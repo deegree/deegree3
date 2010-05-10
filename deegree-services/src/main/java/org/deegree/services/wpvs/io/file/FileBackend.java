@@ -85,11 +85,7 @@ public class FileBackend extends ModelBackend<Envelope> {
      * @throws IOException
      */
     public FileBackend( File billboardFile ) throws IOException {
-        if ( billboardFile.exists() ) {
-            treeFile = getTreeFile( billboardFile );
-        } else {
-            throw new IOException( "The given billboard file: " + billboardFile + " does not exist." );
-        }
+        treeFile = getTreeFile( billboardFile );
     }
 
     /**
@@ -99,14 +95,8 @@ public class FileBackend extends ModelBackend<Envelope> {
      * @throws IOException
      */
     public FileBackend( File entityFile, File prototypeFile ) throws IOException {
-        if ( entityFile.exists() ) {
-            buildingFile = getBuildingFile( entityFile );
-            if ( prototypeFile != null && prototypeFile.exists() ) {
-                this.prototypeFile = getPrototypeFile( prototypeFile );
-            }
-        } else {
-            throw new IOException( "The given entity file: " + entityFile + " does not exist." );
-        }
+        buildingFile = getBuildingFile( entityFile );
+        this.prototypeFile = getPrototypeFile( prototypeFile );
     }
 
     /**
@@ -116,6 +106,19 @@ public class FileBackend extends ModelBackend<Envelope> {
     private ModelFile<WorldRenderableObject> getBuildingFile( File entityFile )
                             throws IOException {
         File[] files = mapFileType( entityFile );
+
+        if ( !files[0].exists() ) {
+            throw new IOException( "The given entity backend data file: " + files[0].getAbsolutePath()
+                                   + " does not exist." );
+        }
+        if ( !files[1].exists() ) {
+            throw new IOException( "The given entity backend index file: " + files[1].getAbsolutePath()
+                                   + " does not exist." );
+        }
+        if ( !files[2].exists() ) {
+            throw new IOException( "The given entity backend info file: " + files[2].getAbsolutePath()
+                                   + " does not exist." );
+        }
         return new ModelFile<WorldRenderableObject>( new IndexFile( files[0] ),
                                                      new DataFile<WorldRenderableObject>( files[1],
                                                                                           getBuildingSerializer() ),
@@ -142,6 +145,15 @@ public class FileBackend extends ModelBackend<Envelope> {
     private ModelFile<BillBoard> getTreeFile( File bilboardFile )
                             throws IOException {
         File[] files = mapFileType( bilboardFile );
+        if ( !files[0].exists() ) {
+            throw new IOException( "The given billboard backend data file: " + files[0].getAbsolutePath()
+                                   + " does not exist." );
+        }
+        if ( !files[1].exists() ) {
+            throw new IOException( "The given billboard backend index file: " + files[1].getAbsolutePath()
+                                   + " does not exist." );
+        }
+
         return new ModelFile<BillBoard>( new IndexFile( files[0] ), new DataFile<BillBoard>( files[1],
                                                                                              getTreeSerializer() ),
                                          files[2] );

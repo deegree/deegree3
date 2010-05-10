@@ -100,14 +100,12 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
                 rs = new FileBackend( entityFile, prototypeFile );
             }
 
-            if ( rs != null ) {
-                // instantiate the texture dir
-                List<String> tDirs = config.getTextureDirectory();
-                for ( String tDir : tDirs ) {
-                    if ( tDir != null ) {
-                        File tD = resolveFile( tDir, resolver, false, null );
-                        TexturePool.addTexturesFromDirectory( tD );
-                    }
+            // instantiate the texture dir
+            List<String> tDirs = config.getTextureDirectory();
+            for ( String tDir : tDirs ) {
+                if ( tDir != null ) {
+                    File tD = resolveFile( tDir, resolver, false, null );
+                    TexturePool.addTexturesFromDirectory( tD );
                 }
             }
 

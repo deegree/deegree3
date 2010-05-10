@@ -305,8 +305,8 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
      * 
      */
     private void initModels() {
-        if ( this.perspectiveViewService.getAllBuildingRenderers() != null
-             && !this.perspectiveViewService.getAllBuildingRenderers().isEmpty() ) {
+        if ( this.perspectiveViewService.getAllRenderableRenderers() != null
+             && !this.perspectiveViewService.getAllRenderableRenderers().isEmpty() ) {
             availableDatasets.add( "buildings" );
             this.currentDatasets.add( "buildings" );
             this.renderBuildings = true;
@@ -346,10 +346,9 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
                                                                                           : null,
                             activeTextureManagers.toArray( new TextureManager[activeTextureManagers.size()] ) );
         // outputMV( gl );
-
+        List<RenderableManager<?>> renderableRenders = perspectiveViewService.getRenderableRenderers( this.params );
         if ( renderBuildings ) {
-            List<RenderableManager<?>> buildingRenders = perspectiveViewService.getBuildingRenderers( this.params );
-            for ( RenderableManager<?> br : buildingRenders ) {
+            for ( RenderableManager<?> br : renderableRenders ) {
                 if ( br != null && br instanceof BuildingRenderer ) {
                     br.render( glRenderContext );
                 }
@@ -357,8 +356,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         }
 
         if ( renderTrees ) {
-            List<RenderableManager<?>> treeRenders = this.perspectiveViewService.getBuildingRenderers( this.params );
-            for ( RenderableManager<?> tr : treeRenders ) {
+            for ( RenderableManager<?> tr : renderableRenders ) {
                 if ( tr != null && tr instanceof TreeRenderer ) {
                     tr.render( glRenderContext );
                 }
@@ -692,6 +690,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         case KeyEvent.VK_B: {
             if ( this.availableDatasets.contains( "buildings" ) ) {
                 renderBuildings = !renderBuildings;
+                renderTrees = !renderTrees;
                 if ( renderBuildings ) {
                     this.currentDatasets.add( currentDatasets.size() - 1, "buildings" );
                 } else {

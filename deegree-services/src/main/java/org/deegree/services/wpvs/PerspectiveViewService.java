@@ -418,7 +418,7 @@ public class PerspectiveViewService {
     /**
      * @return all building Renderers (independent of dataset name).
      */
-    public List<RenderableManager<?>> getAllBuildingRenderers() {
+    public List<RenderableManager<?>> getAllRenderableRenderers() {
         return renderableDatasets.getAllDatasourceObjects();
     }
 
@@ -435,7 +435,7 @@ public class PerspectiveViewService {
      * @param viewParams
      * @return all modelRenderers (independent of dataset name) which intersect with the given parameters.
      */
-    public List<RenderableManager<?>> getBuildingRenderers( ViewParams viewParams ) {
+    public List<RenderableManager<?>> getRenderableRenderers( ViewParams viewParams ) {
         return getBuildingRenderers( renderableDatasets.datasetTitles(), viewParams );
     }
 
