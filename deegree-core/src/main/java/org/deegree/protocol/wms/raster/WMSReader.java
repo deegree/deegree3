@@ -42,6 +42,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -64,6 +66,7 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
+import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -148,6 +151,8 @@ public class WMSReader implements RasterReader {
     private boolean transparent;
 
     private int timeout;
+
+    private CRS crs;
 
     /**
      * @param version
@@ -238,9 +243,41 @@ public class WMSReader implements RasterReader {
 
         this.maxWidth = getInt( opts.get( RIO_WMS_MAX_WIDTH ), "max request width" );
         this.maxHeight = getInt( opts.get( RIO_WMS_MAX_HEIGHT ), "max request height" );
+
+        this.client.setMaxMapDimensions( maxWidth, maxHeight );
         this.layers = getLayers( opts );
-        CRS crs = opts.getCRS();
-        this.envelope = client.getBoundingBox( crs == null ? null : crs.getName(), layers );
+        crs = opts.getCRS();
+        if ( crs == null ) {
+            this.envelope = client.getLatLonBoundingBox( layers );
+            LinkedList<String> coordinateSystems = client.getCoordinateSystems( layers.get( 0 ) );
+            for ( int i = 0; i < coordinateSystems.size() && this.crs == null; ++i ) {
+                String srs = coordinateSystems.get( i );
+                if ( srs != null ) {
+                    this.crs = new CRS( srs );
+                    try {
+                        CoordinateSystem cr = crs.getWrappedCRS();
+                        if ( cr.getAxis()[0].getUnits().canConvert( Unit.METRE ) ) {
+                            break;
+                        }
+                    } catch ( UnknownCRSException e ) {
+                        LOG.debug( "(Stack) Unknown crs: " + e.getLocalizedMessage(), e );
+                    }
+
+                }
+            }
+        }
+        if ( crs == null ) {
+            throw new IOException( "Could not get the Default coordinate system for layers: " + layers
+                                   + " does your WMS support the given layers? Unable to use this WMS ( "
+                                   + dataLocationId + " as a raster data source." );
+        }
+        this.envelope = client.getBoundingBox( crs.getName(), layers );
+
+        if ( this.envelope == null ) {
+            throw new IOException( "Could not get the BBox for layers: " + layers
+                                   + " does your WMS support the given layers, unable to use this WMS ( "
+                                   + dataLocationId + " as a raster data source." );
+        }
         CoordinateSystem realCRS = null;
         if ( crs != null ) {
             try {
@@ -275,7 +312,7 @@ public class WMSReader implements RasterReader {
         SimpleRaster result = cache.createFromCache( this, this.dataLocationId );
         if ( result == null ) {
             Envelope env = this.geoRef.getEnvelope( new RasterRect( 1, 1, 2, 2 ), null );
-            Pair<BufferedImage, String> imageResponse = this.client.getMap( layers, maxWidth, maxHeight, env, null,
+            Pair<BufferedImage, String> imageResponse = this.client.getMap( layers, maxWidth, maxHeight, env, crs,
                                                                             format, transparent, true, timeout, false,
                                                                             null );
             if ( imageResponse.first != null ) {
@@ -301,7 +338,7 @@ public class WMSReader implements RasterReader {
                                        "Could not determine the resulting Raster data information of a GetMap request, unable to use this WMS ( "
                                                                + dataLocationId + " as a raster data source." );
             }
-            result = RasterFactory.createEmptyRaster( rdi, envelope, geoRef, this, true, opts );
+            result = RasterFactory.createEmptyRaster( rdi, envelope, geoRef, this, false, opts );
         }
 
         WMSRaster raster = new WMSRaster( result );
@@ -419,8 +456,8 @@ public class WMSReader implements RasterReader {
     public BufferResult read( RasterRect rect, ByteBuffer result )
                             throws IOException {
         Envelope env = this.geoRef.getEnvelope( rect, null );
-        Pair<BufferedImage, String> imageResponse = this.client.getMap( layers, maxWidth, maxHeight, env, null, format,
-                                                                        transparent, true, timeout, false, null );
+        Pair<BufferedImage, String> imageResponse = this.client.getMap( layers, rect.width, rect.height, env, this.crs,
+                                                                        format, transparent, true, timeout, false, null );
         BufferResult res = null;
         if ( imageResponse.first != null ) {
             BufferedImage img = imageResponse.first;
@@ -432,7 +469,62 @@ public class WMSReader implements RasterReader {
 
     @Override
     public boolean shouldCreateCacheFile() {
-        return true;
+        return false;
     }
 
+    public static void main( String[] args )
+                            throws MalformedURLException {
+        RasterIOOptions options = new RasterIOOptions();
+        options.add( RIO_WMS_SYS_ID,
+                     "http://www.wms.nrw.de/geobasis/adv_nrw500?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
+
+        options.add( RasterIOOptions.CRS, "EPSG:31466" );
+        /** Defines the maximum width of a GetMap request. */
+        options.add( RIO_WMS_MAX_WIDTH, "1001" );
+
+        /** Defines the maximum height of a GetMap request. */
+        options.add( RIO_WMS_MAX_HEIGHT, "1001" );
+
+        /** Defines the maximum height of a GetMap request. */
+        options.add( RIO_WMS_LAYERS, "NRW500" );
+
+        /** Defines the maximum scale of a WMS. */
+        options.add( RIO_WMS_MAX_SCALE, "0.1" );
+
+        /** Defines the default (image) format of a get map request to a WMS. */
+        options.add( RIO_WMS_DEFAULT_FORMAT, "png" );
+
+        /** Defines the key to set the GetMap retrieval to transparent. */
+        options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
+
+        /** Defines the key to set the GetMap retrieval timeout. */
+        options.add( RIO_WMS_TIMEOUT, "1000" );
+
+        options.add( RasterIOOptions.OPT_FORMAT, WMSReader.WMSVersion.WMS_111.name() );
+
+        URL url = new URL(
+                           "http://www.wms.nrw.de/geobasis/adv_nrw500?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
+
+        try {
+            InputStream in = url.openStream();
+            AbstractRaster raster = RasterFactory.loadRasterFromStream( in, options );
+            in.close();
+            System.out.println( raster.getEnvelope() );
+            System.out.println( raster.getRasterDataInfo() );
+            System.out.println( "c: " + raster.getColumns() );
+            System.out.println( "r: " + raster.getRows() );
+            Envelope env = raster.getRasterReference().getEnvelope( new RasterRect( 1520, 1520, 1000, 1000 ), null );
+            System.out.println( "env: " + env );
+            AbstractRaster subRaster = raster.getSubRaster( env );
+            RasterFactory.saveRasterToFile( subRaster, new File( "/tmp/out.png" ) );
+
+        } catch ( IOException e ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
+            } else {
+                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
+            }
+        }
+
+    }
 }

@@ -608,9 +608,10 @@ public class RasterFactory {
             // rb: are we sure it is always pixel interleaved?
             RasterDataInfo rdi = new RasterDataInfo( noData, bandTypes, type, InterleaveType.PIXEL );
 
-            if ( byteBuffer == null || byteBuffer.capacity() < rdi.bands * width * height * rdi.dataSize ) {
+            int targetSize = rdi.bands * width * height * rdi.dataSize;
+            if ( byteBuffer == null || byteBuffer.capacity() < targetSize ) {
                 if ( byteBuffer != null ) {
-                    log.warn( "The given bytebuffer's capacity was not to small to for the given buffered image, creating new buffer." );
+                    log.warn( "The given bytebuffer's capacity (" + byteBuffer.capacity() + ") was not too small for the given buffered image (" + targetSize + "), creating new buffer." );
                 }
                 byteBuffer = ByteBufferPool.allocate( rdi.bands * width * height * rdi.dataSize, false );
             }
