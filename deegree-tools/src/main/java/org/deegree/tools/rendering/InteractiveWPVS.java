@@ -44,8 +44,6 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -81,8 +79,11 @@ import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
+import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.rendering.r3d.opengl.display.LODAnalyzer;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
@@ -94,6 +95,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
+import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.wpvs.WPVSController;
 import org.deegree.services.controller.wpvs.getview.GetView;
@@ -885,31 +887,25 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
     private static InteractiveWPVS createWPVSInstance( String configFile, String getUrl )
                             throws UnsupportedOperationException, IOException, JAXBException, OWSException,
                             ServiceInitException {
-        URL configFileURL = null;
-        try {
-            configFileURL = new URL( configFile );
-        } catch ( MalformedURLException e ) {
-            File f = new File( configFile );
-            if ( f.exists() ) {
-                try {
-                    configFileURL = f.toURI().toURL();
-                } catch ( MalformedURLException e1 ) {
-                    // don't know what to do here.
-                    throw new IOException( "Could not load file: " + configFile + " are you sure it exists?" );
-                }
-            }
-        }
-        if ( configFileURL == null ) {
+        File baseDir = new File( configFile );
+        initJDBCConnections( baseDir );
+        initFeatureStores( baseDir );
+        initBatchedMTStores( baseDir );
+        initCoverages( baseDir );
+        initRenderableStores( baseDir );
+
+        File wpvsConfig = new File( baseDir, "services/wpvs.xml" );
+
+        if ( !wpvsConfig.exists() ) {
             throw new IOException( "Could not load file: " + configFile + " are you sure it exists?" );
         }
-
-        XMLAdapter controllerConf = new XMLAdapter( configFileURL );
+        XMLAdapter controllerConf = new XMLAdapter( wpvsConfig );
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "wpvs", "http://www.deegree.org/services/wpvs" );
         XPath xp = new XPath( "wpvs:ServiceConfiguration", nsContext );
 
         OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
-        JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wpvs.configuration:org.deegree.commons.datasource.configuration:org.deegree.commons.configuration" );
+        JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wpvs" );
         Unmarshaller u = jc.createUnmarshaller();
         ServiceConfiguration sc = (ServiceConfiguration) u.unmarshal( elem.getXMLStreamReaderWithoutCaching() );
         float zScale = 1;
@@ -920,6 +916,75 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             params = gv.getViewParameters();
         }
         return new InteractiveWPVS( controllerConf, sc, params, zScale );
+    }
+
+    private static void initFeatureStores( File baseDir ) {
+
+        File fsDir = new File( baseDir, "/datasources/feature" );
+
+        if ( fsDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up feature stores." );
+            LOG.info( "--------------------------------------------------------------------------------" );
+            FeatureStoreManager.init( fsDir );
+            LOG.info( "" );
+        } else {
+            LOG.debug( "No 'datasources/feature' directory -- skipping initialization of feature stores." );
+        }
+    }
+
+    private static void initCoverages( File baseDir ) {
+        File coverageDir = new File( baseDir, "/datasources/coverage" );
+        if ( coverageDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up coverages." );
+            LOG.info( "--------------------------------------------------------------------------------" );
+            CoverageBuilderManager.init( coverageDir );
+            LOG.info( "" );
+        } else {
+            LOG.debug( "No 'datasources/coverage' directory -- skipping initialization of coverages." );
+        }
+    }
+
+    private static void initRenderableStores( File baseDir ) {
+        File renderableDir = new File( baseDir, "/datasources/renderable" );
+        if ( renderableDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up renderable stores." );
+            LOG.info( "--------------------------------------------------------------------------------" );
+            RenderableStoreManager.init( renderableDir );
+            LOG.info( "" );
+        } else {
+            LOG.debug( "No 'datasources/renderable' directory -- skipping initialization of renderable stores." );
+        }
+    }
+
+    private static void initBatchedMTStores( File baseDir ) {
+        File batchedMTDir = new File( baseDir, "/datasources/batchedmt" );
+        if ( batchedMTDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up BatchedMT stores." );
+            LOG.info( "--------------------------------------------------------------------------------" );
+            BatchedMTStoreManager.init( batchedMTDir );
+            LOG.info( "" );
+        } else {
+            LOG.debug( "No 'datasources/batchedmt' directory -- skipping initialization of BatchedMT stores." );
+        }
+
+    }
+
+    private static void initJDBCConnections( File baseDir ) {
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up JDBC connection pools." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
+        File jdbcDir = new File( baseDir, "/jdbc" );
+        if ( jdbcDir.exists() ) {
+            ConnectionManager.init( jdbcDir );
+        } else {
+            LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
+        }
+        LOG.info( "" );
     }
 
     private ViewParams getViewParams( TerrainRenderingManager demRenderer ) {
