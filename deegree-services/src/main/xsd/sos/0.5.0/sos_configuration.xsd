@@ -9,13 +9,13 @@
       </jaxb:schemaBindings>
     </xs:appinfo>
   </xs:annotation>
+  <xs:include schemaLocation="sos_service_configuration.xsd" />  
   <xs:include schemaLocation="sos_published_information.xsd" />
-  <xs:include schemaLocation="sos_service_configuration.xsd" />
   <xs:element name="deegreeSOS">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="sos:PublishedInformation" />
         <xs:element ref="sos:ServiceConfiguration" />
+        <xs:element ref="sos:PublishedInformation" />        
       </xs:sequence>
       <xs:attribute name="configVersion" use="required" fixed="0.5.0" />
     </xs:complexType>
