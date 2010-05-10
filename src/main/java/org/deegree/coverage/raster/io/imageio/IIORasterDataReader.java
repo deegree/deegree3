@@ -170,7 +170,7 @@ public class IIORasterDataReader implements RasterDataReader {
                 try {
                     result = reader.read( 0 );
                     resetStream();
-                    return rasterDataFromImage( result, options );
+                    return RasterFactory.rasterDataFromImage( result, options );
                 } catch ( IOException e ) {
                     LOG.error( "couldn't open image:" + e.getMessage(), e );
                     this.imageReadFailed = true;

@@ -75,6 +75,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
     public RasterAPITextureTileProvider( AbstractRaster raster ) {
         fac = new GeometryFactory();
         this.raster = raster;
+        // GriddedBlobTileContainer.create( file, options )
         this.res = raster.getRasterReference().getResolutionX();
     }
 

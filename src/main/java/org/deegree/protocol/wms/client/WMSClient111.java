@@ -130,6 +130,13 @@ public class WMSClient111 {
     }
 
     /**
+     * @return the system id of the capabilities document.
+     */
+    public String getSystemId() {
+        return this.capabilities.getSystemId();
+    }
+
+    /**
      * Sets the maximum map size that the server will process. If a larger map is requested, it will be broken down into
      * multiple GetMap requests.
      * 
@@ -193,7 +200,7 @@ public class WMSClient111 {
         XPath xp = new XPath( "//" + request + "/Format", null );
         LinkedList<String> list = new LinkedList<String>();
         Object res = capabilities.evaluateXPath( xp, capabilities.getRootElement() );
-        if ( res instanceof List ) {
+        if ( res instanceof List<?> ) {
             for ( Object o : (List<?>) res ) {
                 list.add( ( (OMElement) o ).getText() );
             }
@@ -556,20 +563,9 @@ public class WMSClient111 {
             }
 
             if ( errorsInImage && res.first == null ) {
-                LOG.debug( "Painting image with error: " + res.second );
-                if ( transparent ) {
-                    // TODO create image of type RGBA
-                    res.first = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
-                } else {
-                    // TODO create image of type RGB
-                    res.first = new BufferedImage( width, height, BufferedImage.TYPE_3BYTE_BGR );
-                }
-                Graphics2D g = (Graphics2D) res.first.getGraphics();
-                // TODO use optimized coordinates and font size
-                g.setColor( Color.BLACK );
-                g.fillRect( 0, 0, width - 1, height - 1 );
-                g.setColor( Color.WHITE );
-                g.drawString( "Error: " + res.second, 0, 12 );
+                // TODO create image of type RGBA / RGB
+                res.first = createErrorImage( res.second, width, height, transparent ? BufferedImage.TYPE_4BYTE_ABGR
+                                                                                    : BufferedImage.TYPE_3BYTE_BGR );
                 res.second = null;
             }
 
@@ -579,6 +575,25 @@ public class WMSClient111 {
             }
 
             return res;
+        }
+
+        /**
+         * @param width2
+         * @param height2
+         * @param i
+         * @return
+         */
+        private BufferedImage createErrorImage( String error, int width, int height, int type ) {
+
+            BufferedImage result = new BufferedImage( width, height, type );
+            Graphics2D g = (Graphics2D) result.getGraphics();
+            // TODO use optimized coordinates and font size
+            g.setColor( Color.BLACK );
+            g.fillRect( 0, 0, width - 1, height - 1 );
+            g.setColor( Color.WHITE );
+            g.drawString( "Error: " + error, 0, 12 );
+            return result;
+
         }
 
         // TODO handle axis direction and order correctly, depends on srs
