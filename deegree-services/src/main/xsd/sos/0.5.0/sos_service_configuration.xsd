@@ -2,6 +2,7 @@
 <xs:schema xmlns="http://www.deegree.org/services/sos" xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://www.deegree.org/services/sos"
   elementFormDefault="qualified">
+  <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../xlink/xlinks.xsd" xmlns:cm="http://www.deegree.org/commons" />
   <xs:element name="ServiceConfiguration">
     <xs:complexType>
       <xs:sequence>
@@ -9,42 +10,62 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="name" type="xs:string" />
-              <xs:element name="ObservationStoreId" type="xs:string" />
               <xs:element name="srsName" type="xs:string" />
-              <xs:element name="Procedure" minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="Datastore">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="Location">
-                      <xs:complexType>
-                        <xs:attribute name="lat" type="xs:string" />
-                        <xs:attribute name="lon" type="xs:string" />
-                      </xs:complexType>
-                    </xs:element>
+                    <xs:element name="JDBCConnId" type="xs:string"/>
+                    <xs:element name="Class" type="xs:string" />
+                    <xs:element name="Table" type="xs:string" />
+                    <xs:element ref="Column" minOccurs="0" maxOccurs="unbounded" />
+                    <xs:element ref="Option" minOccurs="0" maxOccurs="unbounded" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Procedure" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
                     <xs:element name="FeatureOfInterest">
                       <xs:complexType>
-                        <xs:attribute name="href" type="xs:string"/>
+                        <xs:attribute ref="xlink:href" />
                       </xs:complexType>
                     </xs:element>
                     <xs:element name="Sensor">
                       <xs:complexType>
-                        <xs:attribute name="id" type="xs:string" />                      
-                        <xs:attribute name="name" type="xs:string" />
-                        <xs:attribute name="href" type="xs:string"/>
+                        <xs:attribute ref="xlink:href" />
                       </xs:complexType>
                     </xs:element>
+                    <xs:element ref="Column" minOccurs="0" maxOccurs="unbounded" />
+                    <xs:element ref="Option" minOccurs="0" maxOccurs="unbounded" />
                   </xs:sequence>
-                  <xs:attribute name="href" type="xs:string"/>
+                  <xs:attribute ref="xlink:href" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="Property" maxOccurs="unbounded">
                 <xs:complexType>
-                  <xs:attribute name="href" type="xs:string"/>
+                  <xs:sequence>
+                    <xs:element ref="Column" minOccurs="0" maxOccurs="unbounded" />
+                    <xs:element ref="Option" minOccurs="0" maxOccurs="unbounded" />
+                  </xs:sequence>
+                  <xs:attribute ref="xlink:href" />
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Option">
+    <xs:complexType>
+      <xs:attribute name="name" />
+      <xs:attribute name="value" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Column">
+    <xs:complexType>
+      <xs:attribute name="type" type="xs:string" />
+      <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
   </xs:element>
 </xs:schema>
