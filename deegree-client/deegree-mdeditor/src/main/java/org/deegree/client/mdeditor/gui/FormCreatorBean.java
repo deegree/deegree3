@@ -58,6 +58,7 @@ import javax.faces.component.UISelectItem;
 import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlCommandLink;
+import javax.faces.component.html.HtmlGraphicImage;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlInputTextarea;
 import javax.faces.component.html.HtmlPanelGrid;
@@ -207,8 +208,14 @@ public class FormCreatorBean implements Serializable {
 
         // help
         HtmlCommandLink helpLink = new HtmlCommandLink();
-        helpLink.setValue( "o" );
         helpLink.setId( GuiUtils.getUniqueId() );
+        helpLink.setStyleClass( "helpLink" );
+        HtmlGraphicImage img = new HtmlGraphicImage();
+        img.setTitle( "Hilfe" );
+        img.setValueExpression( "library", ef.createValueExpression( elContext, "deegree/images", String.class ) );
+        img.setValueExpression( "name", ef.createValueExpression( elContext, "help.gif", String.class ) );
+        helpLink.getChildren().add(img);
+        
         UIParameter param = new UIParameter();
         param.setId( GuiUtils.getUniqueId() );
         param.setName( "mdHelp" );

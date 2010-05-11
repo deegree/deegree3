@@ -9,31 +9,22 @@
 <h:body>
 	<ui:composition template="/page/templates/layout.xhtml">
 
-
 		<ui:define name="metadata">
 						<f:metadata>
 										<f:event type="preRenderView" listener="#{menuCreatorBean.load}" />
 						</f:metadata>
-		</ui:define>
-								
-		<ui:define name="header">
-			<h1 id="titelId">TITEL</h1>
 		</ui:define>
 
 		<ui:define name="menu">
 			<ui:include src="/page/form/emptyMenu.xhtml"/>
 		</ui:define>
 		
-		<ui:define name="leftBox">
-			<ui:include src="/page/navigation.xhtml"/>
+		<ui:define name="headerNav">
+			<ui:include src="/page/form/navigation.xhtml"/>
 		</ui:define>
 		
 		<ui:define name="rightBox">
-			<ui:include src="/page/help.xhtml"/>
-		</ui:define>
-		
-		<ui:define name="footer">
-			FUSS
+			<ui:include src="/page/form/help.xhtml"/>
 		</ui:define>
 		
 	</ui:composition>

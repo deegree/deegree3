@@ -8,29 +8,44 @@
 
 				<ui:insert name="metadata" />
 
-				<div id="container">
+				<div id="mdEditor">
 
-				<div id="header" align="center"><ui:insert name="header">
-				HEADER - ${title} 
-			</ui:insert></div>
+				<div id="header">
+					<ui:insert name="header">
+						<ui:include src="/page/header.xhtml" />
+					</ui:insert>
+				</div>
 
+
+				<div id="headerNav">
+					<ui:insert name="headerNav">
+					</ui:insert>
+				</div>
+				
 				<div id="center">
 
-				<div id="leftBox"><ui:insert name="leftBox">
-				</ui:insert></div>
+				<div id="leftBox">
+					<ui:insert name="leftBox">
+					</ui:insert>
+				</div>
 
-				<div id="main"><ui:insert name="menu" />
-				<div id="content"><ui:insert name="content">
-					</ui:insert></div>
+				<div id="main">
+					<ui:insert name="menu" />
+					<div id="content">
+						<ui:insert name="content">
+					</ui:insert>
+					</div>
 				</div>
 
 				<div id="rightBox"><ui:insert name="rightBox">
 				</ui:insert></div>
 				</div>
 
-				<div id="footer" align="center"><ui:insert name="footer">
-				FOOTER
-			</ui:insert></div>
+				<div id="footer">
+					<ui:insert name="footer">
+						<ui:include src="/page/footer.xhtml" />
+					</ui:insert>
+				</div>
 
 				</div>
 

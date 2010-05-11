@@ -1,83 +1,97 @@
-ul#horizontalList {
+#mdEditor ul#horizontalList {
 	margin: 0;
 	padding: 0.8em;
-	text-align: center;
+	text-align: left;
 }
 
-ul#horizontalList li {
+#mdEditor ul#horizontalList li {
 	list-style: none;
 	display: inline;
 	margin: 0.4em;
 	padding: 0;
 }
 
-ul#horizontalList a,ul#horizontalList span {
+#mdEditor ul#horizontalList a,#mdEditor ul#horizontalList span {
 	padding: 0.2em 1em;
 	text-decoration: none;
 	font-weight: bold;
 	border: 1px solid black;
 	border-left-color: white;
 	border-top-color: white;
-	color: maroon;
+	color: #194c6b;
 	background-color: #ccc;
 }
 
-* html ul#horizontalList a,* html ul#horizontalList span {
-	width: 1em; /* nur fuer IE 5.0x erforderlich */
-	w /idth: auto; /* sicherheitshalber fuer IE 6 zurueckgesetzt */
-}
-
-ul#horizontalList a:hover,ul#horizontalList span {
+#mdEditor ul#horizontalList a:hover,#mdEditor ul#horizontalList span {
 	border-color: white;
 	border-left-color: black;
 	border-top-color: black;
-	color: white;
+	color: #FFFFFF;
 	background-color: gray;
 }
 
-ul#verticalList {
+#mdEditor ul#verticalList {
 	text-align: left;
 }
 
-ul#verticalList li {
+#mdEditor ul#verticalList li {
 	list-style: none;
 	margin-bottom: 20px;
 	margin-left: -35px;
 }
 
-ul#verticalList a,ul#verticalList span {
+#mdEditor ul#verticalList a,#mdEditor ul#verticalList span {
 	padding: 0.2em 1em;
 	text-decoration: none;
 	font-weight: bold;
 	border: 1px solid black;
 	border-left-color: white;
 	border-top-color: white;
-	color: maroon;
+	color: #194c6b;
 	background-color: #ccc;
 }
 
-ul#verticalList a:hover,ul#verticalList span {
+#mdEditor ul#verticalList a:hover,#mdEditor ul#verticalList span {
 	border-color: white;
 	border-left-color: black;
 	border-top-color: black;
-	color: white;
+	color: #FFFFFF;
 	background-color: gray;
 }
 
-.mdFormHeader {
-	text-align: left;
-}
-
-#horizontalMenu {
+#mdEditor #horizontalMenu {
 	margin: 0em auto;
 	margin-bottom: 10px;
+	border-bottom: 2px solid #194c6b;
 }
 
-#verticalMenu {
-	float:left;
+#mdEditor #verticalMenu {
+	float: left;
 	margin-right: 10px;
+	border-right: 2px solid #194c6b;
 }
 
-.invalidFF{
+#mdEditor .invalidFF {
 	border: 2px solid red;
+}
+
+#mdEditor a.helpLink {
+	display: block;
+	float: right;
+	width: 20px;
+	height: 20px;
+	margin: 10px 5px 0px 0px;
+	background-color: #00395B;
+	border: #000000 1px solid;
+	color: #EFEFEF;
+	font-size: 10pt;
+	text-align: center;
+	text-decoration: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+#mdEditor a.helpLink img {
+	margin-top: 2px;
+	border: 0px;
 }

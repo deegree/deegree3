@@ -58,7 +58,7 @@ public class HelpBean implements Serializable {
 
     private static final long serialVersionUID = -548845707830739276L;
 
-    private String helpText = "Und hier die Hilfe für:\n";
+    private String helpText;
 
     public void updateHelp( AjaxBehaviorEvent event )
                             throws AbortProcessingException {

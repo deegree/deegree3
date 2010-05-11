@@ -1,143 +1,92 @@
-body {
-	padding: 0px;
-	margin: 0px;
-	background-color: white;
-}
-
-#container {
+#mdEditor {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #FFFFFF;
+	color: #000000;
+	font-size: 12px;
+	position: relative;
 	margin: 0em auto;
-	/*width: 1000px;*/
 }
 
-#header {
+#mdEditor #header {
+	position: relative;
 	height: 100px;
 	margin: 10px;
-	background-color: #ff0;
 }
 
-#center {
+#mdEditor #header {
+	position: relative;
+	margin: 10px;
+}
+
+#mdEditor #center {
 	position: relative;
 	width: 100%;
 	min-height: 300px;
 }
 
-#leftBox {
+#mdEditor #leftBox {
 	position: absolute;
-	top: 0px;
-	left: 10px;
-	width: 160px;
-	height: 300px;
-	background-color: #fc0;
 }
 
-#main {
+#mdEditor #main {
 	position: relative;
-	margin: 0px 180px;
-	background-color: #ffffc6;
+	margin: 0px 180px 0px 0px;
+	border: 2px solid #194c6b;
 }
 
-#content {
+#mdEditor #content {
+	
 }
 
-#rightBox {
+#mdEditor #rightBox {
 	position: absolute;
 	top: 0px;
 	right: 10px;
 	width: 160px;
 	height: 300px;
-	background-color: #fc0;
 }
 
-#footer {
+#mdEditor #footer {
 	height: 50px;
 	margin: 10px;
-	background-color: #ff0;
-}
-/*
-.error td {
-	border: 3px solid black;
-	background-color: red;
-	color: white;
-	padding: 5px;
+	text-align: right;
 }
 
-body,html {
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-	font: 85% arial, hevetica, sans-serif;
-	text-align: center;
-	color: #333;
+#mdEditor .headerText {
+	position: absolute;
+	bottom: 5px;
+	left: 25px;
+	font-weight: bold;
+	font-size: x-large;
+	font-style: italic;
 }
 
-#container {
-	margin: 0em auto;
-	width: 1002px;
-	text-align: center;
-	background-color: white;
-	border: 1px solid #CCCCCC;
+#mdEditor .headerImg {
+	position: absolute;
+	bottom: 5px;
+	right: 25px;
 }
 
-#header {
-	width: 1002px;
-	background-repeat: no-repeat;
-	border: 0px solid yellow;
-	position: relative;
-	background-color: white;
-	margin: 0px;
+#mdEditor .footerText {
+	font-size: smaller;
 }
 
-#navHead {
-	height: 20px;
-	background-color: white;
-	position: static;
-	border-top: 1px solid #932724;
-	margin: 0px;
-	padding-left: 1px;
-	color: black;
+#mdEditor .box {
 }
 
-#navCon {
-	float: left;
-	width: 165px;
-	border-right: 1px solid #C5C877;
-	padding-right: 10px;
-	padding-left: 5px
+#mdEditor .boxTitle {
+	font-family: Verdana, "Times New Roman", Times, serif;
+	border-bottom: 1px solid #194c6b;
+	font-size: 110%;
+	font-weight: normal;
+	font-style: italic;
+	background-color: #194c6b;
+	color: #FFFFFF;
+	/*c1cde5*/
+	text-align: left;
+	padding: 3px;
 }
-
-#content {
-	background-image: url(css-images/hg.jpg);
-	background-repeat: no-repeat;
-	background-position: right bottom;
-	width: 992px;
-	margin-top: 0px;
-	margin-bottom: 0px;
-	margin-left: 0px;
-	margin-right: 0px;
-	padding-top: 10px;
-	padding-bottom: 50px;
-	padding-left: 5px;
-	padding-right: 5px;
-	border-top: 1px solid #CCCCCC;
-	border-bottom: 1px solid #cccccc;
-	clear: both;
+#mdEditor .boxText {
+	border: 1px solid #194c6b;
+	padding: 3px;
 }
-
-#content p {
-	line-height: 165%;
-}
-
-#footer {
-	clear: both;
-	color: black;
-	text-align: center;
-	font-size: 90%;
-	background-color: #FFFFFF;
-	padding: 0px;
-	font-size: 90%;
-	border-top: 0px solid #CCCCCC;
-	width: 990px;
-	border-bottom: 0px solid maroon;
-	border-left: 0px solid maroon;
-	border-right: 0px solid maroon;
-}*/
