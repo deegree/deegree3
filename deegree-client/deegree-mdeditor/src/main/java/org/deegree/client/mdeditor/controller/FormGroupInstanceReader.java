@@ -36,10 +36,15 @@
 package org.deegree.client.mdeditor.controller;
 
 import java.io.File;
+
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.component.UISelectItem;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
 
 import org.deegree.client.mdeditor.config.Configuration;
 import org.deegree.client.mdeditor.gui.GuiUtils;
@@ -54,21 +59,41 @@ import org.deegree.client.mdeditor.gui.GuiUtils;
  */
 public class FormGroupInstanceReader {
 
-    public static List<UISelectItem> getSelectItems( String grpId ) {
+    public static List<UISelectItem> getSelectItems( String grpId, String referenceLabel )
+                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
         List<UISelectItem> items = new ArrayList<UISelectItem>();
         String dir = Configuration.getFilesDirURL() + grpId;
         File f = new File( dir );
         if ( f.exists() && f.isDirectory() ) {
             File[] listFiles = f.listFiles();
             for ( int i = 0; i < listFiles.length; i++ ) {
+                String label = listFiles[i].getName();
+                String value = listFiles[i].getName();
+                if ( referenceLabel != null ) {
+                    label = replaceProperties( referenceLabel, DatasetReader.read( listFiles[i].getAbsolutePath() ) );
+                }
                 UISelectItem item = new UISelectItem();
                 item.setId( GuiUtils.getUniqueId() );
-                item.setItemLabel( listFiles[i].getName() );
-                item.setItemValue( listFiles[i].getName() );
+                item.setItemLabel( label );
+                item.setItemValue( value );
                 items.add( item );
             }
         }
         return items;
+    }
+
+    private static String replaceProperties( String referenceLabel, Map<String, Object> map ) {
+        String replaced = referenceLabel;
+        for ( String path : map.keySet() ) {
+            String step = path;
+            if ( path.indexOf( '/' ) > -1 ) {
+                step = path.substring( path.indexOf( '/' ) + 1 );
+            }
+            replaced = replaced.replace( "${" + step + "}", (CharSequence) map.get( path ) );
+
+        }
+        replaced = replaced.replaceAll( "\\$\\{[\\/\\w]*\\}", "" );
+        return replaced;
     }
 
     public static List<String> getDatasets() {

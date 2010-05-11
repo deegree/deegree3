@@ -21,6 +21,7 @@
             <label>Zuständige Stelle/Person (Metadatensatz):</label>
             <selectType>one</selectType>
             <referenceToGroup>ContactFormGroup</referenceToGroup>
+            <referenceText>Name: ${KtextName}, Orga.: ${KtextOrga}, PLZ: ${KSubFormGRoup/KStextPLZ}</referenceText>
         </SelectFormElement>
         <!--
             TODO <SelectFormElement id="selectOneK" visible="true"> <label>Eltern-Objekt:</label>
@@ -138,7 +139,7 @@
             <inputType>timestamp</inputType>
         </InputFormElement>
         <FormGroup id="TimePeriodFormGroup">
-            <label>Gültigkeitszeitraum</label>
+            <title>Gültigkeitszeitraum</title>
             <InputFormElement id="begin">
                 <label>Beginn:</label>
                 <inputType>timestamp</inputType>

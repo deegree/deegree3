@@ -84,24 +84,31 @@
                 <xs:sequence>
                     <xs:element ref="selectType" />
                     <xs:choice>
-                        <xs:element name="referenceToGroup" minOccurs="0">
-                            <xs:annotation>
-                                <xs:documentation>the id of the configured group element, which values should be
-                                    selectable by this list</xs:documentation>
-                            </xs:annotation>
-                            <xs:complexType>
-                                <xs:simpleContent>
-                                    <xs:extension base="xs:string">
-                                        <xs:attribute name="showAsLink" type="xs:boolean" default="true">
-                                            <xs:annotation>
-                                                <xs:documentation>indicates if the form group should be accessible by a
-                                                    link</xs:documentation>
-                                            </xs:annotation>
-                                        </xs:attribute>
-                                    </xs:extension>
-                                </xs:simpleContent>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:sequence>
+                            <xs:element name="referenceToGroup" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>the id of the configured group element, which values should be
+                                        selectable by this list</xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="showAsLink" type="xs:boolean" default="true">
+                                                <xs:annotation>
+                                                    <xs:documentation>indicates if the form group should be accessible by a
+                                                        link</xs:documentation>
+                                                </xs:annotation>
+                                            </xs:attribute>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="referenceText" minOccurs="0" type="xs:string">
+                                <xs:annotation>
+                                    <xs:documentation></xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
                         <xs:element name="referenceToCodeList" type="xs:string" minOccurs="0">
                             <xs:annotation>
                                 <xs:documentation>the id of the configured code list, which values should be selectable

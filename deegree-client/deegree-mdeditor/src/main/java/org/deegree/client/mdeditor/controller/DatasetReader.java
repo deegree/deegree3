@@ -70,51 +70,56 @@ public class DatasetReader {
     public static Map<String, Object> readDataset( String id )
                             throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
         String file = Configuration.getFilesDirURL() + id + ".xml";
+        return read( file );
+    }
+
+    public static Map<String, Object> read( String file )
+                            throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
 
         LOG.debug( "Read dataset " + file );
         Map<String, Object> result = new HashMap<String, Object>();
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( file ) );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( file ) );
 
-            if ( xmlStream.getEventType() == START_DOCUMENT ) {
-                xmlStream.nextTag();
-            }
-
-            xmlStream.require( START_ELEMENT, null, "Dataset" );
+        if ( xmlStream.getEventType() == START_DOCUMENT ) {
             xmlStream.nextTag();
-            if ( xmlStream.getEventType() != START_ELEMENT ) {
-                throw new XMLParsingException( xmlStream, "Empty dataset" );
-            }
+        }
 
-            while ( !( xmlStream.isEndElement() && "Dataset".equals( xmlStream.getLocalName() ) ) ) {
-                if ( "Element".equals( xmlStream.getLocalName() ) ) {
-                    xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, null, "Dataset" );
+        xmlStream.nextTag();
+        if ( xmlStream.getEventType() != START_ELEMENT ) {
+            throw new XMLParsingException( xmlStream, "Empty dataset" );
+        }
 
-                    xmlStream.require( START_ELEMENT, null, "id" );
-                    String path = xmlStream.getElementText();
-                    xmlStream.nextTag();
+        while ( !( xmlStream.isEndElement() && "Dataset".equals( xmlStream.getLocalName() ) ) ) {
+            if ( "Element".equals( xmlStream.getLocalName() ) ) {
+                xmlStream.nextTag();
 
-                    if ( path == null ) {
-                        LOG.info( "found element without, continue reading" );
-                    } else {
-                        List<String> values = new ArrayList<String>();
+                xmlStream.require( START_ELEMENT, null, "id" );
+                String path = xmlStream.getElementText();
+                xmlStream.nextTag();
 
-                        while ( xmlStream.isStartElement() && "value".equals( xmlStream.getLocalName() ) ) {
-                            values.add( xmlStream.getElementText() );
-                            xmlStream.nextTag();
-                        }
+                if ( path == null ) {
+                    LOG.info( "found element without, continue reading" );
+                } else {
+                    List<String> values = new ArrayList<String>();
 
-                        Object value = null;
-                        if ( values.size() > 0 ) {
-                            value = values.size() > 1 ? values : values.get( 0 );
-                            result.put( path, value );
-                        }
+                    while ( xmlStream.isStartElement() && "value".equals( xmlStream.getLocalName() ) ) {
+                        values.add( xmlStream.getElementText() );
+                        xmlStream.nextTag();
+                    }
+
+                    Object value = null;
+                    if ( values.size() > 0 ) {
+                        value = values.size() > 1 ? values : values.get( 0 );
+                        result.put( path, value );
                     }
                 }
-                xmlStream.nextTag();
             }
+            xmlStream.nextTag();
+        }
 
-        
         LOG.debug( "Found " + result.size() + " elements" );
         return result;
     }
+
 }

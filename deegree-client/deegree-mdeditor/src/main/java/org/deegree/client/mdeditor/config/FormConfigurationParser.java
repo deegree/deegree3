@@ -249,6 +249,7 @@ public class FormConfigurationParser {
         if ( referenceToGroup != null ) {
             referencedGroups.add( referenceToGroup );
         }
+        String referenceText = getElementText( xmlStream, "referenceText", null );
         String referenceToCodeList = getElementText( xmlStream, "referenceToCodeList", null );
         String selectedValueAsString = getElementText( xmlStream, "selectedValue", null );
         Object selectedValue = selectedValueAsString;
@@ -262,7 +263,7 @@ public class FormConfigurationParser {
         }
 
         SelectFormField ff = new SelectFormField( getPath( id ), id, label, visible, help, isIdentifier, selectedValue,
-                                                  selectType, referenceToCodeList, referenceToGroup );
+                                                  selectType, referenceToCodeList, referenceToGroup, referenceText );
         setPathToIdentifier( ff );
         return ff;
 

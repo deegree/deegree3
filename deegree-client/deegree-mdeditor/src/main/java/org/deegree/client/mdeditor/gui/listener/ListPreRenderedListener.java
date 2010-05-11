@@ -39,12 +39,19 @@ import java.util.List;
 
 import javax.faces.component.UISelectItem;
 import javax.faces.component.html.HtmlSelectOneMenu;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.ComponentSystemEventListener;
+import javax.servlet.http.HttpSession;
 
+import org.deegree.client.mdeditor.config.FormConfigurationFactory;
 import org.deegree.client.mdeditor.controller.FormGroupInstanceReader;
 import org.deegree.client.mdeditor.gui.GuiUtils;
+import org.deegree.client.mdeditor.model.FormConfiguration;
+import org.deegree.client.mdeditor.model.FormField;
+import org.deegree.client.mdeditor.model.FormFieldPath;
+import org.deegree.client.mdeditor.model.SelectFormField;
 
 /**
  * TODO add class documentation here
@@ -59,19 +66,36 @@ public class ListPreRenderedListener implements ComponentSystemEventListener {
     @Override
     public void processEvent( ComponentSystemEvent arg0 )
                             throws AbortProcessingException {
+
         HtmlSelectOneMenu select = (HtmlSelectOneMenu) arg0.getComponent();
-        String grpReference = (String) select.getAttributes().get( "grpReference" );
-        List<UISelectItem> selectItems = FormGroupInstanceReader.getSelectItems( grpReference );
+        String grpReference = (String) select.getAttributes().get( GuiUtils.GROUPREF_ATT_KEY );
+        FormFieldPath path = (FormFieldPath) select.getAttributes().get( GuiUtils.FIELDPATH_ATT_KEY );
 
-        select.getChildren().clear();
+        FacesContext fc = FacesContext.getCurrentInstance();
+        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
+        try {
+            String referenceLabel = null;
+            FormConfiguration formConfiguration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+            FormField formField = formConfiguration.getFormField( path );
+            if ( formField instanceof SelectFormField ) {
+                referenceLabel = ( (SelectFormField) formField ).getReferenceText();
+            }
+            List<UISelectItem> selectItems = FormGroupInstanceReader.getSelectItems( grpReference, referenceLabel );
 
-        UISelectItem noSelection = new UISelectItem();
-        noSelection.setId( GuiUtils.getUniqueId() );
-        noSelection.setItemLabel( "Kein Eintrag" );
-        noSelection.setItemValue( null );
+            select.getChildren().clear();
 
-        select.getChildren().add( noSelection );
-        select.getChildren().addAll( selectItems );
+            UISelectItem noSelection = new UISelectItem();
+            noSelection.setId( GuiUtils.getUniqueId() );
+            noSelection.setItemLabel( "Kein Eintrag" );
+            noSelection.setItemValue( null );
+
+            select.getChildren().add( noSelection );
+            select.getChildren().addAll( selectItems );
+
+        } catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 
