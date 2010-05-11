@@ -64,6 +64,8 @@ public class GuiUtils {
     public static final String FIELDPATH_ATT_KEY = "fieldPath";
 
     public static final String GROUPID_ATT_KEY = "groupId";
+    
+    public static final String GROUPREF_ATT_KEY = "grpReference";
 
     public static String getUniqueId() {
         return "id_" + UUID.randomUUID();

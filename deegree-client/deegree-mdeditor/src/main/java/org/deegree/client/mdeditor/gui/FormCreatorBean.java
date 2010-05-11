@@ -254,7 +254,7 @@ public class FormCreatorBean implements Serializable {
                 if ( se.getReferenceToCodeList() != null ) {
                     addCodeListItems( input, se.getReferenceToCodeList() );
                 } else if ( se.getReferenceToGroup() != null ) {
-                    input.getAttributes().put( "grpReference", se.getReferenceToGroup() );
+                    input.getAttributes().put( GuiUtils.GROUPREF_ATT_KEY, se.getReferenceToGroup() );
                     input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
                 }
             } else {
@@ -262,7 +262,7 @@ public class FormCreatorBean implements Serializable {
                 if ( se.getReferenceToCodeList() != null ) {
                     addCodeListItems( input, se.getReferenceToCodeList() );
                 } else if ( se.getReferenceToGroup() != null ) {
-                    input.getAttributes().put( "grpReference", se.getReferenceToGroup() );
+                    input.getAttributes().put( GuiUtils.GROUPREF_ATT_KEY, se.getReferenceToGroup() );
                     input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
                 }
             }
