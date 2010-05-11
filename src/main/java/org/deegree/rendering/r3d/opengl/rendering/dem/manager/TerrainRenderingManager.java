@@ -202,7 +202,7 @@ public class TerrainRenderingManager {
                 gl.glDisable( GL.GL_NORMALIZE );
             }
         } catch ( Throwable t ) {
-            LOG.debug( "Rendering did not succeed stack tracke.", t );
+            // LOG.error( "Rendering did not succeed stack tracke.", t );
             LOG.error( "Rendering did not succeed because: " + t.getLocalizedMessage() );
         }
 
@@ -293,7 +293,7 @@ public class TerrainRenderingManager {
         Executor exec = Executor.getInstance();
         List<ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>>> results = null;
         try {
-            results = exec.performSynchronously( workers, (long) maxRequestTime * 1000 );
+            results = exec.performSynchronously( workers, (long) maxRequestTime * 100000 );
         } catch ( InterruptedException e ) {
             LOG.debug( "Could not fetch the textures, stack.", e );
             LOG.error( "Could not fetch the textures because: " + e.getMessage() );

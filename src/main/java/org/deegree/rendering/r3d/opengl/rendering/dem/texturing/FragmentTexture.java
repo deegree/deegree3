@@ -129,7 +129,9 @@ public class FragmentTexture {
         double tileYMin = texture.getMinY() - minY;
         double tileXMax = texture.getMaxX() - minX;
         double tileYMax = texture.getMaxY() - minY;
-
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( tileXMin + ", " + tileYMin + ", " + tileXMax + ", " + tileYMax );
+        }
         if ( tileXMin > patchXMin || tileYMin > patchYMin || tileXMax < patchXMax || tileYMax < patchYMax ) {
             String msg = "Internal error. Returned texture tile is not suitable for the MeshFragment.";
             throw new IllegalArgumentException( msg );
