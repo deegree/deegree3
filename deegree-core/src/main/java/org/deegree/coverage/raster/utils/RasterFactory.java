@@ -611,7 +611,9 @@ public class RasterFactory {
             int targetSize = rdi.bands * width * height * rdi.dataSize;
             if ( byteBuffer == null || byteBuffer.capacity() < targetSize ) {
                 if ( byteBuffer != null ) {
-                    log.warn( "The given bytebuffer's capacity (" + byteBuffer.capacity() + ") was not too small for the given buffered image (" + targetSize + "), creating new buffer." );
+                    log.warn( "The given bytebuffer's capacity (" + byteBuffer.capacity()
+                              + ") was not too small for the given buffered image (" + targetSize
+                              + "), creating new buffer." );
                 }
                 byteBuffer = ByteBufferPool.allocate( rdi.bands * width * height * rdi.dataSize, false );
             }

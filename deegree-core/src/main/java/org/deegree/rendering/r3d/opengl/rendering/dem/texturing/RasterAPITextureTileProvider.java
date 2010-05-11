@@ -40,6 +40,10 @@ import java.nio.ByteBuffer;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.cache.ByteBufferPool;
+import org.deegree.coverage.raster.data.DataView;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
@@ -65,6 +69,8 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
 
     private final double res;
 
+    private boolean hasAlpha;
+
     /**
      * Read a texture from a file and load it using the raster api.
      * 
@@ -75,6 +81,14 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
     public RasterAPITextureTileProvider( AbstractRaster raster ) {
         fac = new GeometryFactory();
         this.raster = raster;
+        BandType[] bandInfo = this.raster.getRasterDataInfo().bandInfo;
+        hasAlpha = bandInfo.length == 4;
+        for ( int i = 0; !hasAlpha && i < bandInfo.length; ++i ) {
+            if ( bandInfo[i] == BandType.ALPHA ) {
+                this.hasAlpha = true;
+            }
+        }
+
         // GriddedBlobTileContainer.create( file, options )
         this.res = raster.getRasterReference().getResolutionX();
     }
@@ -94,11 +108,77 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
         }
 
         PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) simpleRaster.getRasterData();
-        ByteBuffer pixelBuffer = rasterData.getByteBuffer();
+        ByteBuffer pixelBuffer = null;
+        if ( rasterData.isWithinDataArea() ) {
+            pixelBuffer = rasterData.getByteBuffer();
+        } else {
+            if ( rasterData.getDataType() != DataType.BYTE ) {
+                LOG.warn( "Raster type is not byte, textures can currently only be bytes." );
+            } else {
+                if ( !rasterData.isOutside() ) {
+                    rasterData.setNoDataValue( new byte[] { 0, -1, 0 } );
+                    DataView rect = rasterData.getView();
+                    if ( rect.width % 2 != 0 ) {
+                        rect.width--;
+                    }
+                    if ( rect.height % 2 != 0 ) {
+                        rect.height--;
+                    }
+                    pixelBuffer = ByteBufferPool.allocate( rect.width * rect.height * rasterData.getDataInfo().dataSize
+                                                           * rasterData.getBands(), false, false );
 
-        TextureTile tile = new TextureTile( minX, minY, maxX, maxY, subset.getColumns(), subset.getRows(), pixelBuffer,
-                                            false, true );
-        return tile;
+                    LOG.info( "Intersects the raster, get the pixels one by one." );
+                    final byte[] sample = new byte[rasterData.getBands()];
+                    for ( int y = 0; y < rect.height; ++y ) {
+                        for ( int x = 0; x < rect.width; ++x ) {
+                            rasterData.getPixel( x + rect.x, y + rect.y, sample );
+                            pixelBuffer.put( sample );
+                        }
+
+                    }
+
+                }
+            }
+        }
+
+        if ( pixelBuffer == null ) {
+            return null;
+        }
+        // System.out.println( "returning texture tile." );
+
+        // DataView rect = rasterData.getView();
+        // if ( rect.width % 2 != 0 ) {
+        // rect.width++;
+        // }
+        // if ( rect.height % 2 != 0 ) {
+        // rect.height++;
+        // }
+
+        // ByteBufferRasterData data = RasterDataFactory.createRasterData( rect.width, rect.height,
+        // raster.getRasterDataInfo().bandInfo,
+        // rasterData.getDataType(), InterleaveType.PIXEL,
+        // false );
+        // data.setByteBuffer( pixelBuffer, new DataView( new RasterRect( 0, 0, rect.width, rect.height ),
+        // raster.getRasterDataInfo() ) );
+        //
+        // System.out.println( "hier3" );
+        // Envelope env = raster.getRasterReference().getEnvelope( rect, null );
+        // SimpleRaster sr = new SimpleRaster( data, env, raster.getRasterReference() );
+        // try {
+        // System.out.println( "hiere" );
+        // RasterFactory.saveRasterToFile( sr, new File( "/tmp/" + rect.x + "_" + rect.y + ".jpg" ) );
+        // } catch ( IOException e ) {
+        // if ( LOG.isDebugEnabled() ) {
+        // LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
+        // } else {
+        // LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
+        // }
+        // }
+        // System.out.println( "columns: " + subset.getColumns() );
+        // System.out.println( "rows: " + subset.getRows() );
+        return new TextureTile( minX, minY, maxX, maxY, subset.getColumns(), subset.getRows(), pixelBuffer, hasAlpha,
+                                true );
+
     }
 
     @Override

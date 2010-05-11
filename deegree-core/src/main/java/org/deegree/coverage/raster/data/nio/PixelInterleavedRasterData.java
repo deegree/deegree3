@@ -158,7 +158,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         if ( pos == -1 ) {
             System.arraycopy( dataInfo.noDataPixel, 0, result, 0, result.length );
         } else {
-            ByteBuffer data = getByteBuffer();
+            ByteBuffer data = getByteBuffer().asReadOnlyBuffer();
             data.position( pos );
             data.get( result, 0, dataInfo.noDataPixel.length );
         }
@@ -281,5 +281,19 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
             // else use generic setSubset method
             super.setSubset( dstX, dstY, width, height, srcRaster, srcX, srcY );
         }
+    }
+
+    /**
+     * @return true if the view lies totally within data range.
+     */
+    public boolean isWithinDataArea() {
+        return dataAccess.isWithinDataArea();
+    }
+
+    /**
+     * @return true if the view lies totally outside data range.
+     */
+    public boolean isOutside() {
+        return dataAccess.isOutside();
     }
 }

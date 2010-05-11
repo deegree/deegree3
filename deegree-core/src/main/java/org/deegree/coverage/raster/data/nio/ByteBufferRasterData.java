@@ -707,9 +707,9 @@ public abstract class ByteBufferRasterData implements RasterData {
             try {
                 result = getByteBuffer().getShort( pos );
             } catch ( Exception e ) {
-                System.out.println( Thread.currentThread().getName() + "->(x,y)|band->pos: " + x + "," + y + "|" + band
-                                    + "->" + pos + "\n-view: " + getView() + "\n-rdi: " + getView().dataInfo
-                                    + "\n-buffer:" + getByteBuffer() );
+                LOG.debug( Thread.currentThread().getName() + "->(x,y)|band->pos: " + x + "," + y + "|" + band + "->"
+                           + pos + "\n-view: " + getView() + "\n-rdi: " + getView().dataInfo + "\n-buffer:"
+                           + getByteBuffer() );
             }
             return result;
         }
@@ -741,6 +741,8 @@ public abstract class ByteBufferRasterData implements RasterData {
         // get the minimal value of width and height, and allow only for positive values.
         int newOrigx = min( getView().x + sampleDomain.x, getOriginalWidth() );
         int newOrigy = min( getView().y + sampleDomain.y, getOriginalHeight() );
+        // int newOrigx = getView().x + sampleDomain.x;
+        // int newOrigy = getView().y + sampleDomain.y;
         int newWidth = sampleDomain.width;
         int newHeight = sampleDomain.height;
 

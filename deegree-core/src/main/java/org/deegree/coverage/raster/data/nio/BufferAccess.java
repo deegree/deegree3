@@ -119,6 +119,7 @@ public class BufferAccess {
         if ( maxViewData == null ) {
             maxViewData = new RasterRect( 0, 0, 0, 0 );
         }
+        // this.lineStride = view.width * pixelStride;
         this.lineStride = maxViewData.width * pixelStride;
         // the byte buffer intersection is the whole view
         // dataRect = new RasterRect( 0, 0, view.width, view.height );
@@ -251,7 +252,6 @@ public class BufferAccess {
                 }
             }
         }
-
     }
 
     /**
@@ -382,5 +382,20 @@ public class BufferAccess {
                 reader.dispose();
             }
         }
+    }
+
+    /**
+     * @return
+     */
+    boolean isWithinDataArea() {
+        return ( view.x >= maxViewData.x && view.x <= maxViewData.width && ( view.x + view.width ) <= maxViewData.width )
+               && ( view.y >= maxViewData.y && view.y <= maxViewData.height && ( view.y + view.height ) <= maxViewData.height );
+    }
+
+    /**
+     * @return
+     */
+    public boolean isOutside() {
+        return maxViewData.x == 0 && maxViewData.y == 0 && maxViewData.width == 0 && maxViewData.height == 0;
     }
 }
