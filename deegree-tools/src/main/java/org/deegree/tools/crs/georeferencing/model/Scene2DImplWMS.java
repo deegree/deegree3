@@ -68,8 +68,6 @@ public class Scene2DImplWMS implements Scene2D {
 
     private List<String> formatList;
 
-    private Envelope completeRequestBoundingbox;
-
     private Envelope imageBoundingbox;
 
     private Point2d onePixel;
@@ -78,7 +76,7 @@ public class Scene2DImplWMS implements Scene2D {
 
     private BufferedImage requestedImage;
 
-    private URL imageRequestUrl;
+    double minX, minY, maxX, maxY;
 
     /**
      * The GetMap()-request to a WMSClient.
@@ -147,6 +145,27 @@ public class Scene2DImplWMS implements Scene2D {
 
     }
 
+    @Override
+    public Envelope determineRequestBoundingbox( URL imageRequestUrl ) {
+
+        Envelope completeRequestBoundingbox = null;
+
+        wmsClient = new WMSClient111( imageRequestUrl );
+        // lays = Collections.singletonList( "dem" );
+        // srs = new CRS( "EPSG:32618" );
+        lays = Collections.singletonList( "root" );
+        srs = new CRS( "EPSG:4326" );
+
+        if ( wmsClient.hasLayer( lays.get( 0 ) ) ) {
+            completeRequestBoundingbox = wmsClient.getBoundingBox( srs.getName(), lays );
+        } else {
+            // the layer is not supported
+        }
+        return completeRequestBoundingbox;
+        //
+
+    }
+
     /**
      * 
      * 
@@ -158,50 +177,26 @@ public class Scene2DImplWMS implements Scene2D {
 
         double panelWidth = sceneBounds.getWidth();
         double panelHeight = sceneBounds.getHeight();
+        if ( minX != maxX && minY != maxY ) {
 
-        wmsClient = new WMSClient111( imageRequestUrl );
-        lays = Collections.singletonList( "dem" );
-        srs = new CRS( "EPSG:32618" );
-        // lays = Collections.singletonList( "root" );
-        // srs = new CRS( "EPSG:4326" );
+            if ( proportion == 0 ) {
+                // do nothing
 
-        if ( wmsClient.hasLayer( lays.get( 0 ) ) ) {
-            completeRequestBoundingbox = wmsClient.getBoundingBox( srs.getName(), lays );
-        } else {
-            // the layer is not supported
+            } else if ( proportion < 0 ) {
+
+                double newWidth = ( panelWidth / panelHeight ) * ( maxY - minY );
+
+                imageBoundingbox = geometryFactory.createEnvelope( minX, minY, ( minX + newWidth ), maxY, srs );
+
+            } else {
+                double newHeight = ( panelHeight / panelWidth ) * ( maxX - minX );
+
+                imageBoundingbox = geometryFactory.createEnvelope( minX, minY, maxX, ( minY + newHeight ), srs );
+
+            }
+            onePixel = normalizeImageBoundingbox( sceneBounds, imageBoundingbox );
+            formatList = Collections.singletonList( "image/jpeg" );
         }
-
-        double spanX = completeRequestBoundingbox.getSpan0();
-        double spanY = completeRequestBoundingbox.getSpan1();
-        double x0 = completeRequestBoundingbox.getMin().get0();
-        double x1 = completeRequestBoundingbox.getMax().get0();
-        double y0 = completeRequestBoundingbox.getMin().get1();
-        double y1 = completeRequestBoundingbox.getMax().get1();
-        Point2d halfOfSpan = new Point2d( ( spanX / 2 ), ( spanY / 2 ) );
-        Point2d sight = new Point2d( ( spanX * 0.05 ), ( spanY * 0.05 ) );
-
-        double minX = x0 + halfOfSpan.getX() - sight.getX();
-        double maxX = x1 - halfOfSpan.getX() + sight.getX();
-        double minY = y0 + halfOfSpan.getY() - sight.getY();
-        double maxY = y1 - halfOfSpan.getY() + sight.getY();
-
-        if ( proportion == 0 ) {
-            // do nothing
-
-        } else if ( proportion < 0 ) {
-
-            double newWidth = ( panelWidth / panelHeight ) * ( maxY - minY );
-
-            imageBoundingbox = geometryFactory.createEnvelope( minX, minY, ( minX + newWidth ), maxY, srs );
-
-        } else {
-            double newHeight = ( panelHeight / panelWidth ) * ( maxX - minX );
-
-            imageBoundingbox = geometryFactory.createEnvelope( minX, minY, maxX, ( minY + newHeight ), srs );
-
-        }
-        onePixel = normalizeImageBoundingbox( sceneBounds, imageBoundingbox );
-        formatList = Collections.singletonList( "image/jpeg" );
         return imageBoundingbox;
 
     }
@@ -223,21 +218,14 @@ public class Scene2DImplWMS implements Scene2D {
 
         double w = panelBounds.getWidth();
         double h = panelBounds.getHeight();
-        double envelopeMeasureX = bbox.getMax().get0() - bbox.getMin().get0();
-        double envelopeMeasureY = bbox.getMax().get1() - bbox.getMin().get1();
-        double oneX = envelopeMeasureX / w;
-        double oneY = envelopeMeasureY / h;
+        double oneX = bbox.getSpan0() / w;
+        double oneY = bbox.getSpan1() / h;
         System.out.println( "one Pixel is: " + oneX + " - " + oneY );
         return new Point2d( oneX, oneY );
     }
 
     @Override
-    public void setImageUrl( URL imageRequestUrl ) {
-        this.imageRequestUrl = imageRequestUrl;
-    }
-
-    @Override
-    public void setImageBoundingbox( Point2d change ) {
+    public void changeImageBoundingbox( Point2d change ) {
         double envStartPosX = imageBoundingbox.getMin().get0() + change.getX() * onePixel.getX();
         double envStartPosY = imageBoundingbox.getMin().get1() - change.getY() * onePixel.getY();
 
@@ -260,9 +248,32 @@ public class Scene2DImplWMS implements Scene2D {
     @Override
     public void reset() {
         imageBoundingbox = null;
-        completeRequestBoundingbox = null;
+        minX = 0.0;
+        minY = 0.0;
+        maxX = 0.0;
+        maxY = 0.0;
         onePixel = null;
         requestedImage = null;
+    }
+
+    @Override
+    public void setSightWindowMinX( double minX ) {
+        this.minX = minX;
+    }
+
+    @Override
+    public void setSightWindowMinY( double minY ) {
+        this.minY = minY;
+    }
+
+    @Override
+    public void setSightWindowMaxX( double maxX ) {
+        this.maxX = maxX;
+    }
+
+    @Override
+    public void setSightWindowMaxY( double maxY ) {
+        this.maxY = maxY;
     }
 
 }

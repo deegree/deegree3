@@ -62,25 +62,29 @@ public interface Scene2D {
     public BufferedImage generateImage( Rectangle sceneBounds );
 
     /**
-     * Sets the URL where to find the necessary data. This is outsourced from generating an image because this
-     * information is needed only once at the beginning of the process to draw an image.
-     * 
-     * @param imageUrl
-     */
-    public void setImageUrl( URL imageUrl );
-
-    /**
      * This should set the boundingbox for the image to draw.
      * 
      * @param change
      */
-    public void setImageBoundingbox( Point2d change );
+    public void changeImageBoundingbox( Point2d change );
 
     /**
      * returns the boundingbox of the image
      */
     public Envelope getImageBoundingbox();
 
+    /**
+     * Resets all of the variables to initial value.
+     */
     public void reset();
 
+    public Envelope determineRequestBoundingbox( URL imageUrl );
+
+    public void setSightWindowMinX( double minX );
+
+    public void setSightWindowMinY( double minY );
+
+    public void setSightWindowMaxX( double maxX );
+
+    public void setSightWindowMaxY( double maxY );
 }

@@ -38,6 +38,8 @@ package org.deegree.tools.crs.georeferencing.communication;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -68,16 +70,18 @@ public class Scene2DPanel extends JPanel {
 
     private final double margin = 0.1;
 
+    private double resolutionOfImage = 0.15;
+
     /**
-     * Initializes the attributes that are needed to an image.
+     * Initializes the attributes that are needed for drawing an image.
      * <p>
      * Is not in the constructor because there should be the possibility to decide when this should happen.
      */
     public void init() {
         imageMargin = new Point2d( imageToDraw.getWidth() * margin, imageToDraw.getHeight() * margin );
         beginDrawImageAtPosition = new Point2d( 0 - imageMargin.getX(), 0 - imageMargin.getY() );
-        imageDimension = new Point2d( imageToDraw.getWidth() + imageMargin.getX() * 2, imageToDraw.getHeight()
-                                                                                       + imageMargin.getY() * 2 );
+        imageDimension = new Point2d( ( imageToDraw.getWidth() + imageMargin.getX() * 2 ),
+                                      ( imageToDraw.getHeight() + imageMargin.getY() * 2 ) );
         System.out.println( "beginDrawing the image: " + beginDrawImageAtPosition );
     }
 
@@ -135,6 +139,28 @@ public class Scene2DPanel extends JPanel {
 
         this.addMouseListener( m );
 
+    }
+
+    public void addScene2DMouseMotionListener( MouseMotionListener m ) {
+
+        this.addMouseMotionListener( m );
+    }
+
+    public void addScene2DMouseWheelListener( MouseWheelListener m ) {
+        this.addMouseWheelListener( m );
+    }
+
+    /**
+     * The resolution that is specified to create the window that should be displayed
+     * 
+     * @return
+     */
+    public double getResolutionOfImage() {
+        return resolutionOfImage;
+    }
+
+    public void setResolutionOfImage( double resolutionOfImage ) {
+        this.resolutionOfImage = resolutionOfImage;
     }
 
 }

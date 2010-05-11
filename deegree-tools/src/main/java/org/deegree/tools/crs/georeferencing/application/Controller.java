@@ -41,11 +41,15 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.geometry.Envelope;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
@@ -78,6 +82,8 @@ public class Controller {
 
         view.addScene2DurlListener( new Scene2DurlListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
+        // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+        panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
     }
 
@@ -112,7 +118,7 @@ public class Controller {
         // get the image and resizes it with the margin
         try {
             scene2DUrl = new URL( view.openUrl() );
-            model.setImageUrl( scene2DUrl );
+            setSightWindowAttributes( model.determineRequestBoundingbox( scene2DUrl ) );
             panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
             panel.init();
             panel.addScene2DMouseListener( new Scene2DMouseListener() );
@@ -122,6 +128,33 @@ public class Controller {
         } catch ( MalformedURLException e1 ) {
             e1.printStackTrace();
         }
+    }
+
+    /**
+     * Responsible for setting the
+     */
+    private void setSightWindowAttributes( Envelope holeRequestBoundingbox ) {
+        double spanX = holeRequestBoundingbox.getSpan0();
+        double spanY = holeRequestBoundingbox.getSpan1();
+
+        double x0 = holeRequestBoundingbox.getMin().get0();
+        double x1 = holeRequestBoundingbox.getMax().get0();
+        double y0 = holeRequestBoundingbox.getMin().get1();
+        double y1 = holeRequestBoundingbox.getMax().get1();
+
+        Point2d boundingboxCenter = new Point2d( ( spanX / 2 ), ( spanY / 2 ) );
+        Point2d sight = new Point2d( ( spanX * panel.getResolutionOfImage() ), ( spanY * panel.getResolutionOfImage() ) );
+
+        double minX = x0 + boundingboxCenter.getX() - sight.getX();
+        double maxX = x1 - boundingboxCenter.getX() + sight.getX();
+        double minY = y0 + boundingboxCenter.getY() - sight.getY();
+        double maxY = y1 - boundingboxCenter.getY() + sight.getY();
+
+        model.setSightWindowMinX( minX );
+        model.setSightWindowMaxX( maxX );
+        model.setSightWindowMinY( minY );
+        model.setSightWindowMaxY( maxY );
+
     }
 
     /**
@@ -181,7 +214,7 @@ public class Controller {
                                                                  mouse.getCumulatedMouseChanging().getY() );
 
                 System.out.println( "my new Point2D: " + updateDrawImageAtPosition );
-                model.setImageBoundingbox( updateDrawImageAtPosition );
+                model.changeImageBoundingbox( updateDrawImageAtPosition );
                 panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
                 mouse.reset();
                 panel.repaint();
@@ -196,6 +229,32 @@ public class Controller {
                 panel.repaint();
                 System.out.println( panel.getBeginDrawImageAtPosition() );
             }
+
+        }
+
+    }
+
+    class Scene2DMouseMotionListener implements MouseMotionListener {
+
+        @Override
+        public void mouseDragged( MouseEvent arg0 ) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void mouseMoved( MouseEvent arg0 ) {
+            // TODO Auto-generated method stub
+
+        }
+
+    }
+
+    class Scene2DMouseWheelListener implements MouseWheelListener {
+
+        @Override
+        public void mouseWheelMoved( MouseWheelEvent arg0 ) {
+            // TODO implement zoom, so init image with new resolution
 
         }
 
