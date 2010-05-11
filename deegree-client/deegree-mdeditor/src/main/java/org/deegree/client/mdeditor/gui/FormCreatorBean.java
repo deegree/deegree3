@@ -131,7 +131,7 @@ public class FormCreatorBean implements Serializable {
                     if ( fg != null ) {
                         HtmlPanelGrid grid = new HtmlPanelGrid();
                         grid.setId( GuiUtils.getUniqueId() );
-                        addFormGroup( grid, fg );
+                        addFormGroup( grid, fg, true );
                         forms.put( grpId, grid );
                         form.getChildren().add( grid );
                     }
@@ -144,14 +144,15 @@ public class FormCreatorBean implements Serializable {
 
     }
 
-    private void addFormGroup( HtmlPanelGrid parentGrid, FormGroup fg ) {
+    private void addFormGroup( HtmlPanelGrid parentGrid, FormGroup fg, boolean isMain ) {
 
         LOG.debug( "Add FormGroup " + fg.getId() );
 
         HtmlPanelGrid grid = new HtmlPanelGrid();
         grid.setId( GuiUtils.getUniqueId() );
         grid.setColumns( 3 );
-        grid.setHeaderClass( "mdFormHeader" );
+        grid.setHeaderClass( "mdFormHeader" + ( isMain ? "" : " mdFormHeaderSub" )  );
+        grid.setStyleClass( "mdForm" + ( isMain ? "" : " mdFormSub" ) );
 
         // label
         UIOutput title = new UIOutput();
@@ -162,7 +163,7 @@ public class FormCreatorBean implements Serializable {
         for ( FormElement fe : fg.getFormElements() ) {
             if ( fe instanceof FormGroup ) {
                 grid.getChildren().add( new HtmlPanelGroup() );
-                addFormGroup( grid, (FormGroup) fe );
+                addFormGroup( grid, (FormGroup) fe, false );
                 grid.getChildren().add( new HtmlPanelGroup() );
             } else {
                 addFormField( grid, (FormField) fe );
@@ -201,6 +202,7 @@ public class FormCreatorBean implements Serializable {
         newOutput.setValue( fe.getLabel() );
         setVisibility( fe, newOutput, ef, elContext );
         newOutput.setId( GuiUtils.getUniqueId() );
+        newOutput.setValueExpression( "styleClass", ef.createValueExpression( elContext, "mdFormLabel", String.class ) );
 
         parentGrid.getChildren().add( newOutput );
 
@@ -214,8 +216,8 @@ public class FormCreatorBean implements Serializable {
         img.setTitle( "Hilfe" );
         img.setValueExpression( "library", ef.createValueExpression( elContext, "deegree/images", String.class ) );
         img.setValueExpression( "name", ef.createValueExpression( elContext, "help.gif", String.class ) );
-        helpLink.getChildren().add(img);
-        
+        helpLink.getChildren().add( img );
+
         UIParameter param = new UIParameter();
         param.setId( GuiUtils.getUniqueId() );
         param.setName( "mdHelp" );
@@ -326,11 +328,11 @@ public class FormCreatorBean implements Serializable {
     }
 
     private void setStyleClass( FormField fe, UIInput input, ExpressionFactory ef, ELContext elContext ) {
-        String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].invalid ? 'invalidFF' : ''}";
+        String el = "#{formFieldBean.formFields['" + fe.getPath().toString()
+                    + "'].invalid ? 'invalidFF' : ''} mdFormInput";
         ValueExpression ve = ef.createValueExpression( elContext, el, String.class );
         input.setValueExpression( "styleClass", ve );
     }
-
 
     private void setTitle( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
         String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].title}";

@@ -9,11 +9,11 @@
 
 #mdEditor #header {
 	position: relative;
-	height: 100px;
 	margin: 10px;
+	min-height: 50px;
 }
 
-#mdEditor #header {
+#mdEditor #headerNav {
 	position: relative;
 	margin: 10px;
 }

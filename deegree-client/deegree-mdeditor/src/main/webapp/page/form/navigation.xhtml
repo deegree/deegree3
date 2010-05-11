@@ -4,9 +4,18 @@
 <h:head></h:head>
 <h:body>
 				<h:form id="navForm">
-								<h:commandButton id="navSaveBt" value="#{mdLabels['saveDataset']}" action="#{navigationBean.saveDataset}" />
-								<h:button id="navLoadBt" value="#{mdLabels['loadDataset']}" outcome="/page/form/chooseFile.jsf" />
-								<h:commandButton id="reloadLink" value="#{mdLabels['reloadLink']}" action="#{navigationBean.reloadForm}" />
+								<span class="navBt">
+									<h:commandButton id="navSaveBt" title="#{mdLabels['saveDataset']}"
+												action="#{navigationBean.saveDataset}" image="/resources/deegree/images/page_white_database.gif" />
+								</span>
+								<span class="navBt">
+									<h:button id="navLoadBt" title="#{mdLabels['loadDataset']}"
+												outcome="/page/form/chooseFile.jsf" image="/resources/deegree/images/page_white_edit.gif" />
+								</span>
+								<span class="navBt">
+									<h:commandButton id="reloadLink" title="#{mdLabels['reloadLink']}"
+												action="#{navigationBean.reloadForm}" image="/resources/deegree/images/arrow_refresh.gif" />
+								</span>
 				</h:form>
 </h:body>
 </html>
