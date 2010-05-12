@@ -100,6 +100,7 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.protocol.sos.storage.ObservationStoreManager;
 import org.deegree.record.persistence.RecordStoreManager;
 import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
@@ -972,6 +973,7 @@ public class OGCFrontController extends HttpServlet {
             initProxyConfig();
             initJDBCConnections();
             initFeatureStores();
+            initObservationStores();
             initCoverages();
             initRecordStores();
             initRenderableStores();
@@ -1116,9 +1118,31 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Setting up feature stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
             FeatureStoreManager.init( fsDir );
-            LOG.info( "" );            
+            LOG.info( "" );
         } else {
             LOG.debug( "No 'datasources/feature' directory -- skipping initialization of feature stores." );
+        }
+
+    }
+
+    private void initObservationStores() {
+        File osDir = null;
+        try {
+            osDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/observation",
+                                                   getServletContext() ).toURI() );
+        } catch ( MalformedURLException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( URISyntaxException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        if ( osDir != null && osDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up observation stores." );
+            LOG.info( "--------------------------------------------------------------------------------" );
+            ObservationStoreManager.init( osDir );
+            LOG.info( "" );
+        } else {
+            LOG.debug( "No 'datasources/observation' directory -- skipping initialization of observation stores." );
         }
     }
 
@@ -1158,7 +1182,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Setting up renderable stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
             RenderableStoreManager.init( renderableDir );
-            LOG.info( "" );            
+            LOG.info( "" );
         } else {
             LOG.debug( "No 'datasources/renderable' directory -- skipping initialization of renderable stores." );
         }
@@ -1179,7 +1203,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Setting up BatchedMT stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
             BatchedMTStoreManager.init( batchedMTDir );
-            LOG.info( "" );            
+            LOG.info( "" );
         } else {
             LOG.debug( "No 'datasources/batchedmt' directory -- skipping initialization of BatchedMT stores." );
         }
@@ -1200,7 +1224,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Setting up record stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
             RecordStoreManager.init( rsDir );
-            LOG.info( "" );            
+            LOG.info( "" );
         } else {
             LOG.debug( "No 'datasources/record' directory -- skipping initialization of record stores." );
         }
