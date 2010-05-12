@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,27 +32,51 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
+ ----------------------------------------------------------------------------*/
+package org.deegree.observation.persistence;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import org.deegree.commons.jdbc.ConnectionManager;
 
 /**
- *
- *
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
-public interface Result {
-    /**
-     * @return the result as a string
-     */
-    String getResultAsString();
+public abstract class SQLObservationDatastore implements ObservationDatastore {
 
     /**
-     * @return the observedProperty of this result
+     * the datastore configuration
      */
-    Property getProperty();
+    private final DatastoreConfiguration dsConfig;
+
+    /**
+     * @param dsConfig
+     */
+    protected SQLObservationDatastore( DatastoreConfiguration dsConfig ) {
+        this.dsConfig = dsConfig;
+    }
+
+    /**
+     * @return a new sql connection for the configured jdbc database.
+     * @throws SQLException
+     */
+    protected Connection getConnection()
+                            throws SQLException {
+        return ConnectionManager.getConnection( dsConfig.getJdbcConnId() );
+    }
+
+    /**
+     * @return the dsConfig
+     */
+    public DatastoreConfiguration getDSConfig() {
+        return dsConfig;
+    }
 
 }

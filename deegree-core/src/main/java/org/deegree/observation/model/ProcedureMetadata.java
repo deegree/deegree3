@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,38 +33,58 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
+package org.deegree.observation.model;
+
+import java.net.URL;
 
 /**
+ * The <code>ProcedureMetadata</code> class encapsulates the metadata of a procedure (as it is found in the sos
+ * configuration).
  * 
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
- * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
  */
-public class SimpleNullResult implements Result {
+public class ProcedureMetadata {
 
-    private final Property property;
+    private final String procedureHref;
+
+    private final String featureOfInterestHref;
+
+    private final URL sensorURL;
 
     /**
-     * @param property
+     * @param procedureHref
+     * @param featureOfInterestHref
+     * @param sensorURL
      */
-    public SimpleNullResult( Property property ) {
-        this.property = property;
+    public ProcedureMetadata( String procedureHref, String featureOfInterestHref, URL sensorURL ) {
+        this.procedureHref = procedureHref;
+        this.featureOfInterestHref = featureOfInterestHref;
+        this.sensorURL = sensorURL;
     }
 
-    public String getResultAsString() {
-        return "";
+    /**
+     * @return
+     */
+    public String getProcedureHref() {
+        return procedureHref;
     }
 
-    public Property getProperty() {
-        return property;
+    /**
+     * @return
+     */
+    public String getFeatureOfInterestHref() {
+        return featureOfInterestHref;
     }
 
-    @Override
-    public String toString() {
-        return getResultAsString() + property.getOptionValue( "uom" ) + " (" + property.getColumnName() + ")";
+    /**
+     * @return
+     */
+    public URL getSensorURL() {
+        return sensorURL;
     }
 }

@@ -33,14 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
-
-import java.util.List;
-
-import org.deegree.protocol.sos.filter.ProcedureFilter;
-import org.deegree.protocol.sos.filter.ResultFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
-import org.deegree.protocol.sos.model.Offering;
+package org.deegree.observation.model;
 
 /**
  * 
@@ -51,40 +44,27 @@ import org.deegree.protocol.sos.model.Offering;
  * @version $Revision$, $Date$
  * 
  */
-public interface SQLFilterConverter {
-    /**
-     * Add time filter to the sql QueryBuilder.
-     * 
-     * @param q
-     *            the query builder
-     * @param filters
-     *            a list of time filter
-     * @throws FilterException
-     */
-    void buildTimeClause( QueryBuilder q, List<TimeFilter> filters )
-                            throws FilterException;
+public class SimpleNullResult implements Result {
+
+    private final Property property;
 
     /**
-     * Add procedure filter to the sql QueryBuilder.
-     * 
-     * @param q
-     *            the query builder
-     * @param filters
-     *            a list of procedure filter
-     * @param offering
-     *            the offering
-     * @throws FilterException
+     * @param property
      */
-    void buildProcedureClause( QueryBuilder q, List<ProcedureFilter> filters, Offering offering )
-                            throws FilterException;
+    public SimpleNullResult( Property property ) {
+        this.property = property;
+    }
 
-    /**
-     * Add result filter to the sql QueryBuilder.
-     * 
-     * @param q
-     * @param resultFilter
-     * @throws FilterException
-     */
-    void buildResultClause( QueryBuilder q, List<ResultFilter> resultFilter )
-                            throws FilterException;
+    public String getResultAsString() {
+        return "";
+    }
+
+    public Property getProperty() {
+        return property;
+    }
+
+    @Override
+    public String toString() {
+        return getResultAsString() + property.getOptionValue( "uom" ) + " (" + property.getColumnName() + ")";
+    }
 }

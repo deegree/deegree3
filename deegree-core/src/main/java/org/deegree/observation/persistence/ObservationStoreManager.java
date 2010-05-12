@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
+package org.deegree.observation.persistence;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -146,7 +146,7 @@ public class ObservationStoreManager {
 
         List<Property> properties = simpleStore.getProperty();
         for ( Property propType : properties ) {
-            org.deegree.protocol.sos.model.Property prop = new org.deegree.protocol.sos.model.Property(
+            org.deegree.observation.model.Property prop = new org.deegree.observation.model.Property(
                                                                                                         propType.getHref(),
                                                                                                         propType.getColumn().getName() );
             for ( OptionType propOpType : propType.getOption() ) {

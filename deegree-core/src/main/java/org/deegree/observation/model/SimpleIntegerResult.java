@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
+package org.deegree.observation.model;
 
 /**
  * This class stores integer result values.

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,39 +33,39 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
+package org.deegree.observation.persistence;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.observation.persistence.simplesql.jaxb.SimpleObservationStore;
+import org.deegree.observation.model.Observation;
+import org.deegree.observation.model.Offering;
+import org.deegree.protocol.sos.filter.FilterCollection;
+import org.deegree.protocol.sos.time.SamplingTime;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * This is the interface for a storage of observations.
  * 
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
+ * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
  */
-public class ObservationStoreXMLAdapter extends XMLAdapter {
+public interface ObservationDatastore {
 
-    public SimpleObservationStore parse()
-                            throws XMLProcessingException {
-        SimpleObservationStore simpleStore = null;
-        try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.observation.persistence.simplesql.jaxb" );
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            simpleStore = (SimpleObservationStore) unmarshaller.unmarshal( rootElement.getXMLStreamReaderWithoutCaching() );
-        } catch ( JAXBException e ) {
-            throw new XMLProcessingException( e.getMessage(), e );
-        }
-        return simpleStore;
-    }
+    /**
+     * Get measurements from the datastore.
+     * 
+     * @param filter
+     * @return the resulting measurements
+     * @throws Exception
+     */
+    public Observation getObservation( FilterCollection filter, Offering offering )
+                            throws ObservationDatastoreException;
+
+    /**
+     * Get the time span (sampling time) of all observations in this datastore.
+     * 
+     * @return the sampling time of the datastore
+     */
+    public SamplingTime getSamplingTime();
 
 }

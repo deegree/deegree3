@@ -33,17 +33,17 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
+package org.deegree.observation.model;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.deegree.geometry.Envelope;
+import org.deegree.observation.persistence.ObservationDatastore;
+import org.deegree.observation.persistence.ObservationDatastoreException;
+import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.protocol.sos.filter.FilterCollection;
-import org.deegree.protocol.sos.storage.ObservationDatastore;
-import org.deegree.protocol.sos.storage.ObservationDatastoreException;
-import org.deegree.protocol.sos.storage.ObservationStoreManager;
 
 /**
  * The <code>Offering</code> class encapsulates the information from an offering (as it is present in the sos

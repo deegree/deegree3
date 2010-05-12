@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,52 +33,39 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
+package org.deegree.observation.persistence;
 
-import java.util.List;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
-import org.deegree.protocol.sos.time.TimeInstant;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.observation.persistence.simplesql.jaxb.SimpleObservationStore;
 
 /**
+ * The <code></code> class TODO add class documentation here.
  * 
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
- * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
  */
-public interface Measurement {
+public class ObservationStoreXMLAdapter extends XMLAdapter {
 
-    /**
-     * @TODO return <code>Feature</code>
-     * @return the feature of this measurement
-     */
-    public String getFeatureOfInterest();
+    public SimpleObservationStore parse()
+                            throws XMLProcessingException {
+        SimpleObservationStore simpleStore = null;
+        try {
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.observation.persistence.simplesql.jaxb" );
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            simpleStore = (SimpleObservationStore) unmarshaller.unmarshal( rootElement.getXMLStreamReaderWithoutCaching() );
+        } catch ( JAXBException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        }
+        return simpleStore;
+    }
 
-    /**
-     * @return the procedure
-     */
-    public Procedure getProcedure();
-
-    /**
-     * @return the time of this measurement
-     */
-    public TimeInstant getSamplingTime();
-
-    /**
-     * @return the observed properties
-     */
-    public List<Property> getProperties();
-
-    /**
-     * @param property
-     * @return the result
-     */
-    public Result getResult( Property property );
-
-    /**
-     * @return all results
-     */
-    public List<Result> getResults();
 }

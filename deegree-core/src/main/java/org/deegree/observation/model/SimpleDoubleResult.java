@@ -33,39 +33,44 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
-
-import org.deegree.protocol.sos.filter.FilterCollection;
-import org.deegree.protocol.sos.model.Observation;
-import org.deegree.protocol.sos.model.Offering;
-import org.deegree.protocol.sos.time.SamplingTime;
+package org.deegree.observation.model;
 
 /**
- * This is the interface for a storage of observations.
+ * This class stores double result values.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
  */
-public interface ObservationDatastore {
+public class SimpleDoubleResult implements Result {
+
+    private final double value;
+
+    private final Property property;
 
     /**
-     * Get measurements from the datastore.
-     * 
-     * @param filter
-     * @return the resulting measurements
-     * @throws Exception
+     * @param value
+     * @param property
      */
-    public Observation getObservation( FilterCollection filter, Offering offering )
-                            throws ObservationDatastoreException;
+    public SimpleDoubleResult( double value, Property property ) {
+        this.value = value;
+        this.property = property;
+    }
 
-    /**
-     * Get the time span (sampling time) of all observations in this datastore.
-     * 
-     * @return the sampling time of the datastore
-     */
-    public SamplingTime getSamplingTime();
+    public String getResultAsString() {
+        return Double.toString( value );
+    }
+
+    public Property getProperty() {
+        return property;
+    }
+
+    @Override
+    public String toString() {
+        return getResultAsString() + property.getOptionValue( "uom" ) + " (" + property.getColumnName() + ")";
+    }
 
 }

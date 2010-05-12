@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
+package org.deegree.observation.persistence;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,14 +48,14 @@ import java.util.List;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.utils.time.Duration;
+import org.deegree.observation.model.MeasurementBase;
+import org.deegree.observation.model.Observation;
+import org.deegree.observation.model.Offering;
+import org.deegree.observation.model.Property;
+import org.deegree.observation.model.Result;
+import org.deegree.observation.model.SimpleDoubleResult;
+import org.deegree.observation.model.SimpleMeasurement;
 import org.deegree.protocol.sos.filter.FilterCollection;
-import org.deegree.protocol.sos.model.MeasurementBase;
-import org.deegree.protocol.sos.model.Observation;
-import org.deegree.protocol.sos.model.Offering;
-import org.deegree.protocol.sos.model.Property;
-import org.deegree.protocol.sos.model.Result;
-import org.deegree.protocol.sos.model.SimpleDoubleResult;
-import org.deegree.protocol.sos.model.SimpleMeasurement;
 import org.deegree.protocol.sos.time.IndeterminateTime;
 import org.deegree.protocol.sos.time.SamplingTime;
 import org.deegree.protocol.sos.time.TimePeriod;

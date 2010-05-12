@@ -33,13 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
+package org.deegree.observation.model;
 
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * The <code>ProcedureMetadata</code> class encapsulates the metadata of a procedure (as it is found in the sos
- * configuration).
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -48,43 +48,34 @@ import java.net.URL;
  * @version $Revision$, $Date$
  * 
  */
-public class ProcedureMetadata {
+public class Property {
 
-    private final String procedureHref;
+    private final String href;
 
-    private final String featureOfInterestHref;
+    private final String columnName;
 
-    private final URL sensorURL;
+    private Map<String, String> options = new HashMap<String, String>();
 
-    /**
-     * @param procedureHref
-     * @param featureOfInterestHref
-     * @param sensorURL
-     */
-    public ProcedureMetadata( String procedureHref, String featureOfInterestHref, URL sensorURL ) {
-        this.procedureHref = procedureHref;
-        this.featureOfInterestHref = featureOfInterestHref;
-        this.sensorURL = sensorURL;
+    public Property( String href, String columnName ) {
+        this.href = href;
+        this.columnName = columnName;
+        this.options = options;
     }
 
-    /**
-     * @return
-     */
-    public String getProcedureHref() {
-        return procedureHref;
+    public void addToOption( String name, String value ) {
+        options.put( name.toLowerCase(), value );
     }
 
-    /**
-     * @return
-     */
-    public String getFeatureOfInterestHref() {
-        return featureOfInterestHref;
+    public String getHref() {
+        return href;
     }
 
-    /**
-     * @return
-     */
-    public URL getSensorURL() {
-        return sensorURL;
+    public String getColumnName() {
+        return columnName;
     }
+
+    public String getOptionValue( String optionName ) {
+        return options.get( optionName.toLowerCase() );
+    }
+
 }

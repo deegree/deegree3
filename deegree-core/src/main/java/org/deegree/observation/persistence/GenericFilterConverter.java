@@ -33,9 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
+package org.deegree.observation.persistence;
 
-import static org.deegree.protocol.sos.storage.QueryBuilder.stringSetter;
+import static org.deegree.observation.persistence.QueryBuilder.stringSetter;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -55,6 +55,7 @@ import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.observation.model.Offering;
 import org.deegree.protocol.sos.filter.BeginFilter;
 import org.deegree.protocol.sos.filter.DurationFilter;
 import org.deegree.protocol.sos.filter.EndFilter;
@@ -62,7 +63,6 @@ import org.deegree.protocol.sos.filter.ProcedureFilter;
 import org.deegree.protocol.sos.filter.ResultFilter;
 import org.deegree.protocol.sos.filter.TimeFilter;
 import org.deegree.protocol.sos.filter.TimeInstantFilter;
-import org.deegree.protocol.sos.model.Offering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

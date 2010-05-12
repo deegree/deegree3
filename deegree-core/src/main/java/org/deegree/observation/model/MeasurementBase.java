@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,30 +32,54 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
+ ----------------------------------------------------------------------------*/
+package org.deegree.observation.model;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * This is an exception class for internal filter exceptions.
- *
+ * This {@link MeasurementBase} is a container to store data that is common to all {@link SimpleMeasurement}s.
+ * 
+ * <p>
+ * A {@link MeasurementBase} object is immutable.
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
-public class FilterException extends Exception {
+public class MeasurementBase {
+
+    private final String featureOfInterest;
+
+    private final List<Property> properties;
 
     /**
-     *
+     * @param foi
+     * @param properties
      */
-    private static final long serialVersionUID = -5373675526010343693L;
-
-    /**
-     * @param message
-     */
-    public FilterException( String message ) {
-        super(message);
+    public MeasurementBase( String foi, Collection<Property> properties ) {
+        this.featureOfInterest = foi;
+        this.properties = new ArrayList<Property>( properties );
     }
 
+    /**
+     * @TODO return Feature
+     * @return the feature of interest
+     */
+    public String getFeatureOfInterest() {
+        return featureOfInterest;
+    }
+
+    /**
+     * @TODO measurement for more than one property
+     * @return the observedProperty
+     */
+    public List<Property> getProperties() {
+        return properties;
+    }
 }

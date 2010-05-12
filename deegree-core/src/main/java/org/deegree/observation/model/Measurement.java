@@ -33,17 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
+package org.deegree.observation.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import org.deegree.protocol.sos.time.TimeInstant;
+
 /**
- * This {@link MeasurementBase} is a container to store data that is common to all {@link SimpleMeasurement}s.
- * 
- * <p>
- * A {@link MeasurementBase} object is immutable.
  * 
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
@@ -52,34 +48,37 @@ import java.util.List;
  * @version $Revision$, $Date$
  * 
  */
-public class MeasurementBase {
-
-    private final String featureOfInterest;
-
-    private final List<Property> properties;
+public interface Measurement {
 
     /**
-     * @param foi
-     * @param properties
+     * @TODO return <code>Feature</code>
+     * @return the feature of this measurement
      */
-    public MeasurementBase( String foi, Collection<Property> properties ) {
-        this.featureOfInterest = foi;
-        this.properties = new ArrayList<Property>( properties );
-    }
+    public String getFeatureOfInterest();
 
     /**
-     * @TODO return Feature
-     * @return the feature of interest
+     * @return the procedure
      */
-    public String getFeatureOfInterest() {
-        return featureOfInterest;
-    }
+    public Procedure getProcedure();
 
     /**
-     * @TODO measurement for more than one property
-     * @return the observedProperty
+     * @return the time of this measurement
      */
-    public List<Property> getProperties() {
-        return properties;
-    }
+    public TimeInstant getSamplingTime();
+
+    /**
+     * @return the observed properties
+     */
+    public List<Property> getProperties();
+
+    /**
+     * @param property
+     * @return the result
+     */
+    public Result getResult( Property property );
+
+    /**
+     * @return all results
+     */
+    public List<Result> getResults();
 }
