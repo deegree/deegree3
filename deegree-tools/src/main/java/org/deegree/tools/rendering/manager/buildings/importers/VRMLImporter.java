@@ -38,7 +38,7 @@ package org.deegree.tools.rendering.manager.buildings.importers;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.deegree.commons.utils.JOGLUtils.convertColorGLColor;
+import static org.deegree.rendering.r3d.opengl.JOGLUtils.convertColorGLColor;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;

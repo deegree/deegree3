@@ -48,8 +48,8 @@ import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
+import org.deegree.rendering.r3d.opengl.JOGLUtils;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.services.wpvs.io.BackendResult;
 import org.deegree.services.wpvs.io.DataObjectInfo;
