@@ -258,9 +258,15 @@ public class RasterBuilder implements CoverageBuilder {
                 }
                 if ( file != null ) {
                     final File loc = new File( adapter.resolve( file.getValue() ).getFile() );
+                    if ( !loc.exists() ) {
+                        LOG.warn( "Given raster file location does not exist: " + loc.getAbsolutePath() );
+                        return null;
+                    }
                     rOptions.add( RasterIOOptions.OPT_FORMAT, file.getFileType() );
                     AbstractRaster raster = loadRasterFromFile( loc, rOptions );
-                    raster.setCoordinateSystem( crs );
+                    if ( raster != null ) {
+                        raster.setCoordinateSystem( crs );
+                    }
                     return raster;
                 }
             } catch ( MalformedURLException e ) {

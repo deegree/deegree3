@@ -44,10 +44,10 @@ import java.util.List;
 
 import javax.media.opengl.GL;
 
-import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
+import org.deegree.rendering.r3d.opengl.JOGLUtils;
 import org.deegree.rendering.r3d.opengl.rendering.ShaderProgram;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
 import org.slf4j.Logger;

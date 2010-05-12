@@ -155,4 +155,10 @@ public class WMSTextureTileProvider implements TextureTileProvider {
         return null;
     }
 
+    @Override
+    public CRS getCRS() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

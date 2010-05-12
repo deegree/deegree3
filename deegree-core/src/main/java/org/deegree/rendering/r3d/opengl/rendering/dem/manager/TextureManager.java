@@ -235,77 +235,24 @@ public class TextureManager {
 
             double dist = VectorUtils.getDistance( scaledBBox, eyePos );
             double pixelSize = params.estimatePixelSizeForSpaceUnit( dist );
-            double unitsPerPixel = maxProjectedTexelSize / pixelSize;
-            double providerRes = tileManager.getMatchingResolution( unitsPerPixel );
-            // System.out.println( "ProviderRes: " + providerRes );
-            if ( !( Double.isNaN( providerRes ) || Double.isInfinite( providerRes ) ) ) {
-                // System.out.println( "Setting ProviderRes: " + providerRes );
-                unitsPerPixel = providerRes;
-            }
-            // rb: no 0 values, TODO configuration?
-            unitsPerPixel = Math.max( unitsPerPixel, 0.00001 );
-
-            // check if the texture gets too large with respect to the maximum texture size
-            unitsPerPixel = clipResolution( unitsPerPixel, fragmentBBox, glRenderContext.getMaxTextureSize() );
+            double requiredUnitsPerPixel = maxProjectedTexelSize / pixelSize;
             // System.out.println( "clipped metersPerPixel: " + metersPerPixel );
 
             // rb: note the following values are still in center.
-            double minX = fragmentBBox[0][0] - (float) translationToLocalCRS[0];
-            double minY = fragmentBBox[0][1] - (float) translationToLocalCRS[1];
-            double maxX = fragmentBBox[1][0] - (float) translationToLocalCRS[0];
-            double maxY = fragmentBBox[1][1] - (float) translationToLocalCRS[1];
+            double[] min = new double[] { fragmentBBox[0][0] - (float) translationToLocalCRS[0],
+                                         fragmentBBox[0][1] - (float) translationToLocalCRS[1] };
+            double[] max = new double[] { fragmentBBox[1][0] - (float) translationToLocalCRS[0],
+                                         fragmentBBox[1][1] - (float) translationToLocalCRS[1] };
+            double[][] fragmentBBoxWorldCoordinates = new double[][] { min, max };
 
-            // make the result an even number of pixels.
-            double worldWidth = maxX - minX;
-            double worldHeight = maxY - minY;
-
-            double iWidth = worldWidth / unitsPerPixel;
-            double iHeight = worldHeight / unitsPerPixel;
-            int imageWidth = (int) Math.ceil( iWidth );
-            int imageHeight = (int) Math.ceil( iHeight );
-
-            // following values are note the half distance to the next pixel in world coordinates.
-            // double dW = ( resolution - rW ) * 0.5;
-            // double dH = ( resolution - rH ) * 0.5;
-
-            // rb: create an image which is even (needed for opengl).
-            if ( imageWidth % 2 != 0 ) {
-                double dW = ( unitsPerPixel + ( unitsPerPixel * ( imageWidth - iWidth ) ) ) * 0.5;
-                imageWidth++;
-                minX -= dW;
-                maxX += dW;
+            TextureRequest req = this.tileManager.createTextureRequest( glRenderContext, fragmentBBoxWorldCoordinates,
+                                                                        requiredUnitsPerPixel, fragment );
+            if ( req != null ) {
+                requests.add( req );
             }
-            if ( imageHeight % 2 != 0 ) {
-                double dH = ( unitsPerPixel + ( unitsPerPixel * ( imageHeight - iHeight ) ) ) * 0.5;
-                imageHeight++;
-                minY -= dH;
-                maxY += dH;
-            }
-
-            if ( LOG.isTraceEnabled() ) {
-                LOG.trace( "frag bbox: " + fragmentBBox[0][0] + "," + fragmentBBox[0][1] + " | " + fragmentBBox[1][0]
-                           + "," + fragmentBBox[1][1] );
-                LOG.trace( "requ bbox: " + minX + "," + minY + " | " + maxX + "," + maxY );
-            }
-
-            requests.add( new TextureRequest( fragment, minX, minY, maxX, maxY, (float) unitsPerPixel ) );
         }
 
         return requests;
-    }
-
-    private double clipResolution( double unitsPerPixel, float[][] tilebbox, int maxTextureSize ) {
-        // LOG.warn( "The maxTextureSize in the TextureManager is hardcoded to 1024." );
-        float width = tilebbox[1][0] - tilebbox[0][0];
-        float height = tilebbox[1][1] - tilebbox[0][1];
-        float maxLen = Math.max( width, height );
-        int textureSize = (int) Math.ceil( maxLen / unitsPerPixel );
-        if ( textureSize > maxTextureSize ) {
-            LOG.debug( "Texture size (={}) exceeds maximum texture size (={}). Setting units/Pixel: {}, to: {}",
-                       new Object[] { textureSize, maxTextureSize, unitsPerPixel, ( maxLen / maxTextureSize ) } );
-            unitsPerPixel = maxLen / maxTextureSize;
-        }
-        return unitsPerPixel;
     }
 
     private List<TextureTileRequest> createTileRequests( Collection<TextureRequest> origRequests ) {

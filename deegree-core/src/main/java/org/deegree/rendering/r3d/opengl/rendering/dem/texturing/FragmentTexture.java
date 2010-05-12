@@ -119,11 +119,11 @@ public class FragmentTexture {
         double minX = -translationVector[0];
         double minY = -translationVector[1];
 
-        float[][] bbox = fragment.getBBox();
-        float patchXMin = bbox[0][0];
-        float patchYMin = bbox[0][1];
-        float patchXMax = bbox[1][0];
-        float patchYMax = bbox[1][1];
+        // float[][] bbox = fragment.getBBox();
+        // float patchXMin = bbox[0][0];
+        // float patchYMin = bbox[0][1];
+        // float patchXMax = bbox[1][0];
+        // float patchYMax = bbox[1][1];
 
         double tileXMin = texture.getMinX() - minX;
         double tileYMin = texture.getMinY() - minY;
@@ -132,16 +132,16 @@ public class FragmentTexture {
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( tileXMin + ", " + tileYMin + ", " + tileXMax + ", " + tileYMax );
         }
-        if ( tileXMin > patchXMin || tileYMin > patchYMin || tileXMax < patchXMax || tileYMax < patchYMax ) {
-            String msg = "Internal error. Returned texture tile is not suitable for the MeshFragment.";
-            throw new IllegalArgumentException( msg );
-        }
+        // if ( tileXMin > patchXMin || tileYMin > patchYMin || tileXMax < patchXMax || tileYMax < patchYMax ) {
+        // String msg = "Internal error. Returned texture tile is not suitable for the MeshFragment.";
+        // throw new IllegalArgumentException( msg );
+        // }
 
         double tileWidth = texture.getMaxX() - texture.getMinX();
         double tileHeight = texture.getMaxY() - texture.getMinY();
 
         // build texture coordinates buffer
-        FloatBuffer vertexBuffer = fragment.getData().getVertices();
+        FloatBuffer vertexBuffer = fragment.getData().getVertices().asReadOnlyBuffer();
         vertexBuffer.rewind();
 
         FloatBuffer texCoordsBuffer = texCoords.getBuffer().asFloatBuffer();

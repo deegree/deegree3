@@ -322,8 +322,8 @@ public class TerrainRenderingManager {
                 } catch ( CancellationException e ) {
                     LOG.warn( "Timeout occured fetching textures." );
                 } catch ( Throwable e ) {
-                    LOG.debug( "Could not fetch the textures, stack.", e );
-                    LOG.error( "Could not fetch the textures because: " + e.getMessage() );
+                    LOG.error( "Could not fetch the textures, stack.", e );
+                    // LOG.error( "Could not fetch the textures because: " + e.getMessage() );
                 }
             }
             LOG.debug( "Fetching of textures: " + ( System.currentTimeMillis() - begin ) + " milliseconds." );

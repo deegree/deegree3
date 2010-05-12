@@ -36,6 +36,8 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
+import static java.lang.Double.doubleToLongBits;
+import static java.lang.Math.round;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.nio.ByteBuffer;
@@ -45,8 +47,6 @@ import java.util.Set;
 import javax.media.opengl.GL;
 
 import org.deegree.commons.utils.nio.PooledByteBuffer;
-import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
-import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureTileManager;
 import org.slf4j.Logger;
 
 /**
@@ -69,7 +69,10 @@ public class TextureTile {
 
     private static final Logger LOG = getLogger( TextureTile.class );
 
-    private static final double EPS = 1E-8;
+    // hascode is comparing on 6th decimal.
+    private static final double HASH_CODE_FLOOR = 1000000;
+
+    private static final double EPS = 1E-6;
 
     private int[] textureID;
 
@@ -94,6 +97,11 @@ public class TextureTile {
 
     private final Set<Integer> referencedRenderFragments = new HashSet<Integer>();
 
+    private final long dataSize;
+
+    // true if the gl context unpack value must be set to 1 (the texture width can not be divided by 4 ) :-)
+    private final boolean unpack;
+
     /**
      * Construct a new texture tile.
      * 
@@ -109,10 +117,10 @@ public class TextureTile {
      */
     public TextureTile( double minX, double minY, double maxX, double maxY, int textureWidth, int textureHeight,
                         ByteBuffer imageData, boolean hasAlpha, boolean enableCaching ) {
-        this.minX = minX;
-        this.minY = minY;
-        this.maxX = maxX;
-        this.maxY = maxY;
+        this.minX = round( minX * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
+        this.minY = round( minY * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
+        this.maxX = round( maxX * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
+        this.maxY = round( maxY * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
 
         // rb: what to do with lines?
         if ( maxX != minX ) {
@@ -120,36 +128,17 @@ public class TextureTile {
         } else {
             metersPerPixel = ( maxY - minY ) / textureWidth;
         }
+        this.metersPerPixel = round( metersPerPixel * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
 
         this.tWidth = textureWidth;
+        double p = tWidth / 4d;
+        this.unpack = p - Math.floor( p ) > EPS;
+
         this.tHeight = textureHeight;
         this.imageData = imageData;
         this.hasAlpha = hasAlpha;
         this.enableCaching = enableCaching;
-    }
-
-    /**
-     * Construct a new texture tile.
-     * 
-     * @param minX
-     * @param minY
-     * @param maxX
-     * @param maxY
-     * @param metersPerPixel
-     *            the resolution of a pixel in meters.
-     * @param textureWidth
-     * @param textureHeight
-     * @param pooledBuffer
-     * @param hasAlpha
-     * @param enableCaching
-     *            true if the gpu cache of the {@link TextureManager} and / or the memory cache of the
-     *            {@link TextureTileManager} should be used.
-     */
-    public TextureTile( double minX, double minY, double maxX, double maxY, float metersPerPixel, int textureWidth,
-                        int textureHeight, PooledByteBuffer pooledBuffer, boolean hasAlpha, boolean enableCaching ) {
-        this( minX, minY, maxX, maxY, textureWidth, textureHeight, pooledBuffer.getBuffer(), hasAlpha, enableCaching );
-        this.pooledBuffer = pooledBuffer;
-        this.metersPerPixel = metersPerPixel;
+        dataSize = textureWidth * tHeight * ( 3 + ( hasAlpha ? 1 : 0 ) );
     }
 
     /**
@@ -292,31 +281,59 @@ public class TextureTile {
      */
     private void loadToGPU( GL gl ) {
         if ( textureID == null ) {
-            if ( imageData != null && imageData.capacity() > 0 ) {
-                textureID = new int[1];
-                gl.glGenTextures( 1, textureID, 0 );
-                gl.glBindTexture( GL.GL_TEXTURE_2D, textureID[0] );
-                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP );
-                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP );
-                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR );
-                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR );
-                // imageData.rewind();
-                // int pos = 0;
-                // int cap = imageData.capacity();
-                // byte[] color = new byte[] { (byte) ( 255 * Math.random() ), (byte) ( 255 * Math.random() ),
-                // (byte) ( 255 * Math.random() ) };
-                // while ( pos < cap ) {
-                // imageData.put( color );
-                // pos = imageData.position();
-                // }
-
-                imageData.rewind();
-                if ( hasAlpha ) {
-                    gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tWidth, tHeight, 0, GL.GL_RGBA,
-                                     GL.GL_UNSIGNED_BYTE, imageData );
+            if ( imageData != null ) {
+                if ( imageData.capacity() != dataSize ) {
+                    LOG.warn( "The data of the texture tile was not set correctly, excpected are: " + dataSize
+                              + " bytes of " + ( hasAlpha ? "RGBA" : "RGB" ) + " values, supplied were: "
+                              + imageData.capacity() + ". This texture will not be rendered." );
                 } else {
-                    gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGB, tWidth, tHeight, 0, GL.GL_RGB,
-                                     GL.GL_UNSIGNED_BYTE, imageData );
+                    textureID = new int[1];
+
+                    gl.glGenTextures( 1, textureID, 0 );
+                    gl.glBindTexture( GL.GL_TEXTURE_2D, textureID[0] );
+                    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP );
+                    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP );
+                    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR );
+                    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR );
+                    imageData.rewind();
+                    // int pos = 0;
+                    // int cap = imageData.capacity();
+                    // byte[] color = new byte[] { (byte) ( 255 ), 0, 0 };
+                    // if ( tWidth == 808 ) {
+                    // color = new byte[] { 0, -1, 0 };
+                    // }
+                    // if ( tHeight == 808 ) {
+                    // color = new byte[] { 0, 0, -1 };
+                    // }
+                    //
+                    // while ( pos < cap ) {
+                    // pos = imageData.put( color ).position();
+                    //
+                    // }
+                    //
+                    // imageData.rewind();
+                    // System.out.println( "twidth: " + tWidth );
+                    // System.out.println( "theight: " + tHeight );
+                    // System.out.println( "alpha: " + hasAlpha );
+                    // System.out.println( "capacity: " + imageData.capacity() + " should be: " + 3 * tWidth * tHeight
+                    // );
+                    if ( unpack ) {
+                        System.out.println( "Setting pixel unpack allignment to 1" );
+                        gl.glPixelStorei( GL.GL_UNPACK_ALIGNMENT, 1 );
+                    } else {
+                        System.out.println( "Leaving pixel unpack allignment to 4" );
+                    }
+                    if ( hasAlpha ) {
+                        gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tWidth, tHeight, 0, GL.GL_RGBA,
+                                         GL.GL_UNSIGNED_BYTE, imageData );
+                    } else {
+                        gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGB, tWidth, tHeight, 0, GL.GL_RGB,
+                                         GL.GL_UNSIGNED_BYTE, imageData );
+                    }
+                    if ( unpack ) {
+                        // reset
+                        gl.glPixelStorei( GL.GL_UNPACK_ALIGNMENT, 4 );
+                    }
                 }
             } else {
                 LOG.warn( "The texture tile has no data set (anymore?) might there be a cache problem?" );
@@ -327,9 +344,7 @@ public class TextureTile {
 
     @Override
     public String toString() {
-        String s = "{minX=" + minX + ",minY=" + minY + ",maxX=" + maxX + ",maxY=" + maxY + ",meters/pixel="
-                   + metersPerPixel + "}";
-        return s;
+        return "(" + minX + "," + minY + "," + maxX + "," + maxY + "), meter/pixel: " + metersPerPixel;
     }
 
     /**
@@ -364,15 +379,15 @@ public class TextureTile {
     public int hashCode() {
         // the 2nd millionth prime, :-)
         long code = 32452843;
-        long tmp = Double.doubleToLongBits( this.minX );
+        long tmp = doubleToLongBits( this.minX );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
-        tmp = Double.doubleToLongBits( this.minY );
+        tmp = doubleToLongBits( this.minY );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
         tmp = Double.doubleToLongBits( this.maxX );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
         tmp = Double.doubleToLongBits( this.maxY );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
-        tmp = Double.doubleToLongBits( metersPerPixel );
+        tmp = Double.doubleToLongBits( this.metersPerPixel );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
 
         code = code * 37 + this.tWidth;
@@ -382,6 +397,32 @@ public class TextureTile {
 
         return (int) ( code >>> 32 ) ^ (int) code;
     }
+
+    // public static void main( String[] args ) {
+    // double minX = 20097.8899980;
+    // double minY = 100097.77388778;
+    // double maxX = 20197.27779919;
+    // double maxY = 400097.89898984730;
+    // float metersPerPixel = 0.088898989899f;
+    // int textureHeight = 2008;
+    // int textureWidth = 2103;
+    // TextureTile tt = new TextureTile( minX, minY, maxX, maxY, textureWidth, textureHeight, (ByteBuffer) null,
+    // false, false );
+    // System.out.println( tt.hashCode() );
+    //
+    // // minX = 20097.8899980;
+    // minX = 20097.88999778;
+    // // minY = 100097.77388778;
+    // minY = 100097.773887784;
+    // // maxX = 20197.27779919;
+    // maxX = 20197.2777992001;
+    // // maxY = 400097.89898984730;
+    // maxY = 400097.898989845999;
+    // // metersPerPixel = 0.088898989899f;
+    // metersPerPixel = 0.08889898f;
+    // tt = new TextureTile( minX, minY, maxX, maxY, textureWidth, textureHeight, null, false, false );
+    // System.out.println( tt.hashCode() );
+    // }
 
     @Override
     public boolean equals( Object other ) {

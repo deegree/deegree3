@@ -493,4 +493,9 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
         }
     }
 
+    @Override
+    public CRS getCRS() {
+        return featureStore.getStorageSRS();
+    }
+
 }
