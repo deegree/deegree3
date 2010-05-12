@@ -246,7 +246,7 @@ public class DEMDatasetGenerator {
 
         long fs = 0;
         int level = 0;
-        while ( level < levels ) {
+        while ( level < this.levels ) {
             fs += bytesPerTile * ( 2l << level++ );
         }
         fileSize = fs;
@@ -264,7 +264,7 @@ public class DEMDatasetGenerator {
         System.out.println( "- bytes per tile: " + getBytesPerTile() );
         System.out.println( "- filesize will be: " + fileSize + " bytes ("
                             + Math.round( ( fileSize / ( 1024 * 1024d ) ) * 100d ) / 100d + " Mb)" );
-        System.out.println( "- WPVS translationvector should be: <wpvs:TranslationToLocalCRS x=\"-" + minX + "\" y=\"-"
+        System.out.println( "- WPVS translationvector should be: <TranslationToLocalCRS x=\"-" + minX + "\" y=\"-"
                             + minY + "\"/>" );
 
         outputTriangleHeights( p0, p1, p2, this.getLevels() );

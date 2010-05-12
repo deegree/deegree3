@@ -46,7 +46,6 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
@@ -100,7 +99,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
 
         Envelope subsetEnv = fac.createEnvelope( minX, minY, maxX, maxY, null );
 
-        //  TODO when does this happen?
+        // TODO when does this happen?
         // RasterRect r = raster.getRasterReference().convertEnvelopeToRasterCRS( subsetEnv );
         // if ( r.width % 2 != 0 || r.height % 2 != 0 ) {
         // StringBuilder wH = new StringBuilder();
@@ -129,6 +128,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
         }
         PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) simpleRaster.getRasterData();
         ByteBuffer pixelBuffer = null;
+        boolean ttHasAlpha = this.hasAlpha;
         if ( rasterData.isWithinDataArea() ) {
             pixelBuffer = rasterData.getByteBuffer();
         } else {
@@ -136,17 +136,33 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
                 LOG.warn( "Raster type is not byte, textures can currently only be bytes." );
             } else {
                 if ( !rasterData.isOutside() ) {
+                    ttHasAlpha = true;
                     DataView rect = rasterData.getView();
                     LOG.debug( "Raster api texture rect: " + rect );
+                    int bands = rasterData.getBands() + ( hasAlpha ? 0 : 1 );
                     pixelBuffer = ByteBufferPool.allocate( rect.width * rect.height * rasterData.getDataInfo().dataSize
-                                                           * rasterData.getBands(), false, false );
+                                                           * bands, false, false );
 
                     LOG.debug( "Intersects the raster, get the pixels one by one." );
                     final byte[] sample = new byte[rasterData.getBands()];
+                    final byte[] noData = rasterData.getNullPixel( null );
+                    final byte[] nNoData = new byte[bands];
+                    if ( noData.length == 3 ) {
+                        nNoData[0] = noData[0];
+                        nNoData[1] = noData[0];
+                        nNoData[2] = noData[0];
+                        nNoData[3] = 0;
+                    }
                     for ( int y = 0; y < rect.height; ++y ) {
                         for ( int x = 0; x < rect.width; ++x ) {
-                            rasterData.getPixel( x, y, sample );
-                            pixelBuffer.put( sample );
+                            if ( rasterData.calculatePos( x, y ) == -1 ) {
+                                pixelBuffer.put( nNoData );
+                            } else {
+                                rasterData.getPixel( x, y, sample );
+                                pixelBuffer.put( sample );
+                                // set the alpha visible
+                                pixelBuffer.put( (byte) -1 );
+                            }
                         }
 
                     }
@@ -193,7 +209,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
         // }
         // System.out.println( "columns: " + subset.getColumns() );
         // System.out.println( "rows: " + subset.getRows() );
-        return new TextureTile( minX, minY, maxX, maxY, subset.getColumns(), subset.getRows(), pixelBuffer, hasAlpha,
+        return new TextureTile( minX, minY, maxX, maxY, subset.getColumns(), subset.getRows(), pixelBuffer, ttHasAlpha,
                                 true );
 
     }

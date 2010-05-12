@@ -139,6 +139,8 @@ public class TextureManager {
 
         // produce tile requests (multiple fragments may share a tile)
         List<TextureTileRequest> tileRequests = createTileRequests( requests );
+        // System.out.println( "requests: " + requests.size() );
+        // System.out.println( "tileRequests: " + tileRequests.size() );
 
         LOG.debug( tileRequests.size() + " tile requests" );
 
