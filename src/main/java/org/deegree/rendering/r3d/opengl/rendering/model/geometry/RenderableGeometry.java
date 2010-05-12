@@ -36,7 +36,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
-import static org.deegree.commons.utils.JOGLUtils.convertColorIntAsFloats;
+import static org.deegree.rendering.r3d.opengl.JOGLUtils.convertColorIntAsFloats;
 
 import java.nio.FloatBuffer;
 

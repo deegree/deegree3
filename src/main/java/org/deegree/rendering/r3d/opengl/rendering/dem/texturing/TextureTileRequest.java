@@ -36,6 +36,9 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
+import static java.lang.Double.doubleToLongBits;
+import static java.lang.Math.round;
+
 /**
  * Represents the request for a {@link TextureTile}.
  * 
@@ -46,7 +49,9 @@ package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
  */
 public class TextureTileRequest {
 
-    private final static double EPS = 1E-8;
+    private static final double HASH_CODE_FLOOR = 1000000;
+
+    private static final double EPS = 1E-6;
 
     private double minX;
 
@@ -74,11 +79,11 @@ public class TextureTileRequest {
      * @param metersPerPixel
      */
     public TextureTileRequest( double minX, double minY, double maxX, double maxY, float metersPerPixel ) {
-        this.minX = minX;
-        this.minY = minY;
-        this.maxX = maxX;
-        this.maxY = maxY;
-        this.unitsPerPixel = metersPerPixel;
+        this.minX = round( minX * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
+        this.minY = round( minY * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
+        this.maxX = round( maxX * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
+        this.maxY = round( maxY * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
+        this.unitsPerPixel = (float) ( round( metersPerPixel * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR );
     }
 
     /**
@@ -128,26 +133,6 @@ public class TextureTileRequest {
         // return this.maxX == that.maxX && this.minY == that.minY;
         return ( Math.abs( this.maxX - that.maxX ) < EPS ) && ( Math.abs( this.minY - that.minY ) < EPS );
     }
-
-    /**
-     * Returns whether this {@link TextureRequest} supersedes another {@link TextureRequest}.
-     * <p>
-     * This is true iff:
-     * <ul>
-     * <li>the bbox of the other request lies completely inside the bbox of this request (or coincides with it)</li>
-     * <li>the meters per pixel of the other request is less than or equal to the meters per pixel of this request</li>
-     * </ul>
-     * </p>
-     * 
-     * @param that
-     * @return true, if this request supersedes the given request, false otherwise
-     */
-    public boolean supersedes( TextureTileRequest that ) {
-        return this.minX <= that.minX && this.minY <= that.minY && this.maxX >= that.maxX && this.maxY >= that.maxY
-               && this.unitsPerPixel <= that.unitsPerPixel/* Math.abs( this.unitsPerPixel - that.unitsPerPixel ) <= EPS */;
-    }
-
-    
 
     /**
      * Merge two requests.
@@ -231,9 +216,9 @@ public class TextureTileRequest {
     public int hashCode() {
         // the 2nd millionth prime, :-)
         long code = 32452843;
-        long tmp = Double.doubleToLongBits( this.minX );
+        long tmp = doubleToLongBits( this.minX );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
-        tmp = Double.doubleToLongBits( this.minY );
+        tmp = doubleToLongBits( this.minY );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
         tmp = Double.doubleToLongBits( this.maxX );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
@@ -266,8 +251,27 @@ public class TextureTileRequest {
      * @return true if this request covers the total area of the given 'candiate'.
      */
     public boolean isFullfilled( TextureTile candidate ) {
-        return this.minX >= candidate.getMinX() && this.minY >= candidate.getMinY() && this.maxX <= candidate.getMaxX()
-               && this.maxY <= candidate.getMaxY() && this.unitsPerPixel >= candidate.getMetersPerPixel();
+        return ( this.minX - candidate.getMinX() ) >= ( -EPS ) && ( this.minY - candidate.getMinY() ) >= ( -EPS )
+               && ( this.maxX - candidate.getMaxX() ) <= ( EPS ) && ( this.maxY - candidate.getMaxY() ) <= ( EPS )
+               && ( this.unitsPerPixel - candidate.getMetersPerPixel() ) >= ( -EPS );
+    }
+
+    /**
+     * Returns whether this {@link TextureRequest} supersedes another {@link TextureRequest}.
+     * <p>
+     * This is true iff:
+     * <ul>
+     * <li>the bbox of the other request lies completely inside the bbox of this request (or coincides with it)</li>
+     * <li>the meters per pixel of the other request is less than or equal to the meters per pixel of this request</li>
+     * </ul>
+     * </p>
+     * 
+     * @param that
+     * @return true, if this request supersedes the given request, false otherwise
+     */
+    public boolean supersedes( TextureTileRequest that ) {
+        return this.minX <= that.minX && this.minY <= that.minY && this.maxX >= that.maxX && this.maxY >= that.maxY
+               && this.unitsPerPixel <= that.unitsPerPixel/* Math.abs( this.unitsPerPixel - that.unitsPerPixel ) <= EPS */;
     }
 
     /**
@@ -287,4 +291,5 @@ public class TextureTileRequest {
                && ( ( this.unitsPerPixel >= candidate.unitsPerPixel ) || ( Math.abs( this.unitsPerPixel
                                                                                      - candidate.unitsPerPixel ) < epsilon ) );
     }
+
 }

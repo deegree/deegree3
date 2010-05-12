@@ -36,6 +36,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
 
@@ -76,4 +77,9 @@ public interface TextureTileProvider {
      * @return the bounding box for this {@link TextureTileProvider}
      */
     public Envelope getEnvelope();
+
+    /**
+     * @return the crs of the texture tile provider
+     */
+    public CRS getCRS();
 }

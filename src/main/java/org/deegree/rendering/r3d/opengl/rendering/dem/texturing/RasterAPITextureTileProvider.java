@@ -45,7 +45,10 @@ import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.slf4j.Logger;
@@ -96,7 +99,22 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
     private TextureTile getTextureTile( double minX, double minY, double maxX, double maxY ) {
 
         Envelope subsetEnv = fac.createEnvelope( minX, minY, maxX, maxY, null );
-
+        RasterRect r = raster.getRasterReference().convertEnvelopeToRasterCRS( subsetEnv );
+        if ( r.width % 2 != 0 || r.height % 2 != 0 ) {
+            StringBuilder wH = new StringBuilder();
+            if ( r.width % 2 != 0 ) {
+                wH.append( "width" );
+            }
+            if ( r.height % 2 != 0 ) {
+                if ( wH.length() > 0 ) {
+                    wH.append( " and " );
+                }
+                wH.append( "height" );
+            }
+            LOG.warn( "The requested texture for the world coordinates will result in a texture with odd (not even) texture ( "
+                      + wH.toString() + " ), this may not be." );
+            return null;
+        }
         AbstractRaster subset = raster.getSubRaster( subsetEnv, null, OriginLocation.OUTER );
 
         // extract raw byte buffer (RGB, pixel interleaved)
@@ -106,7 +124,6 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
             LOG.debug( "#getTextureTile(): as simple raster: " + ( System.currentTimeMillis() - begin2 ) + ", env: "
                        + simpleRaster.getEnvelope() );
         }
-
         PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) simpleRaster.getRasterData();
         ByteBuffer pixelBuffer = null;
         if ( rasterData.isWithinDataArea() ) {
@@ -116,32 +133,29 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
                 LOG.warn( "Raster type is not byte, textures can currently only be bytes." );
             } else {
                 if ( !rasterData.isOutside() ) {
-                    rasterData.setNoDataValue( new byte[] { 0, -1, 0 } );
                     DataView rect = rasterData.getView();
-                    if ( rect.width % 2 != 0 ) {
-                        rect.width--;
-                    }
-                    if ( rect.height % 2 != 0 ) {
-                        rect.height--;
-                    }
+                    LOG.debug( "Raster api texture rect: " + rect );
                     pixelBuffer = ByteBufferPool.allocate( rect.width * rect.height * rasterData.getDataInfo().dataSize
                                                            * rasterData.getBands(), false, false );
 
-                    LOG.info( "Intersects the raster, get the pixels one by one." );
+                    LOG.debug( "Intersects the raster, get the pixels one by one." );
                     final byte[] sample = new byte[rasterData.getBands()];
                     for ( int y = 0; y < rect.height; ++y ) {
                         for ( int x = 0; x < rect.width; ++x ) {
-                            rasterData.getPixel( x + rect.x, y + rect.y, sample );
+                            rasterData.getPixel( x, y, sample );
                             pixelBuffer.put( sample );
                         }
 
                     }
-
+                } else {
+                    LOG.debug( "Requested texture is outside the raster data." );
                 }
+
             }
         }
 
         if ( pixelBuffer == null ) {
+            // System.out.println( "No pixelbuffer" );
             return null;
         }
         // System.out.println( "returning texture tile." );
@@ -166,7 +180,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
         // SimpleRaster sr = new SimpleRaster( data, env, raster.getRasterReference() );
         // try {
         // System.out.println( "hiere" );
-        // RasterFactory.saveRasterToFile( sr, new File( "/tmp/" + rect.x + "_" + rect.y + ".jpg" ) );
+        // RasterFactory.saveRasterToFile( sr, File.createTempFile( "result", ".png" ) );
         // } catch ( IOException e ) {
         // if ( LOG.isDebugEnabled() ) {
         // LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
@@ -199,6 +213,19 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
     @Override
     public Envelope getEnvelope() {
         return raster.getEnvelope();
+    }
+
+    /**
+     * @return
+     * 
+     */
+    public RasterGeoReference getRasterReference() {
+        return raster.getRasterReference();
+    }
+
+    @Override
+    public CRS getCRS() {
+        return raster.getCoordinateSystem();
     }
 
 }
