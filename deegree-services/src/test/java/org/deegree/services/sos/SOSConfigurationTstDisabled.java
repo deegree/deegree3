@@ -41,9 +41,10 @@ import java.net.URL;
 
 import org.deegree.protocol.sos.filter.DurationFilter;
 import org.deegree.protocol.sos.filter.FilterCollection;
+import org.deegree.protocol.sos.model.Observation;
+import org.deegree.protocol.sos.model.Offering;
+import org.deegree.protocol.sos.storage.ObservationDatastoreException;
 import org.deegree.protocol.sos.time.TimePeriod;
-import org.deegree.services.sos.model.Observation;
-import org.deegree.services.sos.offering.ObservationOffering;
 import org.junit.Test;
 
 /**
@@ -60,18 +61,18 @@ public class SOSConfigurationTstDisabled {
     /**
      * Test method for {@link org.deegree.services.sos.SOService#getOffering(String)}.
      * 
-     * @throws SOServiceExeption
+     * @throws ObservationDatastoreException
      * @throws SOSConfigurationException
      */
     @Test
     public void testGetOfferings()
-                            throws SOServiceExeption, SOSConfigurationException {
+                            throws ObservationDatastoreException, SOSConfigurationException {
         URL confURL = SOSConfigurationTstDisabled.class.getResource( "sos_configuration.xml" );
         SOService conf = SOSBuilder.createService( confURL );
 
         assertEquals( 6, conf.getAllOfferings().size() );
-        ObservationOffering offering = conf.getOffering( "urn:MyOrg:offering:1" );
-        assertEquals( "urn:ogc:object:Sensor:latlon:foobarnator", offering.getProcedures().get( 0 ).getName() );
+        Offering offering = conf.getOffering( "urn:MyOrg:offering:1" );
+        assertEquals( "urn:ogc:object:Sensor:latlon:foobarnator", offering.getProcedures().get( 0 ).getProcedureHref() );
 
         TimePeriod period = TimePeriod.createTimePeriod( "2008-03-01", "", "P7D" );
         DurationFilter filter = new DurationFilter( period.getBegin(), period.getEnd() );
