@@ -40,7 +40,7 @@
 <%@ page import="org.deegree.services.controller.*"%>
 <%@ page import="org.deegree.services.wps.*"%>
 <%@page import="org.deegree.services.controller.wps.WPSController"%>
-<%@page import="org.deegree.services.wps.processdefinition.ProcessDefinition"%><html>
+<%@page import="org.deegree.services.jaxb.wps.ProcessDefinition"%><html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>deegree 3 WPS</title>
