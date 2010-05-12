@@ -33,14 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
+package org.deegree.observation.persistence;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.protocol.sos.model.Property;
+import org.deegree.observation.model.Property;
 
 /**
  * 

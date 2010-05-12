@@ -33,10 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.deegree.observation.persistence;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -48,34 +45,25 @@ import java.util.Map;
  * @version $Revision$, $Date$
  * 
  */
-public class Property {
+public class ObservationDatastoreException extends Exception {
 
-    private final String href;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5005418443568658164L;
 
-    private final String columnName;
-
-    private Map<String, String> options = new HashMap<String, String>();
-
-    public Property( String href, String columnName ) {
-        this.href = href;
-        this.columnName = columnName;
-        this.options = options;
+    /**
+     * @param message
+     */
+    public ObservationDatastoreException( String message ) {
+        super( message );
     }
 
-    public void addToOption( String name, String value ) {
-        options.put( name.toLowerCase(), value );
+    /**
+     * @param message
+     * @param cause
+     */
+    public ObservationDatastoreException( String message, Throwable cause ) {
+        super( message, cause );
     }
-
-    public String getHref() {
-        return href;
-    }
-
-    public String getColumnName() {
-        return columnName;
-    }
-
-    public String getOptionValue( String optionName ) {
-        return options.get( optionName.toLowerCase() );
-    }
-
 }

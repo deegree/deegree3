@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+   Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,38 +32,30 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
+----------------------------------------------------------------------------*/
+package org.deegree.observation.persistence;
 
 /**
- * The <code></code> class TODO add class documentation here.
- * 
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
+ * This is an exception class for internal filter exceptions.
+ *
+ * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
-public class ObservationDatastoreException extends Exception {
+public class FilterException extends Exception {
 
     /**
-     * 
+     *
      */
-    private static final long serialVersionUID = 5005418443568658164L;
-
-    /**
-     * @param message
-     */
-    public ObservationDatastoreException( String message ) {
-        super( message );
-    }
+    private static final long serialVersionUID = -5373675526010343693L;
 
     /**
      * @param message
-     * @param cause
      */
-    public ObservationDatastoreException( String message, Throwable cause ) {
-        super( message, cause );
+    public FilterException( String message ) {
+        super(message);
     }
+
 }

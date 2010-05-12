@@ -33,14 +33,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
+package org.deegree.observation.model;
 
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.deegree.geometry.primitive.Point;
+import org.deegree.protocol.sos.time.TimePeriod;
 
 /**
- * This class encapsulates a observation and measurement process.
+ * This class is a collection of {@link Measurement}s.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -49,86 +53,59 @@ import org.deegree.geometry.primitive.Point;
  * @version $Revision$, $Date$
  * 
  */
-public class Procedure {
+public class MeasurementCollection implements Iterable<Measurement> {
 
-    private final String procedureHref;
+    private final TimePeriod samplePeriod = new TimePeriod();
 
-    private final Point location;
+    private final List<Measurement> measurements = new LinkedList<Measurement>();
 
-    private final String featureOfInterestHref;
-
-    private final String sensorId;
-
-    private final String sensorName;
-
-    private final URL sensorURL;
+    private final List<Property> properties;
 
     /**
+     * @param properties
+     */
+    public MeasurementCollection( Collection<Property> properties ) {
+        this.properties = new ArrayList<Property>( properties );
+    }
+
+    /**
+     * Add a new measurement to the collection.
      * 
-     * @param procedureHref
-     * @param location
-     * @param featureOfInterestHref
-     * @param sensorId
-     * @param sensorName
-     * @param sensorURL
+     * @param measurement
      */
-    public Procedure( String procedureHref, Point location, String featureOfInterestHref, String sensorId,
-                      String sensorName, URL sensorURL ) {
-        this.procedureHref = procedureHref;
-        this.location = location;
-        this.featureOfInterestHref = featureOfInterestHref;
-        this.sensorId = sensorId;
-        this.sensorName = sensorName;
-        this.sensorURL = sensorURL;
-    }
-
-    /**
-     * @return
-     */
-    public String getProcedureHref() {
-        return procedureHref;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public Point getLocation() {
-        return location;
-    }
-
-    /**
-     * @return
-     */
-    public String getFeatureOfInterestHref() {
-        return featureOfInterestHref;
-    }
-
-    /**
-     * @return
-     */
-    public String getSensorId() {
-        return sensorId;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public String getSensorName() {
-        return sensorName;
-    }
-
-    /**
-     * @return
-     */
-    public URL getSensorURL() {
-        return sensorURL;
+    public void add( Measurement measurement ) {
+        samplePeriod.extend( measurement.getSamplingTime() );
+        measurements.add( measurement );
     }
 
     @Override
     public String toString() {
-        return procedureHref;
+        return String.format( "MeasurementCollection (n: %d) %s", measurements.size(), samplePeriod );
+    }
+
+    public Iterator<Measurement> iterator() {
+        return measurements.iterator();
+    }
+
+    /**
+     * @return the number of measurements in this collection
+     */
+    public int size() {
+        return measurements.size();
+    }
+
+    /**
+     * @return a list of all stored properties.
+     */
+    public List<Property> getProperties() {
+        return new ArrayList<Property>( properties );
+    }
+
+    /**
+     * @return the sampling time of this collection. The TimePeriod will contain all SamplingTimes of this collection.
+     */
+    public TimePeriod getSamplingTime() {
+        return samplePeriod;
     }
 
 }

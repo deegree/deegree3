@@ -33,44 +33,58 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.model;
+package org.deegree.observation.persistence;
+
+import java.util.List;
+
+import org.deegree.observation.model.Offering;
+import org.deegree.protocol.sos.filter.ProcedureFilter;
+import org.deegree.protocol.sos.filter.ResultFilter;
+import org.deegree.protocol.sos.filter.TimeFilter;
 
 /**
- * This class stores double result values.
+ * 
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
  */
-public class SimpleDoubleResult implements Result {
-
-    private final double value;
-
-    private final Property property;
+public interface SQLFilterConverter {
+    /**
+     * Add time filter to the sql QueryBuilder.
+     * 
+     * @param q
+     *            the query builder
+     * @param filters
+     *            a list of time filter
+     * @throws FilterException
+     */
+    void buildTimeClause( QueryBuilder q, List<TimeFilter> filters )
+                            throws FilterException;
 
     /**
-     * @param value
-     * @param property
+     * Add procedure filter to the sql QueryBuilder.
+     * 
+     * @param q
+     *            the query builder
+     * @param filters
+     *            a list of procedure filter
+     * @param offering
+     *            the offering
+     * @throws FilterException
      */
-    public SimpleDoubleResult( double value, Property property ) {
-        this.value = value;
-        this.property = property;
-    }
+    void buildProcedureClause( QueryBuilder q, List<ProcedureFilter> filters, Offering offering )
+                            throws FilterException;
 
-    public String getResultAsString() {
-        return Double.toString( value );
-    }
-
-    public Property getProperty() {
-        return property;
-    }
-
-    @Override
-    public String toString() {
-        return getResultAsString() + property.getOptionValue( "uom" ) + " (" + property.getColumnName() + ")";
-    }
-
+    /**
+     * Add result filter to the sql QueryBuilder.
+     * 
+     * @param q
+     * @param resultFilter
+     * @throws FilterException
+     */
+    void buildResultClause( QueryBuilder q, List<ResultFilter> resultFilter )
+                            throws FilterException;
 }

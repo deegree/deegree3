@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.sos.storage;
+package org.deegree.observation.persistence;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -50,21 +50,21 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.observation.model.MeasurementBase;
+import org.deegree.observation.model.Observation;
+import org.deegree.observation.model.Offering;
+import org.deegree.observation.model.Procedure;
+import org.deegree.observation.model.Property;
+import org.deegree.observation.model.Result;
+import org.deegree.observation.model.SimpleIntegerResult;
+import org.deegree.observation.model.SimpleMeasurement;
+import org.deegree.observation.model.SimpleNullResult;
 import org.deegree.protocol.sos.filter.BeginFilter;
 import org.deegree.protocol.sos.filter.DurationFilter;
 import org.deegree.protocol.sos.filter.EndFilter;
 import org.deegree.protocol.sos.filter.FilterCollection;
 import org.deegree.protocol.sos.filter.TimeFilter;
 import org.deegree.protocol.sos.filter.TimeInstantFilter;
-import org.deegree.protocol.sos.model.MeasurementBase;
-import org.deegree.protocol.sos.model.Observation;
-import org.deegree.protocol.sos.model.Offering;
-import org.deegree.protocol.sos.model.Procedure;
-import org.deegree.protocol.sos.model.Property;
-import org.deegree.protocol.sos.model.Result;
-import org.deegree.protocol.sos.model.SimpleIntegerResult;
-import org.deegree.protocol.sos.model.SimpleMeasurement;
-import org.deegree.protocol.sos.model.SimpleNullResult;
 import org.deegree.protocol.sos.time.SamplingTime;
 import org.deegree.protocol.sos.time.TimePeriod;
 import org.slf4j.Logger;
