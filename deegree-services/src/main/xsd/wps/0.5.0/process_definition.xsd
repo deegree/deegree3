@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns:wps="http://www.deegree.org/services/wps" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
-  xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://www.deegree.org/services/wps"
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/services/wps" targetNamespace="http://www.deegree.org/services/wps"
   elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   jaxb:version="2.1">
-  <import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd" />
   <!--
     === PROCESS DEFINITION ===
   -->
@@ -476,7 +474,7 @@
     </annotation>
     <simpleContent>
       <extension base="string">
-        <attribute ref="xml:lang" use="optional" />
+        <attribute name="lang" type="string" use="optional" />
       </extension>
     </simpleContent>
   </complexType>

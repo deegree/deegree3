@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:wps="http://www.deegree.org/services/wps" xmlns:cm="http://www.deegree.org/commons"
-  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/wps"
-  elementFormDefault="qualified" attributeFormDefault="unqualified">
-  <xs:element name="PublishedInformation">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="OfferedVersions">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="Version" type="xs:string" maxOccurs="unbounded" />
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-</xs:schema>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/services/wps"
+  targetNamespace="http://www.deegree.org/services/wps" elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+  <element name="PublishedInformation">
+    <complexType>
+      <sequence>
+        <element name="OfferedVersions">
+          <complexType>
+            <sequence>
+              <element name="Version" type="string" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>

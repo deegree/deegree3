@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:wps="http://www.deegree.org/services/wps" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/wps" elementFormDefault="qualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
-  <xs:annotation>
-    <xs:appinfo>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/services/wps" xmlns:xlink="http://www.w3.org/1999/xlink"
+  targetNamespace="http://www.deegree.org/services/wps" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <annotation>
+    <appinfo>
       <jaxb:schemaBindings>
         <jaxb:package name="org.deegree.services.jaxb.wps" />
       </jaxb:schemaBindings>
-    </xs:appinfo>
-  </xs:annotation>
-  <xs:include schemaLocation="process_definition.xsd" />  
-  <xs:include schemaLocation="wps_published_information.xsd" />
-  <xs:include schemaLocation="wps_service_configuration.xsd" />
-  <xs:element name="deegreeWPS">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="wps:PublishedInformation" />
-        <xs:element ref="wps:ServiceConfiguration" />
-      </xs:sequence>
-      <xs:attribute name="configVersion" use="required" fixed="0.5.0" />
-    </xs:complexType>
-  </xs:element>
-</xs:schema>
+    </appinfo>
+  </annotation>
+  <include schemaLocation="process_definition.xsd" />
+  <include schemaLocation="wps_published_information.xsd" />
+  <include schemaLocation="wps_service_configuration.xsd" />
+  <element name="deegreeWPS">
+    <complexType>
+      <sequence>
+        <element ref="wps:PublishedInformation" />
+        <element ref="wps:ServiceConfiguration" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+    </complexType>
+  </element>
+</schema>

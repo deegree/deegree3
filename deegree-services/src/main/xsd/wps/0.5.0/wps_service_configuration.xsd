@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:wps="http://www.deegree.org/services/wps" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/wps" elementFormDefault="qualified">
-  <xs:element name="ServiceConfiguration">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="ProcessesDirectory" type="xs:string" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-</xs:schema>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/services/wps" targetNamespace="http://www.deegree.org/services/wps"
+  elementFormDefault="qualified">
+  <element name="ServiceConfiguration">
+    <complexType>
+      <sequence>
+        <element name="ProcessesDirectory" type="string" />
+      </sequence>
+    </complexType>
+  </element>
+</schema>

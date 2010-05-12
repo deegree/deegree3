@@ -1116,10 +1116,10 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Setting up feature stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
             FeatureStoreManager.init( fsDir );
+            LOG.info( "" );            
         } else {
             LOG.debug( "No 'datasources/feature' directory -- skipping initialization of feature stores." );
         }
-        LOG.info( "" );
     }
 
     private void initCoverages() {
@@ -1137,10 +1137,10 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Setting up coverages." );
             LOG.info( "--------------------------------------------------------------------------------" );
             CoverageBuilderManager.init( coverageDir );
+            LOG.info( "" );
         } else {
             LOG.debug( "No 'datasources/coverage' directory -- skipping initialization of coverages." );
         }
-        LOG.info( "" );
     }
 
     private void initRenderableStores() {
@@ -1158,10 +1158,10 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Setting up renderable stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
             RenderableStoreManager.init( renderableDir );
+            LOG.info( "" );            
         } else {
             LOG.debug( "No 'datasources/renderable' directory -- skipping initialization of renderable stores." );
         }
-        LOG.info( "" );
     }
 
     private void initBatchedMTStores() {
@@ -1179,10 +1179,10 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Setting up BatchedMT stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
             BatchedMTStoreManager.init( batchedMTDir );
+            LOG.info( "" );            
         } else {
             LOG.debug( "No 'datasources/batchedmt' directory -- skipping initialization of BatchedMT stores." );
         }
-        LOG.info( "" );
     }
 
     private void initRecordStores() {
@@ -1200,10 +1200,10 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "Setting up record stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
             RecordStoreManager.init( rsDir );
+            LOG.info( "" );            
         } else {
             LOG.debug( "No 'datasources/record' directory -- skipping initialization of record stores." );
         }
-        LOG.info( "" );
     }
 
     private void initJDBCConnections() {
