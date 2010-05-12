@@ -75,4 +75,9 @@
         <phase-listener>org.deegree.client.debug.DebugPhaseListener</phase-listener>
         <phase-listener>org.deegree.client.debug.ParameterPhaseListener</phase-listener>
     </lifecycle>
+
+    <factory>
+        <exception-handler-factory>org.deegree.client.mdeditor.ExceptionHandlerFactory</exception-handler-factory>
+    </factory>
+
 </faces-config>

@@ -19,9 +19,10 @@
         </SelectFormElement>
         <SelectFormElement id="contactMD" visible="true">
             <label>Zuständige Stelle/Person (Metadatensatz):</label>
+            <help>Hiermit können sie eine eindeutige Id für den Datensatz generieren</help>
             <selectType>one</selectType>
             <referenceToGroup>ContactFormGroup</referenceToGroup>
-            <referenceText>Name: ${KtextName}, Orga.: ${KtextOrga}, PLZ: ${KSubFormGRoup/KStextPLZ}</referenceText>
+            <referenceText>Name: ${KtextName}</referenceText>
         </SelectFormElement>
         <!--
             TODO <SelectFormElement id="selectOneK" visible="true"> <label>Eltern-Objekt:</label>
@@ -32,14 +33,17 @@
             <title>Inhaltliche Angaben zu den beschriebenen Daten</title>
             <InputFormElement id="titel">
                 <label>Titel/Name:</label>
+                <help>Bezeichnung, unter der die Ressource bekannt ist</help>
                 <inputType>text</inputType>
             </InputFormElement>
             <InputFormElement id="description">
                 <label>Beschreibung:</label>
+                <help>kurze, beschreibende Zusammenfassung des Inhalts der Ressource</help>
                 <inputType>textarea</inputType>
             </InputFormElement>
             <SelectFormElement id="themeI" visible="true">
                 <label>Thema:</label>
+                <help>thematische Einordnung des Datenbestand</help>
                 <selectType>one</selectType>
                 <referenceToCodeList>theme</referenceToCodeList>
             </SelectFormElement>

@@ -114,7 +114,7 @@ public class FormCreatorBean implements Serializable {
     private FormConfiguration configuration;
 
     public void load( ComponentSystemEvent event )
-                            throws AbortProcessingException {
+                            throws AbortProcessingException, ConfigurationException {
 
         LOG.debug( "Load form for goup with id  " + grpId );
 
@@ -125,20 +125,16 @@ public class FormCreatorBean implements Serializable {
             } else if ( grpId != null ) {
                 FacesContext fc = FacesContext.getCurrentInstance();
                 HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
-                try {
-                    configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-                    FormGroup fg = configuration.getFormGroup( grpId );
-                    if ( fg != null ) {
-                        HtmlPanelGrid grid = new HtmlPanelGrid();
-                        grid.setId( GuiUtils.getUniqueId() );
-                        addFormGroup( grid, fg, true );
-                        forms.put( grpId, grid );
-                        form.getChildren().add( grid );
-                    }
-                } catch ( ConfigurationException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+                FormGroup fg = configuration.getFormGroup( grpId );
+                if ( fg != null ) {
+                    HtmlPanelGrid grid = new HtmlPanelGrid();
+                    grid.setId( GuiUtils.getUniqueId() );
+                    addFormGroup( grid, fg, true );
+                    forms.put( grpId, grid );
+                    form.getChildren().add( grid );
                 }
+
             }
         }
 
@@ -151,7 +147,7 @@ public class FormCreatorBean implements Serializable {
         HtmlPanelGrid grid = new HtmlPanelGrid();
         grid.setId( GuiUtils.getUniqueId() );
         grid.setColumns( 3 );
-        grid.setHeaderClass( "mdFormHeader" + ( isMain ? "" : " mdFormHeaderSub" )  );
+        grid.setHeaderClass( "mdFormHeader" + ( isMain ? "" : " mdFormHeaderSub" ) );
         grid.setStyleClass( "mdForm" + ( isMain ? "" : " mdFormSub" ) );
 
         // label

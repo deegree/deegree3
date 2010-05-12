@@ -77,48 +77,44 @@ public class MenuCreatorBean implements Serializable {
     private ListGroup listGroup;
 
     public void load( ComponentSystemEvent event )
-                            throws AbortProcessingException {
+                            throws AbortProcessingException, ConfigurationException {
 
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
-        try {
-            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
 
-            LAYOUT_TYPE layoutType = manager.getLayoutType();
-            LOG.debug( "create menu for layout type: " + layoutType );
+        FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
 
-            String menuId = null;
-            String listId = null;
-            if ( MENU.equals( layoutType ) ) {
-                menuId = "verticalMenu";
-                listId = "verticalList";
-            } else if ( TAB.equals( layoutType ) ) {
-                menuId = "horizontalMenu";
-                listId = "horizontalList";
+        LAYOUT_TYPE layoutType = manager.getLayoutType();
+        LOG.debug( "create menu for layout type: " + layoutType );
+
+        String menuId = null;
+        String listId = null;
+        if ( MENU.equals( layoutType ) ) {
+            menuId = "verticalMenu";
+            listId = "verticalList";
+        } else if ( TAB.equals( layoutType ) ) {
+            menuId = "horizontalMenu";
+            listId = "horizontalList";
+        }
+
+        if ( listId != null && listGroup.getChildCount() == 0 ) {
+            listGroup.setRendererType( "org.deegree.ListGroupRenderer" );
+            listGroup.setId( GuiUtils.getUniqueId() );
+            listGroup.getAttributes().put( "listId", listId );
+            listGroup.getAttributes().put( "menuId", menuId );
+            for ( FormGroup formGroup : manager.getFormGroups() ) {
+                HtmlOutcomeTargetLink link = new HtmlOutcomeTargetLink();
+                link.setId( GuiUtils.getUniqueId() );
+                link.setValue( formGroup.getLabel() );
+                link.setOutcome( "emptyForm" );
+                UIParameter param = new UIParameter();
+                param.setId( GuiUtils.getUniqueId() );
+                param.setName( "grpId" );
+                param.setValue( formGroup.getId() );
+                link.getChildren().add( param );
+                listGroup.getChildren().add( link );
+                System.out.println( "l: " + link.getId() + " p " + param.getId() );
             }
-
-            if ( listId != null && listGroup.getChildCount() == 0 ) {
-                listGroup.setRendererType( "org.deegree.ListGroupRenderer" );
-                listGroup.setId( GuiUtils.getUniqueId() );
-                listGroup.getAttributes().put( "listId", listId );
-                listGroup.getAttributes().put( "menuId", menuId );
-                for ( FormGroup formGroup : manager.getFormGroups() ) {
-                    HtmlOutcomeTargetLink link = new HtmlOutcomeTargetLink();
-                    link.setId( GuiUtils.getUniqueId() );
-                    link.setValue( formGroup.getLabel() );
-                    link.setOutcome( "emptyForm" );
-                    UIParameter param = new UIParameter();
-                    param.setId( GuiUtils.getUniqueId() );
-                    param.setName( "grpId" );
-                    param.setValue( formGroup.getId() );
-                    link.getChildren().add( param );
-                    listGroup.getChildren().add( link );
-                    System.out.println("l: " + link.getId() + " p " + param.getId());
-                } 
-            }
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 
