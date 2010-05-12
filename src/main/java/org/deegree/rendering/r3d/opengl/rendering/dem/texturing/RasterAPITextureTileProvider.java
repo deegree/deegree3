@@ -99,22 +99,25 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
     private TextureTile getTextureTile( double minX, double minY, double maxX, double maxY ) {
 
         Envelope subsetEnv = fac.createEnvelope( minX, minY, maxX, maxY, null );
-        RasterRect r = raster.getRasterReference().convertEnvelopeToRasterCRS( subsetEnv );
-        if ( r.width % 2 != 0 || r.height % 2 != 0 ) {
-            StringBuilder wH = new StringBuilder();
-            if ( r.width % 2 != 0 ) {
-                wH.append( "width" );
-            }
-            if ( r.height % 2 != 0 ) {
-                if ( wH.length() > 0 ) {
-                    wH.append( " and " );
-                }
-                wH.append( "height" );
-            }
-            LOG.warn( "The requested texture for the world coordinates will result in a texture with odd (not even) texture ( "
-                      + wH.toString() + " ), this may not be." );
-            return null;
-        }
+
+        //  TODO when does this happen?
+        // RasterRect r = raster.getRasterReference().convertEnvelopeToRasterCRS( subsetEnv );
+        // if ( r.width % 2 != 0 || r.height % 2 != 0 ) {
+        // StringBuilder wH = new StringBuilder();
+        // if ( r.width % 2 != 0 ) {
+        // wH.append( "width" );
+        // }
+        // if ( r.height % 2 != 0 ) {
+        // if ( wH.length() > 0 ) {
+        // wH.append( " and " );
+        // }
+        // wH.append( "height" );
+        // }
+        // LOG.warn(
+        // "The requested texture for the world coordinates will result in a texture with odd (not even) texture ( "
+        // + wH.toString() + " ), this may not be." );
+        // return null;
+        // }
         AbstractRaster subset = raster.getSubRaster( subsetEnv, null, OriginLocation.OUTER );
 
         // extract raw byte buffer (RGB, pixel interleaved)
