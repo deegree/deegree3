@@ -80,6 +80,8 @@ public interface Scene2D {
 
     public Envelope determineRequestBoundingbox( URL imageUrl );
 
+    public Envelope getRequestBoundingbox();
+
     public void setSightWindowMinX( double minX );
 
     public void setSightWindowMinY( double minY );

@@ -70,18 +70,23 @@ public class Scene2DPanel extends JPanel {
 
     private final double margin = 0.1;
 
-    private double resolutionOfImage = 0.15;
+    private double resolutionOfImage;
+
+    public Scene2DPanel() {
+        resolutionOfImage = 0.15;
+    }
 
     /**
      * Initializes the attributes that are needed for drawing an image.
      * <p>
      * Is not in the constructor because there should be the possibility to decide when this should happen.
      */
-    public void init() {
-        imageMargin = new Point2d( imageToDraw.getWidth() * margin, imageToDraw.getHeight() * margin );
+    public void init( BufferedImage imageToDraw ) {
+        this.imageToDraw = imageToDraw;
+        imageMargin = new Point2d( this.imageToDraw.getWidth() * margin, this.imageToDraw.getHeight() * margin );
         beginDrawImageAtPosition = new Point2d( 0 - imageMargin.getX(), 0 - imageMargin.getY() );
-        imageDimension = new Point2d( ( imageToDraw.getWidth() + imageMargin.getX() * 2 ),
-                                      ( imageToDraw.getHeight() + imageMargin.getY() * 2 ) );
+        imageDimension = new Point2d( ( this.imageToDraw.getWidth() + imageMargin.getX() * 2 ),
+                                      ( this.imageToDraw.getHeight() + imageMargin.getY() * 2 ) );
         System.out.println( "beginDrawing the image: " + beginDrawImageAtPosition );
     }
 
@@ -98,15 +103,6 @@ public class Scene2DPanel extends JPanel {
 
         }
 
-    }
-
-    /**
-     * Sets the image that should be drawed
-     * 
-     * @param imageToDraw
-     */
-    public void setImageToDraw( BufferedImage imageToDraw ) {
-        this.imageToDraw = imageToDraw;
     }
 
     /**
@@ -159,8 +155,18 @@ public class Scene2DPanel extends JPanel {
         return resolutionOfImage;
     }
 
+    /**
+     * Sets the resolution of the image
+     * 
+     * @param resolutionOfImage
+     */
     public void setResolutionOfImage( double resolutionOfImage ) {
+
         this.resolutionOfImage = resolutionOfImage;
+    }
+
+    public BufferedImage getImageToDraw() {
+        return imageToDraw;
     }
 
 }

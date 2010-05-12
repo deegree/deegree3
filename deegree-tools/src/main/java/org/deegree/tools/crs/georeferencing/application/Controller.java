@@ -82,8 +82,6 @@ public class Controller {
 
         view.addScene2DurlListener( new Scene2DurlListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
-        // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-        panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
     }
 
@@ -105,28 +103,20 @@ public class Controller {
          */
         @Override
         public void actionPerformed( ActionEvent e ) {
-
-            initImagePaint();
-
-        }
-    }
-
-    /**
-     * 
-     */
-    private void initImagePaint() {
-        // get the image and resizes it with the margin
-        try {
-            scene2DUrl = new URL( view.openUrl() );
-            setSightWindowAttributes( model.determineRequestBoundingbox( scene2DUrl ) );
-            panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
-            panel.init();
-            panel.addScene2DMouseListener( new Scene2DMouseListener() );
+            try {
+                scene2DUrl = new URL( view.openUrl() );
+            } catch ( MalformedURLException e1 ) {
+                e1.printStackTrace();
+            }
             mouse = new MouseModel();
+            model.reset();
+            setSightWindowAttributes( model.determineRequestBoundingbox( scene2DUrl ) );
+            panel.init( model.generateImage( panel.getBounds() ) );
             panel.repaint();
+            panel.addScene2DMouseListener( new Scene2DMouseListener() );
+            // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+            panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
-        } catch ( MalformedURLException e1 ) {
-            e1.printStackTrace();
         }
     }
 
@@ -143,6 +133,7 @@ public class Controller {
         double y1 = holeRequestBoundingbox.getMax().get1();
 
         Point2d boundingboxCenter = new Point2d( ( spanX / 2 ), ( spanY / 2 ) );
+        System.out.println( "res: " + panel.getResolutionOfImage() );
         Point2d sight = new Point2d( ( spanX * panel.getResolutionOfImage() ), ( spanY * panel.getResolutionOfImage() ) );
 
         double minX = x0 + boundingboxCenter.getX() - sight.getX();
@@ -215,10 +206,10 @@ public class Controller {
 
                 System.out.println( "my new Point2D: " + updateDrawImageAtPosition );
                 model.changeImageBoundingbox( updateDrawImageAtPosition );
-                panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
+                // panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
+                panel.init( model.generateImage( panel.getBounds() ) );
                 mouse.reset();
                 panel.repaint();
-                panel.init();
 
             } else {
                 panel.setBeginDrawImageAtPosition( new Point2d(
@@ -234,6 +225,15 @@ public class Controller {
 
     }
 
+    /**
+     * 
+     * TODO add class documentation here
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
     class Scene2DMouseMotionListener implements MouseMotionListener {
 
         @Override
@@ -250,11 +250,29 @@ public class Controller {
 
     }
 
+    /**
+     * 
+     * TODO add class documentation here
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
     class Scene2DMouseWheelListener implements MouseWheelListener {
 
         @Override
-        public void mouseWheelMoved( MouseWheelEvent arg0 ) {
-            // TODO implement zoom, so init image with new resolution
+        public void mouseWheelMoved( MouseWheelEvent m ) {
+            System.out.println( "wheelRotation: " + m.getWheelRotation() );
+            if ( m.getWheelRotation() < 0 ) {
+                panel.setResolutionOfImage( panel.getResolutionOfImage() * 0.7 );
+            } else {
+                panel.setResolutionOfImage( panel.getResolutionOfImage() * 1.3 );
+            }
+            // model.reset();
+            setSightWindowAttributes( model.getRequestBoundingbox() );
+            panel.init( model.generateImage( panel.getBounds() ) );
+            panel.repaint();
 
         }
 
@@ -287,7 +305,9 @@ public class Controller {
         public void componentResized( ComponentEvent c ) {
             if ( model.getImageBoundingbox() != null ) {
                 model.reset();
-                initImagePaint();
+                setSightWindowAttributes( model.getRequestBoundingbox() );
+                panel.init( model.generateImage( panel.getBounds() ) );
+                panel.repaint();
             }
 
         }

@@ -70,6 +70,8 @@ public class Scene2DImplWMS implements Scene2D {
 
     private Envelope imageBoundingbox;
 
+    private Envelope holeRequestBoundingbox;
+
     private Point2d onePixel;
 
     private GeometryFactory geometryFactory;
@@ -148,21 +150,17 @@ public class Scene2DImplWMS implements Scene2D {
     @Override
     public Envelope determineRequestBoundingbox( URL imageRequestUrl ) {
 
-        Envelope completeRequestBoundingbox = null;
-
         wmsClient = new WMSClient111( imageRequestUrl );
-        // lays = Collections.singletonList( "dem" );
-        // srs = new CRS( "EPSG:32618" );
-        lays = Collections.singletonList( "root" );
-        srs = new CRS( "EPSG:4326" );
+        lays = Collections.singletonList( "dem" );
+        srs = new CRS( "EPSG:32618" );
+        // lays = Collections.singletonList( "root" );
+        // srs = new CRS( "EPSG:4326" );
 
         if ( wmsClient.hasLayer( lays.get( 0 ) ) ) {
-            completeRequestBoundingbox = wmsClient.getBoundingBox( srs.getName(), lays );
+            return holeRequestBoundingbox = wmsClient.getBoundingBox( srs.getName(), lays );
         } else {
-            // the layer is not supported
+            return null;
         }
-        return completeRequestBoundingbox;
-        //
 
     }
 
@@ -276,4 +274,9 @@ public class Scene2DImplWMS implements Scene2D {
         this.maxY = maxY;
     }
 
+    @Override
+    public Envelope getRequestBoundingbox() {
+
+        return holeRequestBoundingbox;
+    }
 }
