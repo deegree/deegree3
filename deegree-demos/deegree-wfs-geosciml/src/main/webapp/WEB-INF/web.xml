@@ -6,14 +6,6 @@
 	<servlet>
 		<servlet-name>services</servlet-name>
 		<servlet-class>org.deegree.services.controller.OGCFrontController</servlet-class>
-		<!--
-			parameter 'ConfigurationFile' is optional (only needed when a
-			non-default location is used for the 'services_metadata.xml' file)
-		-->
-		<!--
-			init-param> <param-name>ConfigurationFile</param-name>
-			<param-value>conf/services_metadata.xml</param-value> </init-param
-		-->
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
