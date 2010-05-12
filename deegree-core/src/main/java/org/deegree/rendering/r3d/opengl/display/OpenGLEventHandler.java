@@ -47,12 +47,12 @@ import javax.media.opengl.glu.GLU;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.JOGLUtils;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.slf4j.Logger;

@@ -46,9 +46,9 @@ import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLPbuffer;
 
-import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
+import org.deegree.rendering.r3d.opengl.JOGLUtils;
 
 /**
  * The <code>GLPBufferPool</code> supplies methods for the creation of pbuffers. In the future it will be able to pool

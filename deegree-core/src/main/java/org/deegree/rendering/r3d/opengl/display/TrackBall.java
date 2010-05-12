@@ -45,8 +45,8 @@ import java.awt.event.MouseWheelEvent;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 
-import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.rendering.r3d.opengl.JOGLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

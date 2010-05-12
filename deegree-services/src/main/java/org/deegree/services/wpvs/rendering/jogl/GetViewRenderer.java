@@ -36,7 +36,7 @@
 
 package org.deegree.services.wpvs.rendering.jogl;
 
-import static org.deegree.commons.utils.JOGLUtils.getFrameBufferRGB;
+import static org.deegree.rendering.r3d.opengl.JOGLUtils.getFrameBufferRGB;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
@@ -52,11 +52,11 @@ import javax.media.opengl.glu.GLU;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.JOGLUtils;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
