@@ -46,7 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.configuration.ScaleDenominatorsType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.Envelope;
@@ -98,25 +97,6 @@ public abstract class DatasetWrapper<CO> {
      */
     protected Double clarifyMaxPixelError( Double parentMaxPixelError, Double maxPixelError ) {
         return ( maxPixelError == null ) ? parentMaxPixelError : maxPixelError;
-    }
-
-    /**
-     * This method returns true if the second scale interval intersects with the first scale interval.
-     * 
-     * 
-     * @param firstScales
-     * @param secondScales
-     * @return true if the second scale interval intersects the first interval.
-     */
-    protected boolean scalesFit( ScaleDenominatorsType firstScales, ScaleDenominatorsType secondScales ) {
-        boolean result = ( firstScales == null ) && ( secondScales == null );
-        if ( !result ) {
-            if ( firstScales != null && secondScales != null ) {
-                result = ( secondScales.getMin() <= firstScales.getMax() )
-                         && ( firstScales.getMin() <= secondScales.getMax() );
-            }
-        }
-        return result;
     }
 
     /**

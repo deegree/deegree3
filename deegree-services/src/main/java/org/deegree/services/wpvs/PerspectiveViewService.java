@@ -46,7 +46,6 @@ import java.util.List;
 
 import javax.media.opengl.GLPbuffer;
 
-import org.deegree.commons.configuration.BoundingBoxType;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.deegree.commons.xml.XMLAdapter;
@@ -358,33 +357,6 @@ public class PerspectiveViewService {
             LOG.error( "Error while initializing opengl values (may not be important): " + t.getLocalizedMessage() );
         }
 
-    }
-
-    /**
-     * 
-     * @param bbt
-     * @param defaultCRS
-     * @param translationToLocalCRS
-     * @return the envelope created from the boundingbox type.
-     */
-    public static Envelope createEnvelope( BoundingBoxType bbt, CRS defaultCRS, double[] translationToLocalCRS ) {
-        if ( bbt == null ) {
-            return null;
-        }
-        List<Double> lowerCorner = bbt.getLowerCorner();
-        List<Double> upperCorner = bbt.getUpperCorner();
-        if ( lowerCorner.size() != upperCorner.size() ) {
-            throw new IllegalArgumentException( "LowerCorner must be of same dimension as upperCorner." );
-        }
-        double[] lc = new double[lowerCorner.size()];
-        double[] uc = new double[upperCorner.size()];
-        for ( int i = 0; i < lc.length; ++i ) {
-            double translation = ( translationToLocalCRS == null || i >= translationToLocalCRS.length ) ? 0
-                                                                                                       : translationToLocalCRS[i];
-            lc[i] = translation + lowerCorner.get( i );
-            uc[i] = translation + upperCorner.get( i );
-        }
-        return geomFactory.createEnvelope( lc, uc, defaultCRS );
     }
 
     /**

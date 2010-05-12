@@ -48,7 +48,6 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.configuration.ScaleDenominatorsType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
@@ -241,21 +240,6 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
             // exportBoundingBoxType110( writer, abstractDatatype.getBoundingBox() );
             exportSimpleStrings( writer, abstractDatatype.getMetadataURL(), WPVS_NS, "MetadataURL" );
             // exportScales( writer, abstractDatatype.getScaleDenominators() );
-        }
-    }
-
-    /**
-     * @param writer
-     * @param scaleDenominators
-     * @throws XMLStreamException
-     */
-    private static void exportScales( XMLStreamWriter writer, ScaleDenominatorsType scaleDenominators )
-                            throws XMLStreamException {
-        if ( scaleDenominators != null ) {
-            // wms:MinScaleDenominator
-            writeElement( writer, WPVS_NS, "MinScaleDenominator", "" + scaleDenominators.getMin() );
-            // wms:MaxScaleDenominator
-            writeElement( writer, WPVS_NS, "MaxScaleDenominator", "" + scaleDenominators.getMax() );
         }
     }
 }

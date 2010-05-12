@@ -44,7 +44,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.configuration.BoundingBoxType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
@@ -187,52 +186,52 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
         writer.writeEndElement();
     }
 
-    /**
-     * Exports an {@link BoundingBoxType} as an <code>ows:BoundingBoxType</code>. Coordinates will be separated with a
-     * space.
-     *
-     * @param writer
-     * @param bbox
-     *            to be exported
-     * @throws XMLStreamException
-     */
-    public static void exportBoundingBoxType110( XMLStreamWriter writer, BoundingBoxType bbox )
-                            throws XMLStreamException {
-
-        if ( bbox != null ) {
-            exportBoundingBoxType( writer, bbox, OWS110_NS );
-        }
-    }
-
-    /**
-     * @param writer
-     * @param bbox
-     * @param owsNS
-     * @throws XMLStreamException
-     */
-    private static void exportBoundingBoxType( XMLStreamWriter writer, BoundingBoxType bbox, String owsNS )
-                            throws XMLStreamException {
-        writer.writeStartElement( owsNS, "BoundingBox" );
-        // "crs" attribute (optional)
-        if ( bbox.getCrs() != null ) {
-            writer.writeAttribute( "crs", bbox.getCrs() );
-        }
-
-        // "dimensions" attribute (optional)
-        writer.writeAttribute( "dimensions", "" + bbox.getDimensions() );
-
-        // "ows:LowerCorner" element (minOccurs="1", maxOccurs="1")
-        writer.writeStartElement( owsNS, "LowerCorner" );
-        exportCoordinateList( writer, bbox.getLowerCorner(), " " );
-        writer.writeEndElement();
-
-        // "ows:UpperCorner" element (minOccurs="1", maxOccurs="1")
-        writer.writeStartElement( owsNS, "UpperCorner" );
-        exportCoordinateList( writer, bbox.getUpperCorner(), " " );
-        writer.writeEndElement();
-        writer.writeEndElement();// OWS110_NS, "BoundingBox"
-
-    }
+//    /**
+//     * Exports an {@link BoundingBoxType} as an <code>ows:BoundingBoxType</code>. Coordinates will be separated with a
+//     * space.
+//     *
+//     * @param writer
+//     * @param bbox
+//     *            to be exported
+//     * @throws XMLStreamException
+//     */
+//    public static void exportBoundingBoxType110( XMLStreamWriter writer, BoundingBoxType bbox )
+//                            throws XMLStreamException {
+//
+//        if ( bbox != null ) {
+//            exportBoundingBoxType( writer, bbox, OWS110_NS );
+//        }
+//    }
+//
+//    /**
+//     * @param writer
+//     * @param bbox
+//     * @param owsNS
+//     * @throws XMLStreamException
+//     */
+//    private static void exportBoundingBoxType( XMLStreamWriter writer, BoundingBoxType bbox, String owsNS )
+//                            throws XMLStreamException {
+//        writer.writeStartElement( owsNS, "BoundingBox" );
+//        // "crs" attribute (optional)
+//        if ( bbox.getCrs() != null ) {
+//            writer.writeAttribute( "crs", bbox.getCrs() );
+//        }
+//
+//        // "dimensions" attribute (optional)
+//        writer.writeAttribute( "dimensions", "" + bbox.getDimensions() );
+//
+//        // "ows:LowerCorner" element (minOccurs="1", maxOccurs="1")
+//        writer.writeStartElement( owsNS, "LowerCorner" );
+//        exportCoordinateList( writer, bbox.getLowerCorner(), " " );
+//        writer.writeEndElement();
+//
+//        // "ows:UpperCorner" element (minOccurs="1", maxOccurs="1")
+//        writer.writeStartElement( owsNS, "UpperCorner" );
+//        exportCoordinateList( writer, bbox.getUpperCorner(), " " );
+//        writer.writeEndElement();
+//        writer.writeEndElement();// OWS110_NS, "BoundingBox"
+//
+//    }
 
     /**
      * @param writer
