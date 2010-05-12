@@ -148,4 +148,25 @@ public class FormConfiguration {
         return null;
     }
 
+    /**
+     * @param path
+     * @return 
+     */
+    public FormField getFormField( FormFieldPath path ) {
+        for ( FormGroup fg : formGroups ) {
+            return getFormField( fg, path );
+        }
+        return null;
+    }
+
+    public FormField getFormField( FormGroup fg, FormFieldPath path ) {
+        for ( FormElement fe : fg.getFormElements() ) {
+            if ( fe instanceof FormField && path.equals( ( (FormField) fe ).getPath() ) ) {
+                return (FormField) fe;
+            } else if ( fe instanceof FormGroup ) {
+                return getFormField( (FormGroup) fe, path );
+            }
+        }
+        return null;
+    }
 }

@@ -51,13 +51,16 @@ public class SelectFormField extends FormField {
 
     private String referenceToGroup;
 
+    private String referenceText;
+
     public SelectFormField( FormFieldPath path, String id, String label, boolean visible, String help,
                             boolean isIdentifier, Object selectedValue, SELECT_TYPE selectType,
-                            String referenceToCodeList, String referenceToGroup ) {
+                            String referenceToCodeList, String referenceToGroup, String referenceText ) {
         super( path, id, label, visible, help, selectedValue, isIdentifier );
         this.selectType = selectType;
         this.referenceToCodeList = referenceToCodeList;
         this.referenceToGroup = referenceToGroup;
+        this.referenceText = referenceText;
     }
 
     public void setSelectType( SELECT_TYPE selectType ) {
@@ -82,6 +85,14 @@ public class SelectFormField extends FormField {
 
     public String getReferenceToGroup() {
         return referenceToGroup;
+    }
+
+    public void setReferenceText( String referenceText ) {
+        this.referenceText = referenceText;
+    }
+
+    public String getReferenceText() {
+        return referenceText;
     }
 
 }
