@@ -257,6 +257,7 @@ public class ISORecordStore implements RecordStore {
 
         Connection conn = null;
         try {
+            Class.forName( "org.postgresql.Driver" );
             conn = ConnectionManager.getConnection( connectionId );
 
             encoding = determinePostGRESEncoding( conn );
@@ -271,6 +272,9 @@ public class ISORecordStore implements RecordStore {
             }
         } catch ( SQLException e ) {
 
+            e.printStackTrace();
+        } catch ( ClassNotFoundException e ) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
