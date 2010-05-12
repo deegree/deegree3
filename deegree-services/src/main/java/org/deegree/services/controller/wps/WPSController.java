@@ -245,9 +245,7 @@ public class WPSController extends AbstractOGCServiceController {
         for ( String definitionFile : processDefinitionFiles ) {
             LOG.info( "Loading process definition from file '" + definitionFile + "'." );
             try {
-                // for the datasources an the commons package
-                // :org.deegree.commons.datasource.configuration:org.deegree.commons.configuration
-                JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps:org.deegree.commons.datasource.configuration:org.deegree.commons.configuration" );
+                JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
                 ProcessDefinition processDef = (ProcessDefinition) unmarshaller.unmarshal( new File( processesDir,
                                                                                                      definitionFile ) );
