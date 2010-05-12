@@ -318,10 +318,8 @@ public class TextureTile {
                     // System.out.println( "capacity: " + imageData.capacity() + " should be: " + 3 * tWidth * tHeight
                     // );
                     if ( unpack ) {
-                        System.out.println( "Setting pixel unpack allignment to 1" );
+                        LOG.debug( "Setting pixel unpack allignment to 1" );
                         gl.glPixelStorei( GL.GL_UNPACK_ALIGNMENT, 1 );
-                    } else {
-                        System.out.println( "Leaving pixel unpack allignment to 4" );
                     }
                     if ( hasAlpha ) {
                         gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tWidth, tHeight, 0, GL.GL_RGBA,
