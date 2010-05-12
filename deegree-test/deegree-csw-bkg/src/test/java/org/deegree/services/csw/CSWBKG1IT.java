@@ -41,7 +41,7 @@ public class CSWBKG1IT {
     public static Collection getResultSnippets()
                             throws Exception {
 
-        URL url = CSWBKG1IT.class.getResource( "/bkg1/ctl" );
+        URL url = CSWBKG1IT.class.getResource( "/bkg1/ctl/" );
         String file = new File( url.toURI() ).getAbsolutePath();
         System.out.println("file: "+ file);
 
