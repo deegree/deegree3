@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,17 +32,18 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.services.sos.model;
+ ----------------------------------------------------------------------------*/
+package org.deegree.protocol.sos.model;
 
 /**
  * This class stores double result values.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class SimpleDoubleResult implements Result {
 
@@ -69,7 +70,7 @@ public class SimpleDoubleResult implements Result {
 
     @Override
     public String toString() {
-        return getResultAsString() + property.getUOM() + " (" + property.getShortName() + ")";
+        return getResultAsString() + property.getOptionValue( "uom" ) + " (" + property.getColumnName() + ")";
     }
 
 }

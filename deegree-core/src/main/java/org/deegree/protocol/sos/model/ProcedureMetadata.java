@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,50 +33,58 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.storage;
+package org.deegree.protocol.sos.model;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import org.deegree.commons.jdbc.ConnectionManager;
+import java.net.URL;
 
 /**
+ * The <code>ProcedureMetadata</code> class encapsulates the metadata of a procedure (as it is found in the sos
+ * configuration).
  * 
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
- * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
  */
-public abstract class SQLObservationDatastore implements ObservationDatastore {
+public class ProcedureMetadata {
+
+    private final String procedureHref;
+
+    private final String featureOfInterestHref;
+
+    private final URL sensorURL;
 
     /**
-     * the datastore configuration
+     * @param procedureHref
+     * @param featureOfInterestHref
+     * @param sensorURL
      */
-    private final DatastoreConfiguration dsConfig;
-
-    /**
-     * @param dsConfig
-     */
-    protected SQLObservationDatastore( DatastoreConfiguration dsConfig ) {
-        this.dsConfig = dsConfig;
+    public ProcedureMetadata( String procedureHref, String featureOfInterestHref, URL sensorURL ) {
+        this.procedureHref = procedureHref;
+        this.featureOfInterestHref = featureOfInterestHref;
+        this.sensorURL = sensorURL;
     }
 
     /**
-     * @return a new sql connection for the configured jdbc database.
-     * @throws SQLException
+     * @return
      */
-    protected Connection getConnection()
-                            throws SQLException {
-        return ConnectionManager.getConnection( dsConfig.getJdbcConnId() );
+    public String getProcedureHref() {
+        return procedureHref;
     }
 
     /**
-     * @return the dsConfig
+     * @return
      */
-    public DatastoreConfiguration getDSConfig() {
-        return dsConfig;
+    public String getFeatureOfInterestHref() {
+        return featureOfInterestHref;
     }
 
+    /**
+     * @return
+     */
+    public URL getSensorURL() {
+        return sensorURL;
+    }
 }

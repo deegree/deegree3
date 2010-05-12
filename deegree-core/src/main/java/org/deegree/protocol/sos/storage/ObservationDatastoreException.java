@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
-   lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,30 +32,38 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.services.controller.sos;
-
-import org.deegree.services.controller.exception.ControllerException;
-import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.sos.SOServiceException;
+ ----------------------------------------------------------------------------*/
+package org.deegree.protocol.sos.storage;
 
 /**
- * This class can apdapt general SOServiceExceptions to OGC specific exceptions.
- *
- * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * The <code></code> class TODO add class documentation here.
+ * 
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
-public class OWSExceptionAdapter {
+public class ObservationDatastoreException extends Exception {
 
     /**
-     * @param e
-     * @return adapted OWSException
+     * 
      */
-    public static OWSException adapt( SOServiceException e ) {
-        return new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
+    private static final long serialVersionUID = 5005418443568658164L;
+
+    /**
+     * @param message
+     */
+    public ObservationDatastoreException( String message ) {
+        super( message );
     }
 
+    /**
+     * @param message
+     * @param cause
+     */
+    public ObservationDatastoreException( String message, Throwable cause ) {
+        super( message, cause );
+    }
 }

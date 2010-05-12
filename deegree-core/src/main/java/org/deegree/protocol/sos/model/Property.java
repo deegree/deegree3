@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
-   lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,53 +32,50 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.services.sos.model;
+ ----------------------------------------------------------------------------*/
+package org.deegree.protocol.sos.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * This {@link MeasurementBase} is a container to store data that is common to all {@link SimpleMeasurement}s.
- *
- * <p>
- * A {@link MeasurementBase} object is immutable.
- *
- *
- * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * The <code></code> class TODO add class documentation here.
+ * 
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
-public class MeasurementBase {
-    private final String featureOfInterest;
+public class Property {
 
-    private final List<Property> properties;
+    private final String href;
 
-    /**
-     * @param foi
-     * @param properties
-     */
-    public MeasurementBase( String foi, Collection<Property> properties ) {
-        this.featureOfInterest = foi;
-        this.properties = new ArrayList<Property>( properties );
+    private final String columnName;
+
+    private Map<String, String> options = new HashMap<String, String>();
+
+    public Property( String href, String columnName ) {
+        this.href = href;
+        this.columnName = columnName;
+        this.options = options;
     }
 
-    /**
-     * @TODO return Feature
-     * @return the feature of interest
-     */
-    public String getFeatureOfInterest() {
-        return featureOfInterest;
+    public void addToOption( String name, String value ) {
+        options.put( name.toLowerCase(), value );
     }
 
-    /**
-     * @TODO measurement for more than one property
-     * @return the observedProperty
-     */
-    public List<Property> getProperties() {
-        return properties;
+    public String getHref() {
+        return href;
     }
+
+    public String getColumnName() {
+        return columnName;
+    }
+
+    public String getOptionValue( String optionName ) {
+        return options.get( optionName.toLowerCase() );
+    }
+
 }

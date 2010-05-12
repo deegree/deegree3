@@ -33,18 +33,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.model;
+package org.deegree.protocol.sos.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.protocol.sos.time.TimePeriod;
-
 /**
- * This class is a collection of {@link Measurement}s.
+ * This {@link MeasurementBase} is a container to store data that is common to all {@link SimpleMeasurement}s.
+ * 
+ * <p>
+ * A {@link MeasurementBase} object is immutable.
+ * 
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -52,58 +52,34 @@ import org.deegree.protocol.sos.time.TimePeriod;
  * @version $Revision$, $Date$
  * 
  */
-public class MeasurementCollection implements Iterable<Measurement> {
-    private final TimePeriod samplePeriod = new TimePeriod();
+public class MeasurementBase {
 
-    private final List<Measurement> measurements = new LinkedList<Measurement>();
+    private final String featureOfInterest;
 
     private final List<Property> properties;
 
     /**
+     * @param foi
      * @param properties
      */
-    public MeasurementCollection( Collection<Property> properties ) {
+    public MeasurementBase( String foi, Collection<Property> properties ) {
+        this.featureOfInterest = foi;
         this.properties = new ArrayList<Property>( properties );
     }
 
     /**
-     * Add a new measurement to the collection.
-     * 
-     * @param measurement
+     * @TODO return Feature
+     * @return the feature of interest
      */
-    public void add( Measurement measurement ) {
-        samplePeriod.extend( measurement.getSamplingTime() );
-        measurements.add( measurement );
-    }
-
-    @Override
-    public String toString() {
-        return String.format( "MeasurementCollection (n: %d) %s", measurements.size(), samplePeriod );
-    }
-
-    public Iterator<Measurement> iterator() {
-        return measurements.iterator();
+    public String getFeatureOfInterest() {
+        return featureOfInterest;
     }
 
     /**
-     * @return the number of measurements in this collection
-     */
-    public int size() {
-        return measurements.size();
-    }
-
-    /**
-     * @return a list of all stored properties.
+     * @TODO measurement for more than one property
+     * @return the observedProperty
      */
     public List<Property> getProperties() {
-        return new ArrayList<Property>( properties );
+        return properties;
     }
-
-    /**
-     * @return the sampling time of this collection. The TimePeriod will contain all SamplingTimes of this collection.
-     */
-    public TimePeriod getSamplingTime() {
-        return samplePeriod;
-    }
-
 }

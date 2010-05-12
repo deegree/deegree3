@@ -54,7 +54,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -99,7 +98,6 @@ import org.deegree.protocol.sos.describesensor.DescribeSensor100KVPAdapter;
 import org.deegree.protocol.sos.describesensor.DescribeSensor100XMLAdapter;
 import org.deegree.protocol.sos.filter.FilterCollection;
 import org.deegree.protocol.sos.filter.ProcedureFilter;
-import org.deegree.protocol.sos.filter.PropertyFilter;
 import org.deegree.protocol.sos.filter.SpatialFilter;
 import org.deegree.protocol.sos.getfeatureofinterest.GetFeatureOfInterest;
 import org.deegree.protocol.sos.getfeatureofinterest.GetFeatureOfInterest100XMLAdapter;
@@ -108,6 +106,10 @@ import org.deegree.protocol.sos.getobservation.GetObservation100KVPAdapter;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter;
 import org.deegree.protocol.sos.getobservation.EventTime100XMLAdapter.EventTimeXMLParsingException;
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter.ResultFilterException;
+import org.deegree.protocol.sos.model.Observation;
+import org.deegree.protocol.sos.model.Offering;
+import org.deegree.protocol.sos.model.Procedure;
+import org.deegree.protocol.sos.storage.ObservationDatastoreException;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.ControllerException;
@@ -126,12 +128,7 @@ import org.deegree.services.jaxb.sos.PublishedInformation;
 import org.deegree.services.sos.SOSBuilder;
 import org.deegree.services.sos.SOSConfigurationException;
 import org.deegree.services.sos.SOService;
-import org.deegree.services.sos.SOServiceExeption;
 import org.deegree.services.sos.ServiceConfigurationXMLAdapter;
-import org.deegree.services.sos.model.Observation;
-import org.deegree.services.sos.model.Procedure;
-import org.deegree.services.sos.model.Property;
-import org.deegree.services.sos.offering.ObservationOffering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -214,19 +211,12 @@ public class SOSController extends AbstractOGCServiceController {
         validateAndSetOfferedVersions( pubInfo.getSupportedVersions().getVersion() );
 
         // check if all the sensors mentioned in the configuration are actually defined in their respective files
-        for ( ObservationOffering offering : sosService.getAllOfferings() ) {
+        for ( Offering offering : sosService.getAllOfferings() ) {
             for ( Procedure proc : offering.getProcedures() ) {
-                String descriptionURL = proc.getDescriptionDocument();
-                try {
-                    URL description = new URL( descriptionURL );
-                    if ( !checkProcURNinFile( proc.getName(), description ) ) {
-                        LOG.warn( "SOS configuration mentions sensor " + proc.getName() + " but the reference file "
-                                  + descriptionURL + " doesn't contain the sensor's definition." );
-                    }
-                } catch ( MalformedURLException e ) {
-                    // normally cannot happen
-                    LOG.error( e.getMessage() );
-                    e.printStackTrace();
+                URL description = proc.getSensorURL();
+                if ( !checkProcURNinFile( proc.getProcedureHref(), description ) ) {
+                    LOG.warn( "SOS configuration mentions sensor " + proc.getProcedureHref()
+                              + " but the reference file " + description + " doesn't contain the sensor's definition." );
                 }
             }
         }
@@ -302,6 +292,9 @@ public class SOSController extends AbstractOGCServiceController {
             sendServiceException( new OWSException( "an error occured while processing a request",
                                                     ControllerException.NO_APPLICABLE_CODE ), response );
             LOG.error( "an error occured while processing a request", e );
+        } catch ( ObservationDatastoreException e ) {
+            sendServiceException( new OWSException( "an error occured while processing a request", "" ), response );
+            LOG.error( "an error occured while processing a request", e );
         }
     }
 
@@ -359,6 +352,9 @@ public class SOSController extends AbstractOGCServiceController {
             LOG.error( "an error occured while processing the request", e );
             sendServiceException( new OWSException( "an error occured while processing the request: " + e.getMessage(),
                                                     NO_APPLICABLE_CODE ), response );
+        } catch ( ObservationDatastoreException e ) {
+            sendServiceException( new OWSException( "an error occured while processing a request", "" ), response );
+            LOG.error( "an error occured while processing a request", e );
         }
 
     }
@@ -384,10 +380,10 @@ public class SOSController extends AbstractOGCServiceController {
         // TODO a url should be specified in the xlink:href of sampledFeature
         xmlWriter.writeEmptyElement( SA_PREFIX, "sampledFeature", SA_NS );
 
-        for ( ObservationOffering offering : sosService.getAllOfferings() ) {
+        for ( Offering offering : sosService.getAllOfferings() ) {
             for ( Procedure procedure : offering.getProcedures() ) {
-                if ( foiIDs.contains( procedure.getFeatureRef() ) ) {
-                    Geometry procGeometry = procedure.getGeometry();
+                if ( foiIDs.contains( procedure.getFeatureOfInterestHref() ) ) {
+                    Geometry procGeometry = procedure.getLocation();
                     if ( procGeometry instanceof Point ) { // TODO check if the procedure can have some other geometries
                         // and if so,
                         // handle them
@@ -396,7 +392,7 @@ public class SOSController extends AbstractOGCServiceController {
 
                         xmlWriter.writeStartElement( SA_PREFIX, "SamplingPoint", SA_NS );
                         xmlWriter.writeStartElement( GML_PREFIX, "name", GMLNS );
-                        xmlWriter.writeCharacters( procedure.getFeatureRef() );
+                        xmlWriter.writeCharacters( procedure.getFeatureOfInterestHref() );
                         // TODO if the GetFeatureOfInterest does not provide a foi but a location instead, search
                         // for all
                         // sensors
@@ -410,7 +406,7 @@ public class SOSController extends AbstractOGCServiceController {
                         // exporting a gml:Point TODO use GML encoder
                         xmlWriter.writeStartElement( GML_PREFIX, "Point", GMLNS );
                         // have the last part of the foiID as the Point id attribute
-                        String[] foiParts = procedure.getName().split( ":" );
+                        String[] foiParts = procedure.getFeatureOfInterestHref().split( ":" );
                         xmlWriter.writeAttribute( GML_PREFIX, GMLNS, "id", foiParts[foiParts.length - 1] );
 
                         xmlWriter.writeStartElement( GML_PREFIX, "pos", GMLNS );
@@ -446,7 +442,7 @@ public class SOSController extends AbstractOGCServiceController {
         if ( sosService.hasOffering( observationReq.getOffering() ) ) {
             validateGetObservation( observationReq );
 
-            ObservationOffering offering = sosService.getOffering( observationReq.getOffering() );
+            Offering offering = sosService.getOffering( observationReq.getOffering() );
             Observation observation = getObservationResult( offering, observationReq );
 
             writeObservationResult( xmlWriter, observation, observationReq );
@@ -458,13 +454,13 @@ public class SOSController extends AbstractOGCServiceController {
         xmlWriter.flush();
     }
 
-    private Observation getObservationResult( ObservationOffering offering, GetObservation observationReq )
+    private Observation getObservationResult( Offering offering, GetObservation observationReq )
                             throws OWSException {
         FilterCollection filter = createFilterFromRequest( observationReq );
         try {
             return offering.getObservation( filter );
-        } catch ( SOServiceExeption e ) {
-            throw OWSExceptionAdapter.adapt( e );
+        } catch ( ObservationDatastoreException e ) {
+            throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "observedProperty" );
         }
     }
 
@@ -508,19 +504,19 @@ public class SOSController extends AbstractOGCServiceController {
                                 "text/xml;subtype=\"om/1.0.0\"", "text/xml; subtype=\"om/1.0.0\"" );
         validateParameterValue( "responseMode", observationReq.getResponseMode(), "", "inline" );
 
-        ObservationOffering offering = sosService.getOffering( observationReq.getOffering() );
-        List<Property> props = offering.getProperties();
-        String[] allProps = new String[props.size()];
-        for ( int i = 0; i < props.size(); i++ ) {
-            allProps[i] = props.get( i ).getName();
-        }
-        for ( PropertyFilter prop : observationReq.getObservedProperties() ) {
-            validateParameterValue( "observedProperty", prop.getPropertyName(), allProps );
-        }
+        Offering offering = sosService.getOffering( observationReq.getOffering() );
+        // List<Property> props = offering.getProperties();
+        // String[] allProps = new String[props.size()];
+        // for ( int i = 0; i < props.size(); i++ ) {
+        // allProps[i] = props.get( i ).getHref();
+        // }
+        // for ( PropertyFilter prop : observationReq.getObservedProperties() ) {
+        // validateParameterValue( "observedProperty", prop.getPropertyName(), allProps );
+        // }
 
         String[] procs = new String[offering.getProcedures().size()];
         for ( int i = 0; i < procs.length; ++i ) {
-            procs[i] = offering.getProcedures().get( i ).getName();
+            procs[i] = offering.getProcedures().get( i ).getProcedureHref();
         }
         for ( ProcedureFilter proc : observationReq.getProcedures() ) {
             validateParameterValue( "procedure", proc.getProcedureName(), procs );
@@ -528,7 +524,7 @@ public class SOSController extends AbstractOGCServiceController {
 
         List<String> featsList = new LinkedList<String>();
         for ( Procedure proc : offering.getProcedures() ) {
-            featsList.add( proc.getFeatureRef() ); // TODO this could be more than just one
+            featsList.add( proc.getFeatureOfInterestHref() ); // TODO this could be more than just one
         }
         String[] feats = featsList.toArray( new String[featsList.size()] );
         Pair<List<String>, SpatialFilter> p = observationReq.getFeatureOfInterest();
@@ -571,13 +567,12 @@ public class SOSController extends AbstractOGCServiceController {
         boolean found = false;
         PrintWriter writer = response.getWriter();
         String requestedProcedure = describeReq.getProcedure();
-        for ( ObservationOffering offering : sosService.getAllOfferings() ) {
+        for ( Offering offering : sosService.getAllOfferings() ) {
             for ( Procedure proc : offering.getProcedures() ) {
-                String procedure = proc.getName();
+                String procedure = proc.getProcedureHref();
                 if ( requestedProcedure.equals( procedure ) ) {
                     found = true;
-                    String descriptionURL = proc.getDescriptionDocument();
-                    URL description = new URL( descriptionURL );
+                    URL description = proc.getSensorURL();
                     LOG.debug( "trying to read {}", description );
                     try {
                         BufferedReader reader = new BufferedReader( new InputStreamReader( description.openStream() ) );
@@ -607,7 +602,7 @@ public class SOSController extends AbstractOGCServiceController {
 
     private void doGetCapabilities( GetCapabilities capabilitiesReq, DeegreeServicesMetadata serviceMetadata,
                                     HttpResponseBuffer response )
-                            throws XMLStreamException, IOException, OWSException {
+                            throws XMLStreamException, IOException, OWSException, ObservationDatastoreException {
         negotiateVersion( capabilitiesReq ); // throws OWS Exception, if version is not supported
         XMLStreamWriter xmlWriter = response.getXMLWriter();
         Set<Sections> sections = getSections( capabilitiesReq );

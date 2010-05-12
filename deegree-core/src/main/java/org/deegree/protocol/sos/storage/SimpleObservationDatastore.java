@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.storage;
+package org.deegree.protocol.sos.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,14 +43,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.Map.Entry;
 
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.JDBCUtils;
@@ -61,17 +58,17 @@ import org.deegree.protocol.sos.filter.ResultFilter;
 import org.deegree.protocol.sos.filter.SpatialBBOXFilter;
 import org.deegree.protocol.sos.filter.SpatialFilter;
 import org.deegree.protocol.sos.filter.TimeFilter;
+import org.deegree.protocol.sos.model.MeasurementBase;
+import org.deegree.protocol.sos.model.Observation;
+import org.deegree.protocol.sos.model.Offering;
+import org.deegree.protocol.sos.model.Procedure;
+import org.deegree.protocol.sos.model.Property;
+import org.deegree.protocol.sos.model.Result;
+import org.deegree.protocol.sos.model.SimpleDoubleResult;
+import org.deegree.protocol.sos.model.SimpleMeasurement;
 import org.deegree.protocol.sos.time.IndeterminateTime;
 import org.deegree.protocol.sos.time.SamplingTime;
 import org.deegree.protocol.sos.time.TimePeriod;
-import org.deegree.services.sos.SOServiceExeption;
-import org.deegree.services.sos.model.MeasurementBase;
-import org.deegree.services.sos.model.Observation;
-import org.deegree.services.sos.model.Procedure;
-import org.deegree.services.sos.model.Property;
-import org.deegree.services.sos.model.Result;
-import org.deegree.services.sos.model.SimpleDoubleResult;
-import org.deegree.services.sos.model.SimpleMeasurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,19 +101,20 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
 
     /**
      * @param conf
+     * @throws SOServiceException
      */
     public SimpleObservationDatastore( DatastoreConfiguration conf ) {
         super( conf );
         this.timezone = initTimezone();
         this.filterConverter = new GenericFilterConverter( conf, this.timezone );
 
-        this.timeColumn = getDSConfig().getDSColumnName( "timestamp" );
-        this.procColumn = getDSConfig().getDSColumnName( "procedure" );
+        this.timeColumn = getDSConfig().getColumnName( "timestamp" );
+        this.procColumn = getDSConfig().getColumnName( "procedureId" );
     }
 
     private TimeZone initTimezone() {
         TimeZone result;
-        String tz = getDSConfig().getOption( "db_timezone" );
+        String tz = getDSConfig().getOptionValue( "db_timezone" );
         if ( tz == null ) {
             result = TimeZone.getDefault();
         } else {
@@ -129,44 +127,47 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
         return result;
     }
 
-    public Observation getObservation( FilterCollection filter )
-                            throws SOServiceExeption {
+    public Observation getObservation( FilterCollection filter, Offering offering )
+                            throws ObservationDatastoreException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            Map<Property, String> properties = getPropertyMap( filter );
+            List<Property> properties = getPropertyMap( filter );
 
-            Observation measurements = new Observation( properties.keySet() );
+            Observation measurements = new Observation( properties );
 
-            MeasurementBase measurementBase = new MeasurementBase( "", properties.keySet() ); // TODO
+            MeasurementBase measurementBase = new MeasurementBase( "", properties ); // TODO
 
             Calendar template = Calendar.getInstance( this.timezone );
 
             conn = getConnection();
-            List<String> columns = new LinkedList<String>( properties.values() );
+            List<String> columns = new LinkedList<String>();
+            for ( Property property : properties ) {
+                columns.add( property.getColumnName() );
+            }
 
             if ( procColumn != null ) {
                 columns.add( procColumn );
             }
             columns.add( timeColumn );
 
-            stmt = getStatement( filter, columns, conn );
+            stmt = getStatement( filter, columns, conn, offering );
             resultSet = stmt.executeQuery();
 
             List<Result> results = new ArrayList<Result>( properties.size() );
             while ( resultSet.next() ) {
                 results.clear();
-                for ( Entry<Property, String> property : properties.entrySet() ) {
-                    double value = resultSet.getDouble( property.getValue() );
+                for ( Property property : properties ) {
+                    double value = resultSet.getDouble( property.getColumnName() );
                     if ( resultSet.wasNull() ) {
                         value = Double.NaN;
                     }
-                    results.add( new SimpleDoubleResult( value, property.getKey() ) );
+                    results.add( new SimpleDoubleResult( value, property ) );
                 }
                 Date date = resultSet.getTimestamp( timeColumn, template );
 
-                Procedure p = getProcedure( resultSet );
+                Procedure p = getProcedure( resultSet, offering );
 
                 if ( p != null ) {
                     SimpleMeasurement measurement = new SimpleMeasurement( measurementBase, date, p, results );
@@ -179,9 +180,9 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
             return measurements;
         } catch ( SQLException e ) {
             LOG.error( "error while retrieving an observation", e );
-            throw new SOServiceExeption( "internal error, unable to retrieve observation from datastore", e );
+            throw new ObservationDatastoreException( "internal error, unable to retrieve observation from datastore", e );
         } catch ( FilterException e ) {
-            throw new SOServiceExeption( "unable to evaluate filter", e );
+            throw new ObservationDatastoreException( "unable to evaluate filter", e );
         } finally {
             JDBCUtils.close( resultSet );
             JDBCUtils.close( stmt );
@@ -194,17 +195,17 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
      * @return the procedure of this result
      * @throws SQLException
      */
-    protected Procedure getProcedure( ResultSet resultSet )
+    protected Procedure getProcedure( ResultSet resultSet, Offering offering )
                             throws SQLException {
         Procedure p = null;
         if ( procColumn != null ) {
             String s = resultSet.getString( procColumn );
             if ( s != null ) {
-                p = getDSConfig().getProcedure( s.trim() );
+                p = offering.getProcedureBySensorId( s.trim() );
             }
         } else {
             // no procedures configured, return first
-            p = getDSConfig().getProcedure( null );
+            p = offering.getProcedures().get( 0 );
         }
         return p;
     }
@@ -217,7 +218,8 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
         try {
             conn = getConnection();
             conn.setAutoCommit( true );
-            String timestampCol = getDSConfig().getDSColumnName( "timestamp" );
+            String timestampCol;
+            timestampCol = getDSConfig().getColumnName( "timestamp" );
             String tableName = getDSConfig().getTableName();
 
             stmt = conn.prepareStatement( String.format( "SELECT min(%s) as start_date, max(%s) as end_date FROM %s",
@@ -256,11 +258,13 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
      * @param filter
      * @param collection
      * @param conn
+     * @param offering
      * @return the sql select statement with where clauses
      * @throws FilterException
      * @throws SQLException
      */
-    protected PreparedStatement getStatement( FilterCollection filter, Collection<String> collection, Connection conn )
+    protected PreparedStatement getStatement( FilterCollection filter, Collection<String> collection, Connection conn,
+                                              Offering offering )
                             throws FilterException, SQLException {
 
         QueryBuilder q = new QueryBuilder();
@@ -272,7 +276,7 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
         q.add( "SELECT " + columns + " FROM " + getDSConfig().getTableName() );
 
         List<TimeFilter> timeFilter = filter.getTimeFilter();
-        List<ProcedureFilter> procFilter = getProcedureFilter( filter );
+        List<ProcedureFilter> procFilter = getProcedureFilter( filter, offering );
         List<ResultFilter> resultFilter = filter.getResultFilter();
 
         if ( timeFilter.size() > 0 || procFilter.size() > 0 || resultFilter.size() > 0 ) {
@@ -287,7 +291,7 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
             if ( needSep ) {
                 q.add( "AND" );
             }
-            getFilterConverter().buildProcedureClause( q, procFilter );
+            getFilterConverter().buildProcedureClause( q, procFilter, offering );
             needSep = true;
         }
         if ( resultFilter.size() > 0 ) {
@@ -304,7 +308,7 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
 
     // this datastore doesn't support spatial DBs, each procedure has a fixed position.
     // this method creates a procedure filters for the given procedure filters and the given spatial filters.
-    private List<ProcedureFilter> getProcedureFilter( FilterCollection filter ) {
+    private List<ProcedureFilter> getProcedureFilter( FilterCollection filter, Offering offering ) {
         if ( filter.getSpatialFilter().isEmpty() ) {
             return filter.getProcedureFilter();
         }
@@ -313,13 +317,10 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
         if ( !procFilters.isEmpty() ) {
             procedures = new LinkedList<Procedure>();
             for ( ProcedureFilter procFilter : procFilters ) {
-                String procID = getDSConfig().getProcedureIDFromName( procFilter.getProcedureName() );
-                if ( procID != null ) {
-                    procedures.add( getDSConfig().getProcedure( procID ) );
-                }
+                procedures.add( offering.getProcedureByHref( procFilter.getProcedureName() ) );
             }
         } else {
-            procedures = getDSConfig().getProcedures();
+            procedures = offering.getProcedures();
         }
         return getProcedureFilterForSpatialFilter( filter.getSpatialFilter(), procedures );
     }
@@ -332,9 +333,9 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
             if ( spatialFilter instanceof SpatialBBOXFilter ) {
                 SpatialBBOXFilter bboxFilter = (SpatialBBOXFilter) spatialFilter;
                 for ( Procedure proc : procedures ) {
-                    if ( proc.getGeometry() != null ) {
-                        if ( bboxFilter.getBBOX().intersects( proc.getGeometry() ) ) {
-                            result.add( new ProcedureFilter( proc.getName() ) );
+                    if ( proc.getLocation() != null ) {
+                        if ( bboxFilter.getBBOX().intersects( proc.getLocation() ) ) {
+                            result.add( new ProcedureFilter( proc.getProcedureHref() ) );
                         }
                     }
                 }
@@ -352,30 +353,29 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
      * 
      * @param filter
      * @return a map with properties and the corresponding column names
-     * @throws SOServiceExeption
+     * @throws SOServiceException
      */
-    protected Map<Property, String> getPropertyMap( FilterCollection filter )
-                            throws SOServiceExeption {
+    protected List<Property> getPropertyMap( FilterCollection filter )
+                            throws ObservationDatastoreException {
         if ( filter.getPropertyFilter().size() == 0 ) {
-            return getDSConfig().getPropertyColumnMap();
+            return getDSConfig().getProperties();
         }
         Set<String> filteredProperties = new HashSet<String>();
         for ( PropertyFilter propFilter : filter.getPropertyFilter() ) {
             filteredProperties.add( propFilter.getPropertyName() );
         }
 
-        Map<Property, String> properties = new HashMap<Property, String>();
-        for ( Entry<Property, String> property : getDSConfig().getPropertyColumnMap().entrySet() ) {
-            Property key = property.getKey();
-            if ( filteredProperties.contains( key.getName() ) ) {
-                properties.put( key, property.getValue() );
-                filteredProperties.remove( key.getName() );
+        List<Property> properties = new ArrayList<Property>();
+        for ( Property property : getDSConfig().getProperties() ) {
+            if ( filteredProperties.contains( property.getHref() ) ) {
+                properties.add( property );
+                filteredProperties.remove( property.getHref() );
             }
         }
         if ( filteredProperties.size() != 0 ) {
             String msg = "the offering does not contain the observedProperty: "
                          + ArrayUtils.join( ", ", filteredProperties );
-            throw new SOServiceExeption( msg );
+            throw new ObservationDatastoreException( msg );
 
         }
         return properties;

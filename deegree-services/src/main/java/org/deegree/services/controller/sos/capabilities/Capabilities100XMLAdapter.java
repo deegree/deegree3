@@ -44,6 +44,9 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.protocol.sos.model.Offering;
+import org.deegree.protocol.sos.storage.ObservationDatastoreException;
+import org.deegree.protocol.sos.storage.ObservationStoreManager;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.jaxb.metadata.CodeType;
@@ -52,7 +55,6 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
 import org.deegree.services.jaxb.metadata.KeywordsType;
 import org.deegree.services.jaxb.metadata.LanguageStringType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.sos.offering.ObservationOffering;
 
 /**
  * This is an xml adapter for SOS 1.0.0 Capabilities documents.
@@ -104,11 +106,12 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
      *            metadata for the service
      * @param writer
      * @throws XMLStreamException
+     * @throws ObservationDatastoreException
      */
-    public static void export( Set<Sections> sections, List<ObservationOffering> offerings,
+    public static void export( Set<Sections> sections, List<Offering> offerings,
                                DeegreeServicesMetadata serviceMetadata, ServiceIdentificationType identification,
                                XMLStreamWriter writer )
-                            throws XMLStreamException {
+                            throws XMLStreamException, ObservationDatastoreException {
         writer.setPrefix( SOS_PREFIX, SOS_NS );
         writer.setPrefix( OWS_PREFIX, OWS_NS );
         writer.setPrefix( OGC_PREFIX, OGC_NS );
@@ -140,13 +143,14 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndDocument();
     }
 
-    private static void exportContents( XMLStreamWriter writer, List<ObservationOffering> offerings )
-                            throws XMLStreamException {
+    private static void exportContents( XMLStreamWriter writer, List<Offering> offerings )
+                            throws XMLStreamException, ObservationDatastoreException {
         writer.writeStartElement( SOS_NS, "Contents" );
         writer.writeStartElement( SOS_NS, "ObservationOfferingList" );
 
-        for ( ObservationOffering offering : offerings ) {
-            ObservationOffering100XMLAdapter.export( writer, offering );
+        for ( Offering offering : offerings ) {
+            Offering100XMLAdapter.export( writer, offering,
+                                          ObservationStoreManager.getDatastoreById( offering.getOfferingName() ) );
         }
         writer.writeEndElement(); // ObservationOfferingList
         writer.writeEndElement(); // Contents

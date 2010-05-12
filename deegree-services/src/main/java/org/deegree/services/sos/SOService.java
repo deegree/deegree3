@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.services.sos.offering.ObservationOffering;
+import org.deegree.protocol.sos.model.Offering;
 
 /**
  * This is the SOSService, a collection of ObservationOfferings.
@@ -58,16 +58,13 @@ import org.deegree.services.sos.offering.ObservationOffering;
  */
 public class SOService {
 
-    private final Map<String, ObservationOffering> offerings = new HashMap<String, ObservationOffering>();
-
-    private final Map<String, ObservationOffering> offeringsById = new HashMap<String, ObservationOffering>();
+    private final Map<String, Offering> offerings = new HashMap<String, Offering>();
 
     /**
      * @param offering
      */
-    void addOffering( ObservationOffering offering ) {
-        this.offerings.put( offering.getName(), offering );
-        offeringsById.put( offering.getID(), offering );
+    void addOffering( Offering offering ) {
+        this.offerings.put( offering.getOfferingName(), offering );
     }
 
     /**
@@ -78,7 +75,7 @@ public class SOService {
      * @return true if the offering exists
      */
     public boolean hasOffering( String name ) {
-        return this.offerings.containsKey( name ) || offeringsById.containsKey( name );
+        return this.offerings.containsKey( name );
     }
 
     /**
@@ -88,14 +85,14 @@ public class SOService {
      *            the name or id of the offering
      * @return the offering, or <code>null</code> if it doesn't exists
      */
-    public ObservationOffering getOffering( String name ) {
-        return offerings.containsKey( name ) ? this.offerings.get( name ) : offeringsById.get( name );
+    public Offering getOffering( String name ) {
+        return offerings.containsKey( name ) ? this.offerings.get( name ) : null;
     }
 
     /**
      * @return all offerings of this SOS configuration
      */
-    public List<ObservationOffering> getAllOfferings() {
-        return new ArrayList<ObservationOffering>( this.offerings.values() );
+    public List<Offering> getAllOfferings() {
+        return new ArrayList<Offering>( this.offerings.values() );
     }
 }

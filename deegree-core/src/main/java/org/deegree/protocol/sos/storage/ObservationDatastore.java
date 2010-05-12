@@ -33,14 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.model;
+package org.deegree.protocol.sos.storage;
 
-import java.util.List;
-
-import org.deegree.protocol.sos.time.TimeInstant;
+import org.deegree.protocol.sos.filter.FilterCollection;
+import org.deegree.protocol.sos.model.Observation;
+import org.deegree.protocol.sos.model.Offering;
+import org.deegree.protocol.sos.time.SamplingTime;
 
 /**
- * 
+ * This is the interface for a storage of observations.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -48,37 +49,23 @@ import org.deegree.protocol.sos.time.TimeInstant;
  * @version $Revision$, $Date$
  * 
  */
-public interface Measurement {
+public interface ObservationDatastore {
 
     /**
-     * @TODO return <code>Feature</code>
-     * @return the feature of this measurement
+     * Get measurements from the datastore.
+     * 
+     * @param filter
+     * @return the resulting measurements
+     * @throws Exception
      */
-    public String getFeatureOfInterest();
+    public Observation getObservation( FilterCollection filter, Offering offering )
+                            throws ObservationDatastoreException;
 
     /**
-     * @return the procedure
+     * Get the time span (sampling time) of all observations in this datastore.
+     * 
+     * @return the sampling time of the datastore
      */
-    public Procedure getProcedure();
+    public SamplingTime getSamplingTime();
 
-    /**
-     * @return the time of this measurement
-     */
-    public TimeInstant getSamplingTime();
-
-    /**
-     * @return the observed properties
-     */
-    public List<Property> getProperties();
-
-    /**
-     * @param property
-     * @return the result
-     */
-    public Result getResult( Property property );
-
-    /**
-     * @return all results
-     */
-    public List<Result> getResults();
 }

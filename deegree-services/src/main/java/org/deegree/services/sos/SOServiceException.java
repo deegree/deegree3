@@ -33,10 +33,10 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.model;
+package org.deegree.services.sos;
 
 /**
- *
+ * This is an exception class for internal (non-OGC) Sensor Observation Service exceptions.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -44,27 +44,27 @@ package org.deegree.services.sos.model;
  * @version $Revision$, $Date$
  *
  */
-public class SimpleNullResult implements Result {
-
-    private final Property property;
+public class SOServiceException extends Exception {
 
     /**
-     * @param property
+     *
      */
-    public SimpleNullResult( Property property ) {
-        this.property = property;
+    private static final long serialVersionUID = -1234393331582330780L;
+
+    /**
+     * @param message
+     * @param e
+     */
+    public SOServiceException( String message, Throwable e ) {
+        super( message, e );
     }
 
-    public String getResultAsString() {
-        return "";
+    /**
+     * @param message
+     */
+    public SOServiceException( String message ) {
+        super( message );
     }
 
-    public Property getProperty() {
-        return property;
-    }
 
-    @Override
-    public String toString() {
-        return getResultAsString() + property.getUOM() + " (" + property.getShortName() + ")";
-    }
 }

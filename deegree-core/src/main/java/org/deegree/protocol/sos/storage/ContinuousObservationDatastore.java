@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.storage;
+package org.deegree.protocol.sos.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,24 +44,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.utils.time.Duration;
 import org.deegree.protocol.sos.filter.FilterCollection;
+import org.deegree.protocol.sos.model.MeasurementBase;
+import org.deegree.protocol.sos.model.Observation;
+import org.deegree.protocol.sos.model.Offering;
+import org.deegree.protocol.sos.model.Property;
+import org.deegree.protocol.sos.model.Result;
+import org.deegree.protocol.sos.model.SimpleDoubleResult;
+import org.deegree.protocol.sos.model.SimpleMeasurement;
 import org.deegree.protocol.sos.time.IndeterminateTime;
 import org.deegree.protocol.sos.time.SamplingTime;
 import org.deegree.protocol.sos.time.TimePeriod;
-import org.deegree.services.sos.SOSConfigurationException;
-import org.deegree.services.sos.SOServiceExeption;
-import org.deegree.services.sos.model.MeasurementBase;
-import org.deegree.services.sos.model.Observation;
-import org.deegree.services.sos.model.Property;
-import org.deegree.services.sos.model.Result;
-import org.deegree.services.sos.model.SimpleDoubleResult;
-import org.deegree.services.sos.model.SimpleMeasurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,63 +87,67 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
      *            the datastore configuration
      * @throws SOSConfigurationException
      *             if the {@link DatastoreConfiguration} contains no beginDate or interval.
+     * @throws SOServiceException
      */
-    public ContinuousObservationDatastore( DatastoreConfiguration dsConfig ) throws SOSConfigurationException {
+    public ContinuousObservationDatastore( DatastoreConfiguration dsConfig ) throws ObservationDatastoreException {
         super( dsConfig );
         try {
-            begin = DateUtils.parseISO8601Date( dsConfig.getOption( "beginDate" ) );
-            Duration duration = DateUtils.parseISO8601Duration( dsConfig.getOption( "interval" ) );
+            begin = DateUtils.parseISO8601Date( dsConfig.getOptionValue( "beginDate" ) );
+            Duration duration = DateUtils.parseISO8601Duration( dsConfig.getOptionValue( "interval" ) );
             interval = duration.getDateAfter( begin ).getTime() - begin.getTime();
-            String firstID = dsConfig.getOption( "firstID" );
+            String firstID = dsConfig.getOptionValue( "firstID" );
             int id = 1;
             if ( firstID != null ) {
                 id = Integer.parseInt( firstID );
             }
-            String columnName = dsConfig.getDSColumnName( "id" );
+            String columnName = dsConfig.getColumnName( "id" );
             if ( columnName == null ) {
-                throw new SOSConfigurationException( "the datastore configuration is missing the 'id' column" );
+                throw new ObservationDatastoreException( "the datastore configuration is missing the 'id' column" );
             }
             filterConverter = new ContinuousFilterConverter( dsConfig, columnName, begin, interval, id );
         } catch ( ParseException e ) {
-            throw new SOSConfigurationException( "error setting the beginDate/interval", e.getCause() );
+            throw new ObservationDatastoreException( "error setting the beginDate/interval", e.getCause() );
         }
     }
 
     @Override
-    public Observation getObservation( FilterCollection filter )
-                            throws SOServiceExeption {
+    public Observation getObservation( FilterCollection filter, Offering offering )
+                            throws ObservationDatastoreException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            Map<Property, String> properties = getPropertyMap( filter );
+            List<Property> properties = getPropertyMap( filter );
 
-            Observation measurements = new Observation( properties.keySet() );
-            MeasurementBase measurementBase = new MeasurementBase( "", properties.keySet() ); // TODO
+            Observation measurements = new Observation( properties );
+            MeasurementBase measurementBase = new MeasurementBase( "", properties ); // TODO
 
             conn = getConnection();
-            List<String> columns = new LinkedList<String>( properties.values() );
-            String idColumn = getDSConfig().getDSColumnName( "id" );
+            List<String> columns = new LinkedList<String>();
+            for ( Property property : properties ) {
+                columns.add( property.getColumnName() );
+            }
+            String idColumn = getDSConfig().getColumnName( "id" );
             columns.add( idColumn );
-            stmt = getStatement( filter, columns, conn );
+            stmt = getStatement( filter, columns, conn, offering );
             resultSet = stmt.executeQuery();
 
             // Calendar template = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
             List<Result> results = new ArrayList<Result>( properties.size() );
             while ( resultSet.next() ) {
                 results.clear();
-                for ( Entry<Property, String> property : properties.entrySet() ) {
-                    double value = resultSet.getDouble( property.getValue() );
+                for ( Property property : properties ) {
+                    double value = resultSet.getDouble( property.getColumnName() );
                     if ( resultSet.wasNull() ) {
                         value = Double.NaN;
                     }
-                    results.add( new SimpleDoubleResult( value, property.getKey() ) );
+                    results.add( new SimpleDoubleResult( value, property ) );
                 }
                 int id = resultSet.getInt( idColumn );
                 // Date date = resultSet.getTimestamp( "time", template );
                 Date date = filterConverter.dateForRowID( id );
                 SimpleMeasurement measurement = new SimpleMeasurement( measurementBase, date,
-                                                                       getDSConfig().getProcedure( null ), results );
+                                                                       offering.getProcedures().get( 0 ), results );
 
                 measurements.add( measurement );
             }
@@ -156,9 +157,9 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
             return measurements;
         } catch ( SQLException e ) {
             LOG.error( "error while retrieving on observation", e );
-            throw new SOServiceExeption( "internal error, unable to retrieve observation from datastore", e );
+            throw new ObservationDatastoreException( "internal error, unable to retrieve observation from datastore", e );
         } catch ( FilterException e ) {
-            throw new SOServiceExeption( "unable to evaluate filter", e );
+            throw new ObservationDatastoreException( "unable to evaluate filter", e );
         } finally {
             JDBCUtils.close( resultSet );
             JDBCUtils.close( stmt );

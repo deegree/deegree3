@@ -33,41 +33,38 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.model;
+package org.deegree.protocol.sos.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.deegree.protocol.sos.time.TimePeriod;
 
 /**
- * This class is a collection of muliple {@link Measurement}s. The Measurements are grouped by its procedures in
- * {@link MeasurementCollection}s.
+ * This class is a collection of {@link Measurement}s.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
  */
-public class Observation implements Iterable<MeasurementCollection> {
-
-    private final Map<Procedure, MeasurementCollection> measurements = new HashMap<Procedure, MeasurementCollection>();
+public class MeasurementCollection implements Iterable<Measurement> {
 
     private final TimePeriod samplePeriod = new TimePeriod();
+
+    private final List<Measurement> measurements = new LinkedList<Measurement>();
 
     private final List<Property> properties;
 
     /**
-     * Create a Observation with some observed properties.
-     * 
      * @param properties
      */
-    public Observation( Collection<Property> properties ) {
+    public MeasurementCollection( Collection<Property> properties ) {
         this.properties = new ArrayList<Property>( properties );
     }
 
@@ -78,26 +75,16 @@ public class Observation implements Iterable<MeasurementCollection> {
      */
     public void add( Measurement measurement ) {
         samplePeriod.extend( measurement.getSamplingTime() );
-        add( measurement.getProcedure(), measurement );
-    }
-
-    private void add( Procedure procedure, Measurement measurement ) {
-        if ( measurements.containsKey( procedure ) ) {
-            measurements.get( procedure ).add( measurement );
-        } else {
-            MeasurementCollection m = new MeasurementCollection( properties );
-            m.add( measurement );
-            measurements.put( procedure, m );
-        }
+        measurements.add( measurement );
     }
 
     @Override
     public String toString() {
-        return String.format( "ObservationResult (n: %d) %s", measurements.size(), samplePeriod );
+        return String.format( "MeasurementCollection (n: %d) %s", measurements.size(), samplePeriod );
     }
 
-    public Iterator<MeasurementCollection> iterator() {
-        return measurements.values().iterator();
+    public Iterator<Measurement> iterator() {
+        return measurements.iterator();
     }
 
     /**

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.model;
+package org.deegree.protocol.sos.model;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,12 +52,14 @@ import org.deegree.protocol.sos.time.TimeInstant;
  * A {@link SimpleMeasurement} object is immutable.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
  */
 public class SimpleMeasurement implements Measurement {
+
     private final MeasurementBase base;
 
     private final Date sampleDate;
@@ -83,7 +85,7 @@ public class SimpleMeasurement implements Measurement {
     }
 
     public String getFeatureOfInterest() {
-        return procedure.getFeatureRef();
+        return procedure.getFeatureOfInterestHref();
     }
 
     public Procedure getProcedure() {

@@ -33,15 +33,17 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.storage;
+package org.deegree.protocol.sos.storage;
 
-import org.deegree.protocol.sos.filter.FilterCollection;
-import org.deegree.protocol.sos.time.SamplingTime;
-import org.deegree.services.sos.SOServiceExeption;
-import org.deegree.services.sos.model.Observation;
+import java.util.List;
+
+import org.deegree.protocol.sos.filter.ProcedureFilter;
+import org.deegree.protocol.sos.filter.ResultFilter;
+import org.deegree.protocol.sos.filter.TimeFilter;
+import org.deegree.protocol.sos.model.Offering;
 
 /**
- * This is the interface for a storage of observations.
+ * 
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -49,23 +51,40 @@ import org.deegree.services.sos.model.Observation;
  * @version $Revision$, $Date$
  * 
  */
-public interface ObservationDatastore {
+public interface SQLFilterConverter {
+    /**
+     * Add time filter to the sql QueryBuilder.
+     * 
+     * @param q
+     *            the query builder
+     * @param filters
+     *            a list of time filter
+     * @throws FilterException
+     */
+    void buildTimeClause( QueryBuilder q, List<TimeFilter> filters )
+                            throws FilterException;
 
     /**
-     * Get measurements from the datastore.
+     * Add procedure filter to the sql QueryBuilder.
      * 
-     * @param filter
-     * @return the resulting measurements
-     * @throws SOServiceExeption
+     * @param q
+     *            the query builder
+     * @param filters
+     *            a list of procedure filter
+     * @param offering
+     *            the offering
+     * @throws FilterException
      */
-    public Observation getObservation( FilterCollection filter )
-                            throws SOServiceExeption;
+    void buildProcedureClause( QueryBuilder q, List<ProcedureFilter> filters, Offering offering )
+                            throws FilterException;
 
     /**
-     * Get the time span (sampling time) of all observations in this datastore.
+     * Add result filter to the sql QueryBuilder.
      * 
-     * @return the sampling time of the datastore
+     * @param q
+     * @param resultFilter
+     * @throws FilterException
      */
-    public SamplingTime getSamplingTime();
-
+    void buildResultClause( QueryBuilder q, List<ResultFilter> resultFilter )
+                            throws FilterException;
 }

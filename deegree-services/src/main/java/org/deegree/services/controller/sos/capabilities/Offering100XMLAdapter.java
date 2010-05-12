@@ -40,10 +40,12 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.Envelope;
+import org.deegree.protocol.sos.model.Offering;
+import org.deegree.protocol.sos.model.Procedure;
+import org.deegree.protocol.sos.model.Property;
+import org.deegree.protocol.sos.storage.ObservationDatastore;
+import org.deegree.protocol.sos.storage.SimpleObservationDatastore;
 import org.deegree.services.controller.sos.getobservation.EventTime100XMLExporter;
-import org.deegree.services.sos.model.Procedure;
-import org.deegree.services.sos.model.Property;
-import org.deegree.services.sos.offering.ObservationOffering;
 
 /**
  * This is an xml adapter for ObservationOffering elements after the SOS 1.0.0 spec.
@@ -53,7 +55,7 @@ import org.deegree.services.sos.offering.ObservationOffering;
  * 
  * @version $Revision$, $Date$
  */
-public class ObservationOffering100XMLAdapter extends XMLAdapter {
+public class Offering100XMLAdapter extends XMLAdapter {
 
     private static final String SOS_NS = "http://www.opengis.net/sos/1.0";
 
@@ -75,7 +77,7 @@ public class ObservationOffering100XMLAdapter extends XMLAdapter {
      *            the ObservationOffering
      * @throws XMLStreamException
      */
-    public static void export( XMLStreamWriter writer, ObservationOffering offering )
+    public static void export( XMLStreamWriter writer, Offering offering, ObservationDatastore datastore )
                             throws XMLStreamException {
         writer.setPrefix( SOS_PREFIX, SOS_NS );
         writer.setPrefix( GML_PREFIX, GML_NS );
@@ -83,33 +85,33 @@ public class ObservationOffering100XMLAdapter extends XMLAdapter {
         writer.setPrefix( "xlink", XLN_NS );
 
         writer.writeStartElement( SOS_NS, "ObservationOffering" );
-        writer.writeAttribute( GML_NS, "id", offering.getID() );
+        writer.writeAttribute( GML_NS, "id", offering.getObservationStoreId() );
 
         writer.writeStartElement( GML_NS, "name" );
-        writer.writeCharacters( offering.getName() );
+        writer.writeCharacters( offering.getOfferingName() );
         writer.writeEndElement();
 
         exportBoundedBy( writer, offering );
 
         writer.writeStartElement( SOS_NS, "time" );
-        EventTime100XMLExporter.exportSamplingTime( writer, offering.getSamplingTime() );
+        EventTime100XMLExporter.exportSamplingTime( writer, datastore.getSamplingTime() );
         writer.writeEndElement();
 
         for ( Procedure proc : offering.getProcedures() ) {
             writer.writeStartElement( SOS_NS, "procedure" );
-            writer.writeAttribute( XLN_NS, "href", proc.getName() );
+            writer.writeAttribute( XLN_NS, "href", proc.getProcedureHref() );
             writer.writeEndElement();
         }
 
-        for ( Property prop : offering.getProperties() ) {
+        for ( Property prop : ( (SimpleObservationDatastore) datastore ).getDSConfig().getProperties() ) {
             writer.writeStartElement( SOS_NS, "observedProperty" );
-            writer.writeAttribute( XLN_NS, "href", prop.getName() );
+            writer.writeAttribute( XLN_NS, "href", prop.getHref() );
             writer.writeEndElement();
         }
 
         for ( Procedure proc : offering.getProcedures() ) {
             writer.writeStartElement( SOS_NS, "featureOfInterest" );
-            writer.writeAttribute( XLN_NS, "href", proc.getFeatureRef() );
+            writer.writeAttribute( XLN_NS, "href", proc.getFeatureOfInterestHref() );
             writer.writeEndElement();
         }
 
@@ -124,7 +126,7 @@ public class ObservationOffering100XMLAdapter extends XMLAdapter {
         writer.writeEndElement(); // ObservationOffering
     }
 
-    private static void exportBoundedBy( XMLStreamWriter writer, ObservationOffering offering )
+    private static void exportBoundedBy( XMLStreamWriter writer, Offering offering )
                             throws XMLStreamException {
         writer.writeStartElement( GML_NS, "boundedBy" );
         Envelope env = offering.getBBOX();

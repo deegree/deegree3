@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.sos.getobservation;
 
 import java.util.List;
@@ -42,18 +42,18 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.sos.model.Measurement;
-import org.deegree.services.sos.model.MeasurementCollection;
-import org.deegree.services.sos.model.Property;
+import org.deegree.protocol.sos.model.Measurement;
+import org.deegree.protocol.sos.model.MeasurementCollection;
+import org.deegree.protocol.sos.model.Property;
 
 /**
  * This is an xml adapter for DataArray elements after the SWE 1.0.1 spec.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class DataArray101XMLAdapter extends XMLAdapter {
 
@@ -67,10 +67,10 @@ public class DataArray101XMLAdapter extends XMLAdapter {
 
     /**
      * Export a MeasurementCollection as swe:DataArray.
-     *
+     * 
      * @param writer
      * @param collection
-     *
+     * 
      * @throws XMLStreamException
      */
     public static void export( XMLStreamWriter writer, MeasurementCollection collection )
@@ -99,7 +99,7 @@ public class DataArray101XMLAdapter extends XMLAdapter {
         writer.writeEndElement();
 
         for ( Property p : collection.getProperties() ) {
-            exportQuantityField( writer, p.getShortName(), p.getName(), p.getUOM() );
+            exportQuantityField( writer, p.getColumnName(), p.getHref(), p.getOptionValue( "uom" ) );
         }
 
         writer.writeEndElement();

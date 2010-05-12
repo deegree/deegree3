@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.storage;
+package org.deegree.protocol.sos.storage;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -47,9 +47,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.Map.Entry;
 
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.protocol.sos.filter.BeginFilter;
@@ -58,17 +56,17 @@ import org.deegree.protocol.sos.filter.EndFilter;
 import org.deegree.protocol.sos.filter.FilterCollection;
 import org.deegree.protocol.sos.filter.TimeFilter;
 import org.deegree.protocol.sos.filter.TimeInstantFilter;
+import org.deegree.protocol.sos.model.MeasurementBase;
+import org.deegree.protocol.sos.model.Observation;
+import org.deegree.protocol.sos.model.Offering;
+import org.deegree.protocol.sos.model.Procedure;
+import org.deegree.protocol.sos.model.Property;
+import org.deegree.protocol.sos.model.Result;
+import org.deegree.protocol.sos.model.SimpleIntegerResult;
+import org.deegree.protocol.sos.model.SimpleMeasurement;
+import org.deegree.protocol.sos.model.SimpleNullResult;
 import org.deegree.protocol.sos.time.SamplingTime;
 import org.deegree.protocol.sos.time.TimePeriod;
-import org.deegree.services.sos.SOServiceExeption;
-import org.deegree.services.sos.model.MeasurementBase;
-import org.deegree.services.sos.model.Observation;
-import org.deegree.services.sos.model.Procedure;
-import org.deegree.services.sos.model.Property;
-import org.deegree.services.sos.model.Result;
-import org.deegree.services.sos.model.SimpleIntegerResult;
-import org.deegree.services.sos.model.SimpleMeasurement;
-import org.deegree.services.sos.model.SimpleNullResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,8 +105,8 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
      */
     public BinarySQLDatastore( DatastoreConfiguration dsConfig ) {
         super( dsConfig );
-        this.samplingPeriodMS = Integer.parseInt( dsConfig.getOption( "ms_sampling_period" ) );
-        this.numOfMeasurements = Integer.parseInt( dsConfig.getOption( "number_of_measurements" ) );
+        this.samplingPeriodMS = Integer.parseInt( dsConfig.getOptionValue( "ms_sampling_period" ) );
+        this.numOfMeasurements = Integer.parseInt( dsConfig.getOptionValue( "number_of_measurements" ) );
 
         int msPerRecord = this.samplingPeriodMS * this.numOfMeasurements;
         if ( msPerRecord != T_SECOND && msPerRecord != T_MINUTE && msPerRecord != T_HOUR && msPerRecord != T_DAY ) {
@@ -139,23 +137,23 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
     }
 
     @Override
-    public Observation getObservation( FilterCollection filter )
-                            throws SOServiceExeption {
+    public Observation getObservation( FilterCollection filter, Offering offering )
+                            throws ObservationDatastoreException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            Map<Property, String> properties = getPropertyMap( filter );
+            List<Property> properties = getPropertyMap( filter );
 
-            Observation measurements = new Observation( properties.keySet() );
+            Observation measurements = new Observation( properties );
 
             MeasurementBase measurementBase = new MeasurementBase( "", // TODO
-                                                                   properties.keySet() );
+                                                                   properties );
 
             conn = getConnection();
             List<String> columns = buildColumnList( properties );
 
-            stmt = getStatement( filter, columns, conn );
+            stmt = getStatement( filter, columns, conn, offering );
             resultSet = stmt.executeQuery();
 
             TimestampFilter timestampFilter = new TimestampFilter( filter.getTimeFilter() );
@@ -163,12 +161,12 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
             List<ByteArrayResult> results = new ArrayList<ByteArrayResult>( properties.size() );
             while ( resultSet.next() ) {
                 results.clear();
-                for ( Entry<Property, String> property : properties.entrySet() ) {
-                    byte[] value = resultSet.getBytes( property.getValue() );
-                    results.add( new ByteArrayResult( property.getKey(), value ) );
+                for ( Property property : properties ) {
+                    byte[] value = resultSet.getBytes( property.getColumnName() );
+                    results.add( new ByteArrayResult( property, value ) );
                 }
                 Date date = resultSet.getTimestamp( timeColumn, GMT_TIMEZONE );
-                Procedure p = getProcedure( resultSet );
+                Procedure p = getProcedure( resultSet, offering );
                 if ( p != null ) {
                     generateMeasurements( date, p, results, measurementBase, measurements, timestampFilter );
                 } else {
@@ -179,9 +177,9 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
             return measurements;
         } catch ( SQLException e ) {
             LOG.error( "error while retrieving on observation", e );
-            throw new SOServiceExeption( "internal error, unable to retrieve observation from datastore" );
+            throw new ObservationDatastoreException( "internal error, unable to retrieve observation from datastore" );
         } catch ( FilterException e ) {
-            throw new SOServiceExeption( "unable to evaluate filter", e );
+            throw new ObservationDatastoreException( "unable to evaluate filter", e );
         } finally {
             JDBCUtils.close( resultSet );
             JDBCUtils.close( stmt );
@@ -189,8 +187,11 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
         }
     }
 
-    private List<String> buildColumnList( Map<Property, String> properties ) {
-        List<String> columns = new LinkedList<String>( properties.values() );
+    private List<String> buildColumnList( List<Property> properties ) {
+        List<String> columns = new LinkedList<String>();
+        for ( Property property : properties ) {
+            columns.add( property.getColumnName() );
+        }
         if ( procColumn != null ) {
             columns.add( procColumn );
         }
@@ -234,7 +235,8 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
     }
 
     @Override
-    protected PreparedStatement getStatement( FilterCollection filter, Collection<String> collection, Connection conn )
+    protected PreparedStatement getStatement( FilterCollection filter, Collection<String> collection, Connection conn,
+                                              Offering offering )
                             throws SQLException, FilterException {
         FilterCollection extendedFilter = new FilterCollection();
 
@@ -264,7 +266,7 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
                 extendedFilter.add( timeFilter );
             }
         }
-        return super.getStatement( extendedFilter, collection, conn );
+        return super.getStatement( extendedFilter, collection, conn, offering );
     }
 
     private Date roundDownDate( Date date ) {

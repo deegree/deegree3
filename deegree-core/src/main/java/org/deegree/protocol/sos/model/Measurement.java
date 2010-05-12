@@ -33,13 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.storage;
+package org.deegree.protocol.sos.model;
 
 import java.util.List;
 
-import org.deegree.protocol.sos.filter.ProcedureFilter;
-import org.deegree.protocol.sos.filter.ResultFilter;
-import org.deegree.protocol.sos.filter.TimeFilter;
+import org.deegree.protocol.sos.time.TimeInstant;
 
 /**
  * 
@@ -50,38 +48,37 @@ import org.deegree.protocol.sos.filter.TimeFilter;
  * @version $Revision$, $Date$
  * 
  */
-public interface SQLFilterConverter {
-    /**
-     * Add time filter to the sql QueryBuilder.
-     * 
-     * @param q
-     *            the query builder
-     * @param filters
-     *            a list of time filter
-     * @throws FilterException
-     */
-    void buildTimeClause( QueryBuilder q, List<TimeFilter> filters )
-                            throws FilterException;
+public interface Measurement {
 
     /**
-     * Add procedure filter to the sql QueryBuilder.
-     * 
-     * @param q
-     *            the query builder
-     * @param filters
-     *            a list of procedure filter
-     * @throws FilterException
+     * @TODO return <code>Feature</code>
+     * @return the feature of this measurement
      */
-    void buildProcedureClause( QueryBuilder q, List<ProcedureFilter> filters )
-                            throws FilterException;
+    public String getFeatureOfInterest();
 
     /**
-     * Add result filter to the sql QueryBuilder.
-     * 
-     * @param q
-     * @param resultFilter
-     * @throws FilterException
+     * @return the procedure
      */
-    void buildResultClause( QueryBuilder q, List<ResultFilter> resultFilter )
-                            throws FilterException;
+    public Procedure getProcedure();
+
+    /**
+     * @return the time of this measurement
+     */
+    public TimeInstant getSamplingTime();
+
+    /**
+     * @return the observed properties
+     */
+    public List<Property> getProperties();
+
+    /**
+     * @param property
+     * @return the result
+     */
+    public Result getResult( Property property );
+
+    /**
+     * @return all results
+     */
+    public List<Result> getResults();
 }

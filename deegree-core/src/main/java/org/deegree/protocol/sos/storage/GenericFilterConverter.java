@@ -33,9 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.storage;
+package org.deegree.protocol.sos.storage;
 
-import static org.deegree.services.sos.storage.QueryBuilder.stringSetter;
+import static org.deegree.protocol.sos.storage.QueryBuilder.stringSetter;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -62,7 +62,7 @@ import org.deegree.protocol.sos.filter.ProcedureFilter;
 import org.deegree.protocol.sos.filter.ResultFilter;
 import org.deegree.protocol.sos.filter.TimeFilter;
 import org.deegree.protocol.sos.filter.TimeInstantFilter;
-import org.deegree.services.sos.model.Property;
+import org.deegree.protocol.sos.model.Offering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +94,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
 
     @Override
     public void buildTimeClause( QueryBuilder q, List<TimeFilter> filters ) {
-        String timeStampColumn = dsConfig.getDSColumnName( "timestamp" );
+        String timeStampColumn = dsConfig.getColumnName( "timestamp" );
         final Calendar template = Calendar.getInstance( tz );
 
         ArrayList<String> timeFilters = new ArrayList<String>( filters.size() );
@@ -140,14 +140,14 @@ public class GenericFilterConverter implements SQLFilterConverter {
     }
 
     @Override
-    public void buildProcedureClause( QueryBuilder q, List<ProcedureFilter> filters ) {
-        String procColumn = dsConfig.getDSColumnName( "procedure" );
+    public void buildProcedureClause( QueryBuilder q, List<ProcedureFilter> filters, Offering offering ) {
+        String procColumn = dsConfig.getColumnName( "procedureId" );
         if ( procColumn == null ) {
             return;
         }
         List<String> procedureFilters = new ArrayList<String>( filters.size() );
         for ( final ProcedureFilter filter : filters ) {
-            final String id = dsConfig.getProcedureIDFromName( filter.getProcedureName() );
+            final String id = offering.getProcedureIdFromHref( filter.getProcedureName() );
             procedureFilters.add( procColumn + " = ?" );
             q.add( QueryBuilder.stringSetter( id ) );
         }
@@ -199,8 +199,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
             throw new FilterException(
                                        "Unsupported filter operation. PropertyIsBetween only supports PropertyName and Literal." );
         }
-        Property prop = dsConfig.getPropertyFromName( propName );
-        String colName = dsConfig.getColumnName( prop );
+        String colName = dsConfig.getColumnName( propName );
         q.add( stringSetter( lower ) ).add( "? <" ).add( colName );
         q.add( "AND" ).add( colName ).add( " < ?" ).add( stringSetter( upper ) );
     }
@@ -208,8 +207,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
     private void buildPropertyIsNullClause( QueryBuilder q, ComparisonOperator op ) {
         PropertyIsNull p = (PropertyIsNull) op;
         String propName = p.getPropertyName().getPropertyName();
-        Property prop = dsConfig.getPropertyFromName( propName );
-        String colName = dsConfig.getColumnName( prop );
+        String colName = dsConfig.getColumnName( propName );
         q.add( colName + " IS NOT NULL" );
     }
 
@@ -240,9 +238,8 @@ public class GenericFilterConverter implements SQLFilterConverter {
         }
         StringPair propFilter = getSimplePropFilter( op );
         if ( compOp != null && propFilter != null ) {
-            Property prop = dsConfig.getPropertyFromName( propFilter.first );
             final String value = propFilter.second;
-            String colName = dsConfig.getColumnName( prop );
+            String colName = dsConfig.getColumnName( propFilter.first );
 
             q.add( colName );
             q.add( compOp + " ?" );

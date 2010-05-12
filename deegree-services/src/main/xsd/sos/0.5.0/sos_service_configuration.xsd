@@ -10,20 +10,16 @@
             <sequence>
               <element name="name" type="string" />
               <element name="srsName" type="string" />
-              <element name="Datastore">
-                <complexType>
-                  <sequence>
-                    <element name="JDBCConnId" type="string" />
-                    <element name="Class" type="string" />
-                    <element name="Table" type="string" />
-                    <element ref="sos:Column" minOccurs="0" maxOccurs="unbounded" />
-                    <element ref="sos:Option" minOccurs="0" maxOccurs="unbounded" />
-                  </sequence>
-                </complexType>
-              </element>
+              <element name="ObservationStoreId" type="string" />
               <element name="Procedure" maxOccurs="unbounded">
                 <complexType>
                   <sequence>
+                    <element name="Location">
+                      <complexType>
+                        <attribute name="lat" type="string" />
+                        <attribute name="lon" type="string" />
+                      </complexType>
+                    </element>
                     <element name="FeatureOfInterest">
                       <complexType>
                         <attribute name="href" type="string" />
@@ -31,20 +27,11 @@
                     </element>
                     <element name="Sensor">
                       <complexType>
+                        <attribute name="id" type="string" />
+                        <attribute name="name" type="string" />
                         <attribute name="href" type="string" />
                       </complexType>
                     </element>
-                    <element ref="sos:Column" minOccurs="0" maxOccurs="unbounded" />
-                    <element ref="sos:Option" minOccurs="0" maxOccurs="unbounded" />
-                  </sequence>
-                  <attribute name="href" type="string" />
-                </complexType>
-              </element>
-              <element name="Property" maxOccurs="unbounded">
-                <complexType>
-                  <sequence>
-                    <element ref="sos:Column" minOccurs="0" maxOccurs="unbounded" />
-                    <element ref="sos:Option" minOccurs="0" maxOccurs="unbounded" />
                   </sequence>
                   <attribute name="href" type="string" />
                 </complexType>
@@ -53,18 +40,6 @@
           </complexType>
         </element>
       </sequence>
-    </complexType>
-  </element>
-  <element name="Option">
-    <complexType>
-      <attribute name="name" />
-      <attribute name="value" />
-    </complexType>
-  </element>
-  <element name="Column">
-    <complexType>
-      <attribute name="type" type="string" />
-      <attribute name="name" type="string" />
     </complexType>
   </element>
 </schema>

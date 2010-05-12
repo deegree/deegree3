@@ -33,10 +33,10 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.services.sos.model;
+package org.deegree.protocol.sos.storage;
 
 /**
- *
+ * This is an exception class for internal filter exceptions.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -44,64 +44,18 @@ package org.deegree.services.sos.model;
  * @version $Revision$, $Date$
  *
  */
-public class Property {
-    private final String name;
-
-    private final String shortName;
-
-    private final String uom;
+public class FilterException extends Exception {
 
     /**
-     * @param name
+     *
      */
-    public Property( String name ) {
-        this( name, name );
-    }
+    private static final long serialVersionUID = -5373675526010343693L;
 
     /**
-     * @param name
-     * @param shortName
+     * @param message
      */
-    public Property( String name, String shortName ) {
-        this( name, shortName, null );
+    public FilterException( String message ) {
+        super(message);
     }
 
-    /**
-     * @param name
-     * @param shortName
-     * @param uom
-     */
-    public Property( String name, String shortName, String uom ) {
-        this.name = name;
-        this.shortName = shortName;
-        this.uom = uom;
-    }
-
-    /**
-     * @return the short name
-     */
-    public String getShortName() {
-        return shortName;
-    }
-
-    /**
-     * @return the name of the property
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @return the name of the Unit of Measure
-     */
-    public String getUOM() {
-        return uom;
-    }
-
-    /**
-     * @return true if the property has a UOM
-     */
-    public boolean hasUOM() {
-        return uom != null;
-    }
 }

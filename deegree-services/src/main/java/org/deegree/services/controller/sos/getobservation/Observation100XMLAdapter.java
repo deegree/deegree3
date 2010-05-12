@@ -45,11 +45,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.sos.model.Measurement;
-import org.deegree.services.sos.model.MeasurementCollection;
-import org.deegree.services.sos.model.Observation;
-import org.deegree.services.sos.model.Property;
-import org.deegree.services.sos.model.Result;
+import org.deegree.protocol.sos.model.Measurement;
+import org.deegree.protocol.sos.model.MeasurementCollection;
+import org.deegree.protocol.sos.model.Observation;
+import org.deegree.protocol.sos.model.Property;
+import org.deegree.protocol.sos.model.Result;
 
 /**
  * This is an xml adapter for the O&M 1.0.0 spec.
@@ -177,7 +177,7 @@ public class Observation100XMLAdapter extends XMLAdapter {
     private static void exportProcedure( XMLStreamWriter writer, Measurement m )
                             throws XMLStreamException {
         writer.writeStartElement( OM_NS, "procedure" );
-        writer.writeAttribute( XLN_NS, "href", m.getProcedure().getName() );
+        writer.writeAttribute( XLN_NS, "href", m.getProcedure().getProcedureHref() );
         writer.writeEndElement();
     }
 
@@ -218,7 +218,7 @@ public class Observation100XMLAdapter extends XMLAdapter {
     private static void exportProperty( XMLStreamWriter writer, Property property )
                             throws XMLStreamException {
         writer.writeStartElement( OM_NS, "observedProperty" );
-        writer.writeAttribute( XLN_NS, "href", property.getName() );
+        writer.writeAttribute( XLN_NS, "href", property.getHref() );
         writer.writeEndElement();
     }
 
@@ -236,7 +236,7 @@ public class Observation100XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
             for ( Property property : properties ) {
                 writer.writeStartElement( SWE_NS, "component" );
-                writer.writeAttribute( XLN_NS, "href", property.getName() );
+                writer.writeAttribute( XLN_NS, "href", property.getHref() );
                 writer.writeEndElement();
             }
             writer.writeEndElement();
@@ -248,7 +248,7 @@ public class Observation100XMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( OM_NS, "result" );
         writer.writeAttribute( XSINS, "type", GML_PREFIX + ":MeasureType" );
-        writer.writeAttribute( "uom", r.getProperty().getUOM() );
+        writer.writeAttribute( "uom", r.getProperty().getOptionValue( "uom" ) );
         writer.writeCharacters( r.getResultAsString() );
         writer.writeEndElement();
     }

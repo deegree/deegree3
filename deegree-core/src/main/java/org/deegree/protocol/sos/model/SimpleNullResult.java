@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,30 +32,39 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.services.sos.storage;
+ ----------------------------------------------------------------------------*/
+package org.deegree.protocol.sos.model;
 
 /**
- * This is an exception class for internal filter exceptions.
- *
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
-public class FilterException extends Exception {
+public class SimpleNullResult implements Result {
+
+    private final Property property;
 
     /**
-     *
+     * @param property
      */
-    private static final long serialVersionUID = -5373675526010343693L;
-
-    /**
-     * @param message
-     */
-    public FilterException( String message ) {
-        super(message);
+    public SimpleNullResult( Property property ) {
+        this.property = property;
     }
 
+    public String getResultAsString() {
+        return "";
+    }
+
+    public Property getProperty() {
+        return property;
+    }
+
+    @Override
+    public String toString() {
+        return getResultAsString() + property.getOptionValue( "uom" ) + " (" + property.getColumnName() + ")";
+    }
 }

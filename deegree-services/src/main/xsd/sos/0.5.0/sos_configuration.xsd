@@ -14,8 +14,8 @@
   <element name="deegreeSOS">
     <complexType>
       <sequence>
-        <element ref="sos:PublishedInformation" />
         <element ref="sos:ServiceConfiguration" />
+        <element ref="sos:PublishedInformation" />
       </sequence>
       <attribute name="configVersion" use="required" fixed="0.5.0" />
     </complexType>
