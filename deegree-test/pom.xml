@@ -19,7 +19,7 @@
     <module>deegree-wms-cite130</module>
     <module>deegree-wms-similarity-tests</module>
     <module>deegree-wcs-cite100</module>
-    <module>deegree-csw-bkg</module>
+    <!-- module>deegree-csw-bkg</module> -->
     <module>deegree-sos-cite100</module>
   </modules>
   <properties>
