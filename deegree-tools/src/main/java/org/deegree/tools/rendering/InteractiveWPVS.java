@@ -43,6 +43,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -72,7 +73,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.math.Vectors3f;
@@ -85,6 +85,7 @@ import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
+import org.deegree.rendering.r3d.opengl.JOGLUtils;
 import org.deegree.rendering.r3d.opengl.display.LODAnalyzer;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
@@ -887,16 +888,58 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
                             throws UnsupportedOperationException, IOException, JAXBException, OWSException,
                             ServiceInitException {
         File baseDir = new File( configFile );
-        initJDBCConnections( baseDir );
-        initFeatureStores( baseDir );
-        initBatchedMTStores( baseDir );
-        initCoverages( baseDir );
-        initRenderableStores( baseDir );
+        File wpvsConfig = null;
+        if ( !baseDir.exists() ) {
+            throw new FileNotFoundException( "Given location: " + configFile
+                                             + " does not exist, please supply a valid configuration file / directory." );
+        }
+        if ( baseDir.isFile() ) {
+            // let's assume it is a configuration file, let's test for service as parent.
+            File parent = baseDir.getParentFile();
+            if ( parent == null || !parent.exists() ) {
+                throw new FileNotFoundException(
+                                                 "The parent of configuration location: "
+                                                                         + configFile
+                                                                         + " does not exist, no way to load the datasource, please supply a valid configuration directory." );
+            }
+            if ( !"services".equalsIgnoreCase( parent.getName() ) ) {
+                System.out.println( "The parent ( "
+                                    + parent.getName()
+                                    + " of file: "
+                                    + baseDir.getAbsolutePath()
+                                    + " is not a deegree 3 'services' directory, trying to find the datasource directory." );
+            }
+            File p2 = parent.getParentFile();
+            if ( p2 == null || !p2.exists() ) {
+                throw new FileNotFoundException(
+                                                 "The root of your wpvs configuration location: "
+                                                                         + parent.getAbsolutePath()
+                                                                         + "../"
+                                                                         + " does not exist, no way to load the configuration/datasources, please supply a valid configuration directory." );
+            }
+            wpvsConfig = baseDir;
+            baseDir = p2;
 
-        File wpvsConfig = new File( baseDir, "services/wpvs.xml" );
+        }
+        initJDBCConnections( baseDir );
+
+        File dsDir = new File( baseDir, "/datasources/" );
+        if ( !dsDir.exists() ) {
+            throw new FileNotFoundException( "The expected datasource location " + dsDir.getAbsolutePath()
+                                             + ", does not exists, please supply a valid configuration directory." );
+        }
+        initFeatureStores( dsDir );
+        initBatchedMTStores( dsDir );
+        initCoverages( dsDir );
+        initRenderableStores( dsDir );
+
+        if ( wpvsConfig == null ) {
+            wpvsConfig = new File( baseDir, "services/wpvs.xml" );
+        }
 
         if ( !wpvsConfig.exists() ) {
-            throw new IOException( "Could not load file: " + configFile + " are you sure it exists?" );
+            throw new FileNotFoundException( "Could not load file: " + wpvsConfig.getAbsolutePath()
+                                             + " don't know where the wpvs configuration file is located." );
         }
         XMLAdapter controllerConf = new XMLAdapter( wpvsConfig );
         NamespaceContext nsContext = new NamespaceContext();
@@ -919,7 +962,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
     private static void initFeatureStores( File baseDir ) {
 
-        File fsDir = new File( baseDir, "/datasources/feature" );
+        File fsDir = new File( baseDir, "/feature" );
 
         if ( fsDir.exists() ) {
             LOG.info( "--------------------------------------------------------------------------------" );
@@ -928,12 +971,13 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             FeatureStoreManager.init( fsDir );
             LOG.info( "" );
         } else {
-            LOG.debug( "No 'datasources/feature' directory -- skipping initialization of feature stores." );
+            LOG.debug( "No '" + baseDir.getAbsolutePath()
+                       + "/feature' directory -- skipping initialization of feature stores." );
         }
     }
 
     private static void initCoverages( File baseDir ) {
-        File coverageDir = new File( baseDir, "/datasources/coverage" );
+        File coverageDir = new File( baseDir, "/coverage" );
         if ( coverageDir.exists() ) {
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "Setting up coverages." );
@@ -941,12 +985,13 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             CoverageBuilderManager.init( coverageDir );
             LOG.info( "" );
         } else {
-            LOG.debug( "No 'datasources/coverage' directory -- skipping initialization of coverages." );
+            LOG.debug( "No '" + baseDir.getAbsolutePath()
+                       + "/coverage' directory -- skipping initialization of coverages." );
         }
     }
 
     private static void initRenderableStores( File baseDir ) {
-        File renderableDir = new File( baseDir, "/datasources/renderable" );
+        File renderableDir = new File( baseDir, "/renderable" );
         if ( renderableDir.exists() ) {
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "Setting up renderable stores." );
@@ -954,12 +999,13 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             RenderableStoreManager.init( renderableDir );
             LOG.info( "" );
         } else {
-            LOG.debug( "No 'datasources/renderable' directory -- skipping initialization of renderable stores." );
+            LOG.debug( "No '" + baseDir.getAbsolutePath()
+                       + "/renderable' directory -- skipping initialization of renderable stores." );
         }
     }
 
     private static void initBatchedMTStores( File baseDir ) {
-        File batchedMTDir = new File( baseDir, "/datasources/batchedmt" );
+        File batchedMTDir = new File( baseDir, "/batchedmt" );
         if ( batchedMTDir.exists() ) {
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "Setting up BatchedMT stores." );
@@ -967,7 +1013,8 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             BatchedMTStoreManager.init( batchedMTDir );
             LOG.info( "" );
         } else {
-            LOG.debug( "No 'datasources/batchedmt' directory -- skipping initialization of BatchedMT stores." );
+            LOG.debug( "No '" + baseDir.getAbsolutePath()
+                       + "/batchedmt' directory -- skipping initialization of BatchedMT stores." );
         }
 
     }
