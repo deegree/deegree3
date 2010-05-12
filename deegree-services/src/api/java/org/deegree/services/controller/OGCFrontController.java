@@ -100,7 +100,7 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.protocol.sos.storage.ObservationStoreManager;
+import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.record.persistence.RecordStoreManager;
 import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.persistence.RenderableStoreManager;

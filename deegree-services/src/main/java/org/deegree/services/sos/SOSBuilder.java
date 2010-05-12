@@ -48,7 +48,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.protocol.sos.model.Procedure;
+import org.deegree.observation.model.Procedure;
 import org.deegree.services.jaxb.sos.ServiceConfiguration;
 import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering;
 import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering.Procedure.Location;
@@ -138,7 +138,7 @@ public class SOSBuilder {
      * @param conf
      * @return
      */
-    private org.deegree.protocol.sos.model.Offering createOffering( Offering conf ) {
+    private org.deegree.observation.model.Offering createOffering( Offering conf ) {
         String offeringName = conf.getName();
         String observationStoreId = conf.getObservationStoreId();
         String srsName = conf.getSrsName();
@@ -166,7 +166,7 @@ public class SOSBuilder {
             }
         }
 
-        org.deegree.protocol.sos.model.Offering offering = new org.deegree.protocol.sos.model.Offering(
+        org.deegree.observation.model.Offering offering = new org.deegree.observation.model.Offering(
                                                                                                         offeringName,
                                                                                                         observationStoreId,
                                                                                                         srsName,

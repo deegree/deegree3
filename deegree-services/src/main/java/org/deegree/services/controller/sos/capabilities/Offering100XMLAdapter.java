@@ -40,11 +40,11 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.Envelope;
-import org.deegree.protocol.sos.model.Offering;
-import org.deegree.protocol.sos.model.Procedure;
-import org.deegree.protocol.sos.model.Property;
-import org.deegree.protocol.sos.storage.ObservationDatastore;
-import org.deegree.protocol.sos.storage.SimpleObservationDatastore;
+import org.deegree.observation.model.Offering;
+import org.deegree.observation.model.Procedure;
+import org.deegree.observation.model.Property;
+import org.deegree.observation.persistence.ObservationDatastore;
+import org.deegree.observation.persistence.SimpleObservationDatastore;
 import org.deegree.services.controller.sos.getobservation.EventTime100XMLExporter;
 
 /**

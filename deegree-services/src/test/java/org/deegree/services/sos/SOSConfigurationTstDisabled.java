@@ -39,11 +39,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.URL;
 
+import org.deegree.observation.model.Observation;
+import org.deegree.observation.model.Offering;
+import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.protocol.sos.filter.DurationFilter;
 import org.deegree.protocol.sos.filter.FilterCollection;
-import org.deegree.protocol.sos.model.Observation;
-import org.deegree.protocol.sos.model.Offering;
-import org.deegree.protocol.sos.storage.ObservationDatastoreException;
 import org.deegree.protocol.sos.time.TimePeriod;
 import org.junit.Test;
 

@@ -42,9 +42,9 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.protocol.sos.model.Measurement;
-import org.deegree.protocol.sos.model.MeasurementCollection;
-import org.deegree.protocol.sos.model.Property;
+import org.deegree.observation.model.Measurement;
+import org.deegree.observation.model.MeasurementCollection;
+import org.deegree.observation.model.Property;
 
 /**
  * This is an xml adapter for DataArray elements after the SWE 1.0.1 spec.

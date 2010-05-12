@@ -44,9 +44,9 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.protocol.sos.model.Offering;
-import org.deegree.protocol.sos.storage.ObservationDatastoreException;
-import org.deegree.protocol.sos.storage.ObservationStoreManager;
+import org.deegree.observation.model.Offering;
+import org.deegree.observation.persistence.ObservationDatastoreException;
+import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.jaxb.metadata.CodeType;
