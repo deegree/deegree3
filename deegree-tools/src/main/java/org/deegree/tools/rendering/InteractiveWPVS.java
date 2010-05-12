@@ -181,7 +181,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
     private final JFrame lodAnalyzerFrame = new JFrame( "Terrain fragment structure" );
 
-    private final LODAnalyzer lodAnalyzer = new LODAnalyzer();
+    private final LODAnalyzer lodAnalyzer;
 
     private String copyrightID;
 
@@ -228,7 +228,6 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         addGLEventListener( this );
         addKeyListener( this );
         // used to create the shader programs.
-        lodAnalyzerFrame.getContentPane().add( lodAnalyzer, BorderLayout.CENTER );
         lodAnalyzerFrame.setDefaultCloseOperation( javax.swing.WindowConstants.HIDE_ON_CLOSE );
         lodAnalyzerFrame.setSize( 600, 600 );
         lodAnalyzerFrame.setLocationByPlatform( true );
@@ -252,6 +251,14 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             this.availableDatasets.add( title );
             this.currentDatasets.add( title );
         }
+
+        double[][] bbox = demRenderer.getFragmentManager().getMultiresolutionMesh().getBBox();
+        double minX = bbox[0][0];
+        double maxX = bbox[1][0];
+        double minY = bbox[0][1];
+        double maxY = bbox[1][1];
+        lodAnalyzer = new LODAnalyzer( (float) ( maxX - minX ), (float) ( maxY - minY ) );
+        lodAnalyzerFrame.getContentPane().add( lodAnalyzer, BorderLayout.CENTER );
 
         TextureDatasetWrapper tDS = this.perspectiveViewService.getTextureDataSets();
         for ( String tN : tDS.datasetTitles() ) {

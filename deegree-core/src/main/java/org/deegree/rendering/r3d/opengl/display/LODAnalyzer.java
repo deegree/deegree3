@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.opengl.display;
 
 import java.awt.Dimension;
@@ -55,20 +55,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * The <code>LODAnalyzer</code> displays the used macrotriangles in a scene. It determines which macrotriangles are
- * used for the current view and makes a 2D projections in nice color.
- *
+ * The <code>LODAnalyzer</code> displays the used macrotriangles in a scene. It determines which macrotriangles are used
+ * for the current view and makes a 2D projections in nice color.
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author: rbezema $
+ * 
  * @version $Revision: $, $Date: $
- *
  */
 public class LODAnalyzer extends GLCanvas implements GLEventListener {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -2679880887972155332L;
 
     private static final Logger LOG = LoggerFactory.getLogger( LODAnalyzer.class );
@@ -79,14 +75,22 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
 
     private ViewFrustum frustum;
 
+    private final float maxX;
+
+    private final float maxY;
+
     /**
      * Adds a gl listener to this {@link LODAnalyzer}
-     *
+     * 
+     * @param maxX
+     * @param maxY
      * @throws GLException
      */
-    public LODAnalyzer() throws GLException {
+    public LODAnalyzer( float maxX, float maxY ) throws GLException {
         setMinimumSize( new Dimension( 0, 0 ) );
         addGLEventListener( this );
+        this.maxX = maxX;
+        this.maxY = maxY;
     }
 
     @Override
@@ -102,7 +106,7 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
 
     /**
      * Update the {@link RenderMeshFragment}s and the view frustum, no calculations are done.
-     *
+     * 
      * @param currentLOD
      * @param frustum
      */
@@ -126,9 +130,9 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
         for ( RenderMeshFragment fragment : currentLOD ) {
             setColor( gl, fragment );
             MacroTriangle mt = new MacroTriangle( fragment );
-            gl.glVertex2f( mt.p0.x / 32768.0f, mt.p0.y / 32768.0f );
-            gl.glVertex2f( mt.p1.x / 32768.0f, mt.p1.y / 32768.0f );
-            gl.glVertex2f( mt.p2.x / 32768.0f, mt.p2.y / 32768.0f );
+            gl.glVertex2f( mt.p0.x / maxX, mt.p0.y / maxY );
+            gl.glVertex2f( mt.p1.x / maxX, mt.p1.y / maxY );
+            gl.glVertex2f( mt.p2.x / maxX, mt.p2.y / maxY );
         }
         gl.glEnd();
 
@@ -137,28 +141,28 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
         gl.glColor3f( 0.0f, 0.0f, 0.0f );
         for ( RenderMeshFragment fragment : currentLOD ) {
             MacroTriangle mt = new MacroTriangle( fragment );
-            gl.glVertex2f( mt.p0.x / 32768.0f, mt.p0.y / 32768.0f );
-            gl.glVertex2f( mt.p1.x / 32768.0f, mt.p1.y / 32768.0f );
+            gl.glVertex2f( mt.p0.x / maxX, mt.p0.y / maxY );
+            gl.glVertex2f( mt.p1.x / maxX, mt.p1.y / maxY );
 
-            gl.glVertex2f( mt.p1.x / 32768.0f, mt.p1.y / 32768.0f );
-            gl.glVertex2f( mt.p2.x / 32768.0f, mt.p2.y / 32768.0f );
+            gl.glVertex2f( mt.p1.x / maxX, mt.p1.y / maxY );
+            gl.glVertex2f( mt.p2.x / maxX, mt.p2.y / maxY );
 
-            gl.glVertex2f( mt.p2.x / 32768.0f, mt.p2.y / 32768.0f );
-            gl.glVertex2f( mt.p0.x / 32768.0f, mt.p0.y / 32768.0f );
+            gl.glVertex2f( mt.p2.x / maxX, mt.p2.y / maxY );
+            gl.glVertex2f( mt.p0.x / maxX, mt.p0.y / maxY );
         }
         gl.glEnd();
 
         // draw view frustum boundaries
         Point3d eyePos = frustum.getEyePos();
-        Point2f eyePos2D = new Point2f( (float) eyePos.x / 32768.0f, (float) eyePos.y / 32768.0f );
+        Point2f eyePos2D = new Point2f( (float) eyePos.x / maxX, (float) eyePos.y / maxY );
 
         gl.glColor3f( 1.0f, 0.0f, 0.0f );
         gl.glBegin( GL.GL_LINES );
         gl.glVertex2f( eyePos2D.x, eyePos2D.y );
-        gl.glVertex2f( (float) frustum.ftr.x / 32768.0f, (float) frustum.ftr.y / 32768.0f );
+        gl.glVertex2f( (float) frustum.ftr.x / maxX, (float) frustum.ftr.y / maxY );
 
         gl.glVertex2f( eyePos2D.x, eyePos2D.y );
-        gl.glVertex2f( (float) frustum.ftl.x / 32768.0f, (float) frustum.ftl.y / 32768.0f );
+        gl.glVertex2f( (float) frustum.ftl.x / maxX, (float) frustum.ftl.y / maxY );
         gl.glEnd();
     }
 

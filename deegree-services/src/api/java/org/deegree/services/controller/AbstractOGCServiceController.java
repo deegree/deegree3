@@ -113,9 +113,6 @@ public abstract class AbstractOGCServiceController {
     /** Common configuration (metadata) of parent {@link OGCFrontController}. */
     protected DeegreeServicesMetadata mainControllerConf;
 
-    /** JAXB classpath containing the configuration files in commons and other useful configuration locations. */
-    protected final static String JAXB_CONFIG_CLASSPATH = "org.deegree.commons.configuration:";
-
     private final static SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
 
     /**
@@ -752,8 +749,8 @@ public abstract class AbstractOGCServiceController {
      * configuration classpath). If the given schemalocation is not <code>null</code>, the unmarshaller will validate
      * against the schema file loaded from the given location.
      * 
-     * @param additionalClasspath
-     *            which will be added to the {@link AbstractOGCServiceController#JAXB_CONFIG_CLASSPATH}.
+     * @param jaxbPackage
+     *            used for instantiating the unmarshaller
      * @param schemaLocation
      *            if not <code>null</code> this method will try to load the schema from location and set the validation
      *            in the unmarshaller. This location could be:
@@ -762,9 +759,9 @@ public abstract class AbstractOGCServiceController {
      * @throws JAXBException
      *             if the {@link Unmarshaller} could not be created.
      */
-    public Unmarshaller getUnmarshaller( String additionalClasspath, String schemaLocation )
+    public Unmarshaller getUnmarshaller( String jaxbPackage, String schemaLocation )
                             throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance( JAXB_CONFIG_CLASSPATH + additionalClasspath );
+        JAXBContext jc = JAXBContext.newInstance( jaxbPackage );
         Unmarshaller u = jc.createUnmarshaller();
 
         if ( schemaLocation != null ) {

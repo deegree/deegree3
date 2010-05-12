@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -151,6 +150,7 @@ public class WPVSController extends AbstractOGCServiceController {
             ServiceConfiguration sc = parseServerConfiguration( nsContext, controllerConf );
             service = new PerspectiveViewService( controllerConf, sc );
         } catch ( JAXBException e ) {
+            e.printStackTrace();
             throw new ControllerInitException( e.getMessage(), e );
         } catch ( ServiceInitException e ) {
             throw new ControllerInitException( e.getMessage(), e );
@@ -160,7 +160,7 @@ public class WPVSController extends AbstractOGCServiceController {
 
     private PublishedInformation parsePublishedInformation( NamespaceContext nsContext, XMLAdapter controllerConf )
                             throws JAXBException {
-        Unmarshaller u = getUnmarshaller( "org.deegree.services.controller.wpvs.configuration", PUBLISHED_SCHEMA_FILE );
+        Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.wpvs", PUBLISHED_SCHEMA_FILE );
 
         XPath xp = new XPath( "wpvs:PublishedInformation", nsContext );
         OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
@@ -195,7 +195,7 @@ public class WPVSController extends AbstractOGCServiceController {
     private ServiceConfiguration parseServerConfiguration( NamespaceContext nsContext, XMLAdapter controllerConf )
                             throws JAXBException {
 
-        Unmarshaller u = getUnmarshaller( "org.deegree.services.wpvs.configuration", CONFIG_SCHEMA_FILE );
+        Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.wpvs", CONFIG_SCHEMA_FILE );
 
         XPath xp = new XPath( "wpvs:ServiceConfiguration", nsContext );
         OMElement elem = controllerConf.getRequiredElement( controllerConf.getRootElement(), xp );
