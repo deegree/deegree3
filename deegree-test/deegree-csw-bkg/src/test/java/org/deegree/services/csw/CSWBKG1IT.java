@@ -43,6 +43,7 @@ public class CSWBKG1IT {
 
         URL url = CSWBKG1IT.class.getResource( "/bkg1/ctl" );
         String file = new File( url.toURI() ).getAbsolutePath();
+        System.out.println("file: "+ file);
 
        
         CiteWrapper wrapper = new CiteWrapper( file );
