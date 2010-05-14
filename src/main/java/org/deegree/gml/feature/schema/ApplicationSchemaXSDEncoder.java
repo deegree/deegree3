@@ -338,6 +338,9 @@ public class ApplicationSchemaXSDEncoder {
 
             boolean contentTypeBegin = false;
             short contentType = complex.getContentType();
+
+            short derivation = complex.getDerivationMethod();
+
             switch ( contentType ) {
             case CONTENTTYPE_SIMPLE:
                 writer.writeStartElement( "xs", "simpleContent", XSNS );
@@ -350,13 +353,14 @@ public class ApplicationSchemaXSDEncoder {
             case CONTENTTYPE_EMPTY:
                 break;
             case CONTENTTYPE_ELEMENT:
-                writer.writeStartElement( "xs", "complexContent", XSNS );
-                contentTypeBegin = true;
+                if ( derivation != DERIVATION_NONE ) {
+                    writer.writeStartElement( "xs", "complexContent", XSNS );
+                    contentTypeBegin = true;
+                }
                 break;
             }
 
             boolean derivationBegin = false;
-            short derivation = complex.getDerivationMethod();
             XSTypeDefinition base = complex.getBaseType();
             String prefix = determinePrefix( base.getNamespace(), targetNs, targetPrefix );
             switch ( derivation ) {
@@ -366,10 +370,11 @@ public class ApplicationSchemaXSDEncoder {
                 derivationBegin = true;
                 break;
             case DERIVATION_LIST:
-                // TODO?
+                LOG.warn( "Derviation by list is not implemented/tested. Occured for complex element "
+                          + complex.getName() );
                 break;
             case DERIVATION_NONE:
-                // TODO?
+                // nothing to do, handled above
                 break;
             case DERIVATION_RESTRICTION:
                 writer.writeStartElement( "xs", "restriction", XSNS );
@@ -377,10 +382,12 @@ public class ApplicationSchemaXSDEncoder {
                 derivationBegin = true;
                 break;
             case DERIVATION_SUBSTITUTION:
-                // TODO?
+                LOG.warn( "Derviation by subtitution is not implemented/tested. Occured for complex element "
+                          + complex.getName() );
                 break;
             case DERIVATION_UNION:
-                // TODO?
+                LOG.warn( "Derviation by union is not implemented/tested. Occured for complex element "
+                          + complex.getName() );
                 break;
             }
 
@@ -423,6 +430,7 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeAttribute( "name", simple.getName() );
 
             // TODO how can one find the derivation type? getFinal() is wrong!
+            LOG.warn( "Exporing a simple type is done always by restriction. Other derivations may be possible?!" );
             writer.writeStartElement( "xs", "restriction", XSNS );
 
             String simpleNs = simple.getBaseType().getNamespace();
@@ -477,6 +485,7 @@ public class ApplicationSchemaXSDEncoder {
                            targetNs );
         } else if ( term instanceof XSWildcard ) {
             XSWildcard wildcard = (XSWildcard) term;
+            LOG.warn( "Exporting of wildcards not handled." );
             // TODO
         }
 
