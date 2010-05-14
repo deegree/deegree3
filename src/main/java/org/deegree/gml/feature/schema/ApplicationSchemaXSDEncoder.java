@@ -143,7 +143,11 @@ public class ApplicationSchemaXSDEncoder {
     // stores all custom simple types that occured as types of simple properties
     private Map<QName, XSSimpleTypeDefinition> customSimpleTypes = new LinkedHashMap<QName, XSSimpleTypeDefinition>();
 
-    private List<XSTypeDefinition> separateTypes = new ArrayList<XSTypeDefinition>();
+    private Set<String> customStNames = new HashSet<String>();
+
+    private List<XSTypeDefinition> customExportedTypes = new ArrayList<XSTypeDefinition>();
+
+    private Set<String> exportedFtTypes = new HashSet<String>();
 
     private Set<QName> exportedFts = new HashSet<QName>();
 
@@ -260,6 +264,7 @@ public class ApplicationSchemaXSDEncoder {
 
         writer.setPrefix( XS_PREFIX, XSNS );
         writer.setPrefix( GML_PREFIX, gmlNsURI );
+        writer.setPrefix( targetPrefix, targetNs );
 
         writer.writeStartElement( XSNS, "schema" );
         writer.writeNamespace( XS_PREFIX, XSNS );
@@ -302,15 +307,22 @@ public class ApplicationSchemaXSDEncoder {
             LOG.debug( "Exporting ft " + ft.getName() );
             export( writer, ft );
         }
+        writer.writeComment( "Finished with exporting feature types" );
 
         // export custom simple type declarations
         for ( XSSimpleTypeDefinition xsSimpleType : customSimpleTypes.values() ) {
             export( writer, xsSimpleType );
         }
 
+        // build convenience set in order to check just the names of the previously exported simple types
+        for ( XSSimpleTypeDefinition xsSimpleType : customSimpleTypes.values() ) {
+            customStNames.add( xsSimpleType.getName() );
+        }
+
+        writer.writeComment( "Starting exporting separate type" );
         int index = 0;
-        while ( index < separateTypes.size() ) {
-            XSTypeDefinition xsTypeDef = separateTypes.get( index );
+        while ( index < customExportedTypes.size() ) {
+            XSTypeDefinition xsTypeDef = customExportedTypes.get( index );
             LOG.debug( "Exporting type " + xsTypeDef );
             exportType( writer, xsTypeDef, targetPrefix, targetNs );
             index++;
@@ -340,6 +352,7 @@ public class ApplicationSchemaXSDEncoder {
             short contentType = complex.getContentType();
 
             short derivation = complex.getDerivationMethod();
+            XSTypeDefinition base = complex.getBaseType();
 
             switch ( contentType ) {
             case CONTENTTYPE_SIMPLE:
@@ -353,7 +366,9 @@ public class ApplicationSchemaXSDEncoder {
             case CONTENTTYPE_EMPTY:
                 break;
             case CONTENTTYPE_ELEMENT:
-                if ( derivation != DERIVATION_NONE ) {
+                // TODO check if non-redundant restriction / extension is performed (in that case, complexContent
+                // container element is required)
+                if ( base != null && !base.getName().equals( "anyType" ) ) {
                     writer.writeStartElement( "xs", "complexContent", XSNS );
                     contentTypeBegin = true;
                 }
@@ -361,7 +376,6 @@ public class ApplicationSchemaXSDEncoder {
             }
 
             boolean derivationBegin = false;
-            XSTypeDefinition base = complex.getBaseType();
             String prefix = determinePrefix( base.getNamespace(), targetNs, targetPrefix );
             switch ( derivation ) {
             case DERIVATION_EXTENSION:
@@ -377,9 +391,11 @@ public class ApplicationSchemaXSDEncoder {
                 // nothing to do, handled above
                 break;
             case DERIVATION_RESTRICTION:
-                writer.writeStartElement( "xs", "restriction", XSNS );
-                writer.writeAttribute( "base", prefix + base.getName() );
-                derivationBegin = true;
+                if ( !base.getName().equals( "anyType" ) ) {
+                    writer.writeStartElement( "xs", "restriction", XSNS );
+                    writer.writeAttribute( "base", prefix + base.getName() );
+                    derivationBegin = true;
+                }
                 break;
             case DERIVATION_SUBSTITUTION:
                 LOG.warn( "Derviation by subtitution is not implemented/tested. Occured for complex element "
@@ -494,6 +510,7 @@ public class ApplicationSchemaXSDEncoder {
     private void exportElement( XMLStreamWriter writer, XSElementDeclaration element, int minOccurs, int maxOccurs,
                                 boolean maxUnbounded, String targetPrefix, String targetNs )
                             throws XMLStreamException {
+
         LOG.debug( "Exporting Element " + element.getNamespace() + "/" + element.getName() );
         writer.writeStartElement( "xs", "element", XSNS );
         writer.writeAttribute( "name", element.getName() );
@@ -508,13 +525,18 @@ public class ApplicationSchemaXSDEncoder {
 
         XSTypeDefinition type = element.getTypeDefinition();
         if ( type.getNamespace().equals( targetNs ) ) {
-            if ( !type.getAnonymous() ) {
-                writer.writeAttribute( "type", type.getName() );
-                if ( !separateTypes.contains( type ) ) {
-                    separateTypes.add( type );
-                }
+            if ( exportedFtTypes.contains( type.getName() ) || customStNames.contains( type.getName() ) ) {
+                writer.writeAttribute( "ref", targetPrefix + ":" + type.getName() );
             } else {
-                exportType( writer, type, targetPrefix, targetNs );
+
+                if ( !type.getAnonymous() ) {
+                    writer.writeAttribute( "type", type.getName() );
+                    if ( !customExportedTypes.contains( type ) ) {
+                        customExportedTypes.add( type );
+                    }
+                } else {
+                    exportType( writer, type, targetPrefix, targetNs );
+                }
             }
         } else {
             String prefix = determinePrefix( type.getNamespace(), targetNs, targetPrefix );
@@ -628,6 +650,8 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeEndElement();
         }
 
+        exportedFtTypes.add( ft.getName().getLocalPart() + "Type" );
+
         exportedFts.add( ft.getName() );
     }
 
@@ -692,19 +716,29 @@ public class ApplicationSchemaXSDEncoder {
                 writer.writeAttribute( "type", "gml:MeasureType" );
             }
         } else if ( pt instanceof CustomPropertyType ) {
-            XSTypeDefinition xsTypeDef = ( (CustomPropertyType) pt ).getXSDValueType();
+            XSComplexTypeDefinition xsTypeDef = ( (CustomPropertyType) pt ).getXSDValueType();
+            String targetPrefix = pt.getName().getPrefix();
+            String targetNs = pt.getName().getNamespaceURI();
             if ( xsTypeDef == null ) {
                 LOG.warn( "Type definition null inside " + pt.getName() + " property type." );
             } else {
 
-                if ( !xsTypeDef.getAnonymous() ) {
-                    if ( !separateTypes.contains( xsTypeDef ) ) {
-                        separateTypes.add( xsTypeDef );
-                    }
-                    writer.writeAttribute( "type", xsTypeDef.getName() );
+                if ( exportedFtTypes.contains( xsTypeDef.getName() ) ) {
+                    writer.writeAttribute( "ref", targetPrefix + ":" + xsTypeDef.getName() );
                 } else {
-                    LOG.debug( "Exporting anonymous Type " + xsTypeDef );
-                    exportType( writer, xsTypeDef, pt.getName().getPrefix(), pt.getName().getNamespaceURI() );
+
+                    if ( !xsTypeDef.getAnonymous() ) {
+                        if ( exportedFtTypes.contains( xsTypeDef.getName() ) ) {
+                            writer.writeAttribute( "ref", xsTypeDef.getName() );
+                        }
+                        if ( !customExportedTypes.contains( xsTypeDef ) ) {
+                            customExportedTypes.add( xsTypeDef );
+                        }
+                        writer.writeAttribute( "type", xsTypeDef.getName() );
+                    } else {
+                        LOG.debug( "Exporting anonymous Type " + xsTypeDef );
+                        exportType( writer, xsTypeDef, targetPrefix, targetNs );
+                    }
                 }
             }
         }
