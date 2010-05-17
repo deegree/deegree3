@@ -199,6 +199,15 @@ public class TextureTileManager {
         return Double.NaN;
     }
 
+    /**
+     * Create a texture request from the given texture tile providers.
+     * 
+     * @param glRenderContext
+     * @param fragmentBBoxWorldCoordinates
+     * @param requiredUnitsPerPixel
+     * @param fragment
+     * @return a Texture request
+     */
     public TextureRequest createTextureRequest( RenderContext glRenderContext, double[][] fragmentBBoxWorldCoordinates,
                                                 double requiredUnitsPerPixel, RenderMeshFragment fragment ) {
         double unitsPerPixel = requiredUnitsPerPixel;

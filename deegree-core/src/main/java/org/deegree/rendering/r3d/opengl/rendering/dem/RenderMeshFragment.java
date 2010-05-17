@@ -74,6 +74,7 @@ import org.slf4j.Logger;
  * @version $Revision$
  */
 public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
+
     private static final Logger LOG = getLogger( RenderMeshFragment.class );
 
     private final MeshFragment fragment;
@@ -275,41 +276,41 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     private void enableAndRenderTextures( GL gl, List<FragmentTexture> textures, ShaderProgram shaderProgram ) {
         // render with or without texture
         if ( textures != null && textures.size() > 0 && textures.get( 0 ) != null ) {
-            int glVCB = textures.get( 0 ).getGLVertexCoordBufferId();
-            int tId = textures.get( 0 ).getGLTextureId();
+            FragmentTexture texture = textures.get( 0 );
+            int glVCB = texture.getGLVertexCoordBufferId();
+            int tId = texture.getGLTextureId();
+
             if ( glVCB != -1 && tId != -1 ) {
                 // first texture (uses always-available texture unit 0)
                 gl.glClientActiveTexture( GL.GL_TEXTURE0 );
                 gl.glActiveTexture( GL.GL_TEXTURE0 );
                 gl.glEnable( GL.GL_TEXTURE_2D );
                 gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-
+                gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glVCB );
+                gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
+                gl.glBindTexture( GL.GL_TEXTURE_2D, tId );
                 gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
                 gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
 
-                gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glVCB );
-                gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
-
-                gl.glBindTexture( GL.GL_TEXTURE_2D, tId );
                 // second to last texture
                 for ( int i = 1; i < textures.size(); i++ ) {
-                    if ( textures.get( i ) != null ) {
-                        glVCB = textures.get( i ).getGLVertexCoordBufferId();
-                        tId = textures.get( i ).getGLTextureId();
+                    texture = textures.get( i );
+                    if ( texture != null ) {
+                        glVCB = texture.getGLVertexCoordBufferId();
+                        tId = texture.getGLTextureId();
                         if ( glVCB != -1 && tId != -1 ) {
                             int textureUnitId = JOGLUtils.getTextureUnitConst( i );
                             gl.glClientActiveTexture( textureUnitId );
                             gl.glActiveTexture( textureUnitId );
                             gl.glEnable( GL.GL_TEXTURE_2D );
                             gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-
-                            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
-                            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
-
                             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glVCB );
                             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
                             gl.glBindTexture( GL.GL_TEXTURE_2D, tId );
+                            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
+                            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
+
                         } else {
                             LOG.warn( "No texture id or no texture coordinates for texture(" + i
                                       + "), ignoring this texture." );
