@@ -237,6 +237,7 @@ public class GenerateQueryableProperties {
                                                  parsedElement.getQueryableProperties() );
         }
         // TODO spatial
+        LOG.info( "Boundingbox = null?? " + parsedElement.getQueryableProperties().getBoundingBox() );
         if ( parsedElement.getQueryableProperties().getBoundingBox() != null ) {
             generateISOQP_BoundingBoxStatement( isUpdate, connection, operatesOnId,
                                                 parsedElement.getQueryableProperties() );
@@ -1191,6 +1192,10 @@ public class GenerateQueryableProperties {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_boundingbox.name();
         StringWriter sqlStatement = new StringWriter( 500 );
         PreparedStatement stm = null;
+        double east = qp.getBoundingBox().getEastBoundLongitude();
+        double north = qp.getBoundingBox().getNorthBoundLatitude();
+        double west = qp.getBoundingBox().getWestBoundLongitude();
+        double south = qp.getBoundingBox().getSouthBoundLatitude();
 
         int localId = 0;
         try {
@@ -1198,23 +1203,21 @@ public class GenerateQueryableProperties {
             if ( isUpdate == false ) {
                 localId = getLastDatasetId( connection, databaseTable );
                 localId++;
-                sqlStatement.append( "INSERT INTO " + databaseTable + " ("
-                                     + PostGISMappingsISODC.CommonColumnNames.id.name() + ", "
-                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", bbox) VALUES ("
-                                     + localId + "," + operatesOnId + ",SetSRID('BOX3D(? ?,? ?)'::box3d,-1));" );
+                sqlStatement.append( "INSERT INTO " ).append( databaseTable ).append( '(' );
+                sqlStatement.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( ',' );
+                sqlStatement.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
+                sqlStatement.append( ", bbox) VALUES (" + localId ).append( "," + operatesOnId );
+                sqlStatement.append( ",SetSRID('BOX3D(" + east ).append( " " + north ).append( "," + west );
+                sqlStatement.append( " " + south ).append( ")'::box3d,-1));" );
             } else {
-                sqlStatement.append( "UPDATE " + databaseTable + " SET bbox = "
-                                     + "SetSRID('BOX3D(? ?,? ?)'::box3d,-1) WHERE "
-                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = " + operatesOnId
-                                     + ";" );
+                sqlStatement.append( "UPDATE " ).append( databaseTable ).append( " SET bbox = SetSRID('BOX3D(" + east );
+                sqlStatement.append( " " + north ).append( "," + west ).append( " " + south );
+                sqlStatement.append( ")'::box3d,-1) WHERE " );
+                sqlStatement.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
+                sqlStatement.append( " = " + operatesOnId + ";" );
             }
             stm = connection.prepareStatement( sqlStatement.toString() );
-            LOG.debug( "boundingbox: " + sqlStatement );
-            stm.setObject( 1, qp.getBoundingBox().getEastBoundLongitude() );
-            stm.setObject( 2, qp.getBoundingBox().getNorthBoundLatitude() );
-            stm.setObject( 3, qp.getBoundingBox().getWestBoundLongitude() );
-            stm.setObject( 4, qp.getBoundingBox().getSouthBoundLatitude() );
-
+            LOG.debug( "boundinbox: " + stm );
             stm.executeUpdate();
             stm.close();
 
