@@ -7,9 +7,9 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.List;
 
-import org.deegree.protocol.wps.FillDataInput;
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
+import org.deegree.protocol.wps.tools.FillDataInput;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
