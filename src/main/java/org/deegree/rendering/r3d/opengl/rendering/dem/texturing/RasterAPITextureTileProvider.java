@@ -38,14 +38,14 @@ package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
 import java.nio.ByteBuffer;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.cache.ByteBufferPool;
-import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
@@ -96,8 +96,17 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
     }
 
     private TextureTile getTextureTile( double minX, double minY, double maxX, double maxY ) {
+        if ( raster.getRasterDataInfo().getDataType() != DataType.BYTE ) {
+            LOG.warn( "Raster type is not byte, textures can currently only be bytes." );
+            return null;
+        }
 
         Envelope subsetEnv = fac.createEnvelope( minX, minY, maxX, maxY, null );
+
+        double nMinX = minX;
+        double nMaxX = maxX;
+        double nMinY = minY;
+        double nMaxY = maxY;
 
         // TODO when does this happen?
         // RasterRect r = raster.getRasterReference().convertEnvelopeToRasterCRS( subsetEnv );
@@ -127,78 +136,40 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
                        + simpleRaster.getEnvelope() );
         }
         PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) simpleRaster.getRasterData();
-        ByteBuffer pixelBuffer = null;
-        boolean ttHasAlpha = this.hasAlpha;
-        if ( rasterData.isWithinDataArea() ) {
-            pixelBuffer = rasterData.getByteBuffer();
-        } else {
-            if ( rasterData.getDataType() != DataType.BYTE ) {
-                LOG.warn( "Raster type is not byte, textures can currently only be bytes." );
-            } else {
-                if ( !rasterData.isOutside() ) {
-                    ttHasAlpha = true;
-                    DataView rect = rasterData.getView();
-                    LOG.debug( "Raster api texture rect: " + rect );
-                    int bands = rasterData.getBands() + ( hasAlpha ? 0 : 1 );
-                    pixelBuffer = ByteBufferPool.allocate( rect.width * rect.height * rasterData.getDataInfo().dataSize
-                                                           * bands, false, false );
-
-                    LOG.debug( "Intersects the raster, get the pixels one by one." );
-                    final byte[] sample = new byte[rasterData.getBands()];
-                    final byte[] noData = rasterData.getNullPixel( null );
-                    final byte[] nNoData = new byte[bands];
-                    if ( noData.length == 3 ) {
-                        nNoData[0] = noData[0];
-                        nNoData[1] = noData[0];
-                        nNoData[2] = noData[0];
-                        nNoData[3] = 0;
-                    }
-                    for ( int y = 0; y < rect.height; ++y ) {
-                        for ( int x = 0; x < rect.width; ++x ) {
-                            if ( rasterData.calculatePos( x, y ) == -1 ) {
-                                pixelBuffer.put( nNoData );
-                            } else {
-                                rasterData.getPixel( x, y, sample );
-                                pixelBuffer.put( sample );
-                                // set the alpha visible
-                                pixelBuffer.put( (byte) -1 );
-                            }
-                        }
-
-                    }
-                } else {
-                    LOG.debug( "Requested texture is outside the raster data." );
-                }
-
-            }
-        }
-
-        if ( pixelBuffer == null ) {
-            // System.out.println( "No pixelbuffer" );
+        if ( rasterData.isOutside() ) {
             return null;
         }
-        // System.out.println( "returning texture tile." );
-
-        // DataView rect = rasterData.getView();
-        // if ( rect.width % 2 != 0 ) {
-        // rect.width++;
-        // }
-        // if ( rect.height % 2 != 0 ) {
-        // rect.height++;
-        // }
-
-        // ByteBufferRasterData data = RasterDataFactory.createRasterData( rect.width, rect.height,
+        boolean ttHasAlpha = this.hasAlpha;
+        Pair<ByteBuffer, RasterRect> data = rasterData.getDataRect();
+        int texWidth = data.second.width;
+        int texHeight = data.second.height;
+        ByteBuffer pixelBuffer = data.first;
+        if ( !rasterData.isWithinDataArea() ) {
+            // pixelBuffer = data.first;
+            if ( !rasterData.isOutside() ) {
+                // Pair<ByteBuffer, RasterRect> data = rasterData.getDataRect();
+                Envelope envelope = raster.getRasterReference().getEnvelope( data.second, subset.getCoordinateSystem() );
+                double dataMinX = envelope.getMin().get0();
+                double dataMinY = envelope.getMin().get1();
+                double dataMaxX = envelope.getMax().get0();
+                double dataMaxY = envelope.getMax().get1();
+                return new TextureTile( nMinX, nMinY, nMaxX, nMaxY, dataMinX, dataMinY, dataMaxX, dataMaxY, texWidth,
+                                        texHeight, pixelBuffer, ttHasAlpha, true );
+            }
+        }
+        return new TextureTile( nMinX, nMinY, nMaxX, nMaxY, texWidth, texHeight, pixelBuffer, ttHasAlpha, true );
+        // RasterRect rect = data.second;
+        // System.out.println( rect );
+        // ByteBufferRasterData bbData = RasterDataFactory.createRasterData( rect.width, rect.height,
         // raster.getRasterDataInfo().bandInfo,
-        // rasterData.getDataType(), InterleaveType.PIXEL,
-        // false );
-        // data.setByteBuffer( pixelBuffer, new DataView( new RasterRect( 0, 0, rect.width, rect.height ),
+        // rasterData.getDataType(),
+        // InterleaveType.PIXEL, false );
+        // bbData.setByteBuffer( pixelBuffer, new DataView( new RasterRect( 0, 0, rect.width, rect.height ),
         // raster.getRasterDataInfo() ) );
         //
-        // System.out.println( "hier3" );
         // Envelope env = raster.getRasterReference().getEnvelope( rect, null );
-        // SimpleRaster sr = new SimpleRaster( data, env, raster.getRasterReference() );
+        // SimpleRaster sr = new SimpleRaster( bbData, env, raster.getRasterReference() );
         // try {
-        // System.out.println( "hiere" );
         // RasterFactory.saveRasterToFile( sr, File.createTempFile( "result", ".png" ) );
         // } catch ( IOException e ) {
         // if ( LOG.isDebugEnabled() ) {
@@ -207,10 +178,6 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
         // LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
         // }
         // }
-        // System.out.println( "columns: " + subset.getColumns() );
-        // System.out.println( "rows: " + subset.getRows() );
-        return new TextureTile( minX, minY, maxX, maxY, subset.getColumns(), subset.getRows(), pixelBuffer, ttHasAlpha,
-                                true );
 
     }
 
@@ -235,7 +202,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
     }
 
     /**
-     * @return
+     * @return the raster reference of the texture
      * 
      */
     public RasterGeoReference getRasterReference() {

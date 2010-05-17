@@ -37,6 +37,7 @@ package org.deegree.coverage.raster.data.nio;
 
 import java.nio.ByteBuffer;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
@@ -295,5 +296,12 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
      */
     public boolean isOutside() {
         return dataAccess.isOutside();
+    }
+
+    /**
+     * @return the loaded buffer and the rectangle for which the buffer has data.
+     */
+    public Pair<ByteBuffer, RasterRect> getDataRect() {
+        return new Pair<ByteBuffer, RasterRect>( getByteBuffer(), dataAccess.getDataRectangle() );
     }
 }

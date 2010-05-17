@@ -119,26 +119,16 @@ public class FragmentTexture {
         double minX = -translationVector[0];
         double minY = -translationVector[1];
 
-        // float[][] bbox = fragment.getBBox();
-        // float patchXMin = bbox[0][0];
-        // float patchYMin = bbox[0][1];
-        // float patchXMax = bbox[1][0];
-        // float patchYMax = bbox[1][1];
-
-        double tileXMin = texture.getMinX() - minX;
-        double tileYMin = texture.getMinY() - minY;
-        double tileXMax = texture.getMaxX() - minX;
-        double tileYMax = texture.getMaxY() - minY;
+        double tileXMin = texture.getDataMinX() - minX;
+        double tileYMin = texture.getDataMinY() - minY;
+        double tileXMax = texture.getDataMaxX() - minX;
+        double tileYMax = texture.getDataMaxY() - minY;
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( tileXMin + ", " + tileYMin + ", " + tileXMax + ", " + tileYMax );
         }
-        // if ( tileXMin > patchXMin || tileYMin > patchYMin || tileXMax < patchXMax || tileYMax < patchYMax ) {
-        // String msg = "Internal error. Returned texture tile is not suitable for the MeshFragment.";
-        // throw new IllegalArgumentException( msg );
-        // }
 
-        double tileWidth = texture.getMaxX() - texture.getMinX();
-        double tileHeight = texture.getMaxY() - texture.getMinY();
+        double tileWidth = texture.getDataMaxX() - texture.getDataMinX();
+        double tileHeight = texture.getDataMaxY() - texture.getDataMinY();
 
         // build texture coordinates buffer
         FloatBuffer vertexBuffer = fragment.getData().getVertices().asReadOnlyBuffer();
@@ -152,10 +142,14 @@ public class FragmentTexture {
             float y = vertexBuffer.get();
             // skip z value (not relevant for texture coordinate generation)
             vertexBuffer.get();
-
-            float texX = (float) ( ( x - tileXMin ) / tileWidth );
-            float texY = (float) ( 1 - ( y - tileYMin ) / tileHeight );
-
+            float texX = -1;
+            float texY = -1;
+            if ( x >= tileXMin && x <= tileXMax ) {
+                texX = (float) ( ( x - tileXMin ) / tileWidth );
+            }
+            if ( y >= tileYMin && y <= tileYMax ) {
+                texY = (float) ( 1 - ( y - tileYMin ) / tileHeight );
+            }
             texCoordsBuffer.put( texX );
             texCoordsBuffer.put( texY );
         }

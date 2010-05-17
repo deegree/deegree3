@@ -76,7 +76,7 @@ public class TextureTile {
 
     private int[] textureID;
 
-    private double minX, minY, maxX, maxY;
+    private final double minX, minY, maxX, maxY, dataMinX, dataMinY, dataMaxX, dataMaxY;
 
     private double metersPerPixel;
 
@@ -117,28 +117,54 @@ public class TextureTile {
      */
     public TextureTile( double minX, double minY, double maxX, double maxY, int textureWidth, int textureHeight,
                         ByteBuffer imageData, boolean hasAlpha, boolean enableCaching ) {
+        this( minX, minY, maxX, maxY, minX, minY, maxX, maxY, textureWidth, textureHeight, imageData, hasAlpha,
+              enableCaching );
+
+    }
+
+    /**
+     * @param minX
+     * @param minY
+     * @param maxX
+     * @param maxY
+     * @param dataMinX
+     * @param dataMinY
+     * @param dataMaxX
+     * @param dataMaxY
+     * @param textureWidth
+     * @param textureHeight
+     * @param imageData
+     * @param hasAlpha
+     * @param enableCaching
+     */
+    public TextureTile( double minX, double minY, double maxX, double maxY, double dataMinX, double dataMinY,
+                        double dataMaxX, double dataMaxY, int textureWidth, int textureHeight, ByteBuffer imageData,
+                        boolean hasAlpha, boolean enableCaching ) {
         this.minX = round( minX * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
         this.minY = round( minY * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
         this.maxX = round( maxX * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
         this.maxY = round( maxY * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
+        this.dataMinX = dataMinX;
+        this.dataMinY = dataMinY;
+        this.dataMaxX = dataMaxX;
+        this.dataMaxY = dataMaxY;
 
+        this.tWidth = textureWidth;
+        this.tHeight = textureHeight;
         // rb: what to do with lines?
         if ( maxX != minX ) {
-            metersPerPixel = ( maxX - minX ) / textureWidth;
+            metersPerPixel = ( this.dataMaxX - this.dataMinX ) / tWidth;
         } else {
-            metersPerPixel = ( maxY - minY ) / textureWidth;
+            metersPerPixel = ( this.dataMaxY - this.dataMinY ) / tWidth;
         }
         this.metersPerPixel = round( metersPerPixel * HASH_CODE_FLOOR ) / HASH_CODE_FLOOR;
 
-        this.tWidth = textureWidth;
         double p = tWidth / 4d;
         this.unpack = p - Math.floor( p ) > EPS;
-
-        this.tHeight = textureHeight;
         this.imageData = imageData;
         this.hasAlpha = hasAlpha;
         this.enableCaching = enableCaching;
-        dataSize = textureWidth * tHeight * ( 3 + ( hasAlpha ? 1 : 0 ) );
+        dataSize = tWidth * tHeight * ( 3 + ( hasAlpha ? 1 : 0 ) );
     }
 
     /**
@@ -197,6 +223,34 @@ public class TextureTile {
      */
     public double getMaxY() {
         return maxY;
+    }
+
+    /**
+     * @return the dataMinX
+     */
+    public final double getDataMinX() {
+        return dataMinX;
+    }
+
+    /**
+     * @return the dataMinY
+     */
+    public final double getDataMinY() {
+        return dataMinY;
+    }
+
+    /**
+     * @return the dataMaxX
+     */
+    public final double getDataMaxX() {
+        return dataMaxX;
+    }
+
+    /**
+     * @return the dataMaxY
+     */
+    public final double getDataMaxY() {
+        return dataMaxY;
     }
 
     /**
@@ -433,4 +487,5 @@ public class TextureTile {
         }
         return false;
     }
+
 }
