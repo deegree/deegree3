@@ -515,10 +515,20 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         GL gl = drawable.getGL();
         gl.glClearColor( 0.1f, 0.2f, 0.8f, 0.0f );
 
+        // int[] values = new int[3];
+        // gl.glGetIntegerv( GL.GL_COMPRESSED_TEXTURE_FORMATS, values, 0 );
+        // for ( int v : values ) {
+        // System.out.println( "v: " + v );
+        // }
+        // System.out.println( GL.GL_COMPRESSED_RGB_S3TC_DXT1_EXT );
+        // System.out.println( GL.GL_COMPRESSED_RGBA_S3TC_DXT1_EXT );
+        // System.out.println( GL.GL_COMPRESSED_RGBA_S3TC_DXT3_EXT );
+        // System.out.println( GL.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT );
+
         // gl.glEnable( GL.GL_CULL_FACE );
         // gl.glCullFace( GL.GL_BACK );
         gl.glShadeModel( GL.GL_SMOOTH );
-        gl.glPolygonMode( GL.GL_FRONT_AND_BACK, GL.GL_FILL );
+        gl.glPolygonMode( GL.GL_FRONT, GL.GL_FILL );
         // gl.glPolygonMode( GL.GL_FRONT, GL.GL_LINE );
         // gl.glPolygonMode( GL.GL_BACK, GL.GL_LINE );
         // -0.9099613,-0.10755372,-0.41469324
@@ -1249,6 +1259,18 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         // Point3d eye = new Point3d( 11640.826763764217, 14905.356340264812, 105.60125300402316 );
         // Point3d lookingAt = new Point3d( 11640.421077371024, 14906.042588792956, 104.99752996487413 );
         // Vector3d viewerUp = new Vector3d( -0.49208113043558477, 0.3926383915255517, 0.7769757104112581 );
+
+        // eye = new Point3d( 302.89945876629815, 32478.042855379656, 1107.8712218394253 );
+        // lookingAt = new Point3d( 302.8243522721566, 32477.936366469246, 1106.8797486292488 );
+        // viewerUp = new Vector3d( -0.012344764703222063, 0.9943046401331957, -0.10585787355701011 );
+        //
+        // eye = new Point3d( 255.80779269279031, 32411.27445849423, 486.2189150965908 );
+        // lookingAt = new Point3d( 255.73268619864876, 32411.16796958382, 485.2274418864143 );
+        // viewerUp = new Vector3d( -0.012344764703222063, 0.9943046401331957, -0.10585787355701011 );
+        //
+        // eye = new Point3d( 10620.468935048752, 14985.997719715537, 71.66828874932546 );
+        // lookingAt = new Point3d( 10620.490821833564, 14985.32548833627, 70.92827122157445 );
+        // viewerUp = new Vector3d( 0.14028570064737583, -0.7308065630552575, 0.6680132405792482 );
 
         double fovy = 45.0;
         if ( demRenderer != null && eye.x == 200 && eye.y == 200 && eye.z == 200 ) {
