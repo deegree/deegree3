@@ -35,12 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps;
 
+
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.getcapabilities.WPSCapabilities;
+import org.deegree.protocol.wps.tools.FillDataInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * Command line client (CLI) tool to access org.deegree.protocol.wps.WPSClient
@@ -73,7 +78,13 @@ public class WPSCLI {
         
         capabilities.getOperationURLasString( "DescribeProcess" , true);
         
-        
+        DescribeProcess dP = new DescribeProcess(new URL("http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=DescribeProcess&IDENTIFIER=Intersection"));
+
+        FillDataInput fillDataInput = new FillDataInput(dP);
+        fillDataInput.setDataInputs(dP.getProcessDescriptions().get(0).getDataInputs());
+        fillDataInput.setDataOutput();
+        fillDataInput.runExecute();
+
 
         // iterate over the process offerings of the service capabilities
         for ( int i = 0; i < capabilities.getProcessOfferings().size(); i++ ) {
