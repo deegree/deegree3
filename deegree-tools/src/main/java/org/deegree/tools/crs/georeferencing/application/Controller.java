@@ -44,6 +44,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -74,6 +75,8 @@ public class Controller {
     private MouseModel mouse;
 
     private URL scene2DUrl;
+
+    private BufferedImage imga;
 
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
@@ -121,7 +124,7 @@ public class Controller {
     }
 
     /**
-     * Responsible for setting the
+     * Responsible for setting the sightwindow
      */
     private void setSightWindowAttributes( Envelope holeRequestBoundingbox ) {
         double spanX = holeRequestBoundingbox.getSpan0();
@@ -140,6 +143,11 @@ public class Controller {
         double maxX = x1 - boundingboxCenter.getX() + sight.getX();
         double minY = y0 + boundingboxCenter.getY() - sight.getY();
         double maxY = y1 - boundingboxCenter.getY() + sight.getY();
+
+        // double predictionMinX = x0 + boundingboxCenter.getX() - ( sight.getX() * 2 );
+        // double predictionMaxX = x1 - boundingboxCenter.getX() + ( sight.getX() * 2 );
+        // double predictionMinY = y0 + boundingboxCenter.getY() - ( sight.getY() * 2 );
+        // double predictionMaxY = y1 - boundingboxCenter.getY() + ( sight.getY() * 2 );
 
         model.setSightWindowMinX( minX );
         model.setSightWindowMaxX( maxX );
@@ -186,6 +194,12 @@ public class Controller {
         @Override
         public void mouseReleased( MouseEvent m ) {
 
+            if ( mouse.getMouseChanging() == null ) {
+
+                DemoThread demo = new DemoThread();
+                demo.start();
+            }
+
             mouse.setMouseChanging( new Point2d( ( mouse.getPointMousePressed().getX() - m.getX() ),
                                                  ( mouse.getPointMousePressed().getY() - m.getY() ) ) );
             System.out.println( "MouseChanging: " + mouse.getMouseChanging() );
@@ -194,6 +208,8 @@ public class Controller {
                                                           + mouse.getMouseChanging().getX(),
                                                           mouse.getCumulatedMouseChanging().getY()
                                                                                   + mouse.getMouseChanging().getY() ) );
+
+            System.out.println( "buffaußerhalb: " + imga );
 
             // if the user went into any critical region
             if ( mouse.getCumulatedMouseChanging().getX() >= panel.getImageMargin().getX()
@@ -205,9 +221,10 @@ public class Controller {
                                                                  mouse.getCumulatedMouseChanging().getY() );
 
                 System.out.println( "my new Point2D: " + updateDrawImageAtPosition );
-                model.changeImageBoundingbox( updateDrawImageAtPosition );
+                // model.changeImageBoundingbox( updateDrawImageAtPosition );
                 // panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
-                panel.init( model.generateImage( panel.getBounds() ) );
+                // panel.init( model.generateImage( panel.getBounds() ) );
+                panel.init( imga );
                 mouse.reset();
                 panel.repaint();
 
@@ -220,6 +237,33 @@ public class Controller {
                 panel.repaint();
                 System.out.println( panel.getBeginDrawImageAtPosition() );
             }
+
+        }
+
+    }
+
+    class DemoThread extends Thread {
+
+        public void run() {
+            // for ( int i = 0; i < 3; i++ ) {
+            // try {
+            // sleep( 1000 );
+            // } catch ( InterruptedException e ) {
+            // }
+            // System.out.println( "Demo-Thread " + i );
+            // }
+            // Point2d mouseChange = new Point2d( mouse.getMouseChanging().getX() * 2, mouse.getMouseChanging().getY() *
+            // 2 );
+
+            // model.changeImageBoundingbox( mouseChange );
+
+            // panel.getImageMargin();
+            // if ( mouse.getMouseChanging().getX() > mouse.getMouseChanging().getY() ) {
+            //
+            // }
+
+            model.changeImageBoundingbox( mouse.getMouseChanging() );
+            imga = model.generateImage( panel.getBounds() );
 
         }
 
@@ -263,13 +307,12 @@ public class Controller {
 
         @Override
         public void mouseWheelMoved( MouseWheelEvent m ) {
-            System.out.println( "wheelRotation: " + m.getWheelRotation() );
             if ( m.getWheelRotation() < 0 ) {
                 panel.setResolutionOfImage( panel.getResolutionOfImage() * 0.7 );
             } else {
                 panel.setResolutionOfImage( panel.getResolutionOfImage() * 1.3 );
             }
-            // model.reset();
+            model.reset();
             setSightWindowAttributes( model.getRequestBoundingbox() );
             panel.init( model.generateImage( panel.getBounds() ) );
             panel.repaint();
