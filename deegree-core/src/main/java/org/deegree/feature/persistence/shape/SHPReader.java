@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -202,8 +203,6 @@ public class SHPReader {
 
     private int type;
 
-    private final ByteBuffer in;
-
     private final CRS crs;
 
     private Envelope bbox;
@@ -212,7 +211,12 @@ public class SHPReader {
 
     private boolean recordNumStartsWith0 = false;
 
-    private RandomAccessFile inFile;
+    private RandomAccessFile file;
+
+    private FileChannel channel;
+
+    // buffer is not thread-safe (needs to be duplicated for every thread)
+    private final ByteBuffer sharedBuffer;
 
     /**
      * @param inFile
@@ -223,32 +227,33 @@ public class SHPReader {
      */
     public SHPReader( RandomAccessFile inFile, CRS crs, SpatialIndex<Long> rtree, boolean startsWithZero )
                             throws IOException {
-        LOG.info ("******************************** NEU");
-        this.inFile = inFile;
-        this.in = inFile.getChannel().map( MapMode.READ_ONLY, 0, inFile.length() );
-        this.in.order( ByteOrder.LITTLE_ENDIAN );
+        file = inFile;
+        channel = file.getChannel();
+        sharedBuffer = channel.map( MapMode.READ_ONLY, 0, file.length() );
+        ByteBuffer buffer = sharedBuffer.duplicate();
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
         this.crs = crs;
         this.rtree = rtree;
         this.recordNumStartsWith0 = startsWithZero;
-        if ( in.getInt() != FILETYPE ) {
+        if ( buffer.getInt() != FILETYPE ) {
             LOG.warn( "File type is wrong, unexpected things might happen, continuing anyway..." );
         }
 
-        in.position( 24 );
-        in.order( ByteOrder.BIG_ENDIAN );
-        int length = in.getInt() * 2; // 16 bit words...
-        in.order( ByteOrder.LITTLE_ENDIAN );
+        buffer.position( 24 );
+        buffer.order( ByteOrder.BIG_ENDIAN );
+        int length = buffer.getInt() * 2; // 16 bit words...
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
 
         LOG.trace( "Length {}", length );
 
         // whyever they mix byte orders?
-        int version = in.getInt();
+        int version = buffer.getInt();
 
         if ( version != VERSION ) {
             LOG.warn( "File version is wrong, continuing in the hope of compatibility..." );
         }
 
-        type = in.getInt();
+        type = buffer.getInt();
         if ( LOG.isTraceEnabled() ) {
             switch ( type ) {
             case NULL:
@@ -298,14 +303,14 @@ public class SHPReader {
         }
 
         envelope = new double[8];
-        envelope[0] = in.getDouble();
-        envelope[2] = in.getDouble();
-        envelope[1] = in.getDouble();
-        envelope[3] = in.getDouble();
-        envelope[4] = in.getDouble();
-        envelope[5] = in.getDouble();
-        envelope[6] = in.getDouble();
-        envelope[7] = in.getDouble();
+        envelope[0] = buffer.getDouble();
+        envelope[2] = buffer.getDouble();
+        envelope[1] = buffer.getDouble();
+        envelope[3] = buffer.getDouble();
+        envelope[4] = buffer.getDouble();
+        envelope[5] = buffer.getDouble();
+        envelope[6] = buffer.getDouble();
+        envelope[7] = buffer.getDouble();
 
         // TODO do this for 3D as well
         bbox = fac.createEnvelope( envelope[0], envelope[2], envelope[1], envelope[3], crs );
@@ -315,17 +320,6 @@ public class SHPReader {
                        + envelope[4] + "," + envelope[5] + " " + envelope[6] + "," + envelope[7] );
         }
 
-    }
-
-    private static final void maybeAddPair( int num, Geometry g, boolean withGeometry, boolean exact,
-                                            List<Pair<Integer, Geometry>> list, Envelope bbox ) {
-        if ( exact ) {
-            if ( bbox.intersects( g ) ) {
-                list.add( new Pair<Integer, Geometry>( num, withGeometry ? g : null ) );
-            }
-        } else {
-            list.add( new Pair<Integer, Geometry>( num, g ) );
-        }
     }
 
     /**
@@ -339,6 +333,8 @@ public class SHPReader {
                             throws IOException {
 
         LOG.debug( "Querying shp with bbox {}", bbox );
+        ByteBuffer buffer = channel.map( MapMode.READ_ONLY, 0, file.length() );
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
 
         LinkedList<Pair<Integer, Geometry>> list = new LinkedList<Pair<Integer, Geometry>>();
 
@@ -346,9 +342,9 @@ public class SHPReader {
         Collections.sort( pointers );
         // ByteBuffer readBuffer = in.asReadOnlyBuffer();
         for ( Long ptr : pointers ) {
-            in.position( (int) ( ptr - 8 ) );
+            buffer.position( (int) ( ptr - 8 ) );
 
-            int num = getBEInt();
+            int num = getBEInt( buffer );
             if ( num == 0 && !recordNumStartsWith0 ) {
                 LOG.error( "PLEASE NOTE THIS: Detected that the shape file starts counting record numbers at 0 and not at 1 as specified!" );
                 LOG.error( "PLEASE NOTE THIS: This should not happen any more, and is a bug! Please report this along with the data!" );
@@ -363,75 +359,75 @@ public class SHPReader {
                 continue;
             }
 
-            int length = getBEInt() * 2; // bah, 16 bit length units here as well!
+            int length = getBEInt( buffer ) * 2; // bah, 16 bit length units here as well!
 
-            int type = in.getInt();
+            int type = buffer.getInt();
             switch ( type ) {
             case NULL:
                 continue;
             case POINT: {
-                Point p = readPoint();
+                Point p = readPoint( buffer );
                 maybeAddPair( num, p, withGeometry, exact, list, bbox );
                 break;
             }
             case POLYLINE: {
-                skipBytes( 32 );
-                maybeAddPair( num, readPolyline( false, false, length ), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readPolyline( buffer, false, false, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYGON: {
-                skipBytes( 32 );
-                maybeAddPair( num, readPolygon( false, false, length ), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readPolygon( buffer, false, false, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case MULTIPOINT: {
-                skipBytes( 32 );
-                maybeAddPair( num, readMultipoint(), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readMultipoint( buffer ), withGeometry, exact, list, bbox );
                 break;
             }
             case POINTM: {
-                skipBytes( 32 );
-                maybeAddPair( num, readPointM(), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readPointM( buffer ), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYLINEM: {
-                skipBytes( 32 );
-                maybeAddPair( num, readPolyline( false, true, length ), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readPolyline( buffer, false, true, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYGONM: {
-                skipBytes( 32 );
-                maybeAddPair( num, readPolygon( false, true, length ), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readPolygon( buffer, false, true, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case MULTIPOINTM: {
-                skipBytes( 32 );
-                maybeAddPair( num, readMultipointM( length ), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readMultipointM( buffer, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case POINTZ: {
-                skipBytes( 32 );
-                maybeAddPair( num, readPointZ(), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readPointZ( buffer ), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYLINEZ: {
-                skipBytes( 32 );
-                maybeAddPair( num, readPolyline( true, false, length ), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readPolyline( buffer, true, false, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYGONZ: {
-                skipBytes( 32 );
-                maybeAddPair( num, readPolygon( true, false, length ), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readPolygon( buffer, true, false, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case MULTIPOINTZ: {
-                skipBytes( 32 );
-                maybeAddPair( num, readMultipointZ( length ), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readMultipointZ( buffer, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case MULTIPATCH: {
-                skipBytes( 32 );
-                maybeAddPair( num, readMultipatch( length ), withGeometry, exact, list, bbox );
+                skipBytes( buffer, 32 );
+                maybeAddPair( num, readMultipatch( buffer, length ), withGeometry, exact, list, bbox );
                 break;
             }
             }
@@ -440,15 +436,11 @@ public class SHPReader {
         return list;
     }
 
-    private final int getBEInt() {
-        in.order( BIG_ENDIAN );
-        int result = in.getInt();
-        in.order( LITTLE_ENDIAN );
-        return result;
-    }
-
-    private final void skipBytes( int bytes ) {
-        in.position( in.position() + bytes );
+    /**
+     * @return the overall bbox of the shape file
+     */
+    public Envelope getEnvelope() {
+        return bbox;
     }
 
     /**
@@ -459,62 +451,78 @@ public class SHPReader {
      */
     public Pair<ArrayList<Pair<float[], Long>>, Boolean> readEnvelopes()
                             throws IOException {
+        channel = file.getChannel();
+        ByteBuffer buffer = sharedBuffer.duplicate();
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
         ArrayList<Pair<float[], Long>> list = new ArrayList<Pair<float[], Long>>();
         boolean startsFromZero = false;
 
-        in.position( 100 );
+        buffer.position( 100 );
 
-        while ( in.position() + 1 < in.capacity() ) {
-            int recNum = getBEInt();
+        while ( buffer.position() + 1 < buffer.capacity() ) {
+            int recNum = getBEInt( buffer );
             if ( !startsFromZero ) {
                 startsFromZero = recNum == 0;
             }
-            int length = getBEInt() * 2; // bah, 16 bit length units here as well!
-            long pos = in.position();
-            int type = in.getInt();
+            int length = getBEInt( buffer ) * 2; // bah, 16 bit length units here as well!
+            long pos = buffer.position();
+            int type = buffer.getInt();
             switch ( type ) {
             case NULL:
                 continue;
             case POINT: {
-                double x = in.getDouble();
-                double y = in.getDouble();
+                double x = buffer.getDouble();
+                double y = buffer.getDouble();
                 Pair<float[], Long> p = new Pair<float[], Long>( new float[] { (float) x, (float) y, (float) x,
                                                                               (float) y }, pos );
                 list.add( p );
                 break;
             }
             default: {
-                Pair<float[], Long> p = new Pair<float[], Long>( new float[] { (float) in.getDouble(),
-                                                                              (float) in.getDouble(),
-                                                                              (float) in.getDouble(),
-                                                                              (float) in.getDouble() }, pos );
+                Pair<float[], Long> p = new Pair<float[], Long>( new float[] { (float) buffer.getDouble(),
+                                                                              (float) buffer.getDouble(),
+                                                                              (float) buffer.getDouble(),
+                                                                              (float) buffer.getDouble() }, pos );
                 list.add( p );
                 break;
             }
             }
 
-            in.position( (int) ( pos + length ) );
+            buffer.position( (int) ( pos + length ) );
         }
 
         return new Pair<ArrayList<Pair<float[], Long>>, Boolean>( list, startsFromZero );
     }
 
-    /**
-     * @return the overall bbox of the shape file
-     */
-    public Envelope getEnvelope() {
-        return bbox;
+    private static final void maybeAddPair( int num, Geometry g, boolean withGeometry, boolean exact,
+                                            List<Pair<Integer, Geometry>> list, Envelope bbox ) {
+        if ( exact ) {
+            if ( bbox.intersects( g ) ) {
+                list.add( new Pair<Integer, Geometry>( num, withGeometry ? g : null ) );
+            }
+        } else {
+            list.add( new Pair<Integer, Geometry>( num, g ) );
+        }
     }
 
-    private Point readPoint()
-                            throws IOException {
-        return fac.createPoint( null, in.getDouble(), in.getDouble(), crs );
+    private final int getBEInt( ByteBuffer buffer ) {
+        buffer.order( BIG_ENDIAN );
+        int result = buffer.getInt();
+        buffer.order( LITTLE_ENDIAN );
+        return result;
     }
 
-    private Geometry readPolygon( boolean z, boolean m, int length )
-                            throws IOException {
+    private final void skipBytes( ByteBuffer buffer, int bytes ) {
+        buffer.position( buffer.position() + bytes );
+    }
 
-        Points[] ps = readLines( m, z, length );
+    private Point readPoint( ByteBuffer buffer ) {
+        return fac.createPoint( null, buffer.getDouble(), buffer.getDouble(), crs );
+    }
+
+    private Geometry readPolygon( ByteBuffer buffer, boolean z, boolean m, int length ) {
+
+        Points[] ps = readLines( buffer, m, z, length );
 
         Ring outer = null;
         LinkedList<Ring> inners = new LinkedList<Ring>();
@@ -553,33 +561,30 @@ public class SHPReader {
         return fac.createPolygon( null, crs, outer, inners );
     }
 
-    private MultiPoint readMultipoint()
-                            throws IOException {
-        int num = in.getInt();
+    private MultiPoint readMultipoint( ByteBuffer buffer ) {
+        int num = buffer.getInt();
 
         LinkedList<Point> list = new LinkedList<Point>();
         for ( int i = 0; i < num; ++i ) {
-            list.add( fac.createPoint( null, in.getInt(), in.getInt(), crs ) );
+            list.add( fac.createPoint( null, buffer.getInt(), buffer.getInt(), crs ) );
         }
 
         return fac.createMultiPoint( null, crs, list );
     }
 
-    private Point readPointM()
-                            throws IOException {
-        return fac.createPoint( null, in.getInt(), in.getInt(), in.getInt(), crs );
+    private Point readPointM( ByteBuffer buffer ) {
+        return fac.createPoint( null, buffer.getInt(), buffer.getInt(), buffer.getInt(), crs );
     }
 
-    private MultiPoint readMultipointM( int length )
-                            throws IOException {
-        int num = in.getInt();
+    private MultiPoint readMultipointM( ByteBuffer buffer, int length ) {
+        int num = buffer.getInt();
 
         int len = 40 + num * 16;
         if ( length == len ) {
             LinkedList<Point> list = new LinkedList<Point>();
 
             for ( int i = 0; i < num; ++i ) {
-                list.add( fac.createPoint( null, new double[] { in.getInt(), in.getInt(), 0, 0 }, crs ) );
+                list.add( fac.createPoint( null, new double[] { buffer.getInt(), buffer.getInt(), 0, 0 }, crs ) );
             }
 
             return fac.createMultiPoint( null, crs, list );
@@ -587,29 +592,29 @@ public class SHPReader {
 
         LinkedList<double[]> xy = new LinkedList<double[]>();
         for ( int i = 0; i < num; ++i ) {
-            xy.add( new double[] { in.getInt(), in.getInt(), 0, 0 } );
+            xy.add( new double[] { buffer.getInt(), buffer.getInt(), 0, 0 } );
         }
 
         LinkedList<Point> list = new LinkedList<Point>();
-        skipBytes( 16 ); // skip measure bounds
+        skipBytes( buffer, 16 ); // skip measure bounds
         for ( int i = 0; i < num; ++i ) {
             double[] p = xy.poll();
-            p[3] = in.getInt();
+            p[3] = buffer.getInt();
             list.add( fac.createPoint( null, p, crs ) );
         }
 
         return fac.createMultiPoint( null, crs, list );
     }
 
-    private Point readPointZ()
-                            throws IOException {
-        return fac.createPoint( null, new double[] { in.getInt(), in.getInt(), in.getInt(), in.getInt() }, crs );
+    private Point readPointZ( ByteBuffer buffer ) {
+        return fac.createPoint( null,
+                                new double[] { buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getInt() },
+                                crs );
     }
 
-    private Curve readPolyline( boolean z, boolean m, int length )
-                            throws IOException {
+    private Curve readPolyline( ByteBuffer buffer, boolean z, boolean m, int length ) {
 
-        Points[] ps = readLines( m, z, length );
+        Points[] ps = readLines( buffer, m, z, length );
         Curve curve = null;
         if ( ps.length == 1 ) {
             curve = fac.createLineString( null, crs, ps[0] );
@@ -623,22 +628,21 @@ public class SHPReader {
         return curve;
     }
 
-    private MultiPoint readMultipointZ( int length )
-                            throws IOException {
-        int num = in.getInt();
+    private MultiPoint readMultipointZ( ByteBuffer buffer, int length ) {
+        int num = buffer.getInt();
         int len = 40 + ( 16 * num ) + 16 + 8 * num;
 
         if ( len == length ) {
             LinkedList<double[]> xy = new LinkedList<double[]>();
             for ( int i = 0; i < num; ++i ) {
-                xy.add( new double[] { in.getInt(), in.getInt(), 0, 0 } );
+                xy.add( new double[] { buffer.getInt(), buffer.getInt(), 0, 0 } );
             }
 
             LinkedList<Point> list = new LinkedList<Point>();
-            skipBytes( 16 ); // skip Z bounds
+            skipBytes( buffer, 16 ); // skip Z bounds
             for ( int i = 0; i < num; ++i ) {
                 double[] p = xy.poll();
-                p[2] = in.getInt();
+                p[2] = buffer.getInt();
                 list.add( fac.createPoint( null, p, crs ) );
             }
 
@@ -647,29 +651,28 @@ public class SHPReader {
 
         LinkedList<double[]> xy = new LinkedList<double[]>();
         for ( int i = 0; i < num; ++i ) {
-            xy.add( new double[] { in.getInt(), in.getInt(), 0, 0 } );
+            xy.add( new double[] { buffer.getInt(), buffer.getInt(), 0, 0 } );
         }
 
-        skipBytes( 16 ); // skip Z bounds
+        skipBytes( buffer, 16 ); // skip Z bounds
         for ( double[] ps : xy ) {
-            ps[2] = in.getInt();
+            ps[2] = buffer.getInt();
         }
 
         LinkedList<Point> list = new LinkedList<Point>();
-        skipBytes( 16 ); // skip measure bounds
+        skipBytes( buffer, 16 ); // skip measure bounds
         for ( int i = 0; i < num; ++i ) {
             double[] p = xy.poll();
-            p[3] = in.getInt();
+            p[3] = buffer.getInt();
             list.add( fac.createPoint( null, p, crs ) );
         }
 
         return fac.createMultiPoint( null, crs, list );
     }
 
-    private MultiSurface readMultipatch( int length )
-                            throws IOException {
-        int numParts = in.getInt();
-        int numPoints = in.getInt();
+    private MultiSurface readMultipatch( ByteBuffer buffer, int length ) {
+        int numParts = buffer.getInt();
+        int numPoints = buffer.getInt();
 
         if ( LOG.isTraceEnabled() ) {
             LOG.trace( "Reading multipatch with " + numParts + " parts and " + numPoints + " points." );
@@ -680,10 +683,10 @@ public class SHPReader {
 
         // read part info
         for ( int i = 0; i < numParts; ++i ) {
-            parts[i] = in.getInt();
+            parts[i] = buffer.getInt();
         }
         for ( int i = 0; i < numParts; ++i ) {
-            partTypes[i] = in.getInt();
+            partTypes[i] = buffer.getInt();
         }
 
         // read points
@@ -700,27 +703,27 @@ public class SHPReader {
 
             // read points for part
             for ( int k = 0; k < points[i].length; ++k ) {
-                points[i][k] = new double[] { in.getInt(), in.getInt(), 0, 0 };
+                points[i][k] = new double[] { buffer.getInt(), buffer.getInt(), 0, 0 };
             }
         }
 
-        skipBytes( 16 ); // z boundary
+        skipBytes( buffer, 16 ); // z boundary
 
         for ( int i = 0; i < numParts; ++i ) {
             // read points for part
             for ( int k = 0; k < points[i].length; ++k ) {
-                points[i][k][2] = in.getInt();
+                points[i][k][2] = buffer.getInt();
             }
         }
 
         int len = 60 + 8 * numParts + 24 * numPoints;
 
         if ( length != len ) {
-            skipBytes( 16 );
+            skipBytes( buffer, 16 );
             for ( int i = 0; i < numParts; ++i ) {
                 // read points for part
                 for ( int k = 0; k < points[i].length; ++k ) {
-                    points[i][k][3] = in.getInt();
+                    points[i][k][3] = buffer.getInt();
                 }
             }
         }
@@ -908,19 +911,18 @@ public class SHPReader {
         return fac.createMultiSurface( null, crs, ss );
     }
 
-    private Points[] readLines( boolean m, boolean z, int length )
-                            throws IOException {
+    private Points[] readLines( ByteBuffer buffer, boolean m, boolean z, int length ) {
 
         int coordDim = m ? 4 : ( z ? 3 : 2 );
 
-        int numParts = in.getInt();
-        int numPoints = in.getInt();
+        int numParts = buffer.getInt();
+        int numPoints = buffer.getInt();
 
         PackedPoints[] res = new PackedPoints[numParts];
         int[] parts = new int[numParts];
 
         for ( int i = 0; i < numParts; ++i ) {
-            parts[i] = in.getInt();
+            parts[i] = buffer.getInt();
         }
 
         for ( int i = 0; i < numParts; ++i ) {
@@ -935,8 +937,8 @@ public class SHPReader {
             double[] coords = new double[num * coordDim];
             int idx = 0;
             for ( int j = 0; j < num; ++j ) {
-                coords[idx++] = in.getDouble();
-                coords[idx++] = in.getDouble();
+                coords[idx++] = buffer.getDouble();
+                coords[idx++] = buffer.getDouble();
                 if ( coordDim == 3 ) {
                     idx += 1;
                 } else if ( coordDim == 4 ) {
@@ -954,21 +956,21 @@ public class SHPReader {
         int zlen = mlen + 16 + 8 * numPoints;
 
         if ( z ) {
-            skipBytes( 16 );
+            skipBytes( buffer, 16 );
             for ( int i = 0; i < numParts; ++i ) {
                 double[] coords = res[i].getAsArray();
                 for ( int j = 0; j < res[i].size(); ++j ) {
-                    coords[2 + j * coordDim] = in.getDouble();
+                    coords[2 + j * coordDim] = buffer.getDouble();
                 }
             }
         }
 
         if ( ( m && mlen != length ) || ( z && zlen != length ) ) {
-            skipBytes( 16 );
+            skipBytes( buffer, 16 );
             for ( int i = 0; i < numParts; ++i ) {
                 double[] coords = res[i].getAsArray();
                 for ( int j = 0; j < res[i].size(); ++j ) {
-                    coords[3 + j * coordDim] = in.getDouble();
+                    coords[3 + j * coordDim] = buffer.getDouble();
                 }
             }
         }
@@ -977,13 +979,13 @@ public class SHPReader {
     }
 
     /**
-     * Closes the underlying input stream.
+     * Closes the underlying file channel and random access file.
      * 
      * @throws IOException
      */
     public void close()
                             throws IOException {
-        inFile.close();
+        channel.close();
+        file.close();
     }
-
 }

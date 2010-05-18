@@ -36,6 +36,8 @@
 
 package org.deegree.feature.persistence.shape;
 
+import static java.nio.ByteOrder.BIG_ENDIAN;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MILLISECOND;
 import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
@@ -51,6 +53,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -81,8 +87,6 @@ public class DBFReader {
 
     private static final Logger LOG = getLogger( DBFReader.class );
 
-    private final RandomAccessFile in;
-
     private final int noOfRecords, recordLength, headerLength;
 
     private HashMap<String, Field> fields = new HashMap<String, Field>();
@@ -92,6 +96,13 @@ public class DBFReader {
     private final Charset encoding;
 
     private GenericFeatureType featureType;
+
+    private final RandomAccessFile file;
+
+    private FileChannel channel;
+
+    // buffer is not thread-safe (needs to be duplicated for every thread)
+    private final ByteBuffer sharedBuffer;
 
     /**
      * Already reads/parses the header.
@@ -105,63 +116,63 @@ public class DBFReader {
      */
     public DBFReader( RandomAccessFile in, Charset encoding, QName ftName, String namespace ) throws IOException {
         this.encoding = encoding;
-        this.in = in;
-        int version = in.readUnsignedByte();
+        this.file = in;
+        channel = file.getChannel();
+        sharedBuffer = channel.map( MapMode.READ_ONLY, 0, file.length() );
+        ByteBuffer buffer = sharedBuffer.duplicate();
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
+
+        int version = buffer.get();
         if ( version < 3 || version > 5 ) {
             LOG.warn( "DBase file is of unsupported version " + version + ". Trying to continue anyway..." );
         }
         if ( LOG.isTraceEnabled() ) {
             LOG.trace( "Version number: " + version );
-            int year = 1900 + in.readUnsignedByte();
-            int month = in.readUnsignedByte();
-            int day = in.readUnsignedByte();
+            int year = 1900 + buffer.get();
+            int month = buffer.get();
+            int day = buffer.get();
             LOG.trace( "Last modified: " + year + "/" + month + "/" + day );
         } else {
-            int skp = 0;
-            while ( ( skp += in.skipBytes( 3 - skp ) ) != 3 ) {
-                // no action in the loop
-            }
+            skipBytes( buffer, 3 );
         }
 
-        noOfRecords = in.readUnsignedByte() + ( in.readUnsignedByte() << 8 ) + ( in.readUnsignedByte() << 16 )
-                      + ( in.readUnsignedByte() << 24 );
+        noOfRecords = buffer.getInt();
         LOG.trace( "Number of records: " + noOfRecords );
 
-        headerLength = in.readUnsignedByte() + ( in.readUnsignedByte() << 8 );
+        headerLength = buffer.getShort();
         LOG.trace( "Length of header: " + headerLength );
 
-        recordLength = in.readUnsignedByte() + ( in.readUnsignedByte() << 8 );
+        recordLength = buffer.getShort();
         LOG.trace( "Record length: " + recordLength );
-        in.seek( 14 );
-        int dirty = in.readUnsignedByte();
+        buffer.position( 14 );
+        int dirty = buffer.get();
         if ( dirty == 1 ) {
             LOG.warn( "DBase file is marked as 'transaction in progress'. Unexpected things may happen." );
         }
-        int enc = in.readUnsignedByte();
+        int enc = buffer.get();
         if ( enc == 1 ) {
             LOG.warn( "DBase file is marked as encrypted. This is unsupported, so you'll get garbage output." );
         }
 
         if ( LOG.isTraceEnabled() ) {
-            in.seek( 29 );
-            LOG.trace( "Language driver code is " + in.readUnsignedByte() );
-            in.skipBytes( 2 );
+            buffer.position( 29 );
+            LOG.trace( "Language driver code is " + buffer.get() );
+            skipBytes( buffer, 2 );
         } else {
-            in.seek( 32 );
+            buffer.position( 32 );
         }
 
         LinkedList<Byte> buf = new LinkedList<Byte>();
-
         LinkedList<PropertyType> types = new LinkedList<PropertyType>();
 
         int read;
-        while ( ( read = in.readUnsignedByte() ) != 13 ) {
+        while ( ( read = buffer.get() ) != 13 ) {
             while ( read != 0 && buf.size() < 10 ) {
                 buf.add( (byte) read );
-                read = in.readUnsignedByte();
+                read = buffer.get();
             }
 
-            in.skipBytes( 10 - buf.size() );
+            skipBytes( buffer, 10 - buf.size() );
 
             byte[] bs = new byte[buf.size()];
             for ( int i = 0; i < bs.length; ++i ) {
@@ -169,13 +180,13 @@ public class DBFReader {
             }
             String name = getString( bs, encoding );
 
-            char type = (char) in.readUnsignedByte();
+            char type = (char) buffer.get();
             SimplePropertyType pt = null;
 
-            in.skipBytes( 4 );
+            skipBytes( buffer, 4 );
 
-            int fieldLength = in.readUnsignedByte();
-            int fieldPrecision = in.readUnsignedByte();
+            int fieldLength = buffer.get();
+            int fieldPrecision = buffer.get();
             LOG.trace( "Field length is " + fieldLength );
 
             switch ( type ) {
@@ -222,8 +233,8 @@ public class DBFReader {
             fieldOrder.add( name );
             types.add( pt );
 
-            in.skipBytes( 13 );
-            if ( in.readUnsignedByte() == 1 ) {
+            skipBytes( buffer, 13 );
+            if ( buffer.get() == 1 ) {
                 LOG.warn( "Index found: index files are not supported by this implementation." );
             }
         }
@@ -253,14 +264,16 @@ public class DBFReader {
      */
     public HashMap<SimplePropertyType, Property> getEntry( int num )
                             throws IOException {
-        HashMap<SimplePropertyType, Property> map = new HashMap<SimplePropertyType, Property>();
 
-        long pos = headerLength + num * recordLength;
-        if ( pos != in.getFilePointer() ) {
-            in.seek( pos );
+        ByteBuffer buffer = sharedBuffer.duplicate();
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
+        HashMap<SimplePropertyType, Property> map = new HashMap<SimplePropertyType, Property>();
+        int pos = headerLength + num * recordLength;
+        if ( pos != buffer.position() ) {
+            buffer.position( pos );
             pos = headerLength + ( num + 1 ) * recordLength;
         }
-        if ( in.readUnsignedByte() == 42 ) {
+        if ( buffer.get() == 42 ) {
             LOG.warn( "The record with number " + num + " is marked as deleted." );
         }
 
@@ -272,13 +285,13 @@ public class DBFReader {
             byte[] bs = new byte[field.length];
             switch ( field.type ) {
             case 'C': {
-                in.readFully( bs );
+                buffer.get( bs );
                 property = new SimpleProperty( field.propertyType, getString( bs, encoding ).trim(), STRING );
                 break;
             }
             case 'N':
             case 'F': {
-                in.readFully( bs );
+                buffer.get( bs );
                 String str = getString( bs, encoding ).trim();
                 if ( str.isEmpty() ) {
                     continue;
@@ -287,7 +300,7 @@ public class DBFReader {
                 break;
             }
             case 'L': {
-                char c = (char) in.readUnsignedByte();
+                char c = (char) buffer.get();
                 Boolean b = null;
                 if ( c == 'Y' || c == 'y' || c == 'T' || c == 't' ) {
                     b = true;
@@ -300,7 +313,7 @@ public class DBFReader {
                 break;
             }
             case 'D': {
-                in.readFully( bs );
+                buffer.get( bs );
                 String val = new String( bs, 0, 4 ).trim();
                 if ( val.isEmpty() ) {
                     continue;
@@ -313,17 +326,14 @@ public class DBFReader {
                 break;
             }
             case 'I': {
-                int ival = in.readUnsignedByte() + ( in.readUnsignedByte() << 8 ) + ( in.readUnsignedByte() << 16 )
-                           + ( in.readUnsignedByte() << 24 );
+                int ival = buffer.getInt();
                 // TODO avoid string conversion
                 property = new SimpleProperty( field.propertyType, "" + ival, INTEGER );
                 break;
             }
             case '@': {
-                int days = in.readUnsignedByte() + ( in.readUnsignedByte() << 8 ) + ( in.readUnsignedByte() << 16 )
-                           + ( in.readUnsignedByte() << 24 );
-                int millis = in.readUnsignedByte() + ( in.readUnsignedByte() << 8 ) + ( in.readUnsignedByte() << 16 )
-                             + ( in.readUnsignedByte() << 24 );
+                int days = buffer.getInt();
+                int millis = buffer.getInt();
                 Calendar cal = new GregorianCalendar( -4713, 1, 1 );
                 cal.add( DAY_OF_MONTH, days ); // it's lenient by default
                 cal.add( MILLISECOND, millis );
@@ -339,7 +349,6 @@ public class DBFReader {
 
             map.put( field.propertyType, property );
         }
-
         return map;
     }
 
@@ -350,7 +359,8 @@ public class DBFReader {
      */
     public void close()
                             throws IOException {
-        in.close();
+        channel.close();
+        file.close();
     }
 
     /**
@@ -387,4 +397,14 @@ public class DBFReader {
         return featureType;
     }
 
+    private final int getBEInt( ByteBuffer buffer ) {
+        buffer.order( BIG_ENDIAN );
+        int result = buffer.getInt();
+        buffer.order( LITTLE_ENDIAN );
+        return result;
+    }
+
+    private final void skipBytes( ByteBuffer buffer, int bytes ) {
+        buffer.position( buffer.position() + bytes );
+    }
 }
