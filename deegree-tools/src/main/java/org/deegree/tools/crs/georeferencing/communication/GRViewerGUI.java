@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -52,7 +51,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -75,8 +73,6 @@ public class GRViewerGUI extends JFrame {
 
     private Scene2DPanel scenePanel2D;
 
-    private final JPanel panelRightAbove;
-
     private BuildingFootprintPanel footprintPanel;
 
     private JMenuItem openurlMenuItem;
@@ -97,19 +93,9 @@ public class GRViewerGUI extends JFrame {
 
         setPreferredSize( new Dimension( 600, 600 ) );
 
-        // panel right above
-        panelRightAbove = new JPanel( new BorderLayout() );
-        panelRightAbove.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
-        footprintPanel = new BuildingFootprintPanel();
-        panelRightAbove.setBackground( Color.white );
-        panelRightAbove.add( footprintPanel );
-        panelRightAbove.setPreferredSize( SUBCOMPONENT_DIMENSION );
-
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, panelRightAbove, 1, 0, 1, 1,
-                                          footprintPanel.getInsets(), GridBagConstraints.LINE_END, 1, 1 );
-
         setupMenubar();
         setup2DScene( gbl );
+        setupPanelFootprint( gbl );
         setupOpenGL( gbl, true );
         this.pack();
     }
@@ -138,6 +124,18 @@ public class GRViewerGUI extends JFrame {
         scenePanel2D.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
         GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, scenePanel2D, 0, 0, 1, 2, 1.0, 1.0 );
+
+    }
+
+    private void setupPanelFootprint( GridBagLayout gbl ) {
+
+        footprintPanel = new BuildingFootprintPanel();
+        footprintPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+        footprintPanel.setBackground( Color.white );
+        footprintPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
+
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, footprintPanel, 1, 0, 1, 1,
+                                          footprintPanel.getInsets(), GridBagConstraints.LINE_END, 1, 1 );
 
     }
 
@@ -193,6 +191,10 @@ public class GRViewerGUI extends JFrame {
      */
     public Scene2DPanel getScenePanel2D() {
         return scenePanel2D;
+    }
+
+    public BuildingFootprintPanel getFootprintPanel() {
+        return footprintPanel;
     }
 
     public void addHoleWindowListener( ComponentListener c ) {

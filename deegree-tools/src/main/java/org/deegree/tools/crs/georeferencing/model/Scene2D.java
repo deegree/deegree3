@@ -42,9 +42,10 @@ import java.net.URL;
 import javax.vecmath.Point2d;
 
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 
 /**
- * TODO add class documentation here
+ * Base interface for the model layer
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -62,6 +63,14 @@ public interface Scene2D {
     public BufferedImage generateImage( Rectangle sceneBounds );
 
     /**
+     * Generates the predicted image for a faster repainting.
+     * 
+     * @param envelope
+     * @return
+     */
+    public BufferedImage generatePredictedImage( Envelope envelope );
+
+    /**
      * This should set the boundingbox for the image to draw.
      * 
      * @param change
@@ -69,24 +78,57 @@ public interface Scene2D {
     public void changeImageBoundingbox( Point2d change );
 
     /**
+     * 
+     * @param change
+     * @return
+     */
+    public void changePredictionBoundingbox( Point2d change );
+
+    /**
      * returns the boundingbox of the image
      */
     public Envelope getImageBoundingbox();
+
+    /**
+     * Returns the requested image.
+     * 
+     * @return
+     */
+    public BufferedImage getRequestedImage();
+
+    /**
+     * Determines the boundingbox for the initialized request.
+     * 
+     * @param imageUrl
+     * @param geometryFactory
+     * @return
+     */
+    public Envelope determineRequestBoundingbox( URL imageUrl, GeometryFactory geometryFactory );
+
+    /**
+     * Returns the hole boundingbox
+     * 
+     * @return
+     */
+    public Envelope getRequestBoundingbox();
+
+    /**
+     * Returns the predicted boundinbox
+     * 
+     * @return
+     */
+    public Envelope getPredictionBoundingbox();
+
+    /**
+     * sets the window where everything is drawn into.
+     * 
+     * @param sightWindowBoundingbox
+     */
+    public void setSightWindowBoundingbox( Envelope sightWindowBoundingbox );
 
     /**
      * Resets all of the variables to initial value.
      */
     public void reset();
 
-    public Envelope determineRequestBoundingbox( URL imageUrl );
-
-    public Envelope getRequestBoundingbox();
-
-    public void setSightWindowMinX( double minX );
-
-    public void setSightWindowMinY( double minY );
-
-    public void setSightWindowMaxX( double maxX );
-
-    public void setSightWindowMaxY( double maxY );
 }

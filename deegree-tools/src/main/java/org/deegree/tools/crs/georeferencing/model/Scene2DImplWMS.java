@@ -70,8 +70,6 @@ public class Scene2DImplWMS implements Scene2D {
 
     private Envelope imageBoundingbox;
 
-    private Envelope predictionBoundingbox;
-
     private Envelope holeRequestBoundingbox;
 
     private Point2d onePixel;
@@ -80,19 +78,25 @@ public class Scene2DImplWMS implements Scene2D {
 
     private BufferedImage requestedImage;
 
-    private double minX, minY, maxX, maxY;
+    private Envelope sightWindowBoundingbox;
 
-    // private double predictionMinX, predictionMinY, predictionMaxX, predictionMaxY;
+    private Envelope predictedBoundingbox;
+
+    private BufferedImage predictedImage;
+
+    private double panelWidth;
+
+    private double panelHeight;
 
     /**
      * The GetMap()-request to a WMSClient.
      * 
      * @param panelWidth
      * @param panelHeight
-     * @param minX
-     * @param maxX
-     * @param minY
-     * @param maxY
+     * @param sightWindowMinX
+     * @param sightWindowMaxX
+     * @param sightWindowMinY
+     * @param sightWindowMaxY
      * @return
      */
     private BufferedImage generateMap( double panelWidth, double panelHeight, Envelope imageBoundingbox ) {
@@ -138,22 +142,32 @@ public class Scene2DImplWMS implements Scene2D {
     @Override
     public BufferedImage generateImage( Rectangle sceneBounds ) {
 
-        double panelWidth = sceneBounds.getWidth();
-        double panelHeight = sceneBounds.getHeight();
+        panelWidth = sceneBounds.getWidth();
+        panelHeight = sceneBounds.getHeight();
 
-        geometryFactory = new GeometryFactory();
         if ( imageBoundingbox == null ) {
             requestedImage = generateMap( panelWidth, panelHeight, generateImageBoundingbox( sceneBounds ) );
+
         } else {
             requestedImage = generateMap( panelWidth, panelHeight, imageBoundingbox );
+
         }
         return requestedImage;
 
     }
 
     @Override
-    public Envelope determineRequestBoundingbox( URL imageRequestUrl ) {
+    public BufferedImage generatePredictedImage( Envelope envelope ) {
 
+        predictedImage = generateMap( panelWidth, panelHeight, envelope );
+
+        return predictedImage;
+
+    }
+
+    @Override
+    public Envelope determineRequestBoundingbox( URL imageRequestUrl, GeometryFactory fac ) {
+        this.geometryFactory = fac;
         wmsClient = new WMSClient111( imageRequestUrl );
         lays = Collections.singletonList( "dem" );
         srs = new CRS( "EPSG:32618" );
@@ -180,7 +194,12 @@ public class Scene2DImplWMS implements Scene2D {
 
         double panelWidth = sceneBounds.getWidth();
         double panelHeight = sceneBounds.getHeight();
-        if ( minX != maxX && minY != maxY ) {
+        if ( sightWindowBoundingbox != null ) {
+
+            double minX = sightWindowBoundingbox.getMin().get0();
+            double minY = sightWindowBoundingbox.getMin().get1();
+            double maxX = sightWindowBoundingbox.getMax().get0();
+            double maxY = sightWindowBoundingbox.getMax().get1();
 
             if ( proportion == 0 ) {
                 // do nothing
@@ -190,16 +209,12 @@ public class Scene2DImplWMS implements Scene2D {
                 double newWidth = ( panelWidth / panelHeight ) * ( maxY - minY );
 
                 imageBoundingbox = geometryFactory.createEnvelope( minX, minY, ( minX + newWidth ), maxY, srs );
-                // predictionBoundingbox = geometryFactory.createEnvelope( predictionMinX, predictionMinY,
-                // ( predictionMinX + newWidth ), predictionMaxY,
-                // srs );
+
             } else {
                 double newHeight = ( panelHeight / panelWidth ) * ( maxX - minX );
 
                 imageBoundingbox = geometryFactory.createEnvelope( minX, minY, maxX, ( minY + newHeight ), srs );
-                // predictionBoundingbox = geometryFactory.createEnvelope( predictionMinX, predictionMinY,
-                // predictionMaxX,
-                // ( predictionMinY + newHeight ), srs );
+
             }
             onePixel = normalizeImageBoundingbox( sceneBounds, imageBoundingbox );
 
@@ -227,7 +242,6 @@ public class Scene2DImplWMS implements Scene2D {
         double h = panelBounds.getHeight();
         double oneX = bbox.getSpan0() / w;
         double oneY = bbox.getSpan1() / h;
-        System.out.println( "one Pixel is: " + oneX + " - " + oneY );
         return new Point2d( oneX, oneY );
     }
 
@@ -247,21 +261,26 @@ public class Scene2DImplWMS implements Scene2D {
 
     }
 
-    // public void changePredictionBoundingbox( Point2d change ) {
-    // double envStartPosX = predictionBoundingbox.getMin().get0() + change.getX() * onePixel.getX();
-    // double envStartPosY = predictionBoundingbox.getMin().get1() - change.getY() * onePixel.getY();
-    //
-    // double envEndPosX = predictionBoundingbox.getMax().get0() + change.getX() * onePixel.getX();
-    // double envEndPosY = predictionBoundingbox.getMax().get1() - change.getY() * onePixel.getY();
-    //
-    // System.out.println( "OnePixel: " + onePixel + " -- Change: " + change );
-    // System.out.println( "  start: " + envStartPosX + ", " + envStartPosY + " end: " + envEndPosX + ", "
-    // + envEndPosY );
-    //
-    // predictionBoundingbox = geometryFactory.createEnvelope( envStartPosX, envStartPosY, envEndPosX, envEndPosY, srs
-    // );
-    //
-    // }
+    @Override
+    public void changePredictionBoundingbox( Point2d change ) {
+        double rising = 1;
+        Envelope env;
+        if ( predictedBoundingbox != null ) {
+            env = predictedBoundingbox;
+        } else {
+            env = imageBoundingbox;
+        }
+        double envStartPosX = env.getMin().get0() + ( change.getX() * rising ) * onePixel.getX();
+        double envStartPosY = env.getMin().get1() - ( change.getY() * rising ) * onePixel.getY();
+
+        double envEndPosX = env.getMax().get0() + ( change.getX() * rising ) * onePixel.getX();
+        double envEndPosY = env.getMax().get1() - ( change.getY() * rising ) * onePixel.getY();
+
+        System.out.println( "  startPrediction: " + envStartPosX + ", " + envStartPosY + " endPrediction: "
+                            + envEndPosX + ", " + envEndPosY );
+
+        predictedBoundingbox = geometryFactory.createEnvelope( envStartPosX, envStartPosY, envEndPosX, envEndPosY, srs );
+    }
 
     @Override
     public Envelope getImageBoundingbox() {
@@ -271,47 +290,34 @@ public class Scene2DImplWMS implements Scene2D {
     @Override
     public void reset() {
         imageBoundingbox = null;
-        predictionBoundingbox = null;
-        minX = 0.0;
-        minY = 0.0;
-        maxX = 0.0;
-        maxY = 0.0;
-        // predictionMinX = 0.0;
-        // predictionMinY = 0.0;
-        // predictionMaxX = 0.0;
-        // predictionMaxY = 0.0;
+        predictedBoundingbox = null;
+        sightWindowBoundingbox = null;
         onePixel = null;
         requestedImage = null;
+        predictedImage = null;
     }
 
     @Override
-    public void setSightWindowMinX( double minX ) {
-        this.minX = minX;
-        // this.predictionMinX = predictionMinX;
-    }
+    public void setSightWindowBoundingbox( Envelope sigthWindowBoundingbox ) {
+        this.sightWindowBoundingbox = sigthWindowBoundingbox;
 
-    @Override
-    public void setSightWindowMinY( double minY ) {
-        this.minY = minY;
-        // this.predictionMinY = predictionMinY;
-    }
-
-    @Override
-    public void setSightWindowMaxX( double maxX ) {
-        this.maxX = maxX;
-        // this.predictionMaxX = predictionMaxX;
-    }
-
-    @Override
-    public void setSightWindowMaxY( double maxY ) {
-        this.maxY = maxY;
-        // this.predictionMaxY = predictionMaxY;
     }
 
     @Override
     public Envelope getRequestBoundingbox() {
 
         return holeRequestBoundingbox;
+    }
+
+    @Override
+    public Envelope getPredictionBoundingbox() {
+
+        return predictedBoundingbox;
+    }
+
+    @Override
+    public BufferedImage getRequestedImage() {
+        return requestedImage;
     }
 
 }
