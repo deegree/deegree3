@@ -238,6 +238,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private SHPReader getSHP( boolean forceIndexRebuild )
                             throws IOException {
+
         shp = null;
 
         File rtfile = new File( name + ".rti" );
@@ -286,7 +287,6 @@ public class ShapeFeatureStore implements FeatureStore {
         LOG.debug( "done." );
         result.insertBulk( p.first );
         return new Pair<RTree<Long>, Boolean>( result, p.second );
-
     }
 
     private void checkForUpdate() {
@@ -364,13 +364,11 @@ public class ShapeFeatureStore implements FeatureStore {
         bbox = getTransformedEnvelope( bbox );
 
         LinkedList<Pair<Integer, Geometry>> list;
-        synchronized ( shp ) {
-            try {
-                list = shp.query( bbox, true, false );
-            } catch ( IOException e ) {
-                LOG.debug( "Stack trace", e );
-                throw new FeatureStoreException( e );
-            }
+        try {
+            list = shp.query( bbox, true, false );
+        } catch ( IOException e ) {
+            LOG.debug( "Stack trace", e );
+            throw new FeatureStoreException( e );
         }
 
         LOG.debug( "Got {} geometries from shp file", list.size() );
@@ -380,9 +378,7 @@ public class ShapeFeatureStore implements FeatureStore {
         if ( dbf == null ) {
             fields = new LinkedList<PropertyType>();
         } else {
-            synchronized ( dbf ) {
-                fields = dbf.getFields();
-            }
+            fields = dbf.getFields();
         }
         final int geomIdx = ft.getPropertyDeclarations().size() - 1;
         GeometryPropertyType geom = (GeometryPropertyType) ft.getPropertyDeclarations().get( geomIdx );
@@ -394,14 +390,12 @@ public class ShapeFeatureStore implements FeatureStore {
             Pair<Integer, Geometry> pair = list.poll();
             HashMap<SimplePropertyType, Property> entry;
             if ( dbf != null ) {
-                synchronized ( dbf ) {
-                    try {
-                        entry = dbf.getEntry( pair.first );
-                    } catch ( IOException e ) {
-                        LOG.debug( "Stack trace", e );
-                        LOG.debug( "Query bbox: {}", bbox );
-                        throw new FeatureStoreException( e );
-                    }
+                try {
+                    entry = dbf.getEntry( pair.first );
+                } catch ( IOException e ) {
+                    LOG.debug( "Stack trace", e );
+                    LOG.debug( "Query bbox: {}", bbox );
+                    throw new FeatureStoreException( e );
                 }
             } else {
                 entry = new HashMap<SimplePropertyType, Property>();
