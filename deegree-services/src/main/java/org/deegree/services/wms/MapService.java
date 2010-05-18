@@ -308,28 +308,44 @@ public class MapService {
         Iterator<Layer> iter = parent.getChildren().iterator();
         for ( JAXBElement<? extends BaseAbstractLayerType> el : layers ) {
             BaseAbstractLayerType lay = el.getValue();
-
             if ( !( lay instanceof AbstractLayerType ) ) {
                 continue;
             }
-            AbstractLayerType l = (AbstractLayerType) lay;
 
+            if ( !iter.hasNext() ) {
+                LOG.warn( "The parsed layer does not have a child, but a layer was configured, bailing out." );
+                break;
+            }
+            Layer mappedChild = iter.next();
+            if ( mappedChild == null ) {
+                LOG.warn( "The parsed layer does not have a child, but a layer was configured, bailing out." );
+                break;
+            }
+            AbstractLayerType l = (AbstractLayerType) lay;
+            double min = Double.NaN;
+            double max = Double.NaN;
             if ( l.getScaleDenominators() != null ) {
-                double min = l.getScaleDenominators().getMin();
-                double max = l.getScaleDenominators().getMax();
+                min = l.getScaleDenominators().getMin();
+                max = l.getScaleDenominators().getMax();
                 last = max;
-                iter.next().setScaleHint( new DoublePair( min, max ) );
             }
             if ( l.getScaleUntil() != null ) {
-                double min = last;
-                double max = l.getScaleUntil();
+                min = last;
+                max = l.getScaleUntil();
                 last = max;
-                iter.next().setScaleHint( new DoublePair( min, max ) );
             }
             if ( l.getScaleAbove() != null ) {
-                double min = l.getScaleAbove();
-                double max = POSITIVE_INFINITY;
-                iter.next().setScaleHint( new DoublePair( min, max ) );
+                min = l.getScaleAbove();
+                max = POSITIVE_INFINITY;
+            }
+            if ( !Double.isNaN( min ) && !Double.isNaN( max ) ) {
+                if ( min > max ) {
+                    LOG.warn( "Configured min and max scale conflict (min > max) swapping min and max." );
+                    double d = max;
+                    max = min;
+                    min = d;
+                }
+                mappedChild.setScaleHint( new DoublePair( min, max ) );
             }
         }
     }
