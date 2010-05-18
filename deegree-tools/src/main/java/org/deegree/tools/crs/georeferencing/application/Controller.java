@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -51,6 +52,8 @@ import java.net.URL;
 import javax.vecmath.Point2d;
 
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
@@ -72,16 +75,24 @@ public class Controller {
 
     private Scene2DPanel panel;
 
+    private BuildingFootprintPanel footPanel;
+
     private MouseModel mouse;
 
     private URL scene2DUrl;
 
-    private BufferedImage imga;
+    private BufferedImage predictedImage;
+
+    private GeometryFactory fac;
+
+    private boolean wentIntoCriticalRegion;
 
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
         this.model = model;
         panel = view.getScenePanel2D();
+        footPanel = view.getFootprintPanel();
+        this.fac = new GeometryFactory();
 
         view.addScene2DurlListener( new Scene2DurlListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
@@ -113,7 +124,7 @@ public class Controller {
             }
             mouse = new MouseModel();
             model.reset();
-            setSightWindowAttributes( model.determineRequestBoundingbox( scene2DUrl ) );
+            setSightWindowAttributes( model.determineRequestBoundingbox( scene2DUrl, fac ) );
             panel.init( model.generateImage( panel.getBounds() ) );
             panel.repaint();
             panel.addScene2DMouseListener( new Scene2DMouseListener() );
@@ -144,15 +155,8 @@ public class Controller {
         double minY = y0 + boundingboxCenter.getY() - sight.getY();
         double maxY = y1 - boundingboxCenter.getY() + sight.getY();
 
-        // double predictionMinX = x0 + boundingboxCenter.getX() - ( sight.getX() * 2 );
-        // double predictionMaxX = x1 - boundingboxCenter.getX() + ( sight.getX() * 2 );
-        // double predictionMinY = y0 + boundingboxCenter.getY() - ( sight.getY() * 2 );
-        // double predictionMaxY = y1 - boundingboxCenter.getY() + ( sight.getY() * 2 );
-
-        model.setSightWindowMinX( minX );
-        model.setSightWindowMaxX( maxX );
-        model.setSightWindowMinY( minY );
-        model.setSightWindowMaxY( maxY );
+        model.setSightWindowBoundingbox( fac.createEnvelope( minX, minY, maxX, maxY,
+                                                             holeRequestBoundingbox.getCoordinateSystem() ) );
 
     }
 
@@ -194,22 +198,19 @@ public class Controller {
         @Override
         public void mouseReleased( MouseEvent m ) {
 
-            if ( mouse.getMouseChanging() == null ) {
-
-                DemoThread demo = new DemoThread();
-                demo.start();
-            }
-
             mouse.setMouseChanging( new Point2d( ( mouse.getPointMousePressed().getX() - m.getX() ),
                                                  ( mouse.getPointMousePressed().getY() - m.getY() ) ) );
             System.out.println( "MouseChanging: " + mouse.getMouseChanging() );
+
+            Prediction pred = new Prediction( mouse.getMouseChanging() );
+            pred.start();
 
             mouse.setCumulatedMouseChanging( new Point2d( mouse.getCumulatedMouseChanging().getX()
                                                           + mouse.getMouseChanging().getX(),
                                                           mouse.getCumulatedMouseChanging().getY()
                                                                                   + mouse.getMouseChanging().getY() ) );
 
-            System.out.println( "buffaußerhalb: " + imga );
+            System.out.println( "buffaußerhalb: " + predictedImage );
 
             // if the user went into any critical region
             if ( mouse.getCumulatedMouseChanging().getX() >= panel.getImageMargin().getX()
@@ -217,53 +218,57 @@ public class Controller {
                  || mouse.getCumulatedMouseChanging().getY() >= panel.getImageMargin().getY()
                  || mouse.getCumulatedMouseChanging().getY() <= -panel.getImageMargin().getY() ) {
 
-                Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
-                                                                 mouse.getCumulatedMouseChanging().getY() );
+                // Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
+                // mouse.getCumulatedMouseChanging().getY() );
+                //
+                // System.out.println( "my new Point2D: " + updateDrawImageAtPosition );
+                BufferedImage img = model.getRequestedImage();
+                panel.init( img );
+                Graphics2D g = img.createGraphics();
+                g.drawImage( predictedImage, 0, 0, panel.getWidth(), panel.getHeight(), panel );
 
-                System.out.println( "my new Point2D: " + updateDrawImageAtPosition );
-                // model.changeImageBoundingbox( updateDrawImageAtPosition );
-                // panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
-                // panel.init( model.generateImage( panel.getBounds() ) );
-                panel.init( imga );
                 mouse.reset();
                 panel.repaint();
 
             } else {
+                wentIntoCriticalRegion = false;
                 panel.setBeginDrawImageAtPosition( new Point2d(
                                                                 panel.getBeginDrawImageAtPosition().getX()
                                                                                         - mouse.getMouseChanging().getX(),
                                                                 panel.getBeginDrawImageAtPosition().getY()
                                                                                         - mouse.getMouseChanging().getY() ) );
                 panel.repaint();
-                System.out.println( panel.getBeginDrawImageAtPosition() );
+
             }
 
         }
 
     }
 
-    class DemoThread extends Thread {
+    /**
+     * 
+     * The <Code>Prediction</Code> class should handle the getImage in the background.
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    class Prediction extends Thread {
+
+        Point2d changing;
+
+        public Prediction( Point2d changing ) {
+            this.changing = changing;
+        }
 
         public void run() {
-            // for ( int i = 0; i < 3; i++ ) {
-            // try {
-            // sleep( 1000 );
-            // } catch ( InterruptedException e ) {
-            // }
-            // System.out.println( "Demo-Thread " + i );
-            // }
-            // Point2d mouseChange = new Point2d( mouse.getMouseChanging().getX() * 2, mouse.getMouseChanging().getY() *
-            // 2 );
 
-            // model.changeImageBoundingbox( mouseChange );
-
-            // panel.getImageMargin();
-            // if ( mouse.getMouseChanging().getX() > mouse.getMouseChanging().getY() ) {
-            //
-            // }
-
-            model.changeImageBoundingbox( mouse.getMouseChanging() );
-            imga = model.generateImage( panel.getBounds() );
+            System.out.println( "Threadchange: " + changing );
+            model.changePredictionBoundingbox( changing );
+            predictedImage = model.generatePredictedImage( model.getPredictionBoundingbox() );
+            footPanel.setImage( predictedImage );
+            footPanel.repaint();
 
         }
 
