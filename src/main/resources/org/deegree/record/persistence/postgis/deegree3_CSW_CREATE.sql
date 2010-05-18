@@ -13,8 +13,6 @@ COMMENT ON COLUMN Datasets.version
     IS 'version of the record';
 COMMENT ON COLUMN Datasets.AnyText
     IS 'common queryable property (ISO AP 1.0): Whole resource text.';
-COMMENT ON COLUMN Datasets.Identifier
-    IS 'common queryable property (ISO AP 1.0): MD_Metadata.fileIdentifier';
 COMMENT ON COLUMN Datasets.Modified
     IS 'common queryable property (ISO AP 1.0): MD_Metadata.dateStamp .Date';
 COMMENT ON COLUMN Datasets.HasSecurityConstraints
@@ -614,4 +612,4 @@ ALTER TABLE datasets ALTER COLUMN association SET STORAGE EXTENDED;
 COMMENT ON COLUMN datasets.association IS 'common queryable property in DC, but is not supported in ISO AP';
 
 --Geospatial column in isoqp_boundingbox
-SELECT AddGeometryColumn('public','isoqp_boundingbox','bbox','4326','POLYGON','2');
+SELECT AddGeometryColumn('public','isoqp_boundingbox','bbox','-1','POLYGON','2');

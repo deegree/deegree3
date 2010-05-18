@@ -1,5 +1,4 @@
 
-
 ALTER TABLE ADDQP_Degree DROP CONSTRAINT FK_ADDQP_Degree;
 ALTER TABLE ADDQP_Specification DROP CONSTRAINT FK_ADDQP_Specification;
 ALTER TABLE ADDQP_Limitation DROP CONSTRAINT FK_ADDQP_Limitation;
@@ -9,9 +8,6 @@ ALTER TABLE ADDQP_OtherConstraint DROP CONSTRAINT FK_ADDQP_OtherConstraint;
 ALTER TABLE ADDQP_Classification DROP CONSTRAINT FK_ADDQP_Classification;
 
 
-
-
---INSPIRE extension
 DROP TABLE ADDQP_Degree;
 DROP TABLE ADDQP_Specification;
 DROP TABLE ADDQP_Limitation;
@@ -19,3 +15,8 @@ DROP TABLE ADDQP_Lineage;
 DROP TABLE ADDQP_AccessConstraint;
 DROP TABLE ADDQP_OtherConstraint;
 DROP TABLE ADDQP_Classification;
+
+
+
+
+	
