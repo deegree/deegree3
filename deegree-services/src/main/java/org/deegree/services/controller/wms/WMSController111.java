@@ -73,7 +73,8 @@ public class WMSController111 extends WMSControllerBase {
         CRSMAPPINGS.put( "EPSG:4326", "CRS:84" );
         CRSMAPPINGS.put( "EPSG:31466", "EPSG:31462" );
         CRSMAPPINGS.put( "EPSG:31467", "EPSG:31463" );
-        CRSMAPPINGS.put( "EPSG:31468", "EPSG:31464" );
+        // TODO check back with TMC
+//        CRSMAPPINGS.put( "EPSG:31468", "EPSG:31464" );
         CRSMAPPINGS.put( "EPSG:31469", "EPSG:31465" );
     }
 

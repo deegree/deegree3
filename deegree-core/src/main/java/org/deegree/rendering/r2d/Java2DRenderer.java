@@ -72,6 +72,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.deegree.commons.utils.log.LoggingNotes;
+import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -351,6 +352,13 @@ public class Java2DRenderer implements Renderer {
     <T> T transform( T g ) {
         if ( transformer != null ) {
             try {
+                if ( g != null ) {
+                    // TODO minimize transformations in all other cases as well
+                    CRS crs = ( (Geometry) g ).getCoordinateSystem();
+                    if ( transformer.getWrappedTargetCRS().equals( crs ) ) {
+                        return (T) g;
+                    }
+                }
                 return (T) transformer.transform( (Geometry) g );
             } catch ( IllegalArgumentException e ) {
                 LOG.debug( "Stack trace:", e );

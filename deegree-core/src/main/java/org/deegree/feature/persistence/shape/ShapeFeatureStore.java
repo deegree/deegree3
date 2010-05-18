@@ -143,6 +143,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     @Override
     public void init() {
+
         if ( name.toLowerCase().endsWith( ".shp" ) ) {
             name = name.substring( 0, name.length() - 4 );
         }
@@ -372,7 +373,7 @@ public class ShapeFeatureStore implements FeatureStore {
             }
         }
 
-        LOG.debug( "Got {} geometries", list.size() );
+        LOG.debug( "Got {} geometries from shp file", list.size() );
 
         LinkedList<Feature> feats = new LinkedList<Feature>();
         LinkedList<PropertyType> fields;
@@ -388,9 +389,6 @@ public class ShapeFeatureStore implements FeatureStore {
         fields.add( geom );
 
         Filter filter = query.getFilter();
-        if ( filter != null ) {
-            LOG.debug( "Performing additional filtering:\n{}", filter );
-        }
 
         while ( !list.isEmpty() ) {
             Pair<Integer, Geometry> pair = list.poll();
@@ -415,19 +413,24 @@ public class ShapeFeatureStore implements FeatureStore {
                 }
             }
             props.add( new GenericProperty( geom, pair.second ) );
-            Feature feat = ft.newFeature( "shp_" + pair.first, props, null );
-
-            if ( filter == null || filter.evaluate( feat ) ) {
+            if ( filter == null ) {
                 if ( !withGeometries ) {
                     props.removeLast();
-                    feat = ft.newFeature( "shp_" + pair.first, props, null );
                 }
+                Feature feat = ft.newFeature( "shp_" + pair.first, props, null );
                 feats.add( feat );
+            } else {
+                Feature feat = ft.newFeature( "shp_" + pair.first, props, null );
+                if ( filter.evaluate( feat ) ) {
+                    if ( !withGeometries ) {
+                        props.removeLast();
+                        feat = ft.newFeature( "shp_" + pair.first, props, null );
+                    }
+                    feats.add( feat );
+                }
             }
         }
-
-        LOG.debug( "After custom filtering {} features match.", feats.size() );
-
+        LOG.debug( "Produced {} features.", feats.size() );
         return new CachedFeatureResultSet( new GenericFeatureCollection( null, feats ) );
     }
 

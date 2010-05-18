@@ -566,10 +566,10 @@ public class WMSController extends AbstractOGCServiceController {
 
     protected void getMap( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
-        GetMap gm = securityManager == null ? new GetMap( map, version, service )
-                                           : securityManager.preprocess(
-                                                                         new GetMap( map, version, service ),
-                                                                         OGCFrontController.getContext().getCredentials() );
+        GetMap gm = new GetMap( map, version, service );
+        if ( securityManager != null ) {
+            gm = securityManager.preprocess( gm, OGCFrontController.getContext().getCredentials() );
+        }
         checkGetMap( version, gm );
         final Pair<BufferedImage, LinkedList<String>> pair = service.getMapImage( gm );
         addHeaders( response, pair.second );
