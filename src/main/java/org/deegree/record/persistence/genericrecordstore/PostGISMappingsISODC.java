@@ -128,13 +128,13 @@ public class PostGISMappingsISODC implements PostGISMapping {
         // ----------------------<common queryable properties>-------------------------------------
         propToTableAndCol.put( new QName( APISO_NS, "title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
-        propToTableAndCol.put( new QName( DC_NS, "title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
+        propToTableAndCol.put( new QName( DC_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "abstract" ), new PropertyNameMapping( "isoqp_abstract",
                                                                                            "abstract", STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "Abstract" ), new PropertyNameMapping( "isoqp_abstract",
                                                                                            "abstract", STRING ) );
-        propToTableAndCol.put( new QName( DCT_NS, "abstract" ), new PropertyNameMapping( "isoqp_abstract", "abstract",
+        propToTableAndCol.put( new QName( DCT_NS, "Abstract" ), new PropertyNameMapping( "isoqp_abstract", "abstract",
                                                                                          STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "BoundingBox" ), new PropertyNameMapping( "isoqp_BoundingBox",
@@ -149,19 +149,19 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         propToTableAndCol.put( new QName( APISO_NS, "type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "Type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
-        propToTableAndCol.put( new QName( DC_NS, "type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
+        propToTableAndCol.put( new QName( DC_NS, "Type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "format" ), new PropertyNameMapping( "isoqp_format", "format",
                                                                                          STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "Format" ), new PropertyNameMapping( "isoqp_format", "format",
                                                                                          STRING ) );
-        propToTableAndCol.put( new QName( DC_NS, "format" ), new PropertyNameMapping( "isoqp_format", "format", STRING ) );
+        propToTableAndCol.put( new QName( DC_NS, "Format" ), new PropertyNameMapping( "isoqp_format", "format", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
                                                                                           STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "Subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
                                                                                           STRING ) );
-        propToTableAndCol.put( new QName( DC_NS, "subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
+        propToTableAndCol.put( new QName( DC_NS, "Subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
                                                                                        STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "anyText" ),
@@ -173,14 +173,14 @@ public class PostGISMappingsISODC implements PostGISMapping {
                                                                                              "identifier", STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "Identifier" ), new PropertyNameMapping( "qp_identifier",
                                                                                              "identifier", STRING ) );
-        propToTableAndCol.put( new QName( DC_NS, "identifier" ), new PropertyNameMapping( "qp_identifier",
+        propToTableAndCol.put( new QName( DC_NS, "Identifier" ), new PropertyNameMapping( "qp_identifier",
                                                                                           "identifier", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "modified" ),
                                new PropertyNameMapping( "datasets", "modified", DATE ) );
         propToTableAndCol.put( new QName( APISO_NS, "Modified" ),
                                new PropertyNameMapping( "datasets", "modified", DATE ) );
-        propToTableAndCol.put( new QName( DCT_NS, "modified" ), new PropertyNameMapping( "datasets", "modified", DATE ) );
+        propToTableAndCol.put( new QName( DCT_NS, "Modified" ), new PropertyNameMapping( "datasets", "modified", DATE ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "CRS" ), new PropertyNameMapping( "isoqp_crs", "crs" ) );
         propToTableAndCol.put( new QName( DC_NS, "CRS" ), new PropertyNameMapping( "isoqp_crs", "crs" ) );
@@ -189,7 +189,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
                                                                                               "relation" ) );
         propToTableAndCol.put( new QName( APISO_NS, "Association" ), new PropertyNameMapping( "isoqp_association",
                                                                                               "relation" ) );
-        propToTableAndCol.put( new QName( DC_NS, "relation" ),
+        propToTableAndCol.put( new QName( DC_NS, "Relation" ),
                                new PropertyNameMapping( "isoqp_association", "relation" ) );
         // ----------------------</common queryable properties>------------------------------------
         // ----------------------------------------------------------------------------------------
