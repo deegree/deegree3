@@ -267,20 +267,24 @@ public class WMSClient111 {
 
         OMElement elem = capabilities.getElement( capabilities.getRootElement(), new XPath( "//Layer[Name = '" + layer
                                                                                             + "']", null ) );
-        while ( elem.getLocalName().equals( "Layer" ) ) {
-            OMElement bbox = capabilities.getElement( elem, new XPath( "LatLonBoundingBox", null ) );
-            if ( bbox != null ) {
-                try {
-                    min[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
-                    min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
-                    max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
-                    max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return new GeometryFactory().createEnvelope( min, max, new CRS( WGS84 ) );
-                } catch ( NumberFormatException nfe ) {
-                    LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
+        if ( elem == null ) {
+            LOG.warn( "Could not get a layer with name: " + layer );
+        } else {
+            while ( elem.getLocalName().equals( "Layer" ) ) {
+                OMElement bbox = capabilities.getElement( elem, new XPath( "LatLonBoundingBox", null ) );
+                if ( bbox != null ) {
+                    try {
+                        min[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
+                        min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
+                        max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
+                        max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
+                        return new GeometryFactory().createEnvelope( min, max, new CRS( WGS84 ) );
+                    } catch ( NumberFormatException nfe ) {
+                        LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
+                    }
+                } else {
+                    elem = (OMElement) elem.getParent();
                 }
-            } else {
-                elem = (OMElement) elem.getParent();
             }
         }
 
@@ -395,9 +399,10 @@ public class WMSClient111 {
 
         Pair<BufferedImage, String> result;
         try {
-            if ( timeout != -1 ) {
+            if ( timeout == -1 ) {
                 result = worker.call();
             } else {
+
                 result = Executor.getInstance().performSynchronously( worker, timeout * 1000 );
             }
         } catch ( Throwable e ) {
@@ -673,13 +678,5 @@ public class WMSClient111 {
             }
             targetImage.getGraphics().drawImage( response.first, xMin, yMin, null );
         }
-    }
-
-    public static void main( String[] args )
-                            throws MalformedURLException {
-        WMSClient111 client = new WMSClient111(
-                                                new URL(
-                                                         "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1" ) );
-        System.out.println( client.getAddress( GetMap, true ) );
     }
 }
