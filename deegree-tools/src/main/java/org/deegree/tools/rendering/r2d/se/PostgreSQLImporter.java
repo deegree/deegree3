@@ -50,6 +50,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.rendering.r2d.se.parser.PostgreSQLWriter;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.tools.CommandUtils;
 import org.deegree.tools.i18n.Messages;
 
 /**
@@ -97,6 +98,12 @@ public class PostgreSQLImporter {
     public static void main( String[] args )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Options options = initOptions();
+
+        // for the moment, using the CLI API there is no way to respond to a help argument; see
+        // https://issues.apache.org/jira/browse/CLI-179
+        if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
+            CommandUtils.printHelp( options, PostgreSQLImporter.class.getSimpleName(), null, null );
+        }
 
         try {
             new PosixParser().parse( options, args );
