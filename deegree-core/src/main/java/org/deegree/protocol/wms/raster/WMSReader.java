@@ -70,6 +70,8 @@ import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.client.WMSClient111;
 import org.slf4j.Logger;
@@ -94,6 +96,9 @@ public class WMSReader implements RasterReader {
     /** Defines the system id to be used as raster io key, for setting the system id or the capabilities url. */
     public static final String RIO_WMS_SYS_ID = "RASTERIO_WMS_SYS_ID";
 
+    /** The refresh time of the capabilities */
+    public static final String RIO_WMS_REFRESH_TIME = "RASTERIO_WMS_REFRESH_TIME";
+
     /** Defines the maximum width of a GetMap request. */
     public static final String RIO_WMS_MAX_WIDTH = "RASTERIO_WMS_MAX_WIDTH";
 
@@ -110,10 +115,10 @@ public class WMSReader implements RasterReader {
     public static final String RIO_WMS_DEFAULT_FORMAT = "RASTERIO_WMS_DEFAULT_FORMAT";
 
     /** Defines the key to set the GetMap retrieval to transparent. */
-    private static final String RIO_WMS_ENABLE_TRANSPARENT = "RASTERIO_WMS_ENABLE_TRANSPARENCY";
+    public static final String RIO_WMS_ENABLE_TRANSPARENT = "RASTERIO_WMS_ENABLE_TRANSPARENCY";
 
     /** Defines the key to set the GetMap retrieval timeout. */
-    private static final String RIO_WMS_TIMEOUT = "RASTERIO_WMS_GM_TIMEOUT";
+    public static final String RIO_WMS_TIMEOUT = "RASTERIO_WMS_GM_TIMEOUT";
 
     static {
         supportedFormats = new HashSet<String>();
@@ -271,8 +276,33 @@ public class WMSReader implements RasterReader {
                                    + " does your WMS support the given layers? Unable to use this WMS ( "
                                    + dataLocationId + " as a raster data source." );
         }
+        CoordinateSystem wCRS = null;
+        try {
+            wCRS = crs.getWrappedCRS();
+        } catch ( UnknownCRSException e1 ) {
+            throw new IOException( "The Default coordinate system for layers: " + layers
+                                   + " are not supported by your deegree installation. Unable to use this WMS ( "
+                                   + dataLocationId + " as a raster data source." );
+        }
+        // no bbox defined in the given crs
         this.envelope = client.getBoundingBox( crs.getName(), layers );
+        if ( this.envelope == null ) {
+            this.envelope = client.getLatLonBoundingBox( layers );
+            GeometryTransformer transform = new GeometryTransformer( wCRS );
 
+            try {
+                Geometry tEnv = transform.transform( this.envelope );
+                if ( tEnv == null ) {
+                    envelope = null;
+                } else {
+                    envelope = tEnv.getEnvelope();
+                }
+            } catch ( Exception e ) {
+                LOG.error( e.getLocalizedMessage() );
+                envelope = null;
+            }
+
+        }
         if ( this.envelope == null ) {
             throw new IOException( "Could not get the BBox for layers: " + layers
                                    + " does your WMS support the given layers, unable to use this WMS ( "
@@ -292,11 +322,17 @@ public class WMSReader implements RasterReader {
         }
         double scale = getScale( opts );
         int widthAxis = realCRS == null ? 0 : realCRS.getEasting();
-        double eW = this.envelope.getSpan( widthAxis );
-        double eH = this.envelope.getSpan( 1 - widthAxis );
-        this.width = (int) Math.ceil( eW * scale );
-        this.height = (int) Math.ceil( eH * scale );
-        this.geoRef = RasterGeoReference.create( OriginLocation.OUTER, envelope, width, height );
+        // double eW = this.envelope.getSpan( widthAxis );
+        // double eH = this.envelope.getSpan( 1 - widthAxis );
+        // this.width = (int) Math.ceil( eW * scale );
+        // this.height = (int) Math.ceil( eH * scale );
+        // this.geoRef = RasterGeoReference.create( OriginLocation.OUTER, envelope, width, height );
+        this.geoRef = new RasterGeoReference( OriginLocation.OUTER, scale, -scale,
+                                              this.envelope.getMin().get( widthAxis ),
+                                              this.envelope.getMax().get( 1 - widthAxis ) );
+        RasterRect rect = this.geoRef.convertEnvelopeToRasterCRS( this.envelope );
+        this.width = rect.width;
+        this.height = rect.height;
 
         this.transparent = enableTransparency( opts );
         this.format = getFormat( opts );
