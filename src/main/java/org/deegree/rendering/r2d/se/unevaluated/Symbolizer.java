@@ -38,7 +38,8 @@ package org.deegree.rendering.r2d.se.unevaluated;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
@@ -67,7 +68,8 @@ public class Symbolizer<T extends Copyable<T>> {
     private T base;
 
     // TODO improve the caching, eg. implement a real cache with a limit etc.
-    private HashMap<String, T> cache = new HashMap<String, T>();
+    // NOTE: Using a synchronized map here is strictly necessary (race condition), RB / MS 
+    private Map<String, T> cache = new ConcurrentHashMap<String, T>();
 
     private Continuation<T> next;
 
