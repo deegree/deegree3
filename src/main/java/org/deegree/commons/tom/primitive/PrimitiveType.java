@@ -37,16 +37,20 @@ package org.deegree.commons.tom.primitive;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
+import java.sql.Types;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.tom.datetime.Time;
+import org.deegree.feature.Feature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Primitive type system for object properties (e.g. for {@link org.deegree.feature.Feature} instances).
+ * Primitive type system for object properties (e.g. for {@link Feature} instances).
  * <p>
- * Based on XML schema types, but stripped down to leave out any distinctions that are not necessary in the feature
- * model.
+ * Based on XML schema types, but stripped down to leave out any distinctions that are not strictly necessary in the
+ * feature model.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -75,6 +79,8 @@ public enum PrimitiveType {
     DATE_TIME( DateTime.class ),
     /** Property value is of class {@link Time}. */
     TIME( Time.class );
+
+    private static final Logger LOG = LoggerFactory.getLogger( PrimitiveType.class );
 
     private Class<?> valueClass;
 
@@ -108,5 +114,87 @@ public enum PrimitiveType {
         }
         String msg = "Cannot determine PrimitiveType for object class: " + value.getClass();
         throw new IllegalArgumentException( msg );
+    }
+
+    /**
+     * Returns the {@link PrimitiveType} for the given SQL type (from {@link Types}).
+     * 
+     * @see Types
+     * 
+     * @param sqlType
+     * @return corresponding {@link PrimitiveType}, never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the SQL type can not be mapped to a {@link PrimitiveType}
+     */
+    public static PrimitiveType determinePrimitiveType( int sqlType ) {
+
+        PrimitiveType pt = null;
+
+        switch ( sqlType ) {
+        case Types.BIGINT:
+        case Types.INTEGER:
+        case Types.SMALLINT:
+        case Types.TINYINT: {
+            pt = INTEGER;
+            break;
+        }
+        case Types.DECIMAL:
+        case Types.DOUBLE:
+        case Types.FLOAT:
+        case Types.NUMERIC:
+        case Types.REAL: {
+            pt = DECIMAL;
+            break;
+        }
+        case Types.CHAR:
+        case Types.VARCHAR: {
+            pt = STRING;
+            break;
+        }
+        case Types.DATE: {
+            pt = DATE;
+            break;
+        }
+        case Types.TIMESTAMP: {
+            pt = DATE_TIME;
+            break;
+        }
+        case Types.TIME: {
+            pt = TIME;
+            break;
+        }
+        case Types.ARRAY:
+        case Types.BINARY:
+        case Types.BIT:
+        case Types.BLOB:
+        case Types.BOOLEAN:
+        case Types.CLOB:
+        case Types.DATALINK:
+        case Types.DISTINCT:
+        case Types.JAVA_OBJECT:
+        case Types.LONGNVARCHAR:
+        case Types.LONGVARBINARY:
+        case Types.LONGVARCHAR:
+        case Types.NCHAR:
+        case Types.NCLOB:
+        case Types.NULL:
+        case Types.NVARCHAR:
+        case Types.OTHER:
+        case Types.REF:
+        case Types.ROWID:
+        case Types.SQLXML:
+        case Types.STRUCT:
+        case Types.VARBINARY: {
+            String msg = "Unmappable SQL type encountered: " + sqlType;
+            LOG.warn( msg );
+            throw new IllegalArgumentException( msg );
+        }
+        default: {
+            String msg = "Internal error: unknown SQL type encountered: " + sqlType;
+            LOG.error( msg );
+            throw new IllegalArgumentException( msg );
+        }
+        }
+        return pt;
     }
 }

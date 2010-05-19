@@ -90,16 +90,17 @@ public class ApplicationSchema {
      * 
      * @param fts
      *            all application feature types (abstract and non-abstract), this must not include any GML base feature
-     *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>)
+     *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), must not be
+     *            <code>null</code>
      * @param ftToSuperFt
      *            key: feature type A, value: feature type B (A extends B), this must not include any GML base feature
-     *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>)
+     *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), can be <code>null</code>
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt )
                             throws IllegalArgumentException {
-
+                
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
             ft.setSchema( this );
@@ -170,8 +171,7 @@ public class ApplicationSchema {
      * 
      * @return all feature types, never <code>null</code>
      */
-    public List<FeatureType> getFeatureTypes( String namespace, boolean includeCollections,
-                                                   boolean includeAbstracts ) {
+    public List<FeatureType> getFeatureTypes( String namespace, boolean includeCollections, boolean includeAbstracts ) {
         List<FeatureType> fts = new ArrayList<FeatureType>( ftNameToFt.values().size() );
 
         for ( FeatureType ft : ftNameToFt.values() ) {
