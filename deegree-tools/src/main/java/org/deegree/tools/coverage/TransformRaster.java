@@ -104,12 +104,6 @@ public class TransformRaster {
 
         options.addOption( "?", "help", false, "print usage information" );
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
-        // https://issues.apache.org/jira/browse/CLI-179
-        if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
-            printHelp( options );
-        }
-
         try {
             CommandLine line = parser.parse( options, args );
 

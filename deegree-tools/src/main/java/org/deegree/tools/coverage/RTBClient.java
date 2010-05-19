@@ -110,15 +110,6 @@ public class RTBClient {
 
         Options options = initOptions();
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
-        // https://issues.apache.org/jira/browse/CLI-179
-        if ( args != null && args.length > 0 ) {
-            for ( String a : args ) {
-                if ( a != null && a.toLowerCase().contains( "help" ) || "-?".equals( a ) ) {
-                    printHelp( options );
-                }
-            }
-        }
         boolean verbose = false;
         try {
             CommandLine line = parser.parse( options, args );

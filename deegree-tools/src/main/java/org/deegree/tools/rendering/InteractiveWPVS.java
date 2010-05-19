@@ -857,12 +857,6 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
         Options options = initOptions();
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
-        // https://issues.apache.org/jira/browse/CLI-179
-        if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
-            printHelp( options );
-        }
-
         try {
             CommandLine line = new PosixParser().parse( options, args );
 

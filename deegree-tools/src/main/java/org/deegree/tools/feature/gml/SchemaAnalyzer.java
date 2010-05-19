@@ -46,7 +46,6 @@ import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -425,14 +424,9 @@ public class SchemaAnalyzer {
 
         Options options = initOptions();
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see https://issues.apache.org/jira/browse/CLI-179
-        if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
-            printHelp( options );
-        }
-        
         try {
             new PosixParser().parse( options, args );
-        
+
             String inputFileName = options.getOption( OPT_INPUT_FILE ).getValue();
             String namespace = options.getOption( OPT_NAMESPACE ).getValue();
 
