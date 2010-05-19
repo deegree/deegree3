@@ -207,6 +207,8 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
     private int currentColormap = -1;
 
+    private boolean updateLODStructure = true;
+
     /**
      * Creates a new {@link InteractiveWPVS} instance.
      * 
@@ -331,6 +333,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         long begin = System.currentTimeMillis();
         GL gl = drawable.getGL();
         glRenderContext.setContext( gl );
+        glRenderContext.setUpdateLOD( updateLODStructure );
 
         gl.glClear( GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT );
         gl.glLoadIdentity();
@@ -665,6 +668,10 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         }
 
         switch ( k ) {
+        case KeyEvent.VK_U: {
+            this.updateLODStructure = !updateLODStructure;
+            break;
+        }
         case KeyEvent.VK_F11: {
             lodAnalyzerFrame.setVisible( !lodAnalyzerFrame.isVisible() );
             this.setEnabled( true );
@@ -856,6 +863,17 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
                             ServiceInitException {
 
         Options options = initOptions();
+
+        // for the moment, using the CLI API there is no way to respond to a help argument; see
+        // https://issues.apache.org/jira/browse/CLI-179
+        if ( args != null && args.length > 0 ) {
+            for ( String a : args ) {
+                if ( a != null && a.toLowerCase().contains( "help" ) || "-?".equals( a ) ) {
+                    printHelp( options );
+                    System.exit( 1 );
+                }
+            }
+        }
 
         try {
             CommandLine line = new PosixParser().parse( options, args );

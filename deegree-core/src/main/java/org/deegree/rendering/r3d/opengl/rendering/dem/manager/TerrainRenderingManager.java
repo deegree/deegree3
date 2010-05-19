@@ -146,14 +146,16 @@ public class TerrainRenderingManager {
             // ensure correct zScale (zScale = 0 does not work as expected)
             float zScale = ( disableElevationModel ) ? 0.001f : glRenderContext.getTerrainScale();
 
-            // adapt geometry LOD (fragments)
-            updateLOD( glRenderContext, zScale, textureManagers );
+            if ( glRenderContext.updateLOD() ) {
+                // adapt geometry LOD (fragments)
+                updateLOD( glRenderContext, zScale, textureManagers );
+            }
 
             GL gl = glRenderContext.getContext();
             setupLighting( gl );
 
             // set z-scale
-            boolean useScale = Math.abs( zScale - 1 ) < 0.0001;
+            boolean useScale = Math.abs( zScale - 1 ) > 0.0001;
             if ( useScale ) {
                 gl.glPushMatrix();
                 gl.glScalef( 1.0f, 1.0f, zScale );
@@ -293,7 +295,7 @@ public class TerrainRenderingManager {
         Executor exec = Executor.getInstance();
         List<ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>>> results = null;
         try {
-            results = exec.performSynchronously( workers, (long) maxRequestTime * 100000 );
+            results = exec.performSynchronously( workers, (long) maxRequestTime * 1000 );
         } catch ( InterruptedException e ) {
             LOG.debug( "Could not fetch the textures, stack.", e );
             LOG.error( "Could not fetch the textures because: " + e.getMessage() );

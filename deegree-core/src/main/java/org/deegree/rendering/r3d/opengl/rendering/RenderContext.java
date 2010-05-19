@@ -62,6 +62,8 @@ public class RenderContext {
     // the compositing texture shader programs.
     private ShaderProgram[] ctSPrograms;
 
+    private boolean updateLOD;
+
     /**
      * Construct the RenderContext with the given view parameters.
      * 
@@ -161,6 +163,21 @@ public class RenderContext {
      */
     public ShaderProgram getCompositingTextureShaderProgram( int numberOfTextures ) {
         return this.ctSPrograms[numberOfTextures - 1];
+    }
+
+    /**
+     * @param updateLOD
+     *            true if updating the lod should be enabled.
+     */
+    public void setUpdateLOD( boolean updateLOD ) {
+        this.updateLOD = updateLOD;
+    }
+
+    /**
+     * @return true if the lod should be updated
+     */
+    public boolean updateLOD() {
+        return this.updateLOD;
     }
 
 }
