@@ -120,7 +120,8 @@ public class WMSBuilder implements CoverageBuilder {
      */
     private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter ) {
         if ( mrrConfig != null ) {
-            String defCRS = mrrConfig.getCrs();
+//            String defCRS = mrrConfig.getCrs();
+            String defCRS = null;
             CRS crs = null;
             if ( defCRS != null ) {
                 crs = new CRS( defCRS );
