@@ -2,7 +2,7 @@
   <!--
   This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
 -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:oraclefs="http://www.deegree.org/datasource/feature/oracle" 
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:oraclefs="http://www.deegree.org/datasource/feature/oracle"
   targetNamespace="http://www.deegree.org/datasource/feature/oracle" elementFormDefault="qualified"
   xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
   <annotation>
@@ -39,7 +39,13 @@
             </simpleContent>
           </complexType>
         </element>
-        <element name="RelationalMapping" type="string" minOccurs="0" maxOccurs="unbounded" />
+        <element name="MappingHints" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element ref="oraclefs:FeatureType" maxOccurs="unbounded"/>
+            </sequence>
+          </complexType>
+        </element>
       </sequence>
       <attribute name="configVersion" use="required" fixed="0.5.0" />
     </complexType>
@@ -52,4 +58,55 @@
       <enumeration value="GML_32" />
     </restriction>
   </simpleType>
+
+  <element name="FeatureType">
+    <complexType>
+      <annotation>
+        <documentation>Declaration of a feature type of the schema.</documentation>
+        <appinfo>
+          <jaxb:class name="FeatureTypeDecl" />
+        </appinfo>
+      </annotation>
+      <sequence>
+        <!-- element ref="ft:AbstractProperty" minOccurs="0" maxOccurs="unbounded" /-->
+      </sequence>
+      <attribute name="name" type="QName">
+        <annotation>
+          <documentation>
+            Qualified name of the feature type.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="table" type="string" use="optional">
+        <annotation>
+          <documentation>
+            Name of the table that stores features of this type.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="abstract" type="boolean" use="optional">
+        <annotation>
+          <documentation>
+            If true, the feature type is abstract and cannot be
+            instantiated.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="substitutionGroup" type="QName" use="optional">
+        <annotation>
+          <documentation>
+            Name of the feature type that this feature type may substitute, i.e. features of this type may
+            be used whenever the other type is requested.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="javaClass" type="string" use="optional">
+        <annotation>
+          <documentation>
+            Optional: Name of the java class used to represent instances of this feature type in memory. 
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
 </schema>

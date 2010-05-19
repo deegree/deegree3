@@ -32,30 +32,70 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.oracle;
 
+import static org.deegree.commons.tom.primitive.PrimitiveType.determinePrimitiveType;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
+import oracle.spatial.geometry.JGeometry;
+import oracle.sql.STRUCT;
+
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRS;
+import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+import org.deegree.feature.persistence.oracle.jaxb.FeatureTypeDecl;
+import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig.MappingHints;
+import org.deegree.feature.persistence.query.CachedFeatureResultSet;
+import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.query.Query.QueryHint;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link FeatureStore} implementation that uses an Oracle spatial database (TODO versions) as backend.
+ * {@link FeatureStore} implementation that uses an Oracle spatial database (TODO supported versions) as backend.
  * 
  * @see FeatureStore
  * 
@@ -64,21 +104,147 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class OracleFeatureStore implements FeatureStore{
+public class OracleFeatureStore implements FeatureStore {
 
     private static final Logger LOG = LoggerFactory.getLogger( OracleFeatureStore.class );
 
+    private static final GeometryFactory geomFac = new GeometryFactory();
+
+    private final JGeometryAdapter jGeometryAdapter;
+
+    private final CRS storageSRS;
+
+    private final String connId;
+
     private ApplicationSchema schema;
-    
-    OracleFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchemaQualifier, CRS storageSRS ) {
-        this.schema = schema;
-        System.out.println ("JDDB Connection id: " + jdbcConnId);
+
+    private final Map<QName, FeatureTypeMapping> ftToMapping = new HashMap<QName, FeatureTypeMapping>();
+
+    OracleFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchemaQualifier, CRS storageSRS,
+                        MappingHints mappingHints ) {
+
+        this.connId = jdbcConnId;
+        this.storageSRS = storageSRS;
+        if ( mappingHints != null ) {
+            this.schema = buildSchema( jdbcConnId, mappingHints );
+        } else {
+            this.schema = schema;
+        }
+        // TODO make Oracle srid configurable
+        jGeometryAdapter = new JGeometryAdapter( storageSRS, -1 );
+    }
+
+    private ApplicationSchema buildSchema( String jdbcConnId, MappingHints mappingHints ) {
+
+        List<FeatureType> fts = new ArrayList<FeatureType>();
         try {
-            System.out.println ("Connection: " + ConnectionManager.getConnection( jdbcConnId ));
+            Connection conn = ConnectionManager.getConnection( jdbcConnId );
+            DatabaseMetaData md = conn.getMetaData();
+            for ( FeatureTypeDecl ftDecl : mappingHints.getFeatureType() ) {
+                LOG.info( "Creating mapping for feature type '" + ftDecl.getName() + "'." );
+                fts.add( buildFeatureType( ftDecl, md ) );
+                FeatureTypeMapping ftMapping = buildFeatureTypeMapping( ftDecl, md );
+                ftToMapping.put( ftDecl.getName(), ftMapping );
+            }
         } catch ( SQLException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return new ApplicationSchema( fts.toArray( new FeatureType[fts.size()] ), null );
+    }
+
+    private FeatureType buildFeatureType( FeatureTypeDecl ftDecl, DatabaseMetaData md )
+                            throws SQLException {
+
+        String table = ftDecl.getTable();
+        if ( table == null ) {
+            table = ftDecl.getName().getLocalPart();
+        }
+        LOG.info( "table: " + table );
+
+        QName ftName = ftDecl.getName();
+        String prefix = ftName.getPrefix();
+        String namespace = ftName.getNamespaceURI();
+
+        String pkColumn = getPKColumn( md, table );
+        System.out.println( "gml id: " + pkColumn );
+
+        ResultSet rs = md.getColumns( "rtgisokzagg", null, table, null );
+        List<PropertyType> propDecls = new ArrayList<PropertyType>();
+        while ( rs.next() ) {
+            String colName = rs.getString( 4 );
+            if ( !pkColumn.equalsIgnoreCase( colName ) ) {
+                QName ptName = new QName( namespace, colName, prefix );
+                int sqlType = rs.getInt( 5 );
+                System.out.println( "property: " + colName + ", type: " + sqlType );
+                PropertyType pt = buildPropertyType( ptName, sqlType );
+                System.out.println( "pt: " + pt );
+                propDecls.add( pt );
+            }
+        }
+        return new GenericFeatureType( ftName, propDecls, false );
+    }
+
+    private FeatureTypeMapping buildFeatureTypeMapping( FeatureTypeDecl ftDecl, DatabaseMetaData md )
+                            throws SQLException {
+
+        String table = ftDecl.getTable();
+        if ( table == null ) {
+            table = ftDecl.getName().getLocalPart();
+        }
+
+        QName ftName = ftDecl.getName();
+        String prefix = ftName.getPrefix();
+        String namespace = ftName.getNamespaceURI();
+
+        String pkColumn = getPKColumn( md, table );
+        String[] gmlIdColumns = new String[] { pkColumn };
+
+        ResultSet rs = md.getColumns( "rtgisokzagg", null, table, null );
+
+        Map<QName, String> propToColumn = new HashMap<QName, String>();
+
+        while ( rs.next() ) {
+            String colName = rs.getString( 4 );
+            if ( !pkColumn.equalsIgnoreCase( colName ) ) {
+                QName propName = new QName( namespace, colName, prefix );
+                propToColumn.put( propName, colName );
+            }
+        }
+        return new FeatureTypeMapping( ftName, table, gmlIdColumns, propToColumn );
+    }
+
+    private String getPKColumn( DatabaseMetaData md, String table )
+                            throws SQLException {
+        String pkColumn = null;
+        ResultSet rs = md.getPrimaryKeys( "rtgisokzagg", null, table );
+        if ( !rs.next() ) {
+            throw new SQLException( "No primary key column found." );
+        }
+        pkColumn = rs.getString( 4 );
+        if ( rs.next() ) {
+            throw new SQLException( "More than one primary key column (composite primary key)." );
+        }
+        rs.close();
+        return pkColumn;
+    }
+
+    private PropertyType buildPropertyType( QName ptName, int sqlType )
+                            throws IllegalArgumentException {
+        PropertyType pt = null;
+        switch ( sqlType ) {
+        case Types.OTHER: {
+            pt = new GeometryPropertyType( ptName, 0, 1, GeometryType.GEOMETRY, CoordinateDimension.DIM_2, false, null,
+                                           BOTH );
+            break;
+        }
+        default: {
+            PrimitiveType primType = determinePrimitiveType( sqlType );
+            pt = new SimplePropertyType( ptName, 0, 1, primType, false, null );
+            break;
+        }
+        }
+        return pt;
     }
 
     @Override
@@ -91,13 +257,55 @@ public class OracleFeatureStore implements FeatureStore{
     @Override
     public void destroy() {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
     public Envelope getEnvelope( QName ftName ) {
-        // TODO Auto-generated method stub
-        return null;
+        Envelope bbox = null;
+        FeatureType ft = schema.getFeatureType( ftName );
+        FeatureTypeMapping ftMapping = ftToMapping.get( ftName );
+        if ( ftMapping != null ) {
+            Connection conn = null;
+            ResultSet rs = null;
+            Statement stmt = null;
+            try {
+                conn = ConnectionManager.getConnection( connId );
+                String table = ftMapping.getTable();
+                GeometryPropertyType geomPt = ft.getDefaultGeometryPropertyDeclaration();
+                if ( geomPt != null ) {
+                    String geomColumn = ftMapping.getColumn( geomPt.getName() );
+                    String sql = "SELECT SDO_AGGR_MBR(" + geomColumn + ") FROM " + table;
+                    LOG.info( "Performing query: '" + sql + "'" );
+                    stmt = conn.createStatement();
+                    rs = stmt.executeQuery( sql );
+                    if ( rs.next() ) {
+                        STRUCT struct = (STRUCT) rs.getObject( 1 );
+                        JGeometry jg = JGeometry.load( struct );
+                        double[] mbr = jg.getMBR();
+                        if ( mbr.length == 4 ) {
+                            double[] min = new double[] { mbr[0], mbr[1] };
+                            double[] max = new double[] { mbr[2], mbr[3] };
+                            bbox = geomFac.createEnvelope( min, max, storageSRS );
+                        } else if ( mbr.length == 6 ) {
+                            double[] min = new double[] { mbr[0], mbr[1], mbr[2] };
+                            double[] max = new double[] { mbr[3], mbr[4], mbr[5] };
+                            bbox = geomFac.createEnvelope( min, max, storageSRS );
+                        } else {
+                            String msg = "Error while determining bbox for feature type '" + ftName
+                                         + "': got an Oracle MBR with length " + mbr.length + ".";
+                            LOG.error( msg );
+                        }
+                    }
+                }
+            } catch ( SQLException e ) {
+                String msg = "SQLException occured while determining bbox for feature type '" + ftName + "': "
+                             + e.getMessage();
+                LOG.error( msg, e );
+            } finally {
+                JDBCUtils.close( rs, stmt, conn, LOG );
+            }
+        }
+        return bbox;
     }
 
     @Override
@@ -121,14 +329,13 @@ public class OracleFeatureStore implements FeatureStore{
 
     @Override
     public CRS getStorageSRS() {
-        // TODO Auto-generated method stub
-        return null;
+        return storageSRS;
     }
 
     @Override
     public void init()
                             throws FeatureStoreException {
-        LOG.info( "Initializing Oracle feature store." );
+        LOG.debug( "Initializing Oracle feature store." );
     }
 
     @Override
@@ -139,28 +346,145 @@ public class OracleFeatureStore implements FeatureStore{
     @Override
     public FeatureResultSet query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return null;
+
+        FeatureResultSet result = null;
+        if ( query.getTypeNames().length == 0 ) {
+            result = queryById( query );
+        } else {
+            result = queryByTypeNames( query );
+        }
+        return result;
+    }
+
+    private FeatureResultSet queryByTypeNames( Query query )
+                            throws FeatureStoreException {
+        if ( query.getTypeNames().length > 1 ) {
+            String msg = "Join queries are currently not supported by the OracleFeatureStore.";
+            throw new UnsupportedOperationException( msg );
+        }
+        QName ftName = query.getTypeNames()[0].getFeatureTypeName();
+        FeatureType ft = schema.getFeatureType( ftName );
+        if ( ft == null ) {
+            String msg = "Feature type '" + ftName + "' is not served by this feature store.";
+            throw new FeatureStoreException( msg );
+        } else if ( ft.isAbstract() ) {
+            String msg = "Requested feature type '" + ftName + "' is abstract and cannot be queried.";
+            throw new FeatureStoreException( msg );
+        }
+        FeatureTypeMapping ftMapping = ftToMapping.get( ftName );
+        LOG.info( "Querying feature type '" + ftName + "'." );
+        LOG.info( "- filter: " + query.getFilter() );
+        LOG.info( "- bbox: " + query.getHint( QueryHint.HINT_LOOSE_BBOX ) );
+
+        // TODO: streaming
+        FeatureCollection fc = new GenericFeatureCollection();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionManager.getConnection( connId );
+            StringBuffer sql = new StringBuffer( "SELECT " );
+            sql.append( ftMapping.getGMLIdColumns()[0] );
+            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+                sql.append( ',' );
+                sql.append( ftMapping.getColumn( pt.getName() ) );
+            }
+            sql.append( " FROM " );
+            sql.append( ftMapping.getTable() );
+            // TODO where clause
+            LOG.info( "Going to SELECT: " + sql );
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( sql.toString() );
+            while ( rs.next() ) {
+                fc.add( buildFeature( rs, ft, ftMapping ) );
+            }
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.close( rs, stmt, conn, LOG );
+        }
+        return new CachedFeatureResultSet( fc );
+    }
+
+    private FeatureResultSet queryById( Query query ) {
+        String msg = "Id queries are currently not supported by the OracleFeatureStore implementation.";
+        throw new UnsupportedOperationException( msg );
     }
 
     @Override
-    public FeatureResultSet query( Query[] queries )
+    public FeatureResultSet query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return null;
+        Iterator<FeatureResultSet> rsIter = new Iterator<FeatureResultSet>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < queries.length;
+            }
+
+            @Override
+            public FeatureResultSet next() {
+                if ( !hasNext() ) {
+                    throw new NoSuchElementException();
+                }
+                FeatureResultSet rs;
+                try {
+                    rs = query( queries[i++] );
+                } catch ( Exception e ) {
+                    throw new RuntimeException( e.getMessage(), e );
+                }
+                return rs;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        return new CombinedResultSet( rsIter );
     }
 
     @Override
     public int queryHits( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return 0;
+        return query( query ).toCollection().size();
     }
 
     @Override
     public int queryHits( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return 0;
+        return query( queries ).toCollection().size();
+    }
+
+    private Feature buildFeature( ResultSet rs, FeatureType ft, FeatureTypeMapping ftMapping )
+                            throws SQLException {
+        String fid = ft.getName().getLocalPart().toUpperCase() + "_" + rs.getString( 1 );
+        List<Property> props = new ArrayList<Property>();
+        int i = 2;
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            if ( pt instanceof SimplePropertyType ) {
+                String value = rs.getString( i );
+                if ( value != null ) {
+                    PrimitiveValue pv = new PrimitiveValue( value, ( (SimplePropertyType) pt ).getPrimitiveType() );
+                    Property prop = new GenericProperty( pt, pv );
+                    props.add( prop );
+                }
+            } else if ( pt instanceof GeometryPropertyType ) {
+                STRUCT struct = (STRUCT) rs.getObject( i );
+                if ( struct != null ) {
+                    JGeometry jg = JGeometry.load( struct );
+                    Geometry g = jGeometryAdapter.toGeometry( jg );
+                    if ( g != null ) {
+                        Property prop = new GenericProperty( pt, g );
+                        props.add( prop );
+                    }
+                }
+            } else {
+                LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                          + "' not handled in OracleFeatureStore." );
+            }
+            i++;
+        }
+        return ft.newFeature( fid, props, null );
     }
 }

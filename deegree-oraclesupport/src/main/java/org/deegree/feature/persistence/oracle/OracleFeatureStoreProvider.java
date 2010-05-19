@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.oracle;
 
 import java.net.URL;
@@ -46,17 +46,12 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
-import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
-import org.deegree.feature.persistence.oracle.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig;
-import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig.GMLSchemaFileURL;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig.NamespaceHint;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +66,7 @@ import org.slf4j.LoggerFactory;
 public class OracleFeatureStoreProvider implements FeatureStoreProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( OracleFeatureStoreProvider.class );
-    
+
     @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/datasource/feature/oracle";
@@ -92,29 +87,29 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
 
             ApplicationSchema schema = null;
 
-            try {
-                String[] schemaURLs = new String[config.getGMLSchemaFileURL().size()];
-                int i = 0;
-                GMLVersionType gmlVersionType = null;
-                for ( GMLSchemaFileURL jaxbSchemaURL : config.getGMLSchemaFileURL() ) {
-                    schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
-                    // TODO what about different versions at the same time?
-                    gmlVersionType = GMLVersionType.GML_32;
-                }
-                ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
-                                                                                       GMLVersion.valueOf( gmlVersionType.name() ),
-                                                                                       getHintMap( config.getNamespaceHint() ),
-                                                                                       schemaURLs );
-                schema = decoder.extractFeatureTypeSchema();
-
-            } catch ( Exception e ) {
-                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-                LOG.error( msg, e );
-                throw new FeatureStoreException( msg, e );
-            }
+//            try {
+//                String[] schemaURLs = new String[config.getGMLSchemaFileURL().size()];
+//                int i = 0;
+//                GMLVersionType gmlVersionType = null;
+//                for ( GMLSchemaFileURL jaxbSchemaURL : config.getGMLSchemaFileURL() ) {
+//                    schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
+//                    // TODO what about different versions at the same time?
+//                    gmlVersionType = GMLVersionType.GML_32;
+//                }
+//                ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
+//                                                                                       GMLVersion.valueOf( gmlVersionType.name() ),
+//                                                                                       getHintMap( config.getNamespaceHint() ),
+//                                                                                       schemaURLs );
+//                schema = decoder.extractFeatureTypeSchema();
+//
+//            } catch ( Exception e ) {
+//                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+//                LOG.error( msg, e );
+//                throw new FeatureStoreException( msg, e );
+//            }
 
             CRS storageSRS = new CRS( config.getStorageSRS() );
-            fs = new OracleFeatureStore( schema, config.getJDBCConnId(), config.getDBSchemaQualifier(), storageSRS);
+            fs = new OracleFeatureStore( schema, config.getJDBCConnId(), config.getDBSchemaQualifier(), storageSRS, config.getMappingHints() );
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
