@@ -230,7 +230,7 @@ public class SHPReader {
         file = inFile;
         channel = file.getChannel();
         sharedBuffer = channel.map( MapMode.READ_ONLY, 0, file.length() );
-        ByteBuffer buffer = sharedBuffer.duplicate();
+        ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
         buffer.order( ByteOrder.LITTLE_ENDIAN );
         this.crs = crs;
         this.rtree = rtree;
@@ -333,7 +333,8 @@ public class SHPReader {
                             throws IOException {
 
         LOG.debug( "Querying shp with bbox {}", bbox );
-        ByteBuffer buffer = channel.map( MapMode.READ_ONLY, 0, file.length() );
+        // ByteBuffer buffer = channel.map( MapMode.READ_ONLY, 0, file.length() );
+        ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
         buffer.order( ByteOrder.LITTLE_ENDIAN );
 
         LinkedList<Pair<Integer, Geometry>> list = new LinkedList<Pair<Integer, Geometry>>();
@@ -451,8 +452,7 @@ public class SHPReader {
      */
     public Pair<ArrayList<Pair<float[], Long>>, Boolean> readEnvelopes()
                             throws IOException {
-        channel = file.getChannel();
-        ByteBuffer buffer = sharedBuffer.duplicate();
+        ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
         buffer.order( ByteOrder.LITTLE_ENDIAN );
         ArrayList<Pair<float[], Long>> list = new ArrayList<Pair<float[], Long>>();
         boolean startsFromZero = false;

@@ -119,7 +119,7 @@ public class DBFReader {
         this.file = in;
         channel = file.getChannel();
         sharedBuffer = channel.map( MapMode.READ_ONLY, 0, file.length() );
-        ByteBuffer buffer = sharedBuffer.duplicate();
+        ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
         buffer.order( ByteOrder.LITTLE_ENDIAN );
 
         int version = buffer.get();
@@ -265,7 +265,7 @@ public class DBFReader {
     public HashMap<SimplePropertyType, Property> getEntry( int num )
                             throws IOException {
 
-        ByteBuffer buffer = sharedBuffer.duplicate();
+        ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
         buffer.order( ByteOrder.LITTLE_ENDIAN );
         HashMap<SimplePropertyType, Property> map = new HashMap<SimplePropertyType, Property>();
         int pos = headerLength + num * recordLength;
