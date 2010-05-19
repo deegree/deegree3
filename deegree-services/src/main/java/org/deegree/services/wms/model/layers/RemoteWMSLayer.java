@@ -64,13 +64,13 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.datasource.coverage.wms.WMSDataSource;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.protocol.wms.raster.jaxb.WMSDataSourceType;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetMap;
@@ -105,7 +105,7 @@ public class RemoteWMSLayer extends Layer {
      * @param adapter
      * @throws MalformedURLException
      */
-    public RemoteWMSLayer( AbstractLayerType layer, Layer parent, WMSDataSource datasource, XMLAdapter adapter )
+    public RemoteWMSLayer( AbstractLayerType layer, Layer parent, WMSDataSourceType datasource, XMLAdapter adapter )
                             throws MalformedURLException {
         super( layer, parent );
         client = new WMSClient111( adapter.resolve( datasource.getCapabilitiesDocumentLocation().getLocation() ) );
