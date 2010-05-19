@@ -98,7 +98,7 @@ import org.deegree.tools.i18n.Messages;
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 @Tool("Swiss Army knife for GML/deegree application schemas.")
@@ -533,10 +533,6 @@ public class ApplicationSchemaTool {
 
         Options opts = new Options();
 
-        Option opt = new Option( "?", "help", false, "print (this) usage information" );
-        opt.setArgs( 0 );
-        opts.addOption( opt );
-
         String actionsList = "";
         Action[] actions = Action.values();
         actionsList += actions[0].toString();
@@ -544,7 +540,7 @@ public class ApplicationSchemaTool {
             actionsList += ", " + actions[i];
         }
 
-        opt = new Option( OPT_ACTION, true, "action, one of: " + actionsList + "" );
+        Option opt = new Option( OPT_ACTION, true, "action, one of: " + actionsList + "" );
         opt.setRequired( true );
         opts.addOption( opt );
 
@@ -571,6 +567,8 @@ public class ApplicationSchemaTool {
         opt = new Option( OPT_DB_SCHEMA, true, "optional database schema name" );
         opt.setRequired( false );
         opts.addOption( opt );
+
+        CommandUtils.addDefaultOptions( opts );
         return opts;
     }
 

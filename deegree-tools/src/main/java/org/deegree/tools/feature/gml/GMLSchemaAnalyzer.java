@@ -159,17 +159,15 @@ public class GMLSchemaAnalyzer {
 
         Options opts = new Options();
 
-        Option opt = new Option( "?", "help", false, "print (this) usage information" );
-        opt.setArgs( 0 );
-        opts.addOption( opt );
-
-        opt = new Option( OPT_INPUT_FILE, true, "input GML application schema file" );
+        Option opt = new Option( OPT_INPUT_FILE, true, "input GML application schema file" );
         opt.setRequired( true );
         opts.addOption( opt );
 
         opt = new Option( OPT_NAMESPACE, true, "namespace of the element declarations to be analyzed" );
         opt.setRequired( true );
         opts.addOption( opt );
+
+        CommandUtils.addDefaultOptions( opts );
 
         return opts;
 

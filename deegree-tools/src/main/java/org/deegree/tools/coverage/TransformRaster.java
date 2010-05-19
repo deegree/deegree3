@@ -102,7 +102,7 @@ public class TransformRaster {
         interpolation.setArgName( "center|outer" );
         options.addOption( originLocation );
 
-        options.addOption( "?", "help", false, "print usage information" );
+        CommandUtils.addDefaultOptions( options );
 
         // for the moment, using the CLI API there is no way to respond to a help argument; see
         // https://issues.apache.org/jira/browse/CLI-179

@@ -1374,7 +1374,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         opt = new Option( "id", OPT_WPVS_DB_ID, true, "Database id referenced in the wpvs configuration" );
         opts.addOption( opt );
 
-        opts.addOption( "?", "help", false, "print (this) usage information" );
+        CommandUtils.addDefaultOptions( opts );
 
         return opts;
     }

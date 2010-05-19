@@ -36,6 +36,7 @@
 package org.deegree.tools.rendering.dem.filtering;
 
 import static java.lang.System.currentTimeMillis;
+import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -94,8 +95,6 @@ public class DEMRasterFilterer {
     /*
      * Command line options
      */
-    private static final String OPT_VERBOSE = "verbose";
-
     // filter options
     private static final String OPT_KERNEL_SIZE = "kernel_size";
 
@@ -408,8 +407,8 @@ public class DEMRasterFilterer {
 
     private static Options initOptions() {
         Options options = new Options();
-        options.addOption( "v", OPT_VERBOSE, false, "be verbose on errors" );
-        options.addOption( "?", "help", false, "Display this help message" );
+
+        CommandUtils.addDefaultOptions( options );
 
         RasterOptionsParser.addRasterIOLineOptions( options );
         addFilterOptions( options );

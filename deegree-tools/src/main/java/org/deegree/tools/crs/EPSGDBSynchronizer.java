@@ -337,8 +337,7 @@ public class EPSGDBSynchronizer {
         Option opt = new Option( "epsgPath", true, "path to epsg database" );
         options.addOption( opt );
 
-        opt = new Option( "?", "help", false, "print (this) usage information" );
-        options.addOption( opt );
+        CommandUtils.addDefaultOptions( options );
 
         return options;
     }

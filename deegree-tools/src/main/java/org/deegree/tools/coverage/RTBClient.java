@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.coverage;
 
+import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
 import static org.deegree.tools.CommandUtils.getFloatOption;
 import static org.deegree.tools.CommandUtils.getIntOption;
 import static org.deegree.tools.coverage.RasterCommandUtils.getInterpolationType;
@@ -78,7 +79,6 @@ import org.deegree.tools.coverage.utils.RasterOptionsParser;
  */
 @Tool("Builds a raster tree from a given set of rasters.")
 public class RTBClient {
-    private static final String OPT_VERBOSE = "verbose";
 
     private static final String OPT_BBOX = "bbox";
 

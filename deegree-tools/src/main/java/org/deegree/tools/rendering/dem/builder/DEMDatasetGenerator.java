@@ -37,6 +37,7 @@
 package org.deegree.tools.rendering.dem.builder;
 
 import static java.lang.System.currentTimeMillis;
+import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
 
 import java.io.File;
 import java.io.IOException;
@@ -102,8 +103,6 @@ public class DEMDatasetGenerator {
     /*
      * Command line options
      */
-    private static final String OPT_VERBOSE = "verbose";
-
     private static final String OPT_OUTPUT_DIR = "out_dir";
 
     private static final String OPT_OUTPUT_LEVELS = "out_levels";
@@ -740,8 +739,7 @@ public class DEMDatasetGenerator {
         opt = new Option( "mh", OPT_MAX_HEIGHT, true, "maximum z-value, every higher value is clipped to no data value" );
         opts.addOption( opt );
 
-        opts.addOption( "?", "help", false, "print (this) usage information" );
-        opts.addOption( "v", OPT_VERBOSE, false, "be verbose on error." );
+        CommandUtils.addDefaultOptions( opts );
 
         return opts;
     }

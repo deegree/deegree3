@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.coverage.converter;
 
+import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
 import static org.deegree.tools.CommandUtils.getIntOption;
 import static org.deegree.tools.coverage.utils.RasterOptionsParser.OPT_OUTPUT_TYPE;
 import static org.deegree.tools.coverage.utils.RasterOptionsParser.OPT_OUTPUT_TYPE_ABBREV;
@@ -82,8 +83,6 @@ import org.deegree.tools.coverage.utils.RasterOptionsParser;
  */
 @Tool("Converts a raster from one type into another.")
 public class RasterConverter {
-
-    private static final String OPT_VERBOSE = "verbose";
 
     private static final String OPT_NUM_THREADS = "num_threads";
 
@@ -344,8 +343,6 @@ public class RasterConverter {
 
     private static Options initOptions() {
         Options options = new Options();
-        options.addOption( "v", OPT_VERBOSE, false, "be verbose on errors" );
-        options.addOption( "?", "help", false, "Display this help message" );
 
         Option option = new Option( RasterOptionsParser.OPT_RASTER_OUT_LOC_ABBREV, OPT_RASTER_OUT_LOC, true,
                                     "the output directory for the raster tree, defaults to input dir" );
@@ -365,6 +362,8 @@ public class RasterConverter {
         options.addOption( option );
 
         RasterOptionsParser.addRasterIOLineOptions( options );
+
+        CommandUtils.addDefaultOptions( options );
 
         return options;
 

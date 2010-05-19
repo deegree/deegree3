@@ -122,8 +122,6 @@ public class DataManager {
 
     private static final String QL = "qualitylevel";
 
-    private static final String OPT_VERBOSE = "verbose";
-
     private static final String OPT_CREATE_LOWEST_LEVELS = "create_lowest_levels";
 
     private static final String OPT_WPVS_TRANSLATION_TO = "wpvs_translation";
@@ -200,7 +198,7 @@ public class DataManager {
 
         try {
             CommandLine line = parser.parse( options, args );
-            verbose = line.hasOption( OPT_VERBOSE );
+            verbose = line.hasOption( CommandUtils.OPT_VERBOSE );
             startManager( line );
         } catch ( ParseException exp ) {
             System.err.println( "ERROR: Invalid command line: " + exp.getMessage() );
@@ -387,8 +385,7 @@ public class DataManager {
         addVRMLParameters( options );
         addCityGMLParameters( options );
 
-        options.addOption( "?", "help", false, "print (this) usage information" );
-        options.addOption( "v", OPT_VERBOSE, false, "be verbose on errors" );
+        CommandUtils.addDefaultOptions( options );
 
         return options;
 

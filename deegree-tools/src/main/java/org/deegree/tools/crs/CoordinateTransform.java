@@ -35,6 +35,7 @@
 
 package org.deegree.tools.crs;
 
+import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -73,8 +74,6 @@ import org.slf4j.Logger;
  */
 @Tool("Convert a point or a list of points from one SRS to another.")
 public class CoordinateTransform {
-
-    private static final String OPT_VERBOSE = "verbose";
 
     private static final String OPT_S_SRS = "s_srs";
 
@@ -279,8 +278,6 @@ public class CoordinateTransform {
 
     private static Options initOptions() {
         Options options = new Options();
-        options.addOption( "v", OPT_VERBOSE, false, "be verbose on errors" );
-        options.addOption( "?", "help", false, "Display this help message" );
         options.addOption( "i", OPT_INVERSE, false, "should an inverse operation be applied as well." );
         Option option = new Option( "s", OPT_S_SRS, true, "The name of the source srs, e.g. EPSG:4326." );
         option.setArgs( 1 );
@@ -312,6 +309,8 @@ public class CoordinateTransform {
                              "(only valid with -sourceFile) defining a separator between the coords in the file e.g. a ';' or ',' if omitted a space is assumed." );
         option.setArgs( 1 );
         options.addOption( option );
+
+        CommandUtils.addDefaultOptions( options );
 
         return options;
 

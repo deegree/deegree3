@@ -65,11 +65,7 @@ public class PostgreSQLImporter {
     private static Options initOptions() {
         Options opts = new Options();
 
-        Option opt = new Option( "h", "help", false, "print (this) usage information" );
-        opt.setArgs( 0 );
-        opts.addOption( opt );
-
-        opt = new Option( "f", "sldfile", true, "input SE/SLD style file" );
+        Option opt = new Option( "f", "sldfile", true, "input SE/SLD style file" );
         opt.setRequired( true );
         opts.addOption( opt );
 
@@ -84,6 +80,8 @@ public class PostgreSQLImporter {
         opt = new Option( "p", "dbpassword", true, "database password, if left off, will be set as empty" );
         opt.setRequired( false );
         opts.addOption( opt );
+
+        CommandUtils.addDefaultOptions( opts );
 
         return opts;
 

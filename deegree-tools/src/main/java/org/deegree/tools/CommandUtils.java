@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.tools;
 
 import java.io.PrintWriter;
@@ -45,10 +45,10 @@ import org.apache.commons.cli.ParseException;
 
 /**
  * This class contains some static convenience methods for commandline tools.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class CommandUtils {
@@ -58,9 +58,11 @@ public class CommandUtils {
      */
     public static int HELP_TEXT_WIDTH = 80;
 
+    public static final String OPT_VERBOSE = "verbose";
+
     /**
      * Prints a help message for a apache commons-cli based command line tool and <b>terminates the programm</b>.
-     *
+     * 
      * @param options
      *            the options to generate help/usage information for
      * @param toolName
@@ -85,10 +87,10 @@ public class CommandUtils {
         }
         formatter.printUsage( helpPrintWriter, HELP_TEXT_WIDTH, toolName, options );
         if ( otherUsageInfo != null ) {
-            helpBuffer.deleteCharAt( helpBuffer.length() - 1 ); // append additional arguments        
+            helpBuffer.deleteCharAt( helpBuffer.length() - 1 ); // append additional arguments
             helpBuffer.append( ' ' ).append( otherUsageInfo ).append( "\n" );
         }
-        
+
         helpBuffer.append( "\n" );
         formatter.printOptions( helpPrintWriter, HELP_TEXT_WIDTH, options, 3, 5 );
         System.err.print( helpBuffer.toString() );
@@ -97,14 +99,19 @@ public class CommandUtils {
 
     /**
      * Parse a command line argument as integer.
-     *
-     * @param line the parsed command line
-     * @param optName the option name
-     * @param defaultValue the default value
+     * 
+     * @param line
+     *            the parsed command line
+     * @param optName
+     *            the option name
+     * @param defaultValue
+     *            the default value
      * @return the parsed integer argument or <code>defaulValue</code>, if the argument is missing
-     * @throws ParseException if the argument is not a number
+     * @throws ParseException
+     *             if the argument is not a number
      */
-    public static int getIntOption( CommandLine line, String optName, int defaultValue ) throws ParseException {
+    public static int getIntOption( CommandLine line, String optName, int defaultValue )
+                            throws ParseException {
         String stringValue = line.getOptionValue( optName );
         if ( stringValue == null ) {
             return defaultValue;
@@ -118,14 +125,19 @@ public class CommandUtils {
 
     /**
      * Parse a command line argument as float.
-     *
-     * @param line the parsed command line
-     * @param optName the option name
-     * @param defaultValue the default value
+     * 
+     * @param line
+     *            the parsed command line
+     * @param optName
+     *            the option name
+     * @param defaultValue
+     *            the default value
      * @return the parsed float argument or <code>defaulValue</code>, if the argument is missing
-     * @throws ParseException if the argument is not a number
+     * @throws ParseException
+     *             if the argument is not a number
      */
-    public static float getFloatOption( CommandLine line, String optName, float defaultValue ) throws ParseException {
+    public static float getFloatOption( CommandLine line, String optName, float defaultValue )
+                            throws ParseException {
         String stringValue = line.getOptionValue( optName );
         if ( stringValue == null ) {
             return defaultValue;
@@ -135,5 +147,13 @@ public class CommandUtils {
         } catch ( NumberFormatException ex ) {
             throw new ParseException( optName + " is not a number" );
         }
+    }
+
+    /**
+     * @param options
+     */
+    public static void addDefaultOptions( Options options ) {
+        options.addOption( "v", OPT_VERBOSE, false, "be verbose on errors" );
+        options.addOption( "?", "help", false, "print (this) usage information" );
     }
 }

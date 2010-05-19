@@ -54,6 +54,7 @@ import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterBuilder;
+import org.deegree.tools.CommandUtils;
 import org.slf4j.Logger;
 
 /**
@@ -213,6 +214,8 @@ public class RasterOptionsParser {
         option.setArgs( 1 );
         option.setArgName( "dir" );
         options.addOption( option );
+
+        CommandUtils.addDefaultOptions( options );
     }
 
     /**

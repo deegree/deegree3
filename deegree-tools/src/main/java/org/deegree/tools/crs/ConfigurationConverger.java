@@ -38,6 +38,8 @@
 
 package org.deegree.tools.crs;
 
+import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -73,8 +75,6 @@ import org.deegree.tools.rendering.manager.DataManager;
  */
 @Tool("Export the CoordinateSystems from a given Input format to a given Output format and place the result into an output File.")
 public class ConfigurationConverger {
-
-    private static final String OPT_VERBOSE = "verbose";
 
     private static final String OPT_IN_FILE = "input";
 
@@ -246,8 +246,6 @@ public class ConfigurationConverger {
 
     private static Options initOptions() {
         Options options = new Options();
-        options.addOption( "v", OPT_VERBOSE, false, "be verbose on errors" );
-        options.addOption( "?", "help", false, "Display this help message" );
 
         Option option = new Option( "f", OPT_IN_FILE, true, "input file to read the crs defintions from (in inFormat)." );
         option.setArgs( 1 );
@@ -270,6 +268,8 @@ public class ConfigurationConverger {
         option.setArgs( 1 );
         option.setRequired( true );
         options.addOption( option );
+
+        CommandUtils.addDefaultOptions( options );
 
         return options;
 

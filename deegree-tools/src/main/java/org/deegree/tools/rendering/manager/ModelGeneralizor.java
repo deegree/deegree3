@@ -36,6 +36,8 @@
 
 package org.deegree.tools.rendering.manager;
 
+import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,8 +85,6 @@ public class ModelGeneralizor {
     private static final String SOURCE_QL = "source_quality_level";
 
     private static final String HELP = "help";
-
-    private static final String OPT_VERBOSE = "verbose";
 
     private static final String WPVS_TRANSLATION_TO = "wpvs_translation";
 
@@ -266,9 +266,7 @@ public class ModelGeneralizor {
 
         addDatabaseParameters( options );
 
-        options.addOption( "?", "help", false, "print (this) usage information" );
-        options.addOption( "v", OPT_VERBOSE, false, "be verbose on errors" );
-
+        CommandUtils.addDefaultOptions( options );
         return options;
 
     }

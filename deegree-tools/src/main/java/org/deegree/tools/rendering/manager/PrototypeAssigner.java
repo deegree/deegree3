@@ -36,6 +36,8 @@
 
 package org.deegree.tools.rendering.manager;
 
+import static org.deegree.tools.CommandUtils.OPT_VERBOSE;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,8 +84,6 @@ public class PrototypeAssigner {
     private static final String QL = "qualitylevel";
 
     private static final String HELP = "help";
-
-    private static final String OPT_VERBOSE = "verbose";
 
     private static final String BUILDING_ID = "id";
 
@@ -316,8 +316,7 @@ public class PrototypeAssigner {
 
         addDatabaseParameters( options );
 
-        options.addOption( "?", "help", false, "print (this) usage information" );
-        options.addOption( "v", OPT_VERBOSE, false, "be verbose on errors" );
+        CommandUtils.addDefaultOptions( options );
 
         return options;
 

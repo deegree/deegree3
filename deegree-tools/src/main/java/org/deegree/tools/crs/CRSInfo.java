@@ -74,8 +74,6 @@ public class CRSInfo {
     /*
      * Command line options
      */
-    private static final String OPT_VERBOSE = "verbose";
-
     private static final String OPT_IS_AV = "isAvailable";
 
     private static final String OPT_FILE = "file";
@@ -179,7 +177,7 @@ public class CRSInfo {
         CommandLine line = null;
         try {
             line = parser.parse( options, args );
-            verbose = line.hasOption( OPT_VERBOSE );
+            verbose = line.hasOption( CommandUtils.OPT_VERBOSE );
             init( line );
         } catch ( ParseException exp ) {
             System.err.println( "ERROR: Invalid command line: " + exp.getMessage() );
@@ -263,8 +261,6 @@ public class CRSInfo {
 
     private static Options initOptions() {
         Options options = new Options();
-        options.addOption( "v", OPT_VERBOSE, false, "be verbose on errors" );
-        options.addOption( "?", "help", false, "Display this help message" );
         Option option = new Option( "a", OPT_IS_AV, true, "Give an affirmation if the given crs is available" );
         option.setArgs( 1 );
         options.addOption( option );
@@ -278,6 +274,8 @@ public class CRSInfo {
                            OPT_VERIFY,
                            false,
                            "if [-isAvailable] is not given, the -verify flag can be used to verify if the provider can create all configured crs_s, thus verifying if the configuration is correct." );
+
+        CommandUtils.addDefaultOptions( options );
 
         return options;
 

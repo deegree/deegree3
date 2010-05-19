@@ -484,8 +484,6 @@ public class RasterTreeGridifier {
         opt.setRequired( true );
         opts.addOption( opt );
 
-        opts.addOption( "?", "help", false, "print (this) usage information" );
-
         return opts;
     }
 

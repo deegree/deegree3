@@ -75,11 +75,7 @@ public class StyleChecker {
     private static Options initOptions() {
         Options opts = new Options();
 
-        Option opt = new Option( "h", "help", false, "print (this) usage information" );
-        opt.setArgs( 0 );
-        opts.addOption( opt );
-
-        opt = new Option( "d", "dburl", true, "database url, like jdbc:postgresql://localhost/dbname" );
+        Option opt = new Option( "d", "dburl", true, "database url, like jdbc:postgresql://localhost/dbname" );
         opt.setRequired( true );
         opts.addOption( opt );
 
@@ -95,6 +91,8 @@ public class StyleChecker {
                           "if set, faulty styles will be deleted (currently only in the styles table)" );
         opt.setRequired( false );
         opts.addOption( opt );
+
+        CommandUtils.addDefaultOptions( opts );
 
         return opts;
 
