@@ -36,7 +36,6 @@
 package org.deegree.rendering.r3d.opengl.display;
 
 import java.awt.Dimension;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -96,12 +95,20 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
     @Override
     public void init( GLAutoDrawable drawable ) {
         LOG.trace( "init( GLAutoDrawable ) called" );
+        GL gl = drawable.getGL();
+        gl.glClearColor( 1f, 1f, 1f, 0f );
     }
 
     @Override
     public void display( GLAutoDrawable drawable ) {
         LOG.trace( "display( GLAutoDrawable ) called" );
-        renderLODStructure( drawable.getGL() );
+        GL gl = drawable.getGL();
+
+        gl.glClear( GL.GL_COLOR_BUFFER_BIT );
+        // gl.glLoadIdentity();
+        if ( frustum != null && currentLOD != null ) {
+            renderLODStructure( drawable.getGL() );
+        }
     }
 
     /**
@@ -117,22 +124,19 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
 
     private void renderLODStructure( GL gl ) {
 
-        gl.glColor3f( 1.0f, 1.0f, 1.0f );
-        gl.glBegin( GL.GL_POLYGON );
-        gl.glVertex2f( 0f, 0f );
-        gl.glVertex2f( 1f, 0f );
-        gl.glVertex2f( 1f, 1f );
-        gl.glVertex2f( 0f, 1f );
-        gl.glEnd();
-
         // render macrotriangle boundaries of current LOD
         gl.glBegin( GL.GL_TRIANGLES );
         for ( RenderMeshFragment fragment : currentLOD ) {
-            setColor( gl, fragment );
-            MacroTriangle mt = new MacroTriangle( fragment );
-            gl.glVertex2f( mt.p0.x / maxX, mt.p0.y / maxY );
-            gl.glVertex2f( mt.p1.x / maxX, mt.p1.y / maxY );
-            gl.glVertex2f( mt.p2.x / maxX, mt.p2.y / maxY );
+            if ( fragment != null ) {
+                setColor( gl, fragment );
+
+                float[][] mt = fragment.getTrianglePoints();
+                if ( mt != null ) {
+                    gl.glVertex2f( mt[0][0] / maxX, mt[0][1] / maxY );
+                    gl.glVertex2f( mt[1][0] / maxX, mt[1][1] / maxY );
+                    gl.glVertex2f( mt[2][0] / maxX, mt[2][1] / maxY );
+                }
+            }
         }
         gl.glEnd();
 
@@ -140,15 +144,19 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
         gl.glBegin( GL.GL_LINES );
         gl.glColor3f( 0.0f, 0.0f, 0.0f );
         for ( RenderMeshFragment fragment : currentLOD ) {
-            MacroTriangle mt = new MacroTriangle( fragment );
-            gl.glVertex2f( mt.p0.x / maxX, mt.p0.y / maxY );
-            gl.glVertex2f( mt.p1.x / maxX, mt.p1.y / maxY );
+            if ( fragment != null ) {
+                float[][] mt = fragment.getTrianglePoints();
+                if ( mt != null ) {
+                    gl.glVertex2f( mt[0][0] / maxX, mt[0][1] / maxY );
+                    gl.glVertex2f( mt[1][0] / maxX, mt[1][1] / maxY );
 
-            gl.glVertex2f( mt.p1.x / maxX, mt.p1.y / maxY );
-            gl.glVertex2f( mt.p2.x / maxX, mt.p2.y / maxY );
+                    gl.glVertex2f( mt[1][0] / maxX, mt[1][1] / maxY );
+                    gl.glVertex2f( mt[2][0] / maxX, mt[2][1] / maxY );
 
-            gl.glVertex2f( mt.p2.x / maxX, mt.p2.y / maxY );
-            gl.glVertex2f( mt.p0.x / maxX, mt.p0.y / maxY );
+                    gl.glVertex2f( mt[2][0] / maxX, mt[2][1] / maxY );
+                    gl.glVertex2f( mt[0][0] / maxX, mt[0][1] / maxY );
+                }
+            }
         }
         gl.glEnd();
 
@@ -213,10 +221,7 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
 
         gl.glMatrixMode( GL.GL_MODELVIEW );
         gl.glLoadIdentity();
-        int posX = 0;
-        int posY = 0;
-        gl.glViewport( posX, posY, width, height );
-        gl.glScaled( width, height, 1 );
+        gl.glScalef( width, height, 1 );
     }
 
     @Override
@@ -224,110 +229,4 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
         LOG.trace( "displayChanged( GLAutoDrawable, boolean, boolean ) called" );
     }
 
-    private class MacroTriangle {
-
-        Point2f p0;
-
-        Point2f p1;
-
-        Point2f p2;
-
-        MacroTriangle( RenderMeshFragment fragment ) {
-
-            // really dumb (and slow), just used for debugging
-            float[][] bbox = fragment.getBBox();
-            Point2f v0 = new Point2f( bbox[0][0], bbox[0][1] );
-            Point2f v1 = new Point2f( bbox[1][0], bbox[0][1] );
-            Point2f v2 = new Point2f( bbox[1][0], bbox[1][1] );
-            Point2f v3 = new Point2f( bbox[0][0], bbox[1][1] );
-
-            boolean v0found = false;
-            boolean v1found = false;
-            boolean v2found = false;
-            boolean v3found = false;
-
-            double minX = Double.MAX_VALUE;
-            double minY = Double.MAX_VALUE;
-            double maxX = Double.MIN_VALUE;
-            double maxY = Double.MIN_VALUE;
-
-            FloatBuffer vertices = fragment.getData().getVertices();
-            while ( vertices.hasRemaining() ) {
-                float x = vertices.get();
-                float y = vertices.get();
-                vertices.get();
-
-                if ( x < minX ) {
-                    minX = x;
-                }
-                if ( x > maxX ) {
-                    maxX = x;
-                }
-                if ( y < minY ) {
-                    minY = y;
-                }
-                if ( y > maxY ) {
-                    maxY = y;
-                }
-
-                Point2f v = new Point2f( x, y );
-                if ( v.equals( v0 ) ) {
-                    v0found = true;
-                } else if ( v.equals( v1 ) ) {
-                    v1found = true;
-                } else if ( v.equals( v2 ) ) {
-                    v2found = true;
-                } else if ( v.equals( v3 ) ) {
-                    v3found = true;
-                }
-            }
-
-            if ( v0found && v1found ) {
-                p0 = v0;
-                p1 = v1;
-                if ( v2found ) {
-                    p2 = v2;
-                } else if ( v3found ) {
-                    p2 = v3;
-                } else {
-                    p2 = new Point2f( ( v1.x - v0.x ) / 2.0f + v0.x, v3.y );
-                }
-            } else if ( v2found && v3found ) {
-                p0 = v2;
-                p1 = v3;
-                if ( v0found ) {
-                    p2 = v0;
-                } else if ( v1found ) {
-                    p2 = v1;
-                } else {
-                    p2 = new Point2f( ( v3.x - v2.x ) / 2.0f + v2.x, v0.y );
-                }
-            } else if ( v1found && v2found ) {
-                p0 = v1;
-                p1 = v2;
-                if ( v0found ) {
-                    p2 = v0;
-                } else if ( v3found ) {
-                    p2 = v3;
-                } else {
-                    p2 = new Point2f( v0.x, ( v2.y - v1.y ) / 2.0f + v1.y );
-                }
-            } else if ( v3found && v0found ) {
-                p0 = v3;
-                p1 = v0;
-                if ( v1found ) {
-                    p2 = v1;
-                } else if ( v2found ) {
-                    p2 = v2;
-                } else {
-                    p2 = new Point2f( v1.x, ( v3.y - v0.y ) / 2.0f + v0.y );
-                }
-            } else {
-                p0 = v0;
-                p1 = v0;
-                p2 = v0;
-            }
-            vertices.rewind();
-        }
-    }
 }

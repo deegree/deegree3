@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.media.opengl.GL;
@@ -87,6 +88,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     // 1: normal buffer
     // 2: triangle buffer
     private int[] glBufferObjectIds;
+
+    private float[][] triangle;
 
     /**
      * @param fragment
@@ -409,5 +412,109 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
      */
     public boolean canAllocateEnoughMemory() {
         return this.fragment.canAllocateEnoughMemory();
+    }
+
+    /**
+     * @return the vertices of the macro triangle of this Mesh fragment. The returned array will have size [3][2], never
+     *         <code>null</code>.
+     */
+    public float[][] getTrianglePoints() {
+        synchronized ( LOCK ) {
+            if ( this.triangle == null ) {
+                triangle = new float[3][2];
+
+                // really dumb (and slow), just used for debugging
+                float[][] bbox = getBBox();
+
+                float[] v0 = new float[] { bbox[0][0], bbox[0][1] };
+                float[] v1 = new float[] { bbox[1][0], bbox[0][1] };
+                float[] v2 = new float[] { bbox[1][0], bbox[1][1] };
+                float[] v3 = new float[] { bbox[0][0], bbox[1][1] };
+
+                boolean v0found = false;
+                boolean v1found = false;
+                boolean v2found = false;
+                boolean v3found = false;
+
+                try {
+                    load();
+                } catch ( IOException e ) {
+                    if ( LOG.isDebugEnabled() ) {
+                        LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
+                    } else {
+                        LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
+                    }
+                }
+                if ( !isLoaded() ) {
+                    LOG.warn( "Could not determine macrotriangle corners, setting values to min." );
+                    triangle[0] = triangle[1] = triangle[2] = Arrays.copyOf( bbox[0], 2 );
+                }
+                FloatBuffer vertices = getData().getVertices().asReadOnlyBuffer();
+                vertices.rewind();
+                while ( vertices.hasRemaining() ) {
+                    float x = vertices.get();
+                    float y = vertices.get();
+                    vertices.get();
+                    if ( !v0found ) {
+                        v0found = ( Math.abs( v0[0] - x ) < 1E-10 ) && ( Math.abs( v0[1] - y ) < 1E-10 );
+                    }
+                    if ( !v1found ) {
+                        v1found = ( Math.abs( v1[0] - x ) < 1E-10 ) && ( Math.abs( v1[1] - y ) < 1E-10 );
+                    }
+                    if ( !v2found ) {
+                        v2found = ( Math.abs( v2[0] - x ) < 1E-10 ) && ( Math.abs( v2[1] - y ) < 1E-10 );
+                    }
+                    if ( !v3found ) {
+                        v3found = ( Math.abs( v3[0] - x ) < 1E-10 ) && ( Math.abs( v3[1] - y ) < 1E-10 );
+                    }
+                }
+                if ( v0found && v1found ) {
+                    triangle[0] = Arrays.copyOf( v0, 2 );
+                    triangle[1] = Arrays.copyOf( v1, 2 );
+                    if ( v2found ) {
+                        triangle[2] = Arrays.copyOf( v2, 2 );
+                    } else if ( v3found ) {
+                        triangle[2] = Arrays.copyOf( v3, 2 );
+                    } else {
+                        triangle[2] = new float[] { ( v1[0] - v0[0] ) / 2.0f + v0[0], v3[1] };
+                    }
+                } else if ( v2found && v3found ) {
+                    triangle[0] = Arrays.copyOf( v2, 2 );
+                    triangle[1] = Arrays.copyOf( v3, 2 );
+                    if ( v0found ) {
+                        triangle[2] = Arrays.copyOf( v0, 2 );
+                    } else if ( v1found ) {
+                        triangle[2] = Arrays.copyOf( v1, 2 );
+                    } else {
+                        triangle[2] = new float[] { ( v3[0] - v2[0] ) / 2.0f + v2[0], v0[1] };
+                    }
+                } else if ( v1found && v2found ) {
+                    triangle[0] = Arrays.copyOf( v1, 2 );
+                    triangle[1] = Arrays.copyOf( v2, 2 );
+                    if ( v0found ) {
+                        triangle[2] = Arrays.copyOf( v0, 2 );
+                    } else if ( v3found ) {
+                        triangle[2] = Arrays.copyOf( v3, 2 );
+                    } else {
+                        triangle[2] = new float[] { v0[0], ( v2[1] - v1[1] ) / 2.0f + v1[1] };
+                    }
+                } else if ( v3found && v0found ) {
+                    triangle[0] = Arrays.copyOf( v3, 2 );
+                    triangle[1] = Arrays.copyOf( v0, 2 );
+                    if ( v1found ) {
+                        triangle[2] = Arrays.copyOf( v1, 2 );
+                    } else if ( v2found ) {
+                        triangle[2] = Arrays.copyOf( v2, 2 );
+                    } else {
+                        triangle[2] = new float[] { v1[0], ( v3[1] - v0[1] ) / 2.0f + v0[1] };
+                    }
+                } else {
+                    LOG.warn( "Could not determine macrotriangle corners, setting values to min." );
+                    triangle[0] = triangle[1] = triangle[2] = Arrays.copyOf( v0, 2 );
+                }
+            }
+        }
+        return this.triangle;
+
     }
 }
