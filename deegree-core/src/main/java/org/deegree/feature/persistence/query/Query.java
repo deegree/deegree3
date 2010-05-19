@@ -174,6 +174,12 @@ public class Query {
         return hints.get( code );
     }
 
+    /**
+     * Returns the names of the requested feature types.
+     * 
+     * @return the names of the requested feature types, never <code>null</code> (but may be empty for id filter
+     *         queries)
+     */
     public TypeName[] getTypeNames() {
         return typeNames;
     }
