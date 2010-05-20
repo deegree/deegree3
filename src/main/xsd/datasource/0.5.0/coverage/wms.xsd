@@ -58,10 +58,10 @@
           <attribute name="height" type="integer" />
         </complexType>
       </element>
-      <element name="DefaultSRS" type="string" minOccurs="0" />
       <element name="RestrictedRequestParameter" type="wms:RestrictedRequestParameterType" minOccurs="0"
         maxOccurs="unbounded" />
     </sequence>
+    <attribute name="defaultSRS" type="string" use="optional" />
   </complexType>
 
   <element name="MultiResolutionRaster">
@@ -85,6 +85,7 @@
         </element>
       </sequence>
       <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="defaultSRS" type="string" use="optional"/>
     </complexType>
   </element>
 
