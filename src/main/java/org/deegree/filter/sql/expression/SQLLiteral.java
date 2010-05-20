@@ -33,65 +33,50 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql.postgis;
+package org.deegree.filter.sql.expression;
 
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.filter.expression.PropertyName;
+import java.sql.Types;
+
+import org.deegree.filter.expression.Literal;
+import org.deegree.geometry.Geometry;
 
 /**
- * Encapsulates the database mapping for a {@link PropertyName}.
- * <p>
- * TODO type information, table alias, join path?
- * </p>
+ * {@link SQLExpression} that represents a constant value, e.g. a string, a number or a geometry.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PropertyNameMapping {
+public class SQLLiteral implements SQLExpression {
 
-    private final String dbTable;
+    private int sqlType;
 
-    private final String dbColumn;
+    private boolean isSpatial;
 
-    private PrimitiveType dbColumnType;
+    private Object value;
 
-    /**
-     * 
-     * @param dbTable
-     * @param dbColumn
-     */
-    public PropertyNameMapping( String dbTable, String dbColumn ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
+    public SQLLiteral( Geometry geom ) {
+        this.value = geom;
+        this.sqlType = Types.OTHER;
     }
 
-    /**
-     * Generates a mapping with an additional information which type has the column.
-     * 
-     * @param dbTable
-     * @param dbColumn
-     * @param dbColumnType
-     */
-    public PropertyNameMapping( String dbTable, String dbColumn, PrimitiveType dbColumnType ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
-        this.dbColumnType = dbColumnType;
+    public SQLLiteral( Object value, int sqlType ) {
+        this.value = value;
+        this.sqlType = sqlType;
     }
 
-    public String getTable() {
-        return dbTable;
+    public SQLLiteral( Literal<?> literal ) {
+        // TODO Auto-generated constructor stub
     }
 
-    public String getColumn() {
-        return dbColumn;
+    @Override
+    public int getSQLType() {
+        return sqlType;
     }
 
-    /**
-     * @return the dbColumnType
-     */
-    public PrimitiveType getDbColumnType() {
-        return dbColumnType;
+    @Override
+    public boolean isSpatial() {
+        return isSpatial;
     }
 }

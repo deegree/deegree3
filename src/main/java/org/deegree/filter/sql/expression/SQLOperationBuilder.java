@@ -33,65 +33,41 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql.postgis;
+package org.deegree.filter.sql.expression;
 
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.filter.expression.PropertyName;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Encapsulates the database mapping for a {@link PropertyName}.
- * <p>
- * TODO type information, table alias, join path?
- * </p>
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PropertyNameMapping {
+public class SQLOperationBuilder {
 
-    private final String dbTable;
+    private List<Object> particles = new ArrayList<Object>();
 
-    private final String dbColumn;
-
-    private PrimitiveType dbColumnType;
-
-    /**
-     * 
-     * @param dbTable
-     * @param dbColumn
-     */
-    public PropertyNameMapping( String dbTable, String dbColumn ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
+    public SQLOperationBuilder( boolean matchCase ) {
+        // TODO Auto-generated constructor stub
     }
 
-    /**
-     * Generates a mapping with an additional information which type has the column.
-     * 
-     * @param dbTable
-     * @param dbColumn
-     * @param dbColumnType
-     */
-    public PropertyNameMapping( String dbTable, String dbColumn, PrimitiveType dbColumnType ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
-        this.dbColumnType = dbColumnType;
+    public SQLOperationBuilder() {
+        // TODO Auto-generated constructor stub
     }
 
-    public String getTable() {
-        return dbTable;
+    public void add( String s ) {
+        particles.add( s );
     }
 
-    public String getColumn() {
-        return dbColumn;
+    public void add( SQLExpression expr ) {
+        particles.add( expr );
     }
 
-    /**
-     * @return the dbColumnType
-     */
-    public PrimitiveType getDbColumnType() {
-        return dbColumnType;
+    public SQLOperation toOperation() {
+        return null;
     }
+
 }
