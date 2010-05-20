@@ -42,9 +42,9 @@ import org.deegree.filter.sql.expression.SQLExpression;
  * Indicates that (a part of) a {@link Filter} expression cannot be mapped to an equivalent {@link SQLExpression}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
 public class UnmappableException extends Exception {
 

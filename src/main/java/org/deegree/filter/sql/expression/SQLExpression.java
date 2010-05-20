@@ -36,6 +36,9 @@
 package org.deegree.filter.sql.expression;
 
 import java.sql.Types;
+import java.util.List;
+
+import org.deegree.cs.CRS;
 
 /**
  * Marks (a node of) an SQL expression with type information.
@@ -60,4 +63,29 @@ public interface SQLExpression {
      * @return true, if the expression is spatial, false otherwise
      */
     public boolean isSpatial();
+
+    /**
+     * Returns the SRS of the expression (only for spatial ones).
+     * 
+     * @return the SRS, can be <code>null</code> (unknown or not a spatial expression)
+     */
+    public CRS getSRS();
+
+    /**
+     * Returns the corresponding SQL snippet, with question marks for every {@link SQLLiteral} argument.
+     * 
+     * @see #getLiterals()
+     * 
+     * @return the corresponding SQL snippet, never <code>null</code>
+     */
+    public StringBuilder getSQL();
+
+    /**
+     * Returns the {@link SQLLiteral} that occur in the expression, in same order as in the SQL snippet.
+     * 
+     * @see #getSQL()
+     * 
+     * @return the SQL literals, never <code>null</code>
+     */
+    public List<SQLLiteral> getLiterals();
 }

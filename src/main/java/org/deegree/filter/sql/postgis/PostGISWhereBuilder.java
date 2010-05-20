@@ -35,30 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.postgis;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import static java.sql.Types.BOOLEAN;
+
+import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import org.deegree.filter.Expression;
-import org.deegree.filter.Filter;
+import org.deegree.cs.CRS;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.comparison.ComparisonOperator;
-import org.deegree.filter.comparison.PropertyIsBetween;
-import org.deegree.filter.comparison.PropertyIsEqualTo;
-import org.deegree.filter.comparison.PropertyIsGreaterThan;
-import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
-import org.deegree.filter.comparison.PropertyIsLessThan;
-import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
-import org.deegree.filter.comparison.PropertyIsNotEqualTo;
-import org.deegree.filter.comparison.PropertyIsNull;
-import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Beyond;
@@ -72,51 +59,41 @@ import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
+import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.expression.SQLColumn;
+import org.deegree.filter.sql.expression.SQLExpression;
+import org.deegree.filter.sql.expression.SQLLiteral;
+import org.deegree.filter.sql.expression.SQLOperation;
+import org.deegree.filter.sql.expression.SQLOperationBuilder;
 import org.deegree.filter.sql.islike.IsLikeString;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.WKBWriter;
+
+import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Creates SQL-WHERE clauses from {@link Filter} expressions (to restrict SQL <code>ResultSet</code>s to those rows that
- * contain objects that match a given filter). Also handles the creation of ORDER BY clauses.
- * <p>
- * Note that the generated WHERE and ORDER-BY clauses are sometimes not sufficient to guarantee that the
- * <code>ResultSet</code> only contains the targeted objects and/or keeps the requested order. This happens when the
- * {@link PropertyName}s used in the Filter/sort criteria are not mappable to columns in the database or the contained
- * XPath expressions are not mappable to an equivalent SQL expression. In these cases, one or both of the methods
- * {@link #getPostFilter()}/{@link #getPostSortCriteria()} return not null and the objects extracted from the
- * corresponding {@link ResultSet} must be filtered/sorted in memory to guarantee the requested constraints/order.
- * </p>
+ * {@link AbstractWhereBuilder} implementation for PostGIS databases.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISWhereBuilder {
+public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
     private final PostGISMapping mapping;
 
-    private final OperatorFilter filter;
-
     private final boolean useLegacyPredicates;
 
-    private OperatorFilter postFilter;
-
-    private SortProperty[] postSortCrit;
-
-    private StringBuilder whereClause = new StringBuilder();
-
-    private Collection<Object> whereParams = new ArrayList<Object>();
-
-    private StringBuilder orderBy = new StringBuilder();
-
-    private List<PropertyNameMapping> propNameMappingList;
+    private final List<PropertyNameMapping> propNameMappingList;
 
     /**
      * Creates a new {@link PostGISWhereBuilder} instance.
      * 
      * @param mapping
-     *            provides the mapping for {@link PropertyName}s, must not be <code>null</code>
+     *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
@@ -125,53 +102,14 @@ public class PostGISWhereBuilder {
      *            if true, legacy PostGIS spatial predicates are used (e.g <code>Intersects</code> instead of
      *            <code>ST_Intersects</code>)
      * @throws FilterEvaluationException
-     *             if the filter contains invalid {@link PropertyName}s
      */
     public PostGISWhereBuilder( PostGISMapping mapping, OperatorFilter filter, SortProperty[] sortCrit,
                                 boolean useLegacyPredicates ) throws FilterEvaluationException {
-        this.mapping = mapping;
-        this.filter = filter;
+        super( filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
-        propNameMappingList = new ArrayList<PropertyNameMapping>();
-        if ( filter != null ) {
-            buildWhere( filter.getOperator() );
-        }
-        if ( sortCrit != null ) {
-            buildOrderBy( sortCrit );
-        }
-    }
-
-    /**
-     * Returns the SQL-WHERE clause, without leading "WHERE" keyword.
-     * 
-     * @return the WHERE clause, can be empty, but never <code>null</code>
-     */
-    public StringBuilder getWhereClause() {
-        if ( postFilter != null ) {
-            return new StringBuilder();
-        }
-        return whereClause;
-    }
-
-    /**
-     * Returns the parameters to be set ({@link PreparedStatement#setObject(int, Object)} for the SQL-WHERE clause.
-     * 
-     * @return the list of parameters, can be empty, but never <code>null</code>
-     */
-    public Collection<Object> getWhereParams() {
-        return whereParams;
-    }
-
-    /**
-     * Returns the SQL-WHERE clause, without leading "ORDER BY" keyword.
-     * 
-     * @return the ORDER BY clause, can be empty, but never <code>null</code>
-     */
-    public StringBuilder getOrderBy() {
-        if ( postSortCrit != null ) {
-            return new StringBuilder();
-        }
-        return orderBy;
+        this.mapping = mapping;
+        this.propNameMappingList = new ArrayList<PropertyNameMapping>();
+        build();
     }
 
     /**
@@ -182,157 +120,23 @@ public class PostGISWhereBuilder {
     }
 
     /**
-     * TODO
-     * 
-     * @return
-     */
-    public String getJoinTables() {
-        return null;
-    }
-
-    /**
-     * Returns a {@link Filter} that contains all constraints from the input filter that could not be expressed in the
-     * WHERE clause.
-     * 
-     * @return filter to apply on the objects from the <code>ResultSet</code>, may be <code>null</code> (no
-     *         post-filtering necessary)
-     */
-    public OperatorFilter getPostFilter() {
-        return postFilter;
-    }
-
-    /**
-     * Returns the sort criteria that contains all parts from the input sort criteria that could not be expressed in the
-     * ORDER BY clause.
-     * 
-     * @return sort criteria to apply on the objects from the <code>ResultSet</code>, may be <code>null</code> (no
-     *         post-sorting necessary)
-     */
-    public SortProperty[] getPostSortCriteria() {
-        return postSortCrit;
-    }
-
-    private void buildWhere( Operator op )
-                            throws FilterEvaluationException {
-
-        switch ( op.getType() ) {
-        case COMPARISON: {
-            buildWhere( (ComparisonOperator) op );
-            break;
-        }
-        case LOGICAL: {
-            buildWhere( (LogicalOperator) op );
-            break;
-        }
-        case SPATIAL: {
-            buildWhere( (SpatialOperator) op );
-            break;
-        }
-        }
-    }
-
-    private void buildWhere( ComparisonOperator op )
-                            throws FilterEvaluationException {
-
-        // TODO make type inference fail-proof
-        List<PropertyName> involvedProps = new ArrayList<PropertyName>();
-        for ( Expression expr : op.getParams() ) {
-            determineInvolvedProps( expr, involvedProps );
-        }
-        PropertyName correspondingProp = null;
-        if ( !involvedProps.isEmpty() ) {
-            correspondingProp = involvedProps.get( 0 );
-        }
-
-        switch ( op.getSubType() ) {
-        case PROPERTY_IS_BETWEEN: {
-            PropertyIsBetween propIsBetween = (PropertyIsBetween) op;
-            buildWhere( propIsBetween.getUpperBoundary(), !propIsBetween.getMatchCase(), correspondingProp );
-            whereClause.append( ">=" );
-            buildWhere( propIsBetween.getExpression(), !propIsBetween.getMatchCase(), correspondingProp );
-            whereClause.append( "<=" );
-            buildWhere( propIsBetween.getLowerBoundary(), !propIsBetween.getMatchCase(), correspondingProp );
-            break;
-        }
-        case PROPERTY_IS_EQUAL_TO: {
-            PropertyIsEqualTo propIsEqualTo = (PropertyIsEqualTo) op;
-            buildWhere( propIsEqualTo.getParameter1(), !propIsEqualTo.getMatchCase(), correspondingProp );
-            whereClause.append( "=" );
-            buildWhere( propIsEqualTo.getParameter2(), !propIsEqualTo.getMatchCase(), correspondingProp );
-            break;
-        }
-        case PROPERTY_IS_GREATER_THAN: {
-            PropertyIsGreaterThan propIsGT = (PropertyIsGreaterThan) op;
-            buildWhere( propIsGT.getParameter1(), !propIsGT.getMatchCase(), correspondingProp );
-            whereClause.append( ">" );
-            buildWhere( propIsGT.getParameter2(), !propIsGT.getMatchCase(), correspondingProp );
-            break;
-        }
-        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO: {
-            PropertyIsGreaterThanOrEqualTo propIsGTOrEqualTo = (PropertyIsGreaterThanOrEqualTo) op;
-            buildWhere( propIsGTOrEqualTo.getParameter1(), !propIsGTOrEqualTo.getMatchCase(), correspondingProp );
-            whereClause.append( ">=" );
-            buildWhere( propIsGTOrEqualTo.getParameter2(), !propIsGTOrEqualTo.getMatchCase(), correspondingProp );
-            break;
-        }
-        case PROPERTY_IS_LESS_THAN: {
-            PropertyIsLessThan propIsLT = (PropertyIsLessThan) op;
-            buildWhere( propIsLT.getParameter1(), !propIsLT.getMatchCase(), correspondingProp );
-            whereClause.append( "<" );
-            buildWhere( propIsLT.getParameter2(), !propIsLT.getMatchCase(), correspondingProp );
-            break;
-        }
-        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO: {
-            PropertyIsLessThanOrEqualTo propIsLTOrEqualTo = (PropertyIsLessThanOrEqualTo) op;
-            buildWhere( propIsLTOrEqualTo.getParameter1(), !propIsLTOrEqualTo.getMatchCase(), correspondingProp );
-            whereClause.append( "<=" );
-            buildWhere( propIsLTOrEqualTo.getParameter2(), !propIsLTOrEqualTo.getMatchCase(), correspondingProp );
-            break;
-        }
-        case PROPERTY_IS_LIKE: {
-            buildWhere( (PropertyIsLike) op );
-            break;
-        }
-        case PROPERTY_IS_NOT_EQUAL_TO: {
-            PropertyIsNotEqualTo propIsNotEqualTo = (PropertyIsNotEqualTo) op;
-            buildWhere( propIsNotEqualTo.getParameter1(), !propIsNotEqualTo.getMatchCase(), correspondingProp );
-            whereClause.append( "<>" );
-            buildWhere( propIsNotEqualTo.getParameter2(), !propIsNotEqualTo.getMatchCase(), correspondingProp );
-            break;
-        }
-        case PROPERTY_IS_NULL: {
-            PropertyIsNull propIsNull = (PropertyIsNull) op;
-            buildWhere( propIsNull.getPropertyName(), false, correspondingProp );
-            whereClause.append( " IS NULL" );
-            break;
-        }
-        }
-    }
-
-    /**
-     * TODO better shot at type inference
-     */
-    private void determineInvolvedProps( Expression expr, List<PropertyName> props ) {
-        if ( expr instanceof PropertyName ) {
-            props.add( (PropertyName) expr );
-        } else {
-            for ( Expression subExpr : expr.getParams() ) {
-                determineInvolvedProps( subExpr, props );
-            }
-        }
-    }
-
-    /**
-     * NOTE: Currently, this method appends the generated argument inline, i.e. not using a <code>?</code>. This is
-     * because of a problem that occurred in PostgreSQL; the execution of the inline version is *much* faster (at least
-     * with version 8.0).
+     * Translates the given {@link PropertyIsLike} into an {@link SQLOperation}.
+     * <p>
+     * NOTE: This method appends the generated argument inline, i.e. not using a <code>?</code>. This is because of a
+     * problem that has been observed with PostgreSQL 8.0; the execution of the inline version is *much* faster.
+     * </p>
      * 
      * @param op
-     * 
+     *            comparison operator to be translated, must not be <code>null</code>
+     * @return corresponding SQL expression, never <code>null</code>
+     * @throws UnmappableException
+     *             if translation is not possible (usually due to unmappable property names)
      * @throws FilterEvaluationException
+     *             if the expression contains invalid {@link PropertyName}s
      */
-    private void buildWhere( PropertyIsLike op )
-                            throws FilterEvaluationException {
+    @Override
+    protected SQLOperation toProtoSQL( PropertyIsLike op )
+                            throws UnmappableException, FilterEvaluationException {
 
         String literal = op.getLiteral().getValue().toString();
         String escape = "" + op.getEscapeChar();
@@ -343,345 +147,213 @@ public class PostGISWhereBuilder {
         // TODO lowerCasing?
         String sqlEncoded = specialString.toSQL( !op.getMatchCase() );
 
-        // if isMatchCase == false surround first argument with LOWER (...) and convert characters
-        // in second argument to lower case
-        if ( op.getMatchCase() ) {
-            buildWhere( op.getPropertyName() );
-        } else {
-            whereClause.append( "LOWER(" );
-            buildWhere( op.getPropertyName() );
-            whereClause.append( ')' );
-        }
-
-        whereClause.append( "::TEXT LIKE '" );
-        whereClause.append( sqlEncoded );
-        whereClause.append( "'" );
+        SQLOperationBuilder builder = new SQLOperationBuilder( op.getMatchCase() );
+        builder.add( toProtoSQL( op.getPropertyName() ) );
+        builder.add( "::TEXT LIKE '" );
+        builder.add( sqlEncoded );
+        builder.add( "'" );
+        return builder.toOperation();
     }
 
-    private void buildWhere( LogicalOperator op )
-                            throws FilterEvaluationException {
-        switch ( op.getSubType() ) {
-        case AND: {
-            whereClause.append( "(" );
-            buildWhere( op.getParams()[0] );
-            whereClause.append( ")" );
-            for ( int i = 1; i < op.getParams().length; i++ ) {
-                whereClause.append( " AND (" );
-                buildWhere( op.getParams()[i] );
-                whereClause.append( ")" );
-            }
-            break;
-        }
-        case OR: {
-            whereClause.append( "(" );
-            buildWhere( op.getParams()[0] );
-            whereClause.append( ")" );
-            for ( int i = 1; i < op.getParams().length; i++ ) {
-                whereClause.append( " OR (" );
-                buildWhere( op.getParams()[i] );
-                whereClause.append( ")" );
-            }
-            break;
-        }
-        case NOT: {
-            whereClause.append( "NOT (" );
-            buildWhere( op.getParams()[0] );
-            whereClause.append( ")" );
-            break;
-        }
-        }
-    }
+    @Override
+    protected SQLOperation toProtoSQL( SpatialOperator op )
+                            throws UnmappableException, FilterEvaluationException {
 
-    private void buildWhere( SpatialOperator op )
-                            throws FilterEvaluationException {
+        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+
+        SQLExpression propNameExpr = toProtoSQL( op.getPropName() );
+        if ( !propNameExpr.isSpatial() ) {
+            String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
+                         + "' does not denote a spatial column.";
+            throw new FilterEvaluationException( msg );
+        }
+
+        CRS storageCRS = propNameExpr.getSRS();
+
         switch ( op.getSubType() ) {
         case BBOX: {
             BBOX bbox = (BBOX) op;
-            PropertyName propName = bbox.getPropertyName();
-            buildWhere( propName );
-            whereClause.append( " && " );
-            buildWhere( bbox.getBoundingBox(), propName );
+            builder.add( propNameExpr );
+            builder.add( " && " );
+            builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS ) );
             break;
         }
         case BEYOND: {
             Beyond beyond = (Beyond) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "NOT dwithin(" );
+                builder.add( "NOT dwithin(" );
             } else {
-                whereClause.append( "NOT ST_DWithin(" );
+                builder.add( "NOT ST_DWithin(" );
             }
-            PropertyName propName = beyond.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( beyond.getGeometry(), propName );
-            whereClause.append( ',' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( beyond.getGeometry(), storageCRS ) );
+            builder.add( "," );
             // TODO uom handling
-            whereClause.append( beyond.getDistance().getValue().toPlainString() );
-            whereClause.append( ')' );
+            builder.add( new SQLLiteral( beyond.getDistance().getValue(), Types.NUMERIC ) );
+            builder.add( ")" );
             break;
         }
         case CONTAINS: {
             Contains contains = (Contains) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "contains(" );
+                builder.add( "contains(" );
             } else {
-                whereClause.append( "ST_Contains(" );
+                builder.add( "ST_Contains(" );
             }
-            PropertyName propName = contains.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( contains.getGeometry(), propName );
-            whereClause.append( ')' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( contains.getGeometry(), storageCRS ) );
+            builder.add( ")" );
             break;
         }
         case CROSSES: {
             Crosses crosses = (Crosses) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "crosses(" );
+                builder.add( "crosses(" );
             } else {
-                whereClause.append( "ST_Crosses(" );
+                builder.add( "ST_Crosses(" );
             }
-            PropertyName propName = crosses.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( crosses.getGeometry(), propName );
-
-            whereClause.append( ')' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( crosses.getGeometry(), storageCRS ) );
+            builder.add( ")" );
             break;
         }
         case DISJOINT: {
             Disjoint disjoint = (Disjoint) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "disjoint(" );
+                builder.add( "disjoint(" );
             } else {
-                whereClause.append( "ST_Disjoint(" );
+                builder.add( "ST_Disjoint(" );
             }
-            PropertyName propName = disjoint.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( disjoint.getGeometry(), propName );
-            whereClause.append( ')' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( disjoint.getGeometry(), storageCRS ) );
+            builder.add( ")" );
             break;
         }
         case DWITHIN: {
             DWithin dWithin = (DWithin) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "dwithin(" );
+                builder.add( "dwithin(" );
             } else {
-                whereClause.append( "ST_DWithin(" );
+                builder.add( "ST_DWithin(" );
             }
-            PropertyName propName = dWithin.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( dWithin.getGeometry(), propName );
-            whereClause.append( ',' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( dWithin.getGeometry(), storageCRS ) );
+            builder.add( "," );
             // TODO uom handling
-            whereClause.append( dWithin.getDistance().getValue().toPlainString() );
-            whereClause.append( ')' );
+            builder.add( new SQLLiteral( dWithin.getDistance().getValue(), Types.NUMERIC ) );
+            builder.add( ")" );
             break;
         }
         case EQUALS: {
             Equals equals = (Equals) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "equals(" );
+                builder.add( "equals(" );
             } else {
-                whereClause.append( "ST_Equals(" );
+                builder.add( "ST_Equals(" );
             }
-            PropertyName propName = equals.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( equals.getGeometry(), propName );
-            whereClause.append( ')' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( equals.getGeometry(), storageCRS ) );
+            builder.add( ")" );
             break;
         }
         case INTERSECTS: {
             Intersects intersects = (Intersects) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "intersects(" );
+                builder.add( "intersects(" );
             } else {
-                whereClause.append( "ST_Intersects(" );
+                builder.add( "ST_Intersects(" );
             }
-            PropertyName propName = intersects.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( intersects.getGeometry(), propName );
-            whereClause.append( ')' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( intersects.getGeometry(), storageCRS ) );
+            builder.add( ")" );
             break;
         }
         case OVERLAPS: {
             Overlaps overlaps = (Overlaps) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "overlaps(" );
+                builder.add( "overlaps(" );
             } else {
-                whereClause.append( "ST_Overlaps(" );
+                builder.add( "ST_Overlaps(" );
             }
-            PropertyName propName = overlaps.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( overlaps.getGeometry(), propName );
-            whereClause.append( ')' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( overlaps.getGeometry(), storageCRS ) );
+            builder.add( ")" );
             break;
         }
         case TOUCHES: {
             Touches touches = (Touches) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "touches(" );
+                builder.add( "touches(" );
             } else {
-                whereClause.append( "ST_Touches(" );
+                builder.add( "ST_Touches(" );
             }
-            PropertyName propName = touches.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( touches.getGeometry(), propName );
-            whereClause.append( ')' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( touches.getGeometry(), storageCRS ) );
+            builder.add( ")" );
             break;
         }
         case WITHIN: {
             Within within = (Within) op;
             if ( useLegacyPredicates ) {
-                whereClause.append( "within(" );
+                builder.add( "within(" );
             } else {
-                whereClause.append( "ST_Within(" );
+                builder.add( "ST_Within(" );
             }
-            PropertyName propName = within.getPropName();
-            buildWhere( propName );
-            whereClause.append( ',' );
-            buildWhere( within.getGeometry(), propName );
-            whereClause.append( ')' );
+            builder.add( propNameExpr );
+            builder.add( "," );
+            builder.add( toProtoSQL( within.getGeometry(), storageCRS ) );
+            builder.add( ")" );
             break;
         }
         }
+        return builder.toOperation();
     }
 
-    private void buildWhere( PropertyName propName )
-                            throws FilterEvaluationException {
-
+    @Override
+    protected SQLExpression toProtoSQL( PropertyName propName )
+                            throws UnmappableException, FilterEvaluationException {
+        SQLExpression sql = null;
         PropertyNameMapping propMapping = mapping.getMapping( propName );
         if ( propMapping != null ) {
             propNameMappingList.add( propMapping );
-            whereClause.append( propMapping.getTable() );
-            whereClause.append( '.' );
-            whereClause.append( propMapping.getColumn() );
+            sql = new SQLColumn( propMapping.getTable(), propMapping.getColumn(), propMapping.isSpatial(),
+                                 propMapping.getSQLType() );
         } else {
-            postFilter = filter;
+            throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
         }
+        return sql;
     }
 
-    private void buildWhere( Geometry geometry, PropertyName correspondingProp )
-                            throws FilterEvaluationException {
-        // TODO srs
-        whereClause.append( "GeomFromWKB(?,-1)" );
-        whereParams.add( mapping.getPostGISValue( geometry, correspondingProp ) );
-    }
-
-    private void buildWhere( Expression expr, boolean lowerCase, PropertyName correspondingProp )
-                            throws FilterEvaluationException {
-        switch ( expr.getType() ) {
-        case ADD: {
-            whereClause.append( "(" );
-            buildWhere( expr.getParams()[0], false, correspondingProp );
-            whereClause.append( "+" );
-            buildWhere( expr.getParams()[1], false, correspondingProp );
-            whereClause.append( ")" );
-            break;
-        }
-        case DIV: {
-            whereClause.append( "(" );
-            buildWhere( expr.getParams()[0], false, correspondingProp );
-            whereClause.append( "/" );
-            buildWhere( expr.getParams()[1], false, correspondingProp );
-            whereClause.append( ")" );
-            break;
-        }
-        case FUNCTION: {
-            break;
-        }
-        case LITERAL: {
-            if ( lowerCase ) {
-                whereClause.append( "LOWER(?)" );
-            } else {
-                whereClause.append( "?" );
-            }
-            // convert the literal to the appropriate SQL type
-            Object pgObject = mapping.getPostGISValue( (Literal<?>) expr, correspondingProp );
-            whereParams.add( pgObject );
-            break;
-        }
-        case MUL: {
-            whereClause.append( "(" );
-            buildWhere( expr.getParams()[0], false, correspondingProp );
-            whereClause.append( "*" );
-            buildWhere( expr.getParams()[1], false, correspondingProp );
-            whereClause.append( ")" );
-            break;
-        }
-        case PROPERTY_NAME: {
-            PropertyNameMapping propMapping = mapping.getMapping( (PropertyName) expr );
-            if ( propMapping != null ) {
-                propNameMappingList.add( propMapping );
-                if ( lowerCase ) {
-                    whereClause.append( "LOWER(" );
-                    whereClause.append( propMapping.getTable() );
-                    whereClause.append( '.' );
-                    whereClause.append( propMapping.getColumn() );
-                    whereClause.append( ')' );
-                } else {
-                    whereClause.append( propMapping.getTable() );
-                    whereClause.append( '.' );
-                    whereClause.append( propMapping.getColumn() );
-                }
-            }
-            break;
-        }
-        case SUB: {
-            whereClause.append( "(" );
-            buildWhere( expr.getParams()[0], false, correspondingProp );
-            whereClause.append( "-" );
-            buildWhere( expr.getParams()[1], false, correspondingProp );
-            whereClause.append( ")" );
-            break;
-        }
-        }
-    }
-
-    private void buildOrderBy( SortProperty[] sortCrits )
+    private SQLExpression toProtoSQL( Geometry geom, CRS targetCRS )
                             throws FilterEvaluationException {
 
-        for ( SortProperty sortCrit : sortCrits ) {
-            PropertyNameMapping propMapping = mapping.getMapping( sortCrit.getSortProperty() );
-            if ( propMapping == null ) {
-                postSortCrit = sortCrits;
-                continue;
-            }
-            if ( orderBy.length() > 0 ) {
-                orderBy.append( ',' );
-            }
-            orderBy.append( propMapping.getTable() );
-            orderBy.append( '.' );
-            orderBy.append( propMapping.getColumn() );
-            if ( sortCrit.getSortOrder() ) {
-                orderBy.append( " ASC" );
-            } else {
-                orderBy.append( " DESC" );
+        Geometry transformedGeom = geom;
+        if ( targetCRS != null && !targetCRS.equals( geom.getCoordinateSystem() ) ) {
+            try {
+                GeometryTransformer transformer = new GeometryTransformer( targetCRS.getWrappedCRS() );
+                transformedGeom = transformer.transform( geom );
+            } catch ( Exception e ) {
+                String msg = "Transforming of geometry literal to storage CRS failed: " + e.getMessage();
+                throw new FilterEvaluationException( msg );
             }
         }
-    }
 
-    // /**
-    // * Prevents the propNameMappingList to add duplicate tables.
-    // *
-    // * @param propMapping
-    // */
-    // private void addToPropNameMappingList( PropertyNameMapping propMapping ) {
-    //
-    // if ( propNameMappingList != null ) {
-    // for ( PropertyNameMapping propName : propNameMappingList ) {
-    // if ( propName.getTable().equals( propMapping.getTable() ) ) {
-    // return;
-    // }
-    // }
-    // }
-    // propNameMappingList.add( propMapping );
-    //
-    // }
+        byte[] wkb = null;
+        try {
+            wkb = WKBWriter.write( transformedGeom );
+        } catch ( ParseException e ) {
+            String msg = "Transforming of geometry literal to WKB: " + e.getMessage();
+            throw new FilterEvaluationException( msg );
+        }
+        return new SQLLiteral( wkb, Types.BINARY );
+    }
 }

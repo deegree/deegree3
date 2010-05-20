@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.expression;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.deegree.cs.CRS;
+
 /**
  * {@link SQLExpression} that represents a table column.
  * 
@@ -51,6 +56,8 @@ public class SQLColumn implements SQLExpression {
 
     private String column;
 
+    private String table;
+
     public SQLColumn( String column ) {
         this.column = column;
         isSpatial = true;
@@ -61,6 +68,18 @@ public class SQLColumn implements SQLExpression {
         this.sqlType = sqlType;
     }
 
+    public SQLColumn( String table, String column, boolean spatial, int sqlType ) {
+        this.table = table;
+        this.column = column;
+        this.sqlType = sqlType;
+    }
+
+    @Override
+    public CRS getSRS() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     @Override
     public int getSQLType() {
         return sqlType;
@@ -69,5 +88,24 @@ public class SQLColumn implements SQLExpression {
     @Override
     public boolean isSpatial() {
         return isSpatial;
+    }
+
+    @Override
+    public String toString() {
+        return table + "." + column;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SQLLiteral> getLiterals() {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public StringBuilder getSQL() {
+        StringBuilder sb = new StringBuilder( table );
+        sb.append( "." );
+        sb.append( column );
+        return sb;
     }
 }

@@ -87,11 +87,21 @@ public class PropertyNameMapping {
     public String getColumn() {
         return dbColumn;
     }
+    
+    public boolean isSpatial () {
+        // TODO
+        return false;
+    }
 
     /**
      * @return the dbColumnType
      */
     public PrimitiveType getDbColumnType() {
         return dbColumnType;
+    }
+
+    public int getSQLType() {
+        // TODO Auto-generated method stub
+        return -1;
     }
 }

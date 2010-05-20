@@ -39,6 +39,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.UnmappableException;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -60,9 +61,10 @@ public interface PostGISMapping {
      * @return relational mapping, may be <code>null</code> (if no mapping is possible)
      * @throws FilterEvaluationException
      *             thrown to indicate that the {@link PropertyName} is invalid
+     * @throws UnmappableException 
      */
     public PropertyNameMapping getMapping( PropertyName propName )
-                            throws FilterEvaluationException;
+                            throws FilterEvaluationException, UnmappableException;
 
     /**
      * @param literal
@@ -70,7 +72,7 @@ public interface PostGISMapping {
      * @return
      * @throws FilterEvaluationException
      */
-    public Object getPostGISValue( Literal literal, PropertyName propName )
+    public Object getPostGISValue( Literal<?> literal, PropertyName propName )
                             throws FilterEvaluationException;
 
     /**

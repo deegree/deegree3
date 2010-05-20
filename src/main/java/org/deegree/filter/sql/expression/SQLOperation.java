@@ -35,8 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.expression;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.cs.CRS;
+
 /**
- * {@link SQLExpression} that represents an operation, e.g. an addition, an intersects predicate or distance
+ * {@link SQLExpression} that represents an operation, e.g. an addition, an intersects predicate or a distance
  * calculation.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -50,16 +55,10 @@ public class SQLOperation implements SQLExpression {
 
     private boolean isSpatial;
 
-    private String column;
+    private List<Object> particles;
 
-    public SQLOperation( String column ) {
-        this.column = column;
-        isSpatial = true;
-    }
-
-    public SQLOperation( String column, int sqlType ) {
-        this.column = column;
-        this.sqlType = sqlType;
+    public SQLOperation( List<Object> particles ) {
+        this.particles = particles;
     }
 
     @Override
@@ -70,5 +69,47 @@ public class SQLOperation implements SQLExpression {
     @Override
     public boolean isSpatial() {
         return isSpatial;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for ( Object particle : particles ) {
+            sb.append( particle );
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public List<SQLLiteral> getLiterals() {
+        List<SQLLiteral> literals = new ArrayList<SQLLiteral>();
+        for ( Object particle : particles ) {
+            if ( particle instanceof SQLExpression ) {
+                if ( particle instanceof SQLLiteral ) {
+                    literals.add( (SQLLiteral) particle );
+                } else {
+                    literals.addAll( ( (SQLExpression) particle ).getLiterals() );
+                }
+            }
+        }
+        return literals;
+    }
+
+    @Override
+    public StringBuilder getSQL() {
+        StringBuilder sb = new StringBuilder();
+        for ( Object particle : particles ) {
+            if ( particle instanceof SQLExpression ) {
+                sb.append( ((SQLExpression) particle).getSQL() );
+            } else {
+                sb.append( particle );
+            }
+        }
+        return sb;
+    }
+
+    @Override
+    public CRS getSRS() {
+        return null;
     }
 }

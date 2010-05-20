@@ -74,6 +74,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -146,7 +147,7 @@ public class PostGISFeatureStore implements FeatureStore {
      *            <code>null</code>
      */
     PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchema, CRS storageSRS,
-                                Map<QName, FeatureTypeMapping> relMapping ) {
+                         Map<QName, FeatureTypeMapping> relMapping ) {
         this.schema = schema;
         this.jdbcConnId = jdbcConnId;
         this.dbSchema = dbSchema;
@@ -583,11 +584,11 @@ public class PostGISFeatureStore implements FeatureStore {
                 sql += " AND x1.gml_bounded_by && ?";
 
             }
-            if ( wb != null && wb.getWhereClause().length() > 0 ) {
-                sql += " AND " + wb.getWhereClause();
+            if ( wb != null && wb.getWhereClause() != null ) {
+                sql += " AND " + wb.getWhereClause().getSQL();
             }
-            if ( wb != null && wb.getOrderBy().length() > 0 ) {
-                sql += " ORDER BY " + wb.getOrderBy();
+            if ( wb != null && wb.getOrderBy() != null ) {
+                sql += " ORDER BY " + wb.getOrderBy().getSQL();
             }
 
             stmt = conn.prepareStatement( sql );
@@ -598,10 +599,10 @@ public class PostGISFeatureStore implements FeatureStore {
             if ( looseBBox != null ) {
                 stmt.setObject( argIdx++, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
             }
-            if ( wb != null && wb.getWhereClause().length() > 0 ) {
-                for ( Object arg : wb.getWhereParams() ) {
-                    LOG.debug( "Setting argument: " + arg );
-                    stmt.setObject( argIdx++, arg );
+            if ( wb != null && wb.getWhereClause() != null ) {
+                for ( SQLLiteral literal : wb.getWhereClause().getLiterals() ) {
+                    LOG.debug( "Setting argument: " + literal );
+                    stmt.setObject( argIdx++, literal.getValue() );
                 }
             }
             rs = stmt.executeQuery();

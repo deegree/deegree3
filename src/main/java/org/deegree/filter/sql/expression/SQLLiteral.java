@@ -36,7 +36,10 @@
 package org.deegree.filter.sql.expression;
 
 import java.sql.Types;
+import java.util.Collections;
+import java.util.List;
 
+import org.deegree.cs.CRS;
 import org.deegree.filter.expression.Literal;
 import org.deegree.geometry.Geometry;
 
@@ -59,15 +62,19 @@ public class SQLLiteral implements SQLExpression {
     public SQLLiteral( Geometry geom ) {
         this.value = geom;
         this.sqlType = Types.OTHER;
+        this.isSpatial = true;
     }
 
     public SQLLiteral( Object value, int sqlType ) {
         this.value = value;
         this.sqlType = sqlType;
+        this.isSpatial = false;
     }
 
     public SQLLiteral( Literal<?> literal ) {
-        // TODO Auto-generated constructor stub
+        this.value = literal.getValue();
+        this.sqlType = -1;
+        this.isSpatial = false;
     }
 
     @Override
@@ -75,8 +82,32 @@ public class SQLLiteral implements SQLExpression {
         return sqlType;
     }
 
+    public Object getValue() {
+        return value;
+    }
+    
     @Override
     public boolean isSpatial() {
         return isSpatial;
+    }
+
+    @Override
+    public String toString() {
+        return "'" + value + "'";
+    }
+
+    @Override
+    public List<SQLLiteral> getLiterals() {
+        return Collections.singletonList( this );
+    }
+
+    @Override
+    public StringBuilder getSQL() {
+        return new StringBuilder ("?");
+    }
+
+    @Override
+    public CRS getSRS() {
+        return isSpatial ? ((Geometry) value).getCoordinateSystem() : null;
     }
 }

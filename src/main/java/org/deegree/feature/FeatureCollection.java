@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
 import java.util.Collection;
@@ -44,22 +44,22 @@ import org.deegree.filter.FilterEvaluationException;
 /**
  * A feature collection is a collection of {@link Feature} instances.
  * <p>
- * Note that a {@link FeatureCollection} is a {@link Feature} itself, which complies to the common interpretation, e.g.
- * in GML.
+ * Note that a {@link FeatureCollection} is a {@link Feature} itself, which complies to GML feature collection
+ * definitions.
  * </p>
- *
+ * 
  * @see Feature
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- *
+ * 
  * @version $Revision: 13814 $, $Date: 2008-09-02 20:28:13 +0200 (Di, 02 Sep 2008) $
  */
 public interface FeatureCollection extends Feature, Collection<Feature> {
 
     /**
      * Returns the type information for this feature collection.
-     *
+     * 
      * @return the type information, never <code>null</code>
      */
     @Override
@@ -67,7 +67,7 @@ public interface FeatureCollection extends Feature, Collection<Feature> {
 
     /**
      * Returns the contained features that match the given {@link Filter}.
-     *
+     * 
      * @param filter
      *            <code>Filter</code> to be applied, must not be <code>null</code>
      * @return matching feature instances as a new <code>FeatureCollection</code>

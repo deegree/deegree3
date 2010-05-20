@@ -43,6 +43,7 @@ import org.deegree.cs.CRS;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.i18n.Messages;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -113,6 +114,13 @@ public abstract class SpatialOperator implements Operator {
     }
 
     /**
+     * Returns the name of the spatial property to be considered.
+     * 
+     * @return the name of the property, may be <code>null</code> (only for {@link BBOX})
+     */
+    public abstract PropertyName getPropName();
+
+    /**
      * Performs a checked cast to {@link Geometry}. If the given value is neither null nor a {@link Geometry} instance,
      * a corresponding {@link FilterEvaluationException} is thrown.
      * 
@@ -128,7 +136,7 @@ public abstract class SpatialOperator implements Operator {
             if ( value instanceof Geometry ) {
                 geom = (Geometry) value;
             } else if ( value instanceof Property && ( (Property) value ).getValue() instanceof Geometry ) {
-                geom = (Geometry) ((Property) value).getValue();
+                geom = (Geometry) ( (Property) value ).getValue();
             } else {
                 String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
                 throw new FilterEvaluationException( msg );

@@ -43,6 +43,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.filter.sql.expression.SQLExpression;
+import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 
 /**
@@ -69,16 +71,15 @@ public class GenerateWhereClauseList {
     /**
      * Generates a new instance of the {@link GenerateWhereClauseList}.
      * 
-     * @param _whereBuilder
-     *            should not be <Code>null</Code>
-     * @param _whereParams
-     *            could be <Code>null</Code>
-     * 
+     * @param whereClause
+     *            must not be <code>null</code>
      */
-    public GenerateWhereClauseList( StringBuilder _whereBuilder, Collection<Object> _whereParams ) {
-        this.whereBuilder = _whereBuilder;
-        this.whereParams = _whereParams;
-
+    public GenerateWhereClauseList( SQLExpression whereClause ) {
+        this.whereBuilder = whereClause.getSQL();
+        whereParams = new ArrayList<Object>();
+        for ( SQLLiteral literal : whereClause.getLiterals() ) {
+            whereParams.add( literal.getValue() );
+        }
     }
 
     /**
