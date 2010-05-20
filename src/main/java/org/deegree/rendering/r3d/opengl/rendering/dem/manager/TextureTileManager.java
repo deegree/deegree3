@@ -41,8 +41,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.LinkedHashSet;
 
 import org.deegree.commons.utils.log.LoggingNotes;
-import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -176,6 +174,7 @@ public class TextureTileManager {
             }
             provider = providers[i];
         }
+        System.out.println( "Using povider with native resolution: " + provider.getNativeResolution() );
         return provider;
     }
 
@@ -230,32 +229,32 @@ public class TextureTileManager {
                                         glRenderContext.getMaxTextureSize() );
 
         if ( provider instanceof RasterAPITextureTileProvider ) {
-            RasterGeoReference geoRef = ( (RasterAPITextureTileProvider) provider ).getRasterReference();
+            // RasterGeoReference geoRef = ( (RasterAPITextureTileProvider) provider ).getRasterReference();
             Envelope env = geomFac.createEnvelope( fragmentBBoxWorldCoordinates[0], fragmentBBoxWorldCoordinates[1],
                                                    null );
-            RasterRect rect = geoRef.convertEnvelopeToRasterCRS( env );
-            boolean createNewEnv = false;
+            // RasterRect rect = geoRef.convertEnvelopeToRasterCRS( env );
+            // boolean createNewEnv = false;
             // make the result an even number of pixels.
-            if ( rect.width % 2 != 0 ) {
-                if ( rect.width + 1 >= glRenderContext.getMaxTextureSize() ) {
-                    rect.width--;
-                } else {
-                    rect.width++;
-                }
-                createNewEnv = true;
-            }
-            if ( rect.height % 2 != 0 ) {
-                if ( rect.height + 1 >= glRenderContext.getMaxTextureSize() ) {
-                    rect.height--;
-                } else {
-                    rect.height++;
-                }
-                createNewEnv = true;
-            }
-
-            if ( createNewEnv ) {
-                env = geoRef.getEnvelope( rect, null );
-            }
+            // if ( rect.width % 2 != 0 ) {
+            // if ( rect.width + 1 >= glRenderContext.getMaxTextureSize() ) {
+            // rect.width--;
+            // } else {
+            // rect.width++;
+            // }
+            // createNewEnv = true;
+            // }
+            // if ( rect.height % 2 != 0 ) {
+            // if ( rect.height + 1 >= glRenderContext.getMaxTextureSize() ) {
+            // rect.height--;
+            // } else {
+            // rect.height++;
+            // }
+            // createNewEnv = true;
+            // }
+            //
+            // if ( createNewEnv ) {
+            // env = geoRef.getEnvelope( rect, null );
+            // }
             int xAxis = 0;
             if ( provider.getCRS() != null ) {
                 CoordinateSystem crs = null;

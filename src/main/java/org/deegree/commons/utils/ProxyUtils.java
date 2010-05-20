@@ -102,7 +102,8 @@ public final class ProxyUtils {
      * 
      * @param proxyConfigFile
      */
-    public synchronized static void setupProxyParameters( File proxyConfigFile ) throws IllegalArgumentException {
+    public synchronized static void setupProxyParameters( File proxyConfigFile )
+                            throws IllegalArgumentException {
         try {
             String contextName = "org.deegree.commons.proxy.jaxb";
             JAXBContext jc = JAXBContext.newInstance( contextName );
@@ -113,7 +114,7 @@ public final class ProxyUtils {
             }
         } catch ( Exception e ) {
             String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
-            throw new IllegalArgumentException (msg, e);
+            throw new IllegalArgumentException( msg, e );
         }
     }
 
@@ -246,6 +247,19 @@ public final class ProxyUtils {
         } else {
             System.clearProperty( key );
         }
+    }
+
+    /**
+     * This method should be used everywhere instead of <code>URL.openConnection()</code>, as it copes with proxies that
+     * require user authentication. This method will retrieve the configured password and user name.
+     * 
+     * @param url
+     * @return connection
+     * @throws IOException
+     */
+    public static URLConnection openURLConnection( URL url )
+                            throws IOException {
+        return openURLConnection( url, getProxyUser(), getProxyPassword() );
     }
 
     /**
