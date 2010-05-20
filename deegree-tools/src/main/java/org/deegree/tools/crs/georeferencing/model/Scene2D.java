@@ -41,6 +41,7 @@ import java.net.URL;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 
@@ -60,7 +61,7 @@ public interface Scene2D {
      * @param sceneBounds
      * @return
      */
-    public BufferedImage generateImage( Rectangle sceneBounds );
+    public BufferedImage generateImage( RasterRect sceneBounds );
 
     /**
      * Generates the predicted image for a faster repainting.
@@ -68,7 +69,7 @@ public interface Scene2D {
      * @param envelope
      * @return
      */
-    public BufferedImage generatePredictedImage( Envelope envelope );
+    public BufferedImage generatePredictedImage( Rectangle predictedBounds, Envelope envelope );
 
     /**
      * This should set the boundingbox for the image to draw.
@@ -94,7 +95,7 @@ public interface Scene2D {
      * 
      * @return
      */
-    public BufferedImage getRequestedImage();
+    public BufferedImage getGeneratedImage();
 
     /**
      * Determines the boundingbox for the initialized request.
@@ -110,7 +111,7 @@ public interface Scene2D {
      * 
      * @return
      */
-    public Envelope getRequestBoundingbox();
+    public Envelope getHoleRequestBoundingbox();
 
     /**
      * Returns the predicted boundinbox
@@ -130,5 +131,9 @@ public interface Scene2D {
      * Resets all of the variables to initial value.
      */
     public void reset();
+
+    public BufferedImage getPredictedImage();
+
+    Point2d getOnePixel();
 
 }

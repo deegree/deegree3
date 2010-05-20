@@ -44,7 +44,7 @@ import javax.swing.JPanel;
 
 /**
  * 
- * TODO add class documentation here
+ * Panel for drawing the footprints of an imported geometry.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -80,7 +80,7 @@ public class BuildingFootprintPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
 
         if ( image != null ) {
-
+            System.out.println( "draw the image in footPanel" );
             g2.drawImage( image, 0, 0, this.getBounds().width, this.getBounds().height, this );
 
         }

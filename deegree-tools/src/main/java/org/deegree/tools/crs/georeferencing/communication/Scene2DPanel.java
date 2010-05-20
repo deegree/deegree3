@@ -72,8 +72,11 @@ public class Scene2DPanel extends JPanel {
 
     private double resolutionOfImage;
 
+    private Graphics2D g2;
+
     public Scene2DPanel() {
         resolutionOfImage = 0.15;
+
     }
 
     /**
@@ -83,23 +86,29 @@ public class Scene2DPanel extends JPanel {
      */
     public void init( BufferedImage imageToDraw ) {
         this.imageToDraw = imageToDraw;
+        init();
+
+    }
+
+    public void init() {
         imageMargin = new Point2d( this.imageToDraw.getWidth() * margin, this.imageToDraw.getHeight() * margin );
         beginDrawImageAtPosition = new Point2d( 0 - imageMargin.getX(), 0 - imageMargin.getY() );
         imageDimension = new Point2d( ( this.imageToDraw.getWidth() + imageMargin.getX() * 2 ),
                                       ( this.imageToDraw.getHeight() + imageMargin.getY() * 2 ) );
-        // System.out.println( "beginDrawing the image: " + beginDrawImageAtPosition );
+        System.out.println( "beginDrawing the image: " + beginDrawImageAtPosition );
+        System.out.println( "margin the image: " + imageMargin );
     }
 
     @Override
     public void paintComponent( Graphics g ) {
         super.paintComponent( g );
-        Graphics2D g2 = (Graphics2D) g;
+        g2 = (Graphics2D) g;
 
         if ( imageToDraw != null ) {
 
             g2.drawImage( imageToDraw, (int) beginDrawImageAtPosition.getX(), (int) beginDrawImageAtPosition.getY(),
                           (int) imageDimension.getX(), (int) imageDimension.getY(), this );
-            System.out.println( "Begin: " + beginDrawImageAtPosition + " Boundaries: " + imageDimension );
+            System.out.println( "Begin: " + beginDrawImageAtPosition );
 
         }
 
@@ -167,6 +176,19 @@ public class Scene2DPanel extends JPanel {
 
     public BufferedImage getImageToDraw() {
         return imageToDraw;
+    }
+
+    public void setImageToDraw( BufferedImage imageToDraw ) {
+        this.imageToDraw = imageToDraw;
+
+    }
+
+    public Graphics2D getG2() {
+        return g2;
+    }
+
+    public Point2d getImageDimension() {
+        return imageDimension;
     }
 
 }

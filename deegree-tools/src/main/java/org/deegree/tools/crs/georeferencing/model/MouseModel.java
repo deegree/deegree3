@@ -108,7 +108,7 @@ public class MouseModel {
      */
     public void reset() {
         cumulatedMouseChanging = NULL_POINT;
-        // mouseChanging = null;
+        mouseChanging = null;
         // cumulatedMouseChanging = null;
         // pointMousePressed = null;
 

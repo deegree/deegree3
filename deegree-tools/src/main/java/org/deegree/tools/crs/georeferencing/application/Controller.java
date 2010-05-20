@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -51,6 +50,7 @@ import java.net.URL;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
@@ -83,16 +83,24 @@ public class Controller {
 
     private BufferedImage predictedImage;
 
-    private GeometryFactory fac;
+    private GeometryFactory geomFactory;
 
     private boolean wentIntoCriticalRegion;
+
+    private Point2d changePoint;
+
+    private RasterRect rect;
+
+    // private Rectangle predictedBounds;
+
+    private Envelope bbox;
 
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
         this.model = model;
         panel = view.getScenePanel2D();
         footPanel = view.getFootprintPanel();
-        this.fac = new GeometryFactory();
+        this.geomFactory = new GeometryFactory();
 
         view.addScene2DurlListener( new Scene2DurlListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
@@ -117,6 +125,7 @@ public class Controller {
          */
         @Override
         public void actionPerformed( ActionEvent e ) {
+
             try {
                 scene2DUrl = new URL( view.openUrl() );
             } catch ( MalformedURLException e1 ) {
@@ -124,8 +133,11 @@ public class Controller {
             }
             mouse = new MouseModel();
             model.reset();
-            setSightWindowAttributes( model.determineRequestBoundingbox( scene2DUrl, fac ) );
-            panel.init( model.generateImage( panel.getBounds() ) );
+            setSightWindowAttributes( model.determineRequestBoundingbox( scene2DUrl, geomFactory ) );
+
+            rect = new RasterRect( panel.getBounds() );
+
+            panel.init( model.generateImage( rect ) );
             panel.repaint();
             panel.addScene2DMouseListener( new Scene2DMouseListener() );
             // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
@@ -155,8 +167,8 @@ public class Controller {
         double minY = y0 + boundingboxCenter.getY() - sight.getY();
         double maxY = y1 - boundingboxCenter.getY() + sight.getY();
 
-        model.setSightWindowBoundingbox( fac.createEnvelope( minX, minY, maxX, maxY,
-                                                             holeRequestBoundingbox.getCoordinateSystem() ) );
+        model.setSightWindowBoundingbox( geomFactory.createEnvelope( minX, minY, maxX, maxY,
+                                                                     holeRequestBoundingbox.getCoordinateSystem() ) );
 
     }
 
@@ -218,15 +230,14 @@ public class Controller {
                  || mouse.getCumulatedMouseChanging().getY() >= panel.getImageMargin().getY()
                  || mouse.getCumulatedMouseChanging().getY() <= -panel.getImageMargin().getY() ) {
 
-                // Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
-                // mouse.getCumulatedMouseChanging().getY() );
-                //
-                // System.out.println( "my new Point2D: " + updateDrawImageAtPosition );
-                BufferedImage img = model.getRequestedImage();
-                panel.init( img );
-                Graphics2D g = img.createGraphics();
-                g.drawImage( predictedImage, 0, 0, panel.getWidth(), panel.getHeight(), panel );
+                Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
+                                                                 mouse.getCumulatedMouseChanging().getY() );
 
+                System.out.println( "my new Point2D: " + updateDrawImageAtPosition );
+                model.changeImageBoundingbox( updateDrawImageAtPosition );
+                // panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
+                System.out.println( "changepoint: " + changePoint );
+                panel.init( predictedImage );
                 mouse.reset();
                 panel.repaint();
 
@@ -242,7 +253,6 @@ public class Controller {
             }
 
         }
-
     }
 
     /**
@@ -260,13 +270,21 @@ public class Controller {
 
         public Prediction( Point2d changing ) {
             this.changing = changing;
+
         }
 
         public void run() {
 
-            System.out.println( "Threadchange: " + changing );
-            model.changePredictionBoundingbox( changing );
-            predictedImage = model.generatePredictedImage( model.getPredictionBoundingbox() );
+            // predictedBounds = new Rectangle( (int) ( panel.getBounds().getWidth() * ( 1 + panel.getMargin() ) ),
+            // (int) ( panel.getBounds().getHeight() * ( 1 + panel.getMargin() ) ) );
+
+            changePoint = new Point2d( changing.getX(), changing.getY() );
+            System.out.println( "Threadchange: " + changePoint );
+
+            model.changePredictionBoundingbox( changePoint );
+
+            bbox = model.getPredictionBoundingbox();
+            predictedImage = model.generatePredictedImage( panel.getBounds(), bbox );
             footPanel.setImage( predictedImage );
             footPanel.repaint();
 
@@ -318,8 +336,8 @@ public class Controller {
                 panel.setResolutionOfImage( panel.getResolutionOfImage() * 1.3 );
             }
             model.reset();
-            setSightWindowAttributes( model.getRequestBoundingbox() );
-            panel.init( model.generateImage( panel.getBounds() ) );
+            setSightWindowAttributes( model.getHoleRequestBoundingbox() );
+            // panel.init( model.generateImage( panel.getBounds() ) );
             panel.repaint();
 
         }
@@ -353,9 +371,10 @@ public class Controller {
         public void componentResized( ComponentEvent c ) {
             if ( model.getImageBoundingbox() != null ) {
                 model.reset();
-                setSightWindowAttributes( model.getRequestBoundingbox() );
-                panel.init( model.generateImage( panel.getBounds() ) );
+                setSightWindowAttributes( model.getHoleRequestBoundingbox() );
+                // panel.init( model.generateImage( panel.getBounds() ) );
                 panel.repaint();
+
             }
 
         }
