@@ -90,6 +90,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
+import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.protocol.csw.CSWConstants;
@@ -524,8 +525,7 @@ public class ISORecordStore implements RecordStore {
         List<Pair<StringBuilder, Collection<Object>>> preparedStatementList = new ArrayList<Pair<StringBuilder, Collection<Object>>>();
 
         List<Pair<StringBuilder, Collection<Object>>> whereClauseList = new GenerateWhereClauseList(
-                                                                                                     builder.getWhereClause(),
-                                                                                                     builder.getWhereParams() ).generateList();
+                                                                                                     builder.getWhereClause() ).generateList();
 
         switch ( recordStoreOptions.getSetOfReturnableElements() ) {
 
@@ -1115,8 +1115,7 @@ public class ISORecordStore implements RecordStore {
                     List<Pair<StringBuilder, Collection<Object>>> preparedStatementList = new ArrayList<Pair<StringBuilder, Collection<Object>>>();
 
                     List<Pair<StringBuilder, Collection<Object>>> whereClauseList = new GenerateWhereClauseList(
-                                                                                                                 builder.getWhereClause(),
-                                                                                                                 builder.getWhereParams() ).generateList();
+                                                                                                                 builder.getWhereClause() ).generateList();
 
                     for ( Pair<StringBuilder, Collection<Object>> whereBuilderPair : whereClauseList ) {
                         try {
@@ -1316,7 +1315,7 @@ public class ISORecordStore implements RecordStore {
         PreparedStatement stmt = null;
         StringBuilder constraintExpression = new StringBuilder();
 
-        StringBuilder stringBuilder = builder.getWhereClause();
+        StringBuilder stringBuilder = builder.getWhereClause().getSQL();
 
         if ( stringBuilder.length() != 0 ) {
             constraintExpression.append( " AND (" ).append( builder.getWhereClause() ).append( ')' );
@@ -1360,11 +1359,10 @@ public class ISORecordStore implements RecordStore {
 
         stmt = conn.prepareStatement( s.toString() );
 
-        if ( builder.getWhereClause().length() > 0 ) {
-            for ( Object arg : builder.getWhereParams() ) {
-                LOG.info( "Setting argument: " + arg );
-                stmt.setObject( 1, arg );
-
+        if ( builder.getWhereClause() != null ) {
+            for ( SQLLiteral literal : builder.getWhereClause().getLiterals() ) {
+                LOG.info( "Setting argument: " + literal );
+                stmt.setObject( 1, literal.getValue() );
             }
         }
 

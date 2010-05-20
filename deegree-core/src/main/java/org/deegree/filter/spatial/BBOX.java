@@ -96,7 +96,7 @@ public class BBOX extends SpatialOperator {
      * @return the name of the property, may be <code>null</code> (implies that the default geometry property of the
      *         object should be used)
      */
-    public PropertyName getPropertyName() {
+    public PropertyName getPropName() {
         return propName;
     }
 

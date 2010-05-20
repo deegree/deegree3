@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Helper class for building {@link SQLOperation} expressions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -48,14 +48,22 @@ import java.util.List;
  */
 public class SQLOperationBuilder {
 
+    private int sqlType;    
+    
+    private boolean matchCase = true;
+
     private List<Object> particles = new ArrayList<Object>();
 
-    public SQLOperationBuilder( boolean matchCase ) {
-        // TODO Auto-generated constructor stub
+    public SQLOperationBuilder( int sqlType ) {
+        this.sqlType = sqlType;
     }
 
     public SQLOperationBuilder() {
-        // TODO Auto-generated constructor stub
+        // nothing to do
+    }
+
+    public SQLOperationBuilder( boolean matchCase ) {
+        this.matchCase = matchCase;
     }
 
     public void add( String s ) {
@@ -67,7 +75,6 @@ public class SQLOperationBuilder {
     }
 
     public SQLOperation toOperation() {
-        return null;
+        return new SQLOperation( particles );
     }
-
 }

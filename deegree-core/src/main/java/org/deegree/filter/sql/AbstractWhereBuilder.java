@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql;
 
+import static java.sql.Types.BOOLEAN;
+
 import java.sql.ResultSet;
 import java.sql.Types;
 
@@ -67,9 +69,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * DB-independent base class for creating of SQL-Expressions from {@link Filter} expressions. Such an expression
- * restricts an SQL <code>ResultSet</code> to those rows that contains objects that match the given filter. Also handles
- * the creation of ORDER BY clauses.
+ * Base class for creating of SQL predicates from {@link Filter} expressions. Such an expression restricts an SQL
+ * <code>ResultSet</code> to those rows that contains objects that match the given filter. Also handles the creation of
+ * ORDER BY clauses.
  * <p>
  * Note that the generated WHERE and ORDER-BY expressions are sometimes not sufficient to guarantee that the
  * <code>ResultSet</code> only contains the targeted objects and/or keeps the requested order. This happens when the
@@ -92,6 +94,10 @@ public abstract class AbstractWhereBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractWhereBuilder.class );
 
+    private final OperatorFilter filter;
+
+    private final SortProperty[] sortCrit;
+
     private SQLExpression whereClause;
 
     private SQLExpression orderByClause;
@@ -111,11 +117,24 @@ public abstract class AbstractWhereBuilder {
      *             if the filter contains invalid {@link PropertyName}s
      */
     protected AbstractWhereBuilder( OperatorFilter filter, SortProperty[] sortCrit ) throws FilterEvaluationException {
+        this.filter = filter;
+        this.sortCrit = sortCrit;
+    }
+
+    /**
+     * Invokes the building of the internal variables that store filter and sort criteria.
+     * 
+     * @throws FilterEvaluationException
+     */
+    protected void build()
+                            throws FilterEvaluationException {
         if ( filter != null ) {
             try {
                 whereClause = toProtoSQL( filter.getOperator() );
             } catch ( UnmappableException e ) {
+                e.printStackTrace();
                 LOG.debug( "Unable to map filter to WHERE-clause. Setting post filter." );
+                LOG.warn( "Using full filter for post filtering step. Partial backend-filtering is not implemented yet. " );
                 postFilter = filter;
             }
         }
@@ -123,7 +142,9 @@ public abstract class AbstractWhereBuilder {
             try {
                 orderByClause = toProtoSQL( sortCrit );
             } catch ( UnmappableException e ) {
+                e.printStackTrace();
                 LOG.debug( "Unable to map sort criteria to ORDER-BY-clause. Setting post order criteria." );
+                LOG.warn( "Using all sort criteria for post sorting step. Partial backend-sorting is not implemented yet. " );
                 postSortCrit = sortCrit;
             }
         }
@@ -177,9 +198,11 @@ public abstract class AbstractWhereBuilder {
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
      */
     protected SQLExpression toProtoSQL( Operator op )
-                            throws UnmappableException {
+                            throws UnmappableException, FilterEvaluationException {
 
         SQLExpression sql = null;
         switch ( op.getType() ) {
@@ -200,72 +223,74 @@ public abstract class AbstractWhereBuilder {
     }
 
     /**
-     * Translates the given {@link ComparisonOperator} into an {@link SQLOperation}.
+     * Translates the given {@link ComparisonOperator} into an {@link SQLExpression}.
      * 
      * @param op
      *            comparison operator to be translated, must not be <code>null</code>
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
      */
-    protected SQLOperation toProtoSQL( ComparisonOperator op )
-                            throws UnmappableException {
+    protected SQLExpression toProtoSQL( ComparisonOperator op )
+                            throws UnmappableException, FilterEvaluationException {
 
         SQLOperation sqlOper = null;
 
         switch ( op.getSubType() ) {
         case PROPERTY_IS_BETWEEN: {
             PropertyIsBetween propIsBetween = (PropertyIsBetween) op;
-            SQLOperationBuilder builder = new SQLOperationBuilder( propIsBetween.getMatchCase() );
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
             builder.add( toProtoSQL( propIsBetween.getLowerBoundary() ) );
-            builder.add( ">=" );
+            builder.add( " >= " );
             builder.add( toProtoSQL( propIsBetween.getExpression() ) );
-            builder.add( "<=" );
+            builder.add( " <= " );
             builder.add( toProtoSQL( propIsBetween.getUpperBoundary() ) );
             sqlOper = builder.toOperation();
             break;
         }
         case PROPERTY_IS_EQUAL_TO: {
             PropertyIsEqualTo propIsEqualTo = (PropertyIsEqualTo) op;
-            SQLOperationBuilder builder = new SQLOperationBuilder( propIsEqualTo.getMatchCase() );
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
             builder.add( toProtoSQL( propIsEqualTo.getParameter1() ) );
-            builder.add( "=" );
+            builder.add( " = " );
             builder.add( toProtoSQL( propIsEqualTo.getParameter2() ) );
             sqlOper = builder.toOperation();
             break;
         }
         case PROPERTY_IS_GREATER_THAN: {
             PropertyIsGreaterThan propIsGT = (PropertyIsGreaterThan) op;
-            SQLOperationBuilder builder = new SQLOperationBuilder( propIsGT.getMatchCase() );
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
             builder.add( toProtoSQL( propIsGT.getParameter1() ) );
-            builder.add( ">" );
+            builder.add( " > " );
             builder.add( toProtoSQL( propIsGT.getParameter2() ) );
             sqlOper = builder.toOperation();
             break;
         }
         case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO: {
             PropertyIsGreaterThanOrEqualTo propIsGTOrEqualTo = (PropertyIsGreaterThanOrEqualTo) op;
-            SQLOperationBuilder builder = new SQLOperationBuilder( propIsGTOrEqualTo.getMatchCase() );
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
             builder.add( toProtoSQL( propIsGTOrEqualTo.getParameter1() ) );
-            builder.add( ">=" );
+            builder.add( " >= " );
             builder.add( toProtoSQL( propIsGTOrEqualTo.getParameter2() ) );
             sqlOper = builder.toOperation();
             break;
         }
         case PROPERTY_IS_LESS_THAN: {
             PropertyIsLessThan propIsLT = (PropertyIsLessThan) op;
-            SQLOperationBuilder builder = new SQLOperationBuilder( propIsLT.getMatchCase() );
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
             builder.add( toProtoSQL( propIsLT.getParameter1() ) );
-            builder.add( "<" );
+            builder.add( " < " );
             builder.add( toProtoSQL( propIsLT.getParameter2() ) );
             sqlOper = builder.toOperation();
             break;
         }
         case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO: {
             PropertyIsLessThanOrEqualTo propIsLTOrEqualTo = (PropertyIsLessThanOrEqualTo) op;
-            SQLOperationBuilder builder = new SQLOperationBuilder( propIsLTOrEqualTo.getMatchCase() );
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
             builder.add( toProtoSQL( propIsLTOrEqualTo.getParameter1() ) );
-            builder.add( "<=" );
+            builder.add( " <= " );
             builder.add( toProtoSQL( propIsLTOrEqualTo.getParameter2() ) );
             sqlOper = builder.toOperation();
             break;
@@ -276,16 +301,16 @@ public abstract class AbstractWhereBuilder {
         }
         case PROPERTY_IS_NOT_EQUAL_TO: {
             PropertyIsNotEqualTo propIsNotEqualTo = (PropertyIsNotEqualTo) op;
-            SQLOperationBuilder builder = new SQLOperationBuilder( propIsNotEqualTo.getMatchCase() );
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
             builder.add( toProtoSQL( propIsNotEqualTo.getParameter1() ) );
-            builder.add( "<>" );
+            builder.add( " <> " );
             builder.add( toProtoSQL( propIsNotEqualTo.getParameter2() ) );
             sqlOper = builder.toOperation();
             break;
         }
         case PROPERTY_IS_NULL: {
             PropertyIsNull propIsNull = (PropertyIsNull) op;
-            SQLOperationBuilder builder = new SQLOperationBuilder( propIsNull.getMatchCase() );
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
             builder.add( toProtoSQL( propIsNull.getPropertyName() ) );
             builder.add( " IS NULL" );
             sqlOper = builder.toOperation();
@@ -303,9 +328,11 @@ public abstract class AbstractWhereBuilder {
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
      */
     protected SQLOperation toProtoSQL( PropertyIsLike op )
-                            throws UnmappableException {
+                            throws UnmappableException, FilterEvaluationException {
 
         String literal = op.getLiteral().getValue().toString();
         String escape = "" + op.getEscapeChar();
@@ -316,7 +343,7 @@ public abstract class AbstractWhereBuilder {
         // TODO lowerCasing?
         String sqlEncoded = specialString.toSQL( !op.getMatchCase() );
 
-        SQLOperationBuilder builder = new SQLOperationBuilder( op.getMatchCase() );
+        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
         builder.add( toProtoSQL( op.getPropertyName() ) );
         builder.add( " LIKE " );
         builder.add( new SQLLiteral( sqlEncoded, Types.VARCHAR ) );
@@ -332,41 +359,42 @@ public abstract class AbstractWhereBuilder {
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
      */
     protected SQLOperation toProtoSQL( LogicalOperator op )
-                            throws UnmappableException {
+                            throws UnmappableException, FilterEvaluationException {
 
-        SQLOperation sqlOper = null;
+        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
 
         switch ( op.getSubType() ) {
         case AND: {
-            SQLOperationBuilder builder = new SQLOperationBuilder();
+            builder.add( "(" );
             builder.add( toProtoSQL( op.getParams()[0] ) );
             for ( int i = 1; i < op.getParams().length; i++ ) {
                 builder.add( " AND " );
                 builder.add( toProtoSQL( op.getParams()[i] ) );
             }
-            sqlOper = builder.toOperation();
+            builder.add( ")" );
             break;
         }
         case OR: {
-            SQLOperationBuilder builder = new SQLOperationBuilder();
+            builder.add( "(" );
             builder.add( toProtoSQL( op.getParams()[0] ) );
             for ( int i = 1; i < op.getParams().length; i++ ) {
                 builder.add( " OR " );
                 builder.add( toProtoSQL( op.getParams()[i] ) );
             }
-            sqlOper = builder.toOperation();
+            builder.add( ")" );
             break;
         }
         case NOT: {
-            SQLOperationBuilder builder = new SQLOperationBuilder();
             builder.add( "NOT " );
             builder.add( toProtoSQL( op.getParams()[0] ) );
             break;
         }
         }
-        return sqlOper;
+        return builder.toOperation();
     }
 
     /**
@@ -377,9 +405,11 @@ public abstract class AbstractWhereBuilder {
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
      */
     protected abstract SQLOperation toProtoSQL( SpatialOperator op )
-                            throws UnmappableException;
+                            throws UnmappableException, FilterEvaluationException;
 
     /**
      * Translates the given {@link Expression} into an {@link SQLExpression}.
@@ -389,26 +419,32 @@ public abstract class AbstractWhereBuilder {
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
      */
     protected SQLExpression toProtoSQL( Expression expr )
-                            throws UnmappableException {
+                            throws UnmappableException, FilterEvaluationException {
 
         SQLExpression sql = null;
 
         switch ( expr.getType() ) {
         case ADD: {
             SQLOperationBuilder builder = new SQLOperationBuilder();
+            builder.add( "(" );
             builder.add( toProtoSQL( expr.getParams()[0] ) );
             builder.add( "+" );
             builder.add( toProtoSQL( expr.getParams()[1] ) );
+            builder.add( ")" );
             sql = builder.toOperation();
             break;
         }
         case DIV: {
             SQLOperationBuilder builder = new SQLOperationBuilder();
+            builder.add( "(" );
             builder.add( toProtoSQL( expr.getParams()[0] ) );
             builder.add( "/" );
             builder.add( toProtoSQL( expr.getParams()[1] ) );
+            builder.add( ")" );
             sql = builder.toOperation();
             break;
         }
@@ -422,9 +458,11 @@ public abstract class AbstractWhereBuilder {
         }
         case MUL: {
             SQLOperationBuilder builder = new SQLOperationBuilder();
+            builder.add( "(" );
             builder.add( toProtoSQL( expr.getParams()[0] ) );
             builder.add( "*" );
             builder.add( toProtoSQL( expr.getParams()[1] ) );
+            builder.add( ")" );
             sql = builder.toOperation();
             break;
         }
@@ -434,9 +472,11 @@ public abstract class AbstractWhereBuilder {
         }
         case SUB: {
             SQLOperationBuilder builder = new SQLOperationBuilder();
+            builder.add( "(" );
             builder.add( toProtoSQL( expr.getParams()[0] ) );
             builder.add( "-" );
             builder.add( toProtoSQL( expr.getParams()[1] ) );
+            builder.add( ")" );
             sql = builder.toOperation();
             break;
         }
@@ -452,9 +492,11 @@ public abstract class AbstractWhereBuilder {
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
      */
     protected SQLExpression toProtoSQL( Literal<?> literal )
-                            throws UnmappableException {
+                            throws UnmappableException, FilterEvaluationException {
         return new SQLLiteral( literal );
     }
 
@@ -466,9 +508,11 @@ public abstract class AbstractWhereBuilder {
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
      */
     protected abstract SQLExpression toProtoSQL( PropertyName expr )
-                            throws UnmappableException;
+                            throws UnmappableException, FilterEvaluationException;
 
     /**
      * Translates the given {@link SortProperty} array into an {@link SQLExpression}.
@@ -478,9 +522,11 @@ public abstract class AbstractWhereBuilder {
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
      *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link PropertyName}s
      */
     protected SQLExpression toProtoSQL( SortProperty[] sortCrits )
-                            throws UnmappableException {
+                            throws UnmappableException, FilterEvaluationException {
 
         SQLOperationBuilder builder = new SQLOperationBuilder();
         for ( int i = 0; i < sortCrits.length; i++ ) {
