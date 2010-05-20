@@ -236,6 +236,7 @@ public class WMSReader implements RasterReader {
             throw new IOException( "No capabilities url found to read from." );
         }
         this.dataLocationId = sysId;
+        LOG.debug( "Creating xml adapter from stream to capabilities:{}", sysId );
         XMLAdapter capabilities = new XMLAdapter( stream );
         capabilities.setSystemId( sysId );
 

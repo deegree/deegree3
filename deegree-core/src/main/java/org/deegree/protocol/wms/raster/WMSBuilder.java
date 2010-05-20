@@ -49,11 +49,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.persistence.CoverageBuilder;
@@ -120,33 +122,35 @@ public class WMSBuilder implements CoverageBuilder {
      */
     private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter ) {
         if ( mrrConfig != null ) {
-//            String defCRS = mrrConfig.getCrs();
-            String defCRS = null;
+            String defCRS = mrrConfig.getDefaultSRS();
+            // String defCRS = null;
             CRS crs = null;
             if ( defCRS != null ) {
                 crs = new CRS( defCRS );
             }
             RasterIOOptions options = getOptions( mrrConfig );
+
             MultiResolutionRaster mrr = new MultiResolutionRaster();
             mrr.setCoordinateSystem( crs );
             for ( Resolution resolution : mrrConfig.getResolution() ) {
-                AbstractRaster rasterLevel = null;
-                try {
-                    if ( resolution.getRes() != null ) {
-                        options.add( RIO_WMS_MAX_SCALE, resolution.getRes().toString() );
+                if ( resolution != null ) {
+                    AbstractRaster rasterLevel = null;
+                    try {
+                        options.add( RIO_WMS_MAX_SCALE, resolution.getRes() == null ? null
+                                                                                   : resolution.getRes().toString() );
+                        rasterLevel = fromJAXB( resolution, adapter, options );
+                    } catch ( IOException e ) {
+                        if ( LOG.isDebugEnabled() ) {
+                            LOG.debug( "(Stack) Exception occurred while creating a resolution wms datasource: "
+                                       + e.getLocalizedMessage(), e );
+                        } else {
+                            LOG.error( "Exception occurred while creating a resolution wms datasource: "
+                                       + e.getLocalizedMessage() );
+                        }
                     }
-                    rasterLevel = fromJAXB( resolution, adapter, options );
-                } catch ( IOException e ) {
-                    if ( LOG.isDebugEnabled() ) {
-                        LOG.debug( "(Stack) Exception occurred while creating a resolution wms datasource: "
-                                   + e.getLocalizedMessage(), e );
-                    } else {
-                        LOG.error( "Exception occurred while creating a resolution wms datasource: "
-                                   + e.getLocalizedMessage() );
+                    if ( rasterLevel != null ) {
+                        mrr.addRaster( rasterLevel );
                     }
-                }
-                if ( rasterLevel != null ) {
-                    mrr.addRaster( rasterLevel );
                 }
             }
             return mrr;
@@ -155,7 +159,11 @@ public class WMSBuilder implements CoverageBuilder {
     }
 
     private RasterIOOptions getOptions( MultiResolutionRasterConfig config ) {
-        return new RasterIOOptions();
+        RasterIOOptions options = new RasterIOOptions();
+        if ( config.getDefaultSRS() != null ) {
+            options.add( RasterIOOptions.CRS, config.getDefaultSRS() );
+        }
+        return options;
     }
 
     /**
@@ -175,8 +183,6 @@ public class WMSBuilder implements CoverageBuilder {
             options.add( RIO_WMS_SYS_ID, capDoc.getLocation() );
             // refresh time is not supported
             options.add( RIO_WMS_REFRESH_TIME, Integer.toString( capDoc.getRefreshTime() ) );
-
-            options.add( RasterIOOptions.CRS, config.getDefaultSRS() );
 
             MaxMapDimensions maxMapDimensions = config.getMaxMapDimensions();
             String width = "-1";
@@ -204,6 +210,10 @@ public class WMSBuilder implements CoverageBuilder {
             }
             options.add( RIO_WMS_MAX_SCALE, maxScale );
 
+            if ( config.getDefaultSRS() != null ) {
+                options.add( RasterIOOptions.CRS, config.getDefaultSRS() );
+            }
+
             RequestedFormat format = config.getRequestedFormat();
             if ( format != null ) {
                 /** Defines the default (image) format of a get map request to a WMS. */
@@ -214,14 +224,18 @@ public class WMSBuilder implements CoverageBuilder {
             }
 
             /** Defines the key to set the GetMap retrieval timeout. */
-            options.add( RIO_WMS_TIMEOUT, config.getRequestedFormat().toString() );
+            String timeout = config.getRequestTimeout() == null ? "60" : config.getRequestTimeout().toString();
+            options.add( RIO_WMS_TIMEOUT, timeout );
 
             // rb: currently only wms 1.1.1 reader support
             options.add( RasterIOOptions.OPT_FORMAT, WMSReader.WMSVersion.WMS_111.name() );
 
             URL url = new URL( capDoc.getLocation() );
 
-            InputStream in = url.openStream();
+            LOG.info( "Opening stream to capabilities:{}", capDoc.getLocation() );
+            URLConnection connection = ProxyUtils.openURLConnection( url );
+            connection.setConnectTimeout( Integer.parseInt( timeout ) * 1000 );
+            InputStream in = connection.getInputStream();
             return RasterFactory.loadRasterFromStream( in, options );
         }
         throw new NullPointerException( "The configured raster datasource may not be null." );
