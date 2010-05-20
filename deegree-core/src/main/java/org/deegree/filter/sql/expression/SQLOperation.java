@@ -33,65 +33,42 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql.postgis;
-
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.filter.expression.PropertyName;
+package org.deegree.filter.sql.expression;
 
 /**
- * Encapsulates the database mapping for a {@link PropertyName}.
- * <p>
- * TODO type information, table alias, join path?
- * </p>
+ * {@link SQLExpression} that represents an operation, e.g. an addition, an intersects predicate or distance
+ * calculation.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PropertyNameMapping {
+public class SQLOperation implements SQLExpression {
 
-    private final String dbTable;
+    private int sqlType;
 
-    private final String dbColumn;
+    private boolean isSpatial;
 
-    private PrimitiveType dbColumnType;
+    private String column;
 
-    /**
-     * 
-     * @param dbTable
-     * @param dbColumn
-     */
-    public PropertyNameMapping( String dbTable, String dbColumn ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
+    public SQLOperation( String column ) {
+        this.column = column;
+        isSpatial = true;
     }
 
-    /**
-     * Generates a mapping with an additional information which type has the column.
-     * 
-     * @param dbTable
-     * @param dbColumn
-     * @param dbColumnType
-     */
-    public PropertyNameMapping( String dbTable, String dbColumn, PrimitiveType dbColumnType ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
-        this.dbColumnType = dbColumnType;
+    public SQLOperation( String column, int sqlType ) {
+        this.column = column;
+        this.sqlType = sqlType;
     }
 
-    public String getTable() {
-        return dbTable;
+    @Override
+    public int getSQLType() {
+        return sqlType;
     }
 
-    public String getColumn() {
-        return dbColumn;
-    }
-
-    /**
-     * @return the dbColumnType
-     */
-    public PrimitiveType getDbColumnType() {
-        return dbColumnType;
+    @Override
+    public boolean isSpatial() {
+        return isSpatial;
     }
 }

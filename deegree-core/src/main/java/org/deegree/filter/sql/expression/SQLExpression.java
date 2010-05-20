@@ -33,65 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql.postgis;
+package org.deegree.filter.sql.expression;
 
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.filter.expression.PropertyName;
+import java.sql.Types;
 
 /**
- * Encapsulates the database mapping for a {@link PropertyName}.
- * <p>
- * TODO type information, table alias, join path?
- * </p>
+ * Marks (a node of) an SQL expression with type information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PropertyNameMapping {
-
-    private final String dbTable;
-
-    private final String dbColumn;
-
-    private PrimitiveType dbColumnType;
+public interface SQLExpression {
 
     /**
+     * Returns the type code from {@link Types}.
      * 
-     * @param dbTable
-     * @param dbColumn
+     * @return the type code
      */
-    public PropertyNameMapping( String dbTable, String dbColumn ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
-    }
+    public int getSQLType();
 
     /**
-     * Generates a mapping with an additional information which type has the column.
+     * Returns whether the expression denotes a spatial value.
      * 
-     * @param dbTable
-     * @param dbColumn
-     * @param dbColumnType
+     * @return true, if the expression is spatial, false otherwise
      */
-    public PropertyNameMapping( String dbTable, String dbColumn, PrimitiveType dbColumnType ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
-        this.dbColumnType = dbColumnType;
-    }
-
-    public String getTable() {
-        return dbTable;
-    }
-
-    public String getColumn() {
-        return dbColumn;
-    }
-
-    /**
-     * @return the dbColumnType
-     */
-    public PrimitiveType getDbColumnType() {
-        return dbColumnType;
-    }
+    public boolean isSpatial();
 }
