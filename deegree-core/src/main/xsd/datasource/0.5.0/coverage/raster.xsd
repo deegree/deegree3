@@ -25,6 +25,23 @@
       </complexContent>
     </complexType>
   </element>
+  
+    <element name="SEFeatureRaster">
+    <annotation>
+      <documentation>A raster which is based on a feature store.</documentation>
+      <appinfo>
+        <jaxb:class name="SEFeatureRasterConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="raster:AbstractRasterType">
+        
+          <attribute name="configVersion" use="required" fixed="0.5.0" />
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
 
   <element name="MultiResolutionRaster">
     <annotation>
@@ -45,7 +62,7 @@
           </complexType>
         </element>
       </sequence>
-      <attribute name="crs" type="string" use="optional" default="EPSG:4326" />
+      <attribute name="crs" type="string" use="optional" />
       <attribute name="originLocation" default="center" type="raster:OriginLocation" />
       <attribute name="readWorldFiles" default="true" type="boolean" />
       <attribute name="nodata" type="decimal" />
@@ -58,7 +75,7 @@
       <element ref="raster:RasterFile" />
       <element ref="raster:RasterDirectory" />
     </choice>
-    <attribute name="crs" type="string" use="optional" default="EPSG:4326" />
+    <attribute name="crs" type="string" use="optional"/>
     <attribute name="originLocation" default="center" type="raster:OriginLocation" />
     <attribute name="readWorldFiles" default="true" type="boolean" />
     <attribute name="nodata" type="decimal" />
