@@ -73,7 +73,7 @@ public class JGeometryAdapter {
      * @param deegreeCRS
      * @param oracleSRID
      */
-    JGeometryAdapter( CRS deegreeCRS, int oracleSRID ) {
+    public JGeometryAdapter( CRS deegreeCRS, int oracleSRID ) {
         this.deegreeCRS = deegreeCRS;
         this.oracleSRID = oracleSRID;
     }

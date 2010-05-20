@@ -64,6 +64,7 @@ import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -120,6 +121,19 @@ public class OracleFeatureStore implements FeatureStore {
 
     private final Map<QName, FeatureTypeMapping> ftToMapping = new HashMap<QName, FeatureTypeMapping>();
 
+    private OracleFeatureStoreTransaction activeTransaction;
+
+    private Connection taConn;
+
+    private Thread transactionHolder;
+
+    /**
+     * @param schema
+     * @param jdbcConnId
+     * @param dbSchemaQualifier
+     * @param storageSRS
+     * @param mappingHints
+     */
     OracleFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchemaQualifier, CRS storageSRS,
                         MappingHints mappingHints ) {
 
@@ -130,7 +144,7 @@ public class OracleFeatureStore implements FeatureStore {
         } else {
             this.schema = schema;
         }
-        // TODO make Oracle srid configurable
+        // TODO make Oracle SRID configurable
         jGeometryAdapter = new JGeometryAdapter( storageSRS, -1 );
     }
 
@@ -250,8 +264,35 @@ public class OracleFeatureStore implements FeatureStore {
     @Override
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        while ( this.activeTransaction != null ) {
+            Thread holder = this.transactionHolder;
+            // check if transaction holder variable has (just) been cleared or if the other thread
+            // has been killed (avoid deadlocks)
+            if ( holder == null || !holder.isAlive() ) {
+                this.activeTransaction = null;
+                this.transactionHolder = null;
+                break;
+            }
+
+            try {
+                // wait until the transaction holder wakes us, but not longer than 5000
+                // milliseconds (as the transaction holder may very rarely get killed without
+                // signalling us)
+                wait( 5000 );
+            } catch ( InterruptedException e ) {
+                // nothing to do
+            }
+        }
+
+        try {
+            taConn = ConnectionManager.getConnection( connId );
+            taConn.setAutoCommit( false );
+            this.activeTransaction = new OracleFeatureStoreTransaction( this, taConn );
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
+        }
+        this.transactionHolder = Thread.currentThread();
+        return this.activeTransaction;
     }
 
     @Override
@@ -486,5 +527,40 @@ public class OracleFeatureStore implements FeatureStore {
             i++;
         }
         return ft.newFeature( fid, props, null );
+    }
+
+    FeatureType getFeatureType (QName ftName) {
+        return schema.getFeatureType( ftName );
+    }
+    
+    FeatureTypeMapping getMapping (QName ftName ) {
+        return ftToMapping.get( ftName );
+    }
+    
+    /**
+     * Allows the {@link OracleFeatureStoreTransaction} to signal that it has been committed / rolled backed.
+     * 
+     * @param ta
+     *            feature store transaction to be released (must be the active one)
+     * @throws FeatureStoreException
+     */
+    void releaseTransaction( OracleFeatureStoreTransaction ta )
+                            throws FeatureStoreException {
+        if ( ta.getStore() != this ) {
+            String msg = Messages.getMessage( "TA_NOT_OWNER" );
+            throw new FeatureStoreException( msg );
+        }
+        if ( ta != this.activeTransaction ) {
+            String msg = Messages.getMessage( "TA_NOT_ACTIVE" );
+            throw new FeatureStoreException( msg );
+        }
+        this.activeTransaction = null;
+        this.transactionHolder = null;
+        // notifyAll();
+        try {
+            taConn.close();
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( "Error closing connection after transaction: " + e.getMessage() );
+        }
     }
 }
