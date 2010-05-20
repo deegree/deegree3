@@ -273,6 +273,9 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeCharacters( fs.getStorageSRS().getName() );
             }
             writer.writeEndElement();
+            
+            // wfs:Operations (minOccurs=0, maxOccurs=1)
+            exportOperations100();
 
             // wfs:LatLongBoundingBox (minOccurs=0, maxOccurs=unbounded)
             Envelope env = fs.getEnvelope( ftName );
