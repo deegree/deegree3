@@ -174,7 +174,7 @@ public class TextureTileManager {
             }
             provider = providers[i];
         }
-        System.out.println( "Using povider with native resolution: " + provider.getNativeResolution() );
+        LOG.debug( "Using povider with native resolution: " + provider.getNativeResolution() );
         return provider;
     }
 
