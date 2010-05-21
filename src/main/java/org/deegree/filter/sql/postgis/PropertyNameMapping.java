@@ -90,7 +90,7 @@ public class PropertyNameMapping {
     
     public boolean isSpatial () {
         // TODO
-        return false;
+        return true;
     }
 
     /**

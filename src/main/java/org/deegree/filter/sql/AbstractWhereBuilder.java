@@ -136,9 +136,14 @@ public abstract class AbstractWhereBuilder {
                 LOG.debug( "Unable to map filter to WHERE-clause. Setting post filter." );
                 LOG.warn( "Using full filter for post filtering step. Partial backend-filtering is not implemented yet. " );
                 postFilter = filter;
+            } catch ( FilterEvaluationException e ) {
+                throw e;
+            } catch ( RuntimeException e ) {
+                LOG.error( e.getMessage(), e );
+                throw e;
             }
         }
-        if ( sortCrit != null ) {
+        if ( sortCrit != null && sortCrit.length != 0 ) {
             try {
                 orderByClause = toProtoSQL( sortCrit );
             } catch ( UnmappableException e ) {
@@ -146,6 +151,11 @@ public abstract class AbstractWhereBuilder {
                 LOG.debug( "Unable to map sort criteria to ORDER-BY-clause. Setting post order criteria." );
                 LOG.warn( "Using all sort criteria for post sorting step. Partial backend-sorting is not implemented yet. " );
                 postSortCrit = sortCrit;
+            } catch ( FilterEvaluationException e ) {
+                throw e;
+            } catch ( RuntimeException e ) {
+                LOG.error( e.getMessage(), e );
+                throw e;
             }
         }
     }
