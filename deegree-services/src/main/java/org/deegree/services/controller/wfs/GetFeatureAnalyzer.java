@@ -35,7 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.wfs;
 
-import static javax.xml.XMLConstants.NULL_NS_URI;
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +50,7 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.utils.QNameUtils;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -424,45 +426,33 @@ class GetFeatureAnalyzer {
      * @return
      */
     private boolean repairSimpleUnqualified( PropertyName propName, TypeName typeName ) {
+
         FeatureType ft = service.lookupFeatureType( typeName.getFeatureTypeName() );
-        String present = propName.getPropertyName();
 
-        // first phase: try to match (prefix:localPart) (there may be multiple properties with identical localPart)
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            QName qName = pt.getName();
-            if ( qName.getNamespaceURI() == null || qName.getNamespaceURI().equals( NULL_NS_URI ) ) {
-                String localPart = qName.getLocalPart();
-                String prefix = qName.getPrefix();
-                if ( prefix != null ) {
-                    String prefixedName = prefix + ':' + localPart;
-                    if ( prefixedName.equals( present ) ) {
-                        org.deegree.commons.xml.NamespaceContext nsContext = new org.deegree.commons.xml.NamespaceContext();
-                        nsContext.addNamespace( prefix, qName.getNamespaceURI() );
-                        propName.set( prefixedName, nsContext );
-                        LOG.warn( "Repaired unqualified PropertyName: " + present + " (added namespace binding)" );
-                        return true;
-                    }
-                }
-            }
+        List<QName> propNames = new ArrayList<QName>();
+        // TODO which GML version
+        for ( PropertyType pt : ft.getPropertyDeclarations( GML_31 ) ) {
+            propNames.add( pt.getName() );
         }
 
-        // second phase: try to match by localPart
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            QName qName = pt.getName();
-            if ( qName.getNamespaceURI() == null || qName.getNamespaceURI().equals( NULL_NS_URI ) ) {
-                String localPart = qName.getLocalPart();
-                String prefix = qName.getPrefix();
-                String prefixedName = prefix + ':' + localPart;
-                if ( localPart.equals( present ) ) {
-                    org.deegree.commons.xml.NamespaceContext nsContext = new org.deegree.commons.xml.NamespaceContext();
-                    nsContext.addNamespace( prefix, qName.getNamespaceURI() );
-                    propName.set( prefixedName, nsContext );
-                    LOG.warn( "Repaired unqualified PropertyName: " + present + " -> " + prefixedName );
-                    return true;
-                }
-            }
+        QName match = QNameUtils.findBestMatch( propName.getAsQName(), propNames );
+        if ( match == null ) {
+            // no match
+            return false;
         }
-        return false;
+        if ( !match.equals( propName.getAsQName() ) ) {
+            LOG.warn( "Repairing unqualified PropertyName: " + QNameUtils.toString( propName.getAsQName() ) + " -> "
+                      + QNameUtils.toString( match ) );
+            // vague match
+            String text = match.getLocalPart();
+            if ( !match.getPrefix().equals( DEFAULT_NS_PREFIX ) ) {
+                text = match.getPrefix() + ":" + match.getLocalPart();
+            }
+            org.deegree.commons.xml.NamespaceContext nsContext = new org.deegree.commons.xml.NamespaceContext();
+            nsContext.addNamespace( match.getPrefix(), match.getNamespaceURI() );
+            propName.set( text, nsContext );
+        }
+        return true;
     }
 
     // TODO do this properly

@@ -37,9 +37,12 @@ package org.deegree.filter.sql.oracle;
 
 import static java.sql.Types.BOOLEAN;
 
+import java.sql.SQLException;
 import java.sql.Types;
 
+import oracle.jdbc.OracleConnection;
 import oracle.spatial.geometry.JGeometry;
+import oracle.sql.STRUCT;
 
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.oracle.JGeometryAdapter;
@@ -83,7 +86,7 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
 
     private final PostGISMapping mapping;
 
-    private final boolean useLegacyPredicates;
+    private OracleConnection conn;
 
     /**
      * Creates a new {@link OracleWhereBuilder} instance.
@@ -94,16 +97,15 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
      *            criteria to use generating the ORDER BY clause, can be <code>null</code>
-     * @param useLegacyPredicates
-     *            if true, legacy PostGIS spatial predicates are used (e.g <code>Intersects</code> instead of
-     *            <code>ST_Intersects</code>)
+     * @param conn
+     *            Oracle connection, must not be <code>null</code>
      * @throws FilterEvaluationException
      */
     public OracleWhereBuilder( PostGISMapping mapping, OperatorFilter filter, SortProperty[] sortCrit,
-                               boolean useLegacyPredicates ) throws FilterEvaluationException {
+                               OracleConnection conn ) throws FilterEvaluationException {
         super( filter, sortCrit );
-        this.useLegacyPredicates = useLegacyPredicates;
         this.mapping = mapping;
+        this.conn = conn;
         build();
     }
 
@@ -114,11 +116,11 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
 
         SQLExpression propNameExpr = toProtoSQL( op.getPropName() );
-        if ( !propNameExpr.isSpatial() ) {
-            String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
-                         + "' does not denote a spatial column.";
-            throw new FilterEvaluationException( msg );
-        }
+        // if ( !propNameExpr.isSpatial() ) {
+        // String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
+        // + "' does not denote a spatial column.";
+        // throw new FilterEvaluationException( msg );
+        // }
 
         CRS storageCRS = propNameExpr.getSRS();
 
@@ -134,14 +136,14 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         }
         case BEYOND: {
             Beyond beyond = (Beyond) op;
-            builder.add( "SDO_WITHIN_DISTANCE(" );
+            builder.add( "NOT SDO_WITHIN_DISTANCE(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( beyond.getGeometry(), storageCRS ) );
             builder.add( ",'DISTANCE=" );
             // TODO uom handling
             builder.add( new SQLLiteral( beyond.getDistance().getValue(), Types.NUMERIC ) );
-            builder.add( "')='FALSE'" );
+            builder.add( "')='TRUE'" );
             break;
         }
         case CONTAINS: {
@@ -164,11 +166,11 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         }
         case DISJOINT: {
             Disjoint disjoint = (Disjoint) op;
-            builder.add( "MDSYS.SDO_RELATE(" );
+            builder.add( "NOT MDSYS.SDO_RELATE(" );
             builder.add( propNameExpr );
             builder.add( "," );
             builder.add( toProtoSQL( disjoint.getGeometry(), storageCRS ) );
-            builder.add( ",'MASK=ANYINTERACT')='FALSE'" );
+            builder.add( ",'MASK=ANYINTERACT')='TRUE'" );
             break;
         }
         case DWITHIN: {
@@ -263,9 +265,13 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         // TODO What about the SRID?
         JGeometryAdapter adapter = new JGeometryAdapter( transformedGeom.getCoordinateSystem(), -1 );
         JGeometry jg = adapter.toJGeometry( geom );
-        
-        // TODO convert to Oracle STRUCT
-        
-        return new SQLLiteral( jg, Types.STRUCT );
+        STRUCT struct = null;
+        try {
+            struct = JGeometry.store( jg, conn );
+        } catch ( SQLException e ) {
+            String msg = "Transforming of geometry to Oracle STRUCT failed: " + e.getMessage();
+            throw new FilterEvaluationException( msg );
+        }
+        return new SQLLiteral( struct, Types.STRUCT );
     }
 }

@@ -36,10 +36,12 @@
 package org.deegree.feature.persistence.oracle;
 
 import static org.deegree.commons.tom.primitive.PrimitiveType.determinePrimitiveType;
+import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -53,17 +55,18 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
+import oracle.jdbc.OracleConnection;
 import oracle.spatial.geometry.JGeometry;
 import oracle.sql.STRUCT;
 
+import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
-import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -72,11 +75,10 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.oracle.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig.MappingHints;
-import org.deegree.feature.persistence.query.CachedFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
+import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.persistence.query.Query.QueryHint;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
@@ -87,7 +89,18 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.sql.UnmappableException;
+import org.deegree.filter.sql.expression.SQLExpression;
+import org.deegree.filter.sql.expression.SQLLiteral;
+import org.deegree.filter.sql.oracle.OracleWhereBuilder;
+import org.deegree.filter.sql.postgis.PostGISMapping;
+import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -127,6 +140,8 @@ public class OracleFeatureStore implements FeatureStore {
 
     private Thread transactionHolder;
 
+    private PostGISMapping mapping = null;
+
     /**
      * @param schema
      * @param jdbcConnId
@@ -146,6 +161,30 @@ public class OracleFeatureStore implements FeatureStore {
         }
         // TODO make Oracle SRID configurable
         jGeometryAdapter = new JGeometryAdapter( storageSRS, -1 );
+
+        mapping = new PostGISMapping() {
+
+            @Override
+            public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+                                    throws FilterEvaluationException {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public Object getPostGISValue( Literal<?> literal, PropertyName propName )
+                                    throws FilterEvaluationException {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public PropertyNameMapping getMapping( PropertyName propName )
+                                    throws FilterEvaluationException, UnmappableException {
+                System.out.println( "Need mapping for " + propName );
+                return new PropertyNameMapping( "X1", propName.getAsQName().getLocalPart() );
+            }
+        };
     }
 
     private ApplicationSchema buildSchema( String jdbcConnId, MappingHints mappingHints ) {
@@ -352,15 +391,13 @@ public class OracleFeatureStore implements FeatureStore {
     @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public GMLObject getObjectById( String id )
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -398,7 +435,8 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     private FeatureResultSet queryByTypeNames( Query query )
-                            throws FeatureStoreException {
+                            throws FeatureStoreException, FilterEvaluationException {
+
         if ( query.getTypeNames().length > 1 ) {
             String msg = "Join queries are currently not supported by the OracleFeatureStore.";
             throw new UnsupportedOperationException( msg );
@@ -412,39 +450,76 @@ public class OracleFeatureStore implements FeatureStore {
             String msg = "Requested feature type '" + ftName + "' is abstract and cannot be queried.";
             throw new FeatureStoreException( msg );
         }
-        FeatureTypeMapping ftMapping = ftToMapping.get( ftName );
-        LOG.info( "Querying feature type '" + ftName + "'." );
-        LOG.info( "- filter: " + query.getFilter() );
-        LOG.info( "- bbox: " + query.getHint( QueryHint.HINT_LOOSE_BBOX ) );
 
-        // TODO: streaming
-        FeatureCollection fc = new GenericFeatureCollection();
+        Filter filter = query.getFilter();
+        if ( filter != null && !( filter instanceof OperatorFilter ) ) {
+            throw new UnsupportedOperationException();
+        }
+        return queryByOperatorFilter( ft, (OperatorFilter) filter, query.getSortProperties() );
+    }
+
+    private FeatureResultSet queryByOperatorFilter( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrits )
+                            throws FilterEvaluationException, FeatureStoreException {
+
+        FeatureTypeMapping ftMapping = ftToMapping.get( ft.getName() );
+
+        FeatureResultSet result = null;
+
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( connId );
-            StringBuffer sql = new StringBuffer( "SELECT " );
+            OracleConnection oraConn = (OracleConnection) ( (DelegatingConnection) conn ).getInnermostDelegate();
+            OracleWhereBuilder wb = new OracleWhereBuilder( mapping, filter, sortCrits, oraConn );
+            SQLExpression where = wb.getWhereClause();
+            SQLExpression orderBy = wb.getOrderBy();
+
+            StringBuilder sql = new StringBuilder( "SELECT " );
             sql.append( ftMapping.getGMLIdColumns()[0] );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 sql.append( ',' );
                 sql.append( ftMapping.getColumn( pt.getName() ) );
             }
+
             sql.append( " FROM " );
             sql.append( ftMapping.getTable() );
-            // TODO where clause
-            LOG.info( "Going to SELECT: " + sql );
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( sql.toString() );
-            while ( rs.next() ) {
-                fc.add( buildFeature( rs, ft, ftMapping ) );
+            sql.append( " X1" );
+
+            if ( where != null ) {
+                sql.append( " WHERE " );
+                sql.append( where.getSQL() );
             }
+            if ( orderBy != null ) {
+                sql.append( " ORDER BY " );
+                sql.append( orderBy.getSQL() );
+            }
+
+            LOG.info( "Preparing SELECT: " + sql );
+            stmt = conn.prepareStatement( sql.toString() );
+
+            int i = 1;
+            if ( where != null ) {
+                for ( SQLLiteral o : where.getLiterals() ) {
+                    stmt.setObject( i++, o.getValue() );
+                }
+            }
+            if ( orderBy != null ) {
+                for ( SQLLiteral o : where.getLiterals() ) {
+                    stmt.setObject( i++, o.getValue() );
+                }
+            }
+
+            rs = stmt.executeQuery();
+            result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt, ft, ftMapping ) );
+
         } catch ( Exception e ) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtils.close( rs, stmt, conn, LOG );
+            close( rs, stmt, conn, LOG );
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.debug( msg, e );
+            throw new FeatureStoreException( msg, e );
         }
-        return new CachedFeatureResultSet( fc );
+        return result;
     }
 
     private FeatureResultSet queryById( Query query ) {
@@ -499,6 +574,7 @@ public class OracleFeatureStore implements FeatureStore {
 
     private Feature buildFeature( ResultSet rs, FeatureType ft, FeatureTypeMapping ftMapping )
                             throws SQLException {
+
         String fid = ft.getName().getLocalPart().toUpperCase() + "_" + rs.getString( 1 );
         List<Property> props = new ArrayList<Property>();
         int i = 2;
@@ -529,14 +605,14 @@ public class OracleFeatureStore implements FeatureStore {
         return ft.newFeature( fid, props, null );
     }
 
-    FeatureType getFeatureType (QName ftName) {
+    FeatureType getFeatureType( QName ftName ) {
         return schema.getFeatureType( ftName );
     }
-    
-    FeatureTypeMapping getMapping (QName ftName ) {
+
+    FeatureTypeMapping getMapping( QName ftName ) {
         return ftToMapping.get( ftName );
     }
-    
+
     /**
      * Allows the {@link OracleFeatureStoreTransaction} to signal that it has been committed / rolled backed.
      * 
@@ -561,6 +637,27 @@ public class OracleFeatureStore implements FeatureStore {
             taConn.close();
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Error closing connection after transaction: " + e.getMessage() );
+        }
+    }
+
+    private class FeatureResultSetIterator extends ResultSetIterator<Feature> {
+
+        private FeatureType ft;
+
+        private FeatureTypeMapping ftMapping;
+
+        public FeatureResultSetIterator( ResultSet rs, Connection conn, Statement stmt, FeatureType ft,
+                                         FeatureTypeMapping ftMapping ) {
+            super( rs, conn, stmt );
+            this.ft = ft;
+            this.ftMapping = ftMapping;
+        }
+
+        @SuppressWarnings("synthetic-access")
+        @Override
+        protected Feature createElement( ResultSet rs )
+                                throws SQLException {
+            return buildFeature( rs, ft, ftMapping );
         }
     }
 }

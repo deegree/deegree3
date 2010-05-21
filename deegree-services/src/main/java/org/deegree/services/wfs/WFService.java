@@ -36,7 +36,6 @@
 
 package org.deegree.services.wfs;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.services.i18n.Messages.get;
 
 import java.util.Collection;
@@ -45,10 +44,10 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
@@ -98,7 +97,7 @@ public class WFService {
         // filling prefix map with the provided NamespaceHints
         hintedNamespaces = new HashSet<String>();
 
-        for (FeatureStore fs : FeatureStoreManager.getAll() ) {
+        for ( FeatureStore fs : FeatureStoreManager.getAll() ) {
             addStore( fs );
             addNotYetHintedNamespaces( fs.getSchema().getFeatureTypes() );
         }
@@ -176,31 +175,11 @@ public class WFService {
         FeatureType ft = ftNameToFt.get( ftName );
 
         if ( ft == null ) {
-            // try namespace tolerant matching
-            if ( ftName.getPrefix() != null && !DEFAULT_NS_PREFIX.equals( ftName.getPrefix() ) ) {
-                // try to match prefix and localPart
-                for ( Entry<QName, FeatureType> candidate : ftNameToFt.entrySet() ) {
-                    if ( ftName.getLocalPart().equals( candidate.getKey().getLocalPart() )
-                         && ftName.getPrefix().equals( candidate.getKey().getPrefix() ) ) {
-                        ft = candidate.getValue();
-                        LOG.warn( "Feature type name " + ftName + " (without namespace) was matched with "
-                                  + candidate.getKey()
-                                  + " (it cannot be found among the served feature types otherwise)." );
-                        break;
-                    }
-                }
-            }
-            if ( ft == null ) {
-                // try to match localPart only
-                for ( Entry<QName, FeatureType> candidate : ftNameToFt.entrySet() ) {
-                    if ( ftName.getLocalPart().equals( candidate.getKey().getLocalPart() ) ) {
-                        ft = candidate.getValue();
-                        LOG.warn( "Feature type name " + ftName + " (without namespace) was matched with "
-                                  + candidate.getKey()
-                                  + " (it cannot be found among the served feature types otherwise)." );
-                        break;
-                    }
-                }
+            QName match = QNameUtils.findBestMatch( ftName, ftNameToFt.keySet() );
+            if ( match != null ) {
+                LOG.warn( "Repairing unqualified FeatureType name: " + QNameUtils.toString( ftName ) + " -> "
+                          + QNameUtils.toString( match ) );
+                ft = ftNameToFt.get( match );
             }
         }
         return ft;
