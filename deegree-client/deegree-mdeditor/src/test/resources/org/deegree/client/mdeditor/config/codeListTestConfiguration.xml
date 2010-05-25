@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!--XML-Beispieldatei von XMLSpy generiert v2008 rel. 2 sp2 (http://www.altova.com)-->
+<CodeListConfiguration xsi:schemaLocation="http://www.deegree.org/igeoportal schema/codelistConfiguration.xsd"
+    xmlns="http://www.deegree.org/igeoportal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <CodeList id="keyword">
+        <Code>
+            <value>Abitur</value>
+            <label>Abitur</label>
+        </Code>
+        <Code>
+            <value>single</value>
+            <label>Single</label>
+        </Code>
+        <Code>
+            <value>steuern</value>
+            <label>Steuern</label>
+        </Code>
+        <Code>
+            <value>zentren</value>
+            <label>Zentren</label>
+        </Code>
+    </CodeList>
+    <CodeList id="hierarchylevel">
+        <Code>
+            <value>dataset</value>
+            <label>Datensatz</label>
+        </Code>
+        <Code>
+            <value>service</value>
+            <label>Service</label>
+        </Code>
+    </CodeList>
+    <CodeList id="roleCode">
+        <Code>
+            <value>resourceProvider</value>
+            <label>Anbieter</label>
+        </Code>
+        <Code>
+            <value>custodian</value>
+            <label>Verwalter</label>
+        </Code>
+        <Code>
+            <value>owner</value>
+            <label>Eigentümer</label>
+        </Code>
+        <Code>
+            <value>user</value>
+            <label>Nutzer</label>
+        </Code>
+        <Code>
+            <value>distributor</value>
+            <label>Vertrieb</label>
+        </Code>
+        <Code>
+            <value>originator</value>
+            <label>Urheber</label>
+        </Code>
+        <Code>
+            <value>pointOfContact</value>
+            <label>Ansprechpartner</label>
+        </Code>
+        <Code>
+            <value>principalInvestigator</value>
+            <label>Projektleitung</label>
+        </Code>
+        <Code>
+            <value>processor</value>
+            <label>Bearbeiter</label>
+        </Code>
+        <Code>
+            <value>publisher</value>
+            <label>Herausgeber</label>
+        </Code>
+        <Code>
+            <value>author</value>
+            <label>Autor</label>
+        </Code>
+    </CodeList>
+</CodeListConfiguration>
