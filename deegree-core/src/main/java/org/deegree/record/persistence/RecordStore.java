@@ -47,7 +47,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.record.publication.TransactionOperation;
-import org.deegree.record.publication.TransactionOptions;
 
 /**
  * Base interface of the {@link RecordStore} persistence layer, provides access to stored {@link RecordStore} instances
@@ -144,7 +143,7 @@ public interface RecordStore {
      * @throws SQLException
      * @throws XMLStreamException
      */
-    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations  )
+    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations )
                             throws SQLException, XMLStreamException;
 
     /**
