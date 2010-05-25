@@ -37,6 +37,7 @@ package org.deegree.geometry.io;
 
 import java.io.Reader;
 
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -46,8 +47,7 @@ import com.vividsolutions.jts.io.ParseException;
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Text (WKT).
  * 
- * TODO re-implement without delegating to JTS
- * TODO add support for non-SFS geometries (e.g. non-linear curves)
+ * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves)
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -59,14 +59,22 @@ public class WKTReader {
     private static final com.vividsolutions.jts.io.WKTReader jtsReader = new com.vividsolutions.jts.io.WKTReader();
 
     // TODO remove the need for this object
-    private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
+    private final AbstractDefaultGeometry defaultGeom;
 
-    public static Geometry read( Reader reader )
+    private CRS crs;
+
+    public WKTReader( CRS crs ) {
+        this.crs = crs;
+        // currently necessary to ensure that created (sub-) geometries have the correct CRS
+        this.defaultGeom = new DefaultPoint( null, crs, null, new double[] { 0.0, 0.0 } );
+    }
+
+    public Geometry read( Reader reader )
                             throws ParseException {
         return defaultGeom.createFromJTS( jtsReader.read( reader ) );
     }
 
-    public static Geometry read( String wkt )
+    public Geometry read( String wkt )
                             throws ParseException {
         return defaultGeom.createFromJTS( jtsReader.read( wkt ) );
     }

@@ -75,10 +75,10 @@ public class GeometryTest {
         p3 = geomFactory.createPoint( "p3", 10.0, 10.0, crs );
         p4 = geomFactory.createPoint( "p4", 20.0, 20.0, crs );
 
-        l1 = geomFactory.createLineString( "l1", crs,
-                                           new PackedPoints( new double[] { 10.0, 5.0, 15.0, 9.0, 20.0, 20.0 }, 2 ) );
-        l2 = geomFactory.createLineString( "l2", crs, new PackedPoints( new double[] { 15.0, 20.0, 15.0, 6.0 }, 2 ) );
-        l3 = geomFactory.createLineString( "l3", crs, new PackedPoints( new double[] { 9.0, 9.0, 12.0, 5.0 }, 2 ) );
+        l1 = geomFactory.createLineString( "l1", crs, new PackedPoints( crs, new double[] { 10.0, 5.0, 15.0, 9.0, 20.0,
+                                                                                           20.0 }, 2 ) );
+        l2 = geomFactory.createLineString( "l2", crs, new PackedPoints( crs, new double[] { 15.0, 20.0, 15.0, 6.0 }, 2 ) );
+        l3 = geomFactory.createLineString( "l3", crs, new PackedPoints( crs, new double[] { 9.0, 9.0, 12.0, 5.0 }, 2 ) );
 
         env1 = geomFactory.createEnvelope( 13.0, 7.0, 21.0, 21.0, crs );
     }
@@ -89,18 +89,18 @@ public class GeometryTest {
 
     @Test
     public void testIntersects() {
-        assertTrue(! p1.intersects( p2 ) );
+        assertTrue( !p1.intersects( p2 ) );
         assertTrue( !p1.intersects( p3 ) );
         assertTrue( p2.intersects( p3 ) );
 
         assertTrue( l1.intersects( l2 ) );
         assertTrue( l1.intersects( l3 ) );
         assertTrue( !l2.intersects( l3 ) );
-        
-        assertTrue(!env1.intersects( p1 ));
-        assertTrue(!env1.intersects( p2 ));
-        assertTrue(!env1.intersects( p3 ));
-        assertTrue (env1.intersects( p4 ));
+
+        assertTrue( !env1.intersects( p1 ) );
+        assertTrue( !env1.intersects( p2 ) );
+        assertTrue( !env1.intersects( p3 ) );
+        assertTrue( env1.intersects( p4 ) );
     }
 
     //    

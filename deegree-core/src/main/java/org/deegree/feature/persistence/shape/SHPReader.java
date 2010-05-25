@@ -945,7 +945,7 @@ public class SHPReader {
                     idx += 2;
                 }
             }
-            res[i] = new PackedPoints( coords, coordDim );
+            res[i] = new PackedPoints( crs, coords, coordDim );
         }
 
         if ( !z && !m ) {

@@ -505,7 +505,7 @@ public class OracleFeatureStore implements FeatureStore {
                 }
             }
             if ( orderBy != null ) {
-                for ( SQLLiteral o : where.getLiterals() ) {
+                for ( SQLLiteral o : orderBy.getLiterals() ) {
                     stmt.setObject( i++, o.getValue() );
                 }
             }

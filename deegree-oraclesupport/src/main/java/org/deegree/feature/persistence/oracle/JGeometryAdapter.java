@@ -63,11 +63,13 @@ public class JGeometryAdapter {
 
     private static GeometryFactory fac = new GeometryFactory();
 
-    private final WKT wktAdapter = new WKT();
-
     private final CRS deegreeCRS;
 
     private final int oracleSRID;
+
+    private final WKT oracleWktAdapter = new WKT();
+
+    private final WKTReader deegreeWktAdapter;
 
     /**
      * @param deegreeCRS
@@ -76,6 +78,7 @@ public class JGeometryAdapter {
     public JGeometryAdapter( CRS deegreeCRS, int oracleSRID ) {
         this.deegreeCRS = deegreeCRS;
         this.oracleSRID = oracleSRID;
+        this.deegreeWktAdapter = new WKTReader( deegreeCRS );
     }
 
     /**
@@ -92,7 +95,7 @@ public class JGeometryAdapter {
             // TODO implement native conversions
             try {
                 String wkt = WKTWriter.write( g );
-                jg = wktAdapter.toJGeometry( wkt.getBytes() );
+                jg = oracleWktAdapter.toJGeometry( wkt.getBytes() );
                 jg.setSRID( oracleSRID );
             } catch ( Exception e ) {
                 e.printStackTrace();
@@ -123,9 +126,8 @@ public class JGeometryAdapter {
         case GTYPE_COLLECTION: {
             // TODO implement native conversions
             try {
-                byte[] wkt = wktAdapter.fromJGeometry( jg );
-                g = WKTReader.read( new String( wkt ) );
-                g.setCoordinateSystem( deegreeCRS );
+                byte[] wkt = oracleWktAdapter.fromJGeometry( jg );
+                g = deegreeWktAdapter.read( new String( wkt ) );
             } catch ( Exception e ) {
                 e.printStackTrace();
                 String msg = "Internal error: Unable to convert JGeometry to deegree geometry: " + e.getMessage();

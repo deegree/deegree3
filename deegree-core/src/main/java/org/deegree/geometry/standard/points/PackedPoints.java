@@ -38,6 +38,7 @@ package org.deegree.geometry.standard.points;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.deegree.cs.CRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -57,11 +58,14 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class PackedPoints implements Points {
 
+    private CRS crs;
+    
     private int dimension;
 
     private double[] coordinates;
 
-    public PackedPoints( double[] coordinates, int coordinatesDimension ) {
+    public PackedPoints( CRS crs, double[] coordinates, int coordinatesDimension ) {
+        this.crs = crs;
         this.coordinates = coordinates;
         this.dimension = coordinatesDimension;
     }
@@ -86,7 +90,7 @@ public class PackedPoints implements Points {
         for ( int d = 0; d < dimension; d++ ) {
             pointCoordinates[d] = coordinates[idx + d];
         }
-        return new DefaultPoint( null, null, null, pointCoordinates );
+        return new DefaultPoint( null, crs, null, pointCoordinates );
     }
 
     @Override
@@ -96,9 +100,11 @@ public class PackedPoints implements Points {
 
             private int idx = 0;
 
+            @SuppressWarnings("synthetic-access")
             private double[] pointCoordinates = new double[dimension];
 
-            private DefaultPoint point = new DefaultPoint( null, null, null, pointCoordinates );
+            @SuppressWarnings("synthetic-access")
+            private DefaultPoint point = new DefaultPoint( null, crs, null, pointCoordinates );
 
             @Override
             public boolean hasNext() {

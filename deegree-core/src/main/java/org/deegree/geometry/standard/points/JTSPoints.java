@@ -38,6 +38,7 @@ package org.deegree.geometry.standard.points;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
@@ -59,9 +60,12 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class JTSPoints implements Points {
 
+    private final CRS crs;
+
     private final CoordinateSequence seq;
 
-    public JTSPoints( CoordinateSequence seq ) {
+    public JTSPoints( CRS crs, CoordinateSequence seq ) {
+        this.crs = crs;
         this.seq = seq;
     }
 
@@ -86,7 +90,7 @@ public class JTSPoints implements Points {
         for ( int d = 0; d < getDimension(); d++ ) {
             pointCoordinates[d] = getOrdinate( idx, d );
         }
-        return new DefaultPoint( null, null, null, pointCoordinates );
+        return new DefaultPoint( null, crs, null, pointCoordinates );
     }
 
     @Override
@@ -98,7 +102,8 @@ public class JTSPoints implements Points {
 
             private double[] pointCoordinates = new double[getDimension()];
 
-            private DefaultPoint point = new DefaultPoint( null, null, null, pointCoordinates );
+            @SuppressWarnings("synthetic-access")
+            private DefaultPoint point = new DefaultPoint( null, crs, null, pointCoordinates );
 
             @Override
             public boolean hasNext() {
