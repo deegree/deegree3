@@ -487,15 +487,13 @@ public class WKTWriter {
      * @param writer
      * @throws IOException
      */
-    private void writePolygonWithoutPrefix( Polygon geometry, Writer writer )
+    private void writePolygonWithoutPrefix( Surface geometry, Writer writer )
                             throws IOException {
 
-        Ring exteriorRing = geometry.getExteriorRing();
         writer.append( '(' );
-        Points points = exteriorRing.getControlPoints();
+        Points points = geometry.getExteriorRingCoordinates();
         int counter = 0;
         for ( Point point : points ) {
-
             counter++;
             if ( counter < points.size() ) {
                 writePointWithoutPrefix( point, writer );
@@ -503,20 +501,17 @@ public class WKTWriter {
             } else {
                 writePointWithoutPrefix( point, writer );
             }
-
         }
 
         writer.append( ')' );
-        List<Ring> interiorRings = geometry.getInteriorRings();
+        List<Points> interiorRings = geometry.getInteriorRingsCoordinates();
         if ( interiorRings != null ) {
-            for ( Ring r : interiorRings ) {
-
+            for ( Points r : interiorRings ) {
                 writer.append( ",(" );
                 counter = 0;
-                for ( Point point : r.getControlPoints() ) {
-
+                for ( Point point : r ) {
                     counter++;
-                    if ( counter < r.getControlPoints().size() ) {
+                    if ( counter < r.size() ) {
                         writePointWithoutPrefix( point, writer );
                         writer.append( ',' );
                     } else {
@@ -526,7 +521,6 @@ public class WKTWriter {
                 writer.append( ')' );
             }
         }
-
     }
 
     /**
@@ -1103,10 +1097,25 @@ public class WKTWriter {
      * 
      * @param geometry
      * @param writer
+     * @throws IOException
      */
-    public void writeMultiSurface( MultiSurface geometry, Writer writer ) {
-        throw new UnsupportedOperationException( "Handling multiSurfaces is not implemented yet." );
+    public void writeMultiSurface( MultiSurface geometry, Writer writer )
+                            throws IOException {
+        writer.append( "MULTIPOLYGON " );
+        if ( flags.contains( WKTFlag.USE_DKT ) ) {
+            appendObjectProps( writer, geometry );
+        }
+        writer.append( '(' );
 
+        for ( int i = 0; i < geometry.size(); i++ ) {
+            writer.append( '(' );            
+            writePolygonWithoutPrefix( geometry.get( i ), writer );
+            if ( i < geometry.size() - 1 ) {
+                writer.append( ',' );
+            }
+            writer.append( ')' );            
+        }
+        writer.append( ')' );
     }
 
     /**
@@ -1126,17 +1135,13 @@ public class WKTWriter {
         writer.append( '(' );
 
         for ( int i = 0; i < geometry.size(); i++ ) {
-
             writeCurveGeometryWithoutPrefix( geometry.get( i ), writer );
             if ( i < geometry.size() - 1 ) {
                 writer.append( ',' );
-
             }
-
         }
 
         writer.append( ')' );
-
     }
 
     /**
@@ -1166,7 +1171,6 @@ public class WKTWriter {
         writer.append( '(' );
 
         for ( int i = 0; i < geometry.size(); i++ ) {
-
             writePolygonWithoutPrefix( geometry.get( i ), writer );
             if ( i < geometry.size() - 1 ) {
                 writer.append( ',' );
@@ -1174,7 +1178,6 @@ public class WKTWriter {
         }
 
         writer.append( ')' );
-
     }
 
     /**
