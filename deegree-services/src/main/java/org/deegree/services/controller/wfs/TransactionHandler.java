@@ -488,7 +488,8 @@ public class TransactionHandler {
         try {
             updated += ta.performUpdate( ftName, replacementProps, filter, lock );
         } catch ( FeatureStoreException e ) {
-            throw new OWSException( "Error performing update.", ControllerException.NO_APPLICABLE_CODE );
+            throw new OWSException( "Error performing update: " + e.getMessage(), e,
+                                    ControllerException.NO_APPLICABLE_CODE );
         }
     }
 
