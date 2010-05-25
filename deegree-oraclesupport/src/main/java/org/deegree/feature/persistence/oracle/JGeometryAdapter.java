@@ -99,7 +99,7 @@ public class JGeometryAdapter {
                 jg.setSRID( oracleSRID );
             } catch ( Exception e ) {
                 e.printStackTrace();
-                String msg = "Internal error: Unable to deegree geometry to JGeometry: " + e.getMessage();
+                String msg = "Internal error: Unable to convert from deegree geometry to JGeometry: " + e.getMessage();
                 throw new RuntimeException( msg, e );
             }
         }

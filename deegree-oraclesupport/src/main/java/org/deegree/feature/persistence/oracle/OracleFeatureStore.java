@@ -206,7 +206,8 @@ public class OracleFeatureStore implements FeatureStore {
         lockManager = new DefaultLockManager( this, "LOCK_DB" );
     }
 
-    private ApplicationSchema buildSchema( String jdbcConnId, MappingHints mappingHints ) {
+    private ApplicationSchema buildSchema( String jdbcConnId, MappingHints mappingHints )
+                            throws FeatureStoreException {
 
         List<FeatureType> fts = new ArrayList<FeatureType>();
         try {
@@ -226,7 +227,7 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     private FeatureType buildFeatureType( FeatureTypeDecl ftDecl, DatabaseMetaData md )
-                            throws SQLException {
+                            throws SQLException, FeatureStoreException {
 
         String table = ftDecl.getTable();
         if ( table == null ) {
@@ -247,11 +248,15 @@ public class OracleFeatureStore implements FeatureStore {
             if ( !colName.equalsIgnoreCase( pkColumn ) ) {
                 QName ptName = new QName( namespace, colName, prefix );
                 int sqlType = rs.getInt( 5 );
-                System.out.println( "property: " + colName + ", type: " + sqlType );
                 PropertyType pt = buildPropertyType( ptName, sqlType );
-                System.out.println( "pt: " + pt );
                 propDecls.add( pt );
             }
+        }
+        if ( propDecls.isEmpty() ) {
+            String msg = "Configuration error: No columns for table/view '" + table + "' found (schema: '"
+                         + oracleSchema + "').";
+            throw new FeatureStoreException( msg );
+
         }
         return new GenericFeatureType( ftName, propDecls, false );
     }
@@ -687,5 +692,23 @@ public class OracleFeatureStore implements FeatureStore {
                                 throws SQLException {
             return buildFeature( rs, ft, ftMapping );
         }
+    }
+
+    FeatureTypeMapping getMapping( String fid )
+                            throws FeatureStoreException {
+        int delimPos = fid.indexOf( '_' );
+        if ( delimPos == -1 ) {
+            String msg = "Cannot determine feature type for feature id '" + fid
+                         + "' -- does not contain an underscore character.";
+            throw new FeatureStoreException( msg );
+        }
+        String prefix = fid.substring( 0, delimPos  );
+        for ( QName ftName : ftToMapping.keySet() ) {
+            if ( ftName.getLocalPart().toUpperCase().equals( prefix ) ) {
+                return ftToMapping.get( ftName );
+            }
+        }
+        String msg = "No feature type for feature id '" + fid + "' found.";
+        throw new FeatureStoreException( msg );
     }
 }
