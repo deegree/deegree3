@@ -87,29 +87,30 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
 
             ApplicationSchema schema = null;
 
-//            try {
-//                String[] schemaURLs = new String[config.getGMLSchemaFileURL().size()];
-//                int i = 0;
-//                GMLVersionType gmlVersionType = null;
-//                for ( GMLSchemaFileURL jaxbSchemaURL : config.getGMLSchemaFileURL() ) {
-//                    schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
-//                    // TODO what about different versions at the same time?
-//                    gmlVersionType = GMLVersionType.GML_32;
-//                }
-//                ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
-//                                                                                       GMLVersion.valueOf( gmlVersionType.name() ),
-//                                                                                       getHintMap( config.getNamespaceHint() ),
-//                                                                                       schemaURLs );
-//                schema = decoder.extractFeatureTypeSchema();
-//
-//            } catch ( Exception e ) {
-//                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-//                LOG.error( msg, e );
-//                throw new FeatureStoreException( msg, e );
-//            }
+            // try {
+            // String[] schemaURLs = new String[config.getGMLSchemaFileURL().size()];
+            // int i = 0;
+            // GMLVersionType gmlVersionType = null;
+            // for ( GMLSchemaFileURL jaxbSchemaURL : config.getGMLSchemaFileURL() ) {
+            // schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
+            // // TODO what about different versions at the same time?
+            // gmlVersionType = GMLVersionType.GML_32;
+            // }
+            // ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
+            // GMLVersion.valueOf( gmlVersionType.name() ),
+            // getHintMap( config.getNamespaceHint() ),
+            // schemaURLs );
+            // schema = decoder.extractFeatureTypeSchema();
+            //
+            // } catch ( Exception e ) {
+            // String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+            // LOG.error( msg, e );
+            // throw new FeatureStoreException( msg, e );
+            // }
 
             CRS storageSRS = new CRS( config.getStorageSRS() );
-            fs = new OracleFeatureStore( schema, config.getJDBCConnId(), config.getDBSchemaQualifier(), storageSRS, config.getMappingHints() );
+            fs = new OracleFeatureStore( schema, config.getJDBCConnId(), config.getDBSchemaQualifier(), storageSRS,
+                                         config.getMappingHints(), config.getOracleSchema() );
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );

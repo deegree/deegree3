@@ -71,6 +71,7 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.oracle.jaxb.FeatureTypeDecl;
@@ -91,6 +92,7 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
@@ -104,6 +106,7 @@ import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,6 +127,10 @@ public class OracleFeatureStore implements FeatureStore {
 
     private static final GeometryFactory geomFac = new GeometryFactory();
 
+    private final String oracleSchema;
+
+    private final GeometryTransformer geomTransformer;
+
     private final JGeometryAdapter jGeometryAdapter;
 
     private final CRS storageSRS;
@@ -142,16 +149,20 @@ public class OracleFeatureStore implements FeatureStore {
 
     private PostGISMapping mapping = null;
 
+    private LockManager lockManager;
+
     /**
      * @param schema
      * @param jdbcConnId
      * @param dbSchemaQualifier
      * @param storageSRS
      * @param mappingHints
+     * @throws FeatureStoreException
      */
     OracleFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchemaQualifier, CRS storageSRS,
-                        MappingHints mappingHints ) {
+                        MappingHints mappingHints, String oracleSchema ) throws FeatureStoreException {
 
+        this.oracleSchema = oracleSchema;
         this.connId = jdbcConnId;
         this.storageSRS = storageSRS;
         if ( mappingHints != null ) {
@@ -160,6 +171,11 @@ public class OracleFeatureStore implements FeatureStore {
             this.schema = schema;
         }
         // TODO make Oracle SRID configurable
+        try {
+            geomTransformer = new GeometryTransformer( storageSRS.getWrappedCRS() );
+        } catch ( Exception e ) {
+            throw new FeatureStoreException( e.getMessage(), e );
+        }
         jGeometryAdapter = new JGeometryAdapter( storageSRS, -1 );
 
         mapping = new PostGISMapping() {
@@ -181,10 +197,13 @@ public class OracleFeatureStore implements FeatureStore {
             @Override
             public PropertyNameMapping getMapping( PropertyName propName )
                                     throws FilterEvaluationException, UnmappableException {
-                System.out.println( "Need mapping for " + propName );
+                LOG.debug( "Mapping " + propName.getPropertyName() + " to DB." );
                 return new PropertyNameMapping( "X1", propName.getAsQName().getLocalPart() );
             }
         };
+
+        // TODO
+        lockManager = new DefaultLockManager( this, "LOCK_DB" );
     }
 
     private ApplicationSchema buildSchema( String jdbcConnId, MappingHints mappingHints ) {
@@ -220,13 +239,12 @@ public class OracleFeatureStore implements FeatureStore {
         String namespace = ftName.getNamespaceURI();
 
         String pkColumn = getPKColumn( md, table );
-        System.out.println( "gml id: " + pkColumn );
 
-        ResultSet rs = md.getColumns( "rtgisokzagg", null, table, null );
+        ResultSet rs = md.getColumns( null, oracleSchema, table, null );
         List<PropertyType> propDecls = new ArrayList<PropertyType>();
         while ( rs.next() ) {
             String colName = rs.getString( 4 );
-            if ( !pkColumn.equalsIgnoreCase( colName ) ) {
+            if ( !colName.equalsIgnoreCase( pkColumn ) ) {
                 QName ptName = new QName( namespace, colName, prefix );
                 int sqlType = rs.getInt( 5 );
                 System.out.println( "property: " + colName + ", type: " + sqlType );
@@ -253,13 +271,13 @@ public class OracleFeatureStore implements FeatureStore {
         String pkColumn = getPKColumn( md, table );
         String[] gmlIdColumns = new String[] { pkColumn };
 
-        ResultSet rs = md.getColumns( "rtgisokzagg", null, table, null );
+        ResultSet rs = md.getColumns( null, oracleSchema, table, null );
 
         Map<QName, String> propToColumn = new HashMap<QName, String>();
 
         while ( rs.next() ) {
             String colName = rs.getString( 4 );
-            if ( !pkColumn.equalsIgnoreCase( colName ) ) {
+            if ( !colName.equalsIgnoreCase( pkColumn ) ) {
                 QName propName = new QName( namespace, colName, prefix );
                 propToColumn.put( propName, colName );
             }
@@ -270,9 +288,11 @@ public class OracleFeatureStore implements FeatureStore {
     private String getPKColumn( DatabaseMetaData md, String table )
                             throws SQLException {
         String pkColumn = null;
-        ResultSet rs = md.getPrimaryKeys( "rtgisokzagg", null, table );
+        ResultSet rs = md.getPrimaryKeys( null, oracleSchema, table );
         if ( !rs.next() ) {
-            throw new SQLException( "No primary key column found." );
+            rs.close();
+            // TODO
+            return "gebiets_id";
         }
         pkColumn = rs.getString( 4 );
         if ( rs.next() ) {
@@ -391,7 +411,7 @@ public class OracleFeatureStore implements FeatureStore {
     @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
-        throw new UnsupportedOperationException();
+        return lockManager;
     }
 
     @Override
@@ -459,10 +479,9 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     private FeatureResultSet queryByOperatorFilter( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrits )
-                            throws FilterEvaluationException, FeatureStoreException {
+                            throws FeatureStoreException {
 
         FeatureTypeMapping ftMapping = ftToMapping.get( ft.getName() );
-
         FeatureResultSet result = null;
 
         Connection conn = null;
@@ -523,8 +542,9 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     private FeatureResultSet queryById( Query query ) {
-        String msg = "Id queries are currently not supported by the OracleFeatureStore implementation.";
-        throw new UnsupportedOperationException( msg );
+
+        IdFilter filter = (IdFilter) query.getFilter();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -611,6 +631,14 @@ public class OracleFeatureStore implements FeatureStore {
 
     FeatureTypeMapping getMapping( QName ftName ) {
         return ftToMapping.get( ftName );
+    }
+
+    JGeometryAdapter getJGeometryAdapter() {
+        return jGeometryAdapter;
+    }
+
+    GeometryTransformer getGeometryTransformer() {
+        return geomTransformer;
     }
 
     /**

@@ -29,6 +29,7 @@
         </element>
         <element name="StorageSRS" type="string" />
         <element name="JDBCConnId" type="string" />
+        <element name="OracleSchema" type="string" />
         <element name="DBSchemaQualifier" type="string" minOccurs="0" />
         <element name="GMLSchemaFileURL" minOccurs="0" maxOccurs="unbounded">
           <complexType>
@@ -42,7 +43,7 @@
         <element name="MappingHints" minOccurs="0">
           <complexType>
             <sequence>
-              <element ref="oraclefs:FeatureType" maxOccurs="unbounded"/>
+              <element ref="oraclefs:FeatureType" maxOccurs="unbounded" />
             </sequence>
           </complexType>
         </element>
