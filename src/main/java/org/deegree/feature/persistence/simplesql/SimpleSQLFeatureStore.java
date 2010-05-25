@@ -202,7 +202,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                         LOG.info( "Could not determine envelope of database table, using world bbox instead." );
                         return fac.createEnvelope( -180, -90, 180, 90, EPSG_4326 );
                     }
-                    Geometry g = WKTReader.read( bboxString );
+                    Geometry g = new WKTReader(EPSG_4326).read( bboxString );
                     g.setCoordinateSystem( crs );
                     cachedEnvelope.first = current;
                     cachedEnvelope.second = g.getEnvelope();

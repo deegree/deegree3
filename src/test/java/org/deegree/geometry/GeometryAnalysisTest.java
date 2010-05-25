@@ -59,7 +59,6 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -95,11 +94,14 @@ public class GeometryAnalysisTest {
         p3 = geomFactory.createPoint( "p3", 10.0, 10.0, crs );
         p4 = geomFactory.createPoint( "p4", 20.0, 20.0, crs );
 
-        l1 = geomFactory.createLineString( "l1", crs,
-                                           new PackedPoints( new double[] { 10.0, 5.0, 15.0, 9.0, 20.0, 20.0 }, 2 ) );
-        l2 = geomFactory.createLineString( "l2", crs, new PackedPoints( new double[] { 15.0, 20.0, 15.0, 6.0 }, 2 ) );
-        l3 = geomFactory.createLineString( "l3", crs, new PackedPoints( new double[] { 9.0, 9.0, 12.0, 5.0 }, 2 ) );
-        l4 = geomFactory.createLineString( "l4", crs, new PackedPoints( new double[] { 0, 0, 1, 0 }, 2 ) );
+        l1 = geomFactory.createLineString( "l1", crs, new PackedPoints( CRS.EPSG_4326, new double[] { 10.0, 5.0, 15.0,
+                                                                                                     9.0, 20.0, 20.0 },
+                                                                        2 ) );
+        l2 = geomFactory.createLineString( "l2", crs, new PackedPoints( CRS.EPSG_4326, new double[] { 15.0, 20.0, 15.0,
+                                                                                                     6.0 }, 2 ) );
+        l3 = geomFactory.createLineString( "l3", crs, new PackedPoints( CRS.EPSG_4326, new double[] { 9.0, 9.0, 12.0,
+                                                                                                     5.0 }, 2 ) );
+        l4 = geomFactory.createLineString( "l4", crs, new PackedPoints( CRS.EPSG_4326, new double[] { 0, 0, 1, 0 }, 2 ) );
 
         env1 = geomFactory.createEnvelope( 13.0, 7.0, 21.0, 21.0, crs );
     }

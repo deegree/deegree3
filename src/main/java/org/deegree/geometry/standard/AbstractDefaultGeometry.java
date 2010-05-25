@@ -377,7 +377,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     private Points getAsPoints( CoordinateSequence seq ) {
-        return new JTSPoints( seq );
+        return new JTSPoints( crs, seq );
     }
 
     @Override
