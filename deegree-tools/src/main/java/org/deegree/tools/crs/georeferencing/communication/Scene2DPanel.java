@@ -79,36 +79,23 @@ public class Scene2DPanel extends JPanel {
 
     }
 
-    /**
-     * Initializes the attributes that are needed for drawing an image.
-     * <p>
-     * Is not in the constructor because there should be the possibility to decide when this should happen.
-     */
-    public void init( BufferedImage imageToDraw ) {
-        this.imageToDraw = imageToDraw;
-        init();
-
-    }
-
-    public void init() {
-        imageMargin = new Point2d( this.imageToDraw.getWidth() * margin, this.imageToDraw.getHeight() * margin );
-        beginDrawImageAtPosition = new Point2d( 0 - imageMargin.getX(), 0 - imageMargin.getY() );
-        imageDimension = new Point2d( ( this.imageToDraw.getWidth() + imageMargin.getX() * 2 ),
-                                      ( this.imageToDraw.getHeight() + imageMargin.getY() * 2 ) );
-        System.out.println( "beginDrawing the image: " + beginDrawImageAtPosition );
-        System.out.println( "margin the image: " + imageMargin );
-    }
-
     @Override
     public void paintComponent( Graphics g ) {
         super.paintComponent( g );
         g2 = (Graphics2D) g;
+        if ( beginDrawImageAtPosition == null ) {
+            beginDrawImageAtPosition = new Point2d( -this.getBounds().width * margin, -this.getBounds().height * margin );
+            imageDimension = new Point2d( this.getBounds().width + ( -beginDrawImageAtPosition.x * 2 ),
+                                          this.getBounds().height + ( -beginDrawImageAtPosition.y * 2 ) );
+
+        }
 
         if ( imageToDraw != null ) {
 
             g2.drawImage( imageToDraw, (int) beginDrawImageAtPosition.getX(), (int) beginDrawImageAtPosition.getY(),
                           (int) imageDimension.getX(), (int) imageDimension.getY(), this );
-            System.out.println( "Begin: " + beginDrawImageAtPosition );
+            System.out.println( imageToDraw );
+            System.out.println( "Begin: " + beginDrawImageAtPosition + " " + this.getBounds() );
 
         }
 

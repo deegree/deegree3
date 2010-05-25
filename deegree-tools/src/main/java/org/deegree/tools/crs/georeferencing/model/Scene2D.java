@@ -37,13 +37,11 @@ package org.deegree.tools.crs.georeferencing.model;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 
 /**
  * Base interface for the model layer
@@ -54,14 +52,6 @@ import org.deegree.geometry.GeometryFactory;
  * @version $Revision$, $Date$
  */
 public interface Scene2D {
-
-    /**
-     * Generates an image based on a rectangle in which the image has to be drawn
-     * 
-     * @param sceneBounds
-     * @return
-     */
-    public BufferedImage generateImage( RasterRect sceneBounds );
 
     /**
      * Generates the predicted image for a faster repainting.
@@ -98,15 +88,6 @@ public interface Scene2D {
     public BufferedImage getGeneratedImage();
 
     /**
-     * Determines the boundingbox for the initialized request.
-     * 
-     * @param imageUrl
-     * @param geometryFactory
-     * @return
-     */
-    public Envelope determineRequestBoundingbox( URL imageUrl, GeometryFactory geometryFactory );
-
-    /**
      * Returns the hole boundingbox
      * 
      * @return
@@ -135,5 +116,7 @@ public interface Scene2D {
     public BufferedImage getPredictedImage();
 
     Point2d getOnePixel();
+
+    public BufferedImage generateImage( RasterIOOptions options );
 
 }

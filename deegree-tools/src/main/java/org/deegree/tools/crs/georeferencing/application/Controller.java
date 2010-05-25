@@ -45,12 +45,12 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
@@ -81,6 +81,8 @@ public class Controller {
 
     private URL scene2DUrl;
 
+    private RasterIOOptions options;
+
     private BufferedImage predictedImage;
 
     private GeometryFactory geomFactory;
@@ -90,6 +92,28 @@ public class Controller {
     private Point2d changePoint;
 
     private RasterRect rect;
+
+    private static final String RASTERIO_LAYER = "RASTERIO_LAYER";
+
+    private static final String RASTER_FORMATLIST = "RASTER_FORMATLIST";
+
+    private static final String RASTER_URL = "RASTER_URL";
+
+    private static final String RIO_WMS_SYS_ID = "RASTERIO_WMS_SYS_ID";
+
+    private static final String RIO_WMS_MAX_SCALE = "RASTERIO_WMS_MAX_SCALE";
+
+    private static final String RIO_WMS_DEFAULT_FORMAT = "RASTERIO_WMS_DEFAULT_FORMAT";
+
+    private static final String RIO_WMS_MAX_WIDTH = "RASTERIO_WMS_MAX_WIDTH";
+
+    private static final String RIO_WMS_MAX_HEIGHT = "RASTERIO_WMS_MAX_HEIGHT";
+
+    private static final String RIO_WMS_LAYERS = "RASTERIO_WMS_REQUESTED_LAYERS";
+
+    private static final String RIO_WMS_ENABLE_TRANSPARENT = "RASTERIO_WMS_ENABLE_TRANSPARENCY";
+
+    private static final String RIO_WMS_TIMEOUT = "RIO_WMS_TIMEOUT";
 
     // private Rectangle predictedBounds;
 
@@ -126,50 +150,34 @@ public class Controller {
         @Override
         public void actionPerformed( ActionEvent e ) {
 
-            try {
-                scene2DUrl = new URL( view.openUrl() );
-            } catch ( MalformedURLException e1 ) {
-                e1.printStackTrace();
-            }
             mouse = new MouseModel();
             model.reset();
-            setSightWindowAttributes( model.determineRequestBoundingbox( scene2DUrl, geomFactory ) );
 
             rect = new RasterRect( panel.getBounds() );
+            options = new RasterIOOptions();
 
-            panel.init( model.generateImage( rect ) );
+            // options.add( RasterIOOptions.CRS, "EPSG:4326" );
+            options.add( RasterIOOptions.CRS, "EPSG:32618" );
+            options.add( RIO_WMS_LAYERS, "dem" );
+            // options.add( RIO_WMS_LAYERS, "root" );
+            // options.add( RASTER_FORMATLIST, "image/jpeg" );
+            options.add( RASTER_URL, view.openUrl() );
+            options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
+            options.add( RIO_WMS_SYS_ID, view.openUrl() );
+            options.add( RIO_WMS_MAX_SCALE, "0.1" );
+            options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
+            options.add( RIO_WMS_MAX_WIDTH, Integer.toString( rect.width ) );
+            options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( rect.height ) );
+            options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
+            // options.add( RIO_WMS_TIMEOUT, "1000" );
+            panel.setImageToDraw( model.generateImage( options ) );
+
             panel.repaint();
             panel.addScene2DMouseListener( new Scene2DMouseListener() );
             // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
             panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
         }
-    }
-
-    /**
-     * Responsible for setting the sightwindow
-     */
-    private void setSightWindowAttributes( Envelope holeRequestBoundingbox ) {
-        double spanX = holeRequestBoundingbox.getSpan0();
-        double spanY = holeRequestBoundingbox.getSpan1();
-
-        double x0 = holeRequestBoundingbox.getMin().get0();
-        double x1 = holeRequestBoundingbox.getMax().get0();
-        double y0 = holeRequestBoundingbox.getMin().get1();
-        double y1 = holeRequestBoundingbox.getMax().get1();
-
-        Point2d boundingboxCenter = new Point2d( ( spanX / 2 ), ( spanY / 2 ) );
-        System.out.println( "res: " + panel.getResolutionOfImage() );
-        Point2d sight = new Point2d( ( spanX * panel.getResolutionOfImage() ), ( spanY * panel.getResolutionOfImage() ) );
-
-        double minX = x0 + boundingboxCenter.getX() - sight.getX();
-        double maxX = x1 - boundingboxCenter.getX() + sight.getX();
-        double minY = y0 + boundingboxCenter.getY() - sight.getY();
-        double maxY = y1 - boundingboxCenter.getY() + sight.getY();
-
-        model.setSightWindowBoundingbox( geomFactory.createEnvelope( minX, minY, maxX, maxY,
-                                                                     holeRequestBoundingbox.getCoordinateSystem() ) );
-
     }
 
     /**
@@ -237,7 +245,7 @@ public class Controller {
                 model.changeImageBoundingbox( updateDrawImageAtPosition );
                 // panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
                 System.out.println( "changepoint: " + changePoint );
-                panel.init( predictedImage );
+
                 mouse.reset();
                 panel.repaint();
 
@@ -336,7 +344,7 @@ public class Controller {
                 panel.setResolutionOfImage( panel.getResolutionOfImage() * 1.3 );
             }
             model.reset();
-            setSightWindowAttributes( model.getHoleRequestBoundingbox() );
+            // setSightWindowAttributes( model.getHoleRequestBoundingbox() );
             // panel.init( model.generateImage( panel.getBounds() ) );
             panel.repaint();
 
@@ -371,7 +379,7 @@ public class Controller {
         public void componentResized( ComponentEvent c ) {
             if ( model.getImageBoundingbox() != null ) {
                 model.reset();
-                setSightWindowAttributes( model.getHoleRequestBoundingbox() );
+                // setSightWindowAttributes( model.getHoleRequestBoundingbox() );
                 // panel.init( model.generateImage( panel.getBounds() ) );
                 panel.repaint();
 
