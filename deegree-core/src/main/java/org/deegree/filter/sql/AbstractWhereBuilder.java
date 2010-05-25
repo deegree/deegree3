@@ -40,6 +40,7 @@ import static java.sql.Types.BOOLEAN;
 import java.sql.ResultSet;
 import java.sql.Types;
 
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -399,8 +400,9 @@ public abstract class AbstractWhereBuilder {
             break;
         }
         case NOT: {
-            builder.add( "NOT " );
+            builder.add( "NOT (" );
             builder.add( toProtoSQL( op.getParams()[0] ) );
+            builder.add( ")" );
             break;
         }
         }
