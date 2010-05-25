@@ -39,8 +39,10 @@ import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
 
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.CRS;
 import org.deegree.filter.expression.Literal;
+import org.deegree.filter.sql.UnmappableException;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -71,8 +73,18 @@ public class SQLLiteral implements SQLExpression {
         this.isSpatial = false;
     }
 
-    public SQLLiteral( Literal<?> literal ) {
-        this.value = literal.getValue();
+    public SQLLiteral( Literal<?> literal ) throws UnmappableException {
+
+        this.value = literal.getValue();        
+        if ( value != null ) {
+            if ( value instanceof PrimitiveValue ) {
+                // TODO what about differentiating column types?
+                value = ( (PrimitiveValue) value ).getAsText();
+            } else {
+                throw new UnmappableException( "Unhandled literal content '" + value.getClass() + "'" );
+            }
+        }
+        
         this.sqlType = -1;
         this.isSpatial = false;
     }
