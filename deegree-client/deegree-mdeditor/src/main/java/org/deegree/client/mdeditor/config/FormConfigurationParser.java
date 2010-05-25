@@ -53,7 +53,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
@@ -77,11 +76,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormConfigurationParser {
+public class FormConfigurationParser extends Parser {
 
     private static final Logger LOG = getLogger( FormConfigurationParser.class );
-
-    private static final String NS = "http://www.deegree.org/igeoportal";
 
     private static QName FORM_CONF_ELEMENT = new QName( NS, "FormConfiguration" );
 
@@ -93,15 +90,9 @@ public class FormConfigurationParser {
 
     private static QName REF_FORM_ELEMENT = new QName( NS, "ReferencedFormElement" );
 
-    private static QName CODELIST_ELEMENT = new QName( NS, "CodeList" );
-
-    private List<CodeList> codeLists = new ArrayList<CodeList>();
-
     private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
     private List<String> referencedGroups = new ArrayList<String>();
-
-    private List<String> idList = new ArrayList<String>();
 
     private LAYOUT_TYPE layoutType;
 
@@ -132,8 +123,6 @@ public class FormConfigurationParser {
                 QName elementName = xmlStream.getName();
                 if ( FORM_GROUP_ELEMENT.equals( elementName ) ) {
                     formGroups.add( parseFormGroup( xmlStream ) );
-                } else if ( CODELIST_ELEMENT.equals( elementName ) ) {
-                    parseCodeList( xmlStream );
                 }
                 xmlStream.nextTag();
             }
@@ -141,7 +130,7 @@ public class FormConfigurationParser {
             xmlStream.require( END_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
 
             updateFormGroups();
-            return new FormConfiguration( codeLists, formGroups, layoutType, pathToIdentifier );
+            return new FormConfiguration( formGroups, layoutType, pathToIdentifier );
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -283,6 +272,21 @@ public class FormConfigurationParser {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
         boolean isIdentifier = getBooleanAttribute( xmlStream, "isIdentifier", false );
+
+        int occurence = 1;
+        String occurenceAtt = xmlStream.getAttributeValue( null, "occurence" );
+        if ( occurenceAtt != null ) {
+            if ( !"unbounded".equals( occurenceAtt ) ) {
+                try {
+                    occurence = Integer.parseInt( occurenceAtt );
+                } catch ( Exception e ) {
+                    throw new ConfigurationException( "the attribute occurence of input form field with id " + id
+                                                      + " is not a valid integer: " + occurenceAtt );
+                }
+            } else {
+                occurence = Integer.MIN_VALUE;
+            }
+        }
         xmlStream.nextTag();
 
         String label = getElementText( xmlStream, "label", id );
@@ -304,36 +308,10 @@ public class FormConfigurationParser {
             validation.setMinValue( getElementDouble( xmlStream, "minValue", Double.MIN_VALUE ) );
             validation.setMaxValue( getElementDouble( xmlStream, "maxValue", Double.MAX_VALUE ) );
         }
-
         InputFormField ff = new InputFormField( getPath( id ), id, label, visible, help, isIdentifier, inputType,
-                                                defaultValue, validation );
+                                                occurence, defaultValue, validation );
         setPathToIdentifier( ff );
         return ff;
-    }
-
-    private void parseCodeList( XMLStreamReader xmlStream )
-                            throws XMLStreamException, ConfigurationException {
-        String clId = getId( xmlStream );
-        CodeList cl = new CodeList( clId );
-
-        QName code_element = new QName( NS, "Code" );
-        LOG.debug( "Found CodeList with id " + clId );
-        if ( xmlStream.isStartElement() && xmlStream.getName().equals( CODELIST_ELEMENT ) ) {
-            xmlStream.nextTag();
-        }
-        while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( CODELIST_ELEMENT ) ) ) {
-            if ( xmlStream.isStartElement() && code_element.equals( xmlStream.getName() ) ) {
-                xmlStream.nextTag();
-                xmlStream.require( START_ELEMENT, null, "value" );
-                String value = getElementText( xmlStream, "value", null );
-                xmlStream.require( START_ELEMENT, null, "label" );
-                String label = getElementText( xmlStream, "label", null );
-                cl.addCode( value, label );
-            }
-            xmlStream.next();
-        }
-        xmlStream.require( END_ELEMENT, NS, CODELIST_ELEMENT.getLocalPart() );
-        codeLists.add( cl );
     }
 
     private INPUT_TYPE getInputType( XMLStreamReader xmlStream )
@@ -379,21 +357,6 @@ public class FormConfigurationParser {
         throw new XMLParsingException( xmlStream, "layoutType " + elementText + "is not valid" );
     }
 
-    private String getId( XMLStreamReader xmlStream )
-                            throws ConfigurationException {
-        String id = xmlStream.getAttributeValue( null, "id" );
-        if ( id == null || id.length() == 0 ) {
-            throw new ConfigurationException( "missing id" );
-        }
-        if ( idList.contains( id ) ) {
-            throw new ConfigurationException( "An element with id " + id
-                                              + " exists! Ids must be unique in the complete configuration." );
-        } else {
-            idList.add( id );
-        }
-        return id;
-    }
-
     private boolean getBooleanAttribute( XMLStreamReader xmlStream, String name, boolean defaultValue ) {
         try {
             String attributeValue = xmlStream.getAttributeValue( null, name );
@@ -404,16 +367,6 @@ public class FormConfigurationParser {
             LOG.debug( "Attribute with name " + name + "is not set, return defaultValue: " + defaultValue );
         }
         return defaultValue;
-    }
-
-    private String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
-                            throws XMLStreamException {
-        String s = defaultValue;
-        if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
-            s = xmlStream.getElementText();
-            xmlStream.nextTag();
-        }
-        return s;
     }
 
     private int getElementInteger( XMLStreamReader xmlStream, String name, int defaultValue )

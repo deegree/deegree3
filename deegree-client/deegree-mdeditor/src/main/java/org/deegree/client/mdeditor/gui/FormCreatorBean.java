@@ -73,6 +73,8 @@ import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.config.ConfigurationException;
 import org.deegree.client.mdeditor.config.FormConfigurationFactory;
+import org.deegree.client.mdeditor.config.codelist.CodeListConfigurationFactory;
+import org.deegree.client.mdeditor.gui.components.HtmlUnboundedInputText;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
 import org.deegree.client.mdeditor.gui.listener.FormGroupSubmitListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
@@ -241,8 +243,8 @@ public class FormCreatorBean implements Serializable {
             if ( INPUT_TYPE.TEXTAREA.equals( ( (InputFormField) fe ).getInputType() ) ) {
                 input = new HtmlInputTextarea();
             } else {
-                input = new HtmlInputText();
-            }
+                    input = new HtmlInputText();
+                }
         } else if ( fe instanceof SelectFormField ) {
             SelectFormField se = (SelectFormField) fe;
             if ( SELECT_TYPE.MANY.equals( se.getSelectType() ) ) {
@@ -287,8 +289,9 @@ public class FormCreatorBean implements Serializable {
     }
 
     private void addCodeListItems( UIInput select, String codeListRef ) {
-        CodeList codeList = configuration.getCodeList( codeListRef );
-        if ( codeList != null ) {
+        CodeList codeList = null;
+        try {
+            codeList = CodeListConfigurationFactory.getCodeList( codeListRef );
             for ( String value : codeList.getCodes().keySet() ) {
                 UISelectItem si = new UISelectItem();
                 si.setId( GuiUtils.getUniqueId() );
@@ -296,6 +299,8 @@ public class FormCreatorBean implements Serializable {
                 si.setItemLabel( codeList.getCodes().get( value ) );
                 select.getChildren().add( si );
             }
+        } catch ( ConfigurationException e ) {
+            LOG.error( e.getMessage() );
         }
     }
 

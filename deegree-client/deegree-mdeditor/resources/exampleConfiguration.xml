@@ -24,6 +24,10 @@
             <referenceToGroup>ContactFormGroup</referenceToGroup>
             <referenceText>Name: ${KtextName}</referenceText>
         </SelectFormElement>
+        <InputFormElement id="nFach" occurence="unbounded">
+            <label>Test:</label>
+            <inputType>text</inputType>
+        </InputFormElement>
         <!--
             TODO <SelectFormElement id="selectOneK" visible="true"> <label>Eltern-Objekt:</label>
             <selectType>one</selectType> <referenceToGroup></referenceToGroup> </SelectFormElement>
@@ -62,59 +66,21 @@
                 <referenceToGroup>ContactFormGroup</referenceToGroup>
             </SelectFormElement>
         </FormGroup>
-        <!-- 
-        <InputFormElement id="ganzzahl1">
-            <label>int größer 23:</label>
-            <inputType>int</inputType>
-            <Validation>
-                <minValue>23</minValue>
-            </Validation>
-        </InputFormElement>
-        <InputFormElement id="ganzzahl2">
-            <label> int größer 23, kleiner 27:</label>
-            <inputType>int</inputType>
-            <Validation>
-                <minValue>23</minValue>
-                <maxValue>27</maxValue>
-            </Validation>
-        </InputFormElement>
-        <InputFormElement id="ganzzahl3">
-            <label> int kleiner 27:</label>
-            <inputType>int</inputType>
-            <Validation>
-                <maxValue>27</maxValue>
-            </Validation>
-        </InputFormElement>
-        <InputFormElement id="fließzahl1">
-            <label>double größer 23:</label>
-            <inputType>double</inputType>
-            <Validation>
-                <minValue>23</minValue>
-            </Validation>
-        </InputFormElement>
-        <InputFormElement id="fließzahl2">
-            <label>double größer 23, kleiner 27:</label>
-            <inputType>double</inputType>
-            <Validation>
-                <minValue>23</minValue>
-                <maxValue>27</maxValue>
-            </Validation>
-        </InputFormElement>
-        <InputFormElement id="fließzahl3">
-            <label>double kleiner 27:</label>
-            <inputType>double</inputType>
-            <Validation>
-                <maxValue>27</maxValue>
-            </Validation>
-        </InputFormElement>
-        <InputFormElement id="text">
-            <label>text max 2:</label>
-            <inputType>text</inputType>
-            <Validation>
-                <length>2</length>
-            </Validation>
-        </InputFormElement>
-         -->
+        <!--
+            <InputFormElement id="ganzzahl1"> <label>int größer 23:</label> <inputType>int</inputType> <Validation>
+            <minValue>23</minValue> </Validation> </InputFormElement> <InputFormElement id="ganzzahl2"> <label> int
+            größer 23, kleiner 27:</label> <inputType>int</inputType> <Validation> <minValue>23</minValue>
+            <maxValue>27</maxValue> </Validation> </InputFormElement> <InputFormElement id="ganzzahl3"> <label> int
+            kleiner 27:</label> <inputType>int</inputType> <Validation> <maxValue>27</maxValue> </Validation>
+            </InputFormElement> <InputFormElement id="fließzahl1"> <label>double größer 23:</label>
+            <inputType>double</inputType> <Validation> <minValue>23</minValue> </Validation> </InputFormElement>
+            <InputFormElement id="fließzahl2"> <label>double größer 23, kleiner 27:</label>
+            <inputType>double</inputType> <Validation> <minValue>23</minValue> <maxValue>27</maxValue> </Validation>
+            </InputFormElement> <InputFormElement id="fließzahl3"> <label>double kleiner 27:</label>
+            <inputType>double</inputType> <Validation> <maxValue>27</maxValue> </Validation> </InputFormElement>
+            <InputFormElement id="text"> <label>text max 2:</label> <inputType>text</inputType> <Validation>
+            <length>2</length> </Validation> </InputFormElement>
+        -->
     </FormGroup>
 
     <FormGroup id="SpatialFormGroup">
@@ -207,123 +173,4 @@
             <inputType>text</inputType>
         </InputFormElement>
     </FormGroup>
-
-    <CodeList id="keyword">
-        <Code>
-            <value>Abitur</value>
-            <label>Abitur</label>
-        </Code>
-        <Code>
-            <value>single</value>
-            <label>Single</label>
-        </Code>
-        <Code>
-            <value>steuern</value>
-            <label>Steuern</label>
-        </Code>
-        <Code>
-            <value>zentren</value>
-            <label>Zentren</label>
-        </Code>
-    </CodeList>
-    <CodeList id="theme">
-        <Code>
-            <value>society</value>
-            <label>society</label>
-        </Code>
-        <Code>
-            <value>biota</value>
-            <label>biota</label>
-        </Code>
-        <Code>
-            <value>farming</value>
-            <label>farming</label>
-        </Code>
-        <Code>
-            <value>oceans</value>
-            <label>oceans</label>
-        </Code>
-    </CodeList>
-    <CodeList id="hierarchylevel">
-        <Code>
-            <value>dataset</value>
-            <label>Datensatz</label>
-        </Code>
-        <Code>
-            <value>service</value>
-            <label>Service</label>
-        </Code>
-    </CodeList>
-    <CodeList id="countries">
-        <Code>
-            <value>brd</value>
-            <label>Bundesrepublik</label>
-        </Code>
-        <Code>
-            <value>NRW</value>
-            <label>Nordrhein-Westfalen</label>
-        </Code>
-        <Code>
-            <value>bremen</value>
-            <label>Bremen</label>
-        </Code>
-        <Code>
-            <value>saarland</value>
-            <label>Saarland</label>
-        </Code>
-        <Code>
-            <value>berlin</value>
-            <label>Berlin</label>
-        </Code>
-        <Code>
-            <value>niedersachsen</value>
-            <label>Niedersachsen</label>
-        </Code>
-    </CodeList>
-    <CodeList id="roleCode">
-        <Code>
-            <value>resourceProvider</value>
-            <label>Anbieter</label>
-        </Code>
-        <Code>
-            <value>custodian</value>
-            <label>Verwalter</label>
-        </Code>
-        <Code>
-            <value>owner</value>
-            <label>Eigentümer</label>
-        </Code>
-        <Code>
-            <value>user</value>
-            <label>Nutzer</label>
-        </Code>
-        <Code>
-            <value>distributor</value>
-            <label>Vertrieb</label>
-        </Code>
-        <Code>
-            <value>originator</value>
-            <label>Urheber</label>
-        </Code>
-        <Code>
-            <value>pointOfContact</value>
-            <label>Ansprechpartner</label>
-        </Code>
-        <Code>
-            <value>principalInvestigator</value>
-            <label>Projektleitung</label>
-        </Code>
-        <Code>
-            <value>processor</value>
-            <label>Bearbeiter</label>
-        </Code>
-        <Code>
-            <value>publisher</value>
-            <label>Herausgeber</label>
-        </Code>
-        <Code>
-            <value>author</value>
-            <label>Autor</label>
-        </Code>
-    </CodeList>
 </FormConfiguration>

@@ -10,7 +10,6 @@
             <xs:sequence>
                 <xs:element ref="layoutType" />
                 <xs:element ref="FormGroup" maxOccurs="unbounded" />
-                <xs:element ref="CodeList" minOccurs="0" maxOccurs="unbounded" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -71,6 +70,12 @@
                     </xs:element>
                     <xs:element ref="Validation" minOccurs="0" />
                 </xs:sequence>
+                <xs:attribute name="occurence" type="xs:string" default="1">
+                    <xs:annotation>
+                        <xs:documentation>the count of maximum occurence of this field, default is 1. Can be a number or
+                            unbounded, if count is unlimited.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -95,7 +100,8 @@
                                         <xs:extension base="xs:string">
                                             <xs:attribute name="showAsLink" type="xs:boolean" default="true">
                                                 <xs:annotation>
-                                                    <xs:documentation>indicates if the form group should be accessible by a
+                                                    <xs:documentation>indicates if the form group should be accessible
+                                                        by a
                                                         link</xs:documentation>
                                                 </xs:annotation>
                                             </xs:attribute>
@@ -172,33 +178,6 @@
                     </xs:annotation>
                 </xs:element>
             </xs:all>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="CodeList">
-        <xs:annotation>
-            <xs:documentation>a list of static values, which can be referenced by a SelectFormElement</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref="Code" maxOccurs="unbounded" />
-            </xs:sequence>
-            <xs:attribute name="id" type="xs:string" use="required" />
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="Code">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="value" type="xs:string">
-                    <xs:annotation>
-                        <xs:documentation>the value of the code</xs:documentation>
-                    </xs:annotation>
-                </xs:element>
-                <xs:element name="label" type="xs:string" minOccurs="0">
-                    <xs:annotation>
-                        <xs:documentation>the label of the code displayed in the selection list</xs:documentation>
-                    </xs:annotation>
-                </xs:element>
-            </xs:sequence>
         </xs:complexType>
     </xs:element>
     <!-- enumerations -->

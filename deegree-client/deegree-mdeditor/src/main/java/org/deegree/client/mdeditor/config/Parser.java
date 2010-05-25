@@ -35,6 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.config;
 
+import java.util.ArrayList;
+
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 /**
  * TODO add class documentation here
  * 
@@ -43,12 +50,34 @@ package org.deegree.client.mdeditor.config;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConfigurationException extends Exception {
+public abstract class Parser {
 
-    private static final long serialVersionUID = -5005648880467646463L;
+    protected static final String NS = "http://www.deegree.org/igeoportal";
 
-    public ConfigurationException( String message ) {
-        super( message );
+    private List<String> idList = new ArrayList<String>();
+
+    protected String getId( XMLStreamReader xmlStream )
+                            throws ConfigurationException {
+        String id = xmlStream.getAttributeValue( null, "id" );
+        if ( id == null || id.length() == 0 ) {
+            throw new ConfigurationException( "missing id" );
+        }
+        if ( idList.contains( id ) ) {
+            throw new ConfigurationException( "An element with id " + id
+                                              + " exists! Ids must be unique in the complete configuration." );
+        } else {
+            idList.add( id );
+        }
+        return id;
     }
 
+    protected String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
+                            throws XMLStreamException {
+        String s = defaultValue;
+        if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
+            s = xmlStream.getElementText();
+            xmlStream.nextTag();
+        }
+        return s;
+    }
 }

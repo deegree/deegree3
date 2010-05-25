@@ -33,7 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
+package org.deegree.client.mdeditor.config.codelist;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.client.mdeditor.config.Configuration;
+import org.deegree.client.mdeditor.config.ConfigurationException;
+import org.deegree.client.mdeditor.model.CodeList;
 
 /**
  * TODO add class documentation here
@@ -43,12 +50,39 @@ package org.deegree.client.mdeditor.config;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConfigurationException extends Exception {
+public class CodeListConfigurationFactory {
 
-    private static final long serialVersionUID = -5005648880467646463L;
+    private static List<CodeListConfiguration> codeListConfiguration = new ArrayList<CodeListConfiguration>();
 
-    public ConfigurationException( String message ) {
-        super( message );
+    static {
+        CodeListParser parser = new CodeListParser();
+        try {
+            // TODO
+            CodeListConfiguration parseConfiguration = parser.parseConfiguration( Configuration.getCodeListURL() );
+            System.out.println(parseConfiguration.getCodeLists().size());
+            codeListConfiguration.add( parseConfiguration );
+        } catch ( ConfigurationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public static CodeList getCodeList( String id )
+                            throws ConfigurationException {
+        for ( CodeListConfiguration clc : codeListConfiguration ) {
+            if ( clc.getCodeList( id ) != null ) {
+                return clc.getCodeList( id );
+            }
+        }
+        throw new ConfigurationException( "Could not found Codelist with id " + id );
+    }
+
+    public static List<CodeList> getCodeLists() {
+        List<CodeList> codeLists = new ArrayList<CodeList>();
+        for ( CodeListConfiguration clc : codeListConfiguration ) {
+            codeLists.addAll( clc.getCodeLists() );
+        }
+        return codeLists;
     }
 
 }

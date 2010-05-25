@@ -48,6 +48,8 @@ public class Configuration {
     // TODO!!!
     private static String formConfURL = "/home/lyn/workspace/deegree-mdeditor/resources/exampleConfiguration.xml";
 
+    private static String codeListConfURL = "/home/lyn/workspace/deegree-mdeditor/resources/exampleCodeListConfiguration.xml";
+
     private static String filesDirURL = "/home/lyn/workspace/deegree-mdeditor/tmp/";
 
     public static void setFormConfURL( String formConfURL ) {
@@ -64,6 +66,14 @@ public class Configuration {
 
     public static String getFilesDirURL() {
         return filesDirURL;
+    }
+
+    public static String getCodeListURL() {
+        return codeListConfURL;
+    }
+
+    public static void setCodeListURL( String codeListConfURL ) {
+        Configuration.codeListConfURL = codeListConfURL;
     }
 
 }

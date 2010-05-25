@@ -50,28 +50,17 @@ import java.util.Map;
  */
 public class FormConfiguration {
 
-    private List<CodeList> codeLists = new ArrayList<CodeList>();
-
     private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
     private LAYOUT_TYPE layoutType;
 
     private FormFieldPath pathToIdentifier;
 
-    public FormConfiguration( List<CodeList> codeLists, List<FormGroup> formGroups, LAYOUT_TYPE layoutType,
+    public FormConfiguration( List<FormGroup> formGroups, LAYOUT_TYPE layoutType,
                               FormFieldPath pathToIdentifier ) {
-        super();
-        this.codeLists = codeLists;
         this.formGroups = formGroups;
         this.layoutType = layoutType;
         this.pathToIdentifier = pathToIdentifier;
-    }
-
-    /**
-     * @return a list of all codelists
-     */
-    public List<CodeList> getCodeLists() {
-        return codeLists;
     }
 
     /**
@@ -115,23 +104,6 @@ public class FormConfiguration {
                 formFields.put( ff.getPath().toString(), ff );
             }
         }
-    }
-
-    /**
-     * @param id
-     *            the id of the codelist
-     * @return the codelist with the given id
-     */
-    public CodeList getCodeList( String id ) {
-        if ( id == null ) {
-            throw new NullPointerException();
-        }
-        for ( CodeList cl : codeLists ) {
-            if ( id.equals( cl.getId() ) ) {
-                return cl;
-            }
-        }
-        return null;
     }
 
     /**

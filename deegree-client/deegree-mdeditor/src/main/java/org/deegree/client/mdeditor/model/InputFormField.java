@@ -36,6 +36,7 @@
 package org.deegree.client.mdeditor.model;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * TODO add class documentation here
@@ -54,11 +55,15 @@ public class InputFormField extends FormField {
 
     private Validation validation;
 
+    private int occurence;
+
     public InputFormField( FormFieldPath path, String id, String label, boolean visible, String help,
-                           boolean isIdentifier, INPUT_TYPE inputType, String defaultValue, Validation validation ) {
+                           boolean isIdentifier, INPUT_TYPE inputType, int occurence, String defaultValue,
+                           Validation validation ) {
         super( path, id, label, visible, help, defaultValue, isIdentifier );
         this.inputType = inputType;
         this.validation = validation;
+        this.occurence = occurence;
 
         if ( validation != null ) {
             switch ( inputType ) {
@@ -86,6 +91,14 @@ public class InputFormField extends FormField {
 
     public INPUT_TYPE getInputType() {
         return inputType;
+    }
+
+    public void setOccurence( int occurence ) {
+        this.occurence = occurence;
+    }
+
+    public int getOccurence() {
+        return occurence;
     }
 
     public void setValue( Object value ) {
@@ -129,9 +142,13 @@ public class InputFormField extends FormField {
             }
             break;
         case TEXT:
-            String s = (String) value;
-            if ( ( validation != null && validation.getLength() > 0 && s.length() >= validation.getLength() ) ) {
-                invalid = true;
+            if ( value instanceof List<?> ) {
+                // TODO
+            } else {
+                String s = (String) value;
+                if ( ( validation != null && validation.getLength() > 0 && s.length() >= validation.getLength() ) ) {
+                    invalid = true;
+                }
             }
             break;
         }

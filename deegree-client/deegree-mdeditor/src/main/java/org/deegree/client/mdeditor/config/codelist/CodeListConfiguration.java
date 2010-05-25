@@ -33,7 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
+package org.deegree.client.mdeditor.config.codelist;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.client.mdeditor.model.CodeList;
 
 /**
  * TODO add class documentation here
@@ -43,12 +48,35 @@ package org.deegree.client.mdeditor.config;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConfigurationException extends Exception {
+public class CodeListConfiguration {
 
-    private static final long serialVersionUID = -5005648880467646463L;
+    private List<CodeList> codeLists = new ArrayList<CodeList>();
 
-    public ConfigurationException( String message ) {
-        super( message );
+    CodeListConfiguration( List<CodeList> codeLists ) {
+        this.codeLists = codeLists;
     }
 
+    /**
+     * @return a list of all codelists
+     */
+    List<CodeList> getCodeLists() {
+        return codeLists;
+    }
+
+    /**
+     * @param id
+     *            the id of the codelist
+     * @return the codelist with the given id
+     */
+    CodeList getCodeList( String id ) {
+        if ( id == null ) {
+            throw new NullPointerException();
+        }
+        for ( CodeList cl : codeLists ) {
+            if ( id.equals( cl.getId() ) ) {
+                return cl;
+            }
+        }
+        return null;
+    }
 }
