@@ -166,7 +166,7 @@ public class WKTWriterTest extends TestCase {
         WKTWriter WKTwriter = new WKTWriter( flag, decimalFormatter );
         Geometry geom = parseGeometry( "Polygon.gml" );
         WKTwriter.writeGeometry( geom, writer );
-        // System.out.print( writer.toString() + "\n" );
+//        System.out.print( writer.toString() + "\n" );
 
         assertEquals(
                       "POLYGON [id='',metadataproperty=(),description='',name=()]((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))",
@@ -379,7 +379,7 @@ public class WKTWriterTest extends TestCase {
         WKTWriter WKTwriter = new WKTWriter( flag, decimalFormatter );
         Geometry geom = parseGeometry( "Polygon.gml" );
         WKTwriter.writeGeometry( geom, writer );
-        // System.out.print( writer.toString() + "\n" );
+//        System.out.print( writer.toString() + "\n" );
 
         assertEquals(
                       "POLYGON ((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))",
@@ -469,6 +469,23 @@ public class WKTWriterTest extends TestCase {
         // System.out.print( writer.toString() + "\n" );
 
         assertEquals( "POLYGON ((11.0 22.0,44.0 22.0,44.0 88.0,11.0 88.0,11.0 22.0))", writer.toString() );
+
+    }
+
+    @Test
+    public void test_MultiPolygon()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        Writer writer = new StringWriter();
+        WKTWriter WKTwriter = new WKTWriter( flag, decimalFormatter );
+        Geometry geom = parseGeometry( "MultiPolygon.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+//        System.out.print( writer.toString() + "\n" );
+        assertEquals(
+                      "MULTIPOLYGON (((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)),((2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0),(2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)))",
+                      writer.toString() );
 
     }
 
