@@ -533,12 +533,27 @@ public class SHPReader {
                 continue;
             }
 
+            if ( !p.getStartPoint().equals( p.getEndPoint() ) ) {
+                LOG.warn( "Found ring that is not closed. Repairing it." );
+                double[] coords = new double[( p.size() + 1 ) * p.getDimension()];
+                int i = 0;
+                for ( Point pt : p ) {
+                    for ( int dim = 0; dim < pt.getCoordinateDimension(); dim++ ) {
+                        coords[i++] = pt.get( dim );
+                    }
+                }
+                for ( int dim = 0; dim < p.getDimension(); dim++ ) {
+                    coords[i++] = p.get( 0 ).get( dim );
+                }
+                p = new PackedPoints( crs, coords, p.getDimension() );
+            }
+
             if ( outer == null ) {
                 outer = fac.createLinearRing( null, crs, p );
             } else {
                 Ring ring = fac.createLinearRing( null, crs, p );
-                Polygon outerP = fac.createPolygon( null, null, outer, null );
-                Polygon innerP = fac.createPolygon( null, null, ring, null );
+                Polygon outerP = fac.createPolygon( null, crs, outer, null );
+                Polygon innerP = fac.createPolygon( null, crs, ring, null );
                 if ( outerP.contains( innerP ) ) {
                     inners.add( ring );
                 } else {
@@ -557,6 +572,7 @@ public class SHPReader {
         if ( polys.size() > 0 ) {
             return fac.createMultiPolygon( null, crs, polys );
         }
+
         return fac.createPolygon( null, crs, outer, inners );
     }
 
@@ -975,6 +991,10 @@ public class SHPReader {
         }
 
         return res;
+    }
+
+    private int getUnsigned( ByteBuffer buffer ) {
+        return buffer.get() & 0xff;
     }
 
     /**
