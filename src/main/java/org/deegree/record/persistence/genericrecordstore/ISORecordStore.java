@@ -69,6 +69,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -80,6 +82,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
@@ -443,6 +446,20 @@ public class ISORecordStore implements RecordStore {
                                                    profileFormatNumberOutputSchema, true, builder );// combinePreparedStatement(
 
         PreparedStatement ps = conn.prepareStatement( s.toString() );
+        /*
+         * the parameter identified in the WHERE-builder replaces the "?" in the statement
+         */
+        if ( builder != null && builder.getPropNameMappingList().size() > 0 ) {
+            int i = 0;
+
+            for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
+                i++;
+
+                LOG.debug( "Setting argument: " + arg );
+                ps.setObject( i, arg.getValue() );
+            }
+
+        }
         ResultSet rs = ps.executeQuery();
 
         while ( rs.next() ) {
@@ -487,6 +504,40 @@ public class ISORecordStore implements RecordStore {
         ps.close();
         rs.close();
         conn.close();
+
+    }
+
+    /**
+     * Replace the dbTablenames with aliasNames.
+     * 
+     * @param aliasCount
+     * @param builder
+     * @param whereClause
+     * @param aliasMapping
+     */
+    private void createWhereClauseWithAlias( int aliasCount, PostGISWhereBuilder builder, StringBuilder whereClause,
+                                             Set<Pair<String, String>> aliasMapping ) {
+
+        for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
+            if ( !propName.getTable().equals( PostGISMappingsISODC.DatabaseTables.datasets.name() ) ) {
+                aliasMapping.add( new Pair<String, String>( propName.getTable(), propName.getTable()
+                                                                                 + Integer.toString( aliasCount ) ) );
+                aliasCount++;
+            }
+        }
+        StringBuilder replaceWhereClause = new StringBuilder();
+        replaceWhereClause.append( builder.getWhereClause().getSQL() );
+        for ( Pair<String, String> alias : aliasMapping ) {
+
+            Pattern p = Pattern.compile( alias.first + "[.]" );
+            Matcher m = p.matcher( (CharSequence) replaceWhereClause );
+            String replaceString = m.replaceFirst( alias.second + "." );
+            System.out.println( replaceString );
+            replaceWhereClause.delete( 0, replaceWhereClause.capacity() );
+            replaceWhereClause.append( replaceString );
+
+        }
+        whereClause.append( replaceWhereClause );
 
     }
 
@@ -563,6 +614,21 @@ public class ISORecordStore implements RecordStore {
             break;
         }
 
+        /*
+         * the parameter identified in the WHERE-builder replaces the "?" in the statement
+         */
+        if ( builder != null && builder.getPropNameMappingList().size() > 0 ) {
+            int i = 0;
+
+            for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
+                i++;
+
+                LOG.debug( "Setting argument: " + arg );
+                preparedStatement.setObject( i, arg.getValue() );
+            }
+
+        }
+
         rs = preparedStatement.executeQuery();
 
         if ( rs != null && recordStoreOptions.getMaxRecords() != 0 ) {
@@ -598,39 +664,42 @@ public class ISORecordStore implements RecordStore {
                                                    int typeNameFormatNumber, int profileFormatNumberOutputSchema,
                                                    boolean setCount, PostGISWhereBuilder builder )
                             throws IOException, SQLException {
+        int aliasCount = 0;
+        StringBuilder whereClause = new StringBuilder();
+        Set<Pair<String, String>> aliasMapping = new HashSet<Pair<String, String>>();
+        createWhereClauseWithAlias( aliasCount, builder, whereClause, aliasMapping );
         String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
         String format = PostGISMappingsISODC.CommonColumnNames.format.name();
         String data = PostGISMappingsISODC.CommonColumnNames.data.name();
         String id = PostGISMappingsISODC.CommonColumnNames.id.name();
         String datasets = PostGISMappingsISODC.DatabaseTables.datasets.name();
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
-        String formatTypeAlias = formatType + Integer.toString( 0 );
-        String datasetsAlias = PostGISMappingsISODC.DatabaseTables.datasets.name() + Integer.toString( 1 );
+        String formatTypeAlias = formatType + aliasCount;
+
+        // String datasetsAlias = PostGISMappingsISODC.DatabaseTables.datasets.name() + Integer.toString( 1 );
         StringBuilder COUNT_PRE;
         StringBuilder COUNT_SUF;
         StringBuilder SET_OFFSET;
 
-        Set<String> joinTables = new HashSet<String>();
-        for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
-            if ( !propName.getTable().equals( datasets ) ) {
-                joinTables.add( propName.getTable() );
-            }
-        }
-
         LOG.debug( "wherebuilder: " + builder );
 
-        getDatasetIDs.append( "SELECT " ).append( datasetsAlias ).append( '.' );
+        getDatasetIDs.append( "SELECT " ).append( datasets ).append( '.' );
         getDatasetIDs.append( id );
-        getDatasetIDs.append( " FROM " ).append( datasets ).append( " AS " ).append( datasetsAlias );
+        getDatasetIDs.append( " FROM " ).append( datasets );
 
         // LEFT OUTER JOINs
-        for ( String joinTable : joinTables ) {
-            getDatasetIDs.append( " LEFT OUTER JOIN " ).append( joinTable ).append( " ON " );
-            getDatasetIDs.append( joinTable ).append( '.' );
+        Iterator aliasIter = aliasMapping.iterator();
+        while ( aliasIter.hasNext() ) {
+            Pair<String, String> aliasPair = (Pair<String, String>) aliasIter.next();
+            getDatasetIDs.append( " LEFT OUTER JOIN " ).append( aliasPair.first );
+            getDatasetIDs.append( " AS " ).append( aliasPair.second ).append( " ON " );
+            getDatasetIDs.append( aliasPair.second ).append( '.' );
             getDatasetIDs.append( fk_datasets ).append( '=' );
-            getDatasetIDs.append( datasetsAlias ).append( '.' ).append( id );
+            getDatasetIDs.append( datasets ).append( '.' ).append( id );
         }
-        getDatasetIDs.append( " WHERE " ).append( builder.getWhereClause() );
+        if ( whereClause != null ) {
+            getDatasetIDs.append( " WHERE " ).append( whereClause );
+        }
 
         /*
          * precondition if there is a counting of rows needed
@@ -655,7 +724,7 @@ public class ISORecordStore implements RecordStore {
         s.append( data ).append( COUNT_SUF );
         s.append( " FROM " ).append( formatType ).append( " AS " ).append( formatTypeAlias );
         s.append( " WHERE " ).append( formatTypeAlias ).append( '.' );
-        s.append( fk_datasets ).append( " = (" );
+        s.append( fk_datasets ).append( " IN (" );
         s.append( getDatasetIDs ).append( ')' );
         s.append( " AND " ).append( formatTypeAlias ).append( '.' );
         s.append( format ).append( '=' );
