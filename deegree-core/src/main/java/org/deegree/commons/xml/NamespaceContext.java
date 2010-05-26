@@ -98,10 +98,6 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
     }
 
     public String translateNamespacePrefixToUri( String prefix ) {
-        // TODO remove this hack
-        if ( prefix.equals( "" ) ) {
-            return null;
-        }
         if ( javaNsc != null ) {
             return javaNsc.getNamespaceURI( prefix );
         }

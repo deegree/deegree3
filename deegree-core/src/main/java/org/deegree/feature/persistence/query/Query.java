@@ -48,6 +48,7 @@ import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
+import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.TypeName;
@@ -172,6 +173,26 @@ public class Query {
 
     public Object getHint( QueryHint code ) {
         return hints.get( code );
+    }
+
+    /**
+     * Returns an {@link Envelope} suitable for performing a spatial pre-filtering step on the set of feature
+     * candidates.
+     * <p>
+     * The returned {@link Envelope} is determined by the following strategy:
+     * <ul>
+     * <li>If a loose bbox is available ({@link QueryHint#HINT_LOOSE_BBOX}), it is returned.</li>
+     * <li>If no loose bbox is available, but the {@link Query} contains an {@link OperatorFilter}, it is attempted to
+     * extract an {@link Envelope} from it.</li>
+     * <li>If neither a loose bbox is available, nor a bbox can be extracted from the filter, <code>null</code> is
+     * returned.</li>
+     * </ul>
+     * </p>
+     * 
+     * @return an {@link Envelope} suitable for pre-filtering feature candidates, can be <code>null</code>
+     */
+    public Envelope getPrefilterBBox() {
+        return null;
     }
 
     /**

@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.shape;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -79,7 +80,7 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
             Unmarshaller u = jc.createUnmarshaller();
             ShapeFeatureStoreConfig config = (ShapeFeatureStoreConfig) u.unmarshal( configURL );
             XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configURL.toString() );            
+            resolver.setSystemId( configURL.toString() );
 
             String srs = config.getStorageSRS();
             CRS crs = null;
@@ -99,8 +100,20 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
                 LOG.error( msg, e );
                 throw new FeatureStoreException( msg, e );
             }
-            fs = new ShapeFeatureStore( shapeFileName, crs, null, config.getNamespace() );            
-            
+
+            Charset cs = null;
+            String encoding = config.getEncoding();
+            if ( encoding != null ) {
+                try {
+                    cs = Charset.forName( encoding );
+                } catch ( Exception e ) {
+                    String msg = "Unsupported encoding '" + encoding + "'. Continuing with encoding guessing mode.";
+                    LOG.error(msg);
+                }
+            }
+
+            fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getNamespace() );
+
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );

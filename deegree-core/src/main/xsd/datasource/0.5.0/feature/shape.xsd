@@ -24,6 +24,7 @@
         <element name="StorageSRS" type="string" minOccurs="0" />
         <element name="Namespace" type="string" minOccurs="0" />
         <element name="File" type="string" />
+        <element name="Encoding" type="string" minOccurs="0"/>
       </sequence>
       <attribute name="configVersion" use="required" fixed="0.5.0" />
     </complexType>

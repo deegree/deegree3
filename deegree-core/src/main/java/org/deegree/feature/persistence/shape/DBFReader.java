@@ -122,15 +122,15 @@ public class DBFReader {
         ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
         buffer.order( ByteOrder.LITTLE_ENDIAN );
 
-        int version = buffer.get();
+        int version = getUnsigned( buffer );
         if ( version < 3 || version > 5 ) {
             LOG.warn( "DBase file is of unsupported version " + version + ". Trying to continue anyway..." );
         }
         if ( LOG.isTraceEnabled() ) {
             LOG.trace( "Version number: " + version );
-            int year = 1900 + buffer.get();
-            int month = buffer.get();
-            int day = buffer.get();
+            int year = 1900 + getUnsigned( buffer );
+            int month = getUnsigned( buffer );
+            int day = getUnsigned( buffer );
             LOG.trace( "Last modified: " + year + "/" + month + "/" + day );
         } else {
             skipBytes( buffer, 3 );
@@ -145,18 +145,18 @@ public class DBFReader {
         recordLength = buffer.getShort();
         LOG.trace( "Record length: " + recordLength );
         buffer.position( 14 );
-        int dirty = buffer.get();
+        int dirty = getUnsigned( buffer );
         if ( dirty == 1 ) {
             LOG.warn( "DBase file is marked as 'transaction in progress'. Unexpected things may happen." );
         }
-        int enc = buffer.get();
+        int enc = getUnsigned( buffer );
         if ( enc == 1 ) {
             LOG.warn( "DBase file is marked as encrypted. This is unsupported, so you'll get garbage output." );
         }
 
         if ( LOG.isTraceEnabled() ) {
             buffer.position( 29 );
-            LOG.trace( "Language driver code is " + buffer.get() );
+            LOG.trace( "Language driver code is " + getUnsigned( buffer ) );
             skipBytes( buffer, 2 );
         } else {
             buffer.position( 32 );
@@ -166,10 +166,10 @@ public class DBFReader {
         LinkedList<PropertyType> types = new LinkedList<PropertyType>();
 
         int read;
-        while ( ( read = buffer.get() ) != 13 ) {
+        while ( ( read = getUnsigned( buffer ) ) != 13 ) {
             while ( read != 0 && buf.size() < 10 ) {
                 buf.add( (byte) read );
-                read = buffer.get();
+                read = getUnsigned( buffer );
             }
 
             skipBytes( buffer, 10 - buf.size() );
@@ -180,14 +180,14 @@ public class DBFReader {
             }
             String name = getString( bs, encoding );
 
-            char type = (char) buffer.get();
+            char type = (char) getUnsigned( buffer );
             SimplePropertyType pt = null;
 
             skipBytes( buffer, 4 );
 
-            int fieldLength = buffer.get();
-            int fieldPrecision = buffer.get();
-            LOG.trace( "Field length is " + fieldLength );
+            int fieldLength = getUnsigned( buffer );
+            int fieldPrecision = getUnsigned( buffer );
+            LOG.trace( "Field length is " + fieldLength + ", type is " + type );
 
             switch ( type ) {
             case 'C':
@@ -234,7 +234,7 @@ public class DBFReader {
             types.add( pt );
 
             skipBytes( buffer, 13 );
-            if ( buffer.get() == 1 ) {
+            if ( getUnsigned( buffer ) == 1 ) {
                 LOG.warn( "Index found: index files are not supported by this implementation." );
             }
         }
@@ -273,7 +273,7 @@ public class DBFReader {
             buffer.position( pos );
             pos = headerLength + ( num + 1 ) * recordLength;
         }
-        if ( buffer.get() == 42 ) {
+        if ( getUnsigned( buffer ) == 42 ) {
             LOG.warn( "The record with number " + num + " is marked as deleted." );
         }
 
@@ -300,7 +300,7 @@ public class DBFReader {
                 break;
             }
             case 'L': {
-                char c = (char) buffer.get();
+                char c = (char) getUnsigned( buffer );
                 Boolean b = null;
                 if ( c == 'Y' || c == 'y' || c == 'T' || c == 't' ) {
                     b = true;
@@ -350,6 +350,10 @@ public class DBFReader {
             map.put( field.propertyType, property );
         }
         return map;
+    }
+
+    private int getUnsigned( ByteBuffer buffer ) {
+        return buffer.get() & 0xff;
     }
 
     /**
