@@ -46,7 +46,7 @@ import javax.faces.event.ComponentSystemEventListener;
 import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.config.FormConfigurationFactory;
-import org.deegree.client.mdeditor.controller.FormGroupInstanceReader;
+import org.deegree.client.mdeditor.controller.FormGroupHandler;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormField;
@@ -80,7 +80,7 @@ public class ListPreRenderedListener implements ComponentSystemEventListener {
             if ( formField instanceof SelectFormField ) {
                 referenceLabel = ( (SelectFormField) formField ).getReferenceText();
             }
-            List<UISelectItem> selectItems = FormGroupInstanceReader.getSelectItems( grpReference, referenceLabel );
+            List<UISelectItem> selectItems = FormGroupHandler.getSelectItems( grpReference, referenceLabel );
 
             select.getChildren().clear();
 

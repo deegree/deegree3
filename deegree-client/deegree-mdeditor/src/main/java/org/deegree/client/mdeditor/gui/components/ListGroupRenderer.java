@@ -74,7 +74,6 @@ public class ListGroupRenderer extends Renderer {
                             throws IOException {
         ResponseWriter responseWriter = context.getResponseWriter();
         for ( UIComponent child : component.getChildren() ) {
-            System.out.println(child.getFamily() + " " + child.getId());
             responseWriter.startElement( "li", component );
             child.encodeAll( context );
             responseWriter.endElement( "li" );

@@ -35,12 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.listener;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
 import org.deegree.client.mdeditor.gui.FormFieldBean;
+import org.deegree.client.mdeditor.gui.GuiUtils;
+import org.deegree.client.mdeditor.model.FormFieldPath;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -52,8 +58,10 @@ import org.deegree.client.mdeditor.gui.FormFieldBean;
  */
 public class FormFieldValueChangedListener implements AjaxBehaviorListener {
 
+    private static final Logger LOG = getLogger( FormFieldValueChangedListener.class );
+
     @Override
-    public void processAjaxBehavior( AjaxBehaviorEvent arg0 )
+    public void processAjaxBehavior( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
 
         FacesContext fc = FacesContext.getCurrentInstance();
@@ -61,7 +69,15 @@ public class FormFieldValueChangedListener implements AjaxBehaviorListener {
         FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "formFieldBean" );
-        formFieldBean.saveValue( arg0 );
+        UIInput input = (UIInput) event.getSource();
+
+        FormFieldPath path = (FormFieldPath) input.getAttributes().get( GuiUtils.FIELDPATH_ATT_KEY );
+
+        if ( path == null ) {
+            LOG.error( "Can not save value for field " + path + ": groupId or fieldId are null" );
+        } else {
+            formFieldBean.setValue( path, input.getValue() );
+        }
 
     }
 

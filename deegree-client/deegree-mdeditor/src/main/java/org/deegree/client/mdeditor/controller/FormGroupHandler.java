@@ -38,14 +38,11 @@ package org.deegree.client.mdeditor.controller;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.UISelectItem;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
 
 import org.deegree.client.mdeditor.config.Configuration;
 import org.deegree.client.mdeditor.gui.GuiUtils;
@@ -53,19 +50,29 @@ import org.deegree.client.mdeditor.model.FormGroupInstance;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * handles all jobs concerning reading and writing form groups
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormGroupInstanceReader {
+public class FormGroupHandler {
 
-    private static final Logger LOG = getLogger( FormGroupInstanceReader.class );
+    private static final Logger LOG = getLogger( FormGroupHandler.class );
 
-    public static List<UISelectItem> getSelectItems( String grpId, String referenceLabel )
-                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
+    /**
+     * creates select items out of the instances of a form group
+     * 
+     * TODO: is this the best place to create gui elements???
+     * 
+     * @param grpId
+     *            the id of the group
+     * @param referenceLabel
+     *            the pattern describing the label
+     * @return a list of all available instances of the form group with the given grpId
+     */
+    public static List<UISelectItem> getSelectItems( String grpId, String referenceLabel ) {
         List<UISelectItem> items = new ArrayList<UISelectItem>();
         String dir = Configuration.getFilesDirURL() + grpId;
         File f = new File( dir );
@@ -74,14 +81,19 @@ public class FormGroupInstanceReader {
             for ( int i = 0; i < listFiles.length; i++ ) {
                 String label = listFiles[i].getName();
                 String value = listFiles[i].getName();
-                if ( referenceLabel != null ) {
-                    label = replaceProperties( referenceLabel, DatasetReader.read( listFiles[i].getAbsolutePath() ) );
+                try {
+                    if ( referenceLabel != null ) {
+                        label = replaceProperties( referenceLabel, DatasetReader.read( listFiles[i].getAbsolutePath() ) );
+                    }
+                    UISelectItem item = new UISelectItem();
+                    item.setId( GuiUtils.getUniqueId() );
+                    item.setItemLabel( label );
+                    item.setItemValue( value );
+                    items.add( item );
+                } catch ( Exception e ) {
+                    LOG.debug( "Could not read file " + listFiles[i].getAbsolutePath(), e );
+                    LOG.error( "Could not read file " + listFiles[i].getAbsolutePath() + ": ", e.getMessage() );
                 }
-                UISelectItem item = new UISelectItem();
-                item.setId( GuiUtils.getUniqueId() );
-                item.setItemLabel( label );
-                item.setItemValue( value );
-                items.add( item );
             }
         }
         return items;
@@ -101,6 +113,9 @@ public class FormGroupInstanceReader {
         return replaced;
     }
 
+    /**
+     * @return a list of all datasets
+     */
     public static List<String> getDatasets() {
         List<String> datasets = new ArrayList<String>();
         String dir = Configuration.getFilesDirURL();
@@ -117,8 +132,12 @@ public class FormGroupInstanceReader {
         return datasets;
     }
 
-    public static List<FormGroupInstance> getFormGroupInstances( String grpId )
-                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
+    /**
+     * @param grpId
+     *            the id of the group
+     * @return a list of all form group instances of the group with the given id
+     */
+    public static List<FormGroupInstance> getFormGroupInstances( String grpId ) {
         List<FormGroupInstance> fgInstances = new ArrayList<FormGroupInstance>();
         String dir = Configuration.getFilesDirURL() + grpId;
         File f = new File( dir );
@@ -126,9 +145,14 @@ public class FormGroupInstanceReader {
             File[] listFiles = f.listFiles();
             for ( int i = 0; i < listFiles.length; i++ ) {
                 if ( listFiles[i].isFile() ) {
-                    FormGroupInstance instance = new FormGroupInstance( listFiles[i].getName(),
-                                                                        DatasetReader.read( listFiles[i] ) );
-                    fgInstances.add( instance );
+                    try {
+                        FormGroupInstance instance = new FormGroupInstance( listFiles[i].getName(),
+                                                                            DatasetReader.read( listFiles[i] ) );
+                        fgInstances.add( instance );
+                    } catch ( Exception e ) {
+                        LOG.debug( "Could not read file " + listFiles[i].getAbsolutePath(), e );
+                        LOG.error( "Could not read file " + listFiles[i].getAbsolutePath() + ": ", e.getMessage() );
+                    }
 
                 }
             }
@@ -137,22 +161,41 @@ public class FormGroupInstanceReader {
 
     }
 
-    public static void deleteInstance( String grpId, String fileName ) {
-        String dir = Configuration.getFilesDirURL() + grpId + "/" + fileName;
+    /**
+     * Delete the instance of the form group with the given id and name
+     * 
+     * @param grpId
+     *            the id of the group
+     * @param name
+     *            the name of the file (with format suffix)
+     */
+    public static void deleteInstance( String grpId, String name ) {
+        String dir = Configuration.getFilesDirURL() + grpId + "/" + name;
         File f = new File( dir );
         if ( f.exists() && f.isFile() ) {
-            LOG.debug( "Delete file " + fileName + " from group " + grpId );
+            LOG.debug( "Delete file " + name + " from group " + grpId );
             f.delete();
         }
     }
 
-    public static FormGroupInstance getFormGroupInstance( String grpId, String fileName )
-                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
-        String dir = Configuration.getFilesDirURL() + grpId + "/" + fileName;
+    /**
+     * @param grpId
+     *            the id of the group
+     * @param name
+     *            the name of the file (with format suffix)
+     * @return the form group of the form group with the given id and name; null, if the instance could not be read
+     */
+    public static FormGroupInstance getFormGroupInstance( String grpId, String name ) {
+        String dir = Configuration.getFilesDirURL() + grpId + "/" + name;
         File f = new File( dir );
         if ( f.exists() && f.isFile() ) {
-            LOG.debug( "Read file " + fileName + " from group " + grpId );
-            return new FormGroupInstance( f.getName(), DatasetReader.read( f ) );
+            LOG.debug( "Read file " + name + " from group " + grpId );
+            try {
+                return new FormGroupInstance( f.getName(), DatasetReader.read( f ) );
+            } catch ( Exception e ) {
+                LOG.debug( "Could not read file " + f.getAbsolutePath(), e );
+                LOG.error( "Could not read file " + f.getAbsolutePath() + ": ", e.getMessage() );
+            }
         }
         return null;
     }

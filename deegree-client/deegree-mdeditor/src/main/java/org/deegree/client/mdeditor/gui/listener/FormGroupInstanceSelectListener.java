@@ -37,7 +37,6 @@ package org.deegree.client.mdeditor.gui.listener;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 import javax.faces.component.UIComponent;
@@ -46,10 +45,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
 
-import org.deegree.client.mdeditor.controller.FormGroupInstanceReader;
+import org.deegree.client.mdeditor.controller.FormGroupHandler;
 import org.deegree.client.mdeditor.gui.FormFieldBean;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.model.FormGroupInstance;
@@ -87,18 +84,11 @@ public class FormGroupInstanceSelectListener implements AjaxBehaviorListener {
         FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "formFieldBean" );
-        try {
-            FormGroupInstance formGroupInstance = FormGroupInstanceReader.getFormGroupInstance( groupId, fileName );
+        FormGroupInstance formGroupInstance = FormGroupHandler.getFormGroupInstance( groupId, fileName );
+        if ( formGroupInstance != null ) {
             formFieldBean.setValues( groupId, formGroupInstance );
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( FactoryConfigurationError e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } else {
+            // TODO message
         }
     }
 

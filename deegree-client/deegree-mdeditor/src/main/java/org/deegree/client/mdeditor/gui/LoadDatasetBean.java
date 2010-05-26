@@ -44,7 +44,7 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
 import org.deegree.client.mdeditor.controller.DatasetReader;
-import org.deegree.client.mdeditor.controller.FormGroupInstanceReader;
+import org.deegree.client.mdeditor.controller.FormGroupHandler;
 import org.deegree.client.mdeditor.model.FormField;
 
 /**
@@ -62,7 +62,7 @@ public class LoadDatasetBean {
     private String selectedDataset;
 
     public List<String> getDatasets() {
-        return FormGroupInstanceReader.getDatasets();
+        return FormGroupHandler.getDatasets();
     }
 
     public void setSelectedDataset( String selectedDataset ) {

@@ -45,10 +45,7 @@ import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.config.ConfigurationException;
@@ -83,48 +80,6 @@ public class FormFieldBean implements Serializable {
 
     public FormFieldBean() {
         forceReloaded();
-    }
-
-    public void saveValue( AjaxBehaviorEvent event )
-                            throws AbortProcessingException {
-        UIInput input = (UIInput) event.getSource();
-
-        FormFieldPath path = (FormFieldPath) input.getAttributes().get( GuiUtils.FIELDPATH_ATT_KEY );
-
-        if ( path == null ) {
-            LOG.error( "Can not save value for field " + path + ": groupId or fieldId are null" );
-        }
-
-        path.resetIterator();
-
-        String fgId = path.next();
-        FormField ffToUpdate = null;
-        for ( FormGroup fg : formGroups ) {
-            if ( fgId.equals( fg.getId() ) ) {
-                ffToUpdate = getFormField( fg.getFormElements(), path );
-            }
-        }
-        if ( ffToUpdate != null ) {
-            Object value = input.getValue();
-            LOG.debug( "Update element with id " + path + ". New Value is " + value + "." );
-            ffToUpdate.setValue( value );
-        }
-    }
-
-    private FormField getFormField( List<FormElement> fes, FormFieldPath path ) {
-        if ( path.hasNext() ) {
-            String next = path.next();
-            for ( FormElement fe : fes ) {
-                if ( next.equals( fe.getId() ) ) {
-                    if ( fe instanceof FormGroup ) {
-                        return getFormField( ( (FormGroup) fe ).getFormElements(), path );
-                    } else {
-                        return (FormField) fe;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     public List<FormGroup> getFormGroups() {
@@ -180,4 +135,35 @@ public class FormFieldBean implements Serializable {
             }
         }
     }
+
+    public void setValue( FormFieldPath path, Object value ) {
+        String fgId = path.next();
+        FormField ffToUpdate = null;
+        for ( FormGroup fg : formGroups ) {
+            if ( fgId.equals( fg.getId() ) ) {
+                ffToUpdate = getFormField( fg.getFormElements(), path );
+            }
+        }
+        if ( ffToUpdate != null ) {
+            LOG.debug( "Update element with id " + path + ". New Value is " + value + "." );
+            ffToUpdate.setValue( value );
+        }
+    }
+
+    private FormField getFormField( List<FormElement> fes, FormFieldPath path ) {
+        if ( path.hasNext() ) {
+            String next = path.next();
+            for ( FormElement fe : fes ) {
+                if ( next.equals( fe.getId() ) ) {
+                    if ( fe instanceof FormGroup ) {
+                        return getFormField( ( (FormGroup) fe ).getFormElements(), path );
+                    } else {
+                        return (FormField) fe;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 }

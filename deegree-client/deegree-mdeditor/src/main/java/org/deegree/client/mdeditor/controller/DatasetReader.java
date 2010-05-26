@@ -57,7 +57,8 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * 
+ * reading a dataset or single form group
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -68,21 +69,46 @@ public class DatasetReader {
 
     private static final Logger LOG = getLogger( DatasetReader.class );
 
+    /**
+     * @param id
+     *            the id of the dataset to read
+     * @return the dataset with the given id
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     * @throws FactoryConfigurationError
+     */
     public static Map<String, Object> readDataset( String id )
                             throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
         String file = Configuration.getFilesDirURL() + id + ".xml";
         return read( file );
     }
 
+    /**
+     * @param file
+     *            the file to read as complete path
+     * @return the values of the form group stored in the given file
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     * @throws FactoryConfigurationError
+     */
     public static Map<String, Object> read( String file )
                             throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
-        LOG.debug( "Read dataset " + file );
+        LOG.debug( "Read dataset form " + file );
         return read( XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( file ) ) );
     }
 
+    /**
+     * 
+     * @param file
+     *            the file to read
+     * @return the values of the form group stored in the given file
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     * @throws FactoryConfigurationError
+     */
     public static Map<String, Object> read( File file )
                             throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
-        LOG.debug( "Read dataset " + file );
+        LOG.debug( "Read dataset from file " + file.getAbsolutePath() );
         return read( XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( file ) ) );
     }
 

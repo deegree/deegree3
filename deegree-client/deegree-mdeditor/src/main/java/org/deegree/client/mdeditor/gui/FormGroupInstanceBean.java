@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,12 +43,10 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
 
 import org.deegree.client.mdeditor.config.ConfigurationException;
 import org.deegree.client.mdeditor.config.FormConfigurationFactory;
-import org.deegree.client.mdeditor.controller.FormGroupInstanceReader;
+import org.deegree.client.mdeditor.controller.FormGroupHandler;
 import org.deegree.client.mdeditor.model.FormGroupInstance;
 
 /**
@@ -71,23 +68,13 @@ public class FormGroupInstanceBean {
     // TODO
     private void loadFormGropupInstances() {
         HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession( false );
-        List<String> formGroupIds;
         try {
-            formGroupIds = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() ).getReferencedFormGroupIds();
+            List<String> formGroupIds = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() ).getReferencedFormGroupIds();
 
             for ( String id : formGroupIds ) {
-                formGroupInstances.put( id, FormGroupInstanceReader.getFormGroupInstances( id ) );
+                formGroupInstances.put( id, FormGroupHandler.getFormGroupInstances( id ) );
             }
         } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( FactoryConfigurationError e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
