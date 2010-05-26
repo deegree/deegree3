@@ -56,8 +56,7 @@ public class FormConfiguration {
 
     private FormFieldPath pathToIdentifier;
 
-    public FormConfiguration( List<FormGroup> formGroups, LAYOUT_TYPE layoutType,
-                              FormFieldPath pathToIdentifier ) {
+    public FormConfiguration( List<FormGroup> formGroups, LAYOUT_TYPE layoutType, FormFieldPath pathToIdentifier ) {
         this.formGroups = formGroups;
         this.layoutType = layoutType;
         this.pathToIdentifier = pathToIdentifier;
@@ -122,7 +121,7 @@ public class FormConfiguration {
 
     /**
      * @param path
-     * @return 
+     * @return
      */
     public FormField getFormField( FormFieldPath path ) {
         for ( FormGroup fg : formGroups ) {
@@ -140,5 +139,15 @@ public class FormConfiguration {
             }
         }
         return null;
+    }
+
+    public List<String> getReferencedFormGroupIds() {
+        List<String> ids = new ArrayList<String>();
+        for ( FormGroup fg : formGroups ) {
+            if ( fg.isReferenced() ) {
+                ids.add( fg.getId() );
+            }
+        }
+        return ids;
     }
 }

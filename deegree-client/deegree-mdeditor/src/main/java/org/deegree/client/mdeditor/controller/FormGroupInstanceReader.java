@@ -35,8 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.controller;
 
-import java.io.File;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.client.mdeditor.config.Configuration;
 import org.deegree.client.mdeditor.gui.GuiUtils;
+import org.deegree.client.mdeditor.model.FormGroupInstance;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -58,6 +61,8 @@ import org.deegree.client.mdeditor.gui.GuiUtils;
  * @version $Revision: $, $Date: $
  */
 public class FormGroupInstanceReader {
+
+    private static final Logger LOG = getLogger( FormGroupInstanceReader.class );
 
     public static List<UISelectItem> getSelectItems( String grpId, String referenceLabel )
                             throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
@@ -110,6 +115,46 @@ public class FormGroupInstanceReader {
             }
         }
         return datasets;
+    }
+
+    public static List<FormGroupInstance> getFormGroupInstances( String grpId )
+                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
+        List<FormGroupInstance> fgInstances = new ArrayList<FormGroupInstance>();
+        String dir = Configuration.getFilesDirURL() + grpId;
+        File f = new File( dir );
+        if ( f.exists() && f.isDirectory() ) {
+            File[] listFiles = f.listFiles();
+            for ( int i = 0; i < listFiles.length; i++ ) {
+                if ( listFiles[i].isFile() ) {
+                    FormGroupInstance instance = new FormGroupInstance( listFiles[i].getName(),
+                                                                        DatasetReader.read( listFiles[i] ) );
+                    fgInstances.add( instance );
+
+                }
+            }
+        }
+        return fgInstances;
+
+    }
+
+    public static void deleteInstance( String grpId, String fileName ) {
+        String dir = Configuration.getFilesDirURL() + grpId + "/" + fileName;
+        File f = new File( dir );
+        if ( f.exists() && f.isFile() ) {
+            LOG.debug( "Delete file " + fileName + " from group " + grpId );
+            f.delete();
+        }
+    }
+
+    public static FormGroupInstance getFormGroupInstance( String grpId, String fileName )
+                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
+        String dir = Configuration.getFilesDirURL() + grpId + "/" + fileName;
+        File f = new File( dir );
+        if ( f.exists() && f.isFile() ) {
+            LOG.debug( "Read file " + fileName + " from group " + grpId );
+            return new FormGroupInstance( f.getName(), DatasetReader.read( f ) );
+        }
+        return null;
     }
 
 }

@@ -137,3 +137,31 @@
 	text-decoration: none;
 	margin: 5px;
 }
+
+/***** styles for the list of available formGroups instances *****/
+#mdEditor .fgListStyle {
+	border-collapse: collapse;
+}
+
+#mdEditor .fgListStyle td {
+	border: 1px dotted #000000;
+}
+
+#mdEditor .fgListHeaderStyle {
+	font-weight: normal;
+	font-style: italic;
+	padding: 2px 4px;
+}
+
+#mdEditor .fgListRowStyleOdd {
+	background-color: #dbe1e8;
+}
+
+#mdEditor .fgListRowStyleEven {
+	
+}
+
+#mdEditor .fgListselectBtStyle {
+	margin: 0px 5px;
+	background-repeat: no-repeat;
+}

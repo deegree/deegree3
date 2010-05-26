@@ -39,6 +39,7 @@ import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -75,10 +76,19 @@ public class DatasetReader {
 
     public static Map<String, Object> read( String file )
                             throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
-
         LOG.debug( "Read dataset " + file );
+        return read( XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( file ) ) );
+    }
+
+    public static Map<String, Object> read( File file )
+                            throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
+        LOG.debug( "Read dataset " + file );
+        return read( XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( file ) ) );
+    }
+
+    private static Map<String, Object> read( XMLStreamReader xmlStream )
+                            throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
         Map<String, Object> result = new HashMap<String, Object>();
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( file ) );
 
         if ( xmlStream.getEventType() == START_DOCUMENT ) {
             xmlStream.nextTag();

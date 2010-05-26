@@ -58,6 +58,7 @@ import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
+import org.deegree.client.mdeditor.model.FormGroupInstance;
 import org.slf4j.Logger;
 
 /**
@@ -160,4 +161,23 @@ public class FormFieldBean implements Serializable {
         }
     }
 
+    public void setValues( String grpId, FormGroupInstance fgi ) {
+        for ( FormGroup fg : formGroups ) {
+            if ( grpId.equals( fg.getId() ) ) {
+                setValues( fg, fgi.getValues() );
+            }
+        }
+    }
+
+    private void setValues( FormGroup fg, Map<String, Object> values ) {
+        LOG.debug( "update form group with id " + fg.getId() );
+        for ( FormElement fe : fg.getFormElements() ) {
+            if ( fe instanceof FormGroup ) {
+                setValues( ( (FormGroup) fe ), values );
+            } else if ( fe instanceof FormField ) {
+                FormField ff = (FormField) fe;
+                ff.setValue( values.get( ff.getPath().toString() ) );
+            }
+        }
+    }
 }
