@@ -234,7 +234,7 @@ public class FormCreatorBean implements Serializable {
         HtmlOutputText header = new HtmlOutputText();
         header.setValue( "Optionen" );
         col.getFacets().put( "header", header );
-        
+
         dataTable.getChildren().add( col );
 
         grid.getChildren().add( new HtmlPanelGroup() );
@@ -325,12 +325,14 @@ public class FormCreatorBean implements Serializable {
         String id = fe.getId();
         String msgId = "msg_" + id;
         UIInput input = null;
+        String eventName = null;
         if ( fe instanceof InputFormField ) {
             if ( INPUT_TYPE.TEXTAREA.equals( ( (InputFormField) fe ).getInputType() ) ) {
                 input = new HtmlInputTextarea();
             } else {
                 input = new HtmlInputText();
             }
+            eventName = "keyup";
         } else if ( fe instanceof SelectFormField ) {
             SelectFormField se = (SelectFormField) fe;
             if ( SELECT_TYPE.MANY.equals( se.getSelectType() ) ) {
@@ -367,7 +369,7 @@ public class FormCreatorBean implements Serializable {
             input.getAttributes().put( GuiUtils.FIELDPATH_ATT_KEY, fe.getPath() );
             setStyleClass( fe, input, ef, elContext );
             setValue( fe, input, ef, elContext );
-            setValueChangedAjaxBehavior( input, msgId );
+            setValueChangedAjaxBehavior( input, msgId, eventName );
             setVisibility( fe, input, ef, elContext );
             setTitle( fe, input, ef, elContext );
             parentGrid.getChildren().add( input );
@@ -390,7 +392,7 @@ public class FormCreatorBean implements Serializable {
         }
     }
 
-    private void setValueChangedAjaxBehavior( UIInput component, String msgId ) {
+    private void setValueChangedAjaxBehavior( UIInput component, String msgId, String eventName ) {
         AjaxBehavior ajaxInput = new AjaxBehavior();
         List<String> executes = new ArrayList<String>();
         executes.add( "@this" );
@@ -399,7 +401,10 @@ public class FormCreatorBean implements Serializable {
         render.add( "@this" );
         ajaxInput.setRender( render );
         ajaxInput.addAjaxBehaviorListener( new FormFieldValueChangedListener() );
-        component.addClientBehavior( component.getDefaultEventName(), ajaxInput );
+        if ( eventName == null ) {
+            eventName = component.getDefaultEventName();
+        }
+        component.addClientBehavior( eventName, ajaxInput );
     }
 
     private void setVisibility( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
