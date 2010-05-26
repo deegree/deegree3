@@ -243,10 +243,10 @@
 			<wsdl:output message="wps:Execute_BufferProcessResponse"></wsdl:output>
 		</wsdl:operation>
 	</wsdl:portType>
-	<wsdl:binding name="deegree3WPSSOAP" type="wps:deegree3WPSSOAP">
+	<!--  wsdl:binding name="deegree3WPSSOAP" type="wps:deegree3WPSSOAP">
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
-		<wsdl:operation name="GetCapabilities">
+		<wsdl:operation name="GetCapabilities" >
 			<soap:operation soapAction="http://www.deegree.org/services/wps/GetCapabilities" style="document" />
 			<wsdl:input name="GetCapabilitiesRequest">
 				<soap:body use="literal" />
@@ -310,8 +310,8 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
-	</wsdl:binding>
-	<wsdl:binding name="deegree3WPSHttpGet" type="wps:deegree3WPSHttpGet">
+	</wsdl:binding-->
+	<!-- wsdl:binding name="deegree3WPSHttpGet" type="wps:deegree3WPSHttpGet">
 		<http:binding verb="GET" />
 		<wsdl:operation name="GetCapabilities">
 			<http:operation location="/GetCapabilities" />
@@ -424,10 +424,10 @@
 				<mime:mimeXml part="Body" />
 			</wsdl:output>
 		</wsdl:operation>
-	</wsdl:binding>
+	</wsdl:binding -->
 	<wsdl:service name="deegree3WPS">
 		<wsdl:documentation></wsdl:documentation>
-		<wsdl:port binding="wps:deegree3WPSSOAP" name="deegree3WPSSOAP">
+		<!-- wsdl:port binding="wps:deegree3WPSSOAP" name="deegree3WPSSOAP">
 			<soap:address location="http://www.example.org/" />
 		</wsdl:port>
 		<wsdl:port name="deegree3WPSHttpGet" binding="wps:deegree3WPSHttpGet">
@@ -435,6 +435,6 @@
 		</wsdl:port>
 		<wsdl:port name="deegree3WPSHttpPost" binding="wps:deegree3WPSHttpPost">
 			<http:address location="http://www.example.org/" />
-		</wsdl:port>
+		</wsdl:port-->
 	</wsdl:service>
 </wsdl:definitions>
