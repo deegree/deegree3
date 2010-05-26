@@ -645,9 +645,13 @@ public class ISORecordStore implements RecordStore {
                             throws IOException, SQLException {
         PreparedStatement preparedStatement;
         int aliasCount = 0;
-        StringBuilder whereClause = new StringBuilder();
-        Set<Pair<String, String>> aliasMapping = new HashSet<Pair<String, String>>();
-        createWhereClauseWithAlias( aliasCount, builder, whereClause, aliasMapping );
+        Set<Pair<String, String>> aliasMapping = null;
+        StringBuilder whereClause = null;
+        if ( builder.getWhereClause() != null ) {
+            whereClause = new StringBuilder();
+            aliasMapping = new HashSet<Pair<String, String>>();
+            createWhereClauseWithAlias( aliasCount, builder, whereClause, aliasMapping );
+        }
         String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
         String format = PostGISMappingsISODC.CommonColumnNames.format.name();
         String data = PostGISMappingsISODC.CommonColumnNames.data.name();
@@ -668,16 +672,17 @@ public class ISORecordStore implements RecordStore {
         getDatasetIDs.append( " FROM " ).append( datasets );
 
         // LEFT OUTER JOINs
-        Iterator aliasIter = aliasMapping.iterator();
-        while ( aliasIter.hasNext() ) {
-            Pair<String, String> aliasPair = (Pair<String, String>) aliasIter.next();
-            getDatasetIDs.append( " LEFT OUTER JOIN " ).append( aliasPair.first );
-            getDatasetIDs.append( " AS " ).append( aliasPair.second ).append( " ON " );
-            getDatasetIDs.append( aliasPair.second ).append( '.' );
-            getDatasetIDs.append( fk_datasets ).append( '=' );
-            getDatasetIDs.append( datasets ).append( '.' ).append( id );
-        }
         if ( whereClause != null ) {
+            Iterator aliasIter = aliasMapping.iterator();
+            while ( aliasIter.hasNext() ) {
+                Pair<String, String> aliasPair = (Pair<String, String>) aliasIter.next();
+                getDatasetIDs.append( " LEFT OUTER JOIN " ).append( aliasPair.first );
+                getDatasetIDs.append( " AS " ).append( aliasPair.second ).append( " ON " );
+                getDatasetIDs.append( aliasPair.second ).append( '.' );
+                getDatasetIDs.append( fk_datasets ).append( '=' );
+                getDatasetIDs.append( datasets ).append( '.' ).append( id );
+            }
+
             getDatasetIDs.append( " WHERE " ).append( whereClause );
         }
 
