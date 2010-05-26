@@ -454,9 +454,7 @@ public class WKTWriter {
             break;
         }
 
-        writer.append( '(' );
         writePolygonWithoutPrefix( poly, writer );
-        writer.append( ')' );
     }
 
     /**
@@ -473,10 +471,7 @@ public class WKTWriter {
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             appendObjectProps( writer, geometry );
         }
-        writer.append( '(' );
         writePolygonWithoutPrefix( geometry, writer );
-        writer.append( ')' );
-
     }
 
     /**
@@ -490,7 +485,7 @@ public class WKTWriter {
     private void writePolygonWithoutPrefix( Surface geometry, Writer writer )
                             throws IOException {
 
-        writer.append( '(' );
+        writer.append( "((" );
         Points points = geometry.getExteriorRingCoordinates();
         int counter = 0;
         for ( Point point : points ) {
@@ -502,8 +497,8 @@ public class WKTWriter {
                 writePointWithoutPrefix( point, writer );
             }
         }
-
         writer.append( ')' );
+
         List<Points> interiorRings = geometry.getInteriorRingsCoordinates();
         if ( interiorRings != null ) {
             for ( Points r : interiorRings ) {
@@ -521,6 +516,7 @@ public class WKTWriter {
                 writer.append( ')' );
             }
         }
+        writer.append( ')' );        
     }
 
     /**
@@ -1107,13 +1103,11 @@ public class WKTWriter {
         }
         writer.append( '(' );
 
-        for ( int i = 0; i < geometry.size(); i++ ) {
-            writer.append( '(' );            
+        for ( int i = 0; i < geometry.size(); i++ ) {       
             writePolygonWithoutPrefix( geometry.get( i ), writer );
             if ( i < geometry.size() - 1 ) {
                 writer.append( ',' );
-            }
-            writer.append( ')' );            
+            }           
         }
         writer.append( ')' );
     }
