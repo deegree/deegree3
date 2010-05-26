@@ -137,6 +137,7 @@ public class FormFieldBean implements Serializable {
     }
 
     public void setValue( FormFieldPath path, Object value ) {
+        path.resetIterator();
         String fgId = path.next();
         FormField ffToUpdate = null;
         for ( FormGroup fg : formGroups ) {
