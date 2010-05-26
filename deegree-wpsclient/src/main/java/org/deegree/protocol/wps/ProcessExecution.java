@@ -47,21 +47,21 @@ package org.deegree.protocol.wps;
  * @version $Revision$, $Date$
  */
 public class ProcessExecution {
-    
+
     /**
      * 
      * @return percentage completed
      */
-    public int getPercentComplete () {
+    public int getPercentComplete() {
         // TODO impelement me!
         return -1;
     }
-    
+
     /**
      * 
      * @return outputParams
      */
-    public Object [] getOutputParams () {
+    public Object[] getOutputParams() {
         // TODO impelement me!
         return null;
     }

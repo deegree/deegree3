@@ -38,7 +38,6 @@ package org.deegree.protocol.wps.getcapabilities;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * 
  * TODO add class documentation here
@@ -49,58 +48,65 @@ import java.util.Map;
  * @version $Revision: $, $Date: $
  */
 public class OperationsMetadata {
-	
-	private Map<String, Operation> operations = new HashMap<String, Operation>();
-	private String parameter;
-	private String constraint;
-	private String extendedCapabilities;
-	private String metaData;
-		
-	public Map<String, Operation> getOperations() {
-	    //TODO parse operations from ows:OperationsMetadata element
-		return operations;
-	}
-	public void setOperation(Map<String, Operation> operations) {
-		this.operations = operations;
-	}
-	public String getParameter() {
-		return parameter;
-	}
-	public void setParameter(String parameter) {
-		this.parameter = parameter;
-	}
-	public String getConstraint() {
-		return constraint;
-	}
-	public void setConstraint(String constraint) {
-		this.constraint = constraint;
-	}
-	public String getExtendedCapabilities() {
-		return extendedCapabilities;
-	}
-	public void setExtendedCapabilities(String extendedCapabilities) {
-		this.extendedCapabilities = extendedCapabilities;
-	}
 
+    private Map<String, Operation> operations = new HashMap<String, Operation>();
 
-	public String getMetaData() {
-		return metaData;
-	}
-	public void setMetaData(String metaData) {
-		this.metaData = metaData;
-	}
-	
-	public Operation getOperationByName(String name){
-	    Operation op = null;
-	    if (operations.containsKey( name )) {
-	       op = operations.get( name );
-	        
-	    }
-	    return op;
-	}
-	
-	
-	
-	
+    private String parameter;
+
+    private String constraint;
+
+    private String extendedCapabilities;
+
+    private String metaData;
+
+    public Map<String, Operation> getOperations() {
+        // TODO parse operations from ows:OperationsMetadata element
+        return operations;
+    }
+
+    public void setOperation( Map<String, Operation> operations ) {
+        this.operations = operations;
+    }
+
+    public String getParameter() {
+        return parameter;
+    }
+
+    public void setParameter( String parameter ) {
+        this.parameter = parameter;
+    }
+
+    public String getConstraint() {
+        return constraint;
+    }
+
+    public void setConstraint( String constraint ) {
+        this.constraint = constraint;
+    }
+
+    public String getExtendedCapabilities() {
+        return extendedCapabilities;
+    }
+
+    public void setExtendedCapabilities( String extendedCapabilities ) {
+        this.extendedCapabilities = extendedCapabilities;
+    }
+
+    public String getMetaData() {
+        return metaData;
+    }
+
+    public void setMetaData( String metaData ) {
+        this.metaData = metaData;
+    }
+
+    public Operation getOperationByName( String name ) {
+        Operation op = null;
+        if ( operations.containsKey( name ) ) {
+            op = operations.get( name );
+
+        }
+        return op;
+    }
 
 }

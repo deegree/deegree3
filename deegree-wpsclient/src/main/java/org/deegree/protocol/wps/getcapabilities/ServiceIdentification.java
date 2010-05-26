@@ -34,19 +34,20 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.getcapabilities;
-   /**
-    * 
-    *   The class holds the elements which are needed to identify a Service
-    *   according to OGC Web Services Common Specification  (Subclause 7.4.4) - ServiceIdentification
-    *
-    * 
-    * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
-    * @author last edited by: $Author$
-    * 
-    * @version $Revision$, $Date$
-    */
+
+/**
+ * 
+ * The class holds the elements which are needed to identify a Service according to OGC Web Services Common
+ * Specification (Subclause 7.4.4) - ServiceIdentification
+ * 
+ * 
+ * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class ServiceIdentification {
-    
+
     private String serviceType;
 
     private String fees;
@@ -54,76 +55,76 @@ public class ServiceIdentification {
     private String[] accessConstraints;
 
     private String[] serviceTypeVersion;
-    
+
     private String[] profile;
-    
+
     private String[] title;
-    
+
     private String[] abstraCt;
-    
+
     private String[] keywords;
 
-    public String getServiceType(){
+    public String getServiceType() {
         return serviceType;
     }
 
-    public void setServiceType(String serviceType){
+    public void setServiceType( String serviceType ) {
         this.serviceType = serviceType;
     }
 
-    public String getFees(){
+    public String getFees() {
         return fees;
     }
 
-    public void setFees(String fees){
+    public void setFees( String fees ) {
         this.fees = fees;
     }
 
-    public String[] getAccessConstraints(){
+    public String[] getAccessConstraints() {
         return accessConstraints;
     }
 
-    public void setAccessConstraints(String[] accessConstraints){
+    public void setAccessConstraints( String[] accessConstraints ) {
         this.accessConstraints = accessConstraints;
     }
 
-    public String[] getServiceTypeVersion(){
+    public String[] getServiceTypeVersion() {
         return serviceTypeVersion;
     }
 
-    public void setServiceTypeVersion(String[] serviceTypeVersion){
+    public void setServiceTypeVersion( String[] serviceTypeVersion ) {
         this.serviceTypeVersion = serviceTypeVersion;
     }
 
-    public String[] getProfile(){
+    public String[] getProfile() {
         return profile;
     }
 
-    public void setProfile(String[] profile){
+    public void setProfile( String[] profile ) {
         this.profile = profile;
     }
 
-    public String[] getTitle(){
+    public String[] getTitle() {
         return title;
     }
 
-    public void setTitle(String[] title){
+    public void setTitle( String[] title ) {
         this.title = title;
     }
 
-    public String[] getAbstraCt(){
+    public String[] getAbstraCt() {
         return abstraCt;
     }
 
-    public void setAbstraCt(String[] abstraCt){
+    public void setAbstraCt( String[] abstraCt ) {
         this.abstraCt = abstraCt;
     }
 
-    public String[] getKeywords(){
+    public String[] getKeywords() {
         return keywords;
     }
 
-    public void setKeywords(String[] keywords){
+    public void setKeywords( String[] keywords ) {
         this.keywords = keywords;
     }
 

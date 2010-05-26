@@ -37,10 +37,6 @@ package org.deegree.protocol.wps.describeprocess;
 
 import java.util.List;
 
-
-
-
-
 /**
  * 
  * This class holds the elements of the DescribeProcess Document

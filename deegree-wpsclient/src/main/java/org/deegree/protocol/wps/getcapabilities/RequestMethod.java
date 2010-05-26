@@ -34,6 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.getcapabilities;
+
 import java.net.URL;
 
 /**
@@ -46,21 +47,25 @@ import java.net.URL;
  * @version $Revision: $, $Date: $
  */
 public class RequestMethod {
-	
-	private URL url;
-	private String constraint;	 //ows:DomainType
-	
-	public URL getUrl() {
-		return url;
-	}
-	public void setUrl(URL url) {
-		this.url = url;
-	}
-	public String getConstraint() {
-		return constraint;
-	}
-	public void setConstraint(String constraint) {
-		this.constraint = constraint;
-	}	
+
+    private URL url;
+
+    private String constraint; // ows:DomainType
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public void setUrl( URL url ) {
+        this.url = url;
+    }
+
+    public String getConstraint() {
+        return constraint;
+    }
+
+    public void setConstraint( String constraint ) {
+        this.constraint = constraint;
+    }
 
 }

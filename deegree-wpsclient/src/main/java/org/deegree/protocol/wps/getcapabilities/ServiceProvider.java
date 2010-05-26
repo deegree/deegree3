@@ -45,31 +45,35 @@ package org.deegree.protocol.wps.getcapabilities;
  * @version $Revision: $, $Date: $
  */
 public class ServiceProvider {
-	
-	String providerName;
-	String providerSite;
-	ServiceContact serviceContact;
-	public String getProviderName() {
-		return providerName;
-	}
-	
-	
-	public void setProviderName(String providerName) {
-		this.providerName = providerName;
-	}
-	public String getProviderSite() {
-		return providerSite;
-	}
-	public void setProviderSite(String providerSite) {
-		this.providerSite = providerSite;
-	}
-	public ServiceContact getServiceContact() {
-		return serviceContact;
-	}
-	public void setServiceContact(ServiceContact serviceContact) {
-		this.serviceContact = serviceContact;
-	}
-	
-	
+
+    String providerName;
+
+    String providerSite;
+
+    ServiceContact serviceContact;
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName( String providerName ) {
+        this.providerName = providerName;
+    }
+
+    public String getProviderSite() {
+        return providerSite;
+    }
+
+    public void setProviderSite( String providerSite ) {
+        this.providerSite = providerSite;
+    }
+
+    public ServiceContact getServiceContact() {
+        return serviceContact;
+    }
+
+    public void setServiceContact( ServiceContact serviceContact ) {
+        this.serviceContact = serviceContact;
+    }
 
 }

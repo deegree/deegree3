@@ -68,7 +68,5 @@ public class LiteralValuesChoice {
     public void setValuesReference( String valuesReference ) {
         this.valuesReference = valuesReference;
     }
-    
-    
 
 }

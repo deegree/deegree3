@@ -45,24 +45,25 @@ package org.deegree.protocol.wps.getcapabilities;
  * @version $Revision: $, $Date: $
  */
 public class Http {
-	
-	private RequestMethod get;
-	private RequestMethod post;
-	
-	public RequestMethod getGet() {
-		return get;
-	}
-	public void setGet(RequestMethod get) {
-		this.get = get;
-	}
-	public RequestMethod getPost() {
-		return post;
-	}
-	public void setPost(RequestMethod post) {
-		this.post = post;
-	}
-	
-	
-	
+
+    private RequestMethod get;
+
+    private RequestMethod post;
+
+    public RequestMethod getGet() {
+        return get;
+    }
+
+    public void setGet( RequestMethod get ) {
+        this.get = get;
+    }
+
+    public RequestMethod getPost() {
+        return post;
+    }
+
+    public void setPost( RequestMethod post ) {
+        this.post = post;
+    }
 
 }

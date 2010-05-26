@@ -166,13 +166,11 @@ public class WPSCapabilities {
 
     }
 
-
-
-
     /**
      * gets the Information out of the ServiceProvider section of the getCapabilitiesResponse and writes the elements in
      * the class ServiceProvider which is build up according to Subclause 7.4.5 of OGC Web Services Common Specification
      * as stated in the WPS Spec 1.0 for ServiceIdentification
+     * 
      * @return service Provicer
      */
     public ServiceProvider getServiceProvider() {
@@ -215,7 +213,6 @@ public class WPSCapabilities {
 
     }
 
-
     /**
      * 
      * @return operation metadata
@@ -223,40 +220,40 @@ public class WPSCapabilities {
     public OperationsMetadata getOperationsMetadata() {
 
         OperationsMetadata operationsMetadata = new OperationsMetadata();
-        
 
         // TODO OperationsMetadata needs to be implemented
         return operationsMetadata;
 
     }
-    
-    
+
     /**
      * 
-     * @param String declaring the operation, usually GetCapabilities, DescribeProcess or Execute
-     * TODO case-sensitiveness handling of operation parameter needs to be implemented
-     * @param get true means HTTP GET, false means HTTP POST
+     * @param String
+     *            declaring the operation, usually GetCapabilities, DescribeProcess or Execute TODO case-sensitiveness
+     *            handling of operation parameter needs to be implemented
+     * @param get
+     *            true means HTTP GET, false means HTTP POST
      * @return String representation of <ows:Get xlink:href=""/> attribute
      */
-    public String getOperationURLasString(String operation, boolean get){
+    public String getOperationURLasString( String operation, boolean get ) {
         String operationURL = null;
         OMElement operationsMetadataOMElement = null;
         StringBuilder sb = new StringBuilder();
-        sb.append("ows:OperationsMetadata/ows:Operation[@name=\"");
-        sb.append( operation );        
-        if (get){
-            sb.append("\"]/ows:DCP/ows:HTTP/ows:Get");
-            operationsMetadataOMElement = capabilitiesDoc.getElement( capabilitiesDoc.getRootElement(), new XPath( sb.toString(), NS_CONTEXT ));            
+        sb.append( "ows:OperationsMetadata/ows:Operation[@name=\"" );
+        sb.append( operation );
+        if ( get ) {
+            sb.append( "\"]/ows:DCP/ows:HTTP/ows:Get" );
+            operationsMetadataOMElement = capabilitiesDoc.getElement( capabilitiesDoc.getRootElement(),
+                                                                      new XPath( sb.toString(), NS_CONTEXT ) );
         } else {
-            sb.append("\"]/ows:DCP/ows:HTTP/ows:Post");
-            operationsMetadataOMElement = capabilitiesDoc.getElement( capabilitiesDoc.getRootElement(), new XPath( sb.toString(), NS_CONTEXT ));
+            sb.append( "\"]/ows:DCP/ows:HTTP/ows:Post" );
+            operationsMetadataOMElement = capabilitiesDoc.getElement( capabilitiesDoc.getRootElement(),
+                                                                      new XPath( sb.toString(), NS_CONTEXT ) );
         }
         operationURL = operationsMetadataOMElement.getAttribute( new QName( CommonNamespaces.XLNNS, "href" ) ).getAttributeValue();
-        LOG.debug( "DescribeProcess reachable via: " + operationURL);
+        LOG.debug( "DescribeProcess reachable via: " + operationURL );
         return operationURL;
     }
-    
-    
 
     /**
      * gets the Information out of the ProcessOfferings section of the getCapabilitiesResponse and writes the elements
@@ -269,8 +266,9 @@ public class WPSCapabilities {
 
         List<ProcessOffering> processOfferingsList = new ArrayList<ProcessOffering>();
 
-        OMElement processOfferingsOMElement = capabilitiesDoc.getElement( capabilitiesDoc.getRootElement(),
-                                                                new XPath( "wps:ProcessOfferings", NS_CONTEXT ) );
+        OMElement processOfferingsOMElement = capabilitiesDoc.getElement(
+                                                                          capabilitiesDoc.getRootElement(),
+                                                                          new XPath( "wps:ProcessOfferings", NS_CONTEXT ) );
 
         List<OMElement> process = capabilitiesDoc.getElements( processOfferingsOMElement, new XPath( "wps:Process",
                                                                                                      NS_CONTEXT ) );

@@ -70,17 +70,17 @@ public class WPSClient100 {
     private WPSCapabilities serviceCapabilities;
 
     private Map<String, ProcessInfo> processIdToProcess = new HashMap<String, ProcessInfo>();
-    
+
     private XMLAdapter capabilitesDoc;
-    
-   
 
     /**
      * Public constructor to access a WPS instance based on it's GetCapabilities URL
      * 
-     * @param capabilitiesURL url to a WPS instance
-     * @throws MalformedURLException in case a DescribeProcess URL could not constructed from WPS Capabilities response
-     *            
+     * @param capabilitiesURL
+     *            url to a WPS instance
+     * @throws MalformedURLException
+     *             in case a DescribeProcess URL could not constructed from WPS Capabilities response
+     * 
      */
     public WPSClient100( URL capabilitiesURL ) throws Exception {
         try {
@@ -91,22 +91,22 @@ public class WPSClient100 {
                                             + e.getLocalizedMessage() );
         }
         checkCapabilities( this.capabilitesDoc );
-        populateOffering(capabilitiesURL);
+        populateOffering( capabilitiesURL );
     }
-    
+
     /**
      * Public constructor to access a WPS instance based on it's capabilities XML Document
      * 
      * @param capabilitesDoc
      */
-    public WPSClient100( XMLAdapter capabilitesDoc) {
+    public WPSClient100( XMLAdapter capabilitesDoc ) {
         checkCapabilities( capabilitesDoc );
-        this.capabilitesDoc = capabilitesDoc;        
+        this.capabilitesDoc = capabilitesDoc;
     }
-    
+
     /**
-     * Basic check for correctness of most important WPS capabilities document values. 
-     * TODO enhance!
+     * Basic check for correctness of most important WPS capabilities document values. TODO enhance!
+     * 
      * @param capabilities
      */
     private void checkCapabilities( XMLAdapter capabilities ) {
@@ -116,53 +116,59 @@ public class WPSClient100 {
             throw new IllegalArgumentException( get( "WPSCLIENT.WRONG_VERSION_CAPABILITIES", version, "1.0.0" ) );
         }
         String service = root.getAttributeValue( new QName( "service" ) );
-        if ( !service.equalsIgnoreCase( "WPS" ) )  {
-            throw new IllegalArgumentException( get( "WPSCLIENT.NO_WPS_CAPABILITIES", service,
-                                                     "WPS" ) );
+        if ( !service.equalsIgnoreCase( "WPS" ) ) {
+            throw new IllegalArgumentException( get( "WPSCLIENT.NO_WPS_CAPABILITIES", service, "WPS" ) );
         }
     }
-
 
     /**
      * Public constructor to access a WPS instance based on it's base URL
-     * @param serviceBaseURL baseURL, e.g. http://foo.bar/service?
-     * @param version OGC service version  number, e.g. 1.0.0
-     * @param get true means HTTP GET, false means HTTP POST
-     * @throws MalformedURLException MalformedURLException in case a DescribeProcess URL could not constructed from WPS Capabilities response
+     * 
+     * @param serviceBaseURL
+     *            baseURL, e.g. http://foo.bar/service?
+     * @param version
+     *            OGC service version number, e.g. 1.0.0
+     * @param get
+     *            true means HTTP GET, false means HTTP POST
+     * @throws MalformedURLException
+     *             MalformedURLException in case a DescribeProcess URL could not constructed from WPS Capabilities
+     *             response
      */
-    public WPSClient100( URL serviceBaseURL, String version, boolean get) throws Exception {
-        if (!get){
-            LOG.debug( "Capabilities should be transmitted through HTTP Post");
+    public WPSClient100( URL serviceBaseURL, String version, boolean get ) throws Exception {
+        if ( !get ) {
+            LOG.debug( "Capabilities should be transmitted through HTTP Post" );
             // TODO implement
-            throw new Exception("GetCapabilities by Post currently not supported");
+            throw new Exception( "GetCapabilities by Post currently not supported" );
         }
-        StringBuilder parameterString = new StringBuilder(serviceBaseURL.toString());
+        StringBuilder parameterString = new StringBuilder( serviceBaseURL.toString() );
         if ( !serviceBaseURL.toString().endsWith( "?" ) ) {
-            parameterString.append("?");
-        }     
+            parameterString.append( "?" );
+        }
         parameterString.append( "service=WPS" );
         parameterString.append( "&request=GetCapabilities" );
-        if (version != null && !"".equals( version )){            
+        if ( version != null && !"".equals( version ) ) {
             parameterString.append( "&Version=" );
-            parameterString.append( version );  
-        //TODO check if version is well-formed
-        }        
-        LOG.debug( parameterString.toString());
-        URL serviceCapabilities = new URL(parameterString.toString());        
-        populateOffering(serviceCapabilities);        
+            parameterString.append( version );
+            // TODO check if version is well-formed
+        }
+        LOG.debug( parameterString.toString() );
+        URL serviceCapabilities = new URL( parameterString.toString() );
+        populateOffering( serviceCapabilities );
     }
-    
 
     /**
      * populates the Process Offering based on the GetCapabilities Response
-     * @param capabilitiesURL URL to GetCapabilities interface
+     * 
+     * @param capabilitiesURL
+     *            URL to GetCapabilities interface
      */
-    private void populateOffering(URL capabilitiesURL) throws Exception {
+    private void populateOffering( URL capabilitiesURL )
+                            throws Exception {
         serviceCapabilities = new WPSCapabilities( new XMLAdapter( capabilitiesURL ) );
         // TODO populate map on demand (much faster for WPS with lots of processes)
         for ( ProcessOffering offering : serviceCapabilities.getProcessOfferings() ) {
             // fetch full metadata (params) using DescribeProcess
-            ProcessInfo info = fetchProcessInfo( offering.getIdentifier());
+            ProcessInfo info = fetchProcessInfo( offering.getIdentifier() );
             processIdToProcess.put( offering.getIdentifier(), info );
         }
     }
@@ -198,18 +204,20 @@ public class WPSClient100 {
      * @param processIdentifier
      * @return ProcessInfo object containing all relevant process information
      */
-    private ProcessInfo fetchProcessInfo( String processIdentifier ) throws Exception {
-        ProcessInfo processInfo = new ProcessInfo(processIdentifier);   
-        //URL operationsURL = this.serviceCapabilities.getOperationsMetadata().getOperationByName( "DescribeProcess" ).getDcp().getHttp().getGet().getUrl();
-        //since implementation of above methods is missing, set it statically here for testing
+    private ProcessInfo fetchProcessInfo( String processIdentifier )
+                            throws Exception {
+        ProcessInfo processInfo = new ProcessInfo( processIdentifier );
+        // URL operationsURL = this.serviceCapabilities.getOperationsMetadata().getOperationByName( "DescribeProcess"
+        // ).getDcp().getHttp().getGet().getUrl();
+        // since implementation of above methods is missing, set it statically here for testing
         // TODO replace implementation
         URL operationsURL = null;
-        StringBuilder sb = new StringBuilder(serviceCapabilities.getOperationURLasString( "DescribeProcess" , true));
+        StringBuilder sb = new StringBuilder( serviceCapabilities.getOperationURLasString( "DescribeProcess", true ) );
         sb.append( "request=DescribeProcess&Version=1.0.0&identifier=" );
         sb.append( processIdentifier );
-        operationsURL = new URL(sb.toString());
+        operationsURL = new URL( sb.toString() );
         DescribeProcess dp = new DescribeProcess( operationsURL );
-        LOG.debug( "DataInputs[0]:" + dp.getProcessDescriptions().get( 0 ).getDataInputs().get(0) );
+        LOG.debug( "DataInputs[0]:" + dp.getProcessDescriptions().get( 0 ).getDataInputs().get( 0 ) );
         return processInfo;
     }
 

@@ -51,12 +51,9 @@ import org.deegree.commons.xml.XPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
 /**
  * 
- * TODO  This class parses the DescribeProcess Document and writes the elements into the class "ProcessDescription"
+ * TODO This class parses the DescribeProcess Document and writes the elements into the class "ProcessDescription"
  * 
  * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
  * @author last edited by: $Author: kiehle $
@@ -64,11 +61,11 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  */
 public class DescribeProcess {
-    
+
     private static Logger LOG = LoggerFactory.getLogger( DescribeProcess.class );
 
     private XMLAdapter capabilities;
-    
+
     private XMLAdapter describeProcessDoc;
 
     private String service;
@@ -76,17 +73,16 @@ public class DescribeProcess {
     private String version;
 
     private String lang;
-    
+
     private String schemaLocation;
 
     private static final NamespaceContext NS_CONTEXT;
-    
+
     static {
         NS_CONTEXT = new NamespaceContext();
-        NS_CONTEXT.addNamespace("ows", "http://www.opengis.net/ows/1.1" );
-        
-    }
+        NS_CONTEXT.addNamespace( "ows", "http://www.opengis.net/ows/1.1" );
 
+    }
 
     /**
      * 
@@ -98,19 +94,16 @@ public class DescribeProcess {
         } catch ( XMLProcessingException e ) {
             LOG.error( e.getMessage() );
         }
-   }
+    }
 
-
-    public DescribeProcess(XMLAdapter describeProcessDoc){
+    public DescribeProcess( XMLAdapter describeProcessDoc ) {
         this.describeProcessDoc = describeProcessDoc;
         OMElement rootElement = describeProcessDoc.getRootElement();
         this.service = rootElement.getAttributeValue( new QName( "service" ) );
         this.version = rootElement.getAttributeValue( new QName( "version" ) );
         this.lang = rootElement.getAttributeValue( new QName( "lang" ) );
         this.schemaLocation = rootElement.getAttributeValue( new QName( "schemaLocation" ) );
-        
-        
-        
+
     }
 
     /**
@@ -121,8 +114,7 @@ public class DescribeProcess {
         List<ProcessDescription> processDescriptionList = new LinkedList<ProcessDescription>();
         ProcessDescription processDescription = null;
         List<OMElement> processOMElementList = capabilities.getElements( capabilities.getRootElement(),
-                                                                         new XPath( "ProcessDescription",
-                                                                                    NS_CONTEXT ) );
+                                                                         new XPath( "ProcessDescription", NS_CONTEXT ) );
 
         for ( Iterator iterator = processOMElementList.iterator(); iterator.hasNext(); ) {
 
@@ -149,7 +141,7 @@ public class DescribeProcess {
             if ( attribute.getLocalName().equalsIgnoreCase( "schemaLocation" ) )
                 processDescription.setSchemaLocation( attribute.getAttributeValue() );
 
-           LOG.debug( "processDescription.getSchemaLocation: " + processDescription.getSchemaLocation() );
+            LOG.debug( "processDescription.getSchemaLocation: " + processDescription.getSchemaLocation() );
 
         }
 
@@ -171,30 +163,26 @@ public class DescribeProcess {
                     processDescription.setProcessVersion( attribute.getAttributeValue() );
             }
 
-            processDescription.setAbstraCt( capabilities.getNodeAsString(
-                                                                          processOMElement,
-                                                                          new XPath( "ows:Abstract", NS_CONTEXT ),
+            processDescription.setAbstraCt( capabilities.getNodeAsString( processOMElement, new XPath( "ows:Abstract",
+                                                                                                       NS_CONTEXT ),
                                                                           null ) );
 
             processDescription.setIdentifier( capabilities.getNodeAsString( processOMElement,
-                                                                            new XPath( "ows:Identifier",
-                                                                                       NS_CONTEXT ), null ) );
+                                                                            new XPath( "ows:Identifier", NS_CONTEXT ),
+                                                                            null ) );
 
-            processDescription.setProfile( capabilities.getNodeAsString( processOMElement,
-                                                                         new XPath( "ows:Profile", NS_CONTEXT ),
+            processDescription.setProfile( capabilities.getNodeAsString( processOMElement, new XPath( "ows:Profile",
+                                                                                                      NS_CONTEXT ),
                                                                          null ) );
 
             processDescription.setTitle( capabilities.getNodeAsString( processOMElement, new XPath( "ows:Title",
-                                                                                                    NS_CONTEXT ),
-                                                                       null ) );
+                                                                                                    NS_CONTEXT ), null ) );
 
             List<DataInputDescribeProcess> dataInputList = new LinkedList();
 
-            OMElement dataInputs = capabilities.getElement( processOMElement,
-                                                            new XPath( "DataInputs", NS_CONTEXT ) );
+            OMElement dataInputs = capabilities.getElement( processOMElement, new XPath( "DataInputs", NS_CONTEXT ) );
 
-            List<OMElement> inputOMElementList = capabilities.getElements( dataInputs, new XPath( "Input",
-                                                                                                  NS_CONTEXT ) );
+            List<OMElement> inputOMElementList = capabilities.getElements( dataInputs, new XPath( "Input", NS_CONTEXT ) );
 
             for ( int i = 0; i < inputOMElementList.size(); i++ )
 
@@ -204,27 +192,24 @@ public class DescribeProcess {
                 OMElement inputOmelement = (OMElement) inputOMElementList.get( i );
 
                 dataInput.setAbstraCt( capabilities.getNodeAsString( inputOmelement, new XPath( "ows:Abstract",
-                                                                                                NS_CONTEXT ),
-                                                                     null ) );
+                                                                                                NS_CONTEXT ), null ) );
 
                 dataInput.setIdentifier( capabilities.getNodeAsString( inputOmelement, new XPath( "ows:Identifier",
-                                                                                                  NS_CONTEXT ),
-                                                                       null ) );
+                                                                                                  NS_CONTEXT ), null ) );
 
                 dataInput.setMaxOccurs( inputOmelement.getAttributeValue( new QName( "maxOccurs" ) ) );
 
                 dataInput.setMinOccurs( inputOmelement.getAttributeValue( new QName( "minOccurs" ) ) );
 
-                dataInput.setTitle( capabilities.getNodeAsString( inputOmelement, new XPath( "ows:Title",
-                                                                                             NS_CONTEXT ), null ) );
+                dataInput.setTitle( capabilities.getNodeAsString( inputOmelement, new XPath( "ows:Title", NS_CONTEXT ),
+                                                                  null ) );
 
                 InputFormChoiceDescribeProcess inputFormChoice = new InputFormChoiceDescribeProcess();
 
                 if ( capabilities.getElement( inputOmelement, new XPath( "LiteralData", NS_CONTEXT ) ) != null ) {
 
-                    OMElement literalDataOMELement = capabilities.getElement( inputOmelement,
-                                                                              new XPath( "LiteralData",
-                                                                                         NS_CONTEXT ) );
+                    OMElement literalDataOMELement = capabilities.getElement( inputOmelement, new XPath( "LiteralData",
+                                                                                                         NS_CONTEXT ) );
 
                     LiteralInputData literalData = new LiteralInputData();
 
@@ -232,8 +217,8 @@ public class DescribeProcess {
                                                                            new XPath( "ows:DataType", NS_CONTEXT ) );
 
                     literalData.setDefaulValue( capabilities.getNodeAsString( literalDataOMELement,
-                                                                              new XPath( "DefaultValue",
-                                                                                         NS_CONTEXT ), null ) );
+                                                                              new XPath( "DefaultValue", NS_CONTEXT ),
+                                                                              null ) );
 
                     if ( dataTypeOMELement != null ) {
                         for ( Iterator itera = dataTypeOMELement.getAllAttributes(); itera.hasNext(); ) {
@@ -247,17 +232,16 @@ public class DescribeProcess {
 
                     }
 
-                    OMElement uomOmeElement = capabilities.getElement( literalDataOMELement,
-                                                                       new XPath( "UOMs", NS_CONTEXT ) );
+                    OMElement uomOmeElement = capabilities.getElement( literalDataOMELement, new XPath( "UOMs",
+                                                                                                        NS_CONTEXT ) );
 
                     if ( uomOmeElement != null ) {
 
-                        OMElement defaulOMElement = capabilities.getElement( uomOmeElement,
-                                                                             new XPath( "Default", NS_CONTEXT ) );
+                        OMElement defaulOMElement = capabilities.getElement( uomOmeElement, new XPath( "Default",
+                                                                                                       NS_CONTEXT ) );
 
                         OMElement owsUOMDefaulOMElement = capabilities.getElement( defaulOMElement,
-                                                                                   new XPath( "ows:UOM",
-                                                                                              NS_CONTEXT ) );
+                                                                                   new XPath( "ows:UOM", NS_CONTEXT ) );
 
                         Uom uom = new Uom();
                         uom.setDefauLt( owsUOMDefaulOMElement.getText() );
@@ -281,29 +265,25 @@ public class DescribeProcess {
                     OMElement comlexDataInput = capabilities.getElement( inputOmelement, new XPath( "ComplexData",
                                                                                                     NS_CONTEXT ) );
 
-                    OMElement comlexDataDefaultInput = capabilities.getElement( comlexDataInput,
-                                                                                new XPath( "Default", NS_CONTEXT ) );
+                    OMElement comlexDataDefaultInput = capabilities.getElement( comlexDataInput, new XPath( "Default",
+                                                                                                            NS_CONTEXT ) );
 
-                    OMElement formatOmelement = capabilities.getElement( comlexDataDefaultInput,
-                                                                         new XPath( "Format", NS_CONTEXT ) );
+                    OMElement formatOmelement = capabilities.getElement( comlexDataDefaultInput, new XPath( "Format",
+                                                                                                            NS_CONTEXT ) );
 
                     defaulT.setMimeType( capabilities.getNodeAsString( formatOmelement, new XPath( "MimeType",
-                                                                                                   NS_CONTEXT ),
-                                                                       null ) );
+                                                                                                   NS_CONTEXT ), null ) );
 
                     defaulT.setEncoding( capabilities.getNodeAsString( formatOmelement, new XPath( "Encoding",
-                                                                                                   NS_CONTEXT ),
-                                                                       null ) );
+                                                                                                   NS_CONTEXT ), null ) );
 
-                    defaulT.setSchema( capabilities.getNodeAsString( formatOmelement, new XPath( "Schema",
-                                                                                                 NS_CONTEXT ),
-                                                                     null ) );
+                    defaulT.setSchema( capabilities.getNodeAsString( formatOmelement,
+                                                                     new XPath( "Schema", NS_CONTEXT ), null ) );
 
                     complexData.setDefaulT( defaulT );
 
                     OMElement comlexDataSupprotedInput = capabilities.getElement( comlexDataInput,
-                                                                                  new XPath( "Supported",
-                                                                                             NS_CONTEXT ) );
+                                                                                  new XPath( "Supported", NS_CONTEXT ) );
 
                     List<OMElement> formatList = capabilities.getElements( comlexDataSupprotedInput,
                                                                            new XPath( "Format", NS_CONTEXT ) );
@@ -314,16 +294,16 @@ public class DescribeProcess {
 
                         Format supported = new Format();
 
-                        supported.setMimeType( capabilities.getNodeAsString( formatOmelement,
-                                                                             new XPath( "MimeType", NS_CONTEXT ),
+                        supported.setMimeType( capabilities.getNodeAsString( formatOmelement, new XPath( "MimeType",
+                                                                                                         NS_CONTEXT ),
                                                                              null ) );
 
-                        supported.setEncoding( capabilities.getNodeAsString( formatOmelement,
-                                                                             new XPath( "Encoding", NS_CONTEXT ),
+                        supported.setEncoding( capabilities.getNodeAsString( formatOmelement, new XPath( "Encoding",
+                                                                                                         NS_CONTEXT ),
                                                                              null ) );
 
-                        supported.setSchema( capabilities.getNodeAsString( formatOmelement,
-                                                                           new XPath( "Schema", NS_CONTEXT ),
+                        supported.setSchema( capabilities.getNodeAsString( formatOmelement, new XPath( "Schema",
+                                                                                                       NS_CONTEXT ),
                                                                            null ) );
 
                         complexData.addSupported( supported );
@@ -346,8 +326,7 @@ public class DescribeProcess {
                                                                                                       NS_CONTEXT ) );
 
             List<OMElement> processOutputOMElementList = capabilities.getElements( processOutputsOMElement,
-                                                                                   new XPath( "Output",
-                                                                                              NS_CONTEXT ) );
+                                                                                   new XPath( "Output", NS_CONTEXT ) );
 
             List<ProcessOutput> processOutputList = new LinkedList();
 
@@ -358,25 +337,23 @@ public class DescribeProcess {
 
                 OutputDescription outputDescription = new OutputDescription();
 
-                outputDescription.setIdentifier( capabilities.getNodeAsString( processOutputOMElement,
-                                                                               new XPath( "ows:Identifier",
-                                                                                          NS_CONTEXT ), null ) );
+                outputDescription.setIdentifier( capabilities.getNodeAsString(
+                                                                               processOutputOMElement,
+                                                                               new XPath( "ows:Identifier", NS_CONTEXT ),
+                                                                               null ) );
 
                 outputDescription.setAbstraCt( capabilities.getNodeAsString( processOutputOMElement,
-                                                                             new XPath( "ows:Abstract",
-                                                                                        NS_CONTEXT ), null ) );
+                                                                             new XPath( "ows:Abstract", NS_CONTEXT ),
+                                                                             null ) );
 
                 outputDescription.setTitle( capabilities.getNodeAsString( processOutputOMElement,
-                                                                          new XPath( "ows:Title", NS_CONTEXT ),
-                                                                          null ) );
+                                                                          new XPath( "ows:Title", NS_CONTEXT ), null ) );
 
                 OMElement complexOutputOMElement = capabilities.getElement( processOutputOMElement,
-                                                                            new XPath( "ComplexOutput",
-                                                                                       NS_CONTEXT ) );
+                                                                            new XPath( "ComplexOutput", NS_CONTEXT ) );
 
                 OMElement defaultComplexOutputOMElement = capabilities.getElement( complexOutputOMElement,
-                                                                                   new XPath( "Default",
-                                                                                              NS_CONTEXT ) );
+                                                                                   new XPath( "Default", NS_CONTEXT ) );
 
                 OMElement formatDefaultComplexOutputOMElement = capabilities.getElement( defaultComplexOutputOMElement,
                                                                                          new XPath( "Format",
@@ -395,9 +372,9 @@ public class DescribeProcess {
 
                 complexOutput.setDefaulT( defaulT );
 
-                OMElement supportedComplexOutputOMElement = capabilities.getElement( complexOutputOMElement,
-                                                                                     new XPath( "Supported",
-                                                                                                NS_CONTEXT ) );
+                OMElement supportedComplexOutputOMElement = capabilities.getElement(
+                                                                                     complexOutputOMElement,
+                                                                                     new XPath( "Supported", NS_CONTEXT ) );
 
                 List<OMElement> formatsupportedComplexOutputOMElementList = capabilities.getElements(
                                                                                                       supportedComplexOutputOMElement,
@@ -411,11 +388,9 @@ public class DescribeProcess {
                     OMElement formatsupportedComplexOutputOMElement = formatsupportedComplexOutputOMElementList.get( ii );
                     Format supported = new Format();
                     supported.setEncoding( capabilities.getNodeAsString( formatsupportedComplexOutputOMElement,
-                                                                         new XPath( "Encoding", NS_CONTEXT ),
-                                                                         null ) );
+                                                                         new XPath( "Encoding", NS_CONTEXT ), null ) );
                     supported.setMimeType( capabilities.getNodeAsString( formatsupportedComplexOutputOMElement,
-                                                                         new XPath( "MimeType", NS_CONTEXT ),
-                                                                         null ) );
+                                                                         new XPath( "MimeType", NS_CONTEXT ), null ) );
                     supported.setSchema( capabilities.getNodeAsString( formatsupportedComplexOutputOMElement,
                                                                        new XPath( "Schema", NS_CONTEXT ), null ) );
 
@@ -429,8 +404,7 @@ public class DescribeProcess {
                 LiteralOutputData literalOutputData = new LiteralOutputData();
 
                 OMElement literalOutputOMElement = capabilities.getElement( processOutputOMElement,
-                                                                            new XPath( "LiteralOutput",
-                                                                                       NS_CONTEXT ) );
+                                                                            new XPath( "LiteralOutput", NS_CONTEXT ) );
 
                 outputDescription.setOutputFormChoice( outputFormChoice );
 
@@ -444,7 +418,8 @@ public class DescribeProcess {
 
             processDescription.setProcessOutputs( processOutputList );
 
-            String wsdl = null;;
+            String wsdl = null;
+            ;
             processDescription.setWSDL( wsdl );
 
         }

@@ -46,51 +46,54 @@ package org.deegree.protocol.wps.getcapabilities;
  */
 public class Operation {
 
-	private String name;
-	private DCP dcp;
-	private String parameter;
-	private String constraint;
-	private String metadata;
+    private String name;
 
-	
-	public String getName() {
-		return name;
-	}
+    private DCP dcp;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    private String parameter;
 
-	public DCP getDcp() {
-		return dcp;
-	}
+    private String constraint;
 
-	public void setDcp(DCP dcp) {
-		this.dcp = dcp;
-	}
+    private String metadata;
 
-	public String getParameter() {
-		return parameter;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setParameter(String parameter) {
-		this.parameter = parameter;
-	}
+    public void setName( String name ) {
+        this.name = name;
+    }
 
-	public String getConstraint() {
-		return constraint;
-	}
+    public DCP getDcp() {
+        return dcp;
+    }
 
-	public void setConstraint(String constraint) {
-		this.constraint = constraint;
-	}
+    public void setDcp( DCP dcp ) {
+        this.dcp = dcp;
+    }
 
-	public String getMetadata() {
-		return metadata;
-	}
+    public String getParameter() {
+        return parameter;
+    }
 
-	public void setMetadata(String metadata) {
-		this.metadata = metadata;
-	}
-		
+    public void setParameter( String parameter ) {
+        this.parameter = parameter;
+    }
+
+    public String getConstraint() {
+        return constraint;
+    }
+
+    public void setConstraint( String constraint ) {
+        this.constraint = constraint;
+    }
+
+    public String getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata( String metadata ) {
+        this.metadata = metadata;
+    }
+
 }

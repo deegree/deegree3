@@ -45,16 +45,15 @@ package org.deegree.protocol.wps.getcapabilities;
  * @version $Revision: $, $Date: $
  */
 public class DCP {
-	
-	private Http http;
 
-	public Http getHttp() {
-		return http;
-	}
+    private Http http;
 
-	public void setHttp(Http http) {
-		this.http = http;
-	}
+    public Http getHttp() {
+        return http;
+    }
 
-	
+    public void setHttp( Http http ) {
+        this.http = http;
+    }
+
 }

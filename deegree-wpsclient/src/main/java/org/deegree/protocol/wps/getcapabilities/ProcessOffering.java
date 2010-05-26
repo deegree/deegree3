@@ -34,6 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.getcapabilities;
+
 import org.deegree.commons.tom.ows.Version;
 
 /**
@@ -47,104 +48,101 @@ import org.deegree.commons.tom.ows.Version;
  */
 public class ProcessOffering {
 
-	private String identifier;
+    private String identifier;
 
-	private String _abstract;
+    private String _abstract;
 
-	private String title;
+    private String title;
 
-	private String processVersion;
-	
-	private String[] metadata;
-	
-	private String profile;
-	
-	private Version versionType;
-	
-	private String wsdl;
-	
+    private String processVersion;
 
-	public void setIdentifier(String identifier){
-		this.identifier = identifier;
-	}
+    private String[] metadata;
 
-	public String getIdentifier(){
-		return this.identifier;
-	}
+    private String profile;
 
-	public void setAbstract(String _abstract){
-		this._abstract = _abstract;
-	}
+    private Version versionType;
 
-	public String getAbstract(){
-		return this._abstract;
-	}
+    private String wsdl;
 
-	public void setTitle(String title){
-		this.title = title;
-	}
+    public void setIdentifier( String identifier ) {
+        this.identifier = identifier;
+    }
 
-	public String getTitle(){
-		return this.title;
-	}
+    public String getIdentifier() {
+        return this.identifier;
+    }
 
-	public String getProcessVersion(){
-		return processVersion;
-	}
+    public void setAbstract( String _abstract ) {
+        this._abstract = _abstract;
+    }
 
-	public void setProcessVersion(String processVersion){
-		this.processVersion = processVersion;
-	}
+    public String getAbstract() {
+        return this._abstract;
+    }
 
-	public String[] getMetadata(){
-		return metadata;
-	}
+    public void setTitle( String title ) {
+        this.title = title;
+    }
 
-	public void setMetadata(String[] metadata){
-		this.metadata = metadata;
-	}
+    public String getTitle() {
+        return this.title;
+    }
 
-	public String getProfile(){
-		return profile;
-	}
+    public String getProcessVersion() {
+        return processVersion;
+    }
 
-	public void setProfile(String profile){
-		this.profile = profile;
-	}
+    public void setProcessVersion( String processVersion ) {
+        this.processVersion = processVersion;
+    }
 
-	public Version getVersionType(){
-		return versionType;
-	}
+    public String[] getMetadata() {
+        return metadata;
+    }
 
-	public void setVersionType(Version versionType){
-		this.versionType = versionType;
-	}
+    public void setMetadata( String[] metadata ) {
+        this.metadata = metadata;
+    }
 
-	public String getWsdl(){
-		return wsdl;
-	}
+    public String getProfile() {
+        return profile;
+    }
 
-	public void setWsdl(String wsdl){
-		this.wsdl = wsdl;
-	}
-	
-	@Override
-	public String toString(){
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("Identifier: " + identifier);
-	    sb.append("Abstract: " + _abstract);
-	    sb.append("Title: " + title);
-        sb.append("ProcessVersion: " + processVersion);
-        sb.append("Metadata: "); 
-        for (int i=0;i<metadata.length;i++){
+    public void setProfile( String profile ) {
+        this.profile = profile;
+    }
+
+    public Version getVersionType() {
+        return versionType;
+    }
+
+    public void setVersionType( Version versionType ) {
+        this.versionType = versionType;
+    }
+
+    public String getWsdl() {
+        return wsdl;
+    }
+
+    public void setWsdl( String wsdl ) {
+        this.wsdl = wsdl;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "Identifier: " + identifier );
+        sb.append( "Abstract: " + _abstract );
+        sb.append( "Title: " + title );
+        sb.append( "ProcessVersion: " + processVersion );
+        sb.append( "Metadata: " );
+        for ( int i = 0; i < metadata.length; i++ ) {
             sb.append( metadata[i] );
         }
-        sb.append("Profile: " + profile);
-        sb.append("VersionType: " + versionType);
-        sb.append("WSDL: " + wsdl);
-	    return sb.toString();
-	}
-	
-	
+        sb.append( "Profile: " + profile );
+        sb.append( "VersionType: " + versionType );
+        sb.append( "WSDL: " + wsdl );
+        return sb.toString();
+    }
 
 }

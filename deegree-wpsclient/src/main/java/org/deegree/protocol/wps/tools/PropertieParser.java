@@ -33,47 +33,35 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wps.describeprocess;
+package org.deegree.protocol.wps.tools;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * 
- * TODO add class documentation here
+ * WPSCapabilities encapsulates information contained within an WPS Capabilities response
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
-public class InputFormChoiceDescribeProcess {
+public class PropertieParser {
 
-    private ComplexData complexData;
+    protected Properties loadPoperties( String path )
+                            throws IOException {
 
-    private LiteralInputData literalData;
+        Properties properties = new Properties();
 
-    private BoundingBoxData boundingBoxData;
+        try {
+            properties.load( new FileInputStream( path ) );
+        } catch ( Exception e ) {
+            throw new IOException( "Could not load properties file..." );
+        }
+        return properties;
 
-    public ComplexData getComplexData() {
-        return complexData;
-    }
-
-    public void setComplexData( ComplexData complexData ) {
-        this.complexData = complexData;
-    }
-
-    public LiteralInputData getLiteralData() {
-        return literalData;
-    }
-
-    public void setLiteralData( LiteralInputData literalData ) {
-        this.literalData = literalData;
-    }
-
-    public BoundingBoxData getBoundingBoxData() {
-        return boundingBoxData;
-    }
-
-    public void setBoundingBoxData( BoundingBoxData boundingBoxData ) {
-        this.boundingBoxData = boundingBoxData;
     }
 
 }

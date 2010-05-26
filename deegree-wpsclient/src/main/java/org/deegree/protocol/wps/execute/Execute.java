@@ -1,6 +1,5 @@
 package org.deegree.protocol.wps.execute;
 
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -9,14 +8,12 @@ import java.util.List;
 
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
-import org.deegree.protocol.wps.tools.FillDataInput;
+import org.deegree.protocol.wps.tools.CreateExecuteRequest;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.output.XMLOutputter;
-
-
 
 public class Execute {
 
@@ -30,6 +27,8 @@ public class Execute {
 
     List<DataInputExecute> dataInputExecuteList;
 
+    List<ResponseForm> responseFormList;
+
     ResponseForm responseForm;
 
     String language;
@@ -38,7 +37,7 @@ public class Execute {
 
     ProcessDescription processDescription;
 
-    FillDataInput fillDataInput;
+    CreateExecuteRequest fillDataInput;
 
     boolean store;
 
@@ -59,13 +58,13 @@ public class Execute {
     }
 
     public Execute( URL url ) {
-        DescribeProcess describeProcess = new DescribeProcess( url);
+        DescribeProcess describeProcess = new DescribeProcess( url );
 
         this.desribeProcess = describeProcess;
     }
 
     public Execute( ProcessDescription processDesription, List<DataInputExecute> dataInputExecuteList,
-                    ResponseForm responseForm, URL url ) {
+                    List<ResponseForm> responseFormList, URL url ) {
         identifier = processDesription.getIdentifier();
         version = processDesription.getProcessVersion();
         service = processDesription.getService();
@@ -73,7 +72,7 @@ public class Execute {
         status = processDesription.isStatusSupported();
         store = processDesription.isStoreSupported();
         this.dataInputExecuteList = dataInputExecuteList;
-        this.responseForm = responseForm;
+        this.responseFormList = responseFormList;
     }
 
     public void createPost() {
@@ -103,134 +102,110 @@ public class Execute {
 
         identifierProcess.setText( identifier );
 
-        Element dataInputs = new Element( "DataInputs", wpsNamespace );
+        if ( dataInputExecuteList != null ) {
+            Element dataInputs = new Element( "DataInputs", wpsNamespace );
 
-        for ( int i = 0; i < dataInputExecuteList.size(); i++ ) {
-            DataInputExecute dataInputExecute = dataInputExecuteList.get( i );
+            for ( int i = 0; i < dataInputExecuteList.size(); i++ ) {
+                DataInputExecute dataInputExecute = dataInputExecuteList.get( i );
 
-            Element input = new Element( "Input", wpsNamespace );
+                Element input = new Element( "Input", wpsNamespace );
 
-            Element identifier = new Element( "Identifier", owsNamespace );
-            // identifier.setText(processDescription.getDataInputs().get(i).getIdentifier());
+                Element identifier = new Element( "Identifier", owsNamespace );
+                // identifier.setText(processDescription.getDataInputs().get(i).getIdentifier());
 
-            input.addContent( identifier );
+                input.addContent( identifier );
 
-            identifier.setText( dataInputExecute.getIdentifier() );
+                identifier.setText( dataInputExecute.getIdentifier() );
 
-            if ( dataInputExecute.getInputFormChoice().getData().getDataType().getComplexData() != null ) {
+                InputFormChoiceExecute inputFormChoice = dataInputExecute.getInputFormChoice();
 
-                Element complexValueElement = new Element( "ComplexValue", wpsNamespace );
-                // input.addContent( complexValueElement );
-
-                ComplexData complexData = dataInputExecute.getInputFormChoice().getData().getDataType().getComplexData();
-
-                if ( complexData.getEncoding() != null ) {
-                    Attribute formatAttribute = new Attribute( "encoding", complexData.getEncoding() );
-                    complexValueElement.setAttribute( formatAttribute );
+                if ( inputFormChoice.getReference() != null ) {
+                    Element referenceElement = new Element( "Reference", wpsNamespace );
+                    Attribute referenceAttribute = new Attribute(
+                                                                  "href",
+                                                                  dataInputExecute.getInputFormChoice().getReference().getHref() );
+                    referenceElement.setAttribute( referenceAttribute );
+                    input.addContent( referenceElement );
                 }
 
-                if ( complexData.getMimeType() != null ) {
-                    Attribute mimeTypeAttribute = new Attribute( "format", complexData.getMimeType() );
-                    complexValueElement.setAttribute( mimeTypeAttribute );
+                if ( inputFormChoice.getData() != null ) {
+                    if ( inputFormChoice.getData().getDataType() != null ) {
+                        DataType dataType = inputFormChoice.getData().getDataType();
+                        if ( dataType.getLiteralData() != null ) {
+                            Element dataElement = new Element( "Data", wpsNamespace );
+                            input.addContent( dataElement );
+
+                            Element literalValueElement = new Element( "LiteralData", wpsNamespace );
+                            dataElement.addContent( literalValueElement );
+                            literalValueElement.addContent( dataType.getLiteralData().getLiteralData() );
+                        }
+                        if ( dataType.getComplexData() != null ) {
+                            System.out.println( "complexData" );
+                            Element complexValueElementRawData = new Element( "Data", wpsNamespace );
+                            Element complexValueElementComplexData = new Element( "ComplexData", wpsNamespace );
+                            complexValueElementRawData.addContent( complexValueElementComplexData );
+                            complexValueElementComplexData.addContent( dataType.getComplexData().getObject().toString() );
+
+                            input.addContent( complexValueElementRawData );
+
+                        }
+                        if ( dataType.getBoundingBoxData() != null ) {
+
+                            // TO DO
+                        }
+
+                    }
                 }
 
-                if ( complexData.getSchema() != null ) {
-                    Attribute schemaAttribute = new Attribute( "schema", complexData.getSchema() );
-                    complexValueElement.setAttribute( schemaAttribute );
-                }
-
-                if ( dataInputExecute.getInputFormChoice().getReference() != null ) {
-
-                }
-
-                if ( dataInputExecute.getInputFormChoice().getData() != null ) {
-
-                }
-
-                Element complexValueElementReference = new Element( "Reference", wpsNamespace );
-                String wfs = "http://demo.deegree.org/deegree-wfs/services?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TypeName=app:Springs&namespace=xmlns%28app=http://www.deegree.org/app%29&FILTER=%28%3CFilter%20xmlns:app=%22http://www.deegree.org/app%22%3E%3CPropertyIsEqualTo%3E%3CPropertyName%3Eapp:objectid%3C/PropertyName%3E%3CLiteral%3E3%3C/Literal%3E%3C/PropertyIsEqualTo%3E%3C/Filter%3E%29";
-
-                Attribute referenceAttribute = new Attribute( "href", complexData.getObject().toString(),
-                                                              xlinkNamespace );
-                complexValueElementReference.setAttribute( referenceAttribute );
-                // complexValueElement.addContent( complexValueElementReference );
-                input.addContent( complexValueElementReference );
+                dataInputs.addContent( input );
 
             }
 
-            if ( dataInputExecute.getInputFormChoice().getData().getDataType().getLiteralData() != null ) {
-
-                LiteralData literalData = dataInputExecute.getInputFormChoice().getData().getDataType().getLiteralData();
-                Element dataElement = new Element( "Data", wpsNamespace );
-                input.addContent( dataElement );
-
-                Element literalValueElement = new Element( "LiteralData", wpsNamespace );
-                dataElement.addContent( literalValueElement );
-
-                if ( literalData.getDataType() != null ) {
-
-                    Attribute dataTypeAttribute = new Attribute( "dataType", literalData.getDataType() );
-                    // literalValueElement.setAttribute( dataTypeAttribute );
-                }
-
-                if ( literalData.getUom() != null ) {
-                    Attribute uomTypeAttribute = new Attribute( "uom", literalData.getUom() );
-                    // literalValueElement.setAttribute( uomTypeAttribute );fillDataInput
-                }
-
-                // if (literalData.getLiteralData()()!=null){
-                // Attribute defaultValueAttribute = new
-                // Attribute("defaultValue",fillDataInput.getDataInputs().get(i).getInputFormChoice().getLiteralData().getDefaulValue());
-                // // literalValueElement.setAttribute( defaultValueAttribute );
-                // }
-
-            }
-
-            dataInputs.addContent( input );
-
+            root.addContent( dataInputs );
         }
 
-        root.addContent( dataInputs );
+        for ( int j = 0; j < responseFormList.size(); j++ ) {
+            ResponseForm responseForm = responseFormList.get( j );
 
-        if ( responseForm.getRawOutputData() != null ) {
-            Element responseFormElement = new Element( "ReponseForm", wpsNamespace );
-            Element rawDataOutputElement = new Element( "RawDataOutuput", wpsNamespace );
-            responseFormElement.addContent( rawDataOutputElement );
-            Element identifier = new Element( "Identifier", owsNamespace );
-            identifier.setText( responseForm.getRawOutputData().getIdentifier() );
-            rawDataOutputElement.addContent( identifier );
-            root.addContent( responseFormElement );
-
-        } else {
-            Element responseFormElement = new Element( "ReponseForm", wpsNamespace );
-            Element responseDocumentElement = new Element( "ResponseDocument", wpsNamespace );
-            responseFormElement.addContent( responseDocumentElement );
-            Attribute storeExecuteResponse = new Attribute(
-                                                            "storeExecuteResponse",
-                                                            String.valueOf( responseForm.getResponseDocument().storeExecuteResponse ) );
-            Attribute lineage = new Attribute( "lineage", String.valueOf( responseForm.getResponseDocument().lineage ) );
-            Attribute status = new Attribute( "status", String.valueOf( responseForm.getResponseDocument().status ) );
-            responseDocumentElement.setAttribute( storeExecuteResponse );
-            responseDocumentElement.setAttribute( lineage );
-            responseDocumentElement.setAttribute( status );
-
-            for ( int i = 0; i < responseForm.getResponseDocument().getOutput().size(); i++ ) {
-                Element outputElement = new Element( "Output", wpsNamespace );
-                Attribute asReference = new Attribute(
-                                                       "asReference",
-                                                       String.valueOf( responseForm.getResponseDocument().getOutput().get(
-                                                                                                                           i ).isAsReference() ) );
-                outputElement.setAttribute( asReference );
+            if ( responseForm.getRawOutputData() != null ) {
+                Element responseFormElement = new Element( "ReponseForm", wpsNamespace );
+                Element rawDataOutputElement = new Element( "RawDataOutuput", wpsNamespace );
+                responseFormElement.addContent( rawDataOutputElement );
                 Element identifier = new Element( "Identifier", owsNamespace );
-                identifier.setText( responseForm.getResponseDocument().getOutput().get( i ).getIdentifier() );
-                outputElement.addContent( identifier );
-                responseDocumentElement.addContent( outputElement );
+                identifier.setText( responseForm.getRawOutputData().getIdentifier() );
+                rawDataOutputElement.addContent( identifier );
+                root.addContent( responseFormElement );
 
+            } else {
+                Element responseFormElement = new Element( "ReponseForm", wpsNamespace );
+                Element responseDocumentElement = new Element( "ResponseDocument", wpsNamespace );
+                responseFormElement.addContent( responseDocumentElement );
+                Attribute storeExecuteResponse = new Attribute(
+                                                                "storeExecuteResponse",
+                                                                String.valueOf( responseForm.getResponseDocument().storeExecuteResponse ) );
+                Attribute lineage = new Attribute( "lineage",
+                                                   String.valueOf( responseForm.getResponseDocument().lineage ) );
+                Attribute status = new Attribute( "status", String.valueOf( responseForm.getResponseDocument().status ) );
+                responseDocumentElement.setAttribute( storeExecuteResponse );
+                responseDocumentElement.setAttribute( lineage );
+                responseDocumentElement.setAttribute( status );
+
+                for ( int i = 0; i < responseForm.getResponseDocument().getOutput().size(); i++ ) {
+                    Element outputElement = new Element( "Output", wpsNamespace );
+                    Attribute asReference = new Attribute(
+                                                           "asReference",
+                                                           String.valueOf( responseForm.getResponseDocument().getOutput().get(
+                                                                                                                               i ).isAsReference() ) );
+                    outputElement.setAttribute( asReference );
+                    Element identifier = new Element( "Identifier", owsNamespace );
+                    identifier.setText( responseForm.getResponseDocument().getOutput().get( i ).getIdentifier() );
+                    outputElement.addContent( identifier );
+                    responseDocumentElement.addContent( outputElement );
+
+                }
+
+                root.addContent( responseFormElement );
             }
-
-            System.out.println( "responseForm added..." );
-            root.addContent( responseFormElement );
-
         }
 
         writeFile( root, identifier );

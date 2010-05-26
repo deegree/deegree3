@@ -56,7 +56,7 @@ public class ProcessOutput {
     }
 
     public void setOutputDescription( OutputDescription outputDescription ) {
-        this.outputDescription= outputDescription;
+        this.outputDescription = outputDescription;
     }
 
 }

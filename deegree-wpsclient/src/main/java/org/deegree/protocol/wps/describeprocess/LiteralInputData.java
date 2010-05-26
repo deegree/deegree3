@@ -48,7 +48,7 @@ public class LiteralInputData extends LiteralOutputData {
 
     // To Do LiteralValuesChoice
 
-    private  LiteralValuesChoice literalValuesChoice;
+    private LiteralValuesChoice literalValuesChoice;
 
     private String defaulValue;
 

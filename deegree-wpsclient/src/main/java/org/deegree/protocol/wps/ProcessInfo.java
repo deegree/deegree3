@@ -37,9 +37,15 @@ package org.deegree.protocol.wps;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
+import org.deegree.protocol.wps.describeprocess.ProcessDescription;
 import org.deegree.protocol.wps.getcapabilities.ProcessOffering;
+import org.deegree.protocol.wps.tools.CreateExecuteRequest;
+import org.deegree.protocol.wps.tools.InputObject;
+import org.deegree.protocol.wps.tools.OutputConfiguration;
 
 /**
  * 
@@ -53,36 +59,54 @@ import org.deegree.protocol.wps.getcapabilities.ProcessOffering;
 public class ProcessInfo {
 
     private String pi;
-    
+
     private Object[] inputParams;
-    
+
     private Object inputParam;
-    
+
     private Object[] outputParams;
-    
+
     private Object outputParam;
+
+    ProcessDescription processDescription;
 
     /**
      * Constructs a ProcessInfo for a single process known by it's processIdentifier
-     * @param processIdentifier identifier of a single process
+     * 
+     * @param processIdentifier
+     *            identifier of a single process
      */
-    public ProcessInfo(String processIdentifier){
-        if (processIdentifier != null && !processIdentifier.equals( "" )){
-            this.pi = processIdentifier;    
-        }        
+    public ProcessInfo( String processIdentifier ) {
+
+        // übergabe URL anders Regeln...
+        URL url = null;
+        try {
+            url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0" + processIdentifier );
+        } catch ( MalformedURLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        DescribeProcess describeProcess = new DescribeProcess( url );
+        this.processDescription = describeProcess.getProcessDescriptions().get( 0 );
+        if ( processIdentifier != null && !processIdentifier.equals( "" ) ) {
+            this.pi = processIdentifier;
+
+        }
     }
 
-    
-  /**
-   * TODO adjust return type
-   * @return
-   */
+    /**
+     * TODO adjust return type
+     * 
+     * @return
+     */
     public Object[] getInputParams() {
         return null;
     }
 
     /**
      * TODO implement me!
+     * 
      * @param paramId
      * @return
      */
@@ -92,6 +116,7 @@ public class ProcessInfo {
 
     /**
      * TODO implement me!
+     * 
      * @return
      */
     private Object[] getOutputParams() {
@@ -100,33 +125,44 @@ public class ProcessInfo {
 
     /**
      * TODO implement me!
+     * 
      * @param paramId
      * @return
      */
     private Object getOutputParam( String paramId ) {
-        
+
         return null;
     }
 
-   /**
-    *  TODO adjust return type and implement me!
-    * @param inputParams
-    * @return
-    */
-    public void execute( Object[] inputParams ) {
-        //TODO Implement synchronous execution here;
+    /**
+     * TODO adjust return type and implement me!
+     * 
+     * @param inputParams
+     * @return
+     */
+    public void execute( List<InputObject> inputList, List<OutputConfiguration> outputConfigurationList ) {
+        // übergibt an execute: Identifier + Datei (pfad, datei, .....)
+
+        // exectuteProperties.load(defaultconfigs);
+
+        CreateExecuteRequest fillDataInput = new CreateExecuteRequest( inputList, outputConfigurationList,
+                                                                       processDescription );
+        fillDataInput.runExecute();
+
+        // TODO Implement synchronous execution here;
     }
 
     /**
-     *   TODO implement me!
+     * TODO implement me!
+     * 
      * @param inputParams
      * @return
      */
     public ProcessExecution executeAsync( Object[] inputParams ) {
-        //TODO Implement asynchronous execution here;
+        // TODO Implement asynchronous execution here;
         return new ProcessExecution();
     }
-    
+
     /**
      * 
      * @return idetifier of this process
@@ -134,22 +170,24 @@ public class ProcessInfo {
     public String getPi() {
         return this.pi;
     }
-    
+
     // TODO implementMe
-    public void fetchProcessInfoFromService(){
+    public void fetchProcessInfoFromService() {
         try {
-            DescribeProcess dp = new DescribeProcess( new URL("http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities" ));
+            DescribeProcess dp = new DescribeProcess(
+                                                      new URL(
+                                                               "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities" ) );
         } catch ( MalformedURLException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("ProcessIdentifier: " + this.pi + "\n");
-        return sb.toString();        
+        sb.append( "ProcessIdentifier: " + this.pi + "\n" );
+        return sb.toString();
     }
 }

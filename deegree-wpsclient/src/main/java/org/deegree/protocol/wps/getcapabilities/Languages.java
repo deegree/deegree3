@@ -45,20 +45,24 @@ package org.deegree.protocol.wps.getcapabilities;
  * @version $Revision: $, $Date: $
  */
 public class Languages {
-	
-	private String defauLt;
-	private String[] supportedArray;
-	
-	public String getDefauLt() {
-		return defauLt;
-	}
-	public void setDefauLt(String defauLt) {
-		this.defauLt = defauLt;
-	}	
-	public String[] getSupported() {
-		return supportedArray;
-	}
-	public void setSupported(String[] supportedArray) {
-		this.supportedArray=supportedArray;
-	}
+
+    private String defauLt;
+
+    private String[] supportedArray;
+
+    public String getDefauLt() {
+        return defauLt;
+    }
+
+    public void setDefauLt( String defauLt ) {
+        this.defauLt = defauLt;
+    }
+
+    public String[] getSupported() {
+        return supportedArray;
+    }
+
+    public void setSupported( String[] supportedArray ) {
+        this.supportedArray = supportedArray;
+    }
 }

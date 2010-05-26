@@ -33,47 +33,77 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wps.describeprocess;
+package org.deegree.protocol.wps.tools;
 
 /**
  * 
- * TODO add class documentation here
+ * WPSCapabilities encapsulates information contained within an WPS Capabilities response
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
-public class InputFormChoiceDescribeProcess {
+public class OutputConfiguration {
 
-    private ComplexData complexData;
+    private String identifier;
 
-    private LiteralInputData literalData;
+    private boolean rawOrResp;
 
-    private BoundingBoxData boundingBoxData;
+    private boolean lineage;
 
-    public ComplexData getComplexData() {
-        return complexData;
+    private boolean status;
+
+    private boolean store;
+
+    private boolean asReference;
+
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setComplexData( ComplexData complexData ) {
-        this.complexData = complexData;
+    public void setIdentifier( String identifier ) {
+        this.identifier = identifier;
     }
 
-    public LiteralInputData getLiteralData() {
-        return literalData;
+    public boolean isRawOrResp() {
+        return rawOrResp;
     }
 
-    public void setLiteralData( LiteralInputData literalData ) {
-        this.literalData = literalData;
+    public void setRawOrResp( boolean rawOrResp ) {
+        this.rawOrResp = rawOrResp;
     }
 
-    public BoundingBoxData getBoundingBoxData() {
-        return boundingBoxData;
+    public boolean isLineage() {
+        return lineage;
     }
 
-    public void setBoundingBoxData( BoundingBoxData boundingBoxData ) {
-        this.boundingBoxData = boundingBoxData;
+    public void setLineage( boolean lineage ) {
+        this.lineage = lineage;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus( boolean status ) {
+        this.status = status;
+    }
+
+    public boolean isStore() {
+        return store;
+    }
+
+    public void setStore( boolean store ) {
+        this.store = store;
+    }
+
+    public boolean isAsReference() {
+        return asReference;
+    }
+
+    public void setAsReference( boolean asReference ) {
+        this.asReference = asReference;
     }
 
 }

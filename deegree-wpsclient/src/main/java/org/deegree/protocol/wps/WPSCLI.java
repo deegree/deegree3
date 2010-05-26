@@ -35,17 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps;
 
-
-
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
+import org.deegree.protocol.wps.describeprocess.ProcessDescription;
 import org.deegree.protocol.wps.getcapabilities.WPSCapabilities;
-import org.deegree.protocol.wps.tools.FillDataInput;
+import org.deegree.protocol.wps.tools.CreateExecuteRequest;
+import org.deegree.protocol.wps.tools.InputObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * Command line client (CLI) tool to access org.deegree.protocol.wps.WPSClient
@@ -56,17 +57,18 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class WPSCLI {
-    
+
     private static Logger LOG = LoggerFactory.getLogger( WPSCLI.class );
 
-    
     private static final String FULL_SERVICE_URL = "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities";
+
     private static final String BASE_URL = "http://ows7.lat-lon.de/d3WPS_JTS/services?";
-    
+
     /**
      * 
      * @param args
-     * @throws MalformedURLException in case the provided service URL is malformed
+     * @throws MalformedURLException
+     *             in case the provided service URL is malformed
      */
     public static void main( String[] args )
                             throws Exception {
@@ -74,23 +76,32 @@ public class WPSCLI {
         // Construct a new WPSClient using a WPS capabilities url
         WPSClient100 client = new WPSClient100( new URL( FULL_SERVICE_URL ) );
         WPSCapabilities capabilities = client.getCapabilities();
-        //ProcessInfo pInfo = client.getProcess( "Centroid" );
-        
-        capabilities.getOperationURLasString( "DescribeProcess" , true);
-        
-        DescribeProcess dP = new DescribeProcess(new URL("http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=DescribeProcess&IDENTIFIER=Intersection"));
+        // ProcessInfo pInfo = client.getProcess( "Centroid" );
 
-        FillDataInput fillDataInput = new FillDataInput(dP);
-        fillDataInput.setDataInputs(dP.getProcessDescriptions().get(0).getDataInputs());
-        fillDataInput.setDataOutput();
+        capabilities.getOperationURLasString( "DescribeProcess", true );
+
+        DescribeProcess dP=new DescribeProcess(new URL(BASE_URL+"service=WPS&version=1.0.0&request=DescribeProcess&IDENTIFIER=Intersection"));
+        ProcessDescription processDescription = new ProcessDescription();
+        processDescription = dP.getProcessDescriptions().get( 0 );
+       
+        String input="http://sigma.openplans.org/geoserver/ows?service=WFS&request=GetFeature&typename=tiger:poi&namespace=xmlns%28tiger=http://sigma.openplans.org/tiger%29&outputformat=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&FILTER=%28%3CFilter%20xmlns:tiger=%22http://sigma.openplans.org/tiger%22%3E%3CPropertyIsEqualTo%3E%3CPropertyName%3Etiger:objectid%3/PropertyName%3E%3CLiteral%3E3%3C/Literal%3E%3C/PropertyIsEqualTo%3E%3C/Filter%3E%29";
+            
+        InputObject inputObject = new InputObject( "GMLInput1", input,true);
+
+        InputObject inputObject2 = new InputObject( "GMLInput2", "fgjkdsssssssssssssd32" , false);
+
+        List<InputObject> inputObjectList = new ArrayList();
+        inputObjectList.add( inputObject );
+        inputObjectList.add( inputObject2 );
+
+        CreateExecuteRequest fillDataInput = new CreateExecuteRequest( inputObjectList, null, processDescription );
         fillDataInput.runExecute();
-
 
         // iterate over the process offerings of the service capabilities
         for ( int i = 0; i < capabilities.getProcessOfferings().size(); i++ ) {
             LOG.info( capabilities.getProcessOfferings().get( i ).getIdentifier() + ": "
-                                + capabilities.getProcessOfferings().get( i ).getAbstract() );
-        }        
+                      + capabilities.getProcessOfferings().get( i ).getAbstract() );
+        }
         LOG.info( "WSDL: " + capabilities.getWSDL() );
         // TODO add more useful output here
     }
