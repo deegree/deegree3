@@ -37,7 +37,8 @@ package org.deegree.protocol.wps.tools;
 
 /**
  * 
- * WPSCapabilities encapsulates information contained within an WPS Capabilities response
+ * InputObject is used to assign one input
+ * Identifier and InputObject are mandatory, input will be set on "as Reference" as default
  * 
  * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
  * @author last edited by: $Author: walenciak $
@@ -48,7 +49,7 @@ public class InputObject {
 
     private String identifier;
 
-    private String input;
+    private Object inputObject;
 
     private boolean asReference;
 
@@ -66,16 +67,16 @@ public class InputObject {
 
     private String bodyReferenceHref;
 
-    public InputObject( String identifier, String input, boolean asReference ) {
+    public InputObject( String identifier, Object input, boolean asReference ) {
         this.identifier = identifier;
-        this.input = input;
+        this.inputObject = input;
         this.asReference = asReference;
-
     }
+    
 
-    public InputObject( String identifier, String input ) {
+    public InputObject( String identifier, Object input ) {
         this.identifier = identifier;
-        this.input = input;
+        this.inputObject = input;
         this.asReference = true;
 
     }
@@ -88,12 +89,12 @@ public class InputObject {
         this.identifier = identifier;
     }
 
-    public String getInput() {
-        return input;
+    public Object getInput() {
+        return inputObject;
     }
 
     public void setInput( String input ) {
-        this.input = input;
+        this.inputObject = input;
     }
 
     public boolean isAsReference() {

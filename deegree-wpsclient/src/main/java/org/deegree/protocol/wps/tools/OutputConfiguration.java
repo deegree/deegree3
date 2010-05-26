@@ -37,7 +37,7 @@ package org.deegree.protocol.wps.tools;
 
 /**
  * 
- * WPSCapabilities encapsulates information contained within an WPS Capabilities response
+ * OutputConfiguration is used to configure the setting of one output
  * 
  * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
  * @author last edited by: $Author: walenciak $

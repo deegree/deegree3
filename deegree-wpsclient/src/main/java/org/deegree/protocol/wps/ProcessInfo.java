@@ -175,8 +175,7 @@ public class ProcessInfo {
     public void fetchProcessInfoFromService() {
         try {
             DescribeProcess dp = new DescribeProcess(
-                                                      new URL(
-                                                               "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities" ) );
+                                                      new URL("http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities" ) );
         } catch ( MalformedURLException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -60,9 +60,11 @@ import org.deegree.protocol.wps.execute.ResponseDocument;
 import org.deegree.protocol.wps.execute.ResponseForm;
 
 /**
+ * CreateExecuteRequest creates the ExecuteRequest with the inputs assigned via a list of InputObjects and a list of OutputConfigurations
+ * Each InputObject requires identifier and input as mandatory
+ * All outputs will be returned if no further configuration are stated
  * 
- * WPSCapabilities encapsulates information contained within an WPS Capabilities response
- * 
+ *  
  * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
  * @author last edited by: $Author: walenciak $
  * 
@@ -169,6 +171,15 @@ public class CreateExecuteRequest {
 
     }
 
+    
+    /**
+     * writes the Inputs and its attribute into the respective Object of the Execute package
+     * 
+     * @param input   
+     *            detailed information on the input 
+     *
+     *            
+     */
     private void setInput( InputObject input ) {
 
         int c = -99;
@@ -232,7 +243,7 @@ public class CreateExecuteRequest {
 
             bodyReferenceObject.setHref( input.getBodyReferenceHref() );
 
-            reference.setHref( input.getInput() );
+            reference.setHref( input.getInput().toString() );
 
             reference.setEncoding( input.getEncoding() );
 
@@ -250,6 +261,12 @@ public class CreateExecuteRequest {
 
     }
 
+    /**
+     * starts the method setInput for each member of the list
+     * 
+     * @param inputList
+     *            List of all the Inputs handed to the WPS
+     */
     private void setInputs( List<InputObject> inputList ) {
         if ( inputList != null ) {
             dataInputExecuteList = new ArrayList();
@@ -261,12 +278,25 @@ public class CreateExecuteRequest {
 
     }
 
+    /**
+     * starts the method setOutput for each member of the list
+     * 
+     * @param outputConfiguraionList
+     *            List of all the Configurations of the requested outputs
+     */
     private void setOutputs( List<OutputConfiguration> outputConfiguraionList ) {
         for ( int i = 0; i < outputConfiguraionList.size(); i++ ) {
             setOutput( outputConfiguraionList.get( i ) );
         }
     }
 
+    /**
+     * writes the OutputConfiguration into the respective Object of the Execute package
+     * 
+     * @param outputConfiguration   
+     *            Configures how to return the output      *
+     *            
+     */
     private void setOutput( OutputConfiguration outputConfiguration ) {
 
         ResponseForm responseForm = new ResponseForm();
