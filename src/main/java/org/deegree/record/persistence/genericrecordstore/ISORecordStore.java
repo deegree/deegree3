@@ -139,6 +139,8 @@ public class ISORecordStore implements RecordStore {
 
     private final boolean generateFileIds;
 
+    private Connection conn;
+
     /**
      * maps the specific returnable element format to a concrete table in the backend<br>
      * brief, summary, full
@@ -255,7 +257,7 @@ public class ISORecordStore implements RecordStore {
         LOG.debug( "init" );
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
 
-        Connection conn = null;
+        conn = null;
         try {
             Class.forName( "org.postgresql.Driver" );
             conn = ConnectionManager.getConnection( connectionId );
@@ -442,24 +444,22 @@ public class ISORecordStore implements RecordStore {
         int returnedRecords = 0;
         Connection conn = ConnectionManager.getConnection( connectionId );
 
-        StringBuilder s = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
-                                                   profileFormatNumberOutputSchema, true, builder );// combinePreparedStatement(
-
-        PreparedStatement ps = conn.prepareStatement( s.toString() );
-        /*
-         * the parameter identified in the WHERE-builder replaces the "?" in the statement
-         */
-        if ( builder != null && builder.getPropNameMappingList().size() > 0 ) {
-            int i = 0;
-
-            for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
-                i++;
-
-                LOG.debug( "Setting argument: " + arg );
-                ps.setObject( i, arg.getValue() );
-            }
-
-        }
+        PreparedStatement ps = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
+                                                        profileFormatNumberOutputSchema, true, builder );
+        // /*
+        // * the parameter identified in the WHERE-builder replaces the "?" in the statement
+        // */
+        // if ( builder != null && builder.getPropNameMappingList().size() > 0 ) {
+        // int i = 0;
+        //
+        // for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
+        // i++;
+        //
+        // LOG.debug( "Setting argument: " + arg );
+        // ps.setObject( i, arg.getValue() );
+        // }
+        //
+        // }
         ResultSet rs = ps.executeQuery();
 
         while ( rs.next() ) {
@@ -575,12 +575,10 @@ public class ISORecordStore implements RecordStore {
 
         case brief:
 
-            StringBuilder selectBrief = generateSELECTStatement(
-                                                                 formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                                                                 recordStoreOptions, typeNameFormatNumber,
-                                                                 profileFormatNumberOutputSchema, false, builder );
-
-            preparedStatement = conn.prepareStatement( selectBrief.toString() );
+            preparedStatement = generateSELECTStatement(
+                                                         formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                                                         recordStoreOptions, typeNameFormatNumber,
+                                                         profileFormatNumberOutputSchema, false, builder );
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
@@ -588,12 +586,10 @@ public class ISORecordStore implements RecordStore {
             break;
         case summary:
 
-            StringBuilder selectSummary = generateSELECTStatement(
-                                                                   formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
-                                                                   recordStoreOptions, typeNameFormatNumber,
-                                                                   profileFormatNumberOutputSchema, false, builder );
-
-            preparedStatement = conn.prepareStatement( selectSummary.toString() );
+            preparedStatement = generateSELECTStatement(
+                                                         formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
+                                                         recordStoreOptions, typeNameFormatNumber,
+                                                         profileFormatNumberOutputSchema, false, builder );
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
@@ -601,32 +597,15 @@ public class ISORecordStore implements RecordStore {
             break;
         case full:
 
-            StringBuilder selectFull = generateSELECTStatement(
-                                                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
-                                                                recordStoreOptions, typeNameFormatNumber,
-                                                                profileFormatNumberOutputSchema, false, builder );
-
-            preparedStatement = conn.prepareStatement( selectFull.toString() );
+            preparedStatement = generateSELECTStatement(
+                                                         formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
+                                                         recordStoreOptions, typeNameFormatNumber,
+                                                         profileFormatNumberOutputSchema, false, builder );
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
                                ResultType.results, builder );
             break;
-        }
-
-        /*
-         * the parameter identified in the WHERE-builder replaces the "?" in the statement
-         */
-        if ( builder != null && builder.getPropNameMappingList().size() > 0 ) {
-            int i = 0;
-
-            for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
-                i++;
-
-                LOG.debug( "Setting argument: " + arg );
-                preparedStatement.setObject( i, arg.getValue() );
-            }
-
         }
 
         rs = preparedStatement.executeQuery();
@@ -660,10 +639,11 @@ public class ISORecordStore implements RecordStore {
      * @throws IOException
      * @throws SQLException
      */
-    private StringBuilder generateSELECTStatement( String formatType, RecordStoreOptions recordStoreOptions,
-                                                   int typeNameFormatNumber, int profileFormatNumberOutputSchema,
-                                                   boolean setCount, PostGISWhereBuilder builder )
+    private PreparedStatement generateSELECTStatement( String formatType, RecordStoreOptions recordStoreOptions,
+                                                       int typeNameFormatNumber, int profileFormatNumberOutputSchema,
+                                                       boolean setCount, PostGISWhereBuilder builder )
                             throws IOException, SQLException {
+        PreparedStatement preparedStatement;
         int aliasCount = 0;
         StringBuilder whereClause = new StringBuilder();
         Set<Pair<String, String>> aliasMapping = new HashSet<Pair<String, String>>();
@@ -729,8 +709,25 @@ public class ISORecordStore implements RecordStore {
         s.append( " AND " ).append( formatTypeAlias ).append( '.' );
         s.append( format ).append( '=' );
         s.append( typeNameFormatNumber ).append( ' ' ).append( SET_OFFSET ).append( ";" );
-        LOG.info( s.toString() );
-        return s;
+
+        preparedStatement = conn.prepareStatement( s.toString() );
+
+        /*
+         * the parameter identified in the WHERE-builder replaces the "?" in the statement
+         */
+        if ( builder != null && builder.getPropNameMappingList().size() > 0 ) {
+            int i = 0;
+
+            for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
+                i++;
+
+                LOG.debug( "Setting argument: " + arg );
+                preparedStatement.setObject( i, arg.getValue() );
+            }
+
+        }
+        LOG.info( preparedStatement.toString() );
+        return preparedStatement;
 
     }
 
@@ -1002,18 +999,14 @@ public class ISORecordStore implements RecordStore {
                     ResultSet rs = null;
                     PreparedStatement preparedStatement = null;
 
-                    StringBuilder selectRecord = null;
-
                     try {
-                        selectRecord = generateSELECTStatement(
-                                                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                                                                null, formatNum, 0, false, builder );
+                        preparedStatement = generateSELECTStatement(
+                                                                     formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                                                                     null, formatNum, 0, false, builder );
                     } catch ( IOException e ) {
                         e.printStackTrace();
                     }
-                    if ( selectRecord != null ) {
-                        preparedStatement = conn.prepareStatement( selectRecord.toString() );
-                    }
+
                     rs = preparedStatement.executeQuery();
                     List<Integer> deletableDatasets = new ArrayList<Integer>();
                     StringBuilder stringBuilder = new StringBuilder();
