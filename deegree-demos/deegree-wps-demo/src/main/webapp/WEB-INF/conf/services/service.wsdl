@@ -113,76 +113,8 @@
 	<wsdl:message name="GetCapabilitiesResponse">
 		<wsdl:part element="wps:GetCapabilitiesResponse" name="parameters" />
 	</wsdl:message>
-	<wsdl:message name="GetCapabilitiesRequest">
-		<wsdl:part name="parameters" element="wps:GetCapabilities"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="GetCapabilitiesResponse">
-		<wsdl:part name="parameters" element="wps:GetCapabilitiesResponse"></wsdl:part>
-	</wsdl:message>
 	<wsdl:message name="GetCapabilitiesResponse1">
 		<wsdl:part name="parameters" element="wps:GetCapabilitiesResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_ALLRequest">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_ALL"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_ALLResponse">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_ALLResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_ParameterDemoProcessRequest">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_ParameterDemoProcess"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_ParameterDemoProcessResponse">
-		<wsdl:part name="parameters"
-			element="wps:DescribeProcess_ParameterDemoProcessResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="Execute_ParameterDemoProcessRequest">
-		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcess"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="Execute_ParameterDemoProcessResponse">
-		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcessResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_BufferProcessRequest">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcess"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_BufferProcessResponse">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcessResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="Execute_BufferProcessRequest">
-		<wsdl:part name="parameters" element="wps:Execute_BufferProcess"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="Execute_BufferProcessResponse">
-		<wsdl:part name="parameters" element="wps:Execute_BufferProcessResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_ALLRequest">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_ALL"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_ALLResponse">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_ALLResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_ParameterDemoProcessRequest">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_ParameterDemoProcess"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_ParameterDemoProcessResponse">
-		<wsdl:part name="parameters"
-			element="wps:DescribeProcess_ParameterDemoProcessResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="Execute_ParameterDemoProcessRequest">
-		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcess"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="Execute_ParameterDemoProcessResponse">
-		<wsdl:part name="parameters" element="wps:Execute_ParameterDemoProcessResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_BufferProcessRequest">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcess"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="DescribeProcess_BufferProcessResponse">
-		<wsdl:part name="parameters" element="wps:DescribeProcess_BufferProcessResponse"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="Execute_BufferProcessRequest">
-		<wsdl:part name="parameters" element="wps:Execute_BufferProcess"></wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="Execute_BufferProcessResponse">
-		<wsdl:part name="parameters" element="wps:Execute_BufferProcessResponse"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="DescribeProcess_ALLRequest">
 		<wsdl:part name="parameters" element="wps:DescribeProcess_ALL"></wsdl:part>
