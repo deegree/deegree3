@@ -231,7 +231,7 @@ public class SHPReader {
         channel = file.getChannel();
         sharedBuffer = channel.map( MapMode.READ_ONLY, 0, file.length() );
         ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
-        buffer.order( ByteOrder.LITTLE_ENDIAN );
+        buffer.order( ByteOrder.BIG_ENDIAN );
         this.crs = crs;
         this.rtree = rtree;
         this.recordNumStartsWith0 = startsWithZero;
@@ -240,13 +240,12 @@ public class SHPReader {
         }
 
         buffer.position( 24 );
-        buffer.order( ByteOrder.BIG_ENDIAN );
         int length = buffer.getInt() * 2; // 16 bit words...
-        buffer.order( ByteOrder.LITTLE_ENDIAN );
 
         LOG.trace( "Length {}", length );
 
         // whyever they mix byte orders?
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
         int version = buffer.getInt();
 
         if ( version != VERSION ) {
