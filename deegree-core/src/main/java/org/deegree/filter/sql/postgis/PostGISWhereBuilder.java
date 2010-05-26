@@ -69,7 +69,9 @@ import org.deegree.filter.sql.expression.SQLOperationBuilder;
 import org.deegree.filter.sql.islike.IsLikeString;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.io.WKTWriter;
+import org.deegree.geometry.io.WKBWriter;
+
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
@@ -345,16 +347,16 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
         }
 
-        // byte[] wkb = null;
-        // try {
-        // wkb = WKBWriter.write( transformedGeom );
-        // } catch ( ParseException e ) {
-        // String msg = "Transforming of geometry literal to WKB: " + e.getMessage();
-        // throw new FilterEvaluationException( msg );
-        // }
-        // return new SQLLiteral( wkb, Types.BINARY );
-        String wkt = null;
-        wkt = WKTWriter.write( transformedGeom );
-        return new SQLLiteral( wkt, Types.BINARY );
+        byte[] wkb = null;
+        try {
+            wkb = WKBWriter.write( transformedGeom );
+        } catch ( ParseException e ) {
+            String msg = "Transforming of geometry literal to WKB: " + e.getMessage();
+            throw new FilterEvaluationException( msg );
+        }
+        return new SQLLiteral( wkb, Types.BINARY );
+        // String wkt = null;
+        // wkt = WKTWriter.write( transformedGeom );
+        // return new SQLLiteral( wkt, Types.BINARY );
     }
 }
