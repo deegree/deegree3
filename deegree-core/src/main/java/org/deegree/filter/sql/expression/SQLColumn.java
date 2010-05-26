@@ -72,6 +72,7 @@ public class SQLColumn implements SQLExpression {
         this.table = table;
         this.column = column;
         this.sqlType = sqlType;
+        this.isSpatial = spatial;
     }
 
     @Override
