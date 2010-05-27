@@ -68,7 +68,7 @@ public class Symbolizer<T extends Copyable<T>> {
     private T base;
 
     // TODO improve the caching, eg. implement a real cache with a limit etc.
-    // NOTE: Using a synchronized map here is strictly necessary (race condition), RB / MS 
+    // NOTE: Using a synchronized map here is strictly necessary (race condition), RB / MS
     private Map<String, T> cache = new ConcurrentHashMap<String, T>();
 
     private Continuation<T> next;
@@ -179,7 +179,7 @@ public class Symbolizer<T extends Copyable<T>> {
         }
 
         String id = f.getId();
-        if ( cache.containsKey( id ) ) {
+        if ( id != null && cache.containsKey( id ) ) {
             return new Pair<T, Geometry>( cache.get( id ), geom );
         }
 
