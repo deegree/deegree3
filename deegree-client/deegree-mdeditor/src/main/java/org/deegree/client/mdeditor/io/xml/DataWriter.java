@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.io.xml;
 
-import static org.deegree.client.mdeditor.io.xml.FileDataHandler.FILE_SUFFIX;
+import static org.deegree.client.mdeditor.io.xml.XMLDataHandler.FILE_SUFFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;

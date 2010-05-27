@@ -60,11 +60,11 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FileDataHandler extends DataHandler {
+public class XMLDataHandler extends DataHandler {
 
     static final String FILE_SUFFIX = ".xml";
 
-    private static final Logger LOG = getLogger( FileDataHandler.class );
+    private static final Logger LOG = getLogger( XMLDataHandler.class );
 
     @Override
     public List<UISelectItem> getSelectItems( String grpId, String referenceLabel ) {

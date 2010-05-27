@@ -40,7 +40,7 @@ import java.util.Map;
 
 import javax.faces.component.UISelectItem;
 
-import org.deegree.client.mdeditor.io.xml.FileDataHandler;
+import org.deegree.client.mdeditor.io.xml.XMLDataHandler;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.DataGroup;
 
@@ -55,10 +55,10 @@ import org.deegree.client.mdeditor.model.DataGroup;
  */
 public abstract class DataHandler {
 
-    private static FileDataHandler handler;
+    private static XMLDataHandler handler;
 
     static {
-        handler = new FileDataHandler();
+        handler = new XMLDataHandler();
     }
 
     /**
