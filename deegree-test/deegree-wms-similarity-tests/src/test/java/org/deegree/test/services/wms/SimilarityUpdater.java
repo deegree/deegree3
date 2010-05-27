@@ -46,6 +46,8 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import org.deegree.commons.utils.PixelCounter;
+
 /**
  * <code>SimilarityUpdater</code>
  * 
