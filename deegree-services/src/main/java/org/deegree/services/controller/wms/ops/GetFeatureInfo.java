@@ -47,6 +47,7 @@ import static org.deegree.services.controller.ows.OWSException.LAYER_NOT_DEFINED
 import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.services.controller.wms.ops.GetMap.parseDimensionValues;
 import static org.deegree.services.i18n.Messages.get;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -64,6 +65,7 @@ import org.deegree.services.controller.wms.WMSController111;
 import org.deegree.services.controller.wms.WMSController130;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.Layer;
+import org.slf4j.Logger;
 
 /**
  * <code>GetFeatureInfo</code>
@@ -74,6 +76,8 @@ import org.deegree.services.wms.model.layers.Layer;
  * @version $Revision$, $Date$
  */
 public class GetFeatureInfo {
+
+    private static final Logger LOG = getLogger( GetFeatureInfo.class );
 
     private static final GeometryFactory fac = new GeometryFactory();
 
@@ -239,7 +243,8 @@ public class GetFeatureInfo {
         }
         String ss = map.get( "STYLES" );
         if ( ss == null ) {
-            throw new OWSException( get( "WMS.PARAM_MISSING", "STYLES" ), MISSING_PARAMETER_VALUE );
+            LOG.warn( "Mandatory STYLES parameter is missing for GFI request, silently ignoring the protocol breach." );
+            ss = "";
         }
 
         LinkedList<String> layers = new LinkedList<String>( asList( ls.split( "," ) ) );
