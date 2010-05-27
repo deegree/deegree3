@@ -43,6 +43,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -217,7 +218,7 @@ public class StyleRegistry extends TimerTask {
     public void load( String layerName, List<DirectStyleType> styles, XMLAdapter adapter ) {
         for ( DirectStyleType sty : styles ) {
             try {
-                File file = new File( adapter.resolve( sty.getFile() ).getFile() );
+                File file = new File( adapter.resolve( sty.getFile() ).toURI() );
                 String name = sty.getName();
                 Style style = loadNoImport( layerName, file );
                 if ( style != null ) {
@@ -227,6 +228,11 @@ public class StyleRegistry extends TimerTask {
                     put( layerName, style, false );
                 }
             } catch ( MalformedURLException e ) {
+                e.printStackTrace();
+                LOG.trace( "Stack trace", e );
+                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
+            } catch ( URISyntaxException e ) {
+                e.printStackTrace();
                 LOG.trace( "Stack trace", e );
                 LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
             }
@@ -241,7 +247,7 @@ public class StyleRegistry extends TimerTask {
     public void load( String layerName, XMLAdapter adapter, List<SLDStyleType> styles ) {
         for ( SLDStyleType sty : styles ) {
             try {
-                File file = new File( adapter.resolve( sty.getFile() ).getFile() );
+                File file = new File( adapter.resolve( sty.getFile() ).toURI() );
                 String namedLayer = sty.getNamedLayer();
                 Map<String, String> map = new HashMap<String, String>();
                 String name = null;
@@ -271,6 +277,9 @@ public class StyleRegistry extends TimerTask {
                 LOG.trace( "Stack trace", e );
                 LOG.info( "Style file '{}' for layer '{}' could not be parsed: '{}'.",
                           new Object[] { sty.getFile(), layerName, e.getLocalizedMessage() } );
+            } catch ( URISyntaxException e ) {
+                LOG.trace( "Stack trace", e );
+                LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
             }
         }
     }
