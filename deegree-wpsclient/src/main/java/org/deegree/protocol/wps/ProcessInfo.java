@@ -43,7 +43,7 @@ import java.util.List;
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
 import org.deegree.protocol.wps.getcapabilities.ProcessOffering;
-import org.deegree.protocol.wps.tools.CreateExecuteRequest;
+import org.deegree.protocol.wps.tools.BuildExecuteObjects;
 import org.deegree.protocol.wps.tools.InputObject;
 import org.deegree.protocol.wps.tools.OutputConfiguration;
 
@@ -145,9 +145,9 @@ public class ProcessInfo {
 
         // exectuteProperties.load(defaultconfigs);
 
-        CreateExecuteRequest fillDataInput = new CreateExecuteRequest( inputList, outputConfigurationList,
+        BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputList, outputConfigurationList,
                                                                        processDescription );
-        fillDataInput.runExecute();
+        buildExecuteObjects.createExecuteRequest();
 
         // TODO Implement synchronous execution here;
     }

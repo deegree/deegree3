@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.deegree.protocol.wps.describeprocess.DataInputDescribeProcess;
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
@@ -70,7 +72,7 @@ import org.deegree.protocol.wps.execute.ResponseForm;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CreateExecuteRequest {
+public class BuildExecuteObjects {
 
     private List<DataInputDescribeProcess> dataInputs;
 
@@ -98,7 +100,7 @@ public class CreateExecuteRequest {
 
     private List<ResponseForm> responseFormList = new ArrayList();
 
-    public CreateExecuteRequest( List<InputObject> dataInputList, List<OutputConfiguration> outputConfigurationList,
+    public BuildExecuteObjects( List<InputObject> dataInputList, List<OutputConfiguration> outputConfigurationList,
                                  ProcessDescription processDesription ) {
 
         this.processDescription = processDesription;
@@ -116,7 +118,7 @@ public class CreateExecuteRequest {
 
     }
 
-    public CreateExecuteRequest( List<InputObject> dataInputList, ProcessDescription processDesription ) {
+    public BuildExecuteObjects( List<InputObject> dataInputList, ProcessDescription processDesription ) {
 
         this.processDescription = processDesription;
         this.identifier = processDesription.getIdentifier();
@@ -133,7 +135,7 @@ public class CreateExecuteRequest {
 
     }
 
-    public CreateExecuteRequest( ProcessDescription processDesription ) {
+    public BuildExecuteObjects( ProcessDescription processDesription ) {
 
         this.processDescription = processDesription;
         this.identifier = processDesription.getIdentifier();
@@ -354,9 +356,19 @@ public class CreateExecuteRequest {
 
     }
 
-    public void runExecute() {
+
+    
+    public void createExecuteRequest() {
         Execute execute = new Execute( processDescription, dataInputExecuteList, responseFormList, null );
-        execute.createPost();
+        try {
+            execute.createExecuteRequest();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }

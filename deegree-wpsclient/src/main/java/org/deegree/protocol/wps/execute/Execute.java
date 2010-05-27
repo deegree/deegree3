@@ -1,57 +1,108 @@
+//$HeadURL: https://svn.wald.intevation.org/svn/deegree/base/trunk/resources/eclipse/files_template.xml $
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2010 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.execute;
 
+/**
+ * 
+ * InputObject is used to assign one input
+ * Identifier and InputObject are mandatory, input will be set on "as Reference" as default
+ * 
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
+ * @author last edited by: $Author: walenciak $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URL;
 import java.util.List;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
-import org.deegree.protocol.wps.tools.CreateExecuteRequest;
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.deegree.protocol.wps.tools.BuildExecuteObjects;
 import org.jdom.Namespace;
-import org.jdom.output.XMLOutputter;
 
 public class Execute {
 
-    String service;
+    private String service;
 
-    String request;
+    private String request;
 
-    String version;
+    private String version;
 
-    String identifier;
+    private String identifier;
 
-    List<DataInputExecute> dataInputExecuteList;
+    private List<DataInputExecute> dataInputExecuteList;
 
-    List<ResponseForm> responseFormList;
+    private List<ResponseForm> responseFormList;
 
-    ResponseForm responseForm;
+    private ResponseForm responseForm;
 
-    String language;
+    private String language;
 
-    DescribeProcess desribeProcess;
+    private DescribeProcess desribeProcess;
 
-    ProcessDescription processDescription;
+    private ProcessDescription processDescription;
 
-    CreateExecuteRequest fillDataInput;
+    private BuildExecuteObjects fillDataInput;
 
-    boolean store;
+    private boolean store;
 
-    boolean status;
+    private boolean status;
 
-    String schemaLocation;
+    private String schemaLocation;
 
-    Namespace wpsNamespace = Namespace.getNamespace( "wps", "http://www.opengis.net/wps/1.0.0" );
 
-    Namespace owsNamespace = Namespace.getNamespace( "ows", "http://www.opengis.net/ows/1.1" );
+    private Namespace wpsNamespace = Namespace.getNamespace( "wps", "http://www.opengis.net/wps/1.0.0" );
 
-    Namespace xsiNamespace = Namespace.getNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+    private Namespace owsNamespace = Namespace.getNamespace( "ows", "http://www.opengis.net/ows/1.1" );
 
-    Namespace xlinkNamespace = Namespace.getNamespace( "xlink", "http://www.w3.org/1999/xlink" );
+    private Namespace xsiNamespace = Namespace.getNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+
+    private Namespace xlinkNamespace = Namespace.getNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
     public Execute( DescribeProcess describeProcess ) {
         this.desribeProcess = describeProcess;
@@ -75,173 +126,181 @@ public class Execute {
         this.responseFormList = responseFormList;
     }
 
-    public void createPost() {
+    private XMLStreamWriter writeHeader( XMLStreamWriter writer )
+                            throws XMLStreamException {
+               
+        writer.writeAttribute( "service", service );
+        writer.writeAttribute( "version", version );
+        writer.writeAttribute( "store", String.valueOf( store ) );
+        writer.writeAttribute( "status", String.valueOf( status ) );
+        writer.writeAttribute( xsiNamespace.getPrefix(), xsiNamespace.getURI(), "schemaLocation", schemaLocation );
 
-        Element root = new Element( "execute", wpsNamespace );
+        writer.writeStartElement( owsNamespace.getPrefix(), "Identifier", owsNamespace.getURI() );
+        writer.writeCharacters( identifier );
+        writer.writeEndElement();
 
-        Attribute serviceAttribute = new Attribute( "service", service );
-        root.setAttribute( serviceAttribute );
+        return writer;
 
-        Attribute versionAttribute = new Attribute( "version", version );
-        root.setAttribute( versionAttribute );
+    }
 
-        Attribute storeAttribute = new Attribute( "store", String.valueOf( store ) );
-        root.setAttribute( storeAttribute );
-
-        Attribute statusAttribute = new Attribute( "status", String.valueOf( status ) );
-        root.setAttribute( statusAttribute );
-
-        Attribute schemaLocationAttribute = new Attribute( "schemaLocation", schemaLocation, xsiNamespace ); // namespace
-        // setzen
-
-        root.setAttribute( schemaLocationAttribute );
-
-        Element identifierProcess = new Element( "Identifier", owsNamespace );
-
-        root.addContent( identifierProcess );
-
-        identifierProcess.setText( identifier );
-
+    private XMLStreamWriter writeInputs( XMLStreamWriter writer )
+                            throws XMLStreamException {
         if ( dataInputExecuteList != null ) {
-            Element dataInputs = new Element( "DataInputs", wpsNamespace );
+            writer.writeStartElement( wpsNamespace.getPrefix(), "DataInputs", wpsNamespace.getURI() );
 
             for ( int i = 0; i < dataInputExecuteList.size(); i++ ) {
+
                 DataInputExecute dataInputExecute = dataInputExecuteList.get( i );
 
-                Element input = new Element( "Input", wpsNamespace );
+                writer.writeStartElement( wpsNamespace.getPrefix(), "Input", wpsNamespace.getURI() );
 
-                Element identifier = new Element( "Identifier", owsNamespace );
-                // identifier.setText(processDescription.getDataInputs().get(i).getIdentifier());
-
-                input.addContent( identifier );
-
-                identifier.setText( dataInputExecute.getIdentifier() );
+                writer.writeStartElement( owsNamespace.getPrefix(), "Identifier", owsNamespace.getURI() );
+                writer.writeCharacters( dataInputExecute.getIdentifier() );
+                writer.writeEndElement();
 
                 InputFormChoiceExecute inputFormChoice = dataInputExecute.getInputFormChoice();
 
                 if ( inputFormChoice.getReference() != null ) {
-                    Element referenceElement = new Element( "Reference", wpsNamespace );
-                    Attribute referenceAttribute = new Attribute(
-                                                                  "href",
-                                                                  dataInputExecute.getInputFormChoice().getReference().getHref() );
-                    referenceElement.setAttribute( referenceAttribute );
-                    input.addContent( referenceElement );
+                    writer.writeStartElement( wpsNamespace.getPrefix(), "Reference", wpsNamespace.getURI() );
+
+                    writer.writeAttribute( "href", dataInputExecute.getInputFormChoice().getReference().getHref() );
+
+
+                    writer.writeEndElement();
                 }
 
                 if ( inputFormChoice.getData() != null ) {
+
                     if ( inputFormChoice.getData().getDataType() != null ) {
                         DataType dataType = inputFormChoice.getData().getDataType();
+                        writer.writeStartElement( wpsNamespace.getPrefix(), "Data", wpsNamespace.getURI() );
+
                         if ( dataType.getLiteralData() != null ) {
-                            Element dataElement = new Element( "Data", wpsNamespace );
-                            input.addContent( dataElement );
 
-                            Element literalValueElement = new Element( "LiteralData", wpsNamespace );
-                            dataElement.addContent( literalValueElement );
-                            literalValueElement.addContent( dataType.getLiteralData().getLiteralData() );
+                            writer.writeStartElement( wpsNamespace.getPrefix(), "LiteralData", wpsNamespace.getURI() );
+                            writer.writeCharacters( dataType.getLiteralData().getLiteralData() );
+                            writer.writeEndElement();
                         }
+
                         if ( dataType.getComplexData() != null ) {
-                            System.out.println( "complexData" );
-                            Element complexValueElementRawData = new Element( "Data", wpsNamespace );
-                            Element complexValueElementComplexData = new Element( "ComplexData", wpsNamespace );
-                            complexValueElementRawData.addContent( complexValueElementComplexData );
-                            complexValueElementComplexData.addContent( dataType.getComplexData().getObject().toString() );
 
-                            input.addContent( complexValueElementRawData );
+                            writer.writeStartElement( wpsNamespace.getPrefix(), "ComplexData", wpsNamespace.getURI() );
+
+                            writer.writeCharacters( dataType.getComplexData().getObject().toString() );
+                            writer.writeEndElement();
 
                         }
+
                         if ( dataType.getBoundingBoxData() != null ) {
 
                             // TO DO
                         }
 
+                        writer.writeEndElement();
+
                     }
+
                 }
 
-                dataInputs.addContent( input );
+                writer.writeEndElement();
 
             }
 
-            root.addContent( dataInputs );
         }
 
+        return writer;
+    }
+
+    private XMLStreamWriter writeOutputs( XMLStreamWriter writer )
+                            throws XMLStreamException {
         for ( int j = 0; j < responseFormList.size(); j++ ) {
+            writer.writeStartElement( wpsNamespace.getPrefix(), "ResponseForm", wpsNamespace.getURI() );
+
             ResponseForm responseForm = responseFormList.get( j );
 
             if ( responseForm.getRawOutputData() != null ) {
-                Element responseFormElement = new Element( "ReponseForm", wpsNamespace );
-                Element rawDataOutputElement = new Element( "RawDataOutuput", wpsNamespace );
-                responseFormElement.addContent( rawDataOutputElement );
-                Element identifier = new Element( "Identifier", owsNamespace );
-                identifier.setText( responseForm.getRawOutputData().getIdentifier() );
-                rawDataOutputElement.addContent( identifier );
-                root.addContent( responseFormElement );
+
+                writer.writeStartElement( wpsNamespace.getPrefix(), "RawDataOutuput", wpsNamespace.getURI() );
+                writer.writeStartElement( owsNamespace.getPrefix(), "Identifier", owsNamespace.getURI() );
+                writer.writeCharacters( responseForm.getRawOutputData().getIdentifier() );
+                writer.writeEndElement();
+                writer.writeEndElement();
 
             } else {
-                Element responseFormElement = new Element( "ReponseForm", wpsNamespace );
-                Element responseDocumentElement = new Element( "ResponseDocument", wpsNamespace );
-                responseFormElement.addContent( responseDocumentElement );
-                Attribute storeExecuteResponse = new Attribute(
-                                                                "storeExecuteResponse",
-                                                                String.valueOf( responseForm.getResponseDocument().storeExecuteResponse ) );
-                Attribute lineage = new Attribute( "lineage",
-                                                   String.valueOf( responseForm.getResponseDocument().lineage ) );
-                Attribute status = new Attribute( "status", String.valueOf( responseForm.getResponseDocument().status ) );
-                responseDocumentElement.setAttribute( storeExecuteResponse );
-                responseDocumentElement.setAttribute( lineage );
-                responseDocumentElement.setAttribute( status );
+                writer.writeStartElement( wpsNamespace.getPrefix(), "ResponseDocument", wpsNamespace.getURI() );
+
+                writer.writeAttribute( "storeExecuteResponse",
+                                       String.valueOf( responseForm.getResponseDocument().storeExecuteResponse ) );
+                writer.writeAttribute( "lineage", String.valueOf( responseForm.getResponseDocument().lineage ) );
+
+                writer.writeAttribute( "status", String.valueOf( responseForm.getResponseDocument().status ) );
 
                 for ( int i = 0; i < responseForm.getResponseDocument().getOutput().size(); i++ ) {
-                    Element outputElement = new Element( "Output", wpsNamespace );
-                    Attribute asReference = new Attribute(
-                                                           "asReference",
-                                                           String.valueOf( responseForm.getResponseDocument().getOutput().get(
-                                                                                                                               i ).isAsReference() ) );
-                    outputElement.setAttribute( asReference );
-                    Element identifier = new Element( "Identifier", owsNamespace );
-                    identifier.setText( responseForm.getResponseDocument().getOutput().get( i ).getIdentifier() );
-                    outputElement.addContent( identifier );
-                    responseDocumentElement.addContent( outputElement );
+                    writer.writeStartElement( wpsNamespace.getPrefix(), "Output", wpsNamespace.getURI() );
+
+                    writer.writeAttribute(
+                                           "asReference",
+                                           String.valueOf( responseForm.getResponseDocument().getOutput().get( i ).isAsReference() ) );
+
+                    writer.writeStartElement( owsNamespace.getPrefix(), "Identifier", owsNamespace.getURI() );
+                    writer.writeCharacters( responseForm.getResponseDocument().getOutput().get( i ).getIdentifier() );
+                    writer.writeEndElement();
 
                 }
 
-                root.addContent( responseFormElement );
+                writer.writeEndElement();
+
             }
+
+            writer.writeEndElement();
+
         }
 
-        writeFile( root, identifier );
+        return writer;
 
     }
 
-    void writeFile( Element root, String identifier ) {
-        Document doc = new Document( root );
-        // serialize it onto System.out
-
-        XMLOutputter serializer = new XMLOutputter();
-
-        Writer fw = null;
-
+    public void createExecuteRequest()
+                            throws XMLStreamException, IOException {
+        OutputStream out = null;
         try {
-            fw = new FileWriter( "execute" + identifier + ".xml" );
-
-            fw.write( serializer.outputString( doc ) );
-            fw.append( System.getProperty( "line.separator" ) ); // e.g. "\n"
-        } catch ( IOException e ) {
-            System.err.println( "Konnte Datei nicht erstellen" );
-        } finally {
-            if ( fw != null )
-                try {
-                    fw.close();
-                } catch ( IOException e ) {
-                }
+            out = new FileOutputStream( "execute" + identifier + ".xml" );
+        } catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        XMLStreamWriter writer = null;
+        try {
+            writer = factory.createXMLStreamWriter( out );
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        writer.writeStartDocument( "1.0" );//encoding...
+        
+
+        writer.writeStartElement( wpsNamespace.getPrefix(), "execute", wpsNamespace.getURI() );
+
+        System.out.println ("wpsNamespace " + wpsNamespace.getPrefix());
+        writer.writeNamespace( wpsNamespace.getPrefix(), wpsNamespace.getURI() );
+        writer.writeNamespace( owsNamespace.getPrefix(), owsNamespace.getURI() );
+        writer.writeNamespace( xsiNamespace.getPrefix(), xsiNamespace.getURI() );
+        
+        writer = writeHeader( writer );
+        writer = writeInputs( writer );
+        writer = writeOutputs( writer );
+
+        
+        writer.writeEndElement();
+        writer.writeEndDocument();
+
+        writer.flush();
+        writer.close();
+        out.close();
 
     }
 
-    public void out() {
-        ProcessDescription processDescription = desribeProcess.getProcessDescriptions().get( 0 );
 
-        for ( int i = 0; i < processDescription.getDataInputs().size(); i++ ) {
-            System.out.println( processDescription.getDataInputs().get( i ).getIdentifier() );
-        }
-    }
 }
