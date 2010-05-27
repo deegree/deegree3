@@ -332,7 +332,6 @@ public class SHPReader {
                             throws IOException {
 
         LOG.debug( "Querying shp with bbox {}", bbox );
-        // ByteBuffer buffer = channel.map( MapMode.READ_ONLY, 0, file.length() );
         ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
         buffer.order( ByteOrder.LITTLE_ENDIAN );
 
@@ -340,7 +339,6 @@ public class SHPReader {
 
         List<Long> pointers = (List<Long>) rtree.query( createEnvelope( bbox ) );
         Collections.sort( pointers );
-        // ByteBuffer readBuffer = in.asReadOnlyBuffer();
         for ( Long ptr : pointers ) {
             buffer.position( (int) ( ptr - 8 ) );
 

@@ -59,6 +59,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
+import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CachedFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
@@ -126,7 +127,7 @@ public class PostGISFeatureStore implements FeatureStore {
     private LockManager lockManager;
 
     // TODO make this configurable
-    private FeatureStoreCache cache = new FeatureStoreCache( 10000 );
+    private FeatureStoreCache cache = new SimpleFeatureStoreCache( 10000 );
 
     // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
     private boolean useLegacyPredicates;

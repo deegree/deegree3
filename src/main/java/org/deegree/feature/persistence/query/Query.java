@@ -192,7 +192,8 @@ public class Query {
      * @return an {@link Envelope} suitable for pre-filtering feature candidates, can be <code>null</code>
      */
     public Envelope getPrefilterBBox() {
-        return null;
+    	// TODO
+        return (Envelope) getHint(HINT_LOOSE_BBOX);
     }
 
     /**
