@@ -39,10 +39,6 @@
         }(tags[tag])
       }
 
-      function tableBody(table){
-        return table.firstChild && table.firstChild.nodeName == 'TBODY' ? table.firstChild : table
-      }
-
       function dotheswitch() {
         this[document.getElementById('theswitch').value]()
       }
@@ -67,7 +63,7 @@
 function <?name>() {
   var div = document.getElementById('table')
   while(div.firstChild) div.removeChild(div.firstChild)
-  var table = tableBody(this.table(div))
+  var table = this.tbody(this.table(div))
   var row = tr(table)
   th(row, "Field").setAttribute("style", headerStyle)
   th(row, "Value").setAttribute("style", headerStyle)
