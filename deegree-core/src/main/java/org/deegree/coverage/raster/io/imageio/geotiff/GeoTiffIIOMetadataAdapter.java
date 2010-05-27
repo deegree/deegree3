@@ -51,7 +51,7 @@
  *
  */
 
-package org.deegree.coverage.raster.io.imageio;
+package org.deegree.coverage.raster.io.imageio.geotiff;
 
 import java.util.StringTokenizer;
 

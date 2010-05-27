@@ -38,6 +38,7 @@ package org.deegree.coverage.raster.container;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
@@ -64,6 +65,8 @@ public class MemoryTileContainer implements TileContainer {
     private Envelope envelope;
 
     private RasterDataInfo rdi;
+
+    private ResolutionInfo resolutionInfo;
 
     /**
      * @param geoRasterRef
@@ -142,6 +145,9 @@ public class MemoryTileContainer implements TileContainer {
             if ( this.rdi == null ) {
                 this.rdi = raster.getRasterDataInfo();
             }
+            if ( this.resolutionInfo == null ) {
+                this.resolutionInfo = raster.getResolutionInfo();
+            }
             tiles.add( raster );
         }
     }
@@ -190,6 +196,12 @@ public class MemoryTileContainer implements TileContainer {
     @Override
     public RasterDataInfo getRasterDataInfo() {
         return rdi;
+    }
+
+    @Override
+    public ResolutionInfo getResolutionInfo() {
+        // TODO Auto-generated method stub
+        return resolutionInfo;
     }
 
 }

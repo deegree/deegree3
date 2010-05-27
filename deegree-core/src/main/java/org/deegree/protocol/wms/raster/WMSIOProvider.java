@@ -44,7 +44,7 @@ import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.protocol.wms.raster.WMSReader.WMSVersion;
 
 /**
- * TODO add class documentation here
+ * Supplies the information needed to create WMS based coverage
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -70,7 +70,8 @@ public class WMSIOProvider implements RasterIOProvider {
 
     @Override
     public RasterWriter getRasterWriter( String type ) {
-        throw new UnsupportedOperationException( "Transactional wms is currently not supported." );
+        return null;
+        // throw new UnsupportedOperationException( "Transactional wms is currently not supported." );
     }
 
     @Override

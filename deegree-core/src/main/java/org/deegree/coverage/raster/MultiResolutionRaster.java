@@ -46,7 +46,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -62,6 +64,15 @@ public class MultiResolutionRaster extends AbstractCoverage {
 
     private List<AbstractRaster> resolutions = new LinkedList<AbstractRaster>();
 
+    private ResolutionInfo resolutionInfo;
+
+    /**
+     * Create an empty multi resolution raster.
+     */
+    public MultiResolutionRaster() {
+        this.resolutionInfo = new ResolutionInfo();
+    }
+
     /**
      * Adds a raster to the MultiResolution Pyramid
      * 
@@ -70,10 +81,13 @@ public class MultiResolutionRaster extends AbstractCoverage {
      */
     public void addRaster( AbstractRaster raster ) {
         resolutions.add( raster );
+        List<SampleResolution> nativeResolutions = this.resolutionInfo.getNativeResolutions();
+        SampleResolution rasterRes = raster.getResolutionInfo().getNativeResolutions().get( 0 );
+        nativeResolutions.add( rasterRes );
         Comparator<AbstractRaster> comp = new Comparator<AbstractRaster>() {
             public int compare( AbstractRaster a1, AbstractRaster a2 ) {
-                double r1 = Math.abs( a1.getRasterReference().getResolutionX() );
-                double r2 = Math.abs( a2.getRasterReference().getResolutionX() );
+                double r1 = Math.abs( a1.getResolutionInfo().getNativeResolutions().get( 0 ).getResolution( 0 ) );
+                double r2 = Math.abs( a2.getResolutionInfo().getNativeResolutions().get( 0 ).getResolution( 0 ) );
                 return Double.valueOf( r1 ).compareTo( r2 );
             }
         };
@@ -149,5 +163,21 @@ public class MultiResolutionRaster extends AbstractCoverage {
             res.add( min( abs( renv.getResolutionX() ), abs( renv.getResolutionY() ) ) );
         }
         return res;
+    }
+
+    @Override
+    public AbstractRaster getAsRaster( Envelope spatialExtent, SampleResolution resolution,
+                                       InterpolationType interpolation ) {
+        double res = resolution.getResolution( 0 );
+        AbstractRaster raster = getRaster( res );
+        if ( raster == null ) {
+            return resolutions.get( resolutions.size() - 1 );
+        }
+        return raster.getAsRaster( spatialExtent, resolution, interpolation );
+    }
+
+    @Override
+    public ResolutionInfo getResolutionInfo() {
+        return this.resolutionInfo;
     }
 }

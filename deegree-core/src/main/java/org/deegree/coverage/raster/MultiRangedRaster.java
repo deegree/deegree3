@@ -260,4 +260,5 @@ public class MultiRangedRaster extends AbstractRaster {
         }
         return null;
     }
+
 }

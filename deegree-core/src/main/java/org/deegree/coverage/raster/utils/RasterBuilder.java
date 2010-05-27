@@ -212,8 +212,11 @@ public class RasterBuilder implements CoverageBuilder {
             MultiResolutionRaster mrr = new MultiResolutionRaster();
             mrr.setCoordinateSystem( crs );
             for ( Resolution resolution : mrrConfig.getResolution() ) {
-                AbstractRaster rasterLevel = fromJAXB( resolution, adapter, options );
-                mrr.addRaster( rasterLevel );
+                if ( resolution != null ) {
+
+                    AbstractRaster rasterLevel = fromJAXB( resolution, adapter, options );
+                    mrr.addRaster( rasterLevel );
+                }
             }
             return mrr;
         }

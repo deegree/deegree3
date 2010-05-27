@@ -75,7 +75,7 @@ public class IIORasterDataWriter {
         BufferedImage result = rasterDataToImage( sourceRaster );
         boolean written = ImageIO.write( result, format, file );
         if ( !written ) {
-            throw new IOException( "could't find ImageIO writer for " + format );
+            throw new IOException( "Could't write raster with ImageIO for format: " + format );
         }
     }
 

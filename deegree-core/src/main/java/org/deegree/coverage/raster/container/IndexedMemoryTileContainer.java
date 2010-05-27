@@ -43,6 +43,7 @@ import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 import java.util.List;
 
 import org.deegree.commons.index.QTree;
+import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
@@ -65,6 +66,8 @@ public class IndexedMemoryTileContainer implements TileContainer {
     private final RasterGeoReference rasterReference;
 
     private RasterDataInfo rdi;
+
+    private ResolutionInfo resolutionInfo;
 
     /**
      * Uses a QTree as a spatial index.
@@ -105,6 +108,9 @@ public class IndexedMemoryTileContainer implements TileContainer {
             if ( this.rdi == null ) {
                 this.rdi = raster.getRasterDataInfo();
             }
+            if ( this.resolutionInfo == null ) {
+                this.resolutionInfo = raster.getResolutionInfo();
+            }
             index.insert( createEnvelope( raster.getEnvelope() ), raster );
         }
     }
@@ -131,6 +137,11 @@ public class IndexedMemoryTileContainer implements TileContainer {
     @Override
     public RasterDataInfo getRasterDataInfo() {
         return rdi;
+    }
+
+    @Override
+    public ResolutionInfo getResolutionInfo() {
+        return this.resolutionInfo;
     }
 
 }
