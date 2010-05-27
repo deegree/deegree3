@@ -39,6 +39,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.deegree.client.mdeditor.configuration.Configuration;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormFieldPath;
@@ -130,7 +133,7 @@ public class FormConfigurationParserTest extends TestCase {
         assertEquals( selectPath, ( (SelectFormField) select ).getPath() );
     }
 
-    @Test(expected = org.deegree.client.mdeditor.config.ConfigurationException.class)
+    @Test(expected = org.deegree.client.mdeditor.configuration.ConfigurationException.class)
     public void testdoubleIDException() {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/doubleIDTestConfig.xml" );
         try {

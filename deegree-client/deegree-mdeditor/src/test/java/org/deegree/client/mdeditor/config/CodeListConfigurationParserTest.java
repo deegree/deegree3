@@ -39,7 +39,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.deegree.client.mdeditor.config.codelist.CodeListConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.Configuration;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.codelist.CodeListConfigurationFactory;
 import org.deegree.client.mdeditor.model.CodeList;
 import org.junit.Test;
 
