@@ -58,15 +58,15 @@ public class FeatureTypeMapping {
 
     private BlobMapping blobMapping;
 
-    private String[] gmlIdColumns;
+    private String fidColumn;
 
     // TODO: enable more mapping possibilities (e.g. app:Country/gmlName[1]/text()='Blabla')
     private Map<QName, String> propToColumn = new HashMap<QName, String>();
 
-    public FeatureTypeMapping (QName ftName, String table, String [] gmlIdColumns, Map<QName,String> propToColumn) {
+    public FeatureTypeMapping (QName ftName, String table, String fidColumn, Map<QName,String> propToColumn) {
         this.ftName = ftName;
         this.table = table;
-        this.gmlIdColumns = gmlIdColumns;
+        this.fidColumn = fidColumn;
         this.propToColumn = propToColumn;
     }
     
@@ -89,12 +89,12 @@ public class FeatureTypeMapping {
     }
 
     /**
-     * Returns the names of the columns that constitute the gml id of the feature.
+     * Returns the names of the column that stores the id of the feature.
      * 
-     * @return the names of the columns that constitute the gml id, may be <code>null</code> (for BLOB-only mappings)
+     * @return the names of the columns that stores the id of the feature, may be <code>null</code> (for BLOB-only mappings)
      */
-    public String[] getGMLIdColumns() {
-        return gmlIdColumns;
+    public String getFidColumn() {
+        return fidColumn;
     }
 
     /**
