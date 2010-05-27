@@ -1,7 +1,7 @@
 #!/bin/bash
 # generate the requests
 
-loc=../../src/main/resources/org/deegree/test/services/wms/similaritytests.txt
+loc=../../deegree-wms-similarity-tests/src/test/resources/org/deegree/test/services/wms/similaritytests.txt
 
 for file in points/*sld
 do
