@@ -65,8 +65,8 @@ function <?name>() {
   while(div.firstChild) div.removeChild(div.firstChild)
   var table = this.tbody(this.table(div))
   var row = tr(table)
-  th(row, "Field").setAttribute("style", headerStyle)
-  th(row, "Value").setAttribute("style", headerStyle)
+  th(row, "Field").style.cssText = headerStyle
+  th(row, "Value").style.cssText = headerStyle
   var odd = true
   <?property *:properties>
 }
@@ -74,6 +74,6 @@ if(!first) first = <?name>
 
 <?template properties>
 row = tr(table)
-td(row, '<?name>').setAttribute('style', odd ? oddStyle : evenStyle)
-td(row, '<?value>').setAttribute('style', odd ? oddStyle : evenStyle)
+td(row, '<?name>').style.cssText = odd ? oddStyle : evenStyle
+td(row, '<?value>').style.cssText = odd ? oddStyle : evenStyle
 odd = !odd
