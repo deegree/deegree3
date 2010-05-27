@@ -321,6 +321,7 @@ public class MapService {
                 LOG.warn( "The parsed layer does not have a child, but a layer was configured, bailing out." );
                 break;
             }
+
             AbstractLayerType l = (AbstractLayerType) lay;
             double min = Double.NaN;
             double max = Double.NaN;
@@ -400,6 +401,13 @@ public class MapService {
                     registry.load( name, adapter, aLayer.getSLDStyle() );
                 }
                 res.setInternalName( name );
+            }
+
+            // this is necessary as well as the run in addChildren (where the children can contain a mix between
+            // scaledenominators and scaleabove/until)
+            if ( aLayer.getScaleDenominators() != null ) {
+                res.setScaleHint( new DoublePair( aLayer.getScaleDenominators().getMin(),
+                                                  aLayer.getScaleDenominators().getMax() ) );
             }
 
             SupportedFeaturesType sf = aLayer.getSupportedFeatures();

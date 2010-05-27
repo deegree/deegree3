@@ -36,8 +36,6 @@
 
 package org.deegree.services.wms.model.layers;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.services.wms.MapService.prepareImage;
 import static org.deegree.services.wms.model.Dimension.parseTyped;
@@ -133,7 +131,6 @@ public abstract class Layer {
         keywords = new LinkedList<LanguageStringType>();
         srs = new LinkedList<CRS>();
         children = new LinkedList<Layer>();
-        scaleHint = new DoublePair( NEGATIVE_INFINITY, POSITIVE_INFINITY );
     }
 
     protected Layer( AbstractLayerType layer, Layer parent ) {
