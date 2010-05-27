@@ -25,27 +25,12 @@
       </complexContent>
     </complexType>
   </element>
-  
-    <element name="SEFeatureRaster">
-    <annotation>
-      <documentation>A raster which is based on a feature store.</documentation>
-      <appinfo>
-        <jaxb:class name="SEFeatureRasterConfig" />
-      </appinfo>
-    </annotation>
-    <complexType>
-      <complexContent>
-        <extension base="raster:AbstractRasterType">
-        
-          <attribute name="configVersion" use="required" fixed="0.5.0" />
-        </extension>
-      </complexContent>
-    </complexType>
-  </element>
 
+ 
   <element name="MultiResolutionRaster">
     <annotation>
-      <documentation>A multi resolution raster wraps (single) rasters and adds a resolution of each raster.</documentation>
+      <documentation>A multi resolution raster wraps (single) rasters and adds a resolution of each raster.
+      </documentation>
       <appinfo>
         <jaxb:class name="MultiResolutionRasterConfig" />
       </appinfo>
@@ -70,14 +55,17 @@
     </complexType>
   </element>
 
+
+
   <complexType name="AbstractRasterType" abstract="true">
-    <choice>
+    <choice minOccurs="0">
       <element ref="raster:RasterFile" />
       <element ref="raster:RasterDirectory" />
+      <element name="url" type="string" />
     </choice>
-    <attribute name="crs" type="string" use="optional"/>
-    <attribute name="originLocation" default="center" type="raster:OriginLocation" />
     <attribute name="readWorldFiles" default="true" type="boolean" />
+    <attribute name="crs" type="string" use="optional" />
+    <attribute name="originLocation" default="center" type="raster:OriginLocation" />
     <attribute name="nodata" type="decimal" />
   </complexType>
 
