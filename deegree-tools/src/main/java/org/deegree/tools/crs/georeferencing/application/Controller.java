@@ -115,7 +115,10 @@ public class Controller {
 
     private static final String RIO_WMS_TIMEOUT = "RIO_WMS_TIMEOUT";
 
-    // private Rectangle predictedBounds;
+    /**
+     * Specifies the size of the full drawn side.
+     */
+    private static final String RESOLUTION = "RESOLUTION";
 
     private Envelope bbox;
 
@@ -152,13 +155,12 @@ public class Controller {
 
             mouse = new MouseModel();
             model.reset();
-
-            rect = new RasterRect( panel.getBounds() );
             options = new RasterIOOptions();
 
             // options.add( RasterIOOptions.CRS, "EPSG:4326" );
             options.add( RasterIOOptions.CRS, "EPSG:32618" );
             options.add( RIO_WMS_LAYERS, "dem" );
+            options.add( RESOLUTION, "1.0" );
             // options.add( RIO_WMS_LAYERS, "root" );
             // options.add( RASTER_FORMATLIST, "image/jpeg" );
             options.add( RASTER_URL, view.openUrl() );
@@ -166,11 +168,14 @@ public class Controller {
             options.add( RIO_WMS_SYS_ID, view.openUrl() );
             options.add( RIO_WMS_MAX_SCALE, "0.1" );
             options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
-            options.add( RIO_WMS_MAX_WIDTH, Integer.toString( rect.width ) );
-            options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( rect.height ) );
+            // specify the quality
+            options.add( RIO_WMS_MAX_WIDTH, Integer.toString( 200 ) );
+            options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( 200 ) );
             options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
             // options.add( RIO_WMS_TIMEOUT, "1000" );
-            panel.setImageToDraw( model.generateImage( options ) );
+            model.setResolution( 1 );
+            model.init( options, panel.getBounds() );
+            panel.setImageToDraw( model.generateImage( null ) );
 
             panel.repaint();
             panel.addScene2DMouseListener( new Scene2DMouseListener() );
@@ -229,9 +234,12 @@ public class Controller {
                                                           + mouse.getMouseChanging().getX(),
                                                           mouse.getCumulatedMouseChanging().getY()
                                                                                   + mouse.getMouseChanging().getY() ) );
-
             System.out.println( "buffaußerhalb: " + predictedImage );
-
+            panel.setBeginDrawImageAtPosition( new Point2d( panel.getBeginDrawImageAtPosition().getX()
+                                                            - mouse.getMouseChanging().getX(),
+                                                            panel.getBeginDrawImageAtPosition().getY()
+                                                                                    - mouse.getMouseChanging().getY() ) );
+            // 
             // if the user went into any critical region
             if ( mouse.getCumulatedMouseChanging().getX() >= panel.getImageMargin().getX()
                  || mouse.getCumulatedMouseChanging().getX() <= -panel.getImageMargin().getX()
@@ -241,24 +249,13 @@ public class Controller {
                 Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
                                                                  mouse.getCumulatedMouseChanging().getY() );
 
-                System.out.println( "my new Point2D: " + updateDrawImageAtPosition );
-                model.changeImageBoundingbox( updateDrawImageAtPosition );
-                // panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
-                System.out.println( "changepoint: " + changePoint );
+                panel.setImageToDraw( model.getGeneratedImage() );
 
                 mouse.reset();
-                panel.repaint();
-
-            } else {
-                wentIntoCriticalRegion = false;
-                panel.setBeginDrawImageAtPosition( new Point2d(
-                                                                panel.getBeginDrawImageAtPosition().getX()
-                                                                                        - mouse.getMouseChanging().getX(),
-                                                                panel.getBeginDrawImageAtPosition().getY()
-                                                                                        - mouse.getMouseChanging().getY() ) );
-                panel.repaint();
+                panel.reset();
 
             }
+            panel.repaint();
 
         }
     }
@@ -283,18 +280,10 @@ public class Controller {
 
         public void run() {
 
-            // predictedBounds = new Rectangle( (int) ( panel.getBounds().getWidth() * ( 1 + panel.getMargin() ) ),
-            // (int) ( panel.getBounds().getHeight() * ( 1 + panel.getMargin() ) ) );
-
-            changePoint = new Point2d( changing.getX(), changing.getY() );
+            changePoint = new Point2d( changing.getX() * 1, changing.getY() * 1 );
             System.out.println( "Threadchange: " + changePoint );
 
-            model.changePredictionBoundingbox( changePoint );
-
-            bbox = model.getPredictionBoundingbox();
-            predictedImage = model.generatePredictedImage( panel.getBounds(), bbox );
-            footPanel.setImage( predictedImage );
-            footPanel.repaint();
+            model.generateImage( changePoint );
 
         }
 
@@ -339,13 +328,15 @@ public class Controller {
         @Override
         public void mouseWheelMoved( MouseWheelEvent m ) {
             if ( m.getWheelRotation() < 0 ) {
-                panel.setResolutionOfImage( panel.getResolutionOfImage() * 0.7 );
+                panel.setResolutionOfImage( panel.getResolutionOfImage() - .1 );
             } else {
-                panel.setResolutionOfImage( panel.getResolutionOfImage() * 1.3 );
+                panel.setResolutionOfImage( panel.getResolutionOfImage() + .1 );
             }
             model.reset();
-            // setSightWindowAttributes( model.getHoleRequestBoundingbox() );
-            // panel.init( model.generateImage( panel.getBounds() ) );
+            System.out.println( panel.getResolutionOfImage() );
+            model.setResolution( panel.getResolutionOfImage() );
+            model.init( options, panel.getBounds() );
+            panel.setImageToDraw( model.generateImage( null ) );
             panel.repaint();
 
         }
@@ -377,14 +368,13 @@ public class Controller {
 
         @Override
         public void componentResized( ComponentEvent c ) {
-            if ( model.getImageBoundingbox() != null ) {
-                model.reset();
-                // setSightWindowAttributes( model.getHoleRequestBoundingbox() );
-                // panel.init( model.generateImage( panel.getBounds() ) );
+            if ( model.getGeneratedImage() != null ) {
+                model.init( options, panel.getBounds() );
+                panel.setImageToDraw( model.generateImage( null ) );
                 panel.repaint();
 
             }
-
+            panel.setBeginDrawImageAtPosition( null );
         }
 
         @Override

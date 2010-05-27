@@ -41,7 +41,6 @@ import java.awt.image.BufferedImage;
 import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.geometry.Envelope;
 
 /**
  * Base interface for the model layer
@@ -54,33 +53,6 @@ import org.deegree.geometry.Envelope;
 public interface Scene2D {
 
     /**
-     * Generates the predicted image for a faster repainting.
-     * 
-     * @param envelope
-     * @return
-     */
-    public BufferedImage generatePredictedImage( Rectangle predictedBounds, Envelope envelope );
-
-    /**
-     * This should set the boundingbox for the image to draw.
-     * 
-     * @param change
-     */
-    public void changeImageBoundingbox( Point2d change );
-
-    /**
-     * 
-     * @param change
-     * @return
-     */
-    public void changePredictionBoundingbox( Point2d change );
-
-    /**
-     * returns the boundingbox of the image
-     */
-    public Envelope getImageBoundingbox();
-
-    /**
      * Returns the requested image.
      * 
      * @return
@@ -88,35 +60,27 @@ public interface Scene2D {
     public BufferedImage getGeneratedImage();
 
     /**
-     * Returns the hole boundingbox
-     * 
-     * @return
-     */
-    public Envelope getHoleRequestBoundingbox();
-
-    /**
-     * Returns the predicted boundinbox
-     * 
-     * @return
-     */
-    public Envelope getPredictionBoundingbox();
-
-    /**
-     * sets the window where everything is drawn into.
-     * 
-     * @param sightWindowBoundingbox
-     */
-    public void setSightWindowBoundingbox( Envelope sightWindowBoundingbox );
-
-    /**
      * Resets all of the variables to initial value.
      */
     public void reset();
 
-    public BufferedImage getPredictedImage();
+    /**
+     * 
+     * @param options
+     *            for the request, must not be <Code>null</Code>
+     * @param bounds
+     *            of the size of the scene, must not be <Code>null</Code>
+     */
+    public void init( RasterIOOptions options, Rectangle bounds );
 
-    Point2d getOnePixel();
+    /**
+     * 
+     * @param startPoint
+     *            can be <Code>null</Code>. If not specified the defaultValue of initialisation will be taken.
+     * @return
+     */
+    public BufferedImage generateImage( Point2d startPoint );
 
-    public BufferedImage generateImage( RasterIOOptions options );
+    public void setResolution( double resolution );
 
 }

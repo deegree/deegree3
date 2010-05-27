@@ -47,12 +47,11 @@ import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.client.WMSClient111;
 
 /**
@@ -68,6 +67,8 @@ public class Scene2DImplWMS implements Scene2D {
 
     private AbstractRaster raster;
 
+    private SimpleRaster subRaster;
+
     private RasterIOOptions options;
 
     private WMSClient111 wmsClient;
@@ -78,31 +79,55 @@ public class Scene2DImplWMS implements Scene2D {
 
     private String format;
 
-    private Envelope imageBoundingbox;
-
-    private Envelope holeRequestBoundingbox;
-
-    private Point2d onePixel;
-
-    private GeometryFactory geometryFactory;
-
     private BufferedImage generatedImage;
 
-    private Envelope sightWindowBoundingbox;
+    private Point2d transformedBounds;
 
-    private Envelope predictedBoundingbox;
+    private Point2d sample;
 
-    private BufferedImage predictedImage;
+    private double minX, minY, size, resolution;
 
-    private int panelWidth;
+    private int imageWidth, imageHeight;
 
-    private int panelHeight;
+    @Override
+    public void init( RasterIOOptions options, Rectangle bounds ) {
+        this.options = options;
+        URL url = null;
+        try {
+            url = new URL( options.get( "RASTER_URL" ) );
+
+            InputStream in;
+
+            in = url.openStream();
+
+            raster = RasterFactory.loadRasterFromStream( in, options );
+            in.close();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+
+        wmsClient = new WMSClient111( url );
+        size = Double.parseDouble( options.get( "RESOLUTION" ) ) * resolution;
+
+        transformedBounds = transformProportion( bounds, size, raster.getEnvelope() );
+        sample = getSample( bounds, size, raster.getEnvelope() );
+
+        lays = getLayers( options );
+        format = options.get( "RASTERIO_WMS_DEFAULT_FORMAT" );
+        srs = options.getCRS();
+        imageWidth = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_WIDTH" ) );
+        imageHeight = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_HEIGHT" ) );
+
+        minX = raster.getEnvelope().getMin().get0();
+        minY = raster.getEnvelope().getMin().get1();
+
+    }
 
     /**
      * The GetMap()-request to a WMSClient.
      * 
-     * @param panelWidth
-     * @param panelHeight
+     * @param imageWidth
+     * @param iamgeHeight
      * @param sightWindowMinX
      * @param sightWindowMaxX
      * @param sightWindowMinY
@@ -111,15 +136,9 @@ public class Scene2DImplWMS implements Scene2D {
      */
     private BufferedImage generateMap( Envelope imageBoundingbox ) {
 
-        lays = getLayers( options );
-        format = options.get( "RASTERIO_WMS_DEFAULT_FORMAT" );
-        srs = options.getCRS();
-        panelWidth = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_WIDTH" ) );
-        panelHeight = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_HEIGHT" ) );
         try {
-            BufferedImage img = wmsClient.getMap( lays, panelWidth, panelHeight, imageBoundingbox, srs, format, true,
-                                                  false, 1000, false, null ).first;
-            return img;
+            return wmsClient.getMap( lays, imageWidth, imageHeight, imageBoundingbox, srs, format, true, false, 1000,
+                                     false, null ).first;
 
         } catch ( IOException e ) {
             e.printStackTrace();
@@ -138,7 +157,7 @@ public class Scene2DImplWMS implements Scene2D {
      *            the rectangle bounds, not <Code>null</Code>
      * @return an positive, negative or even integer
      */
-    private int determineProportion( RasterRect panelBounds ) {
+    private Point2d transformProportion( Rectangle panelBounds, double size, Envelope env ) {
         double w = panelBounds.width;
         double h = panelBounds.height;
 
@@ -146,109 +165,40 @@ public class Scene2DImplWMS implements Scene2D {
 
         if ( ratio < 1 ) {
             // if < 1 then do orientation on h
-            return -1;
+            double newWidth = ( w / h ) * size * env.getSpan0();
+            return new Point2d( newWidth, env.getSpan1() * size );
         } else if ( ratio > 1 ) {
             // if > 1 then do orientation on w
-            return 1;
+            double newHeight = ( h / w ) * size * env.getSpan1();
+            return new Point2d( env.getSpan0() * size, newHeight );
         }
         // if w = h then return 0
-        return 0;
+        return new Point2d( env.getSpan0() * size, env.getSpan1() * size );
     }
 
     @Override
-    public BufferedImage generateImage( RasterIOOptions options ) {
+    public BufferedImage generateImage( Point2d startPoint ) {
 
-        this.options = options;
-        URL url = null;
-        try {
-            String g = options.get( "RASTER_URL" );
-            url = new URL( options.get( "RASTER_URL" ) );
+        if ( startPoint != null ) {
 
-            InputStream in;
+            minX = subRaster.getEnvelope().getMin().get0() + startPoint.x * sample.x;
+            minY = subRaster.getEnvelope().getMin().get1() - startPoint.y * sample.y;
+            System.out.println( "new subRaster: " + minX + " " + minY );
 
-            in = url.openStream();
-
-            raster = RasterFactory.loadRasterFromStream( in, options );
-            in.close();
-        } catch ( IOException e ) {
-            e.printStackTrace();
+        } else {
+            minX = raster.getEnvelope().getMin().get0();
+            minY = raster.getEnvelope().getMin().get1();
         }
+        double maxX = minX + transformedBounds.x;
+        double maxY = minY + transformedBounds.y;
 
-        wmsClient = new WMSClient111( url );
-
-        // generatedImage = RasterFactory.imageFromRaster( raster );
-        // try {
-        // RasterFactory.saveRasterToFile( raster, new File( "/tmp/out.png" ) );
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        generatedImage = generateMap( raster.getEnvelope() );
-
+        subRaster = raster.getAsSimpleRaster().getSubRaster( minX, minY, maxX, maxY );
+        subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
+        System.out.println( subRaster.getEnvelope() );
+        generatedImage = generateMap( subRaster.getEnvelope() );
         return generatedImage;
 
     }
-
-    @Override
-    public BufferedImage generatePredictedImage( Rectangle predictedBounds, Envelope envelope ) {
-
-        // RasterRect rect = new RasterRect( 0, 0, predictedBounds.width * 2, predictedBounds.height * 2 );
-        //
-        // Envelope env = geometryFactory.createEnvelope( envelope.getMin().get0(), envelope.getMin().get1(),
-        // envelope.getMin().get0() + envelope.getSpan0() * 2,
-        // envelope.getMin().get1() + envelope.getSpan1() * 2,
-        // envelope.getCoordinateSystem() );
-
-        double panelWidth = predictedBounds.getWidth();
-        double panelHeight = predictedBounds.getHeight();
-
-        // predictedImage = generateMap( rect.width, rect.height, env );
-        // predictedImage = generateMap( panelWidth, panelHeight, envelope );
-
-        return predictedImage;
-
-    }
-
-    // /**
-    // *
-    // *
-    // * @param sceneBounds
-    // * @return the boundingbox of the image that should be displayed
-    // */
-    // private Envelope generateImageBoundingbox( RasterRect sceneBounds ) {
-    // int proportion = determineProportion( sceneBounds );
-    //
-    // double panelWidth = sceneBounds.width;
-    // double panelHeight = sceneBounds.height;
-    // if ( sightWindowBoundingbox != null ) {
-    //
-    // double minX = sightWindowBoundingbox.getMin().get0();
-    // double minY = sightWindowBoundingbox.getMin().get1();
-    // double maxX = sightWindowBoundingbox.getMax().get0();
-    // double maxY = sightWindowBoundingbox.getMax().get1();
-    //
-    // if ( proportion == 0 ) {
-    // // do nothing
-    //
-    // } else if ( proportion < 0 ) {
-    //
-    // double newWidth = ( panelWidth / panelHeight ) * ( maxY - minY );
-    //
-    // imageBoundingbox = geometryFactory.createEnvelope( minX, minY, ( minX + newWidth ), maxY, srs );
-    //
-    // } else {
-    // double newHeight = ( panelHeight / panelWidth ) * ( maxX - minX );
-    //
-    // imageBoundingbox = geometryFactory.createEnvelope( minX, minY, maxX, ( minY + newHeight ), srs );
-    //
-    // }
-    // onePixel = normalizeImageBoundingbox( sceneBounds, imageBoundingbox );
-    //
-    // }
-    // System.out.println( "SCENE2DIMPL - generateImagebbox: " + imageBoundingbox );
-    // return imageBoundingbox;
-    //
-    // }
 
     /**
      * Based on bounds from an upper component this method normalizes the bounds of the upper component regarding to an
@@ -263,100 +213,24 @@ public class Scene2DImplWMS implements Scene2D {
      *            the boundingbox, not <Code>null</Code>
      * @return a point, not <Code>null</Code>
      */
-    private Point2d normalizeImageBoundingbox( RasterRect panelBounds, Envelope bbox ) {
+    private Point2d getSample( Rectangle panelBounds, double size, Envelope bbox ) {
 
         double w = panelBounds.width;
         double h = panelBounds.height;
         double oneX = bbox.getSpan0() / w;
         double oneY = bbox.getSpan1() / h;
-        return new Point2d( oneX, oneY );
-    }
-
-    @Override
-    public void changeImageBoundingbox( Point2d change ) {
-        double envStartPosX = imageBoundingbox.getMin().get0() + change.getX() * onePixel.getX();
-        double envStartPosY = imageBoundingbox.getMin().get1() - change.getY() * onePixel.getY();
-
-        double envEndPosX = imageBoundingbox.getMax().get0() + change.getX() * onePixel.getX();
-        double envEndPosY = imageBoundingbox.getMax().get1() - change.getY() * onePixel.getY();
-
-        System.out.println( "OnePixel: " + onePixel + " -- Change: " + change );
-        System.out.println( "  start: " + envStartPosX + ", " + envStartPosY + " end: " + envEndPosX + ", "
-                            + envEndPosY );
-
-        imageBoundingbox = geometryFactory.createEnvelope( envStartPosX, envStartPosY, envEndPosX, envEndPosY, srs );
-
-    }
-
-    @Override
-    public void changePredictionBoundingbox( Point2d change ) {
-        double rising = 1;
-        Envelope env;
-        if ( predictedBoundingbox != null ) {
-            env = predictedBoundingbox;
-
-        } else {
-            env = imageBoundingbox;
-
-        }
-        double envStartPosX = env.getMin().get0() + ( change.getX() * rising ) * onePixel.getX();
-        double envStartPosY = env.getMin().get1() - ( change.getY() * rising ) * onePixel.getY();
-
-        double envEndPosX = env.getMax().get0() + ( change.getX() * rising ) * onePixel.getX();
-        double envEndPosY = env.getMax().get1() - ( change.getY() * rising ) * onePixel.getY();
-
-        System.out.println( "  startPrediction: " + envStartPosX + ", " + envStartPosY + " endPrediction: "
-                            + envEndPosX + ", " + envEndPosY );
-
-        predictedBoundingbox = geometryFactory.createEnvelope( envStartPosX, envStartPosY, envEndPosX, envEndPosY, srs );
-    }
-
-    @Override
-    public Envelope getImageBoundingbox() {
-        return imageBoundingbox;
+        return new Point2d( oneX * size, oneY * size );
     }
 
     @Override
     public void reset() {
-        imageBoundingbox = null;
-        predictedBoundingbox = null;
-        sightWindowBoundingbox = null;
-        onePixel = null;
         generatedImage = null;
-        predictedImage = null;
-    }
-
-    @Override
-    public void setSightWindowBoundingbox( Envelope sigthWindowBoundingbox ) {
-        this.sightWindowBoundingbox = sigthWindowBoundingbox;
-
-    }
-
-    @Override
-    public Envelope getHoleRequestBoundingbox() {
-
-        return holeRequestBoundingbox;
-    }
-
-    @Override
-    public Envelope getPredictionBoundingbox() {
-
-        return predictedBoundingbox;
+        transformedBounds = null;
     }
 
     @Override
     public BufferedImage getGeneratedImage() {
         return generatedImage;
-    }
-
-    @Override
-    public BufferedImage getPredictedImage() {
-        return predictedImage;
-    }
-
-    @Override
-    public Point2d getOnePixel() {
-        return onePixel;
     }
 
     /**
@@ -378,6 +252,12 @@ public class Scene2DImplWMS implements Scene2D {
             }
         }
         return configuredLayers;
+    }
+
+    @Override
+    public void setResolution( double resolution ) {
+        this.resolution = resolution;
+
     }
 
 }
