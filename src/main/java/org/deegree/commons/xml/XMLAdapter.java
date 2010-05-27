@@ -555,7 +555,8 @@ public class XMLAdapter {
             return file.toURI().toURL();
         }
 
-        URL resolvedURL = new URL( new URL( systemId ), url );
+        // TODO this is not really nice, also think about handling url specs here
+        URL resolvedURL = new URL( new URL( systemId ), url.replace( " ", "%20" ) );
         LOG.debug( "-> resolvedURL: '" + resolvedURL + "'" );
         return resolvedURL;
     }
