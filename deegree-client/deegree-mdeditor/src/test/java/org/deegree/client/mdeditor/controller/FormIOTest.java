@@ -36,6 +36,7 @@
 package org.deegree.client.mdeditor.controller;
 
 import java.io.FileNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +45,11 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.TestCase;
 
-import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.config.ConfigurationException;
-import org.deegree.client.mdeditor.config.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.Configuration;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.io.DataHandler;
+import org.deegree.client.mdeditor.io.DataIOException;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.InputFormField;
@@ -90,33 +93,38 @@ public class FormIOTest extends TestCase {
         v3.add( v31 );
         v3.add( v32 );
 
-        DatasetWriter.writeElements( "testWriting", formGroups );
+        try {
+            DataHandler.getInstance().writeDataset( "testWriting", formGroups );
 
-        Map<String, Object> values = DatasetReader.readDataset( "testWriting" );
-        assertEquals( 4, values.size() );
+            Map<String, Object> values = DataHandler.getInstance().getDataset( "testWriting" );
+            assertEquals( 4, values.size() );
 
-        String v4 = String.valueOf( ( (InputFormField) fg.getFormElements().get( 2 ) ).getValue() );
-        String p4 = ( (InputFormField) fg.getFormElements().get( 2 ) ).getPath().toString();
+            String v4 = String.valueOf( ( (InputFormField) fg.getFormElements().get( 2 ) ).getValue() );
+            String p4 = ( (InputFormField) fg.getFormElements().get( 2 ) ).getPath().toString();
 
-        assertTrue( values.containsKey( p1 ) );
-        assertTrue( values.containsKey( p2 ) );
-        assertTrue( values.containsKey( p3 ) );
-        assertTrue( values.containsKey( p4 ) );
+            assertTrue( values.containsKey( p1 ) );
+            assertTrue( values.containsKey( p2 ) );
+            assertTrue( values.containsKey( p3 ) );
+            assertTrue( values.containsKey( p4 ) );
 
-        assertNotNull( values.get( p1 ) );
-        assertNotNull( values.get( p2 ) );
-        assertNotNull( values.get( p3 ) );
-        assertNotNull( values.get( p4 ) );
+            assertNotNull( values.get( p1 ) );
+            assertNotNull( values.get( p2 ) );
+            assertNotNull( values.get( p3 ) );
+            assertNotNull( values.get( p4 ) );
 
-        assertTrue( values.get( p1 ) instanceof String );
-        assertTrue( values.get( p2 ) instanceof String );
-        assertTrue( values.get( p3 ) instanceof List<?> );
-        assertTrue( values.get( p4 ) instanceof String );
+            assertTrue( values.get( p1 ) instanceof String );
+            assertTrue( values.get( p2 ) instanceof String );
+            assertTrue( values.get( p3 ) instanceof List<?> );
+            assertTrue( values.get( p4 ) instanceof String );
 
-        assertEquals( v1, values.get( p1 ) );
-        assertEquals( v2, values.get( p2 ) );
-        assertEquals( v3, values.get( p3 ) );
-        assertEquals( v4, values.get( p4 ) );
+            assertEquals( v1, values.get( p1 ) );
+            assertEquals( v2, values.get( p2 ) );
+            assertEquals( v3, values.get( p3 ) );
+            assertEquals( v4, values.get( p4 ) );
+        } catch ( DataIOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 
