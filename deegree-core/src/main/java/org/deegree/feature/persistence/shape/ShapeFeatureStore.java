@@ -68,6 +68,8 @@ import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.cache.FeatureStoreCache;
+import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CachedFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
@@ -112,7 +114,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private File shpFile, dbfFile;
 
-    private String name;
+    private String shpName;
 
     private CRS crs;
 
@@ -126,34 +128,49 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private ApplicationSchema schema;
 
-    private String namespace;
+    private final String namespace;
+
+	private final FeatureStoreCache cache;
 
     /**
-     * @param name
+     * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
+     * 
+     * @param shpName
+     *            name of the shape file to be loaded, may omit the ".shp" extension, must not be <code>null</code
      * @param crs
+     *            crs used by the shape file, must not be <code>null</code>
      * @param encoding
+     *            encoding used in the dbf file, can be <code>null</code> (encoding guess mode)
      * @param namespace
+     *            namespace to be used for the feature type, must not be <code>null</code>
+     * @param cache 
+     *            used for caching retrieved feature instances, can be <code>null</code> (will create a default cache)
      */
-    public ShapeFeatureStore( String name, CRS crs, Charset encoding, String namespace ) {
-        this.name = name;
+    public ShapeFeatureStore( String shpName, CRS crs, Charset encoding, String namespace, FeatureStoreCache cache ) {
+        this.shpName = shpName;
         this.crs = crs;
         this.encoding = encoding;
         this.namespace = namespace;
+        if (cache != null) {
+        	this.cache = cache;
+        } else {
+        	this.cache = new SimpleFeatureStoreCache ();
+        }
     }
 
     @Override
     public void init() {
 
-        if ( name.toLowerCase().endsWith( ".shp" ) ) {
-            name = name.substring( 0, name.length() - 4 );
+        if ( shpName.toLowerCase().endsWith( ".shp" ) ) {
+            shpName = shpName.substring( 0, shpName.length() - 4 );
         }
 
-        LOG.debug( "Loading shape file '{}'", name );
+        LOG.debug( "Loading shape file '{}'", shpName );
 
         if ( crs == null ) {
-            File prj = new File( name + ".PRJ" );
+            File prj = new File( shpName + ".PRJ" );
             if ( !prj.exists() ) {
-                prj = new File( name + ".prj" );
+                prj = new File( shpName + ".prj" );
             }
             if ( prj.exists() ) {
                 try {
@@ -162,7 +179,7 @@ public class ShapeFeatureStore implements FeatureStore {
                     } catch ( IOException e ) {
                         LOG.debug( "Stack trace:", e );
                         LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.",
-                                  name );
+                                  shpName );
                         available = false;
                         return;
                     }
@@ -175,7 +192,7 @@ public class ShapeFeatureStore implements FeatureStore {
                             crs.getWrappedCRS(); // resolve NOW
                             LOG.debug( ".prj contained EPSG code '{}'", crs.getName() );
                         } catch ( UnknownCRSException e2 ) {
-                            LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", name,
+                            LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", shpName,
                                       e.getLocalizedMessage() );
                             LOG.warn( "The file also does not contain a valid EPSG code, assuming EPSG:4326." );
                             LOG.trace( "Stack trace of failed WKT parsing:", e );
@@ -184,7 +201,7 @@ public class ShapeFeatureStore implements FeatureStore {
                     } catch ( IOException e1 ) {
                         LOG.debug( "Stack trace:", e1 );
                         LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.",
-                                  name );
+                                  shpName );
                         available = false;
                         return;
                     }
@@ -203,14 +220,14 @@ public class ShapeFeatureStore implements FeatureStore {
             LOG.error( "Unknown error", e );
         }
 
-        shpFile = new File( name + ".SHP" );
+        shpFile = new File( shpName + ".SHP" );
         if ( !shpFile.exists() ) {
-            shpFile = new File( name + ".shp" );
+            shpFile = new File( shpName + ".shp" );
         }
         shpLastModified = shpFile.lastModified();
-        dbfFile = new File( name + ".DBF" );
+        dbfFile = new File( shpName + ".DBF" );
         if ( !dbfFile.exists() ) {
-            dbfFile = new File( name + ".dbf" );
+            dbfFile = new File( shpName + ".dbf" );
         }
         dbfLastModified = dbfFile.lastModified();
 
@@ -219,18 +236,18 @@ public class ShapeFeatureStore implements FeatureStore {
         } catch ( IOException e ) {
             LOG.debug( "Stack trace:", e );
             LOG.warn( "The shape datastore for '{}' could not be initialized, because the .shp could not be loaded.",
-                      name );
+                      shpName );
         }
 
         try {
             dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding,
-                                 new QName( namespace, new File( name ).getName() ), namespace );
+                                 new QName( namespace, new File( shpName ).getName() ), namespace );
             ft = dbf.getFeatureType();
         } catch ( IOException e ) {
-            LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", name );
+            LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", shpName );
             GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry" ), 0, 1,
                                                                       GEOMETRY, DIM_2_OR_3, false, null, BOTH );
-            ft = new GenericFeatureType( new QName( namespace, new File( name ).getName() ),
+            ft = new GenericFeatureType( new QName( namespace, new File( shpName ).getName() ),
                                          Collections.<PropertyType> singletonList( geomProp ), false );
         }
         schema = new ApplicationSchema( new FeatureType[] { ft }, null );
@@ -241,10 +258,10 @@ public class ShapeFeatureStore implements FeatureStore {
 
         shp = null;
 
-        File rtfile = new File( name + ".rti" );
+        File rtfile = new File( shpName + ".rti" );
         if ( rtfile.exists() && !( rtfile.lastModified() < shpFile.lastModified() ) && !forceIndexRebuild ) {
             try {
-                RTree<Long> rtree = new RTree<Long>( new FileInputStream( name + ".rti" ) );
+                RTree<Long> rtree = new RTree<Long>( new FileInputStream( shpName + ".rti" ) );
                 shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree, rtree.getExtraFlag() );
             } catch ( IOException e ) {
                 LOG.debug( "Stack trace:", e );
@@ -260,13 +277,13 @@ public class ShapeFeatureStore implements FeatureStore {
 
         shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, null, false );
 
-        LOG.debug( "Building rtree index in memory for '{}'", new File( name ).getName() );
+        LOG.debug( "Building rtree index in memory for '{}'", new File( shpName ).getName() );
 
         Pair<RTree<Long>, Boolean> p = createIndex( shp );
         shp.close();
         LOG.debug( "done." );
         shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, p.first, p.second );
-        RandomAccessFile output = new RandomAccessFile( name + ".rti", "rw" );
+        RandomAccessFile output = new RandomAccessFile( shpName + ".rti", "rw" );
         p.first.write( output, p.second );
         output.close();
         return shp;
@@ -294,25 +311,27 @@ public class ShapeFeatureStore implements FeatureStore {
             synchronized ( shpFile ) {
                 if ( shpLastModified != shpFile.lastModified() ) {
                     shp.close();
-                    LOG.debug( "Re-opening the shape file {}", name );
+                    LOG.debug( "Re-opening the shape file {}", shpName );
                     shp = getSHP( true );
                     shpLastModified = shpFile.lastModified();
+                    cache.clear();
                 }
             }
             synchronized ( dbfFile ) {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
-                    LOG.debug( "Re-opening the dbf file {}", name );
-                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( namespace, name ),
+                    LOG.debug( "Re-opening the dbf file {}", shpName );
+                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( namespace, shpName ),
                                          namespace );
                     ft = dbf.getFeatureType();
                     schema = new ApplicationSchema( new FeatureType[] { ft }, null );
                     dbfLastModified = dbfFile.lastModified();
+                    cache.clear();
                 }
             }
         } catch ( IOException e ) {
             available = false;
-            LOG.debug( "Shape file {} is unavailable at the moment: {}", name, e.getLocalizedMessage() );
+            LOG.debug( "Shape file {} is unavailable at the moment: {}", shpName, e.getLocalizedMessage() );
             LOG.trace( "Stack trace was {}", e );
         }
     }
@@ -351,8 +370,6 @@ public class ShapeFeatureStore implements FeatureStore {
             return new CachedFeatureResultSet( new GenericFeatureCollection() );
         }
 
-        // TODO what about bbox information in the filter?
-        Envelope bbox = (Envelope) query.getHint( QueryHint.HINT_LOOSE_BBOX );
         boolean withGeometries = query.getHint( QueryHint.HINT_NO_GEOMETRIES ) == null;
 
         checkForUpdate();
@@ -361,8 +378,7 @@ public class ShapeFeatureStore implements FeatureStore {
             return null;
         }
 
-        bbox = getTransformedEnvelope( bbox );
-
+        Envelope bbox = getTransformedEnvelope( query.getPrefilterBBox() );
         LinkedList<Pair<Integer, Geometry>> list;
         try {
             list = shp.query( bbox, true, false );
@@ -400,6 +416,7 @@ public class ShapeFeatureStore implements FeatureStore {
             } else {
                 entry = new HashMap<SimplePropertyType, Property>();
             }
+            String fid = buildFID (pair.first);
             LinkedList<Property> props = new LinkedList<Property>();
             for ( PropertyType t : fields ) {
                 if ( entry.containsKey( t ) ) {
@@ -411,14 +428,14 @@ public class ShapeFeatureStore implements FeatureStore {
                 if ( !withGeometries ) {
                     props.removeLast();
                 }
-                Feature feat = ft.newFeature( "shp_" + pair.first, props, null );
+                Feature feat = ft.newFeature( fid, props, null );
                 feats.add( feat );
             } else {
-                Feature feat = ft.newFeature( "shp_" + pair.first, props, null );
+                Feature feat = ft.newFeature( fid, props, null );
                 if ( filter.evaluate( feat ) ) {
                     if ( !withGeometries ) {
                         props.removeLast();
-                        feat = ft.newFeature( "shp_" + pair.first, props, null );
+                        feat = ft.newFeature( fid, props, null );
                     }
                     feats.add( feat );
                 }
@@ -460,6 +477,11 @@ public class ShapeFeatureStore implements FeatureStore {
         };
         return new CombinedResultSet( rsIter );
     }
+    
+    private String buildFID (int num) {
+    	// TODO make this configurable
+    	return "shp_" + num;
+    }
 
     @Override
     public int queryHits( Query query )
@@ -489,6 +511,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     @Override
     public void destroy() {
+    	cache.clear();
         try {
             shp.close();
         } catch ( IOException e ) {

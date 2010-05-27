@@ -112,7 +112,8 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
                 }
             }
 
-            fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getNamespace() );
+            // TODO make cache configurable
+            fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getNamespace(), null );
 
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
