@@ -37,19 +37,24 @@ package org.deegree.client.mdeditor.gui.listener;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.List;
+import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
+import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
+import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
+import static org.deegree.client.mdeditor.gui.GuiUtils.INSTANCE_FILE_NAME_PARAM;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
+import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
 import org.deegree.client.mdeditor.controller.FormGroupHandler;
+import org.deegree.client.mdeditor.controller.FormGroupWriter;
 import org.deegree.client.mdeditor.gui.FormFieldBean;
 import org.deegree.client.mdeditor.gui.FormGroupInstanceBean;
-import org.deegree.client.mdeditor.gui.GuiUtils;
+import org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
 import org.deegree.client.mdeditor.model.FormGroupInstance;
 import org.slf4j.Logger;
 
@@ -61,41 +66,55 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormGroupInstanceSelectListener implements AjaxBehaviorListener {
+public class FormGroupListener implements AjaxBehaviorListener {
 
-    private static final Logger LOG = getLogger( FormGroupInstanceSelectListener.class );
+    private static final Logger LOG = getLogger( FormGroupListener.class );
 
     @Override
     public void processAjaxBehavior( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
-        String fileName = null;
-        String groupId = (String) event.getComponent().getAttributes().get( GuiUtils.GROUPID_ATT_KEY );
+        HtmlCommandButton comp = (HtmlCommandButton) event.getComponent();
+        String grpId = (String) comp.getAttributes().get( GROUPID_ATT_KEY );
+        ACTION_ATT_VALUES action = (ACTION_ATT_VALUES) comp.getAttributes().get( ACTION_ATT_KEY );
 
-        List<UIComponent> children = event.getComponent().getChildren();
-        for ( UIComponent child : children ) {
-            if ( child instanceof UIParameter
-                 && GuiUtils.INSTANCE_FILE_NAME_PARAM.equals( ( (UIParameter) child ).getName() ) ) {
-                fileName = String.valueOf( ( (UIParameter) child ).getValue() );
+        String fileId = null;
+        for ( UIComponent child : comp.getChildren() ) {
+            if ( child instanceof UIParameter && INSTANCE_FILE_NAME_PARAM.equals( ( (UIParameter) child ).getName() ) ) {
+                fileId = (String) ( (UIParameter) child ).getValue();
             }
         }
 
-        LOG.debug( "Select " + fileName + " from group " + groupId );
+        LOG.debug( "FormGroup with id " + grpId + " action: " + action + " file is is " + fileId );
         FacesContext fc = FacesContext.getCurrentInstance();
         FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "formFieldBean" );
-        FormGroupInstance formGroupInstance = FormGroupHandler.getFormGroupInstance( groupId, fileName );
-        if ( formGroupInstance != null ) {
-            formFieldBean.setValues( groupId, formGroupInstance );
 
-            FormGroupInstanceBean formGroupInstanceBean = (FormGroupInstanceBean) fc.getApplication().getELResolver().getValue(
-                                                                                                                                fc.getELContext(),
-                                                                                                                                null,
-                                                                                                                                "formGroupInstanceBean" );
-            formGroupInstanceBean.addSelectedInstances( groupId, fileName );
-        } else {
-            // TODO message
+        FormGroupInstanceBean formGroupInstanceBean = (FormGroupInstanceBean) fc.getApplication().getELResolver().getValue(
+                                                                                                                            fc.getELContext(),
+                                                                                                                            null,
+                                                                                                                            "formGroupInstanceBean" );
+
+        switch ( action ) {
+        case DELETE:
+            FormGroupHandler.deleteInstance( grpId, fileId );
+            formGroupInstanceBean.addSelectedInstances( grpId, null );
+            break;
+        case EDIT:
+            FormGroupWriter.writeFormGroup( formFieldBean.getFormGroup( grpId ), fileId );
+            break;
+        case RESET:
+            FormGroupInstance instanceReset = FormGroupHandler.getFormGroupInstance( grpId, fileId );
+            if ( instanceReset != null ) {
+                formFieldBean.setValues( grpId, instanceReset );
+            }
+            break;
+        case NEW:
+        case SAVE:
+            String newFileId = FormGroupWriter.writeFormGroup( formFieldBean.getFormGroup( grpId ) );
+            formGroupInstanceBean.addSelectedInstances( grpId, newFileId );
+            break;
         }
+        formGroupInstanceBean.reloadFormGroup( grpId );
     }
-
 }

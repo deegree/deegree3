@@ -61,15 +61,35 @@ public class FormGroupWriter extends FormWriter {
 
     private static final Logger LOG = getLogger( FormGroupWriter.class );
 
-    public static void writeFormGroup( FormGroup fg ) {
+    public static String writeFormGroup( FormGroup fg ) {
         String dirUrl = Configuration.getFilesDirURL();
         File dir = new File( dirUrl, fg.getId() );
         if ( !dir.exists() ) {
             dir.mkdir();
         }
-        String instance = Utils.getInstanceId();
-        File file = new File( dir, instance + ".xml" );
+        String id = Utils.getInstanceId() + ".xml";
+        File file = new File( dir, id );
 
+        write( fg, file );
+        return id;
+    }
+
+    /**
+     * @param fg
+     * @param fileId
+     */
+    public static void writeFormGroup( FormGroup fg, String fileId ) {
+        String dirUrl = Configuration.getFilesDirURL();
+        File dir = new File( dirUrl, fg.getId() );
+        File file = new File( dir, fileId );
+        System.out.println( "ww " + file + " " + file.exists() );
+        if ( file.exists() ) {
+            write( fg, file );
+        }
+
+    }
+
+    private static void write( FormGroup fg, File file ) {
         try {
             LOG.debug( "Write values of form group with id " + fg.getId() + " in file " + file.toString() );
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
@@ -92,6 +112,5 @@ public class FormGroupWriter extends FormWriter {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 }

@@ -67,6 +67,12 @@ public class GuiUtils {
 
     public static final String GROUPREF_ATT_KEY = "grpReference";
 
+    public static final String ACTION_ATT_KEY = "fgiAction";
+
+    public static enum ACTION_ATT_VALUES {
+        SAVE, EDIT, NEW, DELETE, RESET
+    }
+
     public static final String INSTANCE_FILE_NAME_PARAM = "fgiFileName";
 
     public static String getUniqueId() {

@@ -35,12 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
@@ -48,6 +51,7 @@ import org.deegree.client.mdeditor.config.ConfigurationException;
 import org.deegree.client.mdeditor.config.FormConfigurationFactory;
 import org.deegree.client.mdeditor.controller.FormGroupHandler;
 import org.deegree.client.mdeditor.model.FormGroupInstance;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -58,27 +62,18 @@ import org.deegree.client.mdeditor.model.FormGroupInstance;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@RequestScoped
-public class FormGroupInstanceBean {
+@SessionScoped
+public class FormGroupInstanceBean implements Serializable {
+
+    private static final long serialVersionUID = -6705118936818062292L;
+
+    private static final Logger LOG = getLogger( FormGroupInstanceBean.class );
 
     private Map<String, List<FormGroupInstance>> formGroupInstances = new HashMap<String, List<FormGroupInstance>>();
 
+    private Map<String, String> selectedInstances = new HashMap<String, String>();
+
     private boolean fgiLoaded = false;
-
-    // TODO
-    private void loadFormGropupInstances() {
-        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession( false );
-        try {
-            List<String> formGroupIds = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() ).getReferencedFormGroupIds();
-
-            for ( String id : formGroupIds ) {
-                formGroupInstances.put( id, FormGroupHandler.getFormGroupInstances( id ) );
-            }
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
 
     public Map<String, List<FormGroupInstance>> getFormGroupInstances() {
         if ( !fgiLoaded ) {
@@ -87,4 +82,36 @@ public class FormGroupInstanceBean {
         }
         return formGroupInstances;
     }
+
+    public void setSelectedInstances( Map<String, String> selectedInstances ) {
+        this.selectedInstances = selectedInstances;
+    }
+
+    public Map<String, String> getSelectedInstances() {
+        return selectedInstances;
+    }
+
+    public void addSelectedInstances( String groupId, String fileName ) {
+        selectedInstances.put( groupId, fileName );
+    }
+
+    public void reloadFormGroup( String grpId ) {
+        LOG.debug( "Form Group with id " + grpId + " has changed. Force reload." );
+        formGroupInstances.put( grpId, FormGroupHandler.getFormGroupInstances( grpId ) );
+    }
+
+    // TODO
+    private void loadFormGropupInstances() {
+        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession( false );
+        try {
+            List<String> formGroupIds = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() ).getReferencedFormGroupIds();
+            for ( String id : formGroupIds ) {
+                reloadFormGroup( id );
+            }
+        } catch ( ConfigurationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
 }

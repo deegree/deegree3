@@ -161,7 +161,14 @@
 	
 }
 
+#mdEditor .fgListColumnStyle {
+	
+}
+
+#mdEditor .fgListOptionStyle {
+	text-align: center;
+}
+
 #mdEditor .fgListselectBtStyle {
-	margin: 0px 5px;
 	background-repeat: no-repeat;
 }

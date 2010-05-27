@@ -80,7 +80,7 @@ import org.deegree.client.mdeditor.config.FormConfigurationFactory;
 import org.deegree.client.mdeditor.config.codelist.CodeListConfigurationFactory;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
 import org.deegree.client.mdeditor.gui.listener.FormGroupInstanceSelectListener;
-import org.deegree.client.mdeditor.gui.listener.FormGroupSubmitListener;
+import org.deegree.client.mdeditor.gui.listener.FormGroupListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
 import org.deegree.client.mdeditor.gui.listener.ListPreRenderedListener;
 import org.deegree.client.mdeditor.model.CodeList;
@@ -137,10 +137,6 @@ public class FormCreatorBean implements Serializable {
                     grid.setId( GuiUtils.getUniqueId() );
                     addFormGroup( grid, fg, true );
 
-                    if ( fg.isReferenced() ) {
-                        addReferencedFormGroup( fg, grid );
-                    }
-
                     forms.put( grpId, grid );
                     form.getChildren().add( grid );
                 }
@@ -173,7 +169,14 @@ public class FormCreatorBean implements Serializable {
                 addFormField( grid, (FormField) fe );
             }
         }
+
         parentGrid.getChildren().add( grid );
+
+        if ( fg.isReferenced() ) {
+            HtmlPanelGrid referencedGrid = new HtmlPanelGrid();
+            addReferencedFormGroup( fg, referencedGrid );
+            parentGrid.getChildren().add( referencedGrid );
+        }
     }
 
     private void addReferencedFormGroup( FormGroup fg, HtmlPanelGrid grid ) {
@@ -182,20 +185,7 @@ public class FormCreatorBean implements Serializable {
         ExpressionFactory ef = app.getExpressionFactory();
         ELContext elContext = FacesContext.getCurrentInstance().getELContext();
 
-        HtmlCommandButton button = new HtmlCommandButton();
-        button.setId( fg.getId() );
-        button.setValue( GuiUtils.getResourceText( FacesContext.getCurrentInstance(), "mdLabels", "saveFormGroup" ) );
-        button.getAttributes().put( GuiUtils.GROUPID_ATT_KEY, fg.getId() );
-
-        AjaxBehavior ajaxBt = new AjaxBehavior();
-        List<String> renderBt = new ArrayList<String>();
-        renderBt.add( "@form" );
-        ajaxBt.setRender( renderBt );
-        ajaxBt.addAjaxBehaviorListener( new FormGroupSubmitListener() );
-        button.addClientBehavior( button.getDefaultEventName(), ajaxBt );
-        grid.getChildren().add( new HtmlPanelGroup() );
-        grid.getChildren().add( button );
-        grid.getChildren().add( new HtmlPanelGroup() );
+        addButtons( grpId, grid );
 
         // list of instances
         HtmlDataTable dataTable = new HtmlDataTable();
@@ -228,19 +218,79 @@ public class FormCreatorBean implements Serializable {
             }
         }
 
+        StringBuilder styleClassSB = new StringBuilder();
+        for ( int i = 0; i < dataTable.getChildCount(); i++ ) {
+            styleClassSB.append( "fgListColumnStyle, " );
+        }
+
         HtmlColumn col = new HtmlColumn();
         HtmlCommandButton selectButton = createSelectButton( fg.getId() );
         col.getChildren().add( selectButton );
         HtmlOutputText header = new HtmlOutputText();
         header.setValue( "Optionen" );
         col.getFacets().put( "header", header );
+        styleClassSB.append( "fgListOptionStyle " );
 
+        dataTable.setColumnClasses( styleClassSB.toString() );
         dataTable.getChildren().add( col );
 
         grid.getChildren().add( new HtmlPanelGroup() );
         grid.getChildren().add( dataTable );
         grid.getChildren().add( new HtmlPanelGroup() );
 
+    }
+
+    private void addButtons( String grpId, HtmlPanelGrid grid ) {
+        HtmlPanelGrid btGrid = new HtmlPanelGrid();
+        btGrid.setColumns( 5 );
+        HtmlCommandButton saveButton = createButton( grpId, "saveFormGroup", ACTION_ATT_VALUES.SAVE, true );
+        HtmlCommandButton newButton = createButton( grpId, "newFormGroup", ACTION_ATT_VALUES.NEW, false );
+        HtmlCommandButton editButton = createButton( grpId, "editFormGroup", ACTION_ATT_VALUES.EDIT, false );
+        HtmlCommandButton resetButton = createButton( grpId, "resetFormGroup", ACTION_ATT_VALUES.RESET, false );
+        HtmlCommandButton deleteButton = createButton( grpId, "deleteFormGroup", ACTION_ATT_VALUES.DELETE, false );
+        deleteButton.setOnclick( "return fgListConfirmDelete('Möchten Sie wirklich löschen?')" );
+
+        btGrid.getChildren().add( saveButton );
+        btGrid.getChildren().add( newButton );
+        btGrid.getChildren().add( editButton );
+        btGrid.getChildren().add( resetButton );
+        btGrid.getChildren().add( deleteButton );
+        grid.getChildren().add( btGrid );
+    }
+
+    private HtmlCommandButton createButton( String grpId, String labelKey, ACTION_ATT_VALUES action, boolean ifNull ) {
+
+        Application app = FacesContext.getCurrentInstance().getApplication();
+        ExpressionFactory ef = app.getExpressionFactory();
+        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+
+        HtmlCommandButton bt = new HtmlCommandButton();
+        bt.setId( getUniqueId() );
+        bt.setValue( GuiUtils.getResourceText( FacesContext.getCurrentInstance(), "mdLabels", labelKey ) );
+        bt.getAttributes().put( GROUPID_ATT_KEY, grpId );
+        bt.getAttributes().put( ACTION_ATT_KEY, action );
+
+        UIParameter param = new UIParameter();
+        param.setName( INSTANCE_FILE_NAME_PARAM );
+        String el = "#{formGroupInstanceBean.selectedInstances['" + grpId + "']}";
+        ValueExpression ve = ef.createValueExpression( elContext, el, String.class );
+        param.setValueExpression( "value", ve );
+
+        AjaxBehavior ajaxB = new AjaxBehavior();
+        List<String> render = new ArrayList<String>();
+        render.add( "@form" );
+        ajaxB.setRender( render );
+        ajaxB.addAjaxBehaviorListener( new FormGroupListener() );
+        bt.addClientBehavior( bt.getDefaultEventName(), ajaxB );
+
+        // visibility
+        String elVisibility = "#{formGroupInstanceBean.selectedInstances['" + grpId + "'] " + ( ifNull ? "==" : "!=" )
+                              + " null}";
+        ValueExpression veVisibility = ef.createValueExpression( elContext, elVisibility, Boolean.class );
+        bt.setValueExpression( "rendered", veVisibility );
+
+        bt.getChildren().add( param );
+        return bt;
     }
 
     private HtmlCommandButton createSelectButton( String groupId ) {
@@ -398,7 +448,7 @@ public class FormCreatorBean implements Serializable {
         executes.add( "@this" );
         ajaxInput.setExecute( executes );
         List<String> render = new ArrayList<String>();
-        render.add( "@this" );
+        render.add( "@none" );
         ajaxInput.setRender( render );
         ajaxInput.addAjaxBehaviorListener( new FormFieldValueChangedListener() );
         if ( eventName == null ) {
