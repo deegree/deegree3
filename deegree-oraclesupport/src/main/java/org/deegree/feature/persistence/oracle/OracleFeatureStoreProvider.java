@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.oracle;
 
+import java.io.File;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,14 +46,17 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.mapping.MappedApplicationSchemaBuilder;
+import org.deegree.feature.persistence.mapping.jaxb.Mapping;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig.NamespaceHint;
-import org.deegree.feature.types.ApplicationSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,38 +90,52 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
 
-            ApplicationSchema schema = null;
+            File mappingFile = null;
+            try {
+                String baseName = FileUtils.getFilename( new File( configURL.toURI() ) );
+                URL mappingURL = resolver.resolve( baseName + "-mapping.xml" );
+                mappingFile = new File( mappingURL.toURI() );
+            } catch ( Exception e ) {
+                throw new FeatureStoreException( "Error determining corresponding mapping file." );
+            }
 
-            // try {
-            // String[] schemaURLs = new String[config.getGMLSchemaFileURL().size()];
-            // int i = 0;
-            // GMLVersionType gmlVersionType = null;
-            // for ( GMLSchemaFileURL jaxbSchemaURL : config.getGMLSchemaFileURL() ) {
-            // schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
-            // // TODO what about different versions at the same time?
-            // gmlVersionType = GMLVersionType.GML_32;
-            // }
-            // ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
-            // GMLVersion.valueOf( gmlVersionType.name() ),
-            // getHintMap( config.getNamespaceHint() ),
-            // schemaURLs );
-            // schema = decoder.extractFeatureTypeSchema();
-            //
-            // } catch ( Exception e ) {
-            // String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            // LOG.error( msg, e );
-            // throw new FeatureStoreException( msg, e );
-            // }
+            if ( !mappingFile.exists() ) {
+                String msg = "No corresponding mapping file '" + mappingFile + "' found.";
+                throw new FeatureStoreException( msg );
+            }
+
+            Mapping mapping = null;
+            try {
+                mapping = getMapping( mappingFile );
+            } catch ( JAXBException e ) {
+                String msg = "Error in feature store mapping file '" + mappingFile + "': " + e.getMessage();
+                LOG.error( msg );
+                throw new FeatureStoreException( msg, e );
+            }
 
             CRS storageSRS = new CRS( config.getStorageSRS() );
-            fs = new OracleFeatureStore( schema, config.getJDBCConnId(), config.getDBSchemaQualifier(), storageSRS,
-                                         config.getMappingHints(), config.getOracleSchema() );
+            MappedApplicationSchema schema = MappedApplicationSchemaBuilder.build( mapping, config.getJDBCConnId(),
+                                                                                   config.getDBSchemaQualifier(),
+                                                                                   storageSRS );
+
+            fs = new OracleFeatureStore( schema, config.getJDBCConnId() );
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
             throw new FeatureStoreException( msg, e );
+        } catch ( SQLException e ) {
+            String msg = "Error creating mapped application schema: " + e.getMessage();
+            LOG.error( msg );
+            throw new FeatureStoreException( msg, e );
         }
         return fs;
+    }
+
+    private Mapping getMapping( File mappingFile )
+                            throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.mapping.jaxb" );
+        Unmarshaller u = jc.createUnmarshaller();
+        return (Mapping) u.unmarshal( mappingFile );
     }
 
     private static Map<String, String> getHintMap( List<NamespaceHint> hints ) {

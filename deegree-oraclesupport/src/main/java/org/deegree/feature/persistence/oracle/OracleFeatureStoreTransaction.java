@@ -240,7 +240,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
             value = s;
             if ( spt.getPrimitiveType() == PrimitiveType.DECIMAL ) {
                 // TODO Provide correct type information / remove this OpenJUMP hack
-                if (s.endsWith( ".0" )) {
+                if ( s.endsWith( ".0" ) ) {
                     value = s.substring( 0, s.length() - 2 );
                 }
             }
@@ -324,7 +324,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( "=?" );
             }
             sql.append( " WHERE " );
-            sql.append( ftMapping.getGMLIdColumns()[0] );
+            sql.append( ftMapping.getFidColumn() );
             sql.append( " IN(?" );
             for ( int i = 1; i < filter.getMatchingIds().size(); i++ ) {
                 sql.append( ",?" );

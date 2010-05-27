@@ -29,7 +29,6 @@
         </element>
         <element name="StorageSRS" type="string" />
         <element name="JDBCConnId" type="string" />
-        <element name="OracleSchema" type="string" />
         <element name="DBSchemaQualifier" type="string" minOccurs="0" />
         <element name="GMLSchemaFileURL" minOccurs="0" maxOccurs="unbounded">
           <complexType>
@@ -38,13 +37,6 @@
                 <attribute name="gmlVersion" type="oraclefs:GMLVersionType" use="required" />
               </extension>
             </simpleContent>
-          </complexType>
-        </element>
-        <element name="MappingHints" minOccurs="0">
-          <complexType>
-            <sequence>
-              <element ref="oraclefs:FeatureType" maxOccurs="unbounded" />
-            </sequence>
           </complexType>
         </element>
       </sequence>
@@ -63,13 +55,13 @@
   <element name="FeatureType">
     <complexType>
       <annotation>
-        <documentation>Declaration of a feature type of the schema.</documentation>
+        <documentation>Provides the hint that a feature type exists in the DB.</documentation>
         <appinfo>
           <jaxb:class name="FeatureTypeDecl" />
         </appinfo>
       </annotation>
       <sequence>
-        <!-- element ref="ft:AbstractProperty" minOccurs="0" maxOccurs="unbounded" /-->
+        <element ref="oraclefs:AbstractProperty" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="name" type="QName">
         <annotation>
@@ -101,13 +93,48 @@
           </documentation>
         </annotation>
       </attribute>
-      <attribute name="javaClass" type="string" use="optional">
-        <annotation>
-          <documentation>
-            Optional: Name of the java class used to represent instances of this feature type in memory. 
-          </documentation>
-        </annotation>
-      </attribute>
     </complexType>
   </element>
+  <!--
+    === Abstract property definition ===
+  -->
+  <element name="AbstractProperty" type="oraclefs:AbstractPropertyType" abstract="true" />
+  <complexType name="AbstractPropertyType" abstract="true">
+    <annotation>
+      <documentation>Declaration of a property of a feature type.</documentation>
+      <appinfo>
+        <jaxb:class name="AbstractPropertyDecl" />
+      </appinfo>
+    </annotation>
+    <attribute name="name" type="QName">
+      <annotation>
+        <documentation>
+          Qualified name of the property.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="minOccurs" type="nonNegativeInteger" use="optional" default="1">
+      <annotation>
+        <documentation>
+          The minimum number of times that this property is required in feature instances.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="maxOccurs" use="optional" default="1">
+      <annotation>
+        <documentation>
+          The maximum number of times that this property is required in feature instances.
+        </documentation>
+      </annotation>
+      <simpleType>
+        <union memberTypes="positiveInteger">
+          <simpleType>
+            <restriction base="token">
+              <enumeration value="unbounded" />
+            </restriction>
+          </simpleType>
+        </union>
+      </simpleType>
+    </attribute>
+  </complexType>
 </schema>

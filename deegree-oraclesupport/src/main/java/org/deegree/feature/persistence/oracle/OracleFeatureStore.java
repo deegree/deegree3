@@ -35,22 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.oracle;
 
-import static org.deegree.commons.tom.primitive.PrimitiveType.determinePrimitiveType;
 import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
@@ -62,7 +56,6 @@ import oracle.sql.STRUCT;
 import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
-import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRS;
@@ -74,8 +67,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
-import org.deegree.feature.persistence.oracle.jaxb.FeatureTypeDecl;
-import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig.MappingHints;
+import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
@@ -84,12 +76,9 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
@@ -127,7 +116,7 @@ public class OracleFeatureStore implements FeatureStore {
 
     private static final GeometryFactory geomFac = new GeometryFactory();
 
-    private final String oracleSchema;
+    private final MappedApplicationSchema schema;
 
     private final GeometryTransformer geomTransformer;
 
@@ -137,9 +126,7 @@ public class OracleFeatureStore implements FeatureStore {
 
     private final String connId;
 
-    private ApplicationSchema schema;
-
-    private final Map<QName, FeatureTypeMapping> ftToMapping = new HashMap<QName, FeatureTypeMapping>();
+    private final LockManager lockManager;
 
     private OracleFeatureStoreTransaction activeTransaction;
 
@@ -147,29 +134,21 @@ public class OracleFeatureStore implements FeatureStore {
 
     private Thread transactionHolder;
 
-    private PostGISMapping mapping = null;
-
-    private LockManager lockManager;
-
     /**
+     * Creates a new {@link OracleFeatureStore} from the given parameters.
+     * 
      * @param schema
+     *            application schema with mapping information, must not be <code>null</code>
      * @param jdbcConnId
-     * @param dbSchemaQualifier
-     * @param storageSRS
-     * @param mappingHints
+     *            JDBC connection id, must not be <code>null</code>
      * @throws FeatureStoreException
      */
-    OracleFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchemaQualifier, CRS storageSRS,
-                        MappingHints mappingHints, String oracleSchema ) throws FeatureStoreException {
+    OracleFeatureStore( MappedApplicationSchema schema, String jdbcConnId ) throws FeatureStoreException {
 
-        this.oracleSchema = oracleSchema;
+        this.schema = schema;
         this.connId = jdbcConnId;
-        this.storageSRS = storageSRS;
-        if ( mappingHints != null ) {
-            this.schema = buildSchema( jdbcConnId, mappingHints );
-        } else {
-            this.schema = schema;
-        }
+        this.storageSRS = schema.getStorageSRS();
+
         // TODO make Oracle SRID configurable
         try {
             geomTransformer = new GeometryTransformer( storageSRS.getWrappedCRS() );
@@ -178,151 +157,8 @@ public class OracleFeatureStore implements FeatureStore {
         }
         jGeometryAdapter = new JGeometryAdapter( storageSRS, -1 );
 
-        mapping = new PostGISMapping() {
-
-            @Override
-            public byte[] getPostGISValue( Geometry literal, PropertyName propName )
-                                    throws FilterEvaluationException {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public Object getPostGISValue( Literal<?> literal, PropertyName propName )
-                                    throws FilterEvaluationException {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public PropertyNameMapping getMapping( PropertyName propName )
-                                    throws FilterEvaluationException, UnmappableException {
-                LOG.debug( "Mapping " + propName.getPropertyName() + " to DB." );
-                return new PropertyNameMapping( "X1", propName.getAsQName().getLocalPart() );
-            }
-        };
-
         // TODO
         lockManager = new DefaultLockManager( this, "LOCK_DB" );
-    }
-
-    private ApplicationSchema buildSchema( String jdbcConnId, MappingHints mappingHints )
-                            throws FeatureStoreException {
-
-        List<FeatureType> fts = new ArrayList<FeatureType>();
-        try {
-            Connection conn = ConnectionManager.getConnection( jdbcConnId );
-            DatabaseMetaData md = conn.getMetaData();
-            for ( FeatureTypeDecl ftDecl : mappingHints.getFeatureType() ) {
-                LOG.info( "Creating mapping for feature type '" + ftDecl.getName() + "'." );
-                fts.add( buildFeatureType( ftDecl, md ) );
-                FeatureTypeMapping ftMapping = buildFeatureTypeMapping( ftDecl, md );
-                ftToMapping.put( ftDecl.getName(), ftMapping );
-            }
-        } catch ( SQLException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return new ApplicationSchema( fts.toArray( new FeatureType[fts.size()] ), null );
-    }
-
-    private FeatureType buildFeatureType( FeatureTypeDecl ftDecl, DatabaseMetaData md )
-                            throws SQLException, FeatureStoreException {
-
-        String table = ftDecl.getTable();
-        if ( table == null ) {
-            table = ftDecl.getName().getLocalPart();
-        }
-        LOG.info( "table: " + table );
-
-        QName ftName = ftDecl.getName();
-        String prefix = ftName.getPrefix();
-        String namespace = ftName.getNamespaceURI();
-
-        String pkColumn = getPKColumn( md, table );
-
-        ResultSet rs = md.getColumns( null, oracleSchema, table, null );
-        List<PropertyType> propDecls = new ArrayList<PropertyType>();
-        while ( rs.next() ) {
-            String colName = rs.getString( 4 );
-            if ( !colName.equalsIgnoreCase( pkColumn ) ) {
-                QName ptName = new QName( namespace, colName, prefix );
-                int sqlType = rs.getInt( 5 );
-                PropertyType pt = buildPropertyType( ptName, sqlType );
-                propDecls.add( pt );
-            }
-        }
-        if ( propDecls.isEmpty() ) {
-            String msg = "Configuration error: No columns for table/view '" + table + "' found (schema: '"
-                         + oracleSchema + "').";
-            throw new FeatureStoreException( msg );
-
-        }
-        return new GenericFeatureType( ftName, propDecls, false );
-    }
-
-    private FeatureTypeMapping buildFeatureTypeMapping( FeatureTypeDecl ftDecl, DatabaseMetaData md )
-                            throws SQLException {
-
-        String table = ftDecl.getTable();
-        if ( table == null ) {
-            table = ftDecl.getName().getLocalPart();
-        }
-
-        QName ftName = ftDecl.getName();
-        String prefix = ftName.getPrefix();
-        String namespace = ftName.getNamespaceURI();
-
-        String pkColumn = getPKColumn( md, table );
-        String[] gmlIdColumns = new String[] { pkColumn };
-
-        ResultSet rs = md.getColumns( null, oracleSchema, table, null );
-
-        Map<QName, String> propToColumn = new HashMap<QName, String>();
-
-        while ( rs.next() ) {
-            String colName = rs.getString( 4 );
-            if ( !colName.equalsIgnoreCase( pkColumn ) ) {
-                QName propName = new QName( namespace, colName, prefix );
-                propToColumn.put( propName, colName );
-            }
-        }
-        return new FeatureTypeMapping( ftName, table, gmlIdColumns, propToColumn );
-    }
-
-    private String getPKColumn( DatabaseMetaData md, String table )
-                            throws SQLException {
-        String pkColumn = null;
-        ResultSet rs = md.getPrimaryKeys( null, oracleSchema, table );
-        if ( !rs.next() ) {
-            rs.close();
-            // TODO
-            return "gebiets_id";
-        }
-        pkColumn = rs.getString( 4 );
-        if ( rs.next() ) {
-            throw new SQLException( "More than one primary key column (composite primary key)." );
-        }
-        rs.close();
-        return pkColumn;
-    }
-
-    private PropertyType buildPropertyType( QName ptName, int sqlType )
-                            throws IllegalArgumentException {
-        PropertyType pt = null;
-        switch ( sqlType ) {
-        case Types.OTHER: {
-            pt = new GeometryPropertyType( ptName, 0, 1, GeometryType.GEOMETRY, CoordinateDimension.DIM_2, false, null,
-                                           BOTH );
-            break;
-        }
-        default: {
-            PrimitiveType primType = determinePrimitiveType( sqlType );
-            pt = new SimplePropertyType( ptName, 0, 1, primType, false, null );
-            break;
-        }
-        }
-        return pt;
     }
 
     @Override
@@ -368,7 +204,7 @@ public class OracleFeatureStore implements FeatureStore {
     public Envelope getEnvelope( QName ftName ) {
         Envelope bbox = null;
         FeatureType ft = schema.getFeatureType( ftName );
-        FeatureTypeMapping ftMapping = ftToMapping.get( ftName );
+        FeatureTypeMapping ftMapping = schema.getMapping( ftName );
         if ( ftMapping != null ) {
             Connection conn = null;
             ResultSet rs = null;
@@ -486,7 +322,7 @@ public class OracleFeatureStore implements FeatureStore {
     private FeatureResultSet queryByOperatorFilter( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrits )
                             throws FeatureStoreException {
 
-        FeatureTypeMapping ftMapping = ftToMapping.get( ft.getName() );
+        FeatureTypeMapping ftMapping = schema.getMapping( ft.getName() );
         FeatureResultSet result = null;
 
         Connection conn = null;
@@ -495,12 +331,37 @@ public class OracleFeatureStore implements FeatureStore {
         try {
             conn = ConnectionManager.getConnection( connId );
             OracleConnection oraConn = (OracleConnection) ( (DelegatingConnection) conn ).getInnermostDelegate();
+
+            // TODO remove this
+            PostGISMapping mapping = new PostGISMapping() {
+                @Override
+                public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+                                        throws FilterEvaluationException {
+                    // TODO Auto-generated method stub
+                    return null;
+                }
+
+                @Override
+                public Object getPostGISValue( Literal<?> literal, PropertyName propName )
+                                        throws FilterEvaluationException {
+                    // TODO Auto-generated method stub
+                    return null;
+                }
+
+                @Override
+                public PropertyNameMapping getMapping( PropertyName propName )
+                                        throws FilterEvaluationException, UnmappableException {
+                    LOG.debug( "Mapping " + propName.getPropertyName() + " to DB." );
+                    return new PropertyNameMapping( "X1", propName.getAsQName().getLocalPart() );
+                }
+            };
+
             OracleWhereBuilder wb = new OracleWhereBuilder( mapping, filter, sortCrits, oraConn );
             SQLExpression where = wb.getWhereClause();
             SQLExpression orderBy = wb.getOrderBy();
 
             StringBuilder sql = new StringBuilder( "SELECT " );
-            sql.append( ftMapping.getGMLIdColumns()[0] );
+            sql.append( ftMapping.getFidColumn() );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 sql.append( ',' );
                 sql.append( ftMapping.getColumn( pt.getName() ) );
@@ -635,7 +496,7 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     FeatureTypeMapping getMapping( QName ftName ) {
-        return ftToMapping.get( ftName );
+        return schema.getMapping( ftName );
     }
 
     JGeometryAdapter getJGeometryAdapter() {
@@ -702,10 +563,10 @@ public class OracleFeatureStore implements FeatureStore {
                          + "' -- does not contain an underscore character.";
             throw new FeatureStoreException( msg );
         }
-        String prefix = fid.substring( 0, delimPos  );
-        for ( QName ftName : ftToMapping.keySet() ) {
+        String prefix = fid.substring( 0, delimPos );
+        for ( QName ftName : schema.getMappings().keySet() ) {
             if ( ftName.getLocalPart().toUpperCase().equals( prefix ) ) {
-                return ftToMapping.get( ftName );
+                return schema.getMapping( ftName );
             }
         }
         String msg = "No feature type for feature id '" + fid + "' found.";
