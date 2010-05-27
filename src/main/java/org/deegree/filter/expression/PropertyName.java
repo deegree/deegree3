@@ -36,7 +36,9 @@
 package org.deegree.filter.expression;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
@@ -156,7 +158,7 @@ public class PropertyName implements Expression {
                 localPart = text.substring( colonIdx + 1 );
                 prefix = text.substring( 0, colonIdx );
             }
-            String namespace = nsContext.translateNamespacePrefixToUri( prefix );
+            String namespace = nsContext == null ? NULL_NS_URI : nsContext.translateNamespacePrefixToUri( prefix );
             simpleProp = new QName( namespace, localPart, prefix );
         }
         return simpleProp;
