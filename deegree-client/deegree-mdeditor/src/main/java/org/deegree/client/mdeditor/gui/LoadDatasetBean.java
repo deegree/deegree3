@@ -43,8 +43,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
-import org.deegree.client.mdeditor.controller.DatasetReader;
-import org.deegree.client.mdeditor.controller.FormGroupHandler;
+import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.model.FormField;
 
 /**
@@ -62,7 +61,8 @@ public class LoadDatasetBean {
     private String selectedDataset;
 
     public List<String> getDatasets() {
-        return FormGroupHandler.getDatasets();
+        System.out.println( "w" );
+        return DataHandler.getInstance().getDatasetIds();
     }
 
     public void setSelectedDataset( String selectedDataset ) {
@@ -84,10 +84,10 @@ public class LoadDatasetBean {
 
         Map<String, Object> values;
         try {
-            values = DatasetReader.readDataset( id );
+            values = DataHandler.getInstance().getDataset( id );
         } catch ( Exception e ) {
-            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.LOAD", e.getMessage(),
-                                                         id, e.getMessage() );
+            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.LOAD", id,
+                                                         e.getMessage() );
             fc.addMessage( "LOAD_FAILED", msg );
             return "/page/form/errorPage.xhtml";
         }

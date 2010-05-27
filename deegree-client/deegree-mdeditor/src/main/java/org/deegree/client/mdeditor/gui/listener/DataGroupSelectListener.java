@@ -46,11 +46,11 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
-import org.deegree.client.mdeditor.controller.FormGroupHandler;
 import org.deegree.client.mdeditor.gui.FormFieldBean;
-import org.deegree.client.mdeditor.gui.FormGroupInstanceBean;
+import org.deegree.client.mdeditor.gui.DataGroupBean;
 import org.deegree.client.mdeditor.gui.GuiUtils;
-import org.deegree.client.mdeditor.model.FormGroupInstance;
+import org.deegree.client.mdeditor.io.DataHandler;
+import org.deegree.client.mdeditor.model.DataGroup;
 import org.slf4j.Logger;
 
 /**
@@ -61,9 +61,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormGroupInstanceSelectListener implements AjaxBehaviorListener {
+public class DataGroupSelectListener implements AjaxBehaviorListener {
 
-    private static final Logger LOG = getLogger( FormGroupInstanceSelectListener.class );
+    private static final Logger LOG = getLogger( DataGroupSelectListener.class );
 
     @Override
     public void processAjaxBehavior( AjaxBehaviorEvent event )
@@ -74,7 +74,7 @@ public class FormGroupInstanceSelectListener implements AjaxBehaviorListener {
         List<UIComponent> children = event.getComponent().getChildren();
         for ( UIComponent child : children ) {
             if ( child instanceof UIParameter
-                 && GuiUtils.INSTANCE_FILE_NAME_PARAM.equals( ( (UIParameter) child ).getName() ) ) {
+                 && GuiUtils.DG_ID_PARAM.equals( ( (UIParameter) child ).getName() ) ) {
                 fileName = String.valueOf( ( (UIParameter) child ).getValue() );
             }
         }
@@ -84,15 +84,15 @@ public class FormGroupInstanceSelectListener implements AjaxBehaviorListener {
         FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "formFieldBean" );
-        FormGroupInstance formGroupInstance = FormGroupHandler.getFormGroupInstance( groupId, fileName );
-        if ( formGroupInstance != null ) {
-            formFieldBean.setValues( groupId, formGroupInstance );
+        DataGroup dataGroup = DataHandler.getInstance().getDataGroup( groupId, fileName );
+        if ( dataGroup != null ) {
+            formFieldBean.setValues( groupId, dataGroup );
 
-            FormGroupInstanceBean formGroupInstanceBean = (FormGroupInstanceBean) fc.getApplication().getELResolver().getValue(
-                                                                                                                                fc.getELContext(),
-                                                                                                                                null,
-                                                                                                                                "formGroupInstanceBean" );
-            formGroupInstanceBean.addSelectedInstances( groupId, fileName );
+            DataGroupBean dataGroupBean = (DataGroupBean) fc.getApplication().getELResolver().getValue(
+                                                                                                        fc.getELContext(),
+                                                                                                        null,
+                                                                                                        "dataGroupBean" );
+            dataGroupBean.addSelectedDataGroup( groupId, fileName );
         } else {
             // TODO message
         }

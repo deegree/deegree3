@@ -33,14 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
+package org.deegree.client.mdeditor.configuration;
 
-import java.util.ArrayList;
-
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import java.io.File;
 
 /**
  * TODO add class documentation here
@@ -50,34 +45,41 @@ import javax.xml.stream.XMLStreamReader;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class Parser {
+public class Configuration {
 
-    protected static final String NS = "http://www.deegree.org/igeoportal";
+    // TODO!!!
+    private static String formConfURL = "/home/lyn/workspace/deegree-mdeditor/resources/exampleConfiguration.xml";
 
-    private List<String> idList = new ArrayList<String>();
+    private static String codeListConfURL = "/home/lyn/workspace/deegree-mdeditor/resources/exampleCodeListConfiguration.xml";
 
-    protected String getId( XMLStreamReader xmlStream )
-                            throws ConfigurationException {
-        String id = xmlStream.getAttributeValue( null, "id" );
-        if ( id == null || id.length() == 0 ) {
-            throw new ConfigurationException( "missing id" );
-        }
-        if ( idList.contains( id ) ) {
-            throw new ConfigurationException( "An element with id " + id
-                                              + " exists! Ids must be unique in the complete configuration." );
-        } else {
-            idList.add( id );
-        }
-        return id;
+    private static String filesDirURL = "/home/lyn/workspace/deegree-mdeditor/tmp/";
+
+    public static void setFormConfURL( String formConfURL ) {
+        Configuration.formConfURL = formConfURL;
     }
 
-    protected String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
-                            throws XMLStreamException {
-        String s = defaultValue;
-        if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
-            s = xmlStream.getElementText();
-            xmlStream.nextTag();
-        }
-        return s;
+    public static String getFormConfURL() {
+        return formConfURL;
     }
+
+    public static void setFilesDirURL( String filesDirURL ) {
+        Configuration.filesDirURL = filesDirURL;
+    }
+
+    public static String getFilesDirURL() {
+        System.out.println(File.pathSeparator + "  " + File.separator);
+        if ( !filesDirURL.endsWith( File.separator ) ) {
+            return filesDirURL + File.separator;
+        }
+        return filesDirURL;
+    }
+
+    public static String getCodeListURL() {
+        return codeListConfURL;
+    }
+
+    public static void setCodeListURL( String codeListConfURL ) {
+        Configuration.codeListConfURL = codeListConfURL;
+    }
+
 }

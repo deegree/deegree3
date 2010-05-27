@@ -33,7 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
+package org.deegree.client.mdeditor.model;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * TODO add class documentation here
@@ -43,37 +46,31 @@ package org.deegree.client.mdeditor.config;
  * 
  * @version $Revision: $, $Date: $
  */
-public class Configuration {
+public class DataGroup {
 
-    // TODO!!!
-    private static String formConfURL = "/home/lyn/workspace/deegree-mdeditor/resources/exampleConfiguration.xml";
+    private String fileName;
 
-    private static String codeListConfURL = "/home/lyn/workspace/deegree-mdeditor/resources/exampleCodeListConfiguration.xml";
+    private Map<String, Object> values = new HashMap<String, Object>();
 
-    private static String filesDirURL = "/home/lyn/workspace/deegree-mdeditor/tmp/";
-
-    public static void setFormConfURL( String formConfURL ) {
-        Configuration.formConfURL = formConfURL;
+    public DataGroup( String fileName, Map<String, Object> values ) {
+        this.fileName = fileName;
+        this.values = values;
     }
 
-    public static String getFormConfURL() {
-        return formConfURL;
+    public void setFileName( String fileName ) {
+        this.fileName = fileName;
     }
 
-    public static void setFilesDirURL( String filesDirURL ) {
-        Configuration.filesDirURL = filesDirURL;
+    public String getFileName() {
+        return fileName;
     }
 
-    public static String getFilesDirURL() {
-        return filesDirURL;
+    public void setValues( Map<String, Object> values ) {
+        this.values = values;
     }
 
-    public static String getCodeListURL() {
-        return codeListConfURL;
-    }
-
-    public static void setCodeListURL( String codeListConfURL ) {
-        Configuration.codeListConfURL = codeListConfURL;
+    public Map<String, Object> getValues() {
+        return values;
     }
 
 }

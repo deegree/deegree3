@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config.codelist;
+package org.deegree.client.mdeditor.configuration.codelist;
 
 import java.util.ArrayList;
 import java.util.List;

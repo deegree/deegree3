@@ -75,12 +75,12 @@ import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.PreRenderComponentEvent;
 import javax.servlet.http.HttpSession;
 
-import org.deegree.client.mdeditor.config.ConfigurationException;
-import org.deegree.client.mdeditor.config.FormConfigurationFactory;
-import org.deegree.client.mdeditor.config.codelist.CodeListConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.codelist.CodeListConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
-import org.deegree.client.mdeditor.gui.listener.FormGroupInstanceSelectListener;
-import org.deegree.client.mdeditor.gui.listener.FormGroupListener;
+import org.deegree.client.mdeditor.gui.listener.DataGroupSelectListener;
+import org.deegree.client.mdeditor.gui.listener.DataGroupListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
 import org.deegree.client.mdeditor.gui.listener.ListPreRenderedListener;
 import org.deegree.client.mdeditor.model.CodeList;
@@ -187,16 +187,16 @@ public class FormCreatorBean implements Serializable {
 
         addButtons( grpId, grid );
 
-        // list of instances
+        // list
         HtmlDataTable dataTable = new HtmlDataTable();
         dataTable.setId( GuiUtils.getUniqueId() );
-        dataTable.setStyleClass( "fgListStyle" );
-        dataTable.setHeaderClass( "fgListHeaderStyle" );
-        dataTable.setRowClasses( "fgListRowStyleOdd, fgListRowStyleEven" );
+        dataTable.setStyleClass( "dgList" );
+        dataTable.setHeaderClass( "dgListHeader" );
+        dataTable.setRowClasses( "dgListRowOdd, dgListRowEven" );
 
         dataTable.setVar( "fgi" );
 
-        String el = "#{formGroupInstanceBean.formGroupInstances['" + fg.getId() + "']}";
+        String el = "#{dataGroupBean.dataGroups['" + fg.getId() + "']}";
         ValueExpression ve = ef.createValueExpression( elContext, el, Object.class );
         dataTable.setValueExpression( "value", ve );
 
@@ -220,7 +220,7 @@ public class FormCreatorBean implements Serializable {
 
         StringBuilder styleClassSB = new StringBuilder();
         for ( int i = 0; i < dataTable.getChildCount(); i++ ) {
-            styleClassSB.append( "fgListColumnStyle, " );
+            styleClassSB.append( "dgListColumn, " );
         }
 
         HtmlColumn col = new HtmlColumn();
@@ -229,7 +229,7 @@ public class FormCreatorBean implements Serializable {
         HtmlOutputText header = new HtmlOutputText();
         header.setValue( "Optionen" );
         col.getFacets().put( "header", header );
-        styleClassSB.append( "fgListOptionStyle " );
+        styleClassSB.append( "dgListOptionColumn " );
 
         dataTable.setColumnClasses( styleClassSB.toString() );
         dataTable.getChildren().add( col );
@@ -271,8 +271,8 @@ public class FormCreatorBean implements Serializable {
         bt.getAttributes().put( ACTION_ATT_KEY, action );
 
         UIParameter param = new UIParameter();
-        param.setName( INSTANCE_FILE_NAME_PARAM );
-        String el = "#{formGroupInstanceBean.selectedInstances['" + grpId + "']}";
+        param.setName( DG_ID_PARAM );
+        String el = "#{dataGroupBean.selectedDataGroups['" + grpId + "']}";
         ValueExpression ve = ef.createValueExpression( elContext, el, String.class );
         param.setValueExpression( "value", ve );
 
@@ -280,11 +280,11 @@ public class FormCreatorBean implements Serializable {
         List<String> render = new ArrayList<String>();
         render.add( "@form" );
         ajaxB.setRender( render );
-        ajaxB.addAjaxBehaviorListener( new FormGroupListener() );
+        ajaxB.addAjaxBehaviorListener( new DataGroupListener() );
         bt.addClientBehavior( bt.getDefaultEventName(), ajaxB );
 
         // visibility
-        String elVisibility = "#{formGroupInstanceBean.selectedInstances['" + grpId + "'] " + ( ifNull ? "==" : "!=" )
+        String elVisibility = "#{dataGroupBean.selectedDataGroups['" + grpId + "'] " + ( ifNull ? "==" : "!=" )
                               + " null}";
         ValueExpression veVisibility = ef.createValueExpression( elContext, elVisibility, Boolean.class );
         bt.setValueExpression( "rendered", veVisibility );
@@ -303,12 +303,11 @@ public class FormCreatorBean implements Serializable {
         String elBtImg = "/resources/deegree/images/pencil.png";
         ValueExpression veBtImg = ef.createValueExpression( elContext, elBtImg, String.class );
         bt.setValueExpression( "image", veBtImg );
-        bt.setStyleClass( "fgListselectBtStyle" );
         bt.getAttributes().put( GROUPID_ATT_KEY, groupId );
 
         // file name param
         UIParameter fileNameParam = new UIParameter();
-        fileNameParam.setName( INSTANCE_FILE_NAME_PARAM );
+        fileNameParam.setName( DG_ID_PARAM );
         String elFileName = "#{fgi.fileName}";
         ValueExpression veFileName = ef.createValueExpression( elContext, elFileName, String.class );
         fileNameParam.setValueExpression( "value", veFileName );
@@ -318,7 +317,7 @@ public class FormCreatorBean implements Serializable {
         List<String> render = new ArrayList<String>();
         render.add( "@form" );
         ajaxSelectBt.setRender( render );
-        ajaxSelectBt.addAjaxBehaviorListener( new FormGroupInstanceSelectListener() );
+        ajaxSelectBt.addAjaxBehaviorListener( new DataGroupSelectListener() );
         bt.addClientBehavior( bt.getDefaultEventName(), ajaxSelectBt );
         return bt;
     }

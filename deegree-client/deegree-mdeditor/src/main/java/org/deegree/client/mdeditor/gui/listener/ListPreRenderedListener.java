@@ -37,6 +37,7 @@ package org.deegree.client.mdeditor.gui.listener;
 
 import java.util.List;
 
+
 import javax.faces.component.UISelectItem;
 import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.context.FacesContext;
@@ -45,9 +46,9 @@ import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.ComponentSystemEventListener;
 import javax.servlet.http.HttpSession;
 
-import org.deegree.client.mdeditor.config.FormConfigurationFactory;
-import org.deegree.client.mdeditor.controller.FormGroupHandler;
+import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 import org.deegree.client.mdeditor.gui.GuiUtils;
+import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
@@ -80,7 +81,8 @@ public class ListPreRenderedListener implements ComponentSystemEventListener {
             if ( formField instanceof SelectFormField ) {
                 referenceLabel = ( (SelectFormField) formField ).getReferenceText();
             }
-            List<UISelectItem> selectItems = FormGroupHandler.getSelectItems( grpReference, referenceLabel );
+            List<UISelectItem> selectItems = DataHandler.getInstance().getSelectItems( grpReference,
+                                                                                            referenceLabel );
 
             select.getChildren().clear();
 

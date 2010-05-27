@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config.codelist;
+package org.deegree.client.mdeditor.configuration.codelist;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
@@ -51,8 +51,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.client.mdeditor.config.ConfigurationException;
-import org.deegree.client.mdeditor.config.Parser;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.Parser;
 import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.commons.xml.XMLParsingException;
 import org.slf4j.Logger;

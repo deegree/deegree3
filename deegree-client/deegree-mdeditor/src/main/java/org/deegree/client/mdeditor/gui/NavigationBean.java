@@ -43,9 +43,9 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import org.deegree.client.mdeditor.config.ConfigurationException;
-import org.deegree.client.mdeditor.config.FormConfigurationFactory;
-import org.deegree.client.mdeditor.controller.DatasetWriter;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 
@@ -84,7 +84,7 @@ public class NavigationBean implements Serializable {
                 return "/page/form/errorPage.xhtml";
             }
 
-            DatasetWriter.writeElements( id, formfields.getFormGroups() );
+            DataHandler.getInstance().writeDataset( id, formfields.getFormGroups() );
 
         } catch ( Exception e ) {
             FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.SAVE_DATASET",

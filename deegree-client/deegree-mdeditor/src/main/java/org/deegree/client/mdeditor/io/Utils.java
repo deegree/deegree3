@@ -33,10 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.model;
+package org.deegree.client.mdeditor.io;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.UUID;
 
 /**
  * TODO add class documentation here
@@ -46,31 +45,10 @@ import java.util.Map;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormGroupInstance {
+public class Utils {
 
-    private String fileName;
-
-    private Map<String, Object> values = new HashMap<String, Object>();
-
-    public FormGroupInstance( String fileName, Map<String, Object> values ) {
-        this.fileName = fileName;
-        this.values = values;
-    }
-
-    public void setFileName( String fileName ) {
-        this.fileName = fileName;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setValues( Map<String, Object> values ) {
-        this.values = values;
-    }
-
-    public Map<String, Object> getValues() {
-        return values;
+    public static String createId() {
+        return UUID.randomUUID().toString();
     }
 
 }

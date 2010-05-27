@@ -138,37 +138,37 @@
 	margin: 5px;
 }
 
-/***** styles for the list of available formGroups instances *****/
-#mdEditor .fgListStyle {
+/***** styles for the list of available data groups *****/
+#mdEditor .dgList {
 	border-collapse: collapse;
 }
 
-#mdEditor .fgListStyle td {
+#mdEditor .dgList td {
 	border: 1px dotted #000000;
 }
 
-#mdEditor .fgListHeaderStyle {
+#mdEditor .dgListHeader {
 	font-weight: normal;
 	font-style: italic;
 	padding: 2px 4px;
 }
 
-#mdEditor .fgListRowStyleOdd {
+#mdEditor .dgListRowOdd {
 	background-color: #dbe1e8;
 }
 
-#mdEditor .fgListRowStyleEven {
+#mdEditor .dgListRowEven {
 	
 }
 
-#mdEditor .fgListColumnStyle {
+#mdEditor .dgListColumn {
 	
 }
 
-#mdEditor .fgListOptionStyle {
+#mdEditor .dgListOptionColumn {
 	text-align: center;
 }
 
-#mdEditor .fgListselectBtStyle {
+#mdEditor .dgListOptionColumn input[type="image"]{
 	background-repeat: no-repeat;
 }

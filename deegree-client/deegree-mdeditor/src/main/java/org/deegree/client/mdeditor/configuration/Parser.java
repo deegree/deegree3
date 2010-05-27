@@ -33,14 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config.codelist;
+package org.deegree.client.mdeditor.configuration;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
-import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.config.ConfigurationException;
-import org.deegree.client.mdeditor.model.CodeList;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * TODO add class documentation here
@@ -50,39 +50,34 @@ import org.deegree.client.mdeditor.model.CodeList;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CodeListConfigurationFactory {
+public abstract class Parser {
 
-    private static List<CodeListConfiguration> codeListConfiguration = new ArrayList<CodeListConfiguration>();
+    protected static final String NS = "http://www.deegree.org/igeoportal";
 
-    static {
-        CodeListParser parser = new CodeListParser();
-        try {
-            // TODO
-            CodeListConfiguration parseConfiguration = parser.parseConfiguration( Configuration.getCodeListURL() );
-            System.out.println(parseConfiguration.getCodeLists().size());
-            codeListConfiguration.add( parseConfiguration );
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+    private List<String> idList = new ArrayList<String>();
 
-    public static CodeList getCodeList( String id )
+    protected String getId( XMLStreamReader xmlStream )
                             throws ConfigurationException {
-        for ( CodeListConfiguration clc : codeListConfiguration ) {
-            if ( clc.getCodeList( id ) != null ) {
-                return clc.getCodeList( id );
-            }
+        String id = xmlStream.getAttributeValue( null, "id" );
+        if ( id == null || id.length() == 0 ) {
+            throw new ConfigurationException( "missing id" );
         }
-        throw new ConfigurationException( "Could not found Codelist with id " + id );
+        if ( idList.contains( id ) ) {
+            throw new ConfigurationException( "An element with id " + id
+                                              + " exists! Ids must be unique in the complete configuration." );
+        } else {
+            idList.add( id );
+        }
+        return id;
     }
 
-    public static List<CodeList> getCodeLists() {
-        List<CodeList> codeLists = new ArrayList<CodeList>();
-        for ( CodeListConfiguration clc : codeListConfiguration ) {
-            codeLists.addAll( clc.getCodeLists() );
+    protected String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
+                            throws XMLStreamException {
+        String s = defaultValue;
+        if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
+            s = xmlStream.getElementText();
+            xmlStream.nextTag();
         }
-        return codeLists;
+        return s;
     }
-
 }

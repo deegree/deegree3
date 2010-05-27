@@ -40,7 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
 import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
-import static org.deegree.client.mdeditor.gui.GuiUtils.INSTANCE_FILE_NAME_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
@@ -50,12 +50,12 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
-import org.deegree.client.mdeditor.controller.FormGroupHandler;
-import org.deegree.client.mdeditor.controller.FormGroupWriter;
 import org.deegree.client.mdeditor.gui.FormFieldBean;
-import org.deegree.client.mdeditor.gui.FormGroupInstanceBean;
+import org.deegree.client.mdeditor.gui.DataGroupBean;
 import org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
-import org.deegree.client.mdeditor.model.FormGroupInstance;
+import org.deegree.client.mdeditor.io.DataHandler;
+import org.deegree.client.mdeditor.io.DataIOException;
+import org.deegree.client.mdeditor.model.DataGroup;
 import org.slf4j.Logger;
 
 /**
@@ -66,9 +66,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormGroupListener implements AjaxBehaviorListener {
+public class DataGroupListener implements AjaxBehaviorListener {
 
-    private static final Logger LOG = getLogger( FormGroupListener.class );
+    private static final Logger LOG = getLogger( DataGroupListener.class );
 
     @Override
     public void processAjaxBehavior( AjaxBehaviorEvent event )
@@ -79,7 +79,7 @@ public class FormGroupListener implements AjaxBehaviorListener {
 
         String fileId = null;
         for ( UIComponent child : comp.getChildren() ) {
-            if ( child instanceof UIParameter && INSTANCE_FILE_NAME_PARAM.equals( ( (UIParameter) child ).getName() ) ) {
+            if ( child instanceof UIParameter && DG_ID_PARAM.equals( ( (UIParameter) child ).getName() ) ) {
                 fileId = (String) ( (UIParameter) child ).getValue();
             }
         }
@@ -90,31 +90,40 @@ public class FormGroupListener implements AjaxBehaviorListener {
                                                                                                     null,
                                                                                                     "formFieldBean" );
 
-        FormGroupInstanceBean formGroupInstanceBean = (FormGroupInstanceBean) fc.getApplication().getELResolver().getValue(
-                                                                                                                            fc.getELContext(),
-                                                                                                                            null,
-                                                                                                                            "formGroupInstanceBean" );
-
+        DataGroupBean dataGroupBean = (DataGroupBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+                                                                                                    null,
+                                                                                                    "dataGroupBean" );
+        DataHandler handler = DataHandler.getInstance();
         switch ( action ) {
         case DELETE:
-            FormGroupHandler.deleteInstance( grpId, fileId );
-            formGroupInstanceBean.addSelectedInstances( grpId, null );
+            handler.deleteDataGroup( grpId, fileId );
+            dataGroupBean.addSelectedDataGroup( grpId, null );
             break;
         case EDIT:
-            FormGroupWriter.writeFormGroup( formFieldBean.getFormGroup( grpId ), fileId );
+            try {
+                handler.writeDataGroup( fileId, formFieldBean.getFormGroup( grpId ) );
+            } catch ( DataIOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             break;
         case RESET:
-            FormGroupInstance instanceReset = FormGroupHandler.getFormGroupInstance( grpId, fileId );
-            if ( instanceReset != null ) {
-                formFieldBean.setValues( grpId, instanceReset );
+            DataGroup dgReset = handler.getDataGroup( grpId, fileId );
+            if ( dgReset != null ) {
+                formFieldBean.setValues( grpId, dgReset );
             }
             break;
         case NEW:
         case SAVE:
-            String newFileId = FormGroupWriter.writeFormGroup( formFieldBean.getFormGroup( grpId ) );
-            formGroupInstanceBean.addSelectedInstances( grpId, newFileId );
+            try {
+                String newFileId = handler.writeDataGroup( null, formFieldBean.getFormGroup( grpId ) );
+                dataGroupBean.addSelectedDataGroup( grpId, newFileId );
+            } catch ( DataIOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             break;
         }
-        formGroupInstanceBean.reloadFormGroup( grpId );
+        dataGroupBean.reloadFormGroup( grpId );
     }
 }

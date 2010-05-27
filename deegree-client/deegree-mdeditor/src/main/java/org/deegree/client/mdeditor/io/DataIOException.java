@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
+package org.deegree.client.mdeditor.io;
 
 /**
  * TODO add class documentation here
@@ -43,11 +43,11 @@ package org.deegree.client.mdeditor.config;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConfigurationException extends Exception {
+public class DataIOException extends Exception {
 
-    private static final long serialVersionUID = -5005648880467646463L;
+    private static final long serialVersionUID = -1391800594279320006L;
 
-    public ConfigurationException( String message ) {
+    public DataIOException( String message ) {
         super( message );
     }
 

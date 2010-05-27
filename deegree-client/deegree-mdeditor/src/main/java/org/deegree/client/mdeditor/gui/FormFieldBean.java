@@ -48,14 +48,14 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import org.deegree.client.mdeditor.config.ConfigurationException;
-import org.deegree.client.mdeditor.config.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
-import org.deegree.client.mdeditor.model.FormGroupInstance;
+import org.deegree.client.mdeditor.model.DataGroup;
 import org.slf4j.Logger;
 
 /**
@@ -116,7 +116,7 @@ public class FormFieldBean implements Serializable {
         }
     }
 
-    public void setValues( String grpId, FormGroupInstance fgi ) {
+    public void setValues( String grpId, DataGroup fgi ) {
         for ( FormGroup fg : formGroups ) {
             if ( grpId.equals( fg.getId() ) ) {
                 setValues( fg, fgi.getValues() );
