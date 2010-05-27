@@ -106,6 +106,26 @@ public abstract class Transformer {
     }
 
     /**
+     * Creates a new Transformer object, with the given target CRS.
+     * 
+     * @param targetCRS
+     *            to transform incoming coordinates to.
+     * @throws IllegalArgumentException
+     *             if the given CoordinateSystem is <code>null</code>
+     * @throws UnknownCRSException
+     *             if the wrapped crs was null
+     */
+    protected Transformer( final CRS targetCRS ) throws IllegalArgumentException, UnknownCRSException {
+        if ( targetCRS == null ) {
+            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
+                                                                     "Transformer(CoordinateSystem)", "targetCRS" ) );
+        }
+
+        this.targetCRS = targetCRS.getWrappedCRS();
+        this.tCRS = targetCRS;
+    }
+
+    /**
      * @param definedTransformation
      *            to use instead of the CRSFactory.
      * @throws IllegalArgumentException
