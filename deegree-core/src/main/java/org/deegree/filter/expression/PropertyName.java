@@ -38,7 +38,6 @@ package org.deegree.filter.expression;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
