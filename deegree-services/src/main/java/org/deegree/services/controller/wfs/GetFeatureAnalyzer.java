@@ -395,35 +395,40 @@ class GetFeatureAnalyzer {
 
         // no check possible if feature type is unknown
         if ( typeNames.length > 0 ) {
-            if ( repairSimpleUnqualified( propName, typeNames[0] ) ) {
-                return;
-            }
-            // TODO property name may be an XPath and use aliases...
-            QName name = getPropertyNameAsQName( propName );
-            if ( name != null ) {
-                if ( typeNames.length == 1 ) {
-                    FeatureType ft = service.lookupFeatureType( typeNames[0].getFeatureTypeName() );
-                    if ( ft.getPropertyDeclaration( name, outputFormat ) == null ) {
-                        String msg = "Specified PropertyName '" + propName.getPropertyName() + "' (='" + name
-                                     + "') does not exist for feature type '" + ft.getName() + "'.";
-                        throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
+            if ( propName.isSimple() ) {
+                if ( !repairSimpleUnqualified( propName, typeNames[0] ) ) {
+                    QName name = getPropertyNameAsQName( propName );
+                    if ( name != null ) {
+                        if ( typeNames.length == 1 ) {
+                            FeatureType ft = service.lookupFeatureType( typeNames[0].getFeatureTypeName() );
+                            if ( ft.getPropertyDeclaration( name, outputFormat ) == null ) {
+                                String msg = "Specified PropertyName '" + propName.getPropertyName() + "' (='" + name
+                                             + "') does not exist for feature type '" + ft.getName() + "'.";
+                                throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
+                            }
+                        }
+                        // TODO really skip this check for join queries?
                     }
                 }
-                // TODO really skip this check for join queries?
+            } else {
+                // TODO property name may be an XPath and use aliases...
             }
         }
     }
 
     /**
-     * Repairs a {@link PropertyName} that just contains the local name of a {@link FeatureType}'s property or a
-     * prefixed name, but without a namespace binding.
+     * Repairs a {@link PropertyName} that contains the local name of a {@link FeatureType}'s property or a prefixed
+     * name, but without a correct namespace binding.
      * <p>
      * This types of propertynames especially occurs in WFS 1.0.0 requests.
      * </p>
      * 
      * @param propName
+     *            property name to be repaired, must be "simple", i.e. contain only of a QName
      * @param typeName
-     * @return
+     *            feature type specification from the query, must not be <code>null</code>
+     * @return true, if the name could be matched against against a property of the feature type successfully, false
+     *         otherwise
      */
     private boolean repairSimpleUnqualified( PropertyName propName, TypeName typeName ) {
 
