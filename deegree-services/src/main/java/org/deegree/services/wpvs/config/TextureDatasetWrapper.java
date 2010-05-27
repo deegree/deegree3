@@ -36,10 +36,15 @@
 
 package org.deegree.services.wpvs.config;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.xml.stream.XMLInputFactory;
 
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.xml.XMLAdapter;
@@ -49,13 +54,20 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.TiledRaster;
+import org.deegree.coverage.raster.cache.RasterCache;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.geometry.Envelope;
+import org.deegree.rendering.r2d.se.parser.SymbologyParser;
+import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureTileManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.RasterAPITextureTileProvider;
+import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.StyledGeometryTTProvider;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileProvider;
 import org.deegree.services.jaxb.wpvs.DEMTextureDataset;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.deegree.services.jaxb.wpvs.StyledGeometryProvider;
 
 /**
  * The <code>TextureDatasetWrapper</code> extracts data from jaxb configuration elements and creates texture managers,
@@ -149,31 +161,17 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
                             throws IOException {
 
         List<TextureTileProvider> tileProviders = new ArrayList<TextureTileProvider>();
-        String storeId = textureDataset.getCoverageStoreId();
-        if ( storeId == null ) {
-            LOG.warn( "No coverage found for texture dataset: " + textureDataset.getTitle() );
-            return sceneEnvelope;
-        }
-
-        AbstractCoverage coverage = CoverageBuilderManager.get( storeId );
-        if ( coverage == null ) {
-            LOG.warn( "The coverage builder with id: " + storeId + " could not create a coverage, ignoring dataset: "
-                      + textureDataset.getTitle() );
-            return sceneEnvelope;
-        }
-        // JAXBElement<? extends AbstractGeospatialDataSourceType> abstractRasterDataSource = null;//
-        // textureDataset.getAbstractRasterDataSource();
-        // todo init the raster datasource over the coverage manager
-        Envelope datasetEnvelope = coverage.getEnvelope();
-        LOG.debug( "Adding texture dataset: " + textureDataset.getTitle() );
-        if ( coverage instanceof MultiResolutionRaster ) {
-            getTileProviders( (MultiResolutionRaster) coverage, tileProviders );
-        } else if ( coverage instanceof TiledRaster || coverage instanceof SimpleRaster ) {
-            addTileProvider( (AbstractRaster) coverage, tileProviders );
+        Envelope datasetEnvelope = null;
+        if ( textureDataset.getCoverageStoreId() != null ) {
+            datasetEnvelope = fillFromCoverage( textureDataset.getCoverageStoreId(), tileProviders );
+        } else if ( textureDataset.getStyledGeometryProvider() != null ) {
+            datasetEnvelope = fillFromStyledGeometries( textureDataset.getStyledGeometryProvider(), tileProviders,
+                                                        sceneEnvelope, toLocalCRS, adapter );
         } else {
-            // geometry?
-
+            LOG.warn( "No texture dataset found for texture dataset: " + textureDataset.getTitle() );
+            return sceneEnvelope;
         }
+
         // WMSDataSourceType levelSource = (WMSDataSourceType) ds;
         // URL capabilitiesURL = new URL( levelSource.getCapabilitiesDocumentLocation().getLocation() );
         // int maxWidth = -1;
@@ -213,52 +211,7 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
         //
         // // TODO configure / lookup feature store from FeatureStoreManager by id!!
         //
-        // // JAXBElement<? extends FeatureStoreType> featureStore = ctDS.getFeatureStore();
-        // FeatureStore store = null;
-        // // try {
-        // // store = FeatureStoreManager.create( featureStore.getValue(), adapter.getSystemId() );
-        // // } catch ( FeatureStoreException e ) {
-        // // throw new IOException( "Could not create a feature store because: " + e.getLocalizedMessage(), e );
-        // // }
-        //
-        // String unresolved = ctDS.getStyleId();
-        // // todo get it from the style manager?
-        // if ( unresolved == null ) {
-        // LOG.warn( "The se-style file was not defined, could not create a closeup layer." );
-        // return sceneEnvelope;
-        // }
-        // URL styleFile = resolve( adapter, unresolved );
-        // InputStream styleStream = styleFile.openStream();
-        // Style style;
-        // try {
-        // style = SymbologyParser.INSTANCE.parse( XMLInputFactory.newInstance().createXMLStreamReader(
-        // styleFile.toExternalForm(),
-        // styleStream ) );
-        // } catch ( Exception e ) {
-        // throw new IOException( "Could not read symbology encoding file because: " + e.getLocalizedMessage(), e );
-        // }
-        //
-        // double unitsPerPixel = ctDS.getMinimumUnitsPerPixel();
-        // TextureCacheDir rasterCache = ctDS.getTextureCacheDir();
-        // File cacheDir = RasterCache.DEFAULT_CACHE_DIR;
-        // double cacheSize = -1;
-        // if ( rasterCache != null ) {
-        // String cd = rasterCache.getValue();
-        // if ( cd != null ) {
-        // URL resolve = adapter.resolve( cd );
-        // cd = resolve.getFile();
-        // cacheDir = new File( resolve.getFile() );
-        // }
-        // cacheSize = rasterCache.getCacheSize();
-        // }
-        // StyledGeometryTTProvider tProv = new StyledGeometryTTProvider( toLocalCRS,
-        // sceneEnvelope.getCoordinateSystem(), store,
-        // style, unitsPerPixel, cacheDir,
-        // Math.round( cacheSize * 1024 * 1024 * 1024 ) );
-        // tileProviders.add( tProv );
-        // datasetEnvelope = tProv.getEnvelope();
-        //
-        // }
+
         if ( !tileProviders.isEmpty() ) {
             TextureTileManager tileManager = new TextureTileManager(
                                                                      tileProviders.toArray( new TextureTileProvider[tileProviders.size()] ),
@@ -299,6 +252,88 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
                       + " because no texture providers could be initialized." );
         }
         return sceneEnvelope;
+    }
+
+    /**
+     * @param coverageStoreId
+     * @param tileProviders
+     */
+    private Envelope fillFromCoverage( String coverageStoreId, List<TextureTileProvider> tileProviders ) {
+        AbstractCoverage coverage = CoverageBuilderManager.get( coverageStoreId );
+        if ( coverage == null ) {
+            LOG.warn( "The coverage builder with id: " + coverageStoreId
+                      + " could not create a coverage, ignoring dataset." );
+            return null;
+        }
+        // JAXBElement<? extends AbstractGeospatialDataSourceType> abstractRasterDataSource = null;//
+        // textureDataset.getAbstractRasterDataSource();
+        // todo init the raster datasource over the coverage manager
+        if ( coverage instanceof MultiResolutionRaster ) {
+            getTileProviders( (MultiResolutionRaster) coverage, tileProviders );
+        } else if ( coverage instanceof TiledRaster || coverage instanceof SimpleRaster ) {
+            addTileProvider( (AbstractRaster) coverage, tileProviders );
+        }
+        return coverage.getEnvelope();
+    }
+
+    /**
+     * @param styledGeometryProvider
+     * @param tileProviders
+     * @throws IOException
+     */
+    private Envelope fillFromStyledGeometries( StyledGeometryProvider styledGeometryProvider,
+                                               List<TextureTileProvider> tileProviders, Envelope sceneEnvelope,
+                                               double[] toLocalCRS, XMLAdapter adapter )
+                            throws IOException {
+        // JAXBElement<? extends FeatureStoreType> featureStore = ctDS.getFeatureStore();
+        // FeatureStore store = null;
+        String featureStoreId = styledGeometryProvider.getFeatureStoreId();
+
+        FeatureStore store = FeatureStoreManager.get( featureStoreId );
+
+        // String styleId = styledGeometryProvider.getStyleId();
+        // Styl
+        String unresolved = styledGeometryProvider.getStyleId();
+        // todo get it from the style manager?
+        if ( unresolved == null ) {
+            LOG.warn( "The se-style file was not defined, could not create a closeup layer." );
+            return null;
+        }
+        URL styleFile = resolve( adapter, unresolved );
+        InputStream styleStream = null;
+        Style style;
+        try {
+            styleStream = styleFile.openStream();
+            style = SymbologyParser.INSTANCE.parse( XMLInputFactory.newInstance().createXMLStreamReader(
+                                                                                                         styleFile.toExternalForm(),
+                                                                                                         styleStream ) );
+        } catch ( Exception e ) {
+            throw new IOException( "Could not read symbology encoding file because: " + e.getLocalizedMessage(), e );
+        } finally {
+            if ( styleStream != null ) {
+                styleStream.close();
+            }
+        }
+
+        double unitsPerPixel = styledGeometryProvider.getMinimumUnitsPerPixel();
+        org.deegree.services.jaxb.wpvs.StyledGeometryProvider.TextureCacheDir rasterCache = styledGeometryProvider.getTextureCacheDir();
+        File cacheDir = RasterCache.DEFAULT_CACHE_DIR;
+        double cacheSize = -1;
+        if ( rasterCache != null ) {
+            String cd = rasterCache.getValue();
+            if ( cd != null ) {
+                URL resolve = adapter.resolve( cd );
+                cd = resolve.getFile();
+                cacheDir = new File( resolve.getFile() );
+            }
+            cacheSize = rasterCache.getCacheSize();
+        }
+        StyledGeometryTTProvider tProv = new StyledGeometryTTProvider( toLocalCRS, sceneEnvelope.getCoordinateSystem(),
+                                                                       store, style, unitsPerPixel, cacheDir,
+                                                                       Math.round( cacheSize * 1024 * 1024 * 1024 ) );
+        tileProviders.add( tProv );
+        return tProv.getEnvelope();
+
     }
 
     /**
