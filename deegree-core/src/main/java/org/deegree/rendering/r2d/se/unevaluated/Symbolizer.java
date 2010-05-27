@@ -185,7 +185,9 @@ public class Symbolizer<T extends Copyable<T>> {
 
         if ( evaluated != null ) {
             Pair<T, Geometry> pair = new Pair<T, Geometry>( evaluated, geom );
-            cache.put( id, pair.first );
+            if ( id != null ) {
+                cache.put( id, pair.first );
+            }
             return pair;
         }
 
@@ -197,7 +199,9 @@ public class Symbolizer<T extends Copyable<T>> {
         }
 
         next.evaluate( evald, f );
-        cache.put( id, pair.first );
+        if ( id != null ) {
+            cache.put( id, pair.first );
+        }
 
         return pair;
     }
