@@ -41,12 +41,16 @@ package org.deegree.coverage.raster.integration;
 import static junit.framework.Assert.assertNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URISyntaxException;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.utils.PixelCounter;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.utils.RasterFactory;
@@ -81,8 +85,8 @@ public abstract class CenterOuterTest implements CompareValues {
      * kind of a constructor will be called as initialization.
      * 
      * @throws IOException
-     * @throws URISyntaxException 
-     * @throws NumberFormatException 
+     * @throws URISyntaxException
+     * @throws NumberFormatException
      */
     protected abstract void buildRasters()
                             throws IOException, NumberFormatException, URISyntaxException;
@@ -106,15 +110,31 @@ public abstract class CenterOuterTest implements CompareValues {
     protected void writeDebugFile( String prefix, SimpleRaster raster ) {
         assertNotNull( raster );
         // always test reading operations on the new raster
-        RasterFactory.imageFromRaster( raster );
-        if ( LOG.isDebugEnabled() ) {
-            try {
-                File f = File.createTempFile( prefix, ".png" );
-                RasterFactory.saveRasterToFile( raster, f );
-            } catch ( IOException e ) {
-                e.printStackTrace();
+        BufferedImage image = RasterFactory.imageFromRaster( raster );
+        if ( outputRasterAsArrays ) {
+            BigInteger[] pixels = PixelCounter.countPixels( image );
+            StringBuilder sb = new StringBuilder( "private final static BigInteger[] FP_" );
+            sb.append( prefix.toUpperCase() );
+            sb.append( " = new BigInteger[] { " );
+            int i = 0;
+            for ( BigInteger bi : pixels ) {
+                sb.append( "BigInteger.valueOf( " );
+                sb.append( bi );
+                sb.append( "l )" );
+                if ( ++i < pixels.length ) {
+                    sb.append( ", " );
+                }
             }
-            if ( outputRasterAsArrays ) {
+            sb.append( "};" );
+            System.out.println( sb.toString() );
+
+            if ( LOG.isDebugEnabled() ) {
+                try {
+                    File f = File.createTempFile( prefix, ".png" );
+                    RasterFactory.saveRasterToFile( raster, f );
+                } catch ( IOException e ) {
+                    e.printStackTrace();
+                }
                 outputRaster( raster, prefix );
             }
         }
@@ -151,6 +171,19 @@ public abstract class CenterOuterTest implements CompareValues {
         }
         sb.append( "};" );
         LOG.debug( sb.toString() );
+
+        try {
+            FileWriter fw = new FileWriter( "/tmp/" + name + ".txt" );
+            fw.write( sb.toString() );
+            fw.close();
+        } catch ( IOException e ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
+            } else {
+                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
+            }
+        }
+        // System.out.println( sb.toString() );
     }
 
     /**
@@ -181,5 +214,16 @@ public abstract class CenterOuterTest implements CompareValues {
                 x = 0;
             }
         }
+    }
+
+    /**
+     * @param footprint
+     * @param raster
+     */
+    public void testValues( BigInteger[] footprint, SimpleRaster raster ) {
+        BufferedImage image = RasterFactory.imageFromRaster( raster );
+        double similarty = PixelCounter.similarityLevel( image, footprint );
+        Assert.assertEquals( 1.0, similarty, 0.0001 );
+
     }
 }
