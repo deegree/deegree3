@@ -106,6 +106,9 @@ public class RasterGeoReference {
 
     private final static double INV_DECIMAL_ACCURACY = 0.000001;
 
+    // the index to the axis which points to easting, defaults to 0, e.g. x,y is assumed.
+    private int eastingAxis = 0;
+
     /**
      * The <code>OriginLocation</code> defines the mapping location of the world origin to the underlying raster.
      * 
@@ -156,6 +159,7 @@ public class RasterGeoReference {
         this.crs = crs;
         if ( cs != null ) {
             transformer = new GeometryTransformer( cs );
+            eastingAxis = cs.getEasting();
         } else {
             transformer = null;
         }
@@ -242,20 +246,54 @@ public class RasterGeoReference {
         if ( envelope != null ) {
             CRS crs = envelope.getCoordinateSystem();
             int xAxis = 0;
-            int yAxis = 1;
             if ( crs != null ) {
                 try {
                     CoordinateSystem cs = crs.getWrappedCRS();
                     xAxis = cs.getEasting();
-                    yAxis = cs.getNorthing();
                 } catch ( UnknownCRSException e ) {
                     // assume xaxis is first.
                 }
             }
             double span0 = envelope.getSpan( xAxis );
-            double span1 = envelope.getSpan( yAxis );
+            double span1 = envelope.getSpan( 1 - xAxis );
             double resX = span0 / width;
             double resY = -span1 / height;
+            double origin0 = envelope.getMin().get0();
+            double origin1 = envelope.getMax().get1();
+            return new RasterGeoReference( location, resX, resY, origin0, origin1, crs );
+        }
+        return null;
+    }
+
+    /**
+     * Create a raster reference which has it's origin at the min[0] and max[1] of the given Envelope. If no CRS is
+     * available from the Envelope axisorder XY is assumed.
+     * 
+     * @param location
+     *            of the origin can be center or outer
+     * @param envelope
+     *            to get the appropriate values from.
+     * @param resolution0
+     *            of the first axis.
+     * @param resolution1
+     *            of the second axis.
+     * @return a new RasterGeoReference of <code>null</code> if the given envelope is <code>null</code>
+     */
+    public static RasterGeoReference create( OriginLocation location, Envelope envelope, double resolution0,
+                                             double resolution1 ) {
+        if ( envelope != null ) {
+            CRS crs = envelope.getCoordinateSystem();
+            int xAxis = 0;
+            if ( crs != null ) {
+                try {
+                    CoordinateSystem cs = crs.getWrappedCRS();
+                    xAxis = cs.getEasting();
+                } catch ( UnknownCRSException e ) {
+                    // assume xaxis is first.
+                }
+            }
+            double resX = ( xAxis == 0 ) ? resolution0 : resolution1;
+            double resY = ( xAxis == 0 ) ? resolution1 : resolution0;
             double origin0 = envelope.getMin().get0();
             double origin1 = envelope.getMax().get1();
             return new RasterGeoReference( location, resX, resY, origin0, origin1, crs );
@@ -962,6 +1000,27 @@ public class RasterGeoReference {
     private final double floor( double val ) {
         val = removeImprecisions( val );
         return Math.floor( val );
+    }
+
+    /**
+     * @return the crs
+     */
+    public final CRS getCrs() {
+        return crs;
+    }
+
+    /**
+     * @return the northing (y) value of the origin.
+     */
+    public double getOriginNorthing() {
+        return getOrigin()[1 - eastingAxis];
+    }
+
+    /**
+     * @return the easting (x) value of the origin.
+     */
+    public double getOriginEasting() {
+        return getOrigin()[eastingAxis];
     }
 
 }

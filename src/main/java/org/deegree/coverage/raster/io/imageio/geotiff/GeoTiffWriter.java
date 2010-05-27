@@ -36,305 +36,353 @@
 
 package org.deegree.coverage.raster.io.imageio.geotiff;
 
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
-import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.GTModelTypeGeoKey;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.GTRasterTypeGeoKey;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.GeographicTypeGeoKey;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.ModelTypeGeocentric;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.ModelTypeGeographic;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.ModelTypeProjected;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.ProjectedCSTypeGeoKey;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.RasterPixelIsArea;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.RasterPixelIsPoint;
+import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.VerticalCSTypeGeoKey;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
-import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.geometry.Envelope;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.metadata.IIOInvalidTreeException;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.ImageOutputStream;
 
-import com.sun.media.jai.codec.TIFFEncodeParam;
-import com.sun.media.jai.codec.TIFFField;
-import com.sun.media.jai.codecimpl.TIFFImageEncoder;
+import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.utils.RasterFactory;
+import org.deegree.cs.CRS;
+import org.deegree.cs.CRSCodeType;
+import org.deegree.cs.EPSGCode;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType;
+import org.deegree.cs.exceptions.UnknownCRSException;
+
+import com.sun.media.imageio.plugins.tiff.GeoTIFFTagSet;
+import com.sun.media.imageio.plugins.tiff.TIFFDirectory;
+import com.sun.media.imageio.plugins.tiff.TIFFField;
+import com.sun.media.imageio.plugins.tiff.TIFFTag;
+import com.sun.media.imageioimpl.plugins.tiff.TIFFImageWriter;
 
 /**
- * This class is for writing GeoTIFF files from any java.awt.image. At that time, only writing the Bounding Box is
- * available.
+ * ImageIO based geo tiff writer. Currently following geotiff tags are exported:
+ * <ul>
+ * <li></li>
+ * <li></li>
+ * <li></li>
+ * </ul>
  * 
- * 
- * @author <a href="mailto:schaefer@lat-lon.de">Axel Schaefer </A>
+ * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version 2.0. $Revision$, $Date$
- * @since 2.0
+ * 
+ * @version $Revision$, $Date$
  */
 public class GeoTiffWriter {
 
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( GeoTiffWriter.class );
 
-    // GeoTIFF values for GTModelTypeGeoKey
-    // http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1
-    private static final int ValueModelTypeProjected = 1;
-
-    private static final int ValueModelTypeGeographic = 2;
-
-    private List<TIFFField> tiffields = null;
+    private static final GeoTIFFTagSet GEO_TAG_SET = GeoTIFFTagSet.getInstance();
 
     /**
-     * see http://www.remotesensing.org/geotiff/spec/geotiff2.4.html#2.4 especialy the KeyEntry part.
-     * 
-     * The key (Integer) is the GeoTIFF Key ID http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.2 The value is
-     * an int array of the size 3. If you want to store simple GeoTIFF key-values set the array to { 0, 1, VALUE }.
-     */
-    private HashMap<Integer, int[]> geoKeyDirectoryTag = null;
-
-    private BufferedImage bi = null;
-
-    private double offset = 0;
-
-    private double scaleFactor = 1;
-
-    /**
-     * creates an GeoTiffWriter instance from an java.awt.image.
-     * 
-     * @param image
-     *            the image, to be transformed to a GeoTIFF.
-     * @param envelope
-     *            the BoundingBox, the GeoTIFF should have
-     * @param resx
-     *            The X-Resolution
-     * @param resy
-     *            The Y-Resolution
-     * @param crs
-     */
-    public GeoTiffWriter( BufferedImage image, Envelope envelope, double resx, double resy, CRS crs ) {
-        this( image, envelope, resx, resy, crs, 0, 1 );
-    }
-
-    /**
-     * creates an GeoTiffWriter instance from an java.awt.image.
-     * 
-     * @param image
-     *            the image, to be transformed to a GeoTIFF.
-     * @param envelope
-     *            the BoundingBox, the GeoTIFF should have
-     * @param resx
-     *            The X-Resolution
-     * @param resy
-     *            The Y-Resolution
-     * @param crs
-     * @param offset
-     * @param scaleFactor
-     */
-    public GeoTiffWriter( BufferedImage image, Envelope envelope, double resx, double resy, CRS crs, double offset,
-                          double scaleFactor ) {
-        this.tiffields = new ArrayList<TIFFField>();
-        this.geoKeyDirectoryTag = new HashMap<Integer, int[]>();
-        int[] header = { 1, 2, 0 };
-        this.bi = image;
-        this.offset = offset;
-        this.scaleFactor = scaleFactor;
-        // sets the header. this key must be overwritten in the write-method.
-        addKeyToGeoKeyDirectoryTag( 1, header );
-        // sets the boundingbox (with envelope and resolution)
-        setBoxInGeoTIFF( envelope, resx, resy );
-        // sets the CoordinateSystem
-        try {
-            setCoordinateSystem( crs );
-        } catch ( UnknownCRSException e ) {
-            LOG.debug( "Could not get coordinate system of the crs: " + e.getLocalizedMessage(), e );
-        }
-    }
-
-    /**
-     * returns the GeoKeys as an array of Tiff Fields.
-     * 
-     * @return an array of TIFFFields
-     */
-    private TIFFField[] getGeoTags() {
-        TIFFField[] extraFields = null;
-
-        if ( this.tiffields != null && this.tiffields.size() > 0 ) {
-            extraFields = new TIFFField[this.tiffields.size()];
-            for ( int i = 0; i < extraFields.length; i++ ) {
-                extraFields[i] = this.tiffields.get( i );
-            }
-        }
-        return extraFields;
-    }
-
-    /**
-     * gets the GeoKeyDirectoryTag as a chararrary.
-     * 
-     * @return the GeoKeyDirectoryTag as a chararrary
-     */
-    private char[] getGeoKeyDirectoryTag() {
-        char[] ch = null;
-
-        // check, if it contains more fields than the header
-        if ( this.geoKeyDirectoryTag.size() > 1 ) {
-            ch = new char[this.geoKeyDirectoryTag.size() * 4];
-            Set set = this.geoKeyDirectoryTag.keySet();
-            Object[] o = set.toArray();
-
-            Integer keyID = null;
-            int[] temparray = new int[3];
-
-            // o.length is equals this.geoKeyDirectoryTag.size()
-            for ( int i = 0; i < o.length; i++ ) {
-                // get the key-ID from the ObjectArray 'o'
-                keyID = (Integer) o[i];
-                // get the values of the HashMap (int[]) at the key keyID
-                temparray = this.geoKeyDirectoryTag.get( keyID );
-                ch[i * 4] = (char) keyID.intValue();
-                ch[i * 4 + 1] = (char) temparray[0];
-                ch[i * 4 + 2] = (char) temparray[1];
-                ch[i * 4 + 3] = (char) temparray[2];
-            }
-        }
-
-        return ch;
-    }
-
-    /**
-     * 
-     * @param key
-     * @param values
-     */
-    private void addKeyToGeoKeyDirectoryTag( int key, int[] values ) {
-        this.geoKeyDirectoryTag.put( new Integer( key ), values );
-    }
-
-    /**
-     * Writes the GeoTIFF as a BufferedImage to an OutputStream. The OutputStream isn't closed after the method.
-     * 
-     * @param os
-     *            the output stream, which has to be written.
-     * @throws IOException
-     */
-    public void write( OutputStream os )
-                            throws IOException {
-        if ( this.geoKeyDirectoryTag.size() > 1 ) {
-            // overwrite header with *real* size of GeoKeyDirectoryTag
-            int[] header = { 1, 2, this.geoKeyDirectoryTag.size() - 1 };
-            addKeyToGeoKeyDirectoryTag( 1, header );
-
-            char[] ch = getGeoKeyDirectoryTag();
-
-            // int tag, int type, int count, java.lang.Object data
-            TIFFField geokeydirectorytag = new TIFFField( GeoTiffTag.GeoKeyDirectoryTag, TIFFField.TIFF_SHORT,
-                                                          ch.length, ch );
-            this.tiffields.add( geokeydirectorytag );
-        }
-
-        // get the geokeys
-        TIFFField[] tiffields_array = getGeoTags();
-
-        TIFFEncodeParam encodeParam = new TIFFEncodeParam();
-        if ( tiffields_array != null && tiffields_array.length > 0 ) {
-            encodeParam.setExtraFields( tiffields_array );
-        }
-        TIFFImageEncoder encoder = new TIFFImageEncoder( os, encodeParam );
-
-        // void encoder( java.awt.image.RenderedImage im )
-        encoder.encode( bi );
-    }
-
-    // ************************************************************************
-    // BoundingBox
-    // ************************************************************************
-    /**
-     * description: Extracts the GeoKeys of the GeoTIFF. The Following Tags will be
-     * extracted(http://www.remotesensing.org/geotiff/spec/geotiffhome.html):
+     * The model pixel scale tag holds following values.<code>
      * <ul>
-     * <li>ModelPixelScaleTag = 33550 (SoftDesk)
-     * <li>ModelTiepointTag = 33922 (Intergraph)
+     * <li>Tag = 33550</li>
+     * <li>Type = DOUBLE (IEEE Double precision)</li>
+     * <li> N = 3 (3 dimensional)</li>
+     * <li> x, y, z resolution</li>
      * </ul>
-     * implementation status: working
+     * </code>
+     * 
+     * 
+     * @param geoRef
+     *            the geo reference to get the values from.
+     * @return the tiff field containing the scale
      */
-    private void setBoxInGeoTIFF( Envelope envelope, double resx, double resy ) {
+    private static TIFFField createModelPixelScaleTag( RasterGeoReference geoRef ) {
+        TIFFTag tag = GEO_TAG_SET.getTag( GeoTIFFTagSet.TAG_MODEL_PIXEL_SCALE );
+        return new TIFFField( tag, TIFFTag.TIFF_DOUBLE, 3, new double[] { geoRef.getResolutionX(),
+                                                                         geoRef.getResolutionY(), 0 } );
+    }
 
-        double[] resolution = { resx, resy, 1d / scaleFactor };
-        // ModelPixelScaleTag:
-        // Tag = 33550
-        // Type = DOUBLE (IEEE Double precision)
-        // N = 3
-        // Owner: SoftDesk
-        TIFFField modelPixelScaleTag = new TIFFField( GeoTiffTag.ModelPixelScaleTag, TIFFField.TIFF_DOUBLE, 3,
-                                                      resolution );
-
-        this.tiffields.add( modelPixelScaleTag );
+    /**
+     * The model tie point tag consists of following values.
+     * <ul>
+     * <li>Tag = 33922 (8482.H)</li>
+     * <li>Type = DOUBLE (IEEE Double precision)</li>
+     * <li>N = 6*K, K = number of tiepoints</li>
+     * <li>the values, 6 dimensionals (3 raster points, 3 world coordinates) per tie point</li>
+     * </ul>
+     * 
+     * @param envelope
+     * @param rasterGeoReference
+     * @return the tiff field containing the tie point
+     */
+    private static TIFFField createModelTiePointTag( RasterGeoReference rasterGeoReference ) {
 
         // ModelTiepointTag:
         // calculate the first points for the upper-left corner {0,0,0} of the
         // tiff
-        double tp_01x = 0.0; // (0, val1)
-        double tp_01y = 0.0; // (1, val2)
-        double tp_01z = 0.0; // (2) z-value. not needed
+        double worldX = rasterGeoReference.getOriginEasting();
+        double worldY = rasterGeoReference.getOriginNorthing();
 
-        // the real-world coordinates for the upper points (tp_01.)
-        // these are the unknown variables which have to be calculated.
-        double tp_02x = 0.0; // (3, val4)
-        double tp_02y = 0.0; // (4, val5)
-        double tp_02z = -offset; // (5) z-value. not needed
-
-        double xmin = envelope.getMin().get0();
-        double ymax = envelope.getMax().get1();
-
-        // transform this equation: xmin = ?[val4] - ( tp_01x * resx )
-        tp_02x = xmin + ( tp_01x * resx );
-
-        // transform this equation: ymax = ?[val5] + ( tp_01y * resy )
-        tp_02y = ymax + ( tp_01y * resy );
-
-        double[] tiepoint = { tp_01x, tp_01y, tp_01z, tp_02x, tp_02y, tp_02z };
-
-        // ModelTiepointTag:
-        // Tag = 33922 (8482.H)
-        // Type = DOUBLE (IEEE Double precision)
-        // N = 6*K, K = number of tiepoints
-        // Alias: GeoreferenceTag
-        // Owner: Intergraph
-        TIFFField modelTiepointTag = new TIFFField( GeoTiffTag.ModelTiepointTag, TIFFField.TIFF_DOUBLE, 6, tiepoint );
-
-        this.tiffields.add( modelTiepointTag );
+        // the upper left point in the raster have given world coordinates
+        double[] tiepoint = { 0, 0, 0, worldX, worldY, 0 };
+        TIFFTag tag = GEO_TAG_SET.getTag( GeoTIFFTagSet.TAG_MODEL_TIE_POINT );
+        return new TIFFField( tag, TIFFTag.TIFF_DOUBLE, 6, tiepoint );
     }
 
-    // ************************************************************************
-    // CoordinateSystem
-    // ************************************************************************
     /**
-     * @throws UnknownCRSException
      * 
+     * see http://www.remotesensing.org/geotiff/spec/geotiff2.4.html#2.4 especially the KeyEntry part.
+     * 
+     * The key (Integer) is the GeoTIFF Key ID http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.2 The value is
+     * an int array of the size 3. If you want to store simple GeoTIFF key-values set the array to { 0, 1, VALUE }.
+     * 
+     * @return a Tifffield containing the geo directory, which contains keys for the crs description and the raster
+     *         type.
      */
-    private void setCoordinateSystem( CRS crs )
-                            throws UnknownCRSException {
-        org.deegree.cs.coordinatesystems.CoordinateSystem crs2 = crs.getWrappedCRS();
-        if ( crs2 != null ) {
-            String[] identifiers = crs2.getOrignalCodeStrings();
-            int epsg = -1;
-            for ( String id : identifiers ) {
-                LOG.debug( "trying to find EPSG code: " + id );
-                if ( id.toUpperCase().startsWith( "EPSG:" ) ) {
-                    try {
-                        epsg = Integer.parseInt( id.substring( 5 ) );
-                        break;
-                    } catch ( NumberFormatException e ) {
-                        // ignore and just try next one
-                    }
-                }
+    private static TIFFField createDirectoryTag( RasterGeoReference geoRef ) {
+        Map<Integer, char[]> geoKeyDirectoryTag = new HashMap<Integer, char[]>();
+        addCRS( geoKeyDirectoryTag, geoRef.getCrs() );
+        addGTRasterTypeGeoKey( geoKeyDirectoryTag, geoRef.getOriginLocation() );
+        // space for the header and the keys.
+        char[] geoKeys = extractGeoKeys( geoKeyDirectoryTag );
+        if ( geoKeys.length > 4 ) {
+            TIFFTag tag = GEO_TAG_SET.getTag( GeoTIFFTagSet.TAG_GEO_KEY_DIRECTORY );
+            return new TIFFField( tag, TIFFTag.TIFF_SHORT, geoKeys.length, geoKeys );
+        }
+        return null;
+    }
+
+    /**
+     * @param geoKeyDirectoryTag2
+     * @param originLocation
+     */
+    private static void addGTRasterTypeGeoKey( Map<Integer, char[]> geoKeyDirectoryTag, OriginLocation originLocation ) {
+        char val = originLocation == OriginLocation.CENTER ? RasterPixelIsArea : RasterPixelIsPoint;
+        geoKeyDirectoryTag.put( GTRasterTypeGeoKey, new char[] { 0, 1, val } );
+    }
+
+    /**
+     * @param geoKeyDirectoryTag2
+     * @return
+     */
+    private static char[] extractGeoKeys( Map<Integer, char[]> geoKeyDirectoryTag ) {
+        Set<Integer> keys = geoKeyDirectoryTag.keySet();
+        int keySize = 4;
+        for ( Integer key : keys ) {
+            char[] values = geoKeyDirectoryTag.get( key );
+            if ( values != null ) {
+                // the key
+                keySize++;
+                // the values
+                keySize += values.length;
             }
-            if ( epsg != -1 ) {
-                int[] keyEntry = new int[] { 0, 1, epsg };
-                if ( crs2.getType() == GEOGRAPHIC ) {
-                    addKeyToGeoKeyDirectoryTag( GeoTiffKey.GTModelTypeGeoKey, new int[] { 0, 1,
-                                                                                         ValueModelTypeGeographic } );
-                    addKeyToGeoKeyDirectoryTag( GeoTiffKey.GeographicTypeGeoKey, keyEntry );
-                } else if ( crs2.getType() == PROJECTED ) {
-                    addKeyToGeoKeyDirectoryTag( GeoTiffKey.GTModelTypeGeoKey,
-                                                new int[] { 0, 1, ValueModelTypeProjected } );
-                    addKeyToGeoKeyDirectoryTag( GeoTiffKey.ProjectedCSTypeGeoKey, keyEntry );
-                } else {
-                    LOG.warn( "Can't save coordinate system. coordinate type " + crs2.getType() + " not supported" );
+        }
+        char[] result = new char[keySize];
+
+        int i = 4;
+        if ( keySize > 4 ) {
+            for ( Integer key : keys ) {
+                // get the values of the HashMap (int[]) at the key keyID
+                char[] values = geoKeyDirectoryTag.get( key );
+                result[i++] = (char) key.intValue();
+                for ( int v = 0; v < values.length; ++v ) {
+                    result[i++] = values[v];
                 }
             }
         }
+        result[0] = 1;// key version type
+        result[1] = 0; // revision
+        result[2] = 2;// minor revision
+        result[3] = (char) keys.size();
+        return result;
+    }
+
+    /**
+     * Adds the description of the crs to the directory.
+     * 
+     * @param geoKeyDirectoryTag
+     *            to add the values of the crs to.
+     * @param crs
+     *            to add.
+     */
+    private static void addCRS( Map<Integer, char[]> geoKeyDirectoryTag, CRS crs ) {
+        if ( crs == null ) {
+            return;
+        }
+        CoordinateSystem srs;
+        try {
+            srs = crs.getWrappedCRS();
+        } catch ( UnknownCRSException e1 ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "(Stack) Could not determine the crs for geotiff writing: " + e1.getLocalizedMessage(), e1 );
+            } else {
+                LOG.error( " Could not determine the crs for geotiff writing: " + e1.getLocalizedMessage() );
+            }
+            return;
+        }
+        if ( srs != null ) {
+            CRSCodeType[] codes = srs.getCodes();
+            // set to user defined
+            int epsgCode = 32767;
+            for ( int i = 0; i < codes.length && epsgCode == 32767; ++i ) {
+                CRSCodeType code = codes[i];
+                if ( code instanceof EPSGCode ) {
+                    epsgCode = ( (EPSGCode) code ).getCodeNo();
+                } else {
+                    String codeString = code.getOriginal();
+                    if ( codeString != null && codeString.toLowerCase().contains( "espg" ) ) {
+                        int index = codeString.lastIndexOf( ":" );
+                        if ( index == -1 ) {
+                            index = codeString.lastIndexOf( "#" );
+                        }
+                        if ( index != -1 ) {
+                            String subString = codeString.substring( index );
+                            try {
+                                epsgCode = Integer.parseInt( subString );
+                            } catch ( NumberFormatException e ) {
+                                // ignore and just try next one
+                            }
+                        }
+                    }
+                }
+            }
+            char[] keyEntry = new char[] { 0, 1, (char) epsgCode };
+            CRSType type = srs.getType();
+            switch ( type ) {
+            case COMPOUND:
+                LOG.warn( "Can't save coordinate system. coordinate type " + srs.getType() + " not supported" );
+                break;
+            case GEOCENTRIC:
+                LOG.warn( "Can't save coordinate system. coordinate type " + srs.getType() + " not supported" );
+                geoKeyDirectoryTag.put( GTModelTypeGeoKey, new char[] { 0, 1, ModelTypeGeocentric } );
+                geoKeyDirectoryTag.put( GeographicTypeGeoKey, keyEntry );
+                if ( epsgCode == 32767 ) {
+                    // add projection parameters etc, this value means user defined.
+                }
+                break;
+            case GEOGRAPHIC:
+                geoKeyDirectoryTag.put( GTModelTypeGeoKey, new char[] { 0, 1, ModelTypeGeographic } );
+                geoKeyDirectoryTag.put( GeographicTypeGeoKey, keyEntry );
+                if ( epsgCode == 32767 ) {
+                    // add projection parameters etc, this value means user defined.
+                }
+                break;
+            case PROJECTED:
+                geoKeyDirectoryTag.put( GTModelTypeGeoKey, new char[] { 0, 1, ModelTypeProjected } );
+                geoKeyDirectoryTag.put( ProjectedCSTypeGeoKey, keyEntry );
+                if ( epsgCode == 32767 ) {
+                    // add projection parameters etc, this value means user defined.
+                }
+                break;
+            case VERTICAL:
+                geoKeyDirectoryTag.put( GTModelTypeGeoKey, new char[] { 0, 1, 32767 } );
+                geoKeyDirectoryTag.put( VerticalCSTypeGeoKey, keyEntry );
+                if ( epsgCode == 32767 ) {
+                    // add projection parameters etc, this value means user defined.
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param raster
+     * @param writer
+     * @throws IOException
+     */
+    private static void write( AbstractRaster raster, ImageWriter writer )
+                            throws IOException {
+        ImageWriteParam encodeParam = writer.getDefaultWriteParam();
+        IIOMetadata metadata = writer.getDefaultImageMetadata( null, encodeParam );
+        TIFFDirectory tiffDir = null;
+        try {
+            tiffDir = TIFFDirectory.createFromMetadata( metadata );
+        } catch ( IIOInvalidTreeException e ) {
+            throw new IOException( "Could not write the meta data for the GeoTIFF file because: "
+                                   + e.getLocalizedMessage(), e );
+        }
+
+        TIFFField tag = createModelTiePointTag( raster.getRasterReference() );
+        if ( tag != null ) {
+            tiffDir.addTIFFField( tag );
+        }
+        tag = createModelPixelScaleTag( raster.getRasterReference() );
+        if ( tag != null ) {
+            tiffDir.addTIFFField( tag );
+        }
+        tag = createDirectoryTag( raster.getRasterReference() );
+        if ( tag != null ) {
+            tiffDir.addTIFFField( tag );
+        }
+        metadata = tiffDir.getAsMetadata();
+        BufferedImage image = RasterFactory.imageFromRaster( raster );
+        IIOImage wImage = new IIOImage( image, null, metadata );
+        writer.write( wImage );
+
+    }
+
+    private static ImageWriter getWriter()
+                            throws IOException {
+        Iterator<ImageWriter> imageWritersByFormatName = ImageIO.getImageWritersByFormatName( "tiff" );
+        ImageWriter writer = null;
+
+        while ( imageWritersByFormatName.hasNext() && writer == null ) {
+            writer = imageWritersByFormatName.next();
+            if ( !( writer instanceof TIFFImageWriter ) ) {
+                writer = null;
+            }
+        }
+        if ( writer == null ) {
+            throw new IOException( "Could not create an ImageIO writer for format:  geoTiff" );
+        }
+        return writer;
+    }
+
+    /**
+     * @param raster
+     * @param out
+     * @throws IOException
+     */
+    public static void save( AbstractRaster raster, OutputStream out )
+                            throws IOException {
+        ImageOutputStream stream = ImageIO.createImageOutputStream( out );
+        ImageWriter writer = getWriter();
+        writer.setOutput( stream );
+        write( raster, writer );
+        stream.flush();
+    }
+
+    /**
+     * @param raster
+     * @param file
+     * @throws IOException
+     */
+    public static void save( AbstractRaster raster, File file )
+                            throws IOException {
+        ImageOutputStream stream = ImageIO.createImageOutputStream( file );
+        ImageWriter writer = getWriter();
+        writer.setOutput( stream );
+        write( raster, writer );
+        stream.flush();
+        stream.close();
     }
 }

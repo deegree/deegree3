@@ -47,7 +47,7 @@ import org.deegree.geometry.GeometryFactory;
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractCoverage {
+public abstract class AbstractCoverage implements Coverage {
 
     private GeometryFactory geomFactory = new GeometryFactory();
 

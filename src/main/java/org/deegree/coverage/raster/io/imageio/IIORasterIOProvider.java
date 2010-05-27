@@ -71,8 +71,10 @@ public class IIORasterIOProvider implements RasterIOProvider {
 
         SUPPORTED_TYPES_READ = new HashSet<String>();
         SUPPORTED_TYPES_READ.addAll( new IIORasterReader().getSupportedFormats() );
+        SUPPORTED_TYPES_READ.add( "geotiff" );
         SUPPORTED_TYPES_WRITE = new HashSet<String>();
         SUPPORTED_TYPES_WRITE.addAll( new IIORasterWriter().getSupportedFormats() );
+        SUPPORTED_TYPES_WRITE.add( "geotiff" );
 
         // String[] readerFormatNames = ImageIO.getReaderFormatNames();
         // if ( readerFormatNames != null ) {

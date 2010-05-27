@@ -49,6 +49,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.coverage.raster.io.WorldFileAccess;
+import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,29 +85,40 @@ public class IIORasterWriter implements RasterWriter {
     public void write( AbstractRaster raster, File file, RasterIOOptions options )
                             throws IOException {
         LOG.debug( "writing " + file + " with ImageIO" );
-        String format = FileUtils.getFileExtension( file );
+        String format = options != null ? options.get( RasterIOOptions.OPT_FORMAT ) : null;
+        if ( format == null ) {
+            format = FileUtils.getFileExtension( file );
+        }
 
         LOG.debug( "Writing raster with width: {} height: {}", raster.getColumns(), raster.getRows() );
-        IIORasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(), file, format );
-
-        RasterGeoReference rasterReference = raster.getRasterReference();
-        WorldFileAccess.writeWorldFile( rasterReference, file );
+        if ( "geotiff".equals( format ) ) {
+            GeoTiffWriter.save( raster, file );
+        } else {
+            IIORasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(), file, format );
+            RasterGeoReference rasterReference = raster.getRasterReference();
+            WorldFileAccess.writeWorldFile( rasterReference, file );
+        }
     }
 
     @Override
     public void write( AbstractRaster raster, OutputStream out, RasterIOOptions options )
                             throws IOException {
         LOG.debug( "writing to stream with ImageIO" );
-        String format = options.get( RasterIOOptions.OPT_FORMAT );
-
-        IIORasterDataWriter.saveRasterDataToStream( raster.getAsSimpleRaster().getRasterData(), out, format );
+        String format = options != null ? options.get( RasterIOOptions.OPT_FORMAT ) : null;
+        if ( "geotiff".equals( format ) ) {
+            GeoTiffWriter.save( raster, out );
+        } else {
+            IIORasterDataWriter.saveRasterDataToStream( raster.getAsSimpleRaster().getRasterData(), out, format );
+        }
     }
 
     @Override
     public boolean canWrite( AbstractRaster raster, RasterIOOptions options ) {
-        if ( ImageIO.getImageWritersBySuffix( options.get( RasterIOOptions.OPT_FORMAT ) ).hasNext()
-        /** && raster.getAsSimpleRaster().getRasterData().getDataType() == BYTE* */
-        ) {
+        String format = options.get( RasterIOOptions.OPT_FORMAT );
+        if ( "geotiff".equalsIgnoreCase( format ) ) {
+            format = "tiff";
+        }
+        if ( ImageIO.getImageWritersBySuffix( format ).hasNext() ) {
             return true;
         }
         return false;

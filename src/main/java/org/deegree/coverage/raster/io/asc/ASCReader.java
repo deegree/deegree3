@@ -65,7 +65,6 @@ import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
-import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
@@ -412,12 +411,12 @@ public class ASCReader implements RasterReader {
         // nothing to do yet.
     }
 
-//    public static void main( String[] args )
-//                            throws IOException {
-//        ASCReader read = new ASCReader();
-//        File f = new File( "/home/rutger/raster_test/utah/raster/dem/12STF200800.asc" );
-//        RasterIOOptions options = RasterIOOptions.forFile( f );
-//        AbstractRaster raster = read.load( f, options );
-//        RasterFactory.saveRasterToFile( raster, new File( "/dev/shm/out.tiff" ) );
-//    }
+    // public static void main( String[] args )
+    // throws IOException {
+    // ASCReader read = new ASCReader();
+    // File f = new File( "/home/rutger/raster_test/utah/raster/dem/12STF200800.asc" );
+    // RasterIOOptions options = RasterIOOptions.forFile( f );
+    // AbstractRaster raster = read.load( f, options );
+    // RasterFactory.saveRasterToFile( raster, new File( "/dev/shm/out.tiff" ) );
+    // }
 }

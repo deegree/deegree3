@@ -37,6 +37,7 @@ package org.deegree.coverage.raster.container;
 
 import java.util.List;
 
+import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
@@ -84,5 +85,10 @@ public interface TileContainer {
      * @return the first tile in the container
      */
     public RasterDataInfo getRasterDataInfo();
+
+    /**
+     * @return the information about the resolution
+     */
+    public ResolutionInfo getResolutionInfo();
 
 }

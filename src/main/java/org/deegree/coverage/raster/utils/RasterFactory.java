@@ -188,11 +188,13 @@ public class RasterFactory {
      */
     public static void saveRasterToFile( AbstractRaster raster, File filename, RasterIOOptions options )
                             throws IOException {
-        if ( !options.contains( RasterIOOptions.OPT_FORMAT ) ) {
+        RasterIOOptions opts = new RasterIOOptions();
+        opts.copyOf( options );
+        if ( !opts.contains( RasterIOOptions.OPT_FORMAT ) ) {
             String format = FileUtils.getFileExtension( filename );
-            options.add( RasterIOOptions.OPT_FORMAT, format );
+            opts.add( RasterIOOptions.OPT_FORMAT, format );
         }
-        RasterWriter writer = getRasterWriter( raster, options );
+        RasterWriter writer = getRasterWriter( raster, opts );
         if ( writer == null ) {
             log.error( "couldn't find raster writer for " + filename );
             throw new IOException( "couldn't find raster writer" );
@@ -802,8 +804,8 @@ public class RasterFactory {
 
     /**
      * Creates a buffered image from the given raster data by calling the
-     * {@link RasterFactory#rasterDataFromImage(RenderedImage, RasterIOOptions, ByteBuffer))} method without any
-     * options. *
+     * {@link RasterFactory#rasterDataFromImage(RenderedImage, RasterIOOptions, ByteBuffer)} method without any options.
+     * *
      * 
      * @param img
      * @return the ByteBufferRasterData object from the image or <code>null</code> if the given img is <code>null</code>

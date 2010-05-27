@@ -35,12 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.interpolation.InterpolationType;
+import org.deegree.coverage.raster.interpolation.RasterInterpolater;
+import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryTransformer;
+import org.slf4j.Logger;
 
 /**
  * This class represents an abstract grid coverage.
@@ -51,8 +62,11 @@ import org.deegree.geometry.Envelope;
  * @version $Revision$, $Date$
  */
 public abstract class AbstractRaster extends AbstractCoverage {
+    private static final Logger LOG = getLogger( AbstractRaster.class );
 
     private RasterGeoReference rasterReference = null;
+
+    private ResolutionInfo resolutionInfo;
 
     /**
      * Instantiate an AbstractRaster with no envelope.
@@ -82,6 +96,9 @@ public abstract class AbstractRaster extends AbstractCoverage {
     protected AbstractRaster( Envelope envelope, RasterGeoReference rasterReference ) {
         super( envelope );
         this.rasterReference = rasterReference;
+        SampleResolution res = new SampleResolution( new double[] { rasterReference.getResolutionX(),
+                                                                   rasterReference.getResolutionY() } );
+        this.resolutionInfo = new ResolutionInfo( res );
     }
 
     /**
@@ -290,6 +307,97 @@ public abstract class AbstractRaster extends AbstractCoverage {
      */
     public boolean isSimpleRaster() {
         return false;
+    }
+
+    @Override
+    public AbstractRaster getAsRaster( Envelope spatialExtent, SampleResolution resolution,
+                                       InterpolationType interpolation ) {
+        if ( spatialExtent == null ) {
+            return null;
+        }
+        // Try the incoming envelope
+        CRS targetCRS = spatialExtent.getCoordinateSystem();
+        if ( this.getCoordinateSystem() == null ) {
+            // take this crs
+            targetCRS = getCoordinateSystem();
+        }
+
+        if ( targetCRS == null || targetCRS.equals( this.getCoordinateSystem() ) ) {
+            if ( getResolutionInfo().getNativeResolutions().get( 0 ).equals( resolution ) ) {
+                // same resolution and same crs, we return the sub raster
+                return getSubRaster( spatialExtent );
+            }
+            RasterGeoReference nGeoRef = resolution.createGeoReference( getRasterReference().getOriginLocation(),
+                                                                        spatialExtent );
+            RasterRect rect = nGeoRef.convertEnvelopeToRasterCRS( spatialExtent );
+
+            // same crs (no crs) but different resolution we must interpolate.
+            RasterInterpolater interpolater = new RasterInterpolater( interpolation );
+            return interpolater.interPolate( this.getSubRaster( spatialExtent ), rect.width, rect.height );
+        }
+        RasterRect rect = null;
+        try {
+            GeometryTransformer gt = new GeometryTransformer( getCoordinateSystem().getWrappedCRS() );
+            Envelope inLocalCRS = gt.transform( spatialExtent ).getEnvelope();
+            RasterGeoReference nGeoRef = resolution.createGeoReference( getRasterReference().getOriginLocation(),
+                                                                        inLocalCRS );
+            rect = nGeoRef.convertEnvelopeToRasterCRS( inLocalCRS );
+
+        } catch ( IllegalArgumentException e1 ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "(Stack) Exception occurred: " + e1.getLocalizedMessage(), e1 );
+            } else {
+                LOG.error( "Exception occurred: " + e1.getLocalizedMessage() );
+            }
+        } catch ( UnknownCRSException e1 ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "(Stack) Exception occurred: " + e1.getLocalizedMessage(), e1 );
+            } else {
+                LOG.error( "Exception occurred: " + e1.getLocalizedMessage() );
+            }
+        } catch ( TransformationException e ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
+            } else {
+                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
+            }
+        }
+
+        if ( rect == null ) {
+            LOG.warn( "Unable to determine new raster size of requested Envelope: " + spatialExtent
+                      + " at resolution: " + resolution );
+            return null;
+        }
+
+        // a different crs, we must transform to the requested crs.
+        AbstractRaster result = null;
+        try {
+            RasterTransformer transformer = new RasterTransformer( targetCRS );
+            result = transformer.transform( this, spatialExtent, rect.width, rect.height, interpolation );
+        } catch ( TransformationException e ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
+            } else {
+                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
+            }
+        } catch ( UnknownCRSException e ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
+            } else {
+                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
+            }
+        }
+        return result;
+
+    }
+
+    /**
+     * Returns information about the possible sample resolutions of this coverage.
+     * 
+     * @return information about the possible sample resolutions.
+     */
+    public ResolutionInfo getResolutionInfo() {
+        return this.resolutionInfo;
     }
 
 }

@@ -108,6 +108,20 @@ public class RasterTransformer extends Transformer {
     }
 
     /**
+     * Creates a new RasterTransformer with the given target CRS.
+     * 
+     * @param targetCRS
+     *            a coordinate system wrapper, wrapping the crs to which all incoming coordinates shall be transformed.
+     * @throws UnknownCRSException
+     *             if the given crs name could not be mapped to a valid (configured) crs.
+     * @throws IllegalArgumentException
+     *             if the given parameter is null.
+     */
+    public RasterTransformer( CRS targetCRS ) throws IllegalArgumentException, UnknownCRSException {
+        super( targetCRS );
+    }
+
+    /**
      * Creates a transformed raster from a given source raster.
      * 
      * <p>

@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.Arrays;
 import java.util.List;
 
+import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
 import org.deegree.coverage.raster.container.TileContainer;
 import org.deegree.coverage.raster.data.RasterData;
@@ -81,6 +82,16 @@ public class TiledRaster extends AbstractRaster {
     public TiledRaster( TileContainer tileContainer ) {
         super();
         this.tileContainer = tileContainer;
+    }
+
+    /**
+     * Returns information about the possible sample resolutions of this coverage.
+     * 
+     * @return information about the possible sample resolutions.
+     */
+    @Override
+    public ResolutionInfo getResolutionInfo() {
+        return tileContainer.getResolutionInfo();
     }
 
     /**
@@ -139,6 +150,7 @@ public class TiledRaster extends AbstractRaster {
      *            the new origin's location definition.
      * @return a subraster of the size of the given envelope, having the given bands and the given target location.
      */
+    @Override
     public TiledRaster getSubRaster( Envelope env, BandType[] bands, OriginLocation targetLocation ) {
         if ( getEnvelope().equals( env ) && ( bands == null || Arrays.equals( bands, getRasterDataInfo().bandInfo ) ) ) {
             return this;
@@ -262,19 +274,8 @@ public class TiledRaster extends AbstractRaster {
                 }
 
                 result.setSubRaster( subsetEnv, r );
-                // RasterCache.dispose();
-                // System.gc();
             }
         }
-        // try {
-        // RasterFactory.saveRasterToFile( result,
-        // new File( "/tmp/" + result.getRasterReference().getResolutionX() + "_"
-        // + Arrays.toString( result.getRasterReference().getOrigin() )
-        // + "_result.png" ) );
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
         return result;
     }
 

@@ -36,114 +36,49 @@
 package org.deegree.coverage.raster.io.imageio.geotiff;
 
 /**
- * This class represents the possible GeoTIFF keys (from 1024 to 4099) in the GeoKeyDirectoryTag (34735).
+ * An interface defining the used geo tiff keys and their allowed values. All constants are in their original geotiff
+ * name, and no (opposing java conventions) in upper case.
  * 
- * @author <a href="mailto:schaefer@lat-lon.de">Axel Schaefer </A>
+ * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version 2.0. $Revision$, $Date$
- * @since
+ * 
+ * @version $Revision$, $Date$
  */
-public class GeoTiffKey {
+public interface GeoTiffKey {
 
+    /** ID defining the crs model, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1 */
     public static final int GTModelTypeGeoKey = 1024;
 
+    /** ID defining the raster sample type, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.2 */
     public static final int GTRasterTypeGeoKey = 1025;
 
-    public static final int GTCitationGeoKey = 1026;
-
+    /** ID defining a geographic crs, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.2.1 */
     public static final int GeographicTypeGeoKey = 2048;
 
-    public static final int GeogCitationGeoKey = 2049;
-
-    public static final int GeogGeodeticDatumGeoKey = 2050;
-
-    public static final int GeogPrimeMeridianGeoKey = 2051;
-
-    public static final int GeogLinearUnitsGeoKey = 2052;
-
-    public static final int GeogLinearUnitSizeGeoKey = 2053;
-
-    public static final int GeogAngularUnitsGeoKey = 2054;
-
-    public static final int GeogAngularUnitSizeGeoKey = 2055;
-
-    public static final int GeogEllipsoidGeoKey = 2056;
-
-    public static final int GeogSemiMajorAxisGeoKey = 2057;
-
-    public static final int GeogSemiMinorAxisGeoKey = 2058;
-
-    public static final int GeogInvFlatteningGeoKey = 2059;
-
-    public static final int GeogAzimuthUnitsGeoKey = 2060;
-
-    public static final int GeogPrimeMeridianLongGeoKey = 2061;
-
+    /** ID defining a projected crs, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.3.1 */
     public static final int ProjectedCSTypeGeoKey = 3072;
 
-    public static final int PCSCitationGeoKey = 3073;
-
-    public static final int ProjectionGeoKey = 3074;
-
-    public static final int ProjCoordTransGeoKey = 3075;
-
-    public static final int ProjLinearUnitsGeoKey = 3076;
-
-    public static final int ProjLinearUnitSizeGeoKey = 3077;
-
-    public static final int ProjStdParallel1GeoKey = 3078;
-
-    // public static final int ProjStdParallelGeoKey =$ProjStdParallel1GeoKey;
-    public static final int ProjStdParallel2GeoKey = 3079;
-
-    public static final int ProjNatOriginLongGeoKey = 3080;
-
-    // public static final int ProjOriginLongGeoKey =$ProjNatOriginLongGeoKey
-    public static final int ProjNatOriginLatGeoKey = 3081;
-
-    // public static final int ProjOriginLatGeoKey =$ProjNatOriginLatGeoKey
-    public static final int ProjFalseEastingGeoKey = 3082;
-
-    public static final int ProjFalseNorthingGeoKey = 3083;
-
-    public static final int ProjFalseOriginLongGeoKey = 3084;
-
-    public static final int ProjFalseOriginLatGeoKey = 3085;
-
-    public static final int ProjFalseOriginEastingGeoKey = 3086;
-
-    public static final int ProjFalseOriginNorthingGeoKey = 3087;
-
-    public static final int ProjCenterLongGeoKey = 3088;
-
-    public static final int ProjCenterLatGeoKey = 3089;
-
-    public static final int ProjCenterEastingGeoKey = 3090;
-
-    public static final int ProjCenterNorthingGeoKey = 3091;
-
-    public static final int ProjScaleAtNatOriginGeoKey = 3092;
-
-    // public static final int ProjScaleAtOriginGeoKey
-    // =$ProjScaleAtNatOriginGeoKey
-    public static final int ProjScaleAtCenterGeoKey = 3093;
-
-    public static final int ProjAzimuthAngleGeoKey = 3094;
-
-    public static final int ProjStraightVertPoleLongGeoKey = 3095;
-
+    /** http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.4.1 */
     public static final int VerticalCSTypeGeoKey = 4096;
 
-    public static final int VerticalCitationGeoKey = 4097;
-
-    public static final int VerticalDatumGeoKey = 4098;
-
-    public static final int VerticalUnitsGeoKey = 4099;
+    /**
+     * Value defining the raster sample point is center (area),
+     * http://www.remotesensing.org/geotiff/spec/geotiff2.5.html#2.5.2.2
+     */
+    public static final char RasterPixelIsArea = 1;
 
     /**
-     * private default constructor prevents instantiation
+     * Value defining the raster sample point is outer (point),
+     * http://www.remotesensing.org/geotiff/spec/geotiff2.5.html#2.5.2.2
      */
-    private GeoTiffKey() {
-    }
+    public static final char RasterPixelIsPoint = 2;
 
+    /** Value defining the crs to be a projected model, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1 */
+    public static final char ModelTypeProjected = 1;
+
+    /** Value defining the crs to be a geographic model, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1 */
+    public static final char ModelTypeGeographic = 2;
+
+    /** Value defining the crs to be a geocentric model, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1 */
+    public static final char ModelTypeGeocentric = 3;
 }
