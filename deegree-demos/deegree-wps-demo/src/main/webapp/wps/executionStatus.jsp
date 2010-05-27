@@ -61,47 +61,49 @@ deegree 3 WPS process status
     if ( allProcesses.size() > 0 ) {
 %>
 <table border="1" cellpadding="3" cellspacing="0">
-	<tr>
-		<th>Process</th>
-		<th>Status</th>
-		<th>Progress</th>
-		<th>Started</th>
-		<th>Finished</th>
-		<th>Duration</th>
-	</tr>
-	<%
-	    SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+  <tr>
+    <th>Process</th>
+    <th>Status</th>
+    <th>Progress</th>
+    <th>Started</th>
+    <th>Finished</th>
+    <th>Duration</th>
+  </tr>
+  <%
+      SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
 
-	        for ( ProcessletExecution p : allProcesses ) {
-	            String durationStr = "";
-	            long duration = -1;
-	            if ( p.getFinishTime() > 0 ) {
-	                duration = p.getFinishTime() - p.getStartTime();
-	            } else if ( p.getStartTime() > 0 ) {
-	                duration = new java.util.Date().getTime() - p.getStartTime();
-	            }
-	            if ( duration >= 0 ) {
-	                duration /= 1000;
-	                long seconds = duration % 60;
-	                long minutes = ( duration % 3600 ) / 60;
-	                long hours = duration / 3600;
-	                durationStr = String.format( "%02d:%02d:%02d", hours, minutes, seconds );
-	            }
-	%>
-	<tr align="center">
-		<td><%=p.getProcessId().toString()%></td>
-		<td><%=p.getExecutionState().toString()%></td>
-		<td><%=p.getExecutionState() == ProcessletExecution.ExecutionState.SUCCEEDED ? 100 : p.getPercentCompleted()%>%</td>
-		<td><%=df.format( p.getStartTime() )%></td>
-		<td><%=p.getFinishTime() > 0 ? df.format( p.getFinishTime() ) : "-"%></td>
-		<td><%=durationStr%></td>
-	</tr>
-	<%
-	    }
-	%>
+          for ( ProcessletExecution p : allProcesses ) {
+              String durationStr = "";
+              long duration = -1;
+              if ( p.getFinishTime() > 0 ) {
+                  duration = p.getFinishTime() - p.getStartTime();
+              } else if ( p.getStartTime() > 0 ) {
+                  duration = new java.util.Date().getTime() - p.getStartTime();
+              }
+              if ( duration >= 0 ) {
+                  duration /= 1000;
+                  long seconds = duration % 60;
+                  long minutes = ( duration % 3600 ) / 60;
+                  long hours = duration / 3600;
+                  durationStr = String.format( "%02d:%02d:%02d", hours, minutes, seconds );
+              }
+  %>
+  <tr align="center">
+    <td><%=p.getProcessId().toString()%></td>
+    <td><%=p.getExecutionState().toString()%></td>
+    <td><%=p.getExecutionState() == ProcessletExecution.ExecutionState.SUCCEEDED ? 100
+                                                                                                    : p.getPercentCompleted()%>%</td>
+    <td><%=df.format( p.getStartTime() )%></td>
+    <td><%=p.getFinishTime() > 0 ? df.format( p.getFinishTime() ) : "-"%></td>
+    <td><%=durationStr%></td>
+  </tr>
+  <%
+      }
+  %>
 </table>
 <%
     } else {
+        // just output
 %>
 No processes have been executed so far.
 <%
