@@ -59,8 +59,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The purpose of this {@link Processlet} is to provide a demonstration for the use of different input and output
- * parameter types in a deegree 3 WPS process.
+ * {@link Processlet} that provides a demonstration for using the different input and output parameter types in a
+ * deegree 3 WPS process.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

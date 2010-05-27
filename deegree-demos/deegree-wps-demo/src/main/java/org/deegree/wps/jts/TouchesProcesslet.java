@@ -35,24 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.wps.jts;
 
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.gml.GMLVersion.GML_31;
 
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLStreamWriter;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
-import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.output.LiteralOutput;
 
 /**
@@ -93,19 +88,6 @@ public class TouchesProcesslet implements Processlet {
         touchesOutput.setValue( String.valueOf( touches ) );
     }
 
-    private void writeGeometry( ComplexOutput gmlOutput, Geometry geometry )
-                            throws ProcessletException {
-        try {
-            XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(),
-                                                                    "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" );
-            sw.setPrefix( "gml", GMLNS );
-            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_31, sw );
-            gmlWriter.write( geometry );
-        } catch ( Exception e ) {
-            throw new ProcessletException( "Error exporting geometry: " + e.getMessage() );
-        }
-    }
-
     private Geometry readGeometry( ComplexInput gmlInput )
                             throws ProcessletException {
         try {
@@ -117,5 +99,4 @@ public class TouchesProcesslet implements Processlet {
                                            + e.getMessage() );
         }
     }
-
 }
