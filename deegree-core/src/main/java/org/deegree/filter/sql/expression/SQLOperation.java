@@ -68,7 +68,7 @@ public class SQLOperation implements SQLExpression {
 
     @Override
     public boolean isSpatial() {
-        return isSpatial;
+        return true;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class SQLOperation implements SQLExpression {
         StringBuilder sb = new StringBuilder();
         for ( Object particle : particles ) {
             if ( particle instanceof SQLExpression ) {
-                sb.append( ((SQLExpression) particle).getSQL() );
+                sb.append( ( (SQLExpression) particle ).getSQL() );
             } else {
                 sb.append( particle );
             }
