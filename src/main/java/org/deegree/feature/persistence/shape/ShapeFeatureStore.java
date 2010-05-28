@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,12 +61,14 @@ import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.index.RTree;
+import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.exceptions.WKTParsingException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.Features;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -76,6 +79,8 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CachedFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
+import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
+import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
@@ -85,7 +90,6 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -357,6 +361,7 @@ public class ShapeFeatureStore implements FeatureStore {
         return bbox;
     }
 
+    @SuppressWarnings("synthetic-access")
     @Override
     public FeatureResultSet query( Query query )
                             throws FilterEvaluationException, FeatureStoreException {
@@ -388,17 +393,18 @@ public class ShapeFeatureStore implements FeatureStore {
             throw new FeatureStoreException( e );
         }
 
-        LinkedList<Feature> feats = new LinkedList<Feature>();
-        Filter filter = query.getFilter();
-        for ( Pair<Integer, Long> recNumAndPos : recNumsAndPos ) {
-            Feature feature = retrieveFeature( recNumAndPos );
-            if ( filter == null || filter.evaluate( feature ) ) {
-                feats.add( feature );
-            }
+        FeatureResultSet rs = new IteratorResultSet( new FeatureIterator( recNumsAndPos.iterator() ) );
+        if ( query.getFilter() != null ) {
+            LOG.debug( "Applying in-memory filtering." );
+            rs = new FilteredFeatureResultSet( rs, query.getFilter() );
         }
 
-        LOG.debug( "Returning {} features.", feats.size() );
-        return new CachedFeatureResultSet( new GenericFeatureCollection( null, feats ) );
+        if ( query.getSortProperties() != null && query.getSortProperties().length > 0 ) {
+            LOG.debug( "Applying in-memory sorting." );
+            rs = new CachedFeatureResultSet( Features.sortFc( rs.toCollection(), query.getSortProperties() ) );
+        }
+
+        return rs;
     }
 
     @Override
@@ -442,7 +448,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
         if ( feature == null ) {
             LOG.debug( "Cache miss for feature {}", fid );
-            
+
             // add simple properties
             HashMap<SimplePropertyType, Property> entry;
             if ( dbf != null ) {
@@ -557,5 +563,54 @@ public class ShapeFeatureStore implements FeatureStore {
     @Override
     public CRS getStorageSRS() {
         return crs;
+    }
+
+    private class FeatureIterator implements CloseableIterator<Feature> {
+
+        private final Iterator<Pair<Integer, Long>> recIter;
+
+        private FeatureIterator( Iterator<Pair<Integer, Long>> recIter ) {
+            this.recIter = recIter;
+        }
+
+        @Override
+        public void close() {
+            // nothing to do
+        }
+
+        @Override
+        public Collection<Feature> getAsCollectionAndClose( Collection<Feature> collection ) {
+            while ( hasNext() ) {
+                collection.add( next() );
+            }
+            return collection;
+        }
+
+        @Override
+        public List<Feature> getAsListAndClose() {
+            return (List<Feature>) getAsCollectionAndClose( new LinkedList<Feature>() );
+        }
+
+        @Override
+        public boolean hasNext() {
+            return recIter.hasNext();
+        }
+
+        @SuppressWarnings("synthetic-access")
+        @Override
+        public Feature next() {
+            Feature f = null;
+            try {
+                f = retrieveFeature( recIter.next() );
+            } catch ( FeatureStoreException e ) {
+                throw new RuntimeException( e.getMessage(), e );
+            }
+            return f;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 }
