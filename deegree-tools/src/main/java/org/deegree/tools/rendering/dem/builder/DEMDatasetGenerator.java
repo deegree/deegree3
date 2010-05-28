@@ -183,29 +183,31 @@ public class DEMDatasetGenerator {
 
         this.inputX = dataBuffer.getWidth();
         this.inputY = dataBuffer.getHeight();
-
         this.rowsPerFragment = rowsPerTile;
 
+        RasterGeoReference rRef = raster.getRasterReference();
+        sampleSizeX = rRef.getResolutionX();
+        sampleSizeY = rRef.getResolutionY();
+
+        this.geoReference = new RasterGeoReference( OriginLocation.CENTER, rRef.getResolutionX(),
+                                                    rRef.getResolutionY(), rRef.getRotationX(), rRef.getRotationY(), 0,
+                                                    raster.getEnvelope().getSpan1(), raster.getCoordinateSystem() );
         // calculate the best size
-        int samplesSize = Math.max( dataBuffer.getWidth(), dataBuffer.getHeight() );
-        int nextPowerOfTwo = MathUtils.nextPowerOfTwoValue( samplesSize );
+        int numSamples = Math.max( dataBuffer.getWidth(), dataBuffer.getHeight() );
+        int nextPowerOfTwo = MathUtils.nextPowerOfTwoValue( numSamples );
 
         this.outputX = nextPowerOfTwo;
         this.outputY = nextPowerOfTwo;
 
         Envelope env = raster.getRasterReference().getEnvelope( new RasterRect( 0, 0, outputX, outputY ), null );
-        RasterGeoReference rRef = raster.getRasterReference();
-        this.geoReference = new RasterGeoReference( OriginLocation.CENTER, rRef.getResolutionX(),
-                                                    rRef.getResolutionY(), rRef.getRotationX(), rRef.getRotationY(), 0,
-                                                    raster.getEnvelope().getSpan1(), raster.getCoordinateSystem() );
 
         Point2f p0 = new Point2f( 0, (float) env.getSpan1() );
         Point2f p1 = new Point2f( 0, 0 );
         Point2f p2 = new Point2f( (float) env.getSpan0(), (float) env.getSpan1() );
 
         int lowestLevel = MathUtils.previousPowerOfTwo( rowsPerTile );
-        int heightesLevel = MathUtils.previousPowerOfTwo( inputX );
-        int tL = ( heightesLevel - lowestLevel ) * 2;
+        int heighestLevel = MathUtils.previousPowerOfTwo( inputX );
+        int tL = ( heighestLevel - lowestLevel ) * 2;
         if ( levels == -1 ) {
             System.out.println( "Setting number of levels for " + rowsPerTile + " rows per macro triangle to: " + tL );
             this.levels = tL;
@@ -258,9 +260,6 @@ public class DEMDatasetGenerator {
         double minY = raster.getEnvelope().getMin().get1();
         double maxX = raster.getEnvelope().getMax().get0();
         double maxY = raster.getEnvelope().getMax().get1();
-
-        sampleSizeX = rRef.getResolutionX();
-        sampleSizeY = rRef.getResolutionY();
 
         System.out.println( "\nInitializing DEMDatasetGenerator" );
         System.out.println( "--------------------------------\n" );
@@ -721,8 +720,8 @@ public class DEMDatasetGenerator {
         // generate macro triangle blob
         double sampleSizeX = Math.abs( builder.sampleSizeX );
         double sampleSizeY = Math.abs( builder.sampleSizeY );
-        int outputExtentX = (int) ( builder.outputX * sampleSizeX );
-        int outputExtentY = (int) ( builder.outputY * sampleSizeY );
+        float outputExtentX = (float) ( builder.outputX * sampleSizeX );
+        float outputExtentY = (float) ( builder.outputY * sampleSizeY );
         PatchManager manager = builder.generateMacroTriangles( triangleManager, 0, 0, outputExtentX, outputExtentY );
 
         // write mrindex blob
