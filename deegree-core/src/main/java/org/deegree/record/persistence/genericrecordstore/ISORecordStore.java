@@ -725,9 +725,13 @@ public class ISORecordStore implements RecordStore {
 
             for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
                 i++;
-
-                LOG.debug( "Setting argument: " + arg );
-                preparedStatement.setObject( i, arg.getValue() );
+                if ( arg.getSQLType() != -1 ) {
+                    LOG.debug( "Setting argument: " + arg );
+                    preparedStatement.setObject( i, arg.getValue(), arg.getSQLType() );
+                } else {
+                    LOG.debug( "Setting argument: " + arg );
+                    preparedStatement.setObject( i, arg.getValue() );
+                }
             }
 
         }
