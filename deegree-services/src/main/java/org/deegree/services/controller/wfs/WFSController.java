@@ -171,8 +171,7 @@ public class WFSController extends AbstractOGCServiceController {
 
     private boolean enableTransactions;
 
-    // TODO read from configuration
-    private boolean enableStreaming = false;
+    private boolean enableStreaming;
 
     private List<CRS> querySRS = new ArrayList<CRS>();
 
@@ -295,6 +294,10 @@ public class WFSController extends AbstractOGCServiceController {
             // build namespaces from NamespaceHints given in the configuration
             Map<String, String> nsMap = service.getPrefixToNs();
 
+            if ( enableStreaming ) {
+                response.disableBuffering();
+            }
+
             switch ( requestType ) {
             case DescribeFeatureType:
                 DescribeFeatureType describeFt = DescribeFeatureTypeKVPAdapter.parse( kvpParamsUC );
@@ -393,6 +396,10 @@ public class WFSController extends AbstractOGCServiceController {
                     throw new OWSException( "Wrong service attribute: '" + serviceAttr + "' -- must be 'WFS'.",
                                             OWSException.INVALID_PARAMETER_VALUE, "service" );
                 }
+            }
+
+            if ( enableStreaming ) {
+                response.disableBuffering();
             }
 
             switch ( requestType ) {
