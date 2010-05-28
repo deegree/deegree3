@@ -104,7 +104,7 @@ public class Util {
             boolean isOracle = conn.getMetaData().getDriverName().contains( "Oracle" );
             stmt = conn.prepareStatement( sql + ( isOracle ? "" : " limit 0" ) );
             stmt.setString( 1, WKTWriter.write( fac.createEnvelope( 0, 0, 1, 1, null ) ) );
-            LOG.debug( "Detemining feature type using query '{}'.", isOracle ? sql : stmt );
+            LOG.debug( "Determining feature type using query '{}'.", isOracle ? sql : stmt );
             stmt.execute();
             set = stmt.getResultSet();
             ResultSetMetaData md = set.getMetaData();
