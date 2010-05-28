@@ -323,6 +323,38 @@ public class SHPReader {
 
     /**
      * @param bbox
+     * @return the list of matching record ids
+     * @throws IOException
+     */
+    public List<Pair<Integer, Long>> query( Envelope bbox )
+                            throws IOException {
+
+        LOG.debug( "Querying shp with bbox {}", bbox );
+
+        ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
+        List<Long> pointers = (List<Long>) rtree.query( createEnvelope( bbox ) );
+        List<Pair<Integer, Long>> recNums = new ArrayList<Pair<Integer, Long>>( pointers.size() );
+        Collections.sort( pointers );
+        for ( Long ptr : pointers ) {
+            buffer.position( (int) ( ptr - 8 ) );
+            int num = getBEInt( buffer );
+            if ( num == 0 && !recordNumStartsWith0 ) {
+                LOG.error( "PLEASE NOTE THIS: Detected that the shape file starts counting record numbers at 0 and not at 1 as specified!" );
+                LOG.error( "PLEASE NOTE THIS: This should not happen any more, and is a bug! Please report this along with the data!" );
+                recordNumStartsWith0 = true;
+            }
+            if ( !recordNumStartsWith0 ) {
+                num -= 1;
+            }
+            recNums.add( new Pair<Integer, Long>( num, ptr ) );
+        }
+
+        return recNums;
+    }
+
+    /**
+     * @param bbox
      * @param withGeometry
      * @param exact
      * @return the list of contained geometries
@@ -489,6 +521,100 @@ public class SHPReader {
         }
 
         return new Pair<ArrayList<Pair<float[], Long>>, Boolean>( list, startsFromZero );
+    }
+
+    /**
+     * Returns the geometry entry stored at the given position.
+     * 
+     * @param ptr
+     *            position of the entry
+     * @return geometry object, may be <code>null</code>
+     */
+    public Geometry readGeometry( long ptr ) {
+
+        LOG.debug( "Retrieving geometry at position {}", ptr );
+        ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
+        buffer.order( ByteOrder.LITTLE_ENDIAN );
+
+        buffer.position( (int) ( ptr - 4 ) );
+
+        int length = getBEInt( buffer ) * 2; // bah, 16 bit length units here as well!
+        int type = buffer.getInt();
+
+        Geometry g = null;
+        switch ( type ) {
+        case NULL: {
+            // nothing to do
+        }
+        case POINT: {
+            g = readPoint( buffer );
+            break;
+        }
+        case POLYLINE: {
+            skipBytes( buffer, 32 );
+            g = readPolyline( buffer, false, false, length );
+            break;
+        }
+        case POLYGON: {
+            skipBytes( buffer, 32 );
+            g = readPolygon( buffer, false, false, length );
+            break;
+        }
+        case MULTIPOINT: {
+            skipBytes( buffer, 32 );
+            g = readMultipoint( buffer );
+            break;
+        }
+        case POINTM: {
+            skipBytes( buffer, 32 );
+            g = readPointM( buffer );
+            break;
+        }
+        case POLYLINEM: {
+            skipBytes( buffer, 32 );
+            g = readPolyline( buffer, false, true, length );
+            break;
+        }
+        case POLYGONM: {
+            skipBytes( buffer, 32 );
+            g = readPolygon( buffer, false, true, length );
+            break;
+        }
+        case MULTIPOINTM: {
+            skipBytes( buffer, 32 );
+            g = readMultipointM( buffer, length );
+            break;
+        }
+        case POINTZ: {
+            skipBytes( buffer, 32 );
+            g = readPointZ( buffer );
+            break;
+        }
+        case POLYLINEZ: {
+            skipBytes( buffer, 32 );
+            g = readPolyline( buffer, true, false, length );
+            break;
+        }
+        case POLYGONZ: {
+            skipBytes( buffer, 32 );
+            g = readPolygon( buffer, true, false, length );
+            break;
+        }
+        case MULTIPOINTZ: {
+            skipBytes( buffer, 32 );
+            g = readMultipointZ( buffer, length );
+            break;
+        }
+        case MULTIPATCH: {
+            skipBytes( buffer, 32 );
+            g = readMultipatch( buffer, length );
+            break;
+        }
+        default: {
+            throw new IllegalArgumentException( "Invalid geometry type " + type );
+        }
+        }
+        return g;
     }
 
     private static final void maybeAddPair( int num, Geometry g, boolean withGeometry, boolean exact,

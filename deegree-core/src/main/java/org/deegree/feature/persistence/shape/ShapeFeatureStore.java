@@ -39,6 +39,7 @@ import static org.deegree.feature.types.property.GeometryPropertyType.Coordinate
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -53,6 +54,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
@@ -75,7 +77,6 @@ import org.deegree.feature.persistence.query.CachedFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.persistence.query.Query.QueryHint;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
@@ -98,6 +99,7 @@ import org.slf4j.Logger;
  * @see FeatureStore
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -130,7 +132,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private final String namespace;
 
-	private final FeatureStoreCache cache;
+    private final FeatureStoreCache cache;
 
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
@@ -143,7 +145,7 @@ public class ShapeFeatureStore implements FeatureStore {
      *            encoding used in the dbf file, can be <code>null</code> (encoding guess mode)
      * @param namespace
      *            namespace to be used for the feature type, must not be <code>null</code>
-     * @param cache 
+     * @param cache
      *            used for caching retrieved feature instances, can be <code>null</code> (will create a default cache)
      */
     public ShapeFeatureStore( String shpName, CRS crs, Charset encoding, String namespace, FeatureStoreCache cache ) {
@@ -151,10 +153,10 @@ public class ShapeFeatureStore implements FeatureStore {
         this.crs = crs;
         this.encoding = encoding;
         this.namespace = namespace;
-        if (cache != null) {
-        	this.cache = cache;
+        if ( cache != null ) {
+            this.cache = cache;
         } else {
-        	this.cache = new SimpleFeatureStoreCache ();
+            this.cache = new SimpleFeatureStoreCache();
         }
     }
 
@@ -321,8 +323,8 @@ public class ShapeFeatureStore implements FeatureStore {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
                     LOG.debug( "Re-opening the dbf file {}", shpName );
-                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( namespace, shpName ),
-                                         namespace );
+                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding,
+                                         new QName( namespace, shpName ), namespace );
                     ft = dbf.getFeatureType();
                     schema = new ApplicationSchema( new FeatureType[] { ft }, null );
                     dbfLastModified = dbfFile.lastModified();
@@ -363,14 +365,12 @@ public class ShapeFeatureStore implements FeatureStore {
             String msg = "Only queries with exactly one or zero type name(s) are supported.";
             throw new UnsupportedOperationException( msg );
         }
-        QName featureType = query.getTypeNames()[0].getFeatureTypeName();
 
+        QName featureType = query.getTypeNames()[0].getFeatureTypeName();
         if ( featureType != null && !featureType.equals( ft.getName() ) ) {
             // or null?
             return new CachedFeatureResultSet( new GenericFeatureCollection() );
         }
-
-        boolean withGeometries = query.getHint( QueryHint.HINT_NO_GEOMETRIES ) == null;
 
         checkForUpdate();
 
@@ -378,70 +378,26 @@ public class ShapeFeatureStore implements FeatureStore {
             return null;
         }
 
+        List<Pair<Integer, Long>> recNumsAndPos;
         Envelope bbox = getTransformedEnvelope( query.getPrefilterBBox() );
-        LinkedList<Pair<Integer, Geometry>> list;
         try {
-            list = shp.query( bbox, true, false );
+            recNumsAndPos = shp.query( bbox );
+            LOG.debug( "{} records matching after BBOX pre-filtering", recNumsAndPos.size() );
         } catch ( IOException e ) {
             LOG.debug( "Stack trace", e );
             throw new FeatureStoreException( e );
         }
 
-        LOG.debug( "Got {} geometries from shp file", list.size() );
-
         LinkedList<Feature> feats = new LinkedList<Feature>();
-        LinkedList<PropertyType> fields;
-        if ( dbf == null ) {
-            fields = new LinkedList<PropertyType>();
-        } else {
-            fields = dbf.getFields();
-        }
-        final int geomIdx = ft.getPropertyDeclarations().size() - 1;
-        GeometryPropertyType geom = (GeometryPropertyType) ft.getPropertyDeclarations().get( geomIdx );
-        fields.add( geom );
-
         Filter filter = query.getFilter();
-
-        while ( !list.isEmpty() ) {
-            Pair<Integer, Geometry> pair = list.poll();
-            HashMap<SimplePropertyType, Property> entry;
-            if ( dbf != null ) {
-                try {
-                    entry = dbf.getEntry( pair.first );
-                } catch ( IOException e ) {
-                    LOG.debug( "Stack trace", e );
-                    LOG.debug( "Query bbox: {}", bbox );
-                    throw new FeatureStoreException( e );
-                }
-            } else {
-                entry = new HashMap<SimplePropertyType, Property>();
-            }
-            String fid = buildFID (pair.first);
-            LinkedList<Property> props = new LinkedList<Property>();
-            for ( PropertyType t : fields ) {
-                if ( entry.containsKey( t ) ) {
-                    props.add( entry.get( t ) );
-                }
-            }
-            props.add( new GenericProperty( geom, pair.second ) );
-            if ( filter == null ) {
-                if ( !withGeometries ) {
-                    props.removeLast();
-                }
-                Feature feat = ft.newFeature( fid, props, null );
-                feats.add( feat );
-            } else {
-                Feature feat = ft.newFeature( fid, props, null );
-                if ( filter.evaluate( feat ) ) {
-                    if ( !withGeometries ) {
-                        props.removeLast();
-                        feat = ft.newFeature( fid, props, null );
-                    }
-                    feats.add( feat );
-                }
+        for ( Pair<Integer, Long> recNumAndPos : recNumsAndPos ) {
+            Feature feature = retrieveFeature( recNumAndPos );
+            if ( filter == null || filter.evaluate( feature ) ) {
+                feats.add( feature );
             }
         }
-        LOG.debug( "Produced {} features.", feats.size() );
+
+        LOG.debug( "Returning {} features.", feats.size() );
         return new CachedFeatureResultSet( new GenericFeatureCollection( null, feats ) );
     }
 
@@ -477,10 +433,50 @@ public class ShapeFeatureStore implements FeatureStore {
         };
         return new CombinedResultSet( rsIter );
     }
-    
-    private String buildFID (int num) {
-    	// TODO make this configurable
-    	return "shp_" + num;
+
+    private Feature retrieveFeature( Pair<Integer, Long> recNumAndPos )
+                            throws FeatureStoreException {
+
+        String fid = buildFID( recNumAndPos.first );
+        Feature feature = (Feature) cache.get( fid );
+
+        if ( feature == null ) {
+            LOG.debug( "Cache miss for feature {}", fid );
+            
+            // add simple properties
+            HashMap<SimplePropertyType, Property> entry;
+            if ( dbf != null ) {
+                try {
+                    entry = dbf.getEntry( recNumAndPos.first );
+                } catch ( IOException e ) {
+                    LOG.debug( "Stack trace", e );
+                    throw new FeatureStoreException( e );
+                }
+            } else {
+                entry = new HashMap<SimplePropertyType, Property>();
+            }
+            LinkedList<Property> props = new LinkedList<Property>();
+            for ( PropertyType t : ft.getPropertyDeclarations() ) {
+                if ( entry.containsKey( t ) ) {
+                    props.add( entry.get( t ) );
+                }
+            }
+
+            // add geometry property
+            Geometry g = shp.readGeometry( recNumAndPos.second );
+            props.add( new GenericProperty( ft.getDefaultGeometryPropertyDeclaration(), g ) );
+            feature = ft.newFeature( fid, props, GML_31 );
+
+            cache.add( feature );
+        } else {
+            LOG.debug( "Cache hit for feature {}", fid );
+        }
+        return feature;
+    }
+
+    private String buildFID( int num ) {
+        // TODO make this configurable
+        return "shp_" + num;
     }
 
     @Override
@@ -511,7 +507,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     @Override
     public void destroy() {
-    	cache.clear();
+        cache.clear();
         try {
             shp.close();
         } catch ( IOException e ) {
