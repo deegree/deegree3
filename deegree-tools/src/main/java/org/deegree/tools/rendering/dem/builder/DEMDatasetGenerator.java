@@ -123,6 +123,10 @@ public class DEMDatasetGenerator {
 
     private final int rowsPerFragment;
 
+    private final double sampleSizeX;
+
+    private final double sampleSizeY;
+
     /** Number of points in the domain (x-dimension). */
     private final int outputX;
 
@@ -252,10 +256,17 @@ public class DEMDatasetGenerator {
 
         double minX = raster.getEnvelope().getMin().get0();
         double minY = raster.getEnvelope().getMin().get1();
+        double maxX = raster.getEnvelope().getMax().get0();
+        double maxY = raster.getEnvelope().getMax().get1();
+
+        sampleSizeX = rRef.getResolutionX();
+        sampleSizeY = rRef.getResolutionY();
 
         System.out.println( "\nInitializing DEMDatasetGenerator" );
         System.out.println( "--------------------------------\n" );
         // System.out.println( "- input file: " + inputFileName );
+        System.out.println( "- envelope: (" + minX + "," + minY + ")-(" + maxX + "," + maxY + ")" );
+        System.out.println( "- raster sample size: x=" + sampleSizeX + ", y=" + sampleSizeY );
         System.out.println( "- bintritree levels: " + levels );
         System.out.println( "- rows per tile: " + rowsPerTile );
         System.out.println( "- vertices per tile: " + getVerticesPerFragment() );
@@ -708,7 +719,11 @@ public class DEMDatasetGenerator {
         System.out.println( triangleManager );
 
         // generate macro triangle blob
-        PatchManager manager = builder.generateMacroTriangles( triangleManager, 0, 0, builder.outputX, builder.outputY );
+        double sampleSizeX = Math.abs( builder.sampleSizeX );
+        double sampleSizeY = Math.abs( builder.sampleSizeY );
+        int outputExtentX = (int) ( builder.outputX * sampleSizeX );
+        int outputExtentY = (int) ( builder.outputY * sampleSizeY );
+        PatchManager manager = builder.generateMacroTriangles( triangleManager, 0, 0, outputExtentX, outputExtentY );
 
         // write mrindex blob
         Blob mrIndexBlob = new FileBlob( new File( outputDir, MultiresolutionMesh.INDEX_FILE_NAME ) );
