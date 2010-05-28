@@ -39,8 +39,10 @@ import static java.sql.Types.BOOLEAN;
 
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.text.ParseException;
+import java.util.Date;
 
-import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -509,6 +511,18 @@ public abstract class AbstractWhereBuilder {
      */
     protected SQLExpression toProtoSQL( Literal<?> literal )
                             throws UnmappableException, FilterEvaluationException {
+        int javaType = -1;
+        Date date = null;
+        try {
+            date = DateUtils.parseISO8601Date( literal.getValue().toString() );
+
+        } catch ( ParseException e ) {
+            e.printStackTrace();
+        }
+        if ( date != null ) {
+            javaType = Types.TIMESTAMP;
+            return new SQLLiteral( literal.getValue(), javaType );
+        }
         return new SQLLiteral( literal );
     }
 
