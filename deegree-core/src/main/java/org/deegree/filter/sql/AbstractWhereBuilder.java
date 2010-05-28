@@ -517,10 +517,14 @@ public abstract class AbstractWhereBuilder {
             date = DateUtils.parseISO8601Date( literal.getValue().toString() );
 
         } catch ( ParseException e ) {
-            e.printStackTrace();
+            date = null;
         }
         if ( date != null ) {
             javaType = Types.TIMESTAMP;
+            return new SQLLiteral( literal.getValue(), javaType );
+        }
+        if ( literal.getValue().toString().equals( "true" ) || literal.getValue().toString().equals( "false" ) ) {
+            javaType = Types.BOOLEAN;
             return new SQLLiteral( literal.getValue(), javaType );
         }
         return new SQLLiteral( literal );
