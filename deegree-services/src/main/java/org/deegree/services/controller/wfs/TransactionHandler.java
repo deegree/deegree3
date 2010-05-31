@@ -179,6 +179,7 @@ public class TransactionHandler {
             String lockId = request.getLockId();
             LockManager manager = null;
             try {
+                // TODO: determine correct feature store
                 manager = service.getStores()[0].getLockManager();
             } catch ( FeatureStoreException e ) {
                 throw new OWSException( "Cannot acquire lock manager: " + e.getMessage(),
