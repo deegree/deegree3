@@ -35,12 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.simplesql;
 
-import static java.lang.Boolean.TRUE;
 import static java.lang.System.currentTimeMillis;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
-import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -202,7 +200,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                         LOG.info( "Could not determine envelope of database table, using world bbox instead." );
                         return fac.createEnvelope( -180, -90, 180, 90, EPSG_4326 );
                     }
-                    Geometry g = new WKTReader(EPSG_4326).read( bboxString );
+                    Geometry g = new WKTReader( EPSG_4326 ).read( bboxString );
                     g.setCoordinateSystem( crs );
                     cachedEnvelope.first = current;
                     cachedEnvelope.second = g.getEnvelope();
@@ -351,25 +349,21 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                         LinkedList<Property> props = new LinkedList<Property>();
                         for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
                             if ( pt instanceof GeometryPropertyType ) {
-                                // if filter is != null, we possibly cannot eval it properly without the geometries
-                                if ( q.getHint( HINT_NO_GEOMETRIES ) != TRUE || q.getFilter() != null ) {
-                                    byte[] bs = rs.getBytes( pt.getName().getLocalPart() );
-                                    if ( bs != null ) {
-                                        try {
-                                            Geometry geom = WKBReader.read( bs );
-                                            geom.setCoordinateSystem( crs );
-                                            if ( geom instanceof MultiGeometry<?> ) {
-                                                for ( Geometry g : (MultiGeometry<?>) geom ) {
-                                                    g.setCoordinateSystem( crs );
-                                                }
+                                byte[] bs = rs.getBytes( pt.getName().getLocalPart() );
+                                if ( bs != null ) {
+                                    try {
+                                        Geometry geom = WKBReader.read( bs );
+                                        geom.setCoordinateSystem( crs );
+                                        if ( geom instanceof MultiGeometry<?> ) {
+                                            for ( Geometry g : (MultiGeometry<?>) geom ) {
+                                                g.setCoordinateSystem( crs );
                                             }
-                                            props.add( new GenericProperty( pt, geom ) );
-                                        } catch ( ParseException e ) {
-                                            LOG.info( "WKB from the DB could not be parsed: '{}'.",
-                                                      e.getLocalizedMessage() );
-                                            LOG.info( "For PostGIS users: you have to select the geometry field 'asbinary(geometry)'." );
-                                            LOG.trace( "Stack trace:", e );
                                         }
+                                        props.add( new GenericProperty( pt, geom ) );
+                                    } catch ( ParseException e ) {
+                                        LOG.info( "WKB from the DB could not be parsed: '{}'.", e.getLocalizedMessage() );
+                                        LOG.info( "For PostGIS users: you have to select the geometry field 'asbinary(geometry)'." );
+                                        LOG.trace( "Stack trace:", e );
                                     }
                                 }
                             } else {

@@ -36,7 +36,6 @@
 package org.deegree.feature.persistence.query;
 
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
-import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 
 import java.util.HashMap;
@@ -75,8 +74,6 @@ public class Query {
     public enum QueryHint {
         /** If present, the store shall apply the argument (an {@link Envelope} as a pre-filtering step. */
         HINT_LOOSE_BBOX,
-        /** If present, the store can omit the geometry objects in the output. */
-        HINT_NO_GEOMETRIES,
         /** If present, the store can use a different LOD for the scale. */
         HINT_SCALE
     }
@@ -105,15 +102,12 @@ public class Query {
      *            {@link QueryHint#HINT_LOOSE_BBOX}
      * @param filter
      *            additional filter constraints, may be <code>null</code>
-     * @param withGeometries
-     *            if false, the feature store may omit the geometry property values in the result
-     *            {@link QueryHint#HINT_NO_GEOMETRIES}
      * @param scale
      *            if scale is positive, a scale query hint will be used
      * @param maxFeatures
      *            may be -1 if no limit needs to be exercised
      */
-    public Query( QName ftName, Envelope looseBbox, Filter filter, boolean withGeometries, int scale, int maxFeatures ) {
+    public Query( QName ftName, Envelope looseBbox, Filter filter, int scale, int maxFeatures ) {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
         this.filter = filter;
         this.featureVersion = null;
@@ -121,9 +115,6 @@ public class Query {
         this.sortBy = null;
         this.maxFeatures = maxFeatures;
         hints.put( HINT_LOOSE_BBOX, looseBbox );
-        if ( !withGeometries ) {
-            hints.put( HINT_NO_GEOMETRIES, Boolean.TRUE );
-        }
         if ( scale > 0 ) {
             hints.put( HINT_SCALE, scale );
         }
@@ -192,8 +183,8 @@ public class Query {
      * @return an {@link Envelope} suitable for pre-filtering feature candidates, can be <code>null</code>
      */
     public Envelope getPrefilterBBox() {
-    	// TODO
-        return (Envelope) getHint(HINT_LOOSE_BBOX);
+        // TODO implement full strategy
+        return (Envelope) getHint( HINT_LOOSE_BBOX );
     }
 
     /**

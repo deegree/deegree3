@@ -91,7 +91,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * 
  */
 public class StyledGeometryTTProvider implements TextureTileProvider {
 
@@ -300,7 +299,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
                 // maxY += dH;
             }
 
-            Query q = new Query( this.rootFT, tileEnv, null, true, -1, -1 );
+            Query q = new Query( this.rootFT, tileEnv, null, -1, -1 );
             FeatureResultSet frs = null;
             long sT = currentTimeMillis();
             try {

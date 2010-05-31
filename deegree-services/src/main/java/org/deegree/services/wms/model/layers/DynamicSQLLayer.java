@@ -132,8 +132,7 @@ public class DynamicSQLLayer extends Layer {
             GenericFeatureType ft = datastore.getFeatureType();
             PropertyName propName = new PropertyName( ft.getDefaultGeometryPropertyDeclaration().getName() );
             OperatorFilter fil = new OperatorFilter( new Intersects( propName, clickBox ) );
-            rs = datastore.query( new Query( ft.getName(), clickBox, fil, fi.returnGeometries(), -1,
-                                             fi.getFeatureCount() ) );
+            rs = datastore.query( new Query( ft.getName(), clickBox, fil, -1, fi.getFeatureCount() ) );
             FeatureCollection col = rs.toCollection();
             return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
         } catch ( FilterEvaluationException e ) {
@@ -166,7 +165,7 @@ public class DynamicSQLLayer extends Layer {
         int maxFeatures = maxFeats == null ? -1 : maxFeats;
         FeatureResultSet rs = null;
         try {
-            rs = datastore.query( new Query( datastore.getFeatureType().getName(), gm.getBoundingBox(), null, true,
+            rs = datastore.query( new Query( datastore.getFeatureType().getName(), gm.getBoundingBox(), null,
                                              round( gm.getScale() ), maxFeatures ) );
 
             for ( Feature f : rs ) {

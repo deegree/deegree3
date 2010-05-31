@@ -231,12 +231,12 @@ public class FeatureLayer extends Layer {
             queries.addAll( map( datastore.getSchema().getFeatureTypes( null, false, false ),
                                  new Mapper<Query, FeatureType>() {
                                      public Query apply( FeatureType u ) {
-                                         return new Query( u.getName(), bbox, filter, true, round( gm.getScale() ),
+                                         return new Query( u.getName(), bbox, filter, round( gm.getScale() ),
                                                            maxFeatures );
                                      }
                                  } ) );
         } else {
-            Query query = new Query( featureType, bbox, filter, true, round( gm.getScale() ), maxFeatures );
+            Query query = new Query( featureType, bbox, filter, round( gm.getScale() ), maxFeatures );
             queries.add( query );
         }
         return dimFilter == null ? new LinkedList<String>() : dimFilter.second;
@@ -344,14 +344,14 @@ public class FeatureLayer extends Layer {
                                                public Query apply( FeatureType u ) {
                                                    return new Query( u.getName(), clickBox, buildFilter( operator, u,
                                                                                                          clickBox ),
-                                                                     fi.returnGeometries(), -1, fi.getFeatureCount() );
+                                                                     -1, fi.getFeatureCount() );
                                                }
                                            } );
                 col = datastore.query( queries.toArray( new Query[queries.size()] ) ).toCollection();
             } else {
                 Query query = new Query( featureType, clickBox,
                                          buildFilter( operator, datastore.getSchema().getFeatureType( featureType ),
-                                                      clickBox ), fi.returnGeometries(), -1, fi.getFeatureCount() );
+                                                      clickBox ), -1, fi.getFeatureCount() );
                 col = datastore.query( query ).toCollection();
             }
 
