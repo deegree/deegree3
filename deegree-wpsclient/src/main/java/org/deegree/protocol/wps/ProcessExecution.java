@@ -35,6 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.protocol.wps.describeprocess.ProcessDescription;
+import org.deegree.protocol.wps.tools.BuildExecuteObjects;
+import org.deegree.protocol.wps.tools.InputObject;
+import org.deegree.protocol.wps.tools.OutputConfiguration;
+
 /**
  * 
  * ProcessExecution provides WPS process execution information
@@ -47,6 +55,20 @@ package org.deegree.protocol.wps;
  * @version $Revision$, $Date$
  */
 public class ProcessExecution {
+
+    private OutputConfiguration outputConfiguration;
+
+    private InputObject inputObject;
+
+    private List<InputObject> inputObjectList = new ArrayList();
+
+    private List<OutputConfiguration> outputConfigurationList = new ArrayList();
+
+    private ProcessDescription processDescription;
+
+    public ProcessExecution( ProcessDescription processDescription ) {
+        this.processDescription = processDescription;
+    }
 
     /**
      * 
@@ -66,4 +88,45 @@ public class ProcessExecution {
         return null;
     }
 
+    public void addInput( String identifier, String input, boolean asRef ) {
+        InputObject inputObject = new InputObject( identifier, input, asRef );
+        this.inputObject = inputObject;
+        inputObjectList.add( inputObject );
+    }
+
+    public void addInput( InputObject inputObject ) {
+        this.inputObject = inputObject;
+        inputObjectList.add( inputObject );
+    }
+
+    public void addOutput( String identifier ) {
+        OutputConfiguration outputConfiguration = new OutputConfiguration( "identifier" );
+        this.outputConfiguration = outputConfiguration;
+        outputConfigurationList.add( outputConfiguration );
+    }
+
+    public void addOutput( OutputConfiguration outputConfiguration ) {
+        this.outputConfiguration = outputConfiguration;
+        outputConfigurationList.add( outputConfiguration );
+    }
+
+    public void buildExecuteRequest() {
+        BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
+                                                                           processDescription );
+        buildExecuteObjects.createExecuteRequest();
+//        buildExecuteObjects.sendExecuteRequest();
+
+    }
+
+    public String returnExecuteRequest() {
+        BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
+                                                                           processDescription );
+        buildExecuteObjects.createExecuteRequest();
+
+        return null;
+    }
+
+    public void sendExecuteRequest() {
+
+    }
 }

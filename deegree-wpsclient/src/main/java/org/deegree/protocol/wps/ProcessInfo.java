@@ -40,10 +40,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.protocol.wps.describeprocess.DataInputDescribeProcess;
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
 import org.deegree.protocol.wps.getcapabilities.ProcessOffering;
 import org.deegree.protocol.wps.tools.BuildExecuteObjects;
+import org.deegree.protocol.wps.tools.DataInputParameter;
+import org.deegree.protocol.wps.tools.DataOutputParameter;
 import org.deegree.protocol.wps.tools.InputObject;
 import org.deegree.protocol.wps.tools.OutputConfiguration;
 
@@ -58,17 +61,39 @@ import org.deegree.protocol.wps.tools.OutputConfiguration;
  */
 public class ProcessInfo {
 
-    private String pi;
+    private DataInputParameter[] inputParameters;
 
-    private Object[] inputParams;
+    private DataInputParameter inputParameter;
 
-    private Object inputParam;
+    private DataOutputParameter[] outputParameters;
 
-    private Object[] outputParams;
+    private DataOutputParameter outputParameter;
 
-    private Object outputParam;
+    private ProcessDescription processDescription;
 
-    ProcessDescription processDescription;
+    private String abstraCt;
+
+    private String title;
+
+    private String identifier;
+
+    private String language;
+
+    private String version;
+
+    private String metaData;
+
+    private String profile;
+
+    private String schemaLocation;
+
+    private String request;
+
+    private String service;
+
+    private String wsdl;
+
+    private String processVersion;
 
     /**
      * Constructs a ProcessInfo for a single process known by it's processIdentifier
@@ -78,7 +103,7 @@ public class ProcessInfo {
      */
     public ProcessInfo( String processIdentifier ) {
 
-        // übergabe URL anders Regeln...
+        // ï¿½bergabe URL anders Regeln...
         URL url = null;
         try {
             url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0" + processIdentifier );
@@ -90,9 +115,22 @@ public class ProcessInfo {
         DescribeProcess describeProcess = new DescribeProcess( url );
         this.processDescription = describeProcess.getProcessDescriptions().get( 0 );
         if ( processIdentifier != null && !processIdentifier.equals( "" ) ) {
-            this.pi = processIdentifier;
+            this.identifier = processIdentifier;
 
         }
+        this.abstraCt = processDescription.getAbstraCt();
+        this.identifier = processDescription.getIdentifier();
+        this.language = processDescription.getLanguage();
+        this.language = processDescription.getMetadata();
+        this.processVersion = processDescription.getProcessVersion();
+        this.profile = processDescription.getProfile();
+        this.request = processDescription.getRequest();
+        this.schemaLocation = processDescription.getSchemaLocation();
+        this.service = processDescription.getService();
+        this.title = processDescription.getTitle();
+        this.version = processDescription.getVersion();
+        this.wsdl = processDescription.getWSDL();
+
     }
 
     /**
@@ -100,8 +138,12 @@ public class ProcessInfo {
      * 
      * @return
      */
-    public Object[] getInputParams() {
-        return null;
+    public DataInputParameter[] getInputParams() {
+        DataInputParameter[] dataInputParamaters = new DataInputParameter[processDescription.getDataInputs().size()];
+        for ( int i = 0; i < processDescription.getDataInputs().size(); i++ ) {
+            dataInputParamaters[i] = new DataInputParameter( processDescription.getDataInputs().get( i ) );
+        }
+        return dataInputParamaters;
     }
 
     /**
@@ -110,8 +152,15 @@ public class ProcessInfo {
      * @param paramId
      * @return
      */
-    private Object getInputParam( String paramId ) {
-        return null;
+    private DataInputParameter getInputParam( String paramId ) {
+        DataInputParameter dataInputParameter = null;
+        for ( int i = 0; i < processDescription.getDataInputs().size(); i++ ) {
+            if ( processDescription.getDataInputs().get( i ).getIdentifier().equalsIgnoreCase( paramId ) )
+
+                dataInputParameter = new DataInputParameter( processDescription.getDataInputs().get( i ) );
+        }
+
+        return dataInputParameter;
     }
 
     /**
@@ -120,7 +169,12 @@ public class ProcessInfo {
      * @return
      */
     private Object[] getOutputParams() {
-        return null;
+        DataOutputParameter[] dataOutputParameters = new DataOutputParameter[processDescription.getProcessOutputs().size()];
+        for ( int i = 0; i < processDescription.getProcessOutputs().size(); i++ ) {
+            dataOutputParameters[i] = new DataOutputParameter(
+                                                               processDescription.getProcessOutputs().get( i ).getOutputDescripton() );
+        }
+        return dataOutputParameters;
     }
 
     /**
@@ -129,9 +183,16 @@ public class ProcessInfo {
      * @param paramId
      * @return
      */
-    private Object getOutputParam( String paramId ) {
-
-        return null;
+    private DataOutputParameter getOutputParam( String paramId ) {
+        DataOutputParameter dataOutputParameter = null;
+        for ( int i = 0; i < processDescription.getProcessOutputs().size(); i++ ) {
+            if ( processDescription.getProcessOutputs().get( i ).getOutputDescripton().getIdentifier().equalsIgnoreCase(
+                                                                                                                         paramId ) ) {
+                dataOutputParameter = new DataOutputParameter(
+                                                               processDescription.getProcessOutputs().get( i ).getOutputDescripton() );
+            }
+        }
+        return dataOutputParameter;
     }
 
     /**
@@ -141,12 +202,12 @@ public class ProcessInfo {
      * @return
      */
     public void execute( List<InputObject> inputList, List<OutputConfiguration> outputConfigurationList ) {
-        // übergibt an execute: Identifier + Datei (pfad, datei, .....)
+        // ï¿½bergibt an execute: Identifier + Datei (pfad, datei, .....)
 
         // exectuteProperties.load(defaultconfigs);
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputList, outputConfigurationList,
-                                                                       processDescription );
+                                                                           processDescription );
         buildExecuteObjects.createExecuteRequest();
 
         // TODO Implement synchronous execution here;
@@ -160,22 +221,23 @@ public class ProcessInfo {
      */
     public ProcessExecution executeAsync( Object[] inputParams ) {
         // TODO Implement asynchronous execution here;
-        return new ProcessExecution();
+        return new ProcessExecution( this.processDescription );
     }
 
     /**
      * 
      * @return idetifier of this process
      */
-    public String getPi() {
-        return this.pi;
+    public String getProcessIdentifier() {
+        return this.identifier;
     }
 
     // TODO implementMe
     public void fetchProcessInfoFromService() {
         try {
             DescribeProcess dp = new DescribeProcess(
-                                                      new URL("http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities" ) );
+                                                      new URL(
+                                                               "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities" ) );
         } catch ( MalformedURLException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -183,10 +245,78 @@ public class ProcessInfo {
 
     }
 
+    public DataInputParameter[] getInputParameters() {
+        return inputParameters;
+    }
+
+    public DataInputParameter getInputParameter() {
+        return inputParameter;
+    }
+
+    public DataOutputParameter[] getOutputParameters() {
+        return outputParameters;
+    }
+
+    public DataOutputParameter getOutputParameter() {
+        return outputParameter;
+    }
+
+    public ProcessDescription getProcessDescription() {
+        return processDescription;
+    }
+
+    public String getAbstraCt() {
+        return abstraCt;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getMetaData() {
+        return metaData;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public String getSchemaLocation() {
+        return schemaLocation;
+    }
+
+    public String getRequest() {
+        return request;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public String getWsdl() {
+        return wsdl;
+    }
+
+    public String getProcessVersion() {
+        return processVersion;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append( "ProcessIdentifier: " + this.pi + "\n" );
+        sb.append( "ProcessIdentifier: " + this.identifier + "\n" );
         return sb.toString();
     }
 }

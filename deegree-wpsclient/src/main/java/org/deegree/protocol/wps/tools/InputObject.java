@@ -37,8 +37,8 @@ package org.deegree.protocol.wps.tools;
 
 /**
  * 
- * InputObject is used to assign one input
- * Identifier and InputObject are mandatory, input will be set on "as Reference" as default
+ * InputObject is used to assign one input Identifier and InputObject are mandatory, input will be set on "as Reference"
+ * as default
  * 
  * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
  * @author last edited by: $Author: walenciak $
@@ -72,7 +72,6 @@ public class InputObject {
         this.inputObject = input;
         this.asReference = asReference;
     }
-    
 
     public InputObject( String identifier, Object input ) {
         this.identifier = identifier;

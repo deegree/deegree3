@@ -53,7 +53,7 @@ public class ComplexData {
 
     private List<Format> supportedList = new ArrayList<Format>();
 
-    private Integer maximumMegaBytes;
+    private String maximumMegaBytes;
 
     public Format getDefaulT() {
         return defaulT;
@@ -71,11 +71,11 @@ public class ComplexData {
         supportedList.add( supported );
     }
 
-    public Integer getMaximumMegaBytes() {
+    public String getMaximumMegaBytes() {
         return maximumMegaBytes;
     }
 
-    public void setMaximumMegaBytes( Integer maximumMegaBytes ) {
+    public void setMaximumMegaBytes( String maximumMegaBytes ) {
         this.maximumMegaBytes = maximumMegaBytes;
     }
 

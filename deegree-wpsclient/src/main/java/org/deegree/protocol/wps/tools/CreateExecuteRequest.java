@@ -72,15 +72,11 @@ import org.deegree.protocol.wps.execute.ResponseForm;
  * 
  * @version $Revision: $, $Date: $
  */
-public class BuildExecuteObjects {
-
-    private List<DataInputDescribeProcess> dataInputs;
+public class CreateExecuteRequest {
 
     private List<DataInputExecute> dataInputExecuteList;
 
     private List<OutputConfiguration> outputConfigurationList;
-
-    private List<ComplexData> complexDataList;
 
     private String identifier;
 
@@ -100,8 +96,8 @@ public class BuildExecuteObjects {
 
     private List<ResponseForm> responseFormList = new ArrayList();
 
-    public BuildExecuteObjects( List<InputObject> dataInputList, List<OutputConfiguration> outputConfigurationList,
-                                ProcessDescription processDesription ) {
+    public CreateExecuteRequest( List<InputObject> dataInputList, List<OutputConfiguration> outputConfigurationList,
+                                 ProcessDescription processDesription ) {
 
         this.processDescription = processDesription;
         this.identifier = processDesription.getIdentifier();
@@ -113,15 +109,13 @@ public class BuildExecuteObjects {
 
         if ( outputConfigurationList == null ) {
             this.outputConfigurationList = createOutputConfigurationList();
-            System.out.println( "outputConfigurationList==null" );
         }
-        System.out.println( outputConfigurationList.get( 0 ).isAsReference() );
-
+        System.out.println( "outputConfigurationList " + outputConfigurationList );
         this.setOutputs( outputConfigurationList );
 
     }
 
-    public BuildExecuteObjects( List<InputObject> dataInputList, ProcessDescription processDesription ) {
+    public CreateExecuteRequest( List<InputObject> dataInputList, ProcessDescription processDesription ) {
 
         this.processDescription = processDesription;
         this.identifier = processDesription.getIdentifier();
@@ -138,7 +132,7 @@ public class BuildExecuteObjects {
 
     }
 
-    public BuildExecuteObjects( ProcessDescription processDesription ) {
+    public CreateExecuteRequest( ProcessDescription processDesription ) {
 
         this.processDescription = processDesription;
         this.identifier = processDesription.getIdentifier();
@@ -167,6 +161,7 @@ public class BuildExecuteObjects {
     private OutputConfiguration createOutputConfiguration( String identifier ) {
         OutputConfiguration outputConfiguration = new OutputConfiguration( identifier );
         outputConfiguration.setAsReference( true );
+        outputConfiguration.setIdentifier( identifier );
         outputConfiguration.setLineage( true );
         outputConfiguration.setRawOrResp( false );
         outputConfiguration.setStatus( true );
@@ -341,12 +336,12 @@ public class BuildExecuteObjects {
                 responseForm.setResponseDocument( responseDocument );
             } else {
                 RawOutputData rawDataOutput = new RawOutputData();
-                rawDataOutput.setIdentifier( processDescription.getProcessOutputs().get( i ).getOutputDescripton().getIdentifier() );
+                rawDataOutput.setIdentifier( processDescription.getProcessOutputs().get( 0 ).getOutputDescripton().getIdentifier() );
 
                 responseForm.setRawOutputData( rawDataOutput );
             }
 
-            if ( processDescription.getProcessOutputs().get( i ).getOutputDescripton().getOutputFormChoice().getBoundingBoxData() != null ) {
+            if ( processDescription.getProcessOutputs().get( 0 ).getOutputDescripton().getOutputFormChoice().getBoundingBoxData() != null ) {
 
             }
 
@@ -357,14 +352,14 @@ public class BuildExecuteObjects {
 
     }
 
-    public void createExecuteRequest() {
+    public void runExecute() {
         Execute execute = new Execute( processDescription, dataInputExecuteList, responseFormList, null );
         try {
             execute.createExecuteRequest();
-        } catch ( IOException e ) {
+        } catch ( XMLStreamException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch ( XMLStreamException e ) {
+        } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

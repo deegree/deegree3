@@ -46,6 +46,8 @@ package org.deegree.protocol.wps.execute;
  * @version $Revision: $, $Date: $
  */
 
+import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -63,7 +65,6 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
 import org.deegree.protocol.wps.tools.BuildExecuteObjects;
-import org.jdom.Namespace;
 
 public class Execute {
 
@@ -95,14 +96,24 @@ public class Execute {
 
     private String schemaLocation;
 
+    private static final NamespaceContext NS_CONTEXT;
 
-    private Namespace wpsNamespace = Namespace.getNamespace( "wps", "http://www.opengis.net/wps/1.0.0" );
+    private OutputStream outputStream;
 
-    private Namespace owsNamespace = Namespace.getNamespace( "ows", "http://www.opengis.net/ows/1.1" );
+    static {
+        NS_CONTEXT = new NamespaceContext();
+        NS_CONTEXT.addNamespace( "ows", "http://www.opengis.net/ows/1.1" );
+        NS_CONTEXT.addNamespace( "wps", "http://www.opengis.net/wps/1.0.0" );
+        NS_CONTEXT.addNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        NS_CONTEXT.addNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
-    private Namespace xsiNamespace = Namespace.getNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+    }
 
-    private Namespace xlinkNamespace = Namespace.getNamespace( "xlink", "http://www.w3.org/1999/xlink" );
+    String wpsNamespace = "wps";
+
+    String owsNamespace = "ows";
+
+    String xsiNamespace = "xsi";
 
     public Execute( DescribeProcess describeProcess ) {
         this.desribeProcess = describeProcess;
@@ -128,14 +139,14 @@ public class Execute {
 
     private XMLStreamWriter writeHeader( XMLStreamWriter writer )
                             throws XMLStreamException {
-               
+
         writer.writeAttribute( "service", service );
         writer.writeAttribute( "version", version );
         writer.writeAttribute( "store", String.valueOf( store ) );
         writer.writeAttribute( "status", String.valueOf( status ) );
-        writer.writeAttribute( xsiNamespace.getPrefix(), xsiNamespace.getURI(), "schemaLocation", schemaLocation );
+        writer.writeAttribute( xsiNamespace, NS_CONTEXT.getURI( xsiNamespace ), "schemaLocation", schemaLocation );
 
-        writer.writeStartElement( owsNamespace.getPrefix(), "Identifier", owsNamespace.getURI() );
+        writer.writeStartElement( owsNamespace, "Identifier", NS_CONTEXT.getURI( owsNamespace ) );
         writer.writeCharacters( identifier );
         writer.writeEndElement();
 
@@ -146,25 +157,24 @@ public class Execute {
     private XMLStreamWriter writeInputs( XMLStreamWriter writer )
                             throws XMLStreamException {
         if ( dataInputExecuteList != null ) {
-            writer.writeStartElement( wpsNamespace.getPrefix(), "DataInputs", wpsNamespace.getURI() );
+            writer.writeStartElement( wpsNamespace, "DataInputs", NS_CONTEXT.getURI( wpsNamespace ) );
 
             for ( int i = 0; i < dataInputExecuteList.size(); i++ ) {
 
                 DataInputExecute dataInputExecute = dataInputExecuteList.get( i );
 
-                writer.writeStartElement( wpsNamespace.getPrefix(), "Input", wpsNamespace.getURI() );
+                writer.writeStartElement( wpsNamespace, "Input", NS_CONTEXT.getURI( wpsNamespace ) );
 
-                writer.writeStartElement( owsNamespace.getPrefix(), "Identifier", owsNamespace.getURI() );
+                writer.writeStartElement( owsNamespace, "Identifier", NS_CONTEXT.getURI( owsNamespace ) );
                 writer.writeCharacters( dataInputExecute.getIdentifier() );
                 writer.writeEndElement();
 
                 InputFormChoiceExecute inputFormChoice = dataInputExecute.getInputFormChoice();
 
                 if ( inputFormChoice.getReference() != null ) {
-                    writer.writeStartElement( wpsNamespace.getPrefix(), "Reference", wpsNamespace.getURI() );
+                    writer.writeStartElement( wpsNamespace, "Reference", NS_CONTEXT.getURI( wpsNamespace ) );
 
                     writer.writeAttribute( "href", dataInputExecute.getInputFormChoice().getReference().getHref() );
-
 
                     writer.writeEndElement();
                 }
@@ -173,20 +183,24 @@ public class Execute {
 
                     if ( inputFormChoice.getData().getDataType() != null ) {
                         DataType dataType = inputFormChoice.getData().getDataType();
-                        writer.writeStartElement( wpsNamespace.getPrefix(), "Data", wpsNamespace.getURI() );
+                        writer.writeStartElement( wpsNamespace, "Data", NS_CONTEXT.getURI( wpsNamespace ) );
 
                         if ( dataType.getLiteralData() != null ) {
 
-                            writer.writeStartElement( wpsNamespace.getPrefix(), "LiteralData", wpsNamespace.getURI() );
+                            writer.writeStartElement( wpsNamespace, "LiteralData", NS_CONTEXT.getURI( wpsNamespace ) );
                             writer.writeCharacters( dataType.getLiteralData().getLiteralData() );
                             writer.writeEndElement();
                         }
 
                         if ( dataType.getComplexData() != null ) {
 
-                            writer.writeStartElement( wpsNamespace.getPrefix(), "ComplexData", wpsNamespace.getURI() );
+                            writer.writeStartElement( wpsNamespace, "ComplexData", NS_CONTEXT.getURI( wpsNamespace ) );
 
-                            writer.writeCharacters( dataType.getComplexData().getObject().toString() );
+                            // writer.writeStartElement(dataType.getComplexData().getObject().toString());
+                            // writer.writeCData(dataType.getComplexData().getObject().toString());
+                            writer.writeDTD( dataType.getComplexData().getObject().toString() );
+
+                            // writer.writeCharacters( );
                             writer.writeEndElement();
 
                         }
@@ -214,20 +228,20 @@ public class Execute {
     private XMLStreamWriter writeOutputs( XMLStreamWriter writer )
                             throws XMLStreamException {
         for ( int j = 0; j < responseFormList.size(); j++ ) {
-            writer.writeStartElement( wpsNamespace.getPrefix(), "ResponseForm", wpsNamespace.getURI() );
+            writer.writeStartElement( wpsNamespace, "ResponseForm", NS_CONTEXT.getURI( wpsNamespace ) );
 
             ResponseForm responseForm = responseFormList.get( j );
 
             if ( responseForm.getRawOutputData() != null ) {
 
-                writer.writeStartElement( wpsNamespace.getPrefix(), "RawDataOutuput", wpsNamespace.getURI() );
-                writer.writeStartElement( owsNamespace.getPrefix(), "Identifier", owsNamespace.getURI() );
+                writer.writeStartElement( wpsNamespace, "RawDataOutuput", NS_CONTEXT.getURI( wpsNamespace ) );
+                writer.writeStartElement( owsNamespace, "Identifier", NS_CONTEXT.getURI( owsNamespace ) );
                 writer.writeCharacters( responseForm.getRawOutputData().getIdentifier() );
                 writer.writeEndElement();
                 writer.writeEndElement();
 
             } else {
-                writer.writeStartElement( wpsNamespace.getPrefix(), "ResponseDocument", wpsNamespace.getURI() );
+                writer.writeStartElement( wpsNamespace, "ResponseDocument", NS_CONTEXT.getURI( wpsNamespace ) );
 
                 writer.writeAttribute( "storeExecuteResponse",
                                        String.valueOf( responseForm.getResponseDocument().storeExecuteResponse ) );
@@ -236,13 +250,13 @@ public class Execute {
                 writer.writeAttribute( "status", String.valueOf( responseForm.getResponseDocument().status ) );
 
                 for ( int i = 0; i < responseForm.getResponseDocument().getOutput().size(); i++ ) {
-                    writer.writeStartElement( wpsNamespace.getPrefix(), "Output", wpsNamespace.getURI() );
+                    writer.writeStartElement( wpsNamespace, "Output", NS_CONTEXT.getURI( wpsNamespace ) );
 
                     writer.writeAttribute(
                                            "asReference",
                                            String.valueOf( responseForm.getResponseDocument().getOutput().get( i ).isAsReference() ) );
 
-                    writer.writeStartElement( owsNamespace.getPrefix(), "Identifier", owsNamespace.getURI() );
+                    writer.writeStartElement( owsNamespace, "Identifier", NS_CONTEXT.getURI( owsNamespace ) );
                     writer.writeCharacters( responseForm.getResponseDocument().getOutput().get( i ).getIdentifier() );
                     writer.writeEndElement();
 
@@ -262,6 +276,7 @@ public class Execute {
 
     public void createExecuteRequest()
                             throws XMLStreamException, IOException {
+
         OutputStream out = null;
         try {
             out = new FileOutputStream( "execute" + identifier + ".xml" );
@@ -278,21 +293,18 @@ public class Execute {
             e.printStackTrace();
         }
 
-        writer.writeStartDocument( "1.0" );//encoding...
-        
+        writer.writeStartDocument( "1.0" );// encoding...
 
-        writer.writeStartElement( wpsNamespace.getPrefix(), "execute", wpsNamespace.getURI() );
+        writer.writeStartElement( wpsNamespace, "execute", NS_CONTEXT.getURI( wpsNamespace ) );
 
-        System.out.println ("wpsNamespace " + wpsNamespace.getPrefix());
-        writer.writeNamespace( wpsNamespace.getPrefix(), wpsNamespace.getURI() );
-        writer.writeNamespace( owsNamespace.getPrefix(), owsNamespace.getURI() );
-        writer.writeNamespace( xsiNamespace.getPrefix(), xsiNamespace.getURI() );
-        
+        writer.writeNamespace( wpsNamespace, NS_CONTEXT.getURI( wpsNamespace ) );
+        writer.writeNamespace( owsNamespace, NS_CONTEXT.getURI( owsNamespace ) );
+        writer.writeNamespace( xsiNamespace, NS_CONTEXT.getURI( xsiNamespace ) );
+
         writer = writeHeader( writer );
         writer = writeInputs( writer );
         writer = writeOutputs( writer );
 
-        
         writer.writeEndElement();
         writer.writeEndDocument();
 
@@ -302,5 +314,42 @@ public class Execute {
 
     }
 
+    public OutputStream returnExecuteRequest()
+                            throws XMLStreamException, IOException {
+
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream( "execute" + identifier + ".xml" );
+        } catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        XMLStreamWriter writer = null;
+        try {
+            writer = factory.createXMLStreamWriter( out );
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        writer.writeStartDocument( "1.0" );// encoding...
+
+        writer.writeStartElement( wpsNamespace, "execute", NS_CONTEXT.getURI( wpsNamespace ) );
+
+        writer.writeNamespace( wpsNamespace, NS_CONTEXT.getURI( wpsNamespace ) );
+        writer.writeNamespace( owsNamespace, NS_CONTEXT.getURI( owsNamespace ) );
+        writer.writeNamespace( xsiNamespace, NS_CONTEXT.getURI( xsiNamespace ) );
+
+        writer = writeHeader( writer );
+        writer = writeInputs( writer );
+        writer = writeOutputs( writer );
+
+        writer.writeEndElement();
+        writer.writeEndDocument();
+
+        out.close();
+        return out;
+    }
 
 }

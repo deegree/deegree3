@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.tools;
 
 import java.io.BufferedReader;
@@ -54,43 +54,42 @@ import org.deegree.commons.xml.XMLAdapter;
  * @version $Revision: $, $Date: $
  */
 public class LoadFile {
-    
+
     String path;
-    
-    public LoadFile(String path){
-        this.path=path;
-        
+
+    public LoadFile( String path ) {
+        this.path = path;
+
     }
-    
-    public String load() throws Exception {
-        BufferedReader br = new BufferedReader(new FileReader(path));
-        Scanner in=new Scanner(br);
-        String fileString="";
-    while(in.hasNext()){
-            int i=0;
-            String out= in.next();
-            fileString=fileString+" "+out;
+
+    public String load()
+                            throws Exception {
+        BufferedReader br = new BufferedReader( new FileReader( path ) );
+        Scanner in = new Scanner( br );
+        String fileString = "";
+        while ( in.hasNext() ) {
+            int i = 0;
+            String out = in.next();
+            fileString = fileString + " " + out;
             i++;
         }
 
-    return (fileString);
-    
+        return ( fileString );
+
     }
-    
-    
-    public void loadXML(){
-       File file = new File("curve.xml");
-       FileReader fileReader=null;
-       try {
-        fileReader = new FileReader(file);
-    } catch ( FileNotFoundException e ) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
-    
-       
-       XMLAdapter xmlInput = new XMLAdapter( file );
-      
+
+    public void loadXML() {
+        File file = new File( "curve.xml" );
+        FileReader fileReader = null;
+        try {
+            fileReader = new FileReader( file );
+        } catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        XMLAdapter xmlInput = new XMLAdapter( file );
+
     }
 
 }

@@ -35,22 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.describeprocess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LiteralValuesChoice {
 
     // To do String values Reference
 
-    private AllowedValues allowedValues;
+    private List<String> allowedValues = new ArrayList();
 
     private String anyValue;
 
     private String valuesReference;
 
-    public AllowedValues getAllowedValues() {
+    public List<String> getAllowedValues() {
         return allowedValues;
     }
 
-    public void setAllowedValues( AllowedValues allowedValues ) {
-        this.allowedValues = allowedValues;
+    public void addAllowedValues( String allowedValue ) {
+        this.allowedValues.add( allowedValue );
     }
 
     public String getAnyValue() {

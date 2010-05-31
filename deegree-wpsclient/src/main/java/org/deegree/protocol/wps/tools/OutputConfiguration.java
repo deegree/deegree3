@@ -58,6 +58,10 @@ public class OutputConfiguration {
 
     private boolean asReference;
 
+    public OutputConfiguration( String identifier ) {
+        this.identifier = identifier;
+    }
+
     public String getIdentifier() {
         return identifier;
     }
