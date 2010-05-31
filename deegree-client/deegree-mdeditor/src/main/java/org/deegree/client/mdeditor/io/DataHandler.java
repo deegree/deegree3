@@ -148,6 +148,14 @@ public abstract class DataHandler {
                             throws DataIOException;
 
     /**
+     * deletes the id with the given dataset
+     * 
+     * @param id
+     *            the id of the dataset to delete
+     */
+    public abstract void deleteDataset( String id );
+
+    /**
      * @return an instance of the used FormGroupHandler
      */
     public static DataHandler getInstance() {

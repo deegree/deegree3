@@ -45,9 +45,6 @@ import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
-import org.deegree.client.mdeditor.io.DataHandler;
-import org.deegree.client.mdeditor.model.FormConfiguration;
-import org.deegree.client.mdeditor.model.FormFieldPath;
 
 /**
  * TODO add class documentation here
@@ -62,43 +59,6 @@ import org.deegree.client.mdeditor.model.FormFieldPath;
 public class NavigationBean implements Serializable {
 
     private static final long serialVersionUID = 9025028665690108601L;
-
-    public Object saveDataset() {
-        String id;
-        FacesContext fc = FacesContext.getCurrentInstance();
-        FormFieldBean formfields = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                 null, "formFieldBean" );
-
-        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
-        try {
-            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-
-            FormFieldPath pathToIdentifier = manager.getPathToIdentifier();
-            Object value = formfields.getFormFields().get( pathToIdentifier.toString() ).getValue();
-            id = String.valueOf( value );
-            if ( value == null || id == null || id.length() == 0 ) {
-                FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL,
-                                                             "ERROR.SAVE_DATASET.INVALID_ID" );
-                fc.addMessage( "SAVE_FAILED_INVALID_ID", msg );
-
-                return "/page/form/errorPage.xhtml";
-            }
-
-            DataHandler.getInstance().writeDataset( id, formfields.getFormGroups() );
-
-        } catch ( Exception e ) {
-            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.SAVE_DATASET",
-                                                         e.getMessage() );
-            fc.addMessage( "SAVE_FAILED", msg );
-
-            return "/page/form/errorPage.xhtml";
-        }
-
-        FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.SAVE_DATASET", id );
-        fc.addMessage( "SAVE_SUCCESS", msg );
-
-        return "/page/form/successPage.xhtml";
-    }
 
     public Object reloadForm() {
         FacesContext fc = FacesContext.getCurrentInstance();

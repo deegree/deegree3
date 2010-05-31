@@ -67,7 +67,6 @@ public class Configuration {
     }
 
     public static String getFilesDirURL() {
-        System.out.println(File.pathSeparator + "  " + File.separator);
         if ( !filesDirURL.endsWith( File.separator ) ) {
             return filesDirURL + File.separator;
         }

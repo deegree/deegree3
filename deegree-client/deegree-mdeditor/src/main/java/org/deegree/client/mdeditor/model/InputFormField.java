@@ -103,54 +103,56 @@ public class InputFormField extends FormField {
 
     public void setValue( Object value ) {
         invalid = false;
-        switch ( inputType ) {
-        case TIMESTAMP:
-            try {
-                if ( validation != null && validation.getTimestampPattern() != null ) {
-                    timePattern = validation.getTimestampPattern();
+        if ( value != null ) {
+            switch ( inputType ) {
+            case TIMESTAMP:
+                try {
+                    if ( validation != null && validation.getTimestampPattern() != null ) {
+                        timePattern = validation.getTimestampPattern();
+                    }
+                    SimpleDateFormat format = new SimpleDateFormat( timePattern );
+                    format.parse( (String) value );
+                } catch ( Exception e ) {
+                    invalid = true;
                 }
-                SimpleDateFormat format = new SimpleDateFormat( timePattern );
-                format.parse( (String) getValue() );
-            } catch ( Exception e ) {
-                invalid = true;
+                break;
+            case DOUBLE:
+                try {
+                    double d = Double.parseDouble( (String) value );
+                    if ( !( validation != null && d >= validation.getMinValue() ) ) {
+                        invalid = true;
+                    }
+                    if ( !( validation != null && d <= validation.getMaxValue() ) ) {
+                        invalid = true;
+                    }
+                } catch ( Exception e ) {
+                    invalid = true;
+                }
+                break;
+            case INT:
+                try {
+                    int i = Integer.parseInt( (String) value );
+                    if ( !( validation != null && i >= validation.getMinValue() ) ) {
+                        invalid = true;
+                    }
+                    if ( !( validation != null && i <= validation.getMaxValue() ) ) {
+                        invalid = true;
+                    }
+                } catch ( Exception e ) {
+                    invalid = true;
+                }
+                break;
+            case TEXT:
+                if ( value instanceof List<?> ) {
+                    // TODO
+                } else {
+                    String s = (String) value;
+                    if ( ( validation != null && validation.getLength() > 0 && s.length() >= validation.getLength() ) ) {
+                        invalid = true;
+                    }
+                }
+                break;
             }
-            break;
-        case DOUBLE:
-            try {
-                double d = Double.parseDouble( (String) getValue() );
-                if ( !( validation != null && d >= validation.getMinValue() ) ) {
-                    invalid = true;
-                }
-                if ( !( validation != null && d <= validation.getMaxValue() ) ) {
-                    invalid = true;
-                }
-            } catch ( Exception e ) {
-                invalid = true;
-            }
-            break;
-        case INT:
-            try {
-                int i = Integer.parseInt( (String) getValue() );
-                if ( !( validation != null && i >= validation.getMinValue() ) ) {
-                    invalid = true;
-                }
-                if ( !( validation != null && i <= validation.getMaxValue() ) ) {
-                    invalid = true;
-                }
-            } catch ( Exception e ) {
-                invalid = true;
-            }
-            break;
-        case TEXT:
-            if ( value instanceof List<?> ) {
-                // TODO
-            } else {
-                String s = (String) value;
-                if ( ( validation != null && validation.getLength() > 0 && s.length() >= validation.getLength() ) ) {
-                    invalid = true;
-                }
-            }
-            break;
         }
         super.setValue( value );
     }

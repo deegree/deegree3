@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.elements;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +67,9 @@ import org.deegree.client.mdeditor.model.ReferencedElement;
 
 @ManagedBean
 @SessionScoped
-public class GenerateIdBean implements ReferencedElementBean {
+public class GenerateIdBean implements ReferencedElementBean, Serializable {
+
+    private static final long serialVersionUID = 7045997278465081712L;
 
     private UIComponent component;
 

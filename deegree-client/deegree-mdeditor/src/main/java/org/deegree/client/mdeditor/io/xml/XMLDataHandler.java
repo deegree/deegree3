@@ -177,8 +177,7 @@ public class XMLDataHandler extends DataHandler {
             for ( int i = 0; i < listFiles.length; i++ ) {
                 if ( listFiles[i].isFile() ) {
                     try {
-                        DataGroup dg = new DataGroup( listFiles[i].getName(),
-                                                                            DataReader.read( listFiles[i] ) );
+                        DataGroup dg = new DataGroup( listFiles[i].getName(), DataReader.read( listFiles[i] ) );
                         dataGroups.add( dg );
                     } catch ( Exception e ) {
                         LOG.debug( "Could not read file " + listFiles[i].getAbsolutePath(), e );
@@ -202,6 +201,19 @@ public class XMLDataHandler extends DataHandler {
     public String writeDataset( String id, List<FormGroup> formGroups )
                             throws DataIOException {
         return DataWriter.writeDataset( id, formGroups );
+    }
+
+    @Override
+    public void deleteDataset( String id ) {
+        String fileName = id;
+        if ( !id.endsWith( FILE_SUFFIX ) ) {
+            fileName = fileName + FILE_SUFFIX;
+        }
+        File f = new File( Configuration.getFilesDirURL(), fileName );
+        if ( f.exists() && f.isFile() ) {
+            LOG.debug( "Delete dataset with " + id );
+            f.delete();
+        }
     }
 
 }

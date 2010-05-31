@@ -110,4 +110,10 @@ public class FormGroup implements FormElement {
     public boolean isReferenced() {
         return referenced;
     }
+
+    public void reset() {
+        for ( FormElement fe : formElements ) {
+            fe.reset();
+        }
+    }
 }

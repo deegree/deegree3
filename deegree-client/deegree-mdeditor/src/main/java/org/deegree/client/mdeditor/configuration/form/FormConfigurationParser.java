@@ -299,7 +299,7 @@ public class FormConfigurationParser extends Parser {
         xmlStream.require( START_ELEMENT, null, "inputType" );
         INPUT_TYPE inputType = getInputType( xmlStream );
 
-        String defaultValue = getElementText( xmlStream, "defaultValue", "" );
+        String defaultValue = getElementText( xmlStream, "defaultValue", null );
 
         Validation validation = null;
         if ( "Validation".equals( xmlStream.getLocalName() ) ) {

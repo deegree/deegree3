@@ -45,6 +45,14 @@ package org.deegree.client.mdeditor.model;
  */
 public interface FormElement {
 
+    /**
+     * @return the id of the form element
+     */
     String getId();
+
+    /**
+     * resets the value of the element
+     */
+    void reset();
 
 }

@@ -24,6 +24,11 @@
 	min-height: 300px;
 }
 
+#mdEditor #topBox {
+	position: relative;
+	width: 100%;
+}
+
 #mdEditor #leftBox {
 	position: absolute;
 }
@@ -40,7 +45,7 @@
 
 #mdEditor #rightBox {
 	position: absolute;
-	top: 0px;
+	top: 38px;
 	right: 10px;
 	width: 160px;
 	height: 300px;

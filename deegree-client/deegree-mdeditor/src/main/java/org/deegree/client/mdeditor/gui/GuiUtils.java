@@ -99,13 +99,22 @@ public class GuiUtils {
                                                 Object... args ) {
         Locale loc = context.getViewRoot().getLocale();
         ResourceBundle bundle = ResourceBundle.getBundle( context.getApplication().getMessageBundle(), loc );
-        String msgDetail = bundle.getString( key + "_Detail" );
-        String msgSummary = bundle.getString( key );
+        String msgDetail = key + "_Detail";
+        try {
+            msgDetail = bundle.getString( key + "_Detail" );
+        } catch ( Exception e ) {
+            LOG.warn( "detailed message for key " + key + " does not exist, set to empty string." );
+        }
+        String msgSummary = key;
+        try {
+            msgSummary = bundle.getString( key );
+        } catch ( Exception e ) {
+            LOG.warn( "message for key " + key + " does not exist, set to key." );
+        }
         if ( args != null ) {
             msgDetail = MessageFormat.format( msgDetail, args );
             msgSummary = MessageFormat.format( msgSummary, args );
         }
         return new FacesMessage( severity, msgSummary, msgDetail );
     }
-
 }

@@ -112,7 +112,10 @@ public class FormConfiguration {
      */
     public FormGroup getFormGroup( String id ) {
         for ( FormGroup fg : formGroups ) {
-            if ( id.equals( fg.getId() ) ) {
+            // return first!
+            if ( id == null ) {
+                return fg;
+            } else if ( id.equals( fg.getId() ) ) {
                 return fg;
             }
         }

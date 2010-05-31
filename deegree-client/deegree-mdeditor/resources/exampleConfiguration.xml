@@ -27,6 +27,7 @@
         <InputFormElement id="nFach" occurence="unbounded">
             <label>Test:</label>
             <inputType>text</inputType>
+            <defaultValue>defaultValue</defaultValue>
         </InputFormElement>
         <!--
             TODO <SelectFormElement id="selectOneK" visible="true"> <label>Eltern-Objekt:</label>
@@ -157,7 +158,7 @@
             </InputFormElement>
             <InputFormElement id="KStextCountry">
                 <label>Land:</label>
-                <inputType>int</inputType>
+                <inputType>text</inputType>
             </InputFormElement>
         </FormGroup>
         <InputFormElement id="KtextPhone">

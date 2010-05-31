@@ -7,6 +7,8 @@
 <h:body>
 
 				<ui:insert name="metadata" />
+				
+				<ui:insert name="javascript" />
 
 				<div id="mdEditor">
 
@@ -24,21 +26,28 @@
 				
 				<div id="center">
 
-				<div id="leftBox">
-					<ui:insert name="leftBox">
-					</ui:insert>
-				</div>
-
-				<div id="main">
-					<ui:insert name="menu" />
-					<div id="content">
-						<ui:insert name="content">
-					</ui:insert>
+					<div id="topBox">
+						<ui:insert name="topBox">
+						</ui:insert>
 					</div>
-				</div>
-
-				<div id="rightBox"><ui:insert name="rightBox">
-				</ui:insert></div>
+					
+					<div id="leftBox">
+						<ui:insert name="leftBox">
+						</ui:insert>
+					</div>
+	
+					<div id="main">
+						<ui:insert name="menu" />
+						<div id="content">
+							<ui:insert name="content">
+						</ui:insert>
+						</div>
+					</div>
+	
+					<div id="rightBox"><ui:insert name="rightBox">
+						</ui:insert>
+					</div>
+				
 				</div>
 
 				<div id="footer">

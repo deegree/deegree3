@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head></h:head>
+<h:body>
+				<h:form id="dsNavForm">
+								<span class="dsNavBt">
+									<h:commandButton id="dsNavNewDSBt" title="#{mdLabels['newDataset']}"
+												action="#{datasetBean.newDataset}" 
+												image="/resources/deegree/images/page_white_add.gif" >
+								  </h:commandButton>
+								</span>
+								<span class="dsNavBt">
+									<h:button id="dsNavLoadTemplateBt" title="#{mdLabels['loadTemplate']}"
+												outcome="/page/form/chooseTemplate.jsf" 
+												image="/resources/deegree/images/page_white_get.gif" />
+								</span>
+								<span class="dsNavBt">
+									<h:button id="dsNavLoadDSBt" title="#{mdLabels['loadDataset']}"
+												outcome="/page/form/chooseDataset.jsf" 
+												image="/resources/deegree/images/page_white_edit.gif" />
+								</span>
+								<span class="dsNavBt">
+									<h:commandButton id="dsNavValidateDSBt" title="#{mdLabels['validateDataset']}"
+												action="#{datasetBean.validateDataset}" 
+												image="/resources/deegree/images/page_white_gear.gif" />
+								</span>
+								<span class="dsNavBt">
+									<h:commandButton id="dsNavSaveDSBt" title="#{mdLabels['saveDataset']}"
+												action="#{datasetBean.saveDataset}" 
+												image="/resources/deegree/images/page_white_database.gif" />
+								</span>
+								<span class="dsNavBt">
+									<h:commandButton id="dsNavDeleteDSBt" title="#{mdLabels['deleteDataset']}" onclick="return confirmDelete('#{mdLabels['deleteDataset_confirmMsg']}');"
+												action="#{datasetBean.deleteDataset}" 
+												image="/resources/deegree/images/page_white_delete.gif" />
+								</span>
+				</h:form>
+</h:body>
+</html>

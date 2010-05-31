@@ -167,4 +167,10 @@ public class FormFieldBean implements Serializable {
         return null;
     }
 
+    public void clearFormFields() {
+        for ( FormGroup fg : formGroups ) {
+            fg.reset();
+        }
+    }
+
 }

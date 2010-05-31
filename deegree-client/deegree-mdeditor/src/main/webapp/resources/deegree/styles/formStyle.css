@@ -120,11 +120,33 @@
 	border: 0px;
 }
 
-#mdEditor .navForm {
+#mdEditor #navForm {
+	
+}
+
+#mdEditor #navForm input {
+	margin: 2px 10px;
+}
+
+#mdEditor #dsNavForm {
 	
 }
 
 #mdEditor .navBt {
+	top: 15px;
+	height: 22px;
+	width: 25px;
+	background-color: #00395B;
+	border: #000000 1px solid;
+	color: #EFEFEF;
+	font-size: 10pt;
+	text-align: center;
+	padding-top: 3px;
+	text-decoration: none;
+	margin: 5px;
+}
+
+#mdEditor .dsNavBt {
 	top: 15px;
 	height: 22px;
 	width: 25px;
@@ -169,6 +191,6 @@
 	text-align: center;
 }
 
-#mdEditor .dgListOptionColumn input[type="image"]{
+#mdEditor .dgListOptionColumn input[type="image"] {
 	background-repeat: no-repeat;
 }

@@ -4,18 +4,9 @@
 <h:head></h:head>
 <h:body>
 				<h:form id="navForm">
-								<span class="navBt">
-									<h:commandButton id="navSaveBt" title="#{mdLabels['saveDataset']}"
-												action="#{navigationBean.saveDataset}" image="/resources/deegree/images/page_white_database.gif" />
-								</span>
-								<span class="navBt">
-									<h:button id="navLoadBt" title="#{mdLabels['loadDataset']}"
-												outcome="/page/form/chooseFile.jsf" image="/resources/deegree/images/page_white_edit.gif" />
-								</span>
-								<span class="navBt">
-									<h:commandButton id="reloadLink" title="#{mdLabels['reloadLink']}"
-												action="#{navigationBean.reloadForm}" image="/resources/deegree/images/arrow_refresh.gif" />
-								</span>
+								<h:button id="homeLink" value="#{mdLabels['homeLink']}" outcome="/page/start.xhtml" />
+								<h:button id="helpLink" value="#{mdLabels['helpLink']}" />
+								<h:commandButton id="reloadLink" value="#{mdLabels['reloadLink']}" title="#{mdLabels['reloadLink']}" action="#{navigationBean.reloadForm}" />
 				</h:form>
 </h:body>
 </html>

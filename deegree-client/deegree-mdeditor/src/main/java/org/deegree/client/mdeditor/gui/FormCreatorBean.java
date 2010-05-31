@@ -127,7 +127,7 @@ public class FormCreatorBean implements Serializable {
             form.getChildren().clear();
             if ( forms.containsKey( grpId ) ) {
                 form.getChildren().add( forms.get( grpId ) );
-            } else if ( grpId != null ) {
+            } else {
                 FacesContext fc = FacesContext.getCurrentInstance();
                 HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
                 configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
@@ -193,8 +193,11 @@ public class FormCreatorBean implements Serializable {
         dataTable.setStyleClass( "dgList" );
         dataTable.setHeaderClass( "dgListHeader" );
         dataTable.setRowClasses( "dgListRowOdd, dgListRowEven" );
-
         dataTable.setVar( "fgi" );
+
+        String elRendered = "#{!empty dataGroupBean.dataGroups['" + fg.getId() + "']}";
+        ValueExpression veRendered = ef.createValueExpression( elContext, elRendered, Boolean.class );
+        dataTable.setValueExpression( "rendered", veRendered );
 
         String el = "#{dataGroupBean.dataGroups['" + fg.getId() + "']}";
         ValueExpression ve = ef.createValueExpression( elContext, el, Object.class );
