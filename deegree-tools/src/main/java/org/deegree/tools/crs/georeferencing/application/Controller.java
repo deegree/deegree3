@@ -157,11 +157,11 @@ public class Controller {
             model.reset();
             options = new RasterIOOptions();
 
-            // options.add( RasterIOOptions.CRS, "EPSG:4326" );
-            options.add( RasterIOOptions.CRS, "EPSG:32618" );
-            options.add( RIO_WMS_LAYERS, "dem" );
+            options.add( RasterIOOptions.CRS, "EPSG:4326" );
+            // options.add( RasterIOOptions.CRS, "EPSG:32618" );
+            // options.add( RIO_WMS_LAYERS, "populationgrid" );
             options.add( RESOLUTION, "1.0" );
-            // options.add( RIO_WMS_LAYERS, "root" );
+            options.add( RIO_WMS_LAYERS, "root" );
             // options.add( RASTER_FORMATLIST, "image/jpeg" );
             options.add( RASTER_URL, view.openUrl() );
             options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
@@ -248,9 +248,10 @@ public class Controller {
 
                 Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
                                                                  mouse.getCumulatedMouseChanging().getY() );
+                System.out.println( "updatePos: " + updateDrawImageAtPosition );
 
+                // panel.setImageToDraw( model.generateImage( updateDrawImageAtPosition ) );
                 panel.setImageToDraw( model.getGeneratedImage() );
-
                 mouse.reset();
                 panel.reset();
 
@@ -280,10 +281,13 @@ public class Controller {
 
         public void run() {
 
-            changePoint = new Point2d( changing.getX() * 1, changing.getY() * 1 );
+            changePoint = new Point2d( changing.getX(), changing.getY() );
             System.out.println( "Threadchange: " + changePoint );
 
-            model.generateImage( changePoint );
+            // model.generatePredictedImage( changing );
+            predictedImage = model.generateImage( changing );
+            footPanel.setImage( predictedImage );
+            footPanel.repaint();
 
         }
 
@@ -334,6 +338,7 @@ public class Controller {
             }
             model.reset();
             System.out.println( panel.getResolutionOfImage() );
+
             model.setResolution( panel.getResolutionOfImage() );
             model.init( options, panel.getBounds() );
             panel.setImageToDraw( model.generateImage( null ) );

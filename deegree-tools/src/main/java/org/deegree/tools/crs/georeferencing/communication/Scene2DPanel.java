@@ -158,19 +158,18 @@ public class Scene2DPanel extends JPanel {
         this.resolutionOfImage = resolutionOfImage;
     }
 
-    public BufferedImage getImageToDraw() {
-        return imageToDraw;
-    }
-
     public void setImageToDraw( BufferedImage imageToDraw ) {
         this.imageToDraw = imageToDraw;
 
     }
 
-    public Point2d getImageDimension() {
-        return imageDimension;
+    public BufferedImage getImageToDraw() {
+        return imageToDraw;
     }
 
+    /**
+     * Resets variables that should be set every time when there is a new image is incoming.
+     */
     public void reset() {
         beginDrawImageAtPosition = new Point2d( -imageMargin.x, -imageMargin.y );
     }

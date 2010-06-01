@@ -40,6 +40,7 @@ import java.awt.image.BufferedImage;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 
 /**
@@ -65,6 +66,8 @@ public interface Scene2D {
     public void reset();
 
     /**
+     * Initializes the image generation from a rasterinput. There will be generated the information that is needed for
+     * every image generation like the {@link RasterGeoReference}.
      * 
      * @param options
      *            for the request, must not be <Code>null</Code>
@@ -81,6 +84,15 @@ public interface Scene2D {
      */
     public BufferedImage generateImage( Point2d startPoint );
 
+    /**
+     * To set the resolution interactively.
+     * 
+     * @param resolution
+     */
     public void setResolution( double resolution );
+
+    public void generatePredictedImage( Point2d changePoint );
+
+    public BufferedImage getPredictedImage();
 
 }
