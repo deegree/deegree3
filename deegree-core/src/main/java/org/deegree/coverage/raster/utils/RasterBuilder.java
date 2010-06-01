@@ -392,18 +392,20 @@ public class RasterBuilder implements CoverageBuilder {
                 opts.add( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR, "yes" );
             }
             String format = opts.get( RasterIOOptions.OPT_FORMAT );
+            boolean readSingleBlobTile = false;
             if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format ) ) ) {
                 // the grid file structure can be defined over multiple 'bin' files, which is used in e.g the WPVS.
                 try {
                     raster = new TiledRaster( GriddedBlobTileContainer.create( directory, opts ) );
+                    readSingleBlobTile = raster != null;
                 } catch ( IOException e ) {
-                    if ( LOG.isDebugEnabled() ) {
-                        LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
-                    } else {
-                        LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
-                    }
+                    LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
                 }
-            } else {
+            } 
+            if( !readSingleBlobTile ){
+                if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format )  ) ){
+                    LOG.info( "Could not instantiate a gridded raster from a single grid file, trying to create a raster from files in directory." );
+                }
                 QTreeInfo inf = buildTiledRaster( coverageFiles, rasters, opts );
                 Envelope domain = inf.envelope;
                 // RasterGeoReference rasterDomain = inf.rasterGeoReference;
