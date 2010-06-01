@@ -61,26 +61,27 @@ import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
-import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.controller.wpvs.getview.GetView;
+import org.deegree.services.wpvs.PerspectiveViewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.opengl.util.texture.Texture;
 
 /**
- * The <code>GetViewRenderer</code> central part of the WPVS, it renders a background image, all given datasets and a
- * copyright image (if requested).
+ * Performs {@link GetView} requests for the {@link PerspectiveViewService}.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
 public class GetViewRenderer implements GLEventListener {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( GetViewRenderer.class );
+    private final static Logger LOG = LoggerFactory.getLogger( GetViewRenderer.class );
 
     private GLU glu;
 
@@ -137,8 +138,8 @@ public class GetViewRenderer implements GLEventListener {
      */
     public GetViewRenderer( GetView request, RenderContext glRenderContext, PooledByteBuffer imageBuffer,
                             TerrainRenderingManager demRenderer, Colormap colormap,
-                            List<TextureManager> textureManagers, List<RenderableManager<?>> renderableRenderers, String copyrightID, double copyrightScale,
-                            double sceneLatitude ) {
+                            List<TextureManager> textureManagers, List<RenderableManager<?>> renderableRenderers,
+                            String copyrightID, double copyrightScale, double sceneLatitude ) {
         this.imageBuffer = imageBuffer;
         this.demRenderer = demRenderer;
         this.textureManagers = textureManagers;
@@ -188,9 +189,9 @@ public class GetViewRenderer implements GLEventListener {
             Collections.sort( renderableRenderers, new Comparator<RenderableManager<?>>() {
                 @Override
                 public int compare( RenderableManager<?> o1, RenderableManager<?> o2 ) {
-                    return (o1 instanceof TreeRenderer)? 1:-1;
+                    return ( o1 instanceof TreeRenderer ) ? 1 : -1;
                 }
-            });
+            } );
             for ( RenderableManager<?> br : renderableRenderers ) {
                 br.render( context );
             }
@@ -372,10 +373,11 @@ public class GetViewRenderer implements GLEventListener {
     }
 
     /**
-     * @return the rendered image.
+     * Returns the rendered image.
+     * 
+     * @return the rendered image, never <code>null</code>
      */
     public BufferedImage getResultImage() {
         return resultImage;
     }
-
 }

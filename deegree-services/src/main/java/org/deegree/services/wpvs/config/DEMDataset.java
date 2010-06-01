@@ -51,7 +51,7 @@ import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStore;
 import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.RenderFragmentManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
-import org.deegree.services.jaxb.wpvs.DEMDataset;
+import org.deegree.services.jaxb.wpvs.DEMDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.slf4j.Logger;
 
@@ -63,9 +63,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
+public class DEMDataset extends Dataset<TerrainRenderingManager> {
 
-    private final static Logger LOG = getLogger( DemDatasetWrapper.class );
+    private final static Logger LOG = getLogger( DEMDataset.class );
 
     private final int numberOfDEMFragmentsCached;
 
@@ -88,7 +88,7 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
      * @param specularColor
      * @param shininess
      */
-    public DemDatasetWrapper( int numberOfDEMFragmentsCached, int directMeshfragmentPoolSize, float[] ambientColor,
+    public DEMDataset( int numberOfDEMFragmentsCached, int directMeshfragmentPoolSize, float[] ambientColor,
                               float[] diffuseColor, float[] specularColor, float shininess ) {
         this.numberOfDEMFragmentsCached = numberOfDEMFragmentsCached;
         this.ambientColor = ambientColor;
@@ -112,8 +112,8 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
     @Override
     public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
                                                 DatasetDefinitions dsd ) {
-        List<DEMDataset> demDatsets = new ArrayList<DEMDataset>();
-        DEMDataset ed = dsd.getDEMDataset();
+        List<DEMDatasetConfig> demDatsets = new ArrayList<DEMDatasetConfig>();
+        DEMDatasetConfig ed = dsd.getDEMDataset();
         demDatsets.add( ed );
         if ( !demDatsets.isEmpty() ) {
             sceneEnvelope = initDatasets( demDatsets, sceneEnvelope, toLocalCRS, dsd.getMaxPixelError(), configAdapter );
@@ -123,10 +123,10 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
         return sceneEnvelope;
     }
 
-    private Envelope initDatasets( List<DEMDataset> demDatsets, Envelope sceneEnvelope, double[] toLocalCRS,
+    private Envelope initDatasets( List<DEMDatasetConfig> demDatsets, Envelope sceneEnvelope, double[] toLocalCRS,
                                    Double parentMaxPixelError, XMLAdapter configAdapter ) {
         if ( demDatsets != null && !demDatsets.isEmpty() ) {
-            for ( DEMDataset eds : demDatsets ) {
+            for ( DEMDatasetConfig eds : demDatsets ) {
                 if ( eds != null ) {
                     if ( isUnAmbiguous( eds.getTitle() ) ) {
                         LOG.info( "The elevation model dataset with name: " + eds.getName() + " and title: "
@@ -150,7 +150,7 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
      * @param datatype
      * @param parentMaxPixelError
      */
-    private void clarifyInheritance( DEMDataset datatype, Double parentMaxPixelError ) {
+    private void clarifyInheritance( DEMDatasetConfig datatype, Double parentMaxPixelError ) {
         datatype.setMaxPixelError( clarifyMaxPixelError( parentMaxPixelError, datatype.getMaxPixelError() ) );
     }
 
@@ -161,7 +161,7 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
      * @param mds
      * @throws IOException
      */
-    private Envelope handleDEMDataset( DEMDataset demDataset, Envelope sceneEnvelope, double[] toLocalCRS,
+    private Envelope handleDEMDataset( DEMDatasetConfig demDataset, Envelope sceneEnvelope, double[] toLocalCRS,
                                        XMLAdapter configAdapter )
                             throws IOException {
 

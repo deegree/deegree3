@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
-  targetNamespace="http://www.deegree.org/services/wpvs" elementFormDefault="qualified">
+  targetNamespace="http://www.deegree.org/services/wpvs" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
   <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.5.0/services_metadata.xsd" />
   <element name="ServiceConfiguration">
     <annotation>
@@ -139,6 +140,9 @@
         it will define a DEM (Digital Elevation Model) but it might as well have a more semantic character (using for
         example rent prices of houses).
       </documentation>
+      <appinfo>
+        <jaxb:class name="DEMDatasetConfig" />
+      </appinfo>
     </annotation>
     <complexType>
       <complexContent>
@@ -161,6 +165,9 @@
         An colormap which can be applied to an elevation model and can be requested by a client. The colors
         will be lineary interpreted between the min and max color.
       </documentation>
+      <appinfo>
+        <jaxb:class name="ColormapDatasetConfig" />
+      </appinfo>
     </annotation>
     <complexType>
       <complexContent>
@@ -198,6 +205,9 @@
         bounding box, defining it's validity. The scale denominators are used to define the scales for which a data
         instance is valid.
       </documentation>
+      <appinfo>
+        <jaxb:class name="DEMTextureDatasetConfig" />
+      </appinfo>
     </annotation>
     <complexType>
       <complexContent>
@@ -261,6 +271,11 @@
     </choice>
   </group>
   <element name="RenderableDataset">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="RenderableDatasetConfig" />
+      </appinfo>
+    </annotation>
     <complexType>
       <complexContent>
         <extension base="wpvs:AbstractDataType">

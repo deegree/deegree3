@@ -54,7 +54,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
-import org.deegree.services.wpvs.config.ModelDatasetWrapper;
+import org.deegree.services.wpvs.config.RenderableDataset;
 import org.deegree.services.wpvs.io.BackendResult;
 import org.deegree.services.wpvs.io.DataObjectInfo;
 import org.deegree.services.wpvs.io.ModelBackend;
@@ -218,7 +218,7 @@ public class FileBackend extends ModelBackend<Envelope> {
                     LOG.debug( "The envelope of the buildings: " + datasetEnvelope );
                     // bm.setValidDomain( datasetEnvelope );
                     if ( bm.getValidDomain() == null
-                         || ( Math.abs( bm.getValidDomain().getSpan0() - ModelDatasetWrapper.DEFAULT_SPAN ) < 1E-8 ) ) {
+                         || ( Math.abs( bm.getValidDomain().getSpan0() - RenderableDataset.DEFAULT_SPAN ) < 1E-8 ) ) {
                         bm.setValidDomain( datasetEnvelope );
                     }
                 }
@@ -277,7 +277,7 @@ public class FileBackend extends ModelBackend<Envelope> {
                 } else {
                     LOG.debug( "The envelope of the trees: " + datasetEnvelope );
                     if ( tm.getValidDomain() == null
-                         || ( Math.abs( tm.getValidDomain().getSpan0() - ModelDatasetWrapper.DEFAULT_SPAN ) < 1E-8 ) ) {
+                         || ( Math.abs( tm.getValidDomain().getSpan0() - RenderableDataset.DEFAULT_SPAN ) < 1E-8 ) ) {
                         // no envelope was known (an old modelfile was read?)
                         tm.setValidDomain( datasetEnvelope );
                     }

@@ -269,7 +269,7 @@ public class WPVSController extends AbstractOGCServiceController {
             testResultMimeType( format );
 
             // render the image
-            BufferedImage gvResponseImage = service.getPerspectiveViewImage( gvReq );
+            BufferedImage gvResponseImage = service.getImage( gvReq );
             String ioFormat = mimeToFormat( format );
             LOG.debug( "Requested format: " + format + " was mapped to response ioformat: " + ioFormat );
             if ( gvResponseImage != null ) {

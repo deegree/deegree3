@@ -65,9 +65,11 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureTileManager
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.RasterAPITextureTileProvider;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.StyledGeometryTTProvider;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileProvider;
-import org.deegree.services.jaxb.wpvs.DEMTextureDataset;
+import org.deegree.services.jaxb.wpvs.DEMTextureDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.services.jaxb.wpvs.StyledGeometryProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>TextureDatasetWrapper</code> extracts data from jaxb configuration elements and creates texture managers,
@@ -76,12 +78,12 @@ import org.deegree.services.jaxb.wpvs.StyledGeometryProvider;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
-public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
+public class DEMTextureDataset extends Dataset<TextureManager> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( TextureDatasetWrapper.class );
+    private final static Logger LOG = LoggerFactory.getLogger( DEMTextureDataset.class );
 
     private final int maxCachedTextureTiles;
 
@@ -97,8 +99,8 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
      * @param maxCachedTextureTiles
      *            the number of texture tiles in cache.
      */
-    public TextureDatasetWrapper( DirectByteBufferPool textureByteBufferPool, int maxTexturesInGPU,
-                                  int maxCachedTextureTiles ) {
+    public DEMTextureDataset( DirectByteBufferPool textureByteBufferPool, int maxTexturesInGPU,
+                              int maxCachedTextureTiles ) {
         // super( sceneEnvelope, translationToLocalCRS, configAdapter );
         this.textureByteBufferPool = textureByteBufferPool;
         this.maxTexturesInGPU = maxTexturesInGPU;
@@ -108,7 +110,7 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
     @Override
     public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
                                                 DatasetDefinitions dsd ) {
-        List<DEMTextureDataset> demTextureDatsets = dsd.getDEMTextureDataset();
+        List<DEMTextureDatasetConfig> demTextureDatsets = dsd.getDEMTextureDataset();
         if ( !demTextureDatsets.isEmpty() ) {
             sceneEnvelope = initDatasets( demTextureDatsets, sceneEnvelope, toLocalCRS, dsd.getMaxPixelError(),
                                           configAdapter );
@@ -118,10 +120,10 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
         return sceneEnvelope;
     }
 
-    private Envelope initDatasets( List<DEMTextureDataset> textureDatasets, Envelope sceneEnvelope,
+    private Envelope initDatasets( List<DEMTextureDatasetConfig> textureDatasets, Envelope sceneEnvelope,
                                    double[] toLocalCRS, Double parentMaxPixelError, XMLAdapter adapter ) {
         if ( textureDatasets != null && !textureDatasets.isEmpty() ) {
-            for ( DEMTextureDataset dts : textureDatasets ) {
+            for ( DEMTextureDatasetConfig dts : textureDatasets ) {
                 if ( dts != null ) {
                     if ( isUnAmbiguous( dts.getTitle() ) ) {
                         LOG.info( "The feature dataset with name: " + dts.getName() + " and title: " + dts.getTitle()
@@ -145,7 +147,7 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
      * @param datatype
      * @param parentMaxPixelError
      */
-    private void clarifyInheritance( DEMTextureDataset datatype, Double parentMaxPixelError ) {
+    private void clarifyInheritance( DEMTextureDatasetConfig datatype, Double parentMaxPixelError ) {
         datatype.setMaxPixelError( clarifyMaxPixelError( parentMaxPixelError, datatype.getMaxPixelError() ) );
     }
 
@@ -156,7 +158,7 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
      * @param mds
      * @throws IOException
      */
-    private Envelope handleTextureDataset( DEMTextureDataset textureDataset, Envelope sceneEnvelope,
+    private Envelope handleTextureDataset( DEMTextureDatasetConfig textureDataset, Envelope sceneEnvelope,
                                            double[] toLocalCRS, XMLAdapter adapter )
                             throws IOException {
 

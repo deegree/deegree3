@@ -74,10 +74,11 @@ import org.deegree.services.jaxb.wpvs.SkyImages;
 import org.deegree.services.jaxb.wpvs.TranslationToLocalCRS;
 import org.deegree.services.jaxb.wpvs.Copyright.Image;
 import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
-import org.deegree.services.wpvs.config.ColormapDatasetWrapper;
-import org.deegree.services.wpvs.config.DemDatasetWrapper;
-import org.deegree.services.wpvs.config.ModelDatasetWrapper;
-import org.deegree.services.wpvs.config.TextureDatasetWrapper;
+import org.deegree.services.wpvs.config.ColormapDataset;
+import org.deegree.services.wpvs.config.Dataset;
+import org.deegree.services.wpvs.config.DEMDataset;
+import org.deegree.services.wpvs.config.RenderableDataset;
+import org.deegree.services.wpvs.config.DEMTextureDataset;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
 import org.deegree.services.wpvs.rendering.jogl.GLPBufferPool;
 import org.deegree.services.wpvs.rendering.jogl.GetViewRenderer;
@@ -85,14 +86,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>PerspectiveViewService</code> class startsup the perspective view
+ * Performs the setup of a {@link Dataset}s from a configuration document and provides the {@link #getImage(GetView)}
+ * method for retrieving rendered images.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class PerspectiveViewService {
 
@@ -104,13 +105,13 @@ public class PerspectiveViewService {
 
     private DirectByteBufferPool textureByteBufferPool;
 
-    private ModelDatasetWrapper renderableDatasets;
+    private RenderableDataset renderableDatasets;
 
-    private TextureDatasetWrapper textureDatasets;
+    private DEMTextureDataset textureDatasets;
 
-    private ColormapDatasetWrapper colormapDatasets;
+    private ColormapDataset colormapDatasets;
 
-    private DemDatasetWrapper demDatasets;
+    private DEMDataset demDatasets;
 
     private double[] translationToLocalCRS;
 
@@ -147,10 +148,12 @@ public class PerspectiveViewService {
     private double latitudeOfScene;
 
     /**
+     * Creates a new {@link PerspectiveViewService} from the given parameters.
+     * 
      * @param configAdapter
-     *            needed for the resolving of any relative urls in the configuration documents.
+     *            needed for the resolving of any relative urls in the configuration documents
      * @param sc
-     *            the service configuration created with jaxb.
+     *            the service configuration created with jaxb
      * @throws ServiceInitException
      */
     public PerspectiveViewService( XMLAdapter configAdapter, ServiceConfiguration sc ) throws ServiceInitException {
@@ -294,12 +297,12 @@ public class PerspectiveViewService {
                                                                            -this.translationToLocalCRS[1], 0 },
                                                              new double[] {
                                                                            -this.translationToLocalCRS[0]
-                                                                                                   + ModelDatasetWrapper.DEFAULT_SPAN,
+                                                                                                   + RenderableDataset.DEFAULT_SPAN,
                                                                            -this.translationToLocalCRS[1]
-                                                                                                   + ModelDatasetWrapper.DEFAULT_SPAN,
-                                                                           ModelDatasetWrapper.DEFAULT_SPAN },
+                                                                                                   + RenderableDataset.DEFAULT_SPAN,
+                                                                           RenderableDataset.DEFAULT_SPAN },
                                                              defaultCRS );
-        renderableDatasets = new ModelDatasetWrapper();
+        renderableDatasets = new RenderableDataset();
         sceneEnvelope = renderableDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                        configAdapter, dsd );
 
@@ -309,7 +312,7 @@ public class PerspectiveViewService {
 
         int noDFC = sc.getNumberOfDEMFragmentsCached() == null ? 1000 : sc.getNumberOfDEMFragmentsCached();
         int dIOM = sc.getDirectIOMemory() == null ? 500 : sc.getDirectIOMemory();
-        demDatasets = new DemDatasetWrapper( noDFC, dIOM, ConfiguredOpenGLInitValues.getTerrainAmbient(),
+        demDatasets = new DEMDataset( noDFC, dIOM, ConfiguredOpenGLInitValues.getTerrainAmbient(),
                                              ConfiguredOpenGLInitValues.getTerrainDiffuse(),
                                              ConfiguredOpenGLInitValues.getTerrainSpecular(),
                                              ConfiguredOpenGLInitValues.getTerrainShininess() );
@@ -327,14 +330,14 @@ public class PerspectiveViewService {
         defaultDEMRenderer = matchingDatasourceObjects.get( 0 );
 
         // the colormap
-        this.colormapDatasets = new ColormapDatasetWrapper();
+        this.colormapDatasets = new ColormapDataset();
         this.colormapDatasets.fillFromDatasetDefinitions( sceneEnvelope, translationToLocalCRS, configAdapter, dsd );
 
         int dTM = sc.getDirectTextureMemory() == null ? 400 : sc.getDirectTextureMemory();
         textureByteBufferPool = new DirectByteBufferPool( dTM * 1024 * 1024, "texture coordinates buffer pool." );
         int tIG = sc.getTexturesInGPUMem() == null ? 300 : sc.getTexturesInGPUMem();
         int cTT = sc.getCachedTextureTiles() == null ? 400 : sc.getCachedTextureTiles();
-        textureDatasets = new TextureDatasetWrapper( textureByteBufferPool, cTT, tIG );
+        textureDatasets = new DEMTextureDataset( textureByteBufferPool, cTT, tIG );
         sceneEnvelope = textureDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                     configAdapter, dsd );
 
@@ -431,14 +434,14 @@ public class PerspectiveViewService {
     /**
      * @return all configured colormap datasets.
      */
-    public ColormapDatasetWrapper getColormapDatasets() {
+    public ColormapDataset getColormapDatasets() {
         return colormapDatasets;
     }
 
     /**
      * @return the configured texture datasets.
      */
-    public TextureDatasetWrapper getTextureDataSets() {
+    public DEMTextureDataset getTextureDataSets() {
         return this.textureDatasets;
     }
 
@@ -454,14 +457,16 @@ public class PerspectiveViewService {
     }
 
     /**
-     * Retrieve the requested datasets and render the result.
+     * Renders an image for requested datasets.
      * 
      * @param request
-     * @return the rendered image.
+     *            encapsulates the view parameters and the requested datasets, must not be <code>null</code>
+     * @return the rendered image, never <code>null</code>
      * @throws OWSException
      */
-    public final BufferedImage getPerspectiveViewImage( GetView request )
+    public final BufferedImage getImage( GetView request )
                             throws OWSException {
+
         ViewParams viewParams = request.getViewParameters();
         LOG.debug( "Requested datasets: " + request.getDatasets() );
         updateMaxWidthAndHeight( viewParams );
@@ -568,7 +573,7 @@ public class PerspectiveViewService {
     /**
      * @return the configured dems
      */
-    public DemDatasetWrapper getDEMDatasets() {
+    public DEMDataset getDEMDatasets() {
         return this.demDatasets;
     }
 }

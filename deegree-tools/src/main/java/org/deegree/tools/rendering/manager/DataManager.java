@@ -369,7 +369,7 @@ public class DataManager {
         options.addOption( option );
 
         option = new Option( "tt", OPT_WPVS_TRANSLATION_TO, true,
-                             "A comma seperated vector, translation vector to the nullpoint of the WPVS (see the WPVS-Config for more information)." );
+                             "A comma separated vector, translation vector to the nullpoint of the WPVS (see the WPVS-Config for more information)." );
         option.setArgs( 1 );
         option.setArgName( "e.g. -tt \"-2568000,-5606000\"  ." );
         options.addOption( option );

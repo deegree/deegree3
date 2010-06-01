@@ -106,9 +106,9 @@ import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.SkyImages;
 import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
 import org.deegree.services.wpvs.PerspectiveViewService;
-import org.deegree.services.wpvs.config.ColormapDatasetWrapper;
-import org.deegree.services.wpvs.config.DemDatasetWrapper;
-import org.deegree.services.wpvs.config.TextureDatasetWrapper;
+import org.deegree.services.wpvs.config.ColormapDataset;
+import org.deegree.services.wpvs.config.DEMDataset;
+import org.deegree.services.wpvs.config.DEMTextureDataset;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
 import org.deegree.tools.CommandUtils;
 import org.deegree.tools.annotations.Tool;
@@ -237,7 +237,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         this.perspectiveViewService = new PerspectiveViewService( configAdapter, sc );
 
         this.demRenderer = this.perspectiveViewService.getDefaultDEMRenderer();
-        DemDatasetWrapper dDW = this.perspectiveViewService.getDEMDatasets();
+        DEMDataset dDW = this.perspectiveViewService.getDEMDatasets();
         Set<String> datasetNames = dDW.datasetTitles();
         if ( datasetNames.isEmpty() ) {
             LOG.warn( "No elevation model dataset was detected, this is strange." );
@@ -262,12 +262,12 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         lodAnalyzer = new LODAnalyzer( (float) ( maxX - minX ), (float) ( maxY - minY ) );
         lodAnalyzerFrame.getContentPane().add( lodAnalyzer, BorderLayout.CENTER );
 
-        TextureDatasetWrapper tDS = this.perspectiveViewService.getTextureDataSets();
+        DEMTextureDataset tDS = this.perspectiveViewService.getTextureDataSets();
         for ( String tN : tDS.datasetTitles() ) {
             this.availableDatasets.add( tN + "(T)" );
         }
 
-        ColormapDatasetWrapper cDS = this.perspectiveViewService.getColormapDatasets();
+        ColormapDataset cDS = this.perspectiveViewService.getColormapDatasets();
 
         for ( String cN : cDS.datasetTitles() ) {
             this.availableDatasets.add( cN + "(C)" );

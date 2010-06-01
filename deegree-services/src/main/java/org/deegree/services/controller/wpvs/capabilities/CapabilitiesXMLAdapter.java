@@ -55,11 +55,11 @@ import org.deegree.services.jaxb.metadata.DCPType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.AbstractDataType;
-import org.deegree.services.jaxb.wpvs.ColormapDataset;
-import org.deegree.services.jaxb.wpvs.DEMDataset;
-import org.deegree.services.jaxb.wpvs.DEMTextureDataset;
+import org.deegree.services.jaxb.wpvs.ColormapDatasetConfig;
+import org.deegree.services.jaxb.wpvs.DEMDatasetConfig;
+import org.deegree.services.jaxb.wpvs.DEMTextureDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
-import org.deegree.services.jaxb.wpvs.RenderableDataset;
+import org.deegree.services.jaxb.wpvs.RenderableDatasetConfig;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,11 +155,11 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
      * @param renderables
      * @throws XMLStreamException
      */
-    private static void exportRenderableDatasets( XMLStreamWriter writer, List<RenderableDataset> renderables )
+    private static void exportRenderableDatasets( XMLStreamWriter writer, List<RenderableDatasetConfig> renderables )
                             throws XMLStreamException {
         if ( renderables != null ) {
             // TODO Rutger: Is this supposed to be like this?
-            for ( RenderableDataset renderable : renderables ) {
+            for ( RenderableDatasetConfig renderable : renderables ) {
                 if ( renderable != null ) {
                     writer.writeStartElement( WPVS_NS, "Dataset" );
                     writer.writeAttribute( "queryable", "true" );
@@ -175,7 +175,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
      * @param dem
      * @throws XMLStreamException
      */
-    private static void exportElevationModel( XMLStreamWriter writer, DEMDataset dem )
+    private static void exportElevationModel( XMLStreamWriter writer, DEMDatasetConfig dem )
                             throws XMLStreamException {
         if ( dem != null ) {
             writer.writeStartElement( WPVS_NS, "ElevationModel" );
@@ -191,10 +191,10 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
      * @param textureDataset
      * @throws XMLStreamException
      */
-    private static void exportTextureDataset( XMLStreamWriter writer, List<DEMTextureDataset> textureDatasets )
+    private static void exportTextureDataset( XMLStreamWriter writer, List<DEMTextureDatasetConfig> textureDatasets )
                             throws XMLStreamException {
         if ( textureDatasets != null && !textureDatasets.isEmpty() ) {
-            for ( DEMTextureDataset td : textureDatasets ) {
+            for ( DEMTextureDatasetConfig td : textureDatasets ) {
                 if ( td != null ) {
                     writer.writeStartElement( WPVS_NS, "Dataset" );
                     writer.writeAttribute( "queryable", "true" );
@@ -210,10 +210,10 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
      * @param colormapDatasets
      * @throws XMLStreamException
      */
-    private static void exportColormapDataset( XMLStreamWriter writer, List<ColormapDataset> colormapDatasets )
+    private static void exportColormapDataset( XMLStreamWriter writer, List<ColormapDatasetConfig> colormapDatasets )
                             throws XMLStreamException {
         if ( colormapDatasets != null && !colormapDatasets.isEmpty() ) {
-            for ( ColormapDataset cd : colormapDatasets ) {
+            for ( ColormapDatasetConfig cd : colormapDatasets ) {
                 if ( cd != null ) {
                     writer.writeStartElement( WPVS_NS, "Dataset" );
                     writer.writeAttribute( "queryable", "true" );

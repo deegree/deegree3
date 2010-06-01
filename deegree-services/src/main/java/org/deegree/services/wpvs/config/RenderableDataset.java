@@ -57,7 +57,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderableProt
 import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
-import org.deegree.services.jaxb.wpvs.RenderableDataset;
+import org.deegree.services.jaxb.wpvs.RenderableDatasetConfig;
 import org.deegree.services.jaxb.wpvs.SwitchLevels;
 import org.deegree.services.jaxb.wpvs.SwitchLevels.Level;
 import org.deegree.services.wpvs.io.ModelBackend;
@@ -69,11 +69,12 @@ import org.slf4j.Logger;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
-public class ModelDatasetWrapper extends DatasetWrapper<RenderableManager<?>> {
-    private final static Logger LOG = getLogger( ModelDatasetWrapper.class );
+public class RenderableDataset extends Dataset<RenderableManager<?>> {
+
+    private final static Logger LOG = getLogger( RenderableDataset.class );
 
     /** span of the default envelope */
     public final static double DEFAULT_SPAN = 0.001;
@@ -91,7 +92,7 @@ public class ModelDatasetWrapper extends DatasetWrapper<RenderableManager<?>> {
     @Override
     public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
                                                 DatasetDefinitions dsd ) {
-        List<RenderableDataset> datsets = dsd.getRenderableDataset();
+        List<RenderableDatasetConfig> datsets = dsd.getRenderableDataset();
         if ( !datsets.isEmpty() ) {
             sceneEnvelope = initDatasets( datsets, sceneEnvelope, toLocalCRS, dsd.getMaxPixelError() );
         } else {
@@ -100,10 +101,10 @@ public class ModelDatasetWrapper extends DatasetWrapper<RenderableManager<?>> {
         return sceneEnvelope;
     }
 
-    private Envelope initDatasets( List<RenderableDataset> datasets, Envelope sceneEnvelope, double[] toLocalCRS,
+    private Envelope initDatasets( List<RenderableDatasetConfig> datasets, Envelope sceneEnvelope, double[] toLocalCRS,
                                    Double parentMaxPixelError ) {
         if ( datasets != null ) {
-            for ( RenderableDataset bds : datasets ) {
+            for ( RenderableDatasetConfig bds : datasets ) {
                 if ( bds != null ) {
                     if ( isUnAmbiguous( bds.getTitle() ) ) {
                         LOG.info( "The feature dataset with name: " + bds.getName() + " and title: " + bds.getTitle()
@@ -153,7 +154,7 @@ public class ModelDatasetWrapper extends DatasetWrapper<RenderableManager<?>> {
      * @param backends
      */
     private Envelope initBillboards( Envelope sceneEnvelope, double[] toLocalCRS,
-                                     RenderableDataset configuredTreeDatasets, RenderableStore backend ) {
+                                     RenderableDatasetConfig configuredTreeDatasets, RenderableStore backend ) {
 
         ModelBackendInfo info = new ModelBackendInfo();
         updateBackendInfo( info, (ModelBackend<?>) backend, ModelBackend.Type.TREE );
@@ -183,7 +184,7 @@ public class ModelDatasetWrapper extends DatasetWrapper<RenderableManager<?>> {
      * @return
      */
     private Envelope initEntities( Envelope sceneEnvelope, double[] toLocalCRS,
-                                   RenderableDataset configuredBuildingsDS, RenderableStore backend ) {
+                                   RenderableDatasetConfig configuredBuildingsDS, RenderableStore backend ) {
         ModelBackendInfo info = new ModelBackendInfo();
         updateBackendInfo( info, (ModelBackend<?>) backend, ModelBackend.Type.BUILDING );
         updateBackendInfo( info, (ModelBackend<?>) backend, ModelBackend.Type.PROTOTYPE );
@@ -253,7 +254,7 @@ public class ModelDatasetWrapper extends DatasetWrapper<RenderableManager<?>> {
      * @param datatype
      * @param parentMaxPixelError
      */
-    private void clarifyInheritance( RenderableDataset datatype, Double parentMaxPixelError ) {
+    private void clarifyInheritance( RenderableDatasetConfig datatype, Double parentMaxPixelError ) {
         datatype.setMaxPixelError( clarifyMaxPixelError( parentMaxPixelError, datatype.getMaxPixelError() ) );
     }
 
@@ -274,7 +275,7 @@ public class ModelDatasetWrapper extends DatasetWrapper<RenderableManager<?>> {
      * @return the merged scene envelope (in realworld coordinates).
      */
     private Envelope mergeGlobalWithScene( double[] toLocalCRS, Envelope dsEnvelope, Envelope sceneEnvelope ) {
-        if ( dsEnvelope != null && ( Math.abs( dsEnvelope.getSpan0() - ModelDatasetWrapper.DEFAULT_SPAN ) > 1E-8 ) ) {
+        if ( dsEnvelope != null && ( Math.abs( dsEnvelope.getSpan0() - RenderableDataset.DEFAULT_SPAN ) > 1E-8 ) ) {
 
             // convert the global dataset (in wpvs world coordinates) to real world coordinates.
             double[] min = dsEnvelope.getMin().getAsArray();

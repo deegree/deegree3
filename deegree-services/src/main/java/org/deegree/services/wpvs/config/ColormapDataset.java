@@ -47,7 +47,7 @@ import java.util.List;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
-import org.deegree.services.jaxb.wpvs.ColormapDataset;
+import org.deegree.services.jaxb.wpvs.ColormapDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.slf4j.Logger;
 
@@ -56,12 +56,12 @@ import org.slf4j.Logger;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
-public class ColormapDatasetWrapper extends DatasetWrapper<Colormap> {
+public class ColormapDataset extends Dataset<Colormap> {
 
-    private static final Logger LOG = getLogger( ColormapDatasetWrapper.class );
+    private static final Logger LOG = getLogger( ColormapDataset.class );
 
     private static final float[] MIN_DEFAULT = new float[] { 1, 0, 0, 1 };
 
@@ -73,7 +73,7 @@ public class ColormapDatasetWrapper extends DatasetWrapper<Colormap> {
     public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
                                                 DatasetDefinitions dsd ) {
 
-        List<ColormapDataset> colormapDatsets = dsd.getColormapDataset();
+        List<ColormapDatasetConfig> colormapDatsets = dsd.getColormapDataset();
         if ( !colormapDatsets.isEmpty() ) {
             sceneEnvelope = initDatasets( colormapDatsets, sceneEnvelope, toLocalCRS, configAdapter );
         } else {
@@ -82,10 +82,10 @@ public class ColormapDatasetWrapper extends DatasetWrapper<Colormap> {
         return sceneEnvelope;
     }
 
-    private Envelope initDatasets( List<ColormapDataset> colormapDatsets, Envelope sceneEnvelope,
-                                                   double[] toLocalCRS, XMLAdapter adapter ) {
+    private Envelope initDatasets( List<ColormapDatasetConfig> colormapDatsets, Envelope sceneEnvelope,
+                                   double[] toLocalCRS, XMLAdapter adapter ) {
         if ( colormapDatsets != null && !colormapDatsets.isEmpty() ) {
-            for ( ColormapDataset dts : colormapDatsets ) {
+            for ( ColormapDatasetConfig dts : colormapDatsets ) {
                 if ( dts != null ) {
                     if ( isUnAmbiguous( dts.getTitle() ) ) {
                         LOG.info( "The colormap dataset with name: " + dts.getName() + " and title: " + dts.getTitle()
@@ -106,7 +106,7 @@ public class ColormapDatasetWrapper extends DatasetWrapper<Colormap> {
      * @param adapter
      * @return
      */
-    private Envelope handleColormapDataset( ColormapDataset dts, Envelope sceneEnvelope, double[] toLocalCRS,
+    private Envelope handleColormapDataset( ColormapDatasetConfig dts, Envelope sceneEnvelope, double[] toLocalCRS,
                                             XMLAdapter adapter ) {
         float[] maxColor = parseColor( dts.getMaxColor(), MAX_DEFAULT );
         float[] minColor = parseColor( dts.getMinColor(), MIN_DEFAULT );

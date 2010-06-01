@@ -60,14 +60,14 @@ import org.slf4j.Logger;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
+ * 
  * @version $Revision$, $Date$
  * @param <CO>
  *            the constraint object.
- * 
  */
-public abstract class DatasetWrapper<CO> {
+public abstract class Dataset<CO> {
 
-    private final static Logger LOG = getLogger( DatasetWrapper.class );
+    private final static Logger LOG = getLogger( Dataset.class );
 
     /** The geometry factory to be used */
     protected final static GeometryFactory geomFac = new GeometryFactory();
@@ -316,5 +316,4 @@ public abstract class DatasetWrapper<CO> {
             return false;
         }
     }
-
 }
