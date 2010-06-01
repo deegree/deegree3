@@ -539,6 +539,7 @@ public class RasterCache {
      * @return the raster created from the cache or <code>null</code> if no cache file with given id was found.
      */
     public SimpleRaster createFromCache( RasterReader reader, String rasterId ) {
+        //rb: todo what about the CRS from RasterIOOptions
         SimpleRaster result = null;
         if ( rasterId != null ) {
             File cacheFile = new File( this.cacheDir, rasterId + FILE_EXTENSION );

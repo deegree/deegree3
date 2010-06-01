@@ -50,6 +50,8 @@ import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.geometry.Envelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a collection of {@link AbstractRaster} instances that describe the same spatial region, but
@@ -61,6 +63,7 @@ import org.deegree.geometry.Envelope;
  * @version $Revision$, $Date$
  */
 public class MultiResolutionRaster extends AbstractCoverage {
+    private static final Logger LOG = LoggerFactory.getLogger( MultiResolutionRaster.class );
 
     private List<AbstractRaster> resolutions = new LinkedList<AbstractRaster>();
 
@@ -80,18 +83,22 @@ public class MultiResolutionRaster extends AbstractCoverage {
      *            raster to be added to the MultiResolutionRaster
      */
     public void addRaster( AbstractRaster raster ) {
-        resolutions.add( raster );
-        List<SampleResolution> nativeResolutions = this.resolutionInfo.getNativeResolutions();
-        SampleResolution rasterRes = raster.getResolutionInfo().getNativeResolutions().get( 0 );
-        nativeResolutions.add( rasterRes );
-        Comparator<AbstractRaster> comp = new Comparator<AbstractRaster>() {
-            public int compare( AbstractRaster a1, AbstractRaster a2 ) {
-                double r1 = Math.abs( a1.getResolutionInfo().getNativeResolutions().get( 0 ).getResolution( 0 ) );
-                double r2 = Math.abs( a2.getResolutionInfo().getNativeResolutions().get( 0 ).getResolution( 0 ) );
-                return Double.valueOf( r1 ).compareTo( r2 );
-            }
-        };
-        Collections.sort( resolutions, comp );
+        if ( raster != null ) {
+            resolutions.add( raster );
+            List<SampleResolution> nativeResolutions = this.resolutionInfo.getNativeResolutions();
+            SampleResolution rasterRes = raster.getResolutionInfo().getNativeResolutions().get( 0 );
+            nativeResolutions.add( rasterRes );
+            Comparator<AbstractRaster> comp = new Comparator<AbstractRaster>() {
+                public int compare( AbstractRaster a1, AbstractRaster a2 ) {
+                    double r1 = Math.abs( a1.getResolutionInfo().getNativeResolutions().get( 0 ).getResolution( 0 ) );
+                    double r2 = Math.abs( a2.getResolutionInfo().getNativeResolutions().get( 0 ).getResolution( 0 ) );
+                    return Double.valueOf( r1 ).compareTo( r2 );
+                }
+            };
+            Collections.sort( resolutions, comp );
+        } else{
+            LOG.error( "Could not add raster to multiresolution raster because null.");
+        }
     }
 
     /**
