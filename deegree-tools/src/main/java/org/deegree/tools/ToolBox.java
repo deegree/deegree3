@@ -93,7 +93,6 @@ public class ToolBox {
                                       // Following classes define public static void main methods, but do not implement
                                       // the tools annotation (maybe fix them?)
                                       new ToolInfo( org.deegree.tools.commons.utils.ScanEncoding.class ),
-                                      new ToolInfo( org.deegree.tools.coverage.rtb.RasterTreeBuilder.class ),
                                       new ToolInfo( org.deegree.tools.crs.PolynomialParameterCreator.class ),
                                       new ToolInfo( org.deegree.tools.feature.gml.GMLSchemaComparator.class ),
                                       new ToolInfo( org.deegree.tools.rendering.viewer.GLViewer.class ),

@@ -124,16 +124,6 @@ public class RasterTreeBuilder {
     }
 
     /**
-     * Prints a warning that this is not a command line tool.
-     * 
-     * @param args
-     */
-    public static void main( String[] args ) {
-        System.err.println( "Please use the RTBClient for a command line client!" );
-        System.exit( 1 );
-    }
-
-    /**
      * Set if existing tiles should be replaced (default is true).
      * 
      * @param overwrite
