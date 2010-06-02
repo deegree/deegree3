@@ -183,7 +183,8 @@ public class RTBClient {
             rtb.setBackgroundValue( RasterCommandUtils.parseBackgroundValue( OPT_BACKGROUND ) );
         }
 
-        rtb.setNumThreads( getIntOption( line, OPT_NUM_THREADS, 4 ) );
+        // currently locked to 1 (still searching for black hole race condition)
+        rtb.setNumThreads( getIntOption( line, OPT_NUM_THREADS, 1 ) );
     }
 
     private static void startRTB( RasterTreeBuilder rtb, CommandLine line )
