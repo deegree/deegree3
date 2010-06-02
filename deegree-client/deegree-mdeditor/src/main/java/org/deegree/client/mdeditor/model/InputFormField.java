@@ -36,6 +36,7 @@
 package org.deegree.client.mdeditor.model;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -104,56 +105,66 @@ public class InputFormField extends FormField {
     public void setValue( Object value ) {
         invalid = false;
         if ( value != null ) {
-            switch ( inputType ) {
-            case TIMESTAMP:
-                try {
-                    if ( validation != null && validation.getTimestampPattern() != null ) {
-                        timePattern = validation.getTimestampPattern();
-                    }
-                    SimpleDateFormat format = new SimpleDateFormat( timePattern );
-                    format.parse( (String) value );
-                } catch ( Exception e ) {
-                    invalid = true;
-                }
-                break;
-            case DOUBLE:
-                try {
-                    double d = Double.parseDouble( (String) value );
-                    if ( !( validation != null && d >= validation.getMinValue() ) ) {
+            if ( value instanceof List<?> ) {
+                // TODO: validate list
+            } else {
+                switch ( inputType ) {
+                case TIMESTAMP:
+                    try {
+                        if ( validation != null && validation.getTimestampPattern() != null ) {
+                            timePattern = validation.getTimestampPattern();
+                        }
+                        SimpleDateFormat format = new SimpleDateFormat( timePattern );
+                        format.parse( (String) value );
+                    } catch ( Exception e ) {
                         invalid = true;
                     }
-                    if ( !( validation != null && d <= validation.getMaxValue() ) ) {
+                    break;
+                case DOUBLE:
+                    try {
+                        double d = Double.parseDouble( (String) value );
+                        if ( !( validation != null && d >= validation.getMinValue() ) ) {
+                            invalid = true;
+                        }
+                        if ( !( validation != null && d <= validation.getMaxValue() ) ) {
+                            invalid = true;
+                        }
+                    } catch ( Exception e ) {
                         invalid = true;
                     }
-                } catch ( Exception e ) {
-                    invalid = true;
-                }
-                break;
-            case INT:
-                try {
-                    int i = Integer.parseInt( (String) value );
-                    if ( !( validation != null && i >= validation.getMinValue() ) ) {
+                    break;
+                case INT:
+                    try {
+                        int i = Integer.parseInt( (String) value );
+                        if ( !( validation != null && i >= validation.getMinValue() ) ) {
+                            invalid = true;
+                        }
+                        if ( !( validation != null && i <= validation.getMaxValue() ) ) {
+                            invalid = true;
+                        }
+                    } catch ( Exception e ) {
                         invalid = true;
                     }
-                    if ( !( validation != null && i <= validation.getMaxValue() ) ) {
-                        invalid = true;
-                    }
-                } catch ( Exception e ) {
-                    invalid = true;
-                }
-                break;
-            case TEXT:
-                if ( value instanceof List<?> ) {
-                    // TODO
-                } else {
+                    break;
+                case TEXT:
                     String s = (String) value;
                     if ( ( validation != null && validation.getLength() > 0 && s.length() >= validation.getLength() ) ) {
                         invalid = true;
                     }
+                    break;
                 }
-                break;
             }
         }
         super.setValue( value );
     }
+
+    public Object getValue() {
+        if ( !( value instanceof List<?> ) && occurence != 1 ) {
+            ArrayList<Object> valueList = new ArrayList<Object>();
+            valueList.add( value );
+            return valueList;
+        }
+        return value;
+    }
+
 }

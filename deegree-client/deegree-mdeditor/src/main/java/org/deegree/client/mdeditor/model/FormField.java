@@ -47,7 +47,7 @@ public abstract class FormField implements FormElement {
 
     private String id;
 
-    private Object value;
+    protected Object value;
 
     private boolean visibility;
 
@@ -75,7 +75,6 @@ public abstract class FormField implements FormElement {
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.identifier = isIdentifier;
-
     }
 
     public String getId() {
@@ -118,11 +117,6 @@ public abstract class FormField implements FormElement {
         return help;
     }
 
-    @Override
-    public String toString() {
-        return getPath().toString() + ": " + getValue();
-    }
-
     public FormFieldPath getPath() {
         return path;
     }
@@ -158,4 +152,10 @@ public abstract class FormField implements FormElement {
     public Object getDefaultValue() {
         return defaultValue;
     }
+
+    @Override
+    public String toString() {
+        return getPath().toString() + ": " + getValue();
+    }
+
 }
