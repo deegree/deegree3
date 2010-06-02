@@ -10,4 +10,16 @@
             <component-type>org.deegree.ListGroup</component-type>
         </component>
     </tag>
+    <tag>
+        <tag-name>inputManyText</tag-name>
+        <component>
+            <component-type>org.deegree.HtmlInputManyText</component-type>
+        </component>
+    </tag>
+    <tag>
+        <tag-name>inputTextItems</tag-name>
+        <component>
+            <component-type>org.deegree.HtmlInputTextItems</component-type>
+        </component>
+    </tag>
 </facelet-taglib>
