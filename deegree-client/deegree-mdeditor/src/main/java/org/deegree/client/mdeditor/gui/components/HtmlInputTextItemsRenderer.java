@@ -35,8 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.components;
 
-import static org.deegree.client.mdeditor.gui.components.HtmlInputTextItems.EVENT_IC;
-import static org.deegree.client.mdeditor.gui.components.HtmlInputTextItems.EVENT_VC;
+import static org.deegree.client.mdeditor.gui.components.HtmlInputTextItems.EVENT_KEYUP;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +63,8 @@ import javax.faces.render.Renderer;
 @FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.HtmlInputTextItemsRenderer")
 public class HtmlInputTextItemsRenderer extends Renderer {
 
+    static final String TREE_CHANGED_EVENT = "treeChanged";
+
     private static String INDEX_PARAM = "itemIndex";
 
     private static String ITEM_ID_PARAM = "itemId";
@@ -75,8 +76,7 @@ public class HtmlInputTextItemsRenderer extends Renderer {
         String behaviorEvent = params.get( "javax.faces.behavior.event" );
 
         int itemIndex = Integer.parseInt( params.get( INDEX_PARAM ) );
-
-        if ( EVENT_IC.equals( behaviorEvent ) ) {
+        if ( TREE_CHANGED_EVENT.equals( behaviorEvent ) ) {
             updateItems( ( (UIInput) component ), itemIndex );
         } else {
             String itemId = params.get( ITEM_ID_PARAM );
@@ -111,6 +111,7 @@ public class HtmlInputTextItemsRenderer extends Renderer {
             // remove item
             values.remove( index );
         }
+        item.setSubmittedValue( values );
     }
 
     @Override
@@ -152,8 +153,8 @@ public class HtmlInputTextItemsRenderer extends Renderer {
         writer.endElement( "div" );
     }
 
-    private void writeTD( FacesContext context, ResponseWriter writer, HtmlInputTextItems component,
-                          Object value, String id, String contextName, boolean isLast, int index )
+    private void writeTD( FacesContext context, ResponseWriter writer, HtmlInputTextItems component, Object value,
+                          String id, String contextName, boolean isLast, int index )
                             throws IOException {
         writer.startElement( "tr", component );
         writer.startElement( "td", component );
@@ -180,11 +181,11 @@ public class HtmlInputTextItemsRenderer extends Renderer {
         writer.endElement( "tr" );
     }
 
-    private void addValueChangedBehavior( FacesContext context, ResponseWriter writer,
-                                          HtmlInputTextItems component, int index, String id )
+    private void addValueChangedBehavior( FacesContext context, ResponseWriter writer, HtmlInputTextItems component,
+                                          int index, String id )
                             throws IOException {
         Map<String, List<ClientBehavior>> behaviors = component.getClientBehaviors();
-        if ( behaviors.containsKey( EVENT_VC ) ) {
+        if ( behaviors.containsKey( EVENT_KEYUP ) ) {
 
             List<ClientBehaviorContext.Parameter> params = new ArrayList<ClientBehaviorContext.Parameter>();
             params.add( new ClientBehaviorContext.Parameter( INDEX_PARAM, index ) );
@@ -192,19 +193,19 @@ public class HtmlInputTextItemsRenderer extends Renderer {
             ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(
                                                                                                        context,
                                                                                                        component,
-                                                                                                       EVENT_VC,
+                                                                                                       EVENT_KEYUP,
                                                                                                        component.getClientId(),
                                                                                                        params );
-            String jsfJsCode = behaviors.get( EVENT_VC ).get( 0 ).getScript( behaviorContext );
+            String jsfJsCode = behaviors.get( EVENT_KEYUP ).get( 0 ).getScript( behaviorContext );
             writer.writeAttribute( "onkeyup", jsfJsCode, null );
         }
     }
 
-    private void addItemChangedBehaviour( FacesContext context, ResponseWriter writer,
-                                          HtmlInputTextItems component, int index )
+    private void addItemChangedBehaviour( FacesContext context, ResponseWriter writer, HtmlInputTextItems component,
+                                          int index )
                             throws IOException {
-        String options = "{'javax.faces.behavior.event':'" + EVENT_IC + "', " + "'execute':'@this', " + "'render':'"
-                         + component.getParent().getClientId() + "', " + "'itemIndex':'" + index + "'}";
+        String options = "{'javax.faces.behavior.event':'" + TREE_CHANGED_EVENT + "', " + "'execute':'@this', "
+                         + "'render':'" + component.getParent().getClientId() + "', " + "'itemIndex':'" + index + "'}";
         String request = "jsf.ajax.request('" + component.getClientId() + "', event, " + options + ")";
         writer.writeAttribute( "onclick", request, null );
     }

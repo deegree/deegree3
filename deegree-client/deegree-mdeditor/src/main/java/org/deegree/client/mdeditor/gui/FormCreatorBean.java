@@ -78,6 +78,8 @@ import javax.servlet.http.HttpSession;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.codelist.CodeListConfigurationFactory;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.gui.components.HtmlInputManyText;
+import org.deegree.client.mdeditor.gui.components.HtmlInputTextItems;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
 import org.deegree.client.mdeditor.gui.listener.DataGroupSelectListener;
 import org.deegree.client.mdeditor.gui.listener.DataGroupListener;
@@ -379,8 +381,11 @@ public class FormCreatorBean implements Serializable {
         UIInput input = null;
         String eventName = null;
         if ( fe instanceof InputFormField ) {
-            if ( INPUT_TYPE.TEXTAREA.equals( ( (InputFormField) fe ).getInputType() ) ) {
+            InputFormField inputFF = (InputFormField) fe;
+            if ( INPUT_TYPE.TEXTAREA.equals( inputFF.getInputType() ) ) {
                 input = new HtmlInputTextarea();
+            } else if ( inputFF.getOccurence() != 1 ) {
+                input = new HtmlInputManyText();
             } else {
                 input = new HtmlInputText();
             }
@@ -420,8 +425,17 @@ public class FormCreatorBean implements Serializable {
             input.setId( id );
             input.getAttributes().put( GuiUtils.FIELDPATH_ATT_KEY, fe.getPath() );
             setStyleClass( fe, input, ef, elContext );
-            setValue( fe, input, ef, elContext );
-            setValueChangedAjaxBehavior( input, msgId, eventName );
+            if ( input instanceof HtmlInputManyText ) {
+                // add items
+                HtmlInputTextItems items = new HtmlInputTextItems();
+                items.setId( GuiUtils.getUniqueId() );
+                setValue( fe, items, ef, elContext );
+                setValueChangedAjaxBehavior( items, msgId, eventName );
+                input.getChildren().add( items );
+            } else {
+                setValue( fe, input, ef, elContext );
+                setValueChangedAjaxBehavior( input, msgId, eventName );
+            }
             setVisibility( fe, input, ef, elContext );
             setTitle( fe, input, ef, elContext );
             parentGrid.getChildren().add( input );

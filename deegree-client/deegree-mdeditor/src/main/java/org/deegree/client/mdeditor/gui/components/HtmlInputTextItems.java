@@ -53,9 +53,8 @@ import javax.faces.component.behavior.ClientBehaviorHolder;
 @FacesComponent(value = "HtmlInputTextItems")
 public class HtmlInputTextItems extends UIInput implements ClientBehaviorHolder {
 
-    static final String EVENT_VC = "valueChanged";
+    static final String EVENT_KEYUP = "keyup";
 
-    static final String EVENT_IC = "itemChanged";
 
     public HtmlInputTextItems() {
         setRendererType( "org.deegree.HtmlInputTextItemsRenderer" );
@@ -63,12 +62,12 @@ public class HtmlInputTextItems extends UIInput implements ClientBehaviorHolder 
 
     @Override
     public Collection<String> getEventNames() {
-        return Arrays.asList( EVENT_IC, EVENT_VC );
+        return Arrays.asList( EVENT_KEYUP );
     }
 
     @Override
     public String getDefaultEventName() {
-        return EVENT_VC;
+        return EVENT_KEYUP;
     }
 
 }
