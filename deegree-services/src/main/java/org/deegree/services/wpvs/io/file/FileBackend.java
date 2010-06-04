@@ -329,7 +329,7 @@ public class FileBackend extends ModelBackend<Envelope> {
     @Override
     public void flush()
                             throws IOException {
-        treeFile.close();
+//        treeFile.close();
         buildingFile.close();
         prototypeFile.close();
     }

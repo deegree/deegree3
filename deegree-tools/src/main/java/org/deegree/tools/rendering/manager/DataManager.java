@@ -54,6 +54,7 @@ import org.deegree.services.wpvs.exception.DatasourceException;
 import org.deegree.services.wpvs.io.BackendResult;
 import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackend.Type;
+import org.deegree.services.wpvs.io.file.FileBackend;
 import org.deegree.tools.CommandUtils;
 import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.rendering.manager.buildings.BuildingManager;
@@ -216,9 +217,13 @@ public class DataManager {
                             throws FileNotFoundException, IOException, UnsupportedOperationException,
                             DatasourceException {
 
-        ModelBackend<?> backend = getModelBackend( line );
+        // ModelBackend<?> backend = getModelBackend( line );
 
-        // backend = new FileBackend( "/media/storage/bonn3d/file_backend/" );
+        File entityFile = new File(
+                                    "/home/schneider/workspace/test-wpvs/src/main/webapp/WEB-INF/data/renderable/buildings/buildings.bin" );
+        File prototypeFile = new File(
+                                 "/home/schneider/workspace/test-wpvs/src/main/webapp/WEB-INF/data/renderable/buildings/prototypes.bin" );        
+        ModelBackend<?> backend = new FileBackend( entityFile, prototypeFile );
 
         Action action = null;
         try {

@@ -52,14 +52,17 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.RemoveMeAfterRefactoring;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -84,6 +87,7 @@ import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.rendering.r3d.opengl.tesselation.Tesselator;
+import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +110,7 @@ public class CityGMLImporter implements ModelImporter {
 
     private static Logger LOG = LoggerFactory.getLogger( CityGMLImporter.class );
 
-    private static final String CITYGML_SCHEMA = "http://www.citygml.org/citygml/1/0/0/CityGML.xsd";
+    private static final String CITYGML_SCHEMA = CityGMLImporter.class.getResource( "schema/citygml100_old/CityGML.xsd" ).toString();
 
     private static final String OPENGIS_SCHEMA = "http://schemas.opengis.net/citygml/building/1.0/building.xsd";
 
@@ -162,6 +166,7 @@ public class CityGMLImporter implements ModelImporter {
             LOG.info( "Using schemalocation: " + schemaLoc );
             adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaLoc );
         } catch ( Exception e ) {
+            LOG.error( e.getMessage(), e );
             throw new IllegalArgumentException( "Could not create an ApplicationSchemaXSDAdapter from schemaLocation: "
                                                 + schemaLoc + " no way to import buildings.", e );
         }
@@ -528,25 +533,22 @@ public class CityGMLImporter implements ModelImporter {
         return rwo;
     }
 
-    /**
-     * @param building
-     * @return
-     */
     private String getExternalRef( Feature building ) {
-        Property prop = building.getProperty( new QName( NS, "externalReference" ) );
-        String result = null;
-        LOG.error( "TODO adapt to changes in feature API: " + RemoveMeAfterRefactoring.class );
-        // if ( val != null ) {
-        // List<GenericCustomPropertyValue> informationSystems = val.getChildNodes( new QName( NS, "informationSystem" )
-        // );
-        // if ( !informationSystems.isEmpty() && informationSystems.get( 0 ) != null ) {
-        // List<String> textValues = informationSystems.get( 0 ).getTextNodes();
-        // if ( !textValues.isEmpty() ) {
-        // result = textValues.get( 0 );
-        // }
-        // }
-        // }
 
+        String result = null;
+
+        NamespaceContext nsContext = new NamespaceContext();
+        nsContext.addNamespace( "cgml", NS );
+        PropertyName propName = new PropertyName( "cgml:externalReference/cgml:informationSystem/text()", nsContext );
+        TypedObjectNode[] tons;
+        try {
+            tons = building.evalXPath( propName, GMLVersion.GML_31 );
+            if ( tons.length > 0 ) {
+                result = ( (PrimitiveValue) tons[0] ).getAsText().trim();
+            }
+        } catch ( JaxenException e ) {
+            LOG.error( "Retrieving of information system property failed: " + e.getMessage() );
+        }
         return result;
     }
 
