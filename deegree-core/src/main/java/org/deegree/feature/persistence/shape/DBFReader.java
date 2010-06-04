@@ -36,8 +36,6 @@
 
 package org.deegree.feature.persistence.shape;
 
-import static java.nio.ByteOrder.BIG_ENDIAN;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MILLISECOND;
 import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
@@ -401,12 +399,12 @@ public class DBFReader {
         return featureType;
     }
 
-    private final int getBEInt( ByteBuffer buffer ) {
-        buffer.order( BIG_ENDIAN );
-        int result = buffer.getInt();
-        buffer.order( LITTLE_ENDIAN );
-        return result;
-    }
+    // private final int getBEInt( ByteBuffer buffer ) {
+    // buffer.order( BIG_ENDIAN );
+    // int result = buffer.getInt();
+    // buffer.order( LITTLE_ENDIAN );
+    // return result;
+    // }
 
     private final void skipBytes( ByteBuffer buffer, int bytes ) {
         buffer.position( buffer.position() + bytes );
