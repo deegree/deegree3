@@ -532,7 +532,7 @@ public class SHPReader {
      */
     public Geometry readGeometry( long ptr ) {
 
-        LOG.debug( "Retrieving geometry at position {}", ptr );
+        LOG.trace( "Retrieving geometry at position {}", ptr );
         ByteBuffer buffer = sharedBuffer.asReadOnlyBuffer();
         buffer.order( ByteOrder.LITTLE_ENDIAN );
 
@@ -1117,9 +1117,9 @@ public class SHPReader {
         return res;
     }
 
-    private int getUnsigned( ByteBuffer buffer ) {
-        return buffer.get() & 0xff;
-    }
+    // private int getUnsigned( ByteBuffer buffer ) {
+    // return buffer.get() & 0xff;
+    // }
 
     /**
      * Closes the underlying file channel and random access file.

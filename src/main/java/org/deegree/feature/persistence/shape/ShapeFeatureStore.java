@@ -447,7 +447,7 @@ public class ShapeFeatureStore implements FeatureStore {
         Feature feature = (Feature) cache.get( fid );
 
         if ( feature == null ) {
-            LOG.debug( "Cache miss for feature {}", fid );
+            LOG.trace( "Cache miss for feature {}", fid );
 
             // add simple properties
             HashMap<SimplePropertyType, Property> entry;
@@ -455,7 +455,7 @@ public class ShapeFeatureStore implements FeatureStore {
                 try {
                     entry = dbf.getEntry( recNumAndPos.first );
                 } catch ( IOException e ) {
-                    LOG.debug( "Stack trace", e );
+                    LOG.trace( "Stack trace", e );
                     throw new FeatureStoreException( e );
                 }
             } else {
@@ -475,7 +475,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
             cache.add( feature );
         } else {
-            LOG.debug( "Cache hit for feature {}", fid );
+            LOG.trace( "Cache hit for feature {}", fid );
         }
         return feature;
     }
