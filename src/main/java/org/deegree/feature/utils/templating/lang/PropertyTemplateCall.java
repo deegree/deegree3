@@ -47,6 +47,7 @@ import java.util.List;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
+import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 
 /**
@@ -92,6 +93,10 @@ public class PropertyTemplateCall {
                 return;
             }
             visited.add( p );
+
+            if ( p.getValue() instanceof Geometry && !geometries ) {
+                return;
+            }
         }
 
         for ( Object o : t.body ) {
