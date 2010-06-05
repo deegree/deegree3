@@ -162,7 +162,9 @@ public class DataManager {
      */
     public static final String OPT_VRML_MAX_TEX_DIM = "vrml_texture_dimension";
 
-    /** The commandline argument for the rotation axis definition, a comma separated list of 4 values, x,y,z,a */
+    /**
+     * The commandline argument for the rotation axis definition, a comma separated list of 4 values, x,y,z,a
+     */
     public static final String OPT_VRML_ROTATION_AXIS = "vrml_rotation_axis";
 
     /**
@@ -191,7 +193,8 @@ public class DataManager {
         Options options = initOptions();
         boolean verbose = false;
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
+        // for the moment, using the CLI API there is no way to respond to a
+        // help argument; see
         // https://issues.apache.org/jira/browse/CLI-179
         if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
             printHelp( options );
@@ -217,13 +220,7 @@ public class DataManager {
                             throws FileNotFoundException, IOException, UnsupportedOperationException,
                             DatasourceException {
 
-        // ModelBackend<?> backend = getModelBackend( line );
-
-        File entityFile = new File(
-                                    "/home/schneider/workspace/test-wpvs/src/main/webapp/WEB-INF/data/renderable/buildings/buildings.bin" );
-        File prototypeFile = new File(
-                                 "/home/schneider/workspace/test-wpvs/src/main/webapp/WEB-INF/data/renderable/buildings/prototypes.bin" );        
-        ModelBackend<?> backend = new FileBackend( entityFile, prototypeFile );
+        ModelBackend<?> backend = getModelBackend( line );
 
         Action action = null;
         try {
@@ -302,6 +299,7 @@ public class DataManager {
 
     private static ModelBackend<?> getModelBackend( CommandLine line )
                             throws UnsupportedOperationException, DatasourceException {
+
         String testFileBackend = line.getOptionValue( DB_HOST );
         String hostURL = "1";
         String fileBackendDir = null;
@@ -311,6 +309,18 @@ public class DataManager {
             if ( fileBackendDir == null || "".equals( fileBackendDir ) ) {
                 throw new IllegalArgumentException( "The filebackend must be supplied with a directory." );
             }
+            // TODO integrate this properly
+            try {
+                File objectsFile = new File( fileBackendDir + "/objects" );
+                File prototypesFile = new File( fileBackendDir + "/prototypes" );
+                FileBackend.initFiles( objectsFile );
+                FileBackend.initFiles( prototypesFile );
+                return new FileBackend( objectsFile, prototypesFile );
+            } catch ( IOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new RuntimeException( e.getMessage(), e );
+            }
         } else {
             if ( !ConnectionManager.getConnectionIds().contains( hostURL ) ) {
                 ConnectionManager.addConnection( hostURL, testFileBackend, line.getOptionValue( OPT_DB_USER ),
@@ -319,7 +329,6 @@ public class DataManager {
         }
         ModelBackend<?> result = ModelBackend.getInstance( hostURL, fileBackendDir );
         return result;
-
     }
 
     /**

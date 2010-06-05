@@ -67,8 +67,8 @@ import org.deegree.services.wpvs.io.serializer.WROSerializer;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
 public class FileBackend extends ModelBackend<Envelope> {
 
@@ -159,7 +159,7 @@ public class FileBackend extends ModelBackend<Envelope> {
                                          files[2] );
     }
 
-    private File[] mapFileType( File entityFile ) {
+    private static File[] mapFileType( File entityFile ) {
         String filepath = FileUtils.getBasename( entityFile );
         File data = new File( filepath + ".bin" );
         File idx = new File( filepath + ".idx" );
@@ -329,7 +329,7 @@ public class FileBackend extends ModelBackend<Envelope> {
     @Override
     public void flush()
                             throws IOException {
-//        treeFile.close();
+        // treeFile.close();
         buildingFile.close();
         prototypeFile.close();
     }
@@ -365,5 +365,17 @@ public class FileBackend extends ModelBackend<Envelope> {
     @Override
     public boolean isBillboard() {
         return this.treeFile != null;
+    }
+
+    public static void initFiles( File entityFile )
+                            throws IOException {
+        File[] files = mapFileType( entityFile );
+        for ( File file : files ) {
+            LOG.info( "Ensuring that file '" + file + "' exists..." );
+            if ( !file.exists() ) {
+                LOG.info( "Not yet. Creating it." );
+                file.createNewFile();
+            }
+        }
     }
 }

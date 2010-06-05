@@ -81,6 +81,8 @@ import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.coverage.utils.RasterOptionsParser;
 import org.deegree.tools.i18n.Messages;
 import org.deegree.tools.rendering.dem.builder.dag.DAGBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tool for generating the binary files for {@link MultiresolutionMesh} instances (MRIndex- and PatchData-BLOBs) from
@@ -100,6 +102,8 @@ import org.deegree.tools.rendering.dem.builder.dag.DAGBuilder;
 @Tool("Generates DEM multiresolution datasets from rasters, suitable for the WPVS.")
 public class DEMDatasetGenerator {
 
+    private static final Logger LOG = LoggerFactory.getLogger( DEMDatasetGenerator.class );
+	
     /*
      * Command line options
      */
@@ -171,7 +175,7 @@ public class DEMDatasetGenerator {
      */
     public DEMDatasetGenerator( AbstractRaster raster, RasterIOOptions options, int levels, int rowsPerTile, float maxZ )
                             throws SQLException, IOException {
-
+   
         this.dataBuffer = buildGrid( raster, options );
 
         if ( Float.isNaN( maxZ ) ) {
@@ -181,8 +185,10 @@ public class DEMDatasetGenerator {
             this.maxZ = maxZ;
         }
 
-        this.inputX = dataBuffer.getWidth();
-        this.inputY = dataBuffer.getHeight();
+        // don't use dataBuffer.getWidth() here, as it seems to be happen that it gets bigger than the input
+        // raster (e.g. 2048 -> 2049)
+        this.inputX = raster.getColumns();
+        this.inputY = raster.getRows();
         this.rowsPerFragment = rowsPerTile;
 
         RasterGeoReference rRef = raster.getRasterReference();
@@ -193,7 +199,7 @@ public class DEMDatasetGenerator {
                                                     rRef.getResolutionY(), rRef.getRotationX(), rRef.getRotationY(), 0,
                                                     raster.getEnvelope().getSpan1(), raster.getCoordinateSystem() );
         // calculate the best size
-        int numSamples = Math.max( dataBuffer.getWidth(), dataBuffer.getHeight() );
+        int numSamples = Math.max( inputX, inputY );
         int nextPowerOfTwo = MathUtils.nextPowerOfTwoValue( numSamples );
 
         this.outputX = nextPowerOfTwo;
@@ -336,8 +342,11 @@ public class DEMDatasetGenerator {
     private void outputTriangleHeights( Point2f p0, Point2f p1, Point2f p2, int level ) {
         Point2f midPoint = calcMidPoint( p1, p2 );
         if ( level > 0 ) {
+        	double mtHeight = ( p0.distance( midPoint ));
+        	double sampleDist = mtHeight / rowsPerFragment;
             System.out.println( "At level " + level + " each macro triangle will have a height of: "
-                                + ( p0.distance( midPoint ) / this.geoReference.getResolutionX() ) + " meters." );
+                                + mtHeight + " meters. Distance between used heixels: "
+                                + sampleDist + " meters");
             outputTriangleHeights( midPoint, p0, p1, level - 1 );
         }
     }
@@ -695,11 +704,10 @@ public class DEMDatasetGenerator {
         AbstractCoverage raster = RasterOptionsParser.loadCoverage( line, rasterIOOptions );
         if ( !( raster instanceof AbstractRaster ) ) {
             throw new IllegalArgumentException(
-                                                "Given raster location holds a multiresolution raster, building a multi resolution mesh from this coverage is not supported." );
+                                                "Given raster location is a multiresolution raster, this is not supported." );
         }
-
-        DEMDatasetGenerator builder = new DEMDatasetGenerator( (AbstractRaster) raster, rasterIOOptions, levels, rows,
-                                                               maxZ );
+        
+        DEMDatasetGenerator builder = new DEMDatasetGenerator( (AbstractRaster) raster, rasterIOOptions, levels, rows, maxZ );
 
         t = line.getOptionValue( OPT_OUTPUT_DIR );
         File outputDir = new File( t );
