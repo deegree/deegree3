@@ -1,7 +1,6 @@
 <%@page import="org.apache.axiom.om.util.Base64"%><%@ page language="java"
   import="java.io.OutputStream,java.io.InputStream,java.util.*,java.util.Enumeration,org.apache.commons.httpclient.*,org.apache.commons.httpclient.methods.*"
-  pageEncoding="UTF-8"%>
-<%
+  pageEncoding="UTF-8"%><%
     // PLEASE NOTE:
     //
     // Do *not* add anything (header, whitespace, etc.) in front or after the JSP
