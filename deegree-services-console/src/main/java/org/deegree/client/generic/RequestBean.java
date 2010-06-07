@@ -35,7 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
+import static org.deegree.commons.utils.CollectionUtils.unzip;
+import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -50,6 +53,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,8 +72,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.httpclient.HttpException;
+import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.HttpUtils;
-import org.deegree.services.controller.FrontControllerStats;
+import org.deegree.commons.utils.Pair;
 import org.slf4j.Logger;
 
 /**
@@ -107,7 +112,8 @@ public class RequestBean {
     @Getter
     private String kvpRequestSel;
 
-    private TreeSet<String> originalKvpRequests = FrontControllerStats.getKVPRequests();
+    private TreeSet<String> originalKvpRequests = new TreeSet<String>(
+                                                                       (Collection) unzipPair( (Collection) getKVPRequests() ).second );
 
     @Getter
     private TreeSet<String> kvpRequests = new TreeSet<String>( originalKvpRequests );
