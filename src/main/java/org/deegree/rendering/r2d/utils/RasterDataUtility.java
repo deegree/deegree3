@@ -134,8 +134,8 @@ public class RasterDataUtility {
      */
     public RasterDataUtility( RasterData d ) {
         this.data = d;
-        width = data.getWidth();
-        height = data.getHeight();
+        width = data.getColumns();
+        height = data.getRows();
         bands = data.getBands();
         BandType[] blist = d.getDataInfo().getBandInfo();
         for ( int i = 0; i < blist.length; i++ )

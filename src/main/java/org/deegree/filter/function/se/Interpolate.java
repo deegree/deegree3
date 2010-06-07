@@ -459,7 +459,7 @@ public class Interpolate extends Function {
 
         RasterDataUtility rawData = new RasterDataUtility( raster );
 
-        img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
+        img = new BufferedImage( data.getColumns(), data.getRows(), BufferedImage.TYPE_INT_ARGB );
         LOG.debug( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
         for ( row = 0; row < img.getHeight(); row++ )
             for ( col = 0; col < img.getWidth(); col++ ) {

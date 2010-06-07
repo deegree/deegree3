@@ -228,7 +228,7 @@ public class SimpleRaster extends AbstractRaster {
         // calculate position in RasterData
         int offset[] = getRasterReference().getRasterCoordinate( x, y );
         RasterData sourceRD = source.getAsSimpleRaster().getReadOnlyRasterData();
-        getRasterData().setSubset( offset[0], offset[1], sourceRD.getWidth(), sourceRD.getHeight(), sourceRD );
+        getRasterData().setSubset( offset[0], offset[1], sourceRD.getColumns(), sourceRD.getRows(), sourceRD );
     }
 
     @Override
@@ -248,12 +248,12 @@ public class SimpleRaster extends AbstractRaster {
 
     @Override
     public int getColumns() {
-        return getRasterData().getWidth();
+        return getRasterData().getColumns();
     }
 
     @Override
     public int getRows() {
-        return getRasterData().getHeight();
+        return getRasterData().getRows();
     }
 
     /**

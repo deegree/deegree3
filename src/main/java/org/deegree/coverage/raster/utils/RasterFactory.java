@@ -380,8 +380,8 @@ public class RasterFactory {
         }
 
         // all operate on the view.
-        int width = raster.getWidth();
-        int height = raster.getHeight();
+        int width = raster.getColumns();
+        int height = raster.getRows();
         DataType type = raster.getDataType();
 
         // pixel stride returns the rasters file, so remodulate that
@@ -484,7 +484,7 @@ public class RasterFactory {
             // }
             // }
             // set data does not work.. it will round to int :-)
-            SampleModel fm = new BandedSampleModel( DataBuffer.TYPE_FLOAT, raster.getWidth(), raster.getHeight(), bands );
+            SampleModel fm = new BandedSampleModel( DataBuffer.TYPE_FLOAT, raster.getColumns(), raster.getRows(), bands );
 
             byte[] noData = sourceRaster.getNullPixel( null );
             FloatBuffer f = ByteBuffer.wrap( noData ).asFloatBuffer();
@@ -517,6 +517,8 @@ public class RasterFactory {
         result.setData( outputRaster );
         return result;
     }
+
+    static int count = 0;
 
     /**
      * @param bandsFromRaster
@@ -799,7 +801,7 @@ public class RasterFactory {
                 }
             }
         }
-        return BandType.fromBufferedImageType( imageType, raster.getNumBands() );
+        return BandType.fromBufferedImageType( imageType, raster.getNumBands(), raster.getSampleModel() );
     }
 
     /**

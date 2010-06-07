@@ -111,12 +111,12 @@ public class RasterInterpolater {
      */
     private void warpTransform( WarpPolynomial warp, Interpolation interpolation, RasterData dstData ) {
         byte[] pixel = new byte[dstData.getBands() * dstData.getDataType().getSize()];
-        float[] srcCoords = new float[dstData.getWidth() * 2];
-        for ( int y = 0; y < dstData.getHeight(); y++ ) {
+        float[] srcCoords = new float[dstData.getColumns() * 2];
+        for ( int y = 0; y < dstData.getRows(); y++ ) {
             // look-up the pixel positions in the source raster for every pixel in this row, the srcCoords will contain
             // the x,y ([2n],[2n+1]) values in the source raster (defined in the native CRS) for this row of pixels.
-            warp.warpRect( 0, y, dstData.getWidth(), 1, srcCoords );
-            for ( int x = 0; x < dstData.getWidth(); x++ ) {
+            warp.warpRect( 0, y, dstData.getColumns(), 1, srcCoords );
+            for ( int x = 0; x < dstData.getColumns(); x++ ) {
                 // get the interpolated pixel and set the value into the result raster
                 interpolation.getPixel( srcCoords[x * 2], srcCoords[x * 2 + 1], pixel );
                 dstData.setPixel( x, y, pixel );

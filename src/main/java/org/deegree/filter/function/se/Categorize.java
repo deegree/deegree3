@@ -150,7 +150,7 @@ public class Categorize extends Function {
 
         RasterDataUtility converter = new RasterDataUtility( raster, style.channelSelection );
 
-        img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
+        img = new BufferedImage( data.getColumns(), data.getRows(), BufferedImage.TYPE_INT_ARGB );
         LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
         for ( row = 0; row < img.getHeight(); row++ ) {
             for ( col = 0; col < img.getWidth(); col++ ) {

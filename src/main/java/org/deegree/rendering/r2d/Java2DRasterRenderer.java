@@ -214,7 +214,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
 
         SimpleRaster simpleRaster = raster.getAsSimpleRaster();
         RasterData data = simpleRaster.getRasterData();
-        int cols = data.getWidth(), rows = data.getHeight();
+        int cols = data.getColumns(), rows = data.getRows();
         int[] idx = channels.evaluate( simpleRaster.getBandTypes() );
         int redIndex = idx[0], greenIndex = idx[1];
         int blueIndex = idx[2], grayIndex = idx[3];
@@ -267,7 +267,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
      */
     private RasterData setEnhancedChannelData( RasterData newData, RasterDataUtility rasutil, int inIndex,
                                                int outIndex, ContrastEnhancement enhancement ) {
-        int i = 0, j = 0, val = 0, cols = newData.getWidth(), rows = newData.getHeight();
+        int i = 0, j = 0, val = 0, cols = newData.getColumns(), rows = newData.getRows();
 
         rasutil.setContrastEnhancement( enhancement );
         if ( enhancement != null ) {

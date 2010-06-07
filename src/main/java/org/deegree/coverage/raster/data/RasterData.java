@@ -105,14 +105,14 @@ public interface RasterData {
      * 
      * @return the height
      */
-    public int getHeight();
+    public int getRows();
 
     /**
      * Returns the width of the raster
      * 
      * @return the width
      */
-    public int getWidth();
+    public int getColumns();
 
     /**
      * Returns the no data values for this raster, or the view of this rasters bands.
