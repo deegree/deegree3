@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,29 +32,32 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.projections.conic;
+
+import static org.junit.Assert.assertEquals;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.exceptions.ProjectionException;
 import org.deegree.cs.projections.ProjectionBase;
-import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.junit.Test;
 
 /**
  * <code>StereographicAlternativeTest</code> test the lambert conformal conic projection
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class LambertConformalConicTest extends ProjectionBase {
+
+    private static final double DELTA = 0.0000001;
 
     private static final LambertConformalConic projection_26985 = new LambertConformalConic(
                                                                                              Math.toRadians( 39.45 ),
@@ -73,7 +76,7 @@ public class LambertConformalConicTest extends ProjectionBase {
      * 6.610765 53.235916
      * 5402441.35292079        4213918.86230420
      * </code>
-     *
+     * 
      * @throws ProjectionException
      */
     @Test
@@ -94,8 +97,8 @@ public class LambertConformalConicTest extends ProjectionBase {
         consistencyTest( projection_26985, 0, 400000, new Point2d( Math.toRadians( -77 ),
                                                                    Math.toRadians( 37.66666666666665 ) ), Unit.METRE,
                          1, true, false, "lambertConformalConic" );
-        assertEquals( Math.toRadians( 39.45 ), projection_26985.getFirstParallelLatitude() );
-        assertEquals( Math.toRadians( 38.3 ), projection_26985.getSecondParallelLatitude() );
+        assertEquals( Math.toRadians( 39.45 ), projection_26985.getFirstParallelLatitude(), DELTA );
+        assertEquals( Math.toRadians( 38.3 ), projection_26985.getSecondParallelLatitude(), DELTA );
     }
 
 }

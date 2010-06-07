@@ -225,7 +225,11 @@ public class XSModelAnalyzer {
         config.setParameter( "error-handler", errorHandler );
         config.setParameter( "validate", Boolean.TRUE );
 
-        schemaLoader.setEntityResolver( new RedirectingEntityResolver() );
+        RedirectingEntityResolver resolver = new RedirectingEntityResolver();
+        for ( int i = 0; i < schemaUrls.length; i++ ) {
+            schemaUrls [i] = resolver.redirect( schemaUrls[i] );
+        }
+        schemaLoader.setEntityResolver( resolver );
 
         // // TODO what about preparsing of GML schemas?
         // try {

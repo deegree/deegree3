@@ -164,6 +164,10 @@ public class SchemaValidator {
         final List<String> errors = new LinkedList<String>();
 
         try {
+            RedirectingEntityResolver resolver = new RedirectingEntityResolver();
+            for ( int i = 0; i < schemaUris.length; i++ ) {
+                schemaUris[i] = resolver.redirect( schemaUris[i] );
+            }            
             GrammarPool grammarPool = ( schemaUris == null ? null : GrammarPoolManager.getGrammarPool( schemaUris ) );
             XMLParserConfiguration parserConfig = createValidatingParser( new RedirectingEntityResolver(), grammarPool );
             parserConfig.setErrorHandler( new XMLErrorHandler() {

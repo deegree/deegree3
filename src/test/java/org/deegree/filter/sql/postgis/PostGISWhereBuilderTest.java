@@ -65,7 +65,7 @@ import com.vividsolutions.jts.util.Assert;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISWhereBuilderTstDisabled {
+public class PostGISWhereBuilderTest {
 
     @Test
     public void testFilter1()
@@ -74,7 +74,7 @@ public class PostGISWhereBuilderTstDisabled {
         OperatorFilter filter = parse( "testfilter1.xml" );
         PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
         SQLExpression whereClause = wb.getWhereClause();
-        Assert.equals( "PHILOSOPHER.NAME='Albert Camus'", whereClause.toString() );
+        Assert.equals( "PHILOSOPHER.NAME = 'Albert Camus'", whereClause.toString() );
     }
 
     @Test

@@ -92,9 +92,16 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
         }
     }
 
-    private String redirect( String systemId ) {
+    /**
+     * Redirects the given entity URL, returning a local URL if available.
+     * 
+     * @param systemId
+     *            entity URL, must not be <code>null</code>
+     * @return redirected URL, identical to input if it cannot be redirected, never <code>null</code>
+     */
+    public String redirect( String systemId ) {
         if ( systemId.startsWith( SCHEMAS_OPENGIS_NET_URL ) ) {
-            String localPart = "./" + systemId.substring( SCHEMAS_OPENGIS_NET_URL.length() );
+            String localPart = systemId.substring( SCHEMAS_OPENGIS_NET_URL.length() );
             if ( availableFiles.contains( localPart ) ) {
                 LOG.debug( "Local hit: " + systemId );
                 try {
