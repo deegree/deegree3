@@ -36,9 +36,10 @@
 
 package org.deegree.cs.projections;
 
-import javax.vecmath.Point2d;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import junit.framework.TestCase;
+import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.components.Axis;
@@ -47,7 +48,6 @@ import org.deegree.cs.components.GeodeticDatum;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
-import org.deegree.cs.projections.Projection;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,9 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class ProjectionBase extends TestCase {
+public class ProjectionBase {
+
+    private static final double DELTA = 0.0000001;
 
     /**
      * Standard axis of a geographic crs
@@ -262,17 +264,17 @@ public class ProjectionBase extends TestCase {
     protected void consistencyTest( Projection toBeTested, double falseNorthing, double falseEasting,
                                     Point2d naturalOrigin, Unit units, double scale, boolean conformal,
                                     boolean equalArea, String name ) {
-        assertEquals( falseNorthing, toBeTested.getFalseNorthing() );
-        assertEquals( falseEasting, toBeTested.getFalseEasting() );
+        assertEquals( falseNorthing, toBeTested.getFalseNorthing(), DELTA );
+        assertEquals( falseEasting, toBeTested.getFalseEasting(), DELTA );
         assertEquals( naturalOrigin, toBeTested.getNaturalOrigin() );
         assertEquals( units, toBeTested.getUnits() );
-        assertEquals( scale, toBeTested.getScale() );
+        assertEquals( scale, toBeTested.getScale(), DELTA );
         assertEquals( conformal, toBeTested.isConformal() );
         assertEquals( equalArea, toBeTested.isEqualArea() );
 
         // some other checks.
-        assertEquals( Math.cos( naturalOrigin.y ), toBeTested.getCosphi0() );
-        assertEquals( Math.sin( naturalOrigin.y ), toBeTested.getSinphi0() );
+        assertEquals( Math.cos( naturalOrigin.y ), toBeTested.getCosphi0(), DELTA );
+        assertEquals( Math.sin( naturalOrigin.y ), toBeTested.getSinphi0(), DELTA );
         assertEquals( name, toBeTested.getImplementationName() );
     }
 }

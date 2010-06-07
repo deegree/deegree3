@@ -362,9 +362,9 @@
       <version>10.4.2.0</version>
     </dependency>
     <dependency>
-      <groupId>opengis-schemas</groupId>
-      <artifactId>opengis-schemas</artifactId>
-      <version>2009-05-08</version>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-ogcschemas</artifactId>
+      <version>20100506</version>
     </dependency>
     <dependency>
       <groupId>jgridshift</groupId>

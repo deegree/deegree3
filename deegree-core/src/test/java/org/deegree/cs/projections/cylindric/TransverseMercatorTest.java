@@ -36,13 +36,15 @@
 
 package org.deegree.cs.projections.cylindric;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.exceptions.ProjectionException;
 import org.deegree.cs.projections.ProjectionBase;
 import org.deegree.cs.projections.conic.LambertConformalConic;
-import org.deegree.cs.projections.cylindric.TransverseMercator;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -57,6 +59,8 @@ import org.junit.Test;
  */
 public class TransverseMercatorTest extends ProjectionBase {
 
+    private static final double DELTA = 0.0000001;
+    
     private static final TransverseMercator projection_25832 = new TransverseMercator(
                                                                                        true,
                                                                                        geographic_4258,
