@@ -39,6 +39,7 @@ package org.deegree.services.wpvs;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -201,7 +202,7 @@ public class PerspectiveViewService {
                 if ( url != null && !"".equals( url ) ) {
                     try {
                         URL resolved = configAdapter.resolve( url );
-                        File f = new File( resolved.getFile() );
+                        File f = new File( resolved.toURI() );
                         this.copyrightKey = TexturePool.addTexture( f );
                         Double cs = copy.getPercentageOfResult();
                         if ( cs != null ) {
@@ -210,7 +211,12 @@ public class PerspectiveViewService {
                         }
                     } catch ( MalformedURLException e ) {
                         LOG.error( "Unable to load copyright image from: " + url + " because: "
-                                   + e.getLocalizedMessage(), e );
+                                   + e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                    } catch ( URISyntaxException e ) {
+                        LOG.error( "Unable to load copyright image from: " + url + " because: "
+                                   + e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
                     }
 
                 }
@@ -260,9 +266,7 @@ public class PerspectiveViewService {
 
     /**
      * @param configAdapter
-     * @param dsd
      */
-
     private void initBackgroundImages( XMLAdapter configAdapter ) {
         SkyImages images = serviceConfiguration.getSkyImages();
         if ( images != null ) {
@@ -274,10 +278,14 @@ public class PerspectiveViewService {
                         String file = image.getFile();
                         try {
                             URL fileURL = configAdapter.resolve( file );
-                            File f = new File( fileURL.getFile() );
+                            File f = new File( fileURL.toURI() );
                             TexturePool.addTexture( name, f );
                         } catch ( MalformedURLException e ) {
-                            LOG.error( "Unable to load sky image: " + name + " because: " + e.getLocalizedMessage(), e );
+                            LOG.error( "Unable to load sky image: " + name + " because: " + e.getLocalizedMessage() );
+                            LOG.trace( "Stack trace:", e );
+                        } catch ( URISyntaxException e ) {
+                            LOG.error( "Unable to load sky image: " + name + " because: " + e.getLocalizedMessage() );
+                            LOG.trace( "Stack trace:", e );
                         }
                     }
                 }
@@ -300,8 +308,7 @@ public class PerspectiveViewService {
                                                                                                    + RenderableDataset.DEFAULT_SPAN,
                                                                            -this.translationToLocalCRS[1]
                                                                                                    + RenderableDataset.DEFAULT_SPAN,
-                                                                           RenderableDataset.DEFAULT_SPAN },
-                                                             defaultCRS );
+                                                                           RenderableDataset.DEFAULT_SPAN }, defaultCRS );
         renderableDatasets = new RenderableDataset();
         sceneEnvelope = renderableDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                        configAdapter, dsd );
@@ -313,9 +320,9 @@ public class PerspectiveViewService {
         int noDFC = sc.getNumberOfDEMFragmentsCached() == null ? 1000 : sc.getNumberOfDEMFragmentsCached();
         int dIOM = sc.getDirectIOMemory() == null ? 500 : sc.getDirectIOMemory();
         demDatasets = new DEMDataset( noDFC, dIOM, ConfiguredOpenGLInitValues.getTerrainAmbient(),
-                                             ConfiguredOpenGLInitValues.getTerrainDiffuse(),
-                                             ConfiguredOpenGLInitValues.getTerrainSpecular(),
-                                             ConfiguredOpenGLInitValues.getTerrainShininess() );
+                                      ConfiguredOpenGLInitValues.getTerrainDiffuse(),
+                                      ConfiguredOpenGLInitValues.getTerrainSpecular(),
+                                      ConfiguredOpenGLInitValues.getTerrainShininess() );
         sceneEnvelope = demDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                 configAdapter, dsd );
 
@@ -344,9 +351,6 @@ public class PerspectiveViewService {
         return sceneEnvelope;
     }
 
-    /**
-     * @param offscreenBuffer
-     */
     private void initGL() {
         int usedTextureUnits = Math.max( 8, textureDatasets.size() );
         configuredOpenGLInitValues = new ConfiguredOpenGLInitValues( usedTextureUnits );

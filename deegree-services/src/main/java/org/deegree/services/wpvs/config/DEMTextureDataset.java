@@ -39,6 +39,7 @@ package org.deegree.services.wpvs.config;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -155,7 +156,6 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      * @param adapter
      * @param toLocalCRS
      * @param sceneEnvelope
-     * @param mds
      * @throws IOException
      */
     private Envelope handleTextureDataset( DEMTextureDatasetConfig textureDataset, Envelope sceneEnvelope,
@@ -324,9 +324,14 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
         if ( rasterCache != null ) {
             String cd = rasterCache.getValue();
             if ( cd != null ) {
-                URL resolve = adapter.resolve( cd );
-                cd = resolve.getFile();
-                cacheDir = new File( resolve.getFile() );
+                try {
+                    URL resolve = adapter.resolve( cd );
+                    cd = new File( resolve.toURI() ).toString();
+                    cacheDir = new File( resolve.toURI() );
+                } catch ( URISyntaxException e ) {
+                    LOG.error( "The cache dir '{}' could not be resolved.", cd );
+                    LOG.trace( "Stack trace:", e );
+                }
             }
             cacheSize = rasterCache.getCacheSize();
         }

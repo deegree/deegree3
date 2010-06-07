@@ -85,6 +85,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -433,8 +434,13 @@ public class MapService {
         } else {
             DynamicLayer dyn = (DynamicLayer) layer;
             if ( dyn.getShapefileDirectory() != null ) {
-                File shapeDir = new File( adapter.resolve( dyn.getShapefileDirectory() ).getFile() );
-                dynamics.add( new ShapeUpdater( shapeDir, parent, this ) );
+                try {
+                    File shapeDir = new File( adapter.resolve( dyn.getShapefileDirectory() ).toURI() );
+                    dynamics.add( new ShapeUpdater( shapeDir, parent, this ) );
+                } catch ( URISyntaxException e ) {
+                    LOG.error( "Dynamic shape file directory '{}' could not be resolved.", dyn.getShapefileDirectory() );
+                    LOG.trace( "Stack trace:", e );
+                }
             }
             if ( dyn.getPostGIS() != null ) {
                 dynamics.add( new PostGISUpdater( dyn.getPostGIS(), parent, this ) );
