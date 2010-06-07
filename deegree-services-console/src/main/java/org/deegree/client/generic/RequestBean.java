@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
+import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -52,17 +53,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.commons.httpclient.HttpException;
 import org.deegree.commons.utils.HttpUtils;
+import org.deegree.services.controller.FrontControllerStats;
 import org.slf4j.Logger;
 
 /**
@@ -97,7 +104,22 @@ public class RequestBean {
 
     private String request;
 
-    private String response = "Select or enter a request in the upper frame and click the \"SEND\" button. After processing, the service response will be displayed in the lower frame.";
+    @Getter
+    private String kvpRequestSel;
+
+    private TreeSet<String> originalKvpRequests = FrontControllerStats.getKVPRequests();
+
+    @Getter
+    private TreeSet<String> kvpRequests = new TreeSet<String>( originalKvpRequests );
+
+    @Getter
+    private boolean kvpRequestIsImage = false;
+
+    @Getter
+    @Setter
+    private String requestFilter;
+
+    private String response = "Select or enter a request above and click the \"SEND\" button. After processing, the service response will be displayed below.";
 
     // SERVICE
     // -- PROFILE
@@ -378,6 +400,57 @@ public class RequestBean {
             // e.printStackTrace();
             // }
         }
+    }
+
+    /**
+     * 
+     */
+    public void sendKVPRequest() {
+        LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + kvpRequestSel );
+        if ( targetUrl != null && targetUrl.length() > 0 && kvpRequestSel != null && kvpRequestSel.length() > 0 ) {
+            Map<String, String> header = new HashMap<String, String>();
+            try {
+                if ( !kvpRequestIsImage ) {
+                    this.response = HttpUtils.get( HttpUtils.UTF8STRING, targetUrl + "?" + kvpRequestSel, header );
+                } else {
+                    this.response = "";
+                }
+            } catch ( HttpException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch ( IOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * @param kvpRequestSel
+     */
+    public void setKvpRequestSel( String kvpRequestSel ) {
+        this.kvpRequestSel = kvpRequestSel;
+        this.kvpRequestIsImage = kvpRequestSel.toLowerCase().indexOf( "request=getmap" ) != -1;
+    }
+
+    /**
+     * @param evt
+     * 
+     */
+    public void applyRequestFilter( AjaxBehaviorEvent evt ) {
+        if ( requestFilter != null && !requestFilter.isEmpty() ) {
+            kvpRequests.clear();
+            for ( String req : originalKvpRequests ) {
+                if ( req.indexOf( requestFilter ) != -1 ) {
+                    kvpRequests.add( req );
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return generateToString( this );
     }
 
 }
