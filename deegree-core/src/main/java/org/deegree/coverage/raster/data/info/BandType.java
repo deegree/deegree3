@@ -38,6 +38,8 @@ package org.deegree.coverage.raster.data.info;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
+import java.awt.image.PixelInterleavedSampleModel;
+import java.awt.image.SampleModel;
 
 import org.deegree.coverage.raster.data.RasterData;
 
@@ -143,9 +145,26 @@ public enum BandType {
      *            The {@link DataBuffer}-Type (eg. TYPE_BYTE, etc.)
      * @param expectedSize
      *            if the type is unknown an array of expectedSize with {@link BandType#BAND_0}[9] will be returned.
+     * @param sampleModel
      * @return The according BandType
      */
-    public static BandType[] fromBufferedImageType( int type, int expectedSize ) {
+    public static BandType[] fromBufferedImageType( int type, int expectedSize, SampleModel sampleModel ) {
+        if ( sampleModel instanceof PixelInterleavedSampleModel ) {
+            PixelInterleavedSampleModel sm = (PixelInterleavedSampleModel) sampleModel;
+            int[] offsets = sm.getBandOffsets();
+            switch ( type ) {
+            case BufferedImage.TYPE_3BYTE_BGR:
+                if ( offsets.length == 3 ) {
+                    BandType[] bands = new BandType[] { BLUE, GREEN, RED };
+                    BandType[] bands2 = new BandType[] { BLUE, GREEN, RED };
+                    for ( int i = 0; i < 3; ++i ) {
+                        bands[i] = bands2[offsets[i]];
+                    }
+                    return bands;
+                }
+                break;
+            }
+        }
         switch ( type ) {
         case BufferedImage.TYPE_INT_ARGB:
         case BufferedImage.TYPE_INT_ARGB_PRE:

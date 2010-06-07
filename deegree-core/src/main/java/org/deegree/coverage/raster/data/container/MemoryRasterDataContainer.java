@@ -85,7 +85,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
      * @see org.deegree.model.raster.RasterDataContainer#getColumns()
      */
     public int getColumns() {
-        return raster.getWidth();
+        return raster.getColumns();
     }
 
     /*
@@ -94,7 +94,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
      * @see org.deegree.model.raster.RasterDataContainer#getRows()
      */
     public int getRows() {
-        return raster.getHeight();
+        return raster.getRows();
     }
 
     /*

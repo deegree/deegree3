@@ -462,7 +462,7 @@ public class TiledRasterData implements RasterData {
     }
 
     @Override
-    public int getHeight() {
+    public int getRows() {
         return sampleDomain.height;
     }
 
@@ -654,7 +654,7 @@ public class TiledRasterData implements RasterData {
     }
 
     @Override
-    public int getWidth() {
+    public int getColumns() {
         return sampleDomain.width;
     }
 

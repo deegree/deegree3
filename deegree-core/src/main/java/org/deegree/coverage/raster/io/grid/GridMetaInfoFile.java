@@ -102,7 +102,7 @@ public class GridMetaInfoFile {
     public GridMetaInfoFile( RasterGeoReference geoReference, int rows, int columns, int tileRasterWidth,
                              int tileRasterHeight, int bands, DataType dataType ) {
         this( geoReference, rows, columns, tileRasterWidth, tileRasterHeight,
-              new RasterDataInfo( BandType.fromBufferedImageType( BufferedImage.TYPE_CUSTOM, bands ), dataType,
+              new RasterDataInfo( BandType.fromBufferedImageType( BufferedImage.TYPE_CUSTOM, bands, null ), dataType,
                                   InterleaveType.PIXEL ) );
     }
 

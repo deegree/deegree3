@@ -147,8 +147,8 @@ public class XYZWriter implements RasterWriter {
                                String separator )
                             throws IOException {
         StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
+        int height = data.getRows() - 1;
+        int width = data.getColumns();
 
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
@@ -175,8 +175,8 @@ public class XYZWriter implements RasterWriter {
                               String separator )
                             throws IOException {
         StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
+        int height = data.getRows() - 1;
+        int width = data.getColumns();
 
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
@@ -203,8 +203,8 @@ public class XYZWriter implements RasterWriter {
                             String separator )
                             throws IOException {
         StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
+        int height = data.getRows() - 1;
+        int width = data.getColumns();
 
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
@@ -231,8 +231,8 @@ public class XYZWriter implements RasterWriter {
                               String separator )
                             throws IOException {
         StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
+        int height = data.getRows() - 1;
+        int width = data.getColumns();
 
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
@@ -259,8 +259,8 @@ public class XYZWriter implements RasterWriter {
                              String separator )
                             throws IOException {
         StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
+        int height = data.getRows() - 1;
+        int width = data.getColumns();
 
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
@@ -284,8 +284,8 @@ public class XYZWriter implements RasterWriter {
                                String separator )
                             throws IOException {
         StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
+        int height = data.getRows() - 1;
+        int width = data.getColumns();
 
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long

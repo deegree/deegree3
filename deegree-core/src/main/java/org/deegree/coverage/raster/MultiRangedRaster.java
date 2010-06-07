@@ -233,7 +233,7 @@ public class MultiRangedRaster extends AbstractRaster {
         int i = 0;
         SimpleRaster raster = multiRange.get( i ).getAsSimpleRaster();
 
-        SimpleRaster result = raster.createCompatibleSimpleRaster( BandType.fromBufferedImageType( 0, multiRange.size() ) );
+        SimpleRaster result = raster.createCompatibleSimpleRaster( BandType.fromBufferedImageType( 0, multiRange.size(), null ) );
 
         result.setSubRaster( getEnvelope(), i, raster );
         for ( i = 1; i < multiRange.size(); i++ ) {

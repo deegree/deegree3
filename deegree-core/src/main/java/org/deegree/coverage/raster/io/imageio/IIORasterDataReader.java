@@ -148,10 +148,6 @@ public class IIORasterDataReader implements RasterDataReader {
         this.inputStream = stream;
     }
 
-    /**
-     * @param format
-     * @param noDataValue
-     */
     private IIORasterDataReader( RasterIOOptions options, boolean resetableStream ) {
         this.format = options.get( RasterIOOptions.OPT_FORMAT );
         this.options = options;
@@ -274,8 +270,10 @@ public class IIORasterDataReader implements RasterDataReader {
                         ImageTypeSpecifier its = imageTypes.next();
                         if ( its != null ) {
                             BufferedImage bi = its.createBufferedImage( 2, 2 );
-                            BandType[] bands = BandType.fromBufferedImageType( bi.getType(), its.getNumBands() );
+                            BandType[] bands = BandType.fromBufferedImageType( bi.getType(), its.getNumBands(),
+                                                                               bi.getRaster().getSampleModel() );
                             DataType type = DataType.fromDataBufferType( its.getSampleModel().getDataType() );
+
                             if ( type != DataType.FLOAT && type != DataType.DOUBLE && type != DataType.BYTE
                                  && bands.length > 1 ) {
                                 type = DataType.BYTE;

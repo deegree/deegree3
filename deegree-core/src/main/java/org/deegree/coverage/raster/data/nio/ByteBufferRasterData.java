@@ -183,7 +183,6 @@ public abstract class ByteBufferRasterData implements RasterData {
         // this.view = view;
         this.rasterWidth = rasterWidth;
         this.rasterHeight = rasterHeight;
-
         this.dataInfo = originalDataInfo;
         this.dataAccess = new BufferAccess( reader, rasterWidth, rasterHeight, view, originalDataInfo,
                                             getPixelStride(), getLineStride(), getBandStride() );
@@ -279,7 +278,7 @@ public abstract class ByteBufferRasterData implements RasterData {
         ByteBufferRasterData copy = createCompatibleEmptyRasterData();
         copy.info = info;
         // this instantiation ensures a readonly buffer.
-        copy.setByteBuffer( this.getByteBuffer().asReadOnlyBuffer(), getView() );
+        copy.setByteBuffer( this.getByteBuffer().asReadOnlyBuffer(), null );
         return copy;
     }
 
@@ -331,11 +330,11 @@ public abstract class ByteBufferRasterData implements RasterData {
         getView().dataInfo.setNoDataPixel( values );
     }
 
-    public final int getWidth() {
+    public final int getColumns() {
         return getView().width;
     }
 
-    public final int getHeight() {
+    public final int getRows() {
         return getView().height;
     }
 
@@ -930,8 +929,8 @@ public abstract class ByteBufferRasterData implements RasterData {
         // int subWidth = min( this.rasterWidth - dstX, width, srcRaster.getWidth() );
         // int subHeight = min( this.rasterHeight - dstY, height, srcRaster.getHeight() );
 
-        int subWidth = clampSize( getWidth(), dstX, srcRaster.getWidth(), srcX, width );
-        int subHeight = clampSize( getHeight(), dstY, srcRaster.getHeight(), srcY, height );
+        int subWidth = clampSize( getColumns(), dstX, srcRaster.getColumns(), srcX, width );
+        int subHeight = clampSize( getRows(), dstY, srcRaster.getRows(), srcY, height );
 
         if ( subHeight <= 0 || subWidth <= 0 ) {
             return;
@@ -953,8 +952,8 @@ public abstract class ByteBufferRasterData implements RasterData {
         // clamp to maximum possible size
         // int subWidth = min( this.rasterWidth - dstX, width, srcRaster.getWidth() );
         // int subHeight = min( this.rasterHeight - dstY, height, srcRaster.getHeight() );
-        int subWidth = clampSize( getWidth(), dstX, srcRaster.getWidth(), srcX, width );
-        int subHeight = clampSize( getHeight(), dstY, srcRaster.getHeight(), srcY, height );
+        int subWidth = clampSize( getColumns(), dstX, srcRaster.getColumns(), srcX, width );
+        int subHeight = clampSize( getRows(), dstY, srcRaster.getRows(), srcY, height );
 
         if ( subHeight <= 0 || subWidth <= 0 ) {
             return;

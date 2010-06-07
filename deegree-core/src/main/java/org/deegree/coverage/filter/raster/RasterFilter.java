@@ -159,8 +159,8 @@ public class RasterFilter extends CoverageFilter {
         BandType[] dataBands = data.getDataInfo().getBandInfo();
         Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
 
-        for ( int y = 0; y < oldData.getHeight(); ++y ) {
-            for ( int x = 0; x < oldData.getWidth(); ++x ) {
+        for ( int y = 0; y < oldData.getRows(); ++y ) {
+            for ( int x = 0; x < oldData.getColumns(); ++x ) {
                 oldData.getShortPixel( x, y, result );
                 // apply band filters
                 if ( !bandsWithConstraints.isEmpty() ) {
@@ -196,8 +196,8 @@ public class RasterFilter extends CoverageFilter {
         BandType[] dataBands = data.getDataInfo().getBandInfo();
         Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
 
-        for ( int y = 0; y < oldData.getHeight(); ++y ) {
-            for ( int x = 0; x < oldData.getWidth(); ++x ) {
+        for ( int y = 0; y < oldData.getRows(); ++y ) {
+            for ( int x = 0; x < oldData.getColumns(); ++x ) {
                 oldData.getIntPixel( x, y, result );
                 // apply band filters
                 if ( !bandsWithConstraints.isEmpty() ) {
@@ -233,8 +233,8 @@ public class RasterFilter extends CoverageFilter {
         BandType[] dataBands = data.getDataInfo().getBandInfo();
         Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
 
-        for ( int y = 0; y < oldData.getHeight(); ++y ) {
-            for ( int x = 0; x < oldData.getWidth(); ++x ) {
+        for ( int y = 0; y < oldData.getRows(); ++y ) {
+            for ( int x = 0; x < oldData.getColumns(); ++x ) {
                 oldData.getFloatPixel( x, y, result );
                 // apply band filters
                 if ( !bandsWithConstraints.isEmpty() ) {
@@ -270,8 +270,8 @@ public class RasterFilter extends CoverageFilter {
         BandType[] dataBands = data.getDataInfo().getBandInfo();
         Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
 
-        for ( int y = 0; y < oldData.getHeight(); ++y ) {
-            for ( int x = 0; x < oldData.getWidth(); ++x ) {
+        for ( int y = 0; y < oldData.getRows(); ++y ) {
+            for ( int x = 0; x < oldData.getColumns(); ++x ) {
                 oldData.getDoublePixel( x, y, result );
                 // apply band filters
                 if ( !bandsWithConstraints.isEmpty() ) {
@@ -302,8 +302,8 @@ public class RasterFilter extends CoverageFilter {
         BandType[] dataBands = data.getDataInfo().getBandInfo();
         Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
 
-        for ( int y = 0; y < oldData.getHeight(); ++y ) {
-            for ( int x = 0; x < oldData.getWidth(); ++x ) {
+        for ( int y = 0; y < oldData.getRows(); ++y ) {
+            for ( int x = 0; x < oldData.getColumns(); ++x ) {
                 oldData.getBytePixel( x, y, result );
                 // apply band filters
                 if ( !bandsWithConstraints.isEmpty() ) {

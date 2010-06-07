@@ -169,8 +169,8 @@ public class ASCWriter implements RasterWriter {
      */
     private void writeUShorts( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        final int width = data.getWidth();
-        final int height = data.getHeight();
+        final int width = data.getColumns();
+        final int height = data.getRows();
         short[] line = new short[width];
         for ( int y = 0; y < height; ++y ) {
             data.getShorts( 0, y, width, 1, 0, line );
@@ -191,8 +191,8 @@ public class ASCWriter implements RasterWriter {
      */
     private void writeShorts( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        final int width = data.getWidth();
-        final int height = data.getHeight();
+        final int width = data.getColumns();
+        final int height = data.getRows();
         short[] line = new short[width];
         for ( int y = 0; y < height; ++y ) {
             data.getShorts( 0, y, width, 1, 0, line );
@@ -213,8 +213,8 @@ public class ASCWriter implements RasterWriter {
      */
     private void writeInts( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        final int width = data.getWidth();
-        final int height = data.getHeight();
+        final int width = data.getColumns();
+        final int height = data.getRows();
         int[] line = new int[width];
         for ( int y = 0; y < height; ++y ) {
             data.getInts( 0, y, width, 1, 0, line );
@@ -235,8 +235,8 @@ public class ASCWriter implements RasterWriter {
      */
     private void writeDoubles( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        final int width = data.getWidth();
-        final int height = data.getHeight();
+        final int width = data.getColumns();
+        final int height = data.getRows();
         double[] line = new double[width];
         for ( int y = 0; y < height; ++y ) {
             data.getDoubles( 0, y, width, 1, 0, line );
@@ -258,8 +258,8 @@ public class ASCWriter implements RasterWriter {
      */
     private void writeBytes( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        final int width = data.getWidth();
-        final int height = data.getHeight();
+        final int width = data.getColumns();
+        final int height = data.getRows();
         byte[] line = new byte[width];
         for ( int y = 0; y < height; ++y ) {
             data.getBytes( 0, y, width, 1, 0, line );
@@ -284,8 +284,8 @@ public class ASCWriter implements RasterWriter {
      */
     private void writeFloats( RasterData data, BufferedWriter bw, String separator )
                             throws IOException {
-        final int width = data.getWidth();
-        final int height = data.getHeight();
+        final int width = data.getColumns();
+        final int height = data.getRows();
         float[] line = new float[width];
         for ( int y = 0; y < height; ++y ) {
             data.getFloats( 0, y, width, 1, 0, line );

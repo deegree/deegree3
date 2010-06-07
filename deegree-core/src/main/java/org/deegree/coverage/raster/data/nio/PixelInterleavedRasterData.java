@@ -202,8 +202,8 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
             int srcRasterPosx = raster.getView().x + srcX;
             int srcRasterPosy = raster.getView().y + srcY;
-            int possibleSrcWidth = raster.getWidth();
-            int possibleSrcHeight = raster.getHeight();
+            int possibleSrcWidth = raster.getColumns();
+            int possibleSrcHeight = raster.getRows();
 
             if ( srcRasterPosx < 0 ) {
                 // origin is negative, so add them to the width(subtract them).
@@ -247,12 +247,12 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
             // * the possible srcWidth has been
             // * determined
             // */, height );
-            int subWidth = clampSize( getWidth(), dstX, raster.dataAccess.getDataRectangle().width, 0/*
+            int subWidth = clampSize( getColumns(), dstX, raster.dataAccess.getDataRectangle().width, 0/*
                                                                                                       * the possible
                                                                                                       * srcWidth has
                                                                                                       * been determined
                                                                                                       */, width );
-            int subHeight = clampSize( getHeight(), dstY, raster.dataAccess.getDataRectangle().height, 0/*
+            int subHeight = clampSize( getRows(), dstY, raster.dataAccess.getDataRectangle().height, 0/*
                                                                                                          * the possible
                                                                                                          * srcWidth has
                                                                                                          * been
