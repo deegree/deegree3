@@ -191,38 +191,14 @@ public class ShapeFeatureStore implements FeatureStore {
                         available = false;
                         return;
                     } catch ( Exception e1 ) {
-                        LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.",
-                                  shpName );
-                        LOG.trace( "Stack trace:", e1 );
-                        available = false;
-                        return;
+                        getCRSFromFile( prj );
+                        if ( crs == null ) {
+                            return;
+                        }
                     }
                 } catch ( WKTParsingException e ) {
-                    try {
-                        BufferedReader in = new BufferedReader( new FileReader( prj ) );
-                        String c = in.readLine().trim();
-                        try {
-                            crs = new CRS( c );
-                            crs.getWrappedCRS(); // resolve NOW
-                            LOG.debug( ".prj contained EPSG code '{}'", crs.getName() );
-                        } catch ( UnknownCRSException e2 ) {
-                            LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", shpName,
-                                      e.getLocalizedMessage() );
-                            LOG.warn( "The file also does not contain a valid EPSG code, assuming EPSG:4326." );
-                            LOG.trace( "Stack trace of failed WKT parsing:", e );
-                            crs = new CRS( "EPSG:4326" );
-                        }
-                    } catch ( IOException e1 ) {
-                        LOG.debug( "Stack trace:", e1 );
-                        LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.",
-                                  shpName );
-                        available = false;
-                        return;
-                    } catch ( Exception e1 ) {
-                        LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.",
-                                  shpName );
-                        LOG.trace( "Stack trace:", e1 );
-                        available = false;
+                    getCRSFromFile( prj );
+                    if ( crs == null ) {
                         return;
                     }
                 }
@@ -271,6 +247,32 @@ public class ShapeFeatureStore implements FeatureStore {
                                          Collections.<PropertyType> singletonList( geomProp ), false );
         }
         schema = new ApplicationSchema( new FeatureType[] { ft }, null );
+    }
+
+    private void getCRSFromFile( File prj ) {
+        try {
+            BufferedReader in = new BufferedReader( new FileReader( prj ) );
+            String c = in.readLine().trim();
+            try {
+                crs = new CRS( c );
+                crs.getWrappedCRS(); // resolve NOW
+                LOG.debug( ".prj contained EPSG code '{}'", crs.getName() );
+            } catch ( UnknownCRSException e2 ) {
+                LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", shpName,
+                          e2.getLocalizedMessage() );
+                LOG.warn( "The file also does not contain a valid EPSG code, assuming EPSG:4326." );
+                LOG.trace( "Stack trace of failed WKT parsing:", e2 );
+                crs = new CRS( "EPSG:4326" );
+            }
+        } catch ( IOException e1 ) {
+            LOG.debug( "Stack trace:", e1 );
+            LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.", shpName );
+            available = false;
+        } catch ( Exception e1 ) {
+            LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.", shpName );
+            LOG.trace( "Stack trace:", e1 );
+            available = false;
+        }
     }
 
     private SHPReader getSHP( boolean forceIndexRebuild )
