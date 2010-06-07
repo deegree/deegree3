@@ -212,6 +212,12 @@ public class ShapeFeatureStore implements FeatureStore {
                                   shpName );
                         available = false;
                         return;
+                    } catch ( Exception e1 ) {
+                        LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.",
+                                  shpName );
+                        LOG.trace( "Stack trace:", e1 );
+                        available = false;
+                        return;
                     }
                 }
             } else {
