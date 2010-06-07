@@ -581,8 +581,8 @@ public class RasterTreeGridifier {
                                 RasterData sourceRaster ) {
 
             // clamp to maximum possible size
-            int subWidth = min( targetData.getWidth() - x0, width, sourceRaster.getWidth() );
-            int subHeight = min( targetData.getHeight() - y0, height, sourceRaster.getHeight() );
+            int subWidth = min( targetData.getColumns() - x0, width, sourceRaster.getColumns() );
+            int subHeight = min( targetData.getRows() - y0, height, sourceRaster.getRows());
 
             byte[] tmp = new byte[targetData.getDataInfo().getDataSize()];
             for ( int y = 0; y < subHeight; y++ ) {
