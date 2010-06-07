@@ -120,6 +120,18 @@ public class CollectionUtils {
     }
 
     /**
+     * This indirection is useful in case you use ComparablePairs instead of normal ones and want to unzip.
+     * 
+     * @param <T>
+     * @param <U>
+     * @param col
+     * @return two separate lists
+     */
+    public static <T, U> Pair<ArrayList<T>, ArrayList<U>> unzipPair( Collection<Pair<T, U>> col ) {
+        return unzip( col );
+    }
+
+    /**
      * @param <T>
      * @param <U>
      * @param col
