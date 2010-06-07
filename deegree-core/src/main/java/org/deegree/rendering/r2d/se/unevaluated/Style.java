@@ -59,6 +59,7 @@ import org.deegree.filter.MatchableObject;
 import org.deegree.filter.function.geometry.IsCurve;
 import org.deegree.filter.function.geometry.IsPoint;
 import org.deegree.filter.function.geometry.IsSurface;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiLineString;
@@ -200,7 +201,8 @@ public class Style {
                         list.add( new Triple<Styling, Geometry, String>( defaultPointStyle, geom, null ) );
                     } else if ( geom instanceof Curve || geom instanceof MultiCurve || geom instanceof MultiLineString ) {
                         list.add( new Triple<Styling, Geometry, String>( defaultLineStyle, geom, null ) );
-                    } else if ( geom instanceof Surface || geom instanceof MultiSurface || geom instanceof MultiPolygon ) {
+                    } else if ( geom instanceof Surface || geom instanceof MultiSurface || geom instanceof MultiPolygon
+                                || geom instanceof Envelope ) {
                         list.add( new Triple<Styling, Geometry, String>( defaultPolygonStyle, geom, null ) );
                     } else {
                         LOG.error( "Geometries of type '{}' are not supported/known. Please report!", geom.getClass() );
