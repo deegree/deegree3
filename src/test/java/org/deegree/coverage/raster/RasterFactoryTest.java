@@ -47,6 +47,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 
@@ -134,10 +135,11 @@ public class RasterFactoryTest {
      * 
      * @throws IOException
      * @throws InterruptedException
+     * @throws URISyntaxException
      */
     // @Test
     public synchronized void testTiledImage()
-                            throws IOException, InterruptedException {
+                            throws IOException, InterruptedException, URISyntaxException {
 
         long t = System.currentTimeMillis();
 
@@ -219,7 +221,7 @@ public class RasterFactoryTest {
     }
 
     private RenderedOp getJAIImage( String file )
-                            throws IOException {
+                            throws IOException, URISyntaxException {
 
         // jpg: 15000, 15000
         // tiff: 20000, 20000
@@ -246,7 +248,7 @@ public class RasterFactoryTest {
         // tiff subset 2: 4532millis
         // jai total: 44543millis
 
-        File f = new File( RasterFactoryTest.class.getResource( file ).getFile() );
+        File f = new File( RasterFactoryTest.class.getResource( file ).toURI() );
         ImageInputStream iis = ImageIO.createImageInputStream( f );
 
         Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName( FileUtils.getFileExtension( f ) );

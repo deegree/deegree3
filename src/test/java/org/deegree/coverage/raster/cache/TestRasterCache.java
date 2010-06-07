@@ -39,6 +39,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -150,15 +151,15 @@ public class TestRasterCache {
     }
 
     private AbstractRaster buildRaster( OriginLocation orig, String fileName, String type, String crs )
-                            throws IOException {
+                            throws IOException, URISyntaxException {
         RasterIOOptions opts = getOptionsForFile( orig, type, crs );
         URL resource = TestRasterCache.class.getResource( fileName );
-        File rFile = new File( resource.getFile() );
+        File rFile = new File( resource.toURI() );
         return RasterFactory.loadRasterFromFile( rFile, opts );
     }
 
     private TiledRaster buildTiledRaster( OriginLocation type )
-                            throws IOException {
+                            throws IOException, URISyntaxException {
         RasterIOOptions opts = getOptionsForFile( type, "jpg", "epsg:26912" );
         MemoryTileContainer mtc = new MemoryTileContainer();
         for ( int y = 0; y < 2; ++y ) {
@@ -166,7 +167,7 @@ public class TestRasterCache {
                 String f = y + "_" + x;
 
                 URL resource = TestRasterCache.class.getResource( "utah/saltlakecity_" + f + ".jpg" );
-                File rFile = new File( resource.getFile() );
+                File rFile = new File( resource.toURI() );
                 AbstractRaster raster = RasterFactory.loadRasterFromFile( rFile, opts );
                 mtc.addTile( raster );
             }
@@ -178,10 +179,11 @@ public class TestRasterCache {
      * Test the requesting of tiles from different rasters.
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
     public void testTileCache()
-                            throws IOException {
+                            throws IOException, URISyntaxException {
         setRasterCache();
         TiledRaster tR = buildTiledRaster( OriginLocation.CENTER );
         checkDiskSize( 0 );
@@ -295,7 +297,7 @@ public class TestRasterCache {
 
     @Test
     public void testMultiThreaded()
-                            throws IOException {
+                            throws IOException, URISyntaxException {
         setRasterCache();
         final TiledRaster tR = buildTiledRaster( OriginLocation.CENTER );
         checkDiskSize( 0 );
