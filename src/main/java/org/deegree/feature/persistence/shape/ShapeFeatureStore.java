@@ -63,6 +63,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -108,6 +109,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(trace = "logs stack traces", debug = "logs information about reading the files, which srs etc.", warn = "logs reasons for not setting up the store", error = "logs grave errors that were not forseen to happen")
 public class ShapeFeatureStore implements FeatureStore {
 
     private static final Logger LOG = getLogger( ShapeFeatureStore.class );
@@ -183,7 +185,7 @@ public class ShapeFeatureStore implements FeatureStore {
                     try {
                         crs = new CRS( prj );
                     } catch ( IOException e ) {
-                        LOG.debug( "Stack trace:", e );
+                        LOG.trace( "Stack trace:", e );
                         LOG.warn( "The shape datastore for '{}' could not be initialized, because no CRS was defined.",
                                   shpName );
                         available = false;
