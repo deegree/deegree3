@@ -51,6 +51,7 @@ import static org.deegree.services.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,6 +59,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -244,7 +246,9 @@ public class WMSController extends AbstractOGCServiceController {
                     for ( GetFeatureInfoFormat t : pi.getGetFeatureInfoFormat() ) {
                         String format = t.getFormat();
                         if ( t.getFile() != null ) {
-                            supportedFeatureInfoFormats.put( format, controllerConf.resolve( t.getFile() ).getFile() );
+                            supportedFeatureInfoFormats.put(
+                                                             format,
+                                                             new File( controllerConf.resolve( t.getFile() ).toURI() ).toString() );
                         } else {
                             instantiateSerializer( featureInfoSerializers, format, t.getClazz(),
                                                    FeatureInfoSerializer.class );
@@ -311,6 +315,8 @@ public class WMSController extends AbstractOGCServiceController {
         } catch ( JAXBException e ) {
             throw new ControllerInitException( e.getMessage(), e );
         } catch ( MalformedURLException e ) {
+            throw new ControllerInitException( e.getMessage(), e );
+        } catch ( URISyntaxException e ) {
             throw new ControllerInitException( e.getMessage(), e );
         }
 
