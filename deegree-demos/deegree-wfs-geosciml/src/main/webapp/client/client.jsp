@@ -31,7 +31,7 @@
     <%!
     /** return true if the file should be ignored */
     boolean ignoreFile( String name ) {
-        return name.endsWith( "CVS" );
+        return name.endsWith( "CVS" ) || name.startsWith( ".svn" );
     }%>
 	<%File requestsBaseDir = new File( getServletContext().getRealPath( "/client/requests" ) );
             String[] serviceTypes = requestsBaseDir.list();
