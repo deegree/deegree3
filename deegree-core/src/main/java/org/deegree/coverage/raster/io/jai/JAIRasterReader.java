@@ -98,8 +98,8 @@ public class JAIRasterReader implements RasterReader {
     }
 
     private AbstractRaster loadFromReader( JAIRasterDataReader reader, RasterIOOptions options ) {
-        width = reader.getWidth();
-        height = reader.getHeight();
+        width = reader.getColumns();
+        height = reader.getRows();
         setID( options );
         reader.close();
         OriginLocation definedRasterOrigLoc = options.getRasterOriginLocation();

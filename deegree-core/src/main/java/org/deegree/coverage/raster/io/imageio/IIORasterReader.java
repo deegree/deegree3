@@ -137,8 +137,8 @@ public class IIORasterReader implements RasterReader {
     }
 
     private AbstractRaster loadFromReader( IIORasterDataReader reader, RasterIOOptions options ) {
-        width = reader.getWidth();
-        height = reader.getHeight();
+        width = reader.getColumns();
+        height = reader.getRows();
         RasterIOOptions opts = new RasterIOOptions();
         opts.copyOf( options );
         setID( opts );

@@ -38,36 +38,24 @@ package org.deegree.coverage.raster.io;
 import org.deegree.coverage.raster.data.RasterData;
 
 /**
- * Simple interface to read RasterData.
+ * Interface for {@link RasterData} readers.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public interface RasterDataReader {
 
     /**
-     * Read the raster data.
+     * Reads the raster data.
      * 
-     * @return Return the underlying raster data.
+     * @return the underlying raster data, never <code>null</code>
      */
     public RasterData read();
-
-    /**
-     * @return The width in pixel of the raster data.
-     */
-    public int getWidth();
-
-    /**
-     * @return The height in pixel of the raster data.
-     */
-    public int getHeight();
 
     /**
      * Clean up all memory references to the loaded image file.
      */
     public void close();
-
 }

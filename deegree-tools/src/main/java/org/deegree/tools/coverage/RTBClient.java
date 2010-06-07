@@ -69,13 +69,12 @@ import org.deegree.tools.coverage.rtb.RasterTreeBuilder;
 import org.deegree.tools.coverage.utils.RasterOptionsParser;
 
 /**
- * This is a commandline interface for the raster tree builder.
+  * This is the commandline interface for the {@link RasterTreeBuilder}.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 @Tool("Builds a raster tree from a given set of rasters.")
 public class RTBClient {
@@ -183,8 +182,7 @@ public class RTBClient {
             rtb.setBackgroundValue( RasterCommandUtils.parseBackgroundValue( OPT_BACKGROUND ) );
         }
 
-        // currently locked to 1 (still searching for black hole race condition)
-        rtb.setNumThreads( getIntOption( line, OPT_NUM_THREADS, 1 ) );
+        rtb.setNumThreads( getIntOption( line, OPT_NUM_THREADS, 2 ) );
     }
 
     private static void startRTB( RasterTreeBuilder rtb, CommandLine line )

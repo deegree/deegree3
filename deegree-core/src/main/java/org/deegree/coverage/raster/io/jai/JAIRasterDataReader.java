@@ -126,8 +126,8 @@ public class JAIRasterDataReader implements RasterDataReader {
      */
     public ByteBufferRasterData read() {
         openImageFile();
-        getHeight();
-        getWidth(); // cache size
+        getRows();
+        getColumns(); // cache size
 
         RenderedImage img = this.img;
         this.img = null; // remove reference to img
@@ -140,7 +140,7 @@ public class JAIRasterDataReader implements RasterDataReader {
      * 
      * @return raster width
      */
-    public int getWidth() {
+    public int getColumns() {
         if ( width == -1 ) {
             openImageFile();
             if ( !errorOnLoading ) {
@@ -155,7 +155,7 @@ public class JAIRasterDataReader implements RasterDataReader {
      * 
      * @return raster height
      */
-    public int getHeight() {
+    public int getRows() {
         if ( height == -1 ) {
             openImageFile();
             if ( !errorOnLoading ) {
