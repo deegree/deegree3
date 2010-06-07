@@ -125,7 +125,6 @@ public class RTBClient {
             RasterTreeBuilder rtb = initRTB( line );
             setAdditionalOptions( rtb, line );
             startRTB( rtb, line );
-
         } catch ( ParseException exp ) {
             System.err.println( "ERROR: Invalid command line: " + exp.getMessage() );
             printHelp( options );
@@ -182,7 +181,7 @@ public class RTBClient {
             rtb.setBackgroundValue( RasterCommandUtils.parseBackgroundValue( OPT_BACKGROUND ) );
         }
 
-        rtb.setNumThreads( getIntOption( line, OPT_NUM_THREADS, 2 ) );
+        rtb.setNumThreads( getIntOption( line, OPT_NUM_THREADS, 1 ) );
     }
 
     private static void startRTB( RasterTreeBuilder rtb, CommandLine line )

@@ -204,16 +204,12 @@ public class RasterTreeBuilder {
         if ( baseEnvelope != null ) {
             dstEnv = baseEnvelope;
         } else {
+            if ( srcRaster.getCoordinateSystem() == null ) {
+                throw new NullPointerException( "The source raster has no coordinate system." );
+            }
             if ( dstSRS == null ) {
                 dstEnv = srcRaster.getEnvelope();
-                if ( srcRaster.getCoordinateSystem() != null ) {
-                    dstSRS = srcRaster.getCoordinateSystem();
-                } else if ( dstEnv.getCoordinateSystem() != null ) {
-                    dstSRS = dstEnv.getCoordinateSystem();
-                } else {
-                    throw new NullPointerException(
-                                                    "The source raster has no coordinate system, and the target crs was not set, this may not be." );
-                }
+                dstSRS = srcRaster.getCoordinateSystem();
             } else {
                 GeometryTransformer dstTransformer = new GeometryTransformer( dstSRS.getWrappedCRS() );
                 dstEnv = (Envelope) dstTransformer.transform( srcRaster.getEnvelope(),
