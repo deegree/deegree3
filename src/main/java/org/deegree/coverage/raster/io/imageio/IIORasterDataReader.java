@@ -201,7 +201,7 @@ public class IIORasterDataReader implements RasterDataReader {
      * 
      * @return raster height
      */
-    public int getWidth() {
+    public int getColumns() {
         synchronized ( LOCK ) {
             if ( width == -1 && !widthReadFailed && findReaderForIO() ) {
                 try {
@@ -221,7 +221,7 @@ public class IIORasterDataReader implements RasterDataReader {
      * 
      * @return raster height
      */
-    public int getHeight() {
+    public int getRows() {
         synchronized ( LOCK ) {
             if ( height == -1 && !heightReadFailed && findReaderForIO() ) {
                 try {
@@ -390,7 +390,7 @@ public class IIORasterDataReader implements RasterDataReader {
     public BufferResult read( RasterRect rect, ByteBuffer resultBuffer ) {
         BufferResult result = null;
         ImageReadParam rp = new ImageReadParam();
-        Rectangle dataRect = new Rectangle( 0, 0, getWidth(), getHeight() );
+        Rectangle dataRect = new Rectangle( 0, 0, getColumns(), getRows() );
         Rectangle intersection = dataRect.intersection( new Rectangle( rect.x, rect.y, rect.width, rect.height ) );
         if ( intersection.width > 0 && intersection.height > 0 ) {
             rp.setSourceRegion( intersection );

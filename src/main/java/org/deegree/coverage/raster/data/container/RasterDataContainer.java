@@ -48,6 +48,7 @@ import org.deegree.coverage.raster.io.RasterDataReader;
  * @version $Revision$, $Date$
  */
 public interface RasterDataContainer {
+
     /**
      * Sets the source of the raster data.
      * 
@@ -69,18 +70,4 @@ public interface RasterDataContainer {
      * @return RasterData
      */
     public RasterData getReadOnlyRasterData();
-
-    /**
-     * Returns the columns / width in pixel of the raster
-     * 
-     * @return columns of the raster
-     */
-    public int getColumns();
-
-    /**
-     * Returns the rows / height in pixel of the raster
-     * 
-     * @return rows of the raster
-     */
-    public int getRows();
 }

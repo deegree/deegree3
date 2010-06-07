@@ -324,7 +324,6 @@ public class RasterBuilder implements CoverageBuilder {
             return buildTiledRaster( rasterLocation, recursive, options );
         }
         return buildMultiResolutionRaster( resolutions, recursive, options );
-
     }
 
     /**

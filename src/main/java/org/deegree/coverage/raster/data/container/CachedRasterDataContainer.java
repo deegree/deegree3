@@ -57,13 +57,11 @@ import org.slf4j.LoggerFactory;
  */
 public class CachedRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( CachedRasterDataContainer.class );
+    private final static Logger LOG = LoggerFactory.getLogger( CachedRasterDataContainer.class );
 
     private RasterDataReader reader;
 
     private String identifier;
-
-    private static Logger log = LoggerFactory.getLogger( CachedRasterDataContainer.class );
 
     private static Cache cache;
 
@@ -109,19 +107,22 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
     public synchronized RasterData getRasterData() {
         // synchronized to prevent multiple reader.read()-calls when
         RasterData raster;
-        if ( log.isDebugEnabled() )
-            log.debug( "accessing: " + this.toString() );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "accessing: " + this.toString() );
+        }
         Element elem = cache.get( identifier );
         if ( elem == null ) {
             raster = reader.read();
             elem = new Element( identifier, raster );
             cache.put( elem );
-            if ( log.isDebugEnabled() )
-                log.debug( "cache miss: " + this.toString() + "#mem: " + cache.getMemoryStoreSize() );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "cache miss: " + this.toString() + "#mem: " + cache.getMemoryStoreSize() );
+            }
         } else {
             raster = (RasterData) elem.getObjectValue();
-            if ( log.isDebugEnabled() )
-                log.debug( "cache hit: " + this.toString() );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "cache hit: " + this.toString() );
+            }
         }
         return raster;
     }
@@ -129,24 +130,6 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
     @Override
     public RasterData getReadOnlyRasterData() {
         return getRasterData().asReadOnly();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.RasterDataContainer#getColumns()
-     */
-    public int getColumns() {
-        return reader.getWidth();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.RasterDataContainer#getRows()
-     */
-    public int getRows() {
-        return reader.getWidth();
     }
 
     public RasterDataContainer getRasterDataContainer( LoadingPolicy type ) {

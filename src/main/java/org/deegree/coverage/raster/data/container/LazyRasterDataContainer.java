@@ -98,24 +98,6 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
         return getRasterData().asReadOnly();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.RasterDataContainer#getColumns()
-     */
-    public int getColumns() {
-        return reader.getWidth();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.RasterDataContainer#getRows()
-     */
-    public int getRows() {
-        return reader.getHeight();
-    }
-
     public synchronized void setRasterDataReader( RasterDataReader reader ) {
         this.rasterLoaded = false;
         this.raster = null;
