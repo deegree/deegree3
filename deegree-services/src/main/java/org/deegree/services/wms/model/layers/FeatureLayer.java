@@ -158,6 +158,9 @@ public class FeatureLayer extends Layer {
                        e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }
+        if ( !datastore.isAvailable() ) {
+            LOG.error( "Layer could not be loaded, because the feature store is not available." );
+        }
         CRS crs = datastore.getEnvelope( null ).getCoordinateSystem();
         if ( crs != null ) {
             try {
