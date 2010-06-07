@@ -40,6 +40,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -240,7 +241,7 @@ public class ToolBox {
             if ( resource == null ) {
                 System.err.println( "Could not load: " + toolbox.getSimpleName() + " this is akward" );
             } else {
-                File f = new File( resource.getFile() );
+                File f = new File( resource.toURI() );
                 String parent = f.getParent();
                 f = new File( parent );
                 if ( f.exists() ) {
@@ -251,6 +252,8 @@ public class ToolBox {
                 }
             }
         } catch ( ClassNotFoundException e ) {
+            System.err.println( e.getMessage() );
+        } catch ( URISyntaxException e ) {
             System.err.println( e.getMessage() );
         }
         StringBuilder sb = new StringBuilder( "Current tools:\n" );
