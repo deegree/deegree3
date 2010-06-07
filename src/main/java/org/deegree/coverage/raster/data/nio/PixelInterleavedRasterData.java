@@ -181,7 +181,6 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public void setSubset( int dstX, int dstY, int width, int height, RasterData srcRaster, int srcX, int srcY ) {
-
         // // // the actual width and height of this raster
         // int wx0 = this.getWidth() - dstX;
         // int hy0 = this.getHeight() - dstY;
@@ -202,37 +201,37 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
             int srcRasterPosx = raster.getView().x + srcX;
             int srcRasterPosy = raster.getView().y + srcY;
-            int possibleSrcWidth = raster.getColumns();
-            int possibleSrcHeight = raster.getRows();
+            int effectiveCols = raster.getColumns();
+            int effectiveRows = raster.getRows();
 
             if ( srcRasterPosx < 0 ) {
                 // origin is negative, so add them to the width(subtract them).
-                possibleSrcWidth += srcRasterPosx;
+                effectiveCols += srcRasterPosx;
                 srcRasterPosx = 0;
             } else if ( srcRasterPosx >= raster.getOriginalWidth() ) {
                 // no copy possible
-                possibleSrcWidth = 0;
+                effectiveCols = 0;
                 srcRasterPosx = raster.getOriginalWidth();
             }
 
             if ( srcRasterPosy < 0 ) {
                 // origin is negative, so add them to the height (subtract them).
-                possibleSrcHeight += srcRasterPosy;
+                effectiveRows += srcRasterPosy;
                 // adjust for snapping to the raster
                 srcRasterPosy = 0;
             } else if ( srcRasterPosy >= raster.getOriginalHeight() ) {
                 // no copy possible
-                possibleSrcHeight = 0;
+                effectiveRows = 0;
                 srcRasterPosy = raster.getOriginalHeight();
             }
 
             // if the number of pixels from the source raster x position to requested width > raster width, snap the new
             // width to the maximum raster width.
-            if ( ( srcRasterPosx + possibleSrcWidth ) >= raster.getOriginalWidth() ) {
-                possibleSrcWidth = raster.getOriginalWidth() - srcRasterPosx;
+            if ( ( srcRasterPosx + effectiveCols ) >= raster.getOriginalWidth() ) {
+                effectiveCols = raster.getOriginalWidth() - srcRasterPosx;
             }
-            if ( ( srcRasterPosy + possibleSrcHeight ) >= raster.getOriginalHeight() ) {
-                possibleSrcHeight = raster.getOriginalHeight() - srcRasterPosy;
+            if ( ( srcRasterPosy + effectiveRows ) >= raster.getOriginalHeight() ) {
+                effectiveRows = raster.getOriginalHeight() - srcRasterPosy;
             }
             // reset to the view, for the calculation of the position
             srcRasterPosx -= raster.getView().x;
@@ -247,17 +246,8 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
             // * the possible srcWidth has been
             // * determined
             // */, height );
-            int subWidth = clampSize( getColumns(), dstX, raster.dataAccess.getDataRectangle().width, 0/*
-                                                                                                      * the possible
-                                                                                                      * srcWidth has
-                                                                                                      * been determined
-                                                                                                      */, width );
-            int subHeight = clampSize( getRows(), dstY, raster.dataAccess.getDataRectangle().height, 0/*
-                                                                                                         * the possible
-                                                                                                         * srcWidth has
-                                                                                                         * been
-                                                                                                         * determined
-                                                                                                         */, height );
+            int subWidth = clampSize( getColumns(), dstX, effectiveCols, 0, width );
+            int subHeight = clampSize( getRows(), dstY, effectiveRows, 0, height );
 
             if ( subHeight <= 0 || subWidth <= 0 ) {
                 return;
