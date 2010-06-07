@@ -43,6 +43,7 @@ import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -250,7 +251,7 @@ public class RasterBuilder implements CoverageBuilder {
                                   config.getOriginLocation().toString().toUpperCase() );
                 }
                 if ( directory != null ) {
-                    File rasterFiles = new File( adapter.resolve( directory.getValue() ).getFile() );
+                    File rasterFiles = new File( adapter.resolve( directory.getValue() ).toURI() );
                     boolean recursive = directory.isRecursive() == null ? false : directory.isRecursive();
                     String fp = directory.getFileType();
                     rOptions.add( RasterIOOptions.OPT_FORMAT, fp );
@@ -260,7 +261,7 @@ public class RasterBuilder implements CoverageBuilder {
                     return buildTiledRaster( rasterFiles, recursive, rOptions );
                 }
                 if ( file != null ) {
-                    final File loc = new File( adapter.resolve( file.getValue() ).getFile() );
+                    final File loc = new File( adapter.resolve( file.getValue() ).toURI() );
                     if ( !loc.exists() ) {
                         LOG.warn( "Given raster file location does not exist: " + loc.getAbsolutePath() );
                         return null;
@@ -281,6 +282,8 @@ public class RasterBuilder implements CoverageBuilder {
                               file.getValue() );
                 }
             } catch ( IOException e ) {
+                LOG.warn( "Could not load the file {}, corresponding data will not be available.", file.getValue() );
+            } catch ( URISyntaxException e ) {
                 LOG.warn( "Could not load the file {}, corresponding data will not be available.", file.getValue() );
             }
         }
@@ -400,9 +403,9 @@ public class RasterBuilder implements CoverageBuilder {
                 } catch ( IOException e ) {
                     LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
                 }
-            } 
-            if( !readSingleBlobTile ){
-                if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format )  ) ){
+            }
+            if ( !readSingleBlobTile ) {
+                if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format ) ) ) {
                     LOG.info( "Could not instantiate a gridded raster from a single grid file, trying to create a raster from files in directory." );
                 }
                 QTreeInfo inf = buildTiledRaster( coverageFiles, rasters, opts );

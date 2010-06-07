@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
+import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
@@ -94,10 +96,15 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
             String shapeFileName = null;
             try {
-                shapeFileName = resolver.resolve( config.getFile().trim() ).getFile();
+                shapeFileName = new File( resolver.resolve( config.getFile().trim() ).toURI() ).toString();
             } catch ( MalformedURLException e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
                 LOG.error( msg, e );
+                throw new FeatureStoreException( msg, e );
+            } catch ( URISyntaxException e ) {
+                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+                LOG.error( msg );
+                LOG.trace( "Stack trace:", e );
                 throw new FeatureStoreException( msg, e );
             }
 
@@ -108,7 +115,7 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
                     cs = Charset.forName( encoding );
                 } catch ( Exception e ) {
                     String msg = "Unsupported encoding '" + encoding + "'. Continuing with encoding guessing mode.";
-                    LOG.error(msg);
+                    LOG.error( msg );
                 }
             }
 
