@@ -35,6 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.TreeSet;
+
+import org.deegree.commons.utils.ConfigManager;
+import org.slf4j.Logger;
+
 /**
  * Keeps track of request and rumtime statistics for the {@link OGCFrontController}.
  * 
@@ -44,6 +59,8 @@ package org.deegree.services.controller;
  * @version $Revision$, $Date$
  */
 public class FrontControllerStats {
+
+    private static final Logger LOG = getLogger( FrontControllerStats.class );
 
     private static long numDispatched;
 
@@ -80,6 +97,25 @@ public class FrontControllerStats {
     }
 
     /**
+     * @param request
+     *            the query string
+     */
+    synchronized static void incomingKVP( String request, long timestamp ) {
+        try {
+            OutputStream os = ConfigManager.getOutputResource( "requests.txt", true );
+            PrintWriter out = new PrintWriter( new OutputStreamWriter( os, "UTF-8" ) );
+            out.println( timestamp + " " + request );
+            out.close();
+        } catch ( FileNotFoundException e ) {
+            LOG.debug( "Could not find the file to store requests." );
+            LOG.debug( " Probably the DEEGREE_HOME directory does not exist and could not be created." );
+            LOG.trace( "Stack trace:", e );
+        } catch ( UnsupportedEncodingException e ) {
+            LOG.trace( "Stack trace:", e );
+        }
+    }
+
+    /**
      * Returns the number of requests that the {@link OGCFrontController} dispatched to service controllers.
      * 
      * @return number of dispatched requests
@@ -111,8 +147,37 @@ public class FrontControllerStats {
      * Returns the maximum response time of all finished requests.
      * 
      * @return the maximum response time
-     */    
+     */
     public static long getMaximumResponseTime() {
         return (long) maxResponseTime;
     }
+
+    /**
+     * @return the incoming KVP requests
+     */
+    public static TreeSet<String> getKVPRequests() {
+        TreeSet<String> requests = new TreeSet<String>();
+        try {
+            InputStreamReader is = new InputStreamReader( ConfigManager.getInputResource( "requests.txt" ), "UTF-8" );
+            BufferedReader in = new BufferedReader( is );
+            String s = null;
+            while ( ( s = in.readLine() ) != null ) {
+                String[] req = s.split( " " );
+                if ( !requests.contains( req[1] ) ) {
+                    requests.add( req[1] );
+                }
+            }
+            in.close();
+        } catch ( UnsupportedEncodingException e ) {
+            LOG.trace( "Stack trace:", e );
+        } catch ( FileNotFoundException e ) {
+            LOG.debug( "The requests file does not exist." );
+            LOG.trace( "Stack trace:", e );
+        } catch ( IOException e ) {
+            LOG.debug( "The requests file could not be read: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
+        return requests;
+    }
+
 }
