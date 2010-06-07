@@ -325,7 +325,13 @@ public class OGCFrontController extends HttpServlet {
                    + " ms." );
     }
 
-    private Map<String, String> getNormalizedKVPMap( String queryString, String encoding )
+    /**
+     * @param queryString
+     * @param encoding
+     * @return a map with the query string's kvps parsed (uppercase keys)
+     * @throws UnsupportedEncodingException
+     */
+    public static Map<String, String> getNormalizedKVPMap( String queryString, String encoding )
                             throws UnsupportedEncodingException {
 
         Map<String, List<String>> keyToValueList = new HashMap<String, List<String>>();

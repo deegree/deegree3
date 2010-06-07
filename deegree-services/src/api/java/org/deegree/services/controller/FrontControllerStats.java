@@ -47,11 +47,12 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.TreeSet;
 
+import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.ConfigManager;
 import org.slf4j.Logger;
 
 /**
- * Keeps track of request and rumtime statistics for the {@link OGCFrontController}.
+ * Keeps track of request and runtime statistics for the {@link OGCFrontController}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -155,16 +156,17 @@ public class FrontControllerStats {
     /**
      * @return the incoming KVP requests
      */
-    public static TreeSet<String> getKVPRequests() {
-        TreeSet<String> requests = new TreeSet<String>();
+    public static TreeSet<ComparablePair<Long, String>> getKVPRequests() {
+        TreeSet<ComparablePair<Long, String>> requests = new TreeSet<ComparablePair<Long, String>>();
         try {
             InputStreamReader is = new InputStreamReader( ConfigManager.getInputResource( "requests.txt" ), "UTF-8" );
             BufferedReader in = new BufferedReader( is );
             String s = null;
             while ( ( s = in.readLine() ) != null ) {
                 String[] req = s.split( " " );
-                if ( !requests.contains( req[1] ) ) {
-                    requests.add( req[1] );
+                ComparablePair<Long, String> p = new ComparablePair<Long, String>( Long.valueOf( req[0] ), req[1] );
+                if ( !requests.contains( p ) ) {
+                    requests.add( p );
                 }
             }
             in.close();

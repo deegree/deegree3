@@ -335,4 +335,12 @@
     </complexType>
   </element>
 
+  <element name="StatisticsLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <extension base="wms:BaseAbstractLayerType" />
+      </complexContent>
+    </complexType>
+  </element>
+
 </schema>

@@ -141,6 +141,7 @@ import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
 import org.deegree.services.jaxb.wms.DynamicLayer;
 import org.deegree.services.jaxb.wms.ServiceConfiguration;
+import org.deegree.services.jaxb.wms.StatisticsLayer;
 import org.deegree.services.jaxb.wms.SupportedFeaturesType;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
@@ -424,6 +425,11 @@ public class MapService {
             defaultInterpolations.put( res, interpol );
 
             addChildren( res, aLayer.getAbstractLayer(), adapter, alias, interpol, quality );
+        } else if ( layer instanceof StatisticsLayer ) {
+            res = new org.deegree.services.wms.model.layers.StatisticsLayer( parent );
+            synchronized ( layers ) {
+                layers.put( res.getName(), res );
+            }
         } else {
             DynamicLayer dyn = (DynamicLayer) layer;
             if ( dyn.getShapefileDirectory() != null ) {
