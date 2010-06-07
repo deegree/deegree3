@@ -52,6 +52,7 @@ import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.cs.components.Unit.METRE;
+import static org.deegree.geometry.utils.GeometryUtils.envelopeToPolygon;
 import static org.deegree.rendering.r2d.RenderHelper.getShapeFromMark;
 import static org.deegree.rendering.r2d.RenderHelper.getShapeFromSvg;
 import static org.deegree.rendering.r2d.RenderHelper.renderMark;
@@ -556,6 +557,9 @@ public class Java2DRenderer implements Renderer {
         }
         if ( geom instanceof Curve ) {
             LOG.warn( "Trying to render line with polygon styling." );
+        }
+        if ( geom instanceof Envelope ) {
+            geom = envelopeToPolygon( (Envelope) geom );
         }
         if ( geom instanceof Surface ) {
             LOG.trace( "Drawing {} with {}", geom, styling );

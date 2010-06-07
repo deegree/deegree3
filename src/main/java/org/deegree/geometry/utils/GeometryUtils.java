@@ -61,10 +61,12 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.rendering.r2d.strokes.TextStroke;
 
@@ -77,6 +79,20 @@ import org.deegree.rendering.r2d.strokes.TextStroke;
  * @version $Revision$, $Date$
  */
 public class GeometryUtils {
+
+    /**
+     * @param env
+     * @return a polygon
+     */
+    public static Polygon envelopeToPolygon( Envelope env ) {
+        GeometryFactory fac = new GeometryFactory();
+        Point a = env.getMin();
+        Point b = fac.createPoint( null, a.get0() + env.getSpan0(), a.get1(), env.getCoordinateSystem() );
+        Point c = env.getMax();
+        Point d = fac.createPoint( null, a.get0(), a.get1() + env.getSpan1(), env.getCoordinateSystem() );
+        LinearRing ring = fac.createLinearRing( null, env.getCoordinateSystem(), new PointsArray( a, b, c, d, a ) );
+        return fac.createPolygon( null, env.getCoordinateSystem(), ring, null );
+    }
 
     /**
      * Moves the coordinates of a geometry.
