@@ -906,21 +906,23 @@ public class WKTParser {
                                                        null );
         CRSIdentifiable baseProjCRS = new CRSIdentifiable( new CRSCodeType[] { projectionCode },
                                                            new String[] { projectionType }, null, null, null );
-        Point2d pointOrigin = new Point2d( DTR * params.get( LONGITUDE_OF_NATURAL_ORIGIN.toString() ),
-                                           DTR * params.get( LATITUDE_OF_NATURAL_ORIGIN.toString() ) );
+
+        Point2d pointOrigin = new Point2d( DTR * determineLongitude( params ), DTR * determineLatitude( params ) );
+
         Axis[] axes = new Axis[] { axis1, axis2 };
         if ( projectionType.equalsIgnoreCase( "transverse_mercator" )
              || projectionType.equalsIgnoreCase( "Gauss_Kruger" ) ) {
-            return new ProjectedCRS( new TransverseMercator( true, geographicCRS, params.get( FALSE_NORTHING ),
-                                                             params.get( FALSE_EASTING ), pointOrigin, unit,
-                                                             params.get( SCALE_AT_NATURAL_ORIGIN ), baseProjCRS ),
-                                     axes, baseCRS );
+            return new ProjectedCRS( new TransverseMercator( true, geographicCRS,
+                                                             params.get( FALSE_NORTHING.toString() ),
+                                                             params.get( FALSE_EASTING.toString() ), pointOrigin, unit,
+                                                             params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
+                                                             baseProjCRS ), axes, baseCRS );
 
         } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_1SP" ) ) {
-            return new ProjectedCRS( new LambertConformalConic( geographicCRS, params.get( FALSE_NORTHING ),
-                                                                params.get( FALSE_EASTING ), pointOrigin, unit,
-                                                                params.get( SCALE_AT_NATURAL_ORIGIN ), baseProjCRS ),
-                                     axes, baseCRS );
+            return new ProjectedCRS( new LambertConformalConic( geographicCRS, params.get( FALSE_NORTHING.toString() ),
+                                                                params.get( FALSE_EASTING.toString() ), pointOrigin,
+                                                                unit, params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
+                                                                baseProjCRS ), axes, baseCRS );
 
         } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_2SP" )
                     || projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic" ) ) {
@@ -935,21 +937,61 @@ public class WKTParser {
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" )
                     || projectionType.equalsIgnoreCase( "Double_Stereographic" )
                     || projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) ) {
-            return new ProjectedCRS( new StereographicAlternative( geographicCRS, params.get( FALSE_NORTHING ),
-                                                                   params.get( "falseeasting" ), pointOrigin, unit,
-                                                                   params.get( "scalefactor" ), baseProjCRS ), axes,
-                                     baseCRS );
+            return new ProjectedCRS( new StereographicAlternative( geographicCRS,
+                                                                   params.get( FALSE_NORTHING.toString() ),
+                                                                   params.get( FALSE_EASTING.toString() ), pointOrigin,
+                                                                   unit,
+                                                                   params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
+                                                                   baseProjCRS ), axes, baseCRS );
 
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Azimuthal" ) ) {
             LOG.warn( "True scale latitude is not read from the StereoGraphic azimuthal projection yet." );
-            return new ProjectedCRS( new StereographicAzimuthal( geographicCRS, params.get( "falsenorthing" ),
-                                                                 params.get( "falseeasting" ), pointOrigin, unit,
-                                                                 params.get( "scalefactor" ), baseProjCRS ), axes,
-                                     baseCRS );
+            return new ProjectedCRS( new StereographicAzimuthal( geographicCRS,
+                                                                 params.get( FALSE_NORTHING.toString() ),
+                                                                 params.get( FALSE_EASTING.toString() ), pointOrigin,
+                                                                 unit,
+                                                                 params.get( SCALE_AT_NATURAL_ORIGIN.toString() ),
+                                                                 baseProjCRS ), axes, baseCRS );
 
         } else {
             throw new WKTParsingException( "The projection type " + projectionType + " is not supported." );
         }
+    }
+
+    /**
+     * Determine the latitude of natural origin based on all the documented names under which it may appear (i.e. from
+     * {@link SupportedProjectionParameters} javadoc).
+     */
+    private double determineLatitude( Map<String, Double> params ) {
+        Double latNatOrigin = null;
+
+        if ( params.containsKey( LATITUDE_OF_NATURAL_ORIGIN.toString() ) ) {
+            latNatOrigin = params.get( LATITUDE_OF_NATURAL_ORIGIN.toString() );
+        } else if ( params.containsKey( "projectionlatitude" ) ) {
+            latNatOrigin = params.get( "projectionlatitude" );
+        } else if ( params.containsKey( "central_latitude" ) ) {
+            latNatOrigin = params.get( "central_latitude" );
+        }
+        return latNatOrigin;
+    }
+
+    /**
+     * Determine the longitude of natural origin based on all the documented names under which it may appear (i.e. from
+     * {@link SupportedProjectionParameters} javadoc).
+     */
+    private double determineLongitude( Map<String, Double> params ) {
+        Double longNatOrigin = null;
+
+        if ( params.containsKey( LONGITUDE_OF_NATURAL_ORIGIN.toString() ) ) {
+            longNatOrigin = params.get( LONGITUDE_OF_NATURAL_ORIGIN.toString() );
+        } else if ( params.containsKey( "central_meridian" ) ) {
+            longNatOrigin = params.get( "central_meridian" );
+        } else if ( params.containsKey( "projectionlongitude" ) ) {
+            longNatOrigin = params.get( "projectionlongitude" );
+        } else if ( params.containsKey( "projection_meridian" ) ) {
+            longNatOrigin = params.get( "projection_meridian" );
+        }
+        return longNatOrigin;
     }
 
     private Map<String, Double> setDefaultParameterValues( Map<String, Double> params ) {
@@ -1131,4 +1173,5 @@ public class WKTParser {
         WKTParser parse = new WKTParser( new BufferedReader( new StringReader( wkt ) ) );
         return parse.parseCoordinateSystem();
     }
+
 }

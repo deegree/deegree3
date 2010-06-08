@@ -111,6 +111,7 @@ public enum SupportedProjectionParameters {
                     return SupportedProjectionParameters.LATITUDE_OF_NATURAL_ORIGIN;
                 } else if ( ( compare.contains( "longitude" ) && ( compare.contains( "origin" ) || compare.contains( "central" ) ) )
                             || "Central Meridian".equalsIgnoreCase( compare )
+                            || "centralmeridian".equalsIgnoreCase( compare )
                             || "CM".equalsIgnoreCase( compare )
                             || matchEPSGString( compare, "parameter", "8802" )
                             || matchEPSGString( compare, "parameter", "8812" )
