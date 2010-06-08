@@ -421,4 +421,11 @@ public class TextStroke implements Stroke {
         }
     }
 
+    /**
+     * @return the calculated line height
+     */
+    public double getLineHeight() {
+        return lineHeight;
+    }
+
 }

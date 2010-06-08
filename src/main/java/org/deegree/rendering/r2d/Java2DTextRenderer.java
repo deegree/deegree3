@@ -129,6 +129,9 @@ public class Java2DTextRenderer implements TextRenderer {
     private void render( TextStyling styling, Font font, String text, Curve c ) {
         renderer.applyFill( styling.fill, styling.uom );
         java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
+        if ( isZero( ( (TextStroke) stroke ).getLineHeight() ) ) {
+            return;
+        }
         if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
             stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke,
                                        styling.linePlacement.perpendicularOffsetType );
