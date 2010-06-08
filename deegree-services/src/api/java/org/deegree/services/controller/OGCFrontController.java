@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
+import static org.deegree.services.controller.FrontControllerStats.incomingKVP;
+
 import java.beans.Introspector;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -277,7 +279,9 @@ public class OGCFrontController extends HttpServlet {
                 sendException( ex, response, null );
                 return;
             }
-            FrontControllerStats.incomingKVP( queryString, entryTime );
+            if ( LOG.isDebugEnabled() ) {
+                incomingKVP( queryString, entryTime );
+            }
 
             // handle as XML, if it request starts with '<'
             boolean isXML = queryString.startsWith( "<" );
