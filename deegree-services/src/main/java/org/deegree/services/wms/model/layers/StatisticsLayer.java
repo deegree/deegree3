@@ -42,6 +42,7 @@ import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.services.controller.FrontControllerStats.getCombinedGetMapEnvelope;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -69,8 +70,11 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.wms.dims.DimensionInterval;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
@@ -83,6 +87,7 @@ import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetMap;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
+import org.deegree.services.wms.model.Dimension;
 import org.slf4j.Logger;
 
 /**
@@ -93,7 +98,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class StatisticsLayer extends Layer {
+public class StatisticsLayer extends FeatureLayer {
 
     private static final Logger LOG = getLogger( StatisticsLayer.class );
 
@@ -124,6 +129,14 @@ public class StatisticsLayer extends Layer {
      */
     public StatisticsLayer( Layer parent ) {
         super( "statistics", "WMS Request Statistics", parent );
+        Date date = new Date( FrontControllerStats.getStartingTime() );
+        List<Object> extent = new ArrayList<Object>();
+        extent.add( new DimensionInterval<Date, String, Integer>( date, "current", 0 ) );
+        List<Object> defaultVals = new ArrayList<Object>();
+        date = new Date( System.currentTimeMillis() );
+        defaultVals.add( new DimensionInterval<Date, String, Integer>( date, "current", 0 ) );
+        dimensions.put( "time", new Dimension<Object>( "time", defaultVals, true, true, true, "ISO8601", null,
+                                                       timeProp.getName(), extent ) );
     }
 
     @Override
@@ -134,6 +147,8 @@ public class StatisticsLayer extends Layer {
     @Override
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
+        Pair<Filter, LinkedList<String>> filter = getDimensionFilter( fi.getDimensions() );
+
         GenericFeatureCollection col = new GenericFeatureCollection();
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {
@@ -152,19 +167,30 @@ public class StatisticsLayer extends Layer {
                     props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ), DATE ) );
                     props.add( new GenericProperty( boxProp, box ) );
 
-                    col.add( new GenericFeature( featureType, null, props, null ) );
+                    GenericFeature f = new GenericFeature( featureType, null, props, null );
+                    try {
+                        if ( filter.first != null && !filter.first.evaluate( f ) ) {
+                            continue;
+                        }
+                    } catch ( FilterEvaluationException e ) {
+                        LOG.debug( "Filter could not be evaluated: '{}'", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                    }
+                    col.add( f );
 
                 } catch ( UnsupportedEncodingException e ) {
                     LOG.trace( "Stack trace:", e );
                 }
             }
         }
-        return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
+        return new Pair<FeatureCollection, LinkedList<String>>( col, filter.second );
     }
 
     @Override
     public LinkedList<String> paintMap( Graphics2D g, GetMap gm, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
+        Pair<Filter, LinkedList<String>> filter = getDimensionFilter( gm.getDimensions() );
+
         PolygonStyling ps = new PolygonStyling();
         ps.stroke = new Stroke();
         ps.stroke.color = Color.black;
@@ -193,19 +219,37 @@ public class StatisticsLayer extends Layer {
                     props.add( new SimpleProperty( timeProp, formatISO8601Date( new Date( req.first ) ), DATE ) );
                     props.add( new GenericProperty( boxProp, box ) );
 
-                    render( new GenericFeature( featureType, null, props, null ), style, renderer, null, gm.getScale() );
-
+                    GenericFeature f = new GenericFeature( featureType, null, props, null );
+                    try {
+                        if ( filter.first != null && !filter.first.evaluate( f ) ) {
+                            continue;
+                        }
+                    } catch ( FilterEvaluationException e ) {
+                        LOG.debug( "Filter could not be evaluated: '{}'", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                    }
+                    render( f, style, renderer, null, gm.getScale() );
                 } catch ( UnsupportedEncodingException e ) {
                     LOG.trace( "Stack trace:", e );
                 }
             }
         }
-        return new LinkedList<String>();
+        return filter.second;
     }
 
     @Override
     public String getName() {
         return "statistics";
+    }
+
+    @Override
+    public Envelope getBbox() {
+        return getCombinedGetMapEnvelope();
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return true;
     }
 
 }

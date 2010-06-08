@@ -195,7 +195,7 @@
   <complexType name="DimensionType">
     <sequence>
       <element name="Name" type="string" minOccurs="0" />
-      <element name="Property" type="string" />
+      <element name="Property" type="QName" />
       <element name="DefaultValue" type="string" minOccurs="0" />
       <element name="MultipleValues" type="boolean" default="0" minOccurs="0" />
       <element name="NearestValue" type="boolean" default="0" minOccurs="0" />

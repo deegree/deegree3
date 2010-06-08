@@ -39,6 +39,7 @@ package org.deegree.services.wms.model.layers;
 import static java.lang.System.currentTimeMillis;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
 import static org.deegree.cs.CRSCodeType.getUndefined;
 import static org.deegree.services.wms.model.Dimension.formatDimensionValueList;
@@ -230,7 +231,7 @@ public class FeatureLayer extends Layer {
         QName featureType = style == null ? null : style.getFeatureType();
         Integer maxFeats = gm.getMaxFeatures().get( this );
         final int maxFeatures = maxFeats == null ? -1 : maxFeats;
-        if ( featureType == null ) {
+        if ( featureType == null && datastore != null ) {
             queries.addAll( map( datastore.getSchema().getFeatureTypes( null, false, false ),
                                  new Mapper<Query, FeatureType>() {
                                      public Query apply( FeatureType u ) {
@@ -385,9 +386,8 @@ public class FeatureLayer extends Layer {
         LinkedList<String> warnings = new LinkedList<String>();
         LinkedList<Operator> ops = new LinkedList<Operator>();
 
-        // TODO cleanup after filter encoding works better
         if ( time != null ) {
-            final PropertyName property = new PropertyName( time.getPropertyName(), null );
+            final PropertyName property = new PropertyName( time.getPropertyName() );
 
             List<?> vals = dims.get( "time" );
 
@@ -452,7 +452,7 @@ public class FeatureLayer extends Layer {
 
         for ( String name : dimensions.keySet() ) {
             Dimension<Object> dim = dimensions.get( name );
-            final PropertyName property = new PropertyName( dim.getPropertyName(), null );
+            final PropertyName property = new PropertyName( dim.getPropertyName() );
 
             List<?> vals = dims.get( name );
 
@@ -465,6 +465,9 @@ public class FeatureLayer extends Layer {
                 if ( name.equals( "elevation" ) ) {
                     warnings.add( "99 Default value used: elevation=" + formatDimensionValueList( vals, false ) + " "
                                   + ( units == null ? "m" : units ) );
+                } else if ( name.equals( "time" ) ) {
+                    warnings.add( "99 Default value used: time=" + formatDimensionValueList( vals, true ) + " "
+                                  + ( units == null ? "ISO8601" : units ) );
                 } else {
                     warnings.add( "99 Default value used: DIM_" + name + "=" + formatDimensionValueList( vals, false )
                                   + " " + units );
@@ -473,6 +476,7 @@ public class FeatureLayer extends Layer {
 
             Operator[] os = new Operator[vals.size()];
             int i = 0;
+
             for ( Object o : vals ) {
 
                 if ( !dim.getNearestValue() && !dim.isValid( o ) ) {
@@ -481,8 +485,20 @@ public class FeatureLayer extends Layer {
 
                 if ( o instanceof DimensionInterval<?, ?, ?> ) {
                     DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
-                    final String min = ( (Number) iv.min ).toString();
-                    final String max = ( (Number) iv.max ).toString();
+                    final String min;
+                    if ( iv.min instanceof Date ) {
+                        min = formatISO8601Date( (Date) iv.min );
+                    } else {
+                        min = ( (Number) iv.min ).toString();
+                    }
+                    final String max;
+                    if ( iv.max instanceof Date ) {
+                        max = formatISO8601Date( (Date) iv.max );
+                    } else if ( iv.max instanceof String ) {
+                        max = formatISO8601Date( new Date() );
+                    } else {
+                        max = ( (Number) iv.max ).toString();
+                    }
                     os[i++] = new PropertyIsBetween( property, new Literal<PrimitiveValue>( min ),
                                                      new Literal<PrimitiveValue>( max ), false );
                 } else {
@@ -497,7 +513,7 @@ public class FeatureLayer extends Layer {
                             }
                         }
                     }
-                    os[i++] = new PropertyIsEqualTo( new PropertyName( dim.getPropertyName(), null ),
+                    os[i++] = new PropertyIsEqualTo( new PropertyName( dim.getPropertyName() ),
                                                      new Literal<PrimitiveValue>( o.toString() ), false );
                 }
             }

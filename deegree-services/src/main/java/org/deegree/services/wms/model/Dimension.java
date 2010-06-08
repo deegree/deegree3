@@ -48,7 +48,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.deegree.commons.utils.math.MathUtils;
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.utils.time.Duration;
 import org.deegree.protocol.wms.dims.DimensionInterval;
 
@@ -75,7 +76,7 @@ public class Dimension<T> {
 
     private String unitSymbol;
 
-    private String property;
+    private QName property;
 
     private List<?> extent;
 
@@ -93,7 +94,7 @@ public class Dimension<T> {
      * @param extent
      */
     public Dimension( String name, List<?> defaultValue, boolean current, boolean nearestValue, boolean multipleValues,
-                      String units, String unitSymbol, String property, List<?> extent ) {
+                      String units, String unitSymbol, QName property, List<?> extent ) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.current = current;
@@ -115,7 +116,7 @@ public class Dimension<T> {
     /**
      * @return the property name
      */
-    public String getPropertyName() {
+    public QName getPropertyName() {
         return property;
     }
 
@@ -186,8 +187,14 @@ public class Dimension<T> {
                 DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
                 if ( time ) {
                     sb.append( formatISO8601DateWOMS( (Date) iv.min ) ).append( "/" );
-                    sb.append( formatISO8601DateWOMS( (Date) iv.max ) ).append( "/" );
-                    sb.append( formatISO8601Duration( (Duration) iv.res ) );
+                    if ( iv.max instanceof Date ) {
+                        sb.append( formatISO8601DateWOMS( (Date) iv.max ) ).append( "/" );
+                    } else {
+                        sb.append( "current/" );
+                    }
+                    if ( iv.res instanceof Duration ) {
+                        sb.append( formatISO8601Duration( (Duration) iv.res ) );
+                    }
                 } else {
                     sb.append( iv.min ).append( "/" ).append( iv.max ).append( "/" ).append( iv.res );
                 }
@@ -241,7 +248,12 @@ public class Dimension<T> {
             DimensionInterval<?, ?, ?> iv = (DimensionInterval<?, ?, ?>) o;
             if ( time ) {
                 Date min = parseISO8601Date( (String) iv.min );
-                Date max = parseISO8601Date( (String) iv.max );
+                Date max;
+                if ( ( (String) iv.max ).equalsIgnoreCase( "current" ) ) {
+                    max = new Date();
+                } else {
+                    max = parseISO8601Date( (String) iv.max );
+                }
                 if ( iv.res instanceof Integer ) {
                     return new DimensionInterval<Date, Date, Object>( min, max, null );
                 }
