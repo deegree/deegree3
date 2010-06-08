@@ -73,6 +73,8 @@ public class GRViewerGUI extends JFrame {
 
     private Scene2DPanel scenePanel2D;
 
+    private NavigationBarPanel navigationPanel;
+
     private BuildingFootprintPanel footprintPanel;
 
     private JMenuItem import2DMapMenuItem;
@@ -97,6 +99,7 @@ public class GRViewerGUI extends JFrame {
         setup2DScene( gbl );
         setupPanelFootprint( gbl );
         setupOpenGL( gbl, true );
+        setuptNavigationBar( gbl );
         this.pack();
     }
 
@@ -117,12 +120,20 @@ public class GRViewerGUI extends JFrame {
         this.getRootPane().setJMenuBar( menuBar );
     }
 
+    private void setuptNavigationBar( GridBagLayout gbl ) {
+        navigationPanel = new NavigationBarPanel();
+        navigationPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+        navigationPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
+
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, navigationPanel, 0, 0, 2, 1, .15, .15 );
+    }
+
     private void setup2DScene( GridBagLayout gbl ) {
         scenePanel2D = new Scene2DPanel();
         scenePanel2D.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         scenePanel2D.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, scenePanel2D, 0, 0, 1, 2, 1.0, 1.0 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, scenePanel2D, 0, 1, 1, 2, 1.0, 1.0 );
 
     }
 
@@ -133,7 +144,7 @@ public class GRViewerGUI extends JFrame {
         footprintPanel.setBackground( Color.white );
         footprintPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, footprintPanel, 1, 0, 1, 1,
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, footprintPanel, 1, 1, 1, 1,
                                           footprintPanel.getInsets(), GridBagConstraints.LINE_END, 1, 1 );
 
     }
@@ -153,7 +164,7 @@ public class GRViewerGUI extends JFrame {
         canvas.addMouseMotionListener( openGLEventListener.getTrackBall() );
         canvas.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 1, 1, 1, 1, new Insets( 10, 10, 0, 0 ),
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 1, 2, 1, 1, new Insets( 10, 10, 0, 0 ),
                                           GridBagConstraints.LINE_END, 1, 1 );
     }
 
@@ -199,6 +210,10 @@ public class GRViewerGUI extends JFrame {
     public void addHoleWindowListener( ComponentListener c ) {
         this.addComponentListener( c );
 
+    }
+
+    public NavigationBarPanel getNavigationPanel() {
+        return navigationPanel;
     }
 
 }

@@ -73,7 +73,9 @@ public class Scene2DPanel extends JPanel {
     private double resolutionOfImage;
 
     public Scene2DPanel() {
+        this.setName( "Scene2DPanel" );
         resolutionOfImage = 1.0;
+
     }
 
     @Override

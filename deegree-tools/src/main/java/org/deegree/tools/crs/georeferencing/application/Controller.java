@@ -44,18 +44,20 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
-import java.net.URL;
 
+import javax.swing.JCheckBox;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
+import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
+import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 
@@ -77,21 +79,21 @@ public class Controller {
 
     private BuildingFootprintPanel footPanel;
 
+    private NavigationBarPanel navPanel;
+
     private MouseModel mouse;
 
-    private URL scene2DUrl;
-
     private RasterIOOptions options;
-
-    private BufferedImage predictedImage;
-
-    private GeometryFactory geomFactory;
-
-    private boolean wentIntoCriticalRegion;
 
     private Point2d changePoint;
 
     private RasterRect rect;
+
+    private RasterRect rectangle;
+
+    private boolean isHorizontalRef;
+
+    private Footprint footPrint;
 
     private static final String RASTERIO_LAYER = "RASTERIO_LAYER";
 
@@ -127,10 +129,16 @@ public class Controller {
         this.model = model;
         panel = view.getScenePanel2D();
         footPanel = view.getFootprintPanel();
-        this.geomFactory = new GeometryFactory();
+        navPanel = view.getNavigationPanel();
+        this.footPrint = new Footprint();
+        // this.geomFactory = new GeometryFactory();
 
-        view.addScene2DurlListener( new Scene2DurlListener() );
+        view.addScene2DurlListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
+        navPanel.addHorizontalRefListener( new ButtonListener() );
+        footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
+
+        isHorizontalRef = false;
 
     }
 
@@ -143,7 +151,7 @@ public class Controller {
      * 
      * @version $Revision$, $Date$
      */
-    class Scene2DurlListener implements ActionListener {
+    class ButtonListener implements ActionListener {
 
         /*
          * (non-Javadoc)
@@ -152,35 +160,58 @@ public class Controller {
          */
         @Override
         public void actionPerformed( ActionEvent e ) {
+            Object source = e.getSource();
+            if ( source instanceof JCheckBox ) {
+                if ( ( (JCheckBox) source ).getText().startsWith( "Horizontal Referencing" ) ) {
 
-            mouse = new MouseModel();
-            model.reset();
-            options = new RasterIOOptions();
+                    if ( isHorizontalRef == false ) {
+                        isHorizontalRef = true;
+                        System.out.println( "hier sollte ein boolean rein! " + isHorizontalRef );
+                    } else {
+                        isHorizontalRef = false;
+                        System.out.println( "hier sollte ein boolean rein! " + isHorizontalRef );
+                    }
+                }
 
-            options.add( RasterIOOptions.CRS, "EPSG:4326" );
-            // options.add( RasterIOOptions.CRS, "EPSG:32618" );
-            // options.add( RIO_WMS_LAYERS, "populationgrid" );
-            options.add( RESOLUTION, "1.0" );
-            options.add( RIO_WMS_LAYERS, "root" );
-            // options.add( RASTER_FORMATLIST, "image/jpeg" );
-            options.add( RASTER_URL, view.openUrl() );
-            options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
-            options.add( RIO_WMS_SYS_ID, view.openUrl() );
-            options.add( RIO_WMS_MAX_SCALE, "0.1" );
-            options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
-            // specify the quality
-            options.add( RIO_WMS_MAX_WIDTH, Integer.toString( 200 ) );
-            options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( 200 ) );
-            options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
-            // options.add( RIO_WMS_TIMEOUT, "1000" );
-            model.setResolution( 1 );
-            model.init( options, panel.getBounds() );
-            panel.setImageToDraw( model.generateImage( null ) );
+            }
+            if ( source instanceof JMenuItem ) {
+                if ( ( (JMenuItem) source ).getText().startsWith( "Import 2D Map" ) ) {
+                    mouse = new MouseModel();
+                    model.reset();
+                    options = new RasterIOOptions();
 
-            panel.repaint();
-            panel.addScene2DMouseListener( new Scene2DMouseListener() );
-            // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-            panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+                    options.add( RasterIOOptions.CRS, "EPSG:4326" );
+                    // options.add( RasterIOOptions.CRS, "EPSG:32618" );
+                    // options.add( RIO_WMS_LAYERS, "populationgrid" );
+                    options.add( RESOLUTION, "1.0" );
+                    options.add( RIO_WMS_LAYERS, "root" );
+                    // options.add( RASTER_FORMATLIST, "image/jpeg" );
+                    options.add( RASTER_URL, view.openUrl() );
+                    options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
+                    options.add( RIO_WMS_SYS_ID, view.openUrl() );
+                    options.add( RIO_WMS_MAX_SCALE, "0.1" );
+                    options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
+                    // specify the quality
+                    options.add( RIO_WMS_MAX_WIDTH, Integer.toString( 200 ) );
+                    options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( 200 ) );
+                    options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
+                    // options.add( RIO_WMS_TIMEOUT, "1000" );
+                    model.setResolution( 1 );
+                    model.init( options, panel.getBounds() );
+                    panel.setImageToDraw( model.generateImage( null ) );
+
+                    panel.repaint();
+                    panel.addScene2DMouseListener( new Scene2DMouseListener() );
+                    // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+                    panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+
+                    footPrint.setDefaultPolygon();
+                    // rectangle = new RasterRect( 50, 50, 200, 200 );
+                    footPanel.setPolygon( footPrint.getPolygon() );
+                    // footPanel.setGeometry( rectangle );
+                    footPanel.repaint();
+                }
+            }
 
         }
     }
@@ -222,42 +253,70 @@ public class Controller {
 
         @Override
         public void mouseReleased( MouseEvent m ) {
+            Object source = m.getSource();
+            if ( source instanceof JPanel ) {
+                if ( ( (JPanel) source ).getName().equals( "Scene2DPanel" ) ) {
 
-            mouse.setMouseChanging( new Point2d( ( mouse.getPointMousePressed().getX() - m.getX() ),
-                                                 ( mouse.getPointMousePressed().getY() - m.getY() ) ) );
-            System.out.println( "MouseChanging: " + mouse.getMouseChanging() );
+                    if ( isHorizontalRef == true ) {
+                        int x = m.getX();
+                        int y = m.getY();
+                        Point2d point2dScene = new Point2d( x, y );
 
-            Prediction pred = new Prediction( mouse.getMouseChanging() );
-            pred.start();
+                    } else {
 
-            mouse.setCumulatedMouseChanging( new Point2d( mouse.getCumulatedMouseChanging().getX()
-                                                          + mouse.getMouseChanging().getX(),
-                                                          mouse.getCumulatedMouseChanging().getY()
-                                                                                  + mouse.getMouseChanging().getY() ) );
-            System.out.println( "buffaußerhalb: " + predictedImage );
-            panel.setBeginDrawImageAtPosition( new Point2d( panel.getBeginDrawImageAtPosition().getX()
-                                                            - mouse.getMouseChanging().getX(),
-                                                            panel.getBeginDrawImageAtPosition().getY()
-                                                                                    - mouse.getMouseChanging().getY() ) );
-            // 
-            // if the user went into any critical region
-            if ( mouse.getCumulatedMouseChanging().getX() >= panel.getImageMargin().getX()
-                 || mouse.getCumulatedMouseChanging().getX() <= -panel.getImageMargin().getX()
-                 || mouse.getCumulatedMouseChanging().getY() >= panel.getImageMargin().getY()
-                 || mouse.getCumulatedMouseChanging().getY() <= -panel.getImageMargin().getY() ) {
+                        mouse.setMouseChanging( new Point2d( ( mouse.getPointMousePressed().getX() - m.getX() ),
+                                                             ( mouse.getPointMousePressed().getY() - m.getY() ) ) );
+                        System.out.println( "MouseChanging: " + mouse.getMouseChanging() );
 
-                Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
-                                                                 mouse.getCumulatedMouseChanging().getY() );
-                System.out.println( "updatePos: " + updateDrawImageAtPosition );
+                        Prediction pred = new Prediction( mouse.getMouseChanging() );
+                        pred.start();
 
-                // panel.setImageToDraw( model.generateImage( updateDrawImageAtPosition ) );
-                panel.setImageToDraw( model.getGeneratedImage() );
-                mouse.reset();
-                panel.reset();
+                        mouse.setCumulatedMouseChanging( new Point2d(
+                                                                      mouse.getCumulatedMouseChanging().getX()
+                                                                                              + mouse.getMouseChanging().getX(),
+                                                                      mouse.getCumulatedMouseChanging().getY()
+                                                                                              + mouse.getMouseChanging().getY() ) );
 
+                        panel.setBeginDrawImageAtPosition( new Point2d(
+                                                                        panel.getBeginDrawImageAtPosition().getX()
+                                                                                                - mouse.getMouseChanging().getX(),
+                                                                        panel.getBeginDrawImageAtPosition().getY()
+                                                                                                - mouse.getMouseChanging().getY() ) );
+                        // 
+                        // if the user went into any critical region
+                        if ( mouse.getCumulatedMouseChanging().getX() >= panel.getImageMargin().getX()
+                             || mouse.getCumulatedMouseChanging().getX() <= -panel.getImageMargin().getX()
+                             || mouse.getCumulatedMouseChanging().getY() >= panel.getImageMargin().getY()
+                             || mouse.getCumulatedMouseChanging().getY() <= -panel.getImageMargin().getY() ) {
+
+                            Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
+                                                                             mouse.getCumulatedMouseChanging().getY() );
+                            System.out.println( "updatePos: " + updateDrawImageAtPosition );
+
+                            panel.setImageToDraw( model.getGeneratedImage() );
+                            mouse.reset();
+                            panel.reset();
+
+                        }
+                        panel.repaint();
+                    }
+                }
+                if ( ( (JPanel) source ).getName().equals( "BuildingFootprintPanel" ) ) {
+                    if ( isHorizontalRef == true ) {
+                        int x = m.getX();
+                        int y = m.getY();
+                        Point2d point2dScene = new Point2d( x, y );
+                        // NearestNeighborInterpolation inter = new NearestNeighborInterpolation( rasterData );
+
+                        footPanel.addPoint( footPrint.getClosestPoint( point2dScene ) );
+                        footPanel.repaint();
+                        // TODO be aware of the insets!!
+                    } else {
+                        System.err.println( "not implemented yet." );
+                    }
+
+                }
             }
-            panel.repaint();
-
         }
     }
 
@@ -285,9 +344,7 @@ public class Controller {
             System.out.println( "Threadchange: " + changePoint );
 
             // model.generatePredictedImage( changing );
-            predictedImage = model.generateImage( changing );
-            footPanel.setImage( predictedImage );
-            footPanel.repaint();
+            model.generateImage( changing );
 
         }
 
