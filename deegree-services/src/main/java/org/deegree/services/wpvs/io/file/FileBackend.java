@@ -61,6 +61,8 @@ import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackendInfo;
 import org.deegree.services.wpvs.io.serializer.PrototypeSerializer;
 import org.deegree.services.wpvs.io.serializer.WROSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>FileBackend</code> is the access to the model in files on the local file system.
@@ -72,7 +74,7 @@ import org.deegree.services.wpvs.io.serializer.WROSerializer;
  */
 public class FileBackend extends ModelBackend<Envelope> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( FileBackend.class );
+    private final static Logger LOG = LoggerFactory.getLogger( FileBackend.class );
 
     private ModelFile<BillBoard> treeFile;
 

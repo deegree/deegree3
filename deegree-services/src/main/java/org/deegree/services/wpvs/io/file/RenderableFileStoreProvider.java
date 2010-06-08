@@ -95,7 +95,7 @@ public class RenderableFileStoreProvider implements RenderableStoreProvider {
                 String prototypeFileName = config.getPrototypeFile();
                 File prototypeFile = null;
                 if ( prototypeFileName != null ) {
-                    prototypeFile = resolveFile( entityFileName, resolver, false, null );
+                    prototypeFile = resolveFile( prototypeFileName, resolver, false, null );
                 }
                 rs = new FileBackend( entityFile, prototypeFile );
             }
