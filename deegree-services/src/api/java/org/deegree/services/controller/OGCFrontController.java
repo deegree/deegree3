@@ -155,7 +155,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "logs the server startup, incoming requests and timing info")
+@LoggingNotes(debug = "logs the server startup, incoming requests and timing info, also enables enhanced request logging in $HOME/.deegree")
 public class OGCFrontController extends HttpServlet {
 
     private static Logger LOG = LoggerFactory.getLogger( OGCFrontController.class );
