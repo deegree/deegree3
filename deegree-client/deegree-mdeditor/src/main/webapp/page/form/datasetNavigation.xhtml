@@ -12,12 +12,12 @@
 								</span>
 								<span class="dsNavBt">
 									<h:button id="dsNavLoadTemplateBt" title="#{mdLabels['loadTemplate']}"
-												outcome="/page/form/chooseTemplate.jsf" 
+												outcome="/page/form/chooseTemplate.xhtml" 
 												image="/resources/deegree/images/page_white_get.gif" />
 								</span>
 								<span class="dsNavBt">
 									<h:button id="dsNavLoadDSBt" title="#{mdLabels['loadDataset']}"
-												outcome="/page/form/chooseDataset.jsf" 
+												outcome="/page/form/chooseDataset.xhtml" 
 												image="/resources/deegree/images/page_white_edit.gif" />
 								</span>
 								<span class="dsNavBt">
@@ -34,6 +34,11 @@
 									<h:commandButton id="dsNavDeleteDSBt" title="#{mdLabels['deleteDataset']}" onclick="return confirmDelete('#{mdLabels['deleteDataset_confirmMsg']}');"
 												action="#{datasetBean.deleteDataset}" 
 												image="/resources/deegree/images/page_white_delete.gif" />
+								</span>
+								<span class="dsNavBt">
+									<h:button id="dsNavExportDSBt" title="#{mdLabels['exportDataset']}"
+												outcome="/page/form/exportDataset.xhtml" 
+												image="/resources/deegree/images/page_white_code_red.png" />
 								</span>
 				</h:form>
 </h:body>

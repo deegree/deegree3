@@ -6,7 +6,7 @@
 	<ui:composition template="/page/templates/formLayout.xhtml">
 	
 			<ui:define name="content">
-				<f:subview id="mdChooseDataset">
+				<f:subview id="mdChooseTemplate">
 						<h:outputText rendered="#{empty datasetBean.datasets}" value="#{mdLabels['loadTemplate_noTemplates']}"/>
 						<h:form id="loadDsForm" rendered="#{!empty datasetBean.datasets}" >
 							<h:inputHidden id="asTemplate" name="asTemplate" value="true"/>
