@@ -40,11 +40,12 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.event.MouseListener;
+import java.util.Vector;
 
 import javax.swing.JPanel;
-import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.tools.crs.georeferencing.model.AbstractPoint;
 
 /**
  * 
@@ -68,9 +69,13 @@ public class BuildingFootprintPanel extends JPanel {
 
     private int yValue = 0;
 
-    private Point2d point;
+    private Vector<AbstractPoint> points;
 
     private Polygon polygon;
+
+    private int pointCounter;
+
+    private boolean focus;
 
     private final Insets insets = new Insets( 10, 10, 0, 0 );
 
@@ -79,6 +84,7 @@ public class BuildingFootprintPanel extends JPanel {
      */
     public BuildingFootprintPanel() {
         this.setName( BUILDINGFOOTPRINT_PANEL_NAME );
+        this.pointCounter = 0;
     }
 
     @Override
@@ -91,8 +97,10 @@ public class BuildingFootprintPanel extends JPanel {
 
         }
 
-        if ( point != null ) {
-            g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
+        if ( points != null ) {
+            for ( AbstractPoint point : points ) {
+                g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
+            }
         }
 
     }
@@ -140,8 +148,8 @@ public class BuildingFootprintPanel extends JPanel {
 
     }
 
-    public void addPoint( Point2d point ) {
-        this.point = point;
+    public void addPoint( Vector<AbstractPoint> points ) {
+        this.points = points;
     }
 
     public void setGeometry( RasterRect rect ) {
@@ -150,6 +158,22 @@ public class BuildingFootprintPanel extends JPanel {
                                                                                                      rect.height,
                                                                                                      rect.y }, 4 );
 
+    }
+
+    public void setFocus( boolean focus ) {
+        this.focus = focus;
+    }
+
+    public boolean getFocus() {
+        return focus;
+    }
+
+    public int getPointCounter() {
+        return pointCounter;
+    }
+
+    public void setPointCounter( int pointCounter ) {
+        this.pointCounter = pointCounter;
     }
 
 }

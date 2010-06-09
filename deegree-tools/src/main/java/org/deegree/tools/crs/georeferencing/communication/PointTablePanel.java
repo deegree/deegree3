@@ -68,7 +68,7 @@ public class PointTablePanel extends JPanel {
 
     private JButton deleteAllButton = new JButton( BUTTON_DELETE_ALL );
 
-    private String[] columnNames = { "referenced coordinates", "building coordinates" };
+    private String[] columnNames = { "X-Ref", "Y-Ref", "X-Building", "Y-Building", "X-Residual", "Y-Residual" };
 
     private DefaultTableModel model = new DefaultTableModel();
 
@@ -79,8 +79,9 @@ public class PointTablePanel extends JPanel {
     private JPanel tablePanel = new JPanel();
 
     public PointTablePanel() {
-        model.addColumn( columnNames[0] );
-        model.addColumn( columnNames[1] );
+        for ( String s : columnNames ) {
+            model.addColumn( s );
+        }
         table.setName( "PointTable" );
         this.setLayout( new BorderLayout( 5, 5 ) );
         buttonPanel.setLayout( new FlowLayout() );
@@ -110,24 +111,29 @@ public class PointTablePanel extends JPanel {
 
     public void setCoords( AbstractPoint point ) {
         if ( model.getRowCount() == 0 ) {
-            Object[] emptyRow = new Object[] {};
-            model.addRow( emptyRow );
+            addRow();
         }
-        Object[] rowData = null;
+        Object[] rowData = new Object[] { point.x, point.y };
+        int rowCount = model.getRowCount();
         switch ( point.getPointType() ) {
 
-        case FootprintPoint:
-            rowData = new Object[] { point };
-
-            model.setValueAt( rowData[0], 0, 1 );
-            break;
         case GeoreferencedPoint:
-
-            rowData = new Object[] { point };
-
-            model.setValueAt( rowData[0], 0, 0 );
+            model.setValueAt( rowData[0], rowCount - 1, 0 );
+            model.setValueAt( rowData[1], rowCount - 1, 1 );
             break;
+        case FootprintPoint:
+            model.setValueAt( rowData[0], rowCount - 1, 2 );
+            model.setValueAt( rowData[1], rowCount - 1, 3 );
+            break;
+
         }
+
+    }
+
+    public void addRow() {
+
+        Object[] emptyRow = new Object[] {};
+        model.addRow( emptyRow );
 
     }
 

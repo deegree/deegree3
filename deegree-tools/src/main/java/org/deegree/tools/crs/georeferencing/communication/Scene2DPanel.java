@@ -41,9 +41,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.vecmath.Point2d;
+
+import org.deegree.tools.crs.georeferencing.model.AbstractPoint;
 
 /**
  * The JPanel that should display a BufferedImage.
@@ -70,7 +73,9 @@ public class Scene2DPanel extends JPanel {
 
     private Point2d imageMargin;
 
-    private Point2d point;
+    private Vector<AbstractPoint> points;
+
+    private boolean focus;
 
     private final double margin = 0.1;
 
@@ -100,8 +105,10 @@ public class Scene2DPanel extends JPanel {
 
         }
 
-        if ( point != null ) {
-            g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
+        if ( points != null ) {
+            for ( AbstractPoint point : points ) {
+                g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
+            }
         }
 
     }
@@ -182,8 +189,16 @@ public class Scene2DPanel extends JPanel {
         beginDrawImageAtPosition = new Point2d( -imageMargin.x, -imageMargin.y );
     }
 
-    public void addPoint( Point2d point ) {
-        this.point = point;
+    public void addPoint( Vector<AbstractPoint> points ) {
+        this.points = points;
+    }
+
+    public void setFocus( boolean focus ) {
+        this.focus = focus;
+    }
+
+    public boolean getFocus() {
+        return focus;
     }
 
 }

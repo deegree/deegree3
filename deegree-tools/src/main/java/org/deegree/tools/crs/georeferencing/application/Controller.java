@@ -44,6 +44,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -62,6 +63,7 @@ import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
 import org.deegree.tools.crs.georeferencing.communication.PointTablePanel;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
+import org.deegree.tools.crs.georeferencing.model.AbstractPoint;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.GeoReferencedPoint;
@@ -102,6 +104,24 @@ public class Controller {
 
     private boolean isHorizontalRef;
 
+    private int start;
+
+    private int pointCounterFootprint;
+
+    private Vector<AbstractPoint> tableValueGeoRef;
+
+    private Vector<AbstractPoint> tableValueFootPrint;
+
+    private FootprintPoint lastFootprintPoint;
+
+    private GeoReferencedPoint lastGeoReferencedPoint;
+
+    // /**
+    // * idicates the initialization of the component. If one click first on the footprintPanel, then there is the
+    // * initalization. Here one get the information to start a new point running.
+    // */
+    // private boolean isInitialized;
+
     private Footprint footPrint;
 
     private static final String RASTERIO_LAYER = "RASTERIO_LAYER";
@@ -141,6 +161,9 @@ public class Controller {
         navPanel = view.getNavigationPanel();
         this.footPrint = new Footprint();
         tablePanel = view.getPointTablePanel();
+        start = 0;
+        tableValueGeoRef = new Vector();
+        tableValueFootPrint = new Vector();
         // this.geomFactory = new GeometryFactory();
 
         view.addScene2DurlListener( new ButtonListener() );
@@ -243,7 +266,7 @@ public class Controller {
         public void tableChanged( TableModelEvent e ) {
             TableModel source = (TableModel) e.getSource();
             int first = e.getFirstRow(), last = e.getLastRow();
-            System.out.println( first + " " + last );
+            // System.out.println( "MyTableChanged :) " + first + " " + last + " " + e.getType() );
 
         }
 
@@ -262,19 +285,16 @@ public class Controller {
 
         @Override
         public void mouseClicked( MouseEvent arg0 ) {
-            // TODO Auto-generated method stub
 
         }
 
         @Override
         public void mouseEntered( MouseEvent arg0 ) {
-            // TODO Auto-generated method stub
 
         }
 
         @Override
         public void mouseExited( MouseEvent arg0 ) {
-            // TODO Auto-generated method stub
 
         }
 
@@ -291,10 +311,19 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
 
                     if ( isHorizontalRef == true ) {
+                        if ( start == 0 ) {
+                            start = 1;
+                            footPanel.setFocus( false );
+                            panel.setFocus( true );
+                        }
+                        if ( panel.getFocus() == true ) {
+                            setValues();
+                        }
                         int x = m.getX();
                         int y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                        panel.addPoint( geoReferencedPoint );
+                        lastGeoReferencedPoint = geoReferencedPoint;
+                        panel.addPoint( tableValueGeoRef );
                         tablePanel.setCoords( geoReferencedPoint );
                         panel.repaint();
                     } else {
@@ -338,20 +367,40 @@ public class Controller {
                 }
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     if ( isHorizontalRef == true ) {
+
+                        if ( start == 0 ) {
+                            start = 1;
+                            footPanel.setFocus( true );
+                            panel.setFocus( false );
+                        }
+                        if ( lastFootprintPoint != null && lastGeoReferencedPoint != null
+                             && footPanel.getFocus() == true ) {
+                            setValues();
+                        }
                         int x = m.getX();
                         int y = m.getY();
                         FootprintPoint footprintPoint = new FootprintPoint( x, y );
                         FootprintPoint point = (FootprintPoint) footPrint.getClosestPoint( footprintPoint );
+                        lastFootprintPoint = point;
+
                         tablePanel.setCoords( point );
-                        footPanel.addPoint( point );
+                        footPanel.addPoint( tableValueFootPrint );
                         footPanel.repaint();
-                        // TODO be aware of the insets!!
                     } else {
                         System.err.println( "not implemented yet." );
                     }
 
                 }
             }
+        }
+
+        private void setValues() {
+            tableValueFootPrint.add( lastFootprintPoint );
+            tableValueGeoRef.add( lastGeoReferencedPoint );
+            lastFootprintPoint = null;
+            lastGeoReferencedPoint = null;
+            tablePanel.addRow();
+
         }
     }
 

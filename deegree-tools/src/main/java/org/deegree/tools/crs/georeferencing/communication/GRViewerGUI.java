@@ -179,7 +179,7 @@ public class GRViewerGUI extends JFrame {
         pointTablePanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         pointTablePanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, pointTablePanel, 1, 2, 2, 1, 1.0, 1.0 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, pointTablePanel, 1, 2, 2, 1, .5, .5 );
     }
 
     /**
