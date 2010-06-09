@@ -252,4 +252,9 @@ public class StatisticsLayer extends FeatureLayer {
         return true;
     }
 
+    @Override
+    public void close() {
+        // no action needed
+    }
+
 }

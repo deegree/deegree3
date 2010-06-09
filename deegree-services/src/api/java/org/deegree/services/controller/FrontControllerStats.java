@@ -191,6 +191,9 @@ public class FrontControllerStats {
             String s = null;
             while ( ( s = in.readLine() ) != null ) {
                 String[] req = s.split( " " );
+                if ( req.length < 2 ) {
+                    continue;
+                }
                 ComparablePair<Long, String> p = new ComparablePair<Long, String>( Long.valueOf( req[0] ), req[1] );
                 if ( !requests.contains( p ) ) {
                     requests.add( p );
@@ -262,6 +265,9 @@ public class FrontControllerStats {
                 try {
                     Map<String, String> map = getNormalizedKVPMap( req.second, "UTF-8" );
                     if ( map.get( "LAYERS" ).equals( "statistics" ) ) {
+                        continue;
+                    }
+                    if ( map.get( "VERSION" ) == null || !map.get( "VERSION" ).equals( "1.1.1" ) ) {
                         continue;
                     }
                     double[] ds = splitAsDoubles( map.get( "BBOX" ), "," );
