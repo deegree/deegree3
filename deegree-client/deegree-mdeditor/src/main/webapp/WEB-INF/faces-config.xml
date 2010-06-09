@@ -53,15 +53,43 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>loadDatasetBean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.gui.LoadDatasetBean</managed-bean-class>
+        <managed-bean-name>datasetBean</managed-bean-name>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.DatasetBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>dataGroupBean</managed-bean-name>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.DataGroupBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    
+    <managed-bean>
+        <managed-bean-name>exportBean</managed-bean-name>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.ExportBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+    
     <render-kit>
         <renderer>
             <component-family>javax.faces.Panel</component-family>
             <renderer-type>org.deegree.ListGroupRenderer</renderer-type>
             <renderer-class>org.deegree.client.mdeditor.gui.components.ListGroupRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+    <render-kit>
+        <renderer>
+            <component-family>javax.faces.Input</component-family>
+            <renderer-type>org.deegree.HtmlInputManyTextRenderer</renderer-type>
+            <renderer-class>org.deegree.client.mdeditor.gui.components.HtmlInputManyTextRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+    <render-kit>
+        <renderer>
+            <component-family>javax.faces.Input</component-family>
+            <renderer-type>org.deegree.HtmlInputTextItemsRenderer</renderer-type>
+            <renderer-class>org.deegree.client.mdeditor.gui.components.HtmlInputTextItemsRenderer</renderer-class>
         </renderer>
     </render-kit>
 
@@ -70,6 +98,15 @@
         <component-class>org.deegree.client.mdeditor.gui.components.ListGroup</component-class>
     </component>
 
+    <component>
+        <component-type>org.deegree.HtmlInputManyText</component-type>
+        <component-class>org.deegree.client.mdeditor.gui.components.HtmlInputManyText</component-class>
+    </component>
+    <component>
+        <component-type>org.deegree.HtmlInputTextItems</component-type>
+        <component-class>org.deegree.client.mdeditor.gui.components.HtmlInputTextItems</component-class>
+    </component>
+    
     <!-- PhaseListener -->
     <lifecycle>
         <phase-listener>org.deegree.client.debug.DebugPhaseListener</phase-listener>
