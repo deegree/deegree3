@@ -323,7 +323,7 @@ public class Controller {
                         int y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                         lastGeoReferencedPoint = geoReferencedPoint;
-                        panel.addPoint( tableValueGeoRef );
+                        panel.addPoint( tableValueGeoRef, lastGeoReferencedPoint );
                         tablePanel.setCoords( geoReferencedPoint );
                         panel.repaint();
                     } else {
@@ -384,7 +384,7 @@ public class Controller {
                         lastFootprintPoint = point;
 
                         tablePanel.setCoords( point );
-                        footPanel.addPoint( tableValueFootPrint );
+                        footPanel.addPoint( tableValueFootPrint, lastFootprintPoint );
                         footPanel.repaint();
                     } else {
                         System.err.println( "not implemented yet." );

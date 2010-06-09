@@ -71,6 +71,8 @@ public class BuildingFootprintPanel extends JPanel {
 
     private Vector<AbstractPoint> points;
 
+    private AbstractPoint tempPoint;
+
     private Polygon polygon;
 
     private int pointCounter;
@@ -95,6 +97,10 @@ public class BuildingFootprintPanel extends JPanel {
         if ( polygon != null ) {
             g2.drawPolygon( polygon );
 
+        }
+
+        if ( tempPoint != null ) {
+            g2.fillOval( (int) tempPoint.x - 5, (int) tempPoint.y - 5, 10, 10 );
         }
 
         if ( points != null ) {
@@ -148,8 +154,9 @@ public class BuildingFootprintPanel extends JPanel {
 
     }
 
-    public void addPoint( Vector<AbstractPoint> points ) {
+    public void addPoint( Vector<AbstractPoint> points, AbstractPoint tempPoint ) {
         this.points = points;
+        this.tempPoint = tempPoint;
     }
 
     public void setGeometry( RasterRect rect ) {

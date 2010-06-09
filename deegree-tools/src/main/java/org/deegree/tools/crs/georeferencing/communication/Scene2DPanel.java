@@ -81,6 +81,8 @@ public class Scene2DPanel extends JPanel {
 
     private double resolutionOfImage;
 
+    private AbstractPoint tempPoint;
+
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
         resolutionOfImage = 1.0;
@@ -103,6 +105,10 @@ public class Scene2DPanel extends JPanel {
             g2.drawImage( imageToDraw, (int) beginDrawImageAtPosition.getX(), (int) beginDrawImageAtPosition.getY(),
                           (int) imageDimension.getX(), (int) imageDimension.getY(), this );
 
+        }
+
+        if ( tempPoint != null ) {
+            g2.fillOval( (int) tempPoint.x - 5, (int) tempPoint.y - 5, 10, 10 );
         }
 
         if ( points != null ) {
@@ -189,8 +195,9 @@ public class Scene2DPanel extends JPanel {
         beginDrawImageAtPosition = new Point2d( -imageMargin.x, -imageMargin.y );
     }
 
-    public void addPoint( Vector<AbstractPoint> points ) {
+    public void addPoint( Vector<AbstractPoint> points, AbstractPoint tempPoint ) {
         this.points = points;
+        this.tempPoint = tempPoint;
     }
 
     public void setFocus( boolean focus ) {
