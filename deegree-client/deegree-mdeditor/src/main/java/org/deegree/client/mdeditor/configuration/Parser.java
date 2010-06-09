@@ -35,12 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.configuration;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -51,6 +58,8 @@ import javax.xml.stream.XMLStreamReader;
  * @version $Revision: $, $Date: $
  */
 public abstract class Parser {
+
+    private static final Logger LOG = getLogger( Parser.class );
 
     protected static final String NS = "http://www.deegree.org/igeoportal";
 
@@ -71,7 +80,7 @@ public abstract class Parser {
         return id;
     }
 
-    protected String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
+    protected static String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
                             throws XMLStreamException {
         String s = defaultValue;
         if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
@@ -80,4 +89,26 @@ public abstract class Parser {
         }
         return s;
     }
+
+    public static URL resolve( String url, XMLStreamReader in )
+                            throws MalformedURLException {
+        String systemId = in.getLocation().getSystemId();
+        if ( systemId == null ) {
+            LOG.warn( "SystemID was null, cannot resolve '{}', trying to use it as absolute URL.", url );
+            return new URL( url );
+        }
+
+        LOG.debug( "Resolving URL '" + url + "' against SystemID '" + systemId + "'." );
+
+        // check if url is an absolute path
+        File file = new File( url );
+        if ( file.isAbsolute() ) {
+            return file.toURI().toURL();
+        }
+
+        URL resolvedURL = new URL( new URL( systemId ), url );
+        LOG.debug( "-> resolvedURL: '" + resolvedURL + "'" );
+        return resolvedURL;
+    }
+
 }
