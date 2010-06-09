@@ -9,7 +9,22 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="layoutType" />
+                <xs:element ref="Mapping" />
                 <xs:element ref="FormGroup" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Mapping">
+        <xs:annotation>
+            <xs:documentation>a list of all configured mappings</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                 <xs:element name="mappingURL" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>the url of the defined schema mapping</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
