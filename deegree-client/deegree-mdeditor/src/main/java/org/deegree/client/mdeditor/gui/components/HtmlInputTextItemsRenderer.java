@@ -52,6 +52,8 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
+import org.deegree.client.mdeditor.gui.GuiUtils;
+
 /**
  * TODO add class documentation here
  * 
@@ -171,7 +173,13 @@ public class HtmlInputTextItemsRenderer extends Renderer {
 
         writer.startElement( "td", component );
         writer.startElement( "a", component );
-        addItemChangedBehaviour( context, writer, component, isLast ? -1 : index );
+
+        int max = ( (HtmlInputManyText) component.getParent() ).getMaxOccurence();
+        if ( max > 1 && index == max - 1 ) {
+            writeMaxOccurenceReached( context, writer, max );
+        } else {
+            writeItemChangedBehaviour( context, writer, component, isLast ? -1 : index );
+        }
 
         writer.startElement( "div", component );
         writer.writeAttribute( "class", isLast ? "add" : "delete", null );
@@ -201,12 +209,19 @@ public class HtmlInputTextItemsRenderer extends Renderer {
         }
     }
 
-    private void addItemChangedBehaviour( FacesContext context, ResponseWriter writer, HtmlInputTextItems component,
-                                          int index )
+    private void writeItemChangedBehaviour( FacesContext context, ResponseWriter writer, HtmlInputTextItems component,
+                                            int index )
                             throws IOException {
         String options = "{'javax.faces.behavior.event':'" + TREE_CHANGED_EVENT + "', " + "'execute':'@this', "
                          + "'render':'" + component.getParent().getClientId() + "', " + "'itemIndex':'" + index + "'}";
         String request = "jsf.ajax.request('" + component.getClientId() + "', event, " + options + ")";
         writer.writeAttribute( "onclick", request, null );
+    }
+
+    private void writeMaxOccurenceReached( FacesContext context, ResponseWriter writer, int maxOccurence )
+                            throws IOException {
+        String jsf = "window.alert('"
+                     + GuiUtils.getResourceText( context, "mdLabels", "maxOccurenceReached", maxOccurence ) + "');";
+        writer.writeAttribute( "onclick", jsf, null );
     }
 }

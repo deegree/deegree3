@@ -386,6 +386,7 @@ public class FormCreatorBean implements Serializable {
                 input = new HtmlInputTextarea();
             } else if ( inputFF.getOccurence() != 1 ) {
                 input = new HtmlInputManyText();
+                ( (HtmlInputManyText) input ).setMaxOccurence( inputFF.getOccurence() );
             } else {
                 input = new HtmlInputText();
             }

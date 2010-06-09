@@ -52,8 +52,28 @@ import javax.faces.component.behavior.ClientBehaviorHolder;
 @ResourceDependency(name = "unboundedInputText.css", library = "deegree/components")
 public class HtmlInputManyText extends UIInput implements ClientBehaviorHolder {
 
+    private int maxOccurence = Integer.MIN_VALUE;
+
     public HtmlInputManyText() {
         setRendererType( "org.deegree.HtmlInputManyTextRenderer" );
+    }
+
+    /**
+     * set max ocurence to > 1 to limit the number of input fields. a value < 1 means an unlimited number of input
+     * fields.
+     * 
+     * @param maxOccurence
+     *            the maximum number of fields
+     */
+    public void setMaxOccurence( int maxOccurence ) {
+        this.maxOccurence = maxOccurence;
+    }
+
+    /**
+     * @return the max occurence (Integer.MIN_VALUE, when no limitation exists or cannot read as int)
+     */
+    public int getMaxOccurence() {
+        return maxOccurence;
     }
 
 }
