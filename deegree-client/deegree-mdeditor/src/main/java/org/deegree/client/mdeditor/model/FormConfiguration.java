@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,10 +57,14 @@ public class FormConfiguration {
 
     private FormFieldPath pathToIdentifier;
 
-    public FormConfiguration( List<FormGroup> formGroups, LAYOUT_TYPE layoutType, FormFieldPath pathToIdentifier ) {
+    private final List<URL> mappingURLs;
+
+    public FormConfiguration( List<FormGroup> formGroups, LAYOUT_TYPE layoutType, FormFieldPath pathToIdentifier,
+                              List<URL> mappingURLs ) {
         this.formGroups = formGroups;
         this.layoutType = layoutType;
         this.pathToIdentifier = pathToIdentifier;
+        this.mappingURLs = mappingURLs;
     }
 
     /**
@@ -152,5 +157,9 @@ public class FormConfiguration {
             }
         }
         return ids;
+    }
+
+    public List<URL> getMappingURLs() {
+        return mappingURLs;
     }
 }

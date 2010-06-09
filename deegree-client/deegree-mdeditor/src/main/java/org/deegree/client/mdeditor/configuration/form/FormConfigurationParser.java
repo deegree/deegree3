@@ -43,6 +43,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -84,6 +86,8 @@ public class FormConfigurationParser extends Parser {
 
     private static QName FORM_CONF_ELEMENT = new QName( NS, "FormConfiguration" );
 
+    private static QName MAPPING_ELEMENT = new QName( NS, "Mapping" );
+
     private static QName FORM_GROUP_ELEMENT = new QName( NS, "FormGroup" );
 
     private static QName INPUT_FORM_ELEMENT = new QName( NS, "InputFormElement" );
@@ -106,9 +110,9 @@ public class FormConfigurationParser extends Parser {
                             throws ConfigurationException {
         try {
             XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
+                                                                                             formConfiguration,
                                                                                              new FileReader(
                                                                                                              formConfiguration ) );
-
             if ( xmlStream.getEventType() == START_DOCUMENT ) {
                 xmlStream.nextTag();
             }
@@ -119,10 +123,15 @@ public class FormConfigurationParser extends Parser {
             }
             xmlStream.require( START_ELEMENT, NS, "layoutType" );
             layoutType = getLayoutType( xmlStream );
+            LOG.debug( "Found layout type: " + layoutType );
             xmlStream.nextTag();
 
+            List<URL> mappings = new ArrayList<URL>();
             while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( FORM_CONF_ELEMENT ) ) ) {
                 QName elementName = xmlStream.getName();
+                if ( MAPPING_ELEMENT.equals( elementName ) ) {
+                    parseMappings( xmlStream, mappings );
+                }
                 if ( FORM_GROUP_ELEMENT.equals( elementName ) ) {
                     formGroups.add( parseFormGroup( xmlStream ) );
                 }
@@ -132,7 +141,7 @@ public class FormConfigurationParser extends Parser {
             xmlStream.require( END_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
 
             updateFormGroups();
-            return new FormConfiguration( formGroups, layoutType, pathToIdentifier );
+            return new FormConfiguration( formGroups, layoutType, pathToIdentifier, mappings );
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -147,6 +156,28 @@ public class FormConfigurationParser extends Parser {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void parseMappings( XMLStreamReader xmlStream, List<URL> mappings )
+                            throws XMLStreamException {
+        LOG.debug( "Parse Mapping" );
+        while ( !( xmlStream.isEndElement() && MAPPING_ELEMENT.equals( xmlStream.getName() ) ) ) {
+            System.out.println( xmlStream.getLocalName() );
+            if ( "mappingURL".equals( xmlStream.getLocalName() ) ) {
+                String url = getElementText( xmlStream, "mappingURL", null );
+                if ( url != null ) {
+                    LOG.debug( "Found mappingURL: " + url );
+                    try {
+                        mappings.add( resolve( url, xmlStream ) );
+                    } catch ( MalformedURLException e ) {
+                        LOG.debug( "Could not resolve as URL: " + url, e );
+                        LOG.error( "Could not resolve as URL: " + url, e.getMessage() );
+                    }
+                }
+            } else {
+                xmlStream.nextTag();
+            }
+        }
     }
 
     private FormGroup parseFormGroup( XMLStreamReader xmlStream )
