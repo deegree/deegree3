@@ -35,7 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.wms;
 
+import static java.lang.Math.max;
+import static java.lang.System.currentTimeMillis;
 import static org.deegree.client.util.FacesUtil.getServerURL;
+import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
+import static org.deegree.commons.utils.time.DateUtils.parseISO8601Date;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -43,16 +47,21 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.LinkedList;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.event.ValueChangeEvent;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import org.slf4j.Logger;
 
@@ -91,6 +100,29 @@ public class OpenLayers implements Serializable {
 
     @Getter
     private double maxy;
+
+    @Getter
+    private boolean statisticsAvailable;
+
+    @Getter
+    @Setter
+    private Date from;
+
+    @Getter
+    @Setter
+    private Date until;
+
+    private String fromString;
+
+    private String untilString;
+
+    private Date extent;
+
+    private Layer statistics;
+
+    @Getter
+    @Setter
+    private HtmlPanelGroup mapPanel;
 
     /**
      * 
@@ -155,6 +187,26 @@ public class OpenLayers implements Serializable {
                     if ( l.name != null ) {
                         l.jsName = l.name.replace( ":", "" );
                         layers.add( l );
+                        if ( l.name.equals( "statistics" ) ) {
+                            statisticsAvailable = true;
+                            while ( !( reader.isStartElement() && reader.getLocalName().equals( "Extent" ) && reader.getAttributeValue(
+                                                                                                                                        null,
+                                                                                                                                        "name" ).equals(
+                                                                                                                                                         "time" ) ) ) {
+                                reader.next();
+                            }
+                            String def = reader.getAttributeValue( null, "default" );
+                            String ext = reader.getElementText();
+                            try {
+                                extent = parseISO8601Date( ext.split( "/" )[0] );
+                                from = parseISO8601Date( def.split( "/" )[0] );
+                                until = new Date( currentTimeMillis() );
+                                statistics = l;
+                            } catch ( ParseException e ) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
             }
@@ -199,6 +251,27 @@ public class OpenLayers implements Serializable {
     }
 
     /**
+     * @param evt
+     */
+    public void timeChanged( ValueChangeEvent evt ) {
+//        from = new Date( max( from.getTime(), extent.getTime() ) );
+        fromString = formatISO8601Date( from );
+        untilString = formatISO8601Date( until );
+        System.out.println( fromString + "''''''''''''''''''''''''''''''''''''''''''''''" );
+        // statistics.extraParams = ", time: '" + formatISO8601Date( from ) + "/" + formatISO8601Date( until ) + "'";
+        // Map map = ( (Map) mapPanel.getChildren().get( 0 ) );
+        // map.setValid(false);
+    }
+
+    public String getFromString() {
+        return fromString = formatISO8601Date( from );
+    }
+
+    public String getUntilString() {
+        return untilString = formatISO8601Date( until );
+    }
+
+    /**
      * <code>Layer</code>
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -217,6 +290,9 @@ public class OpenLayers implements Serializable {
 
         @Getter
         String jsName;
+
+        @Getter
+        String extraParams = "";
     }
 
 }

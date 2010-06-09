@@ -21,24 +21,45 @@
     <p>This OpenLayers map is configured with your WMS layers.</p>
 
     <f:view>
-        <m:map width="70%" height="90%" id="map" jsVariable="map" binding="#{layerDatabase.openlayersMap}"
-            options="{projection: '#{openLayers.coordinateSystem}', allOverlays: true, maxResolution: 'auto', minResolution: 'auto', minExtent: new OpenLayers.Bounds(-0.00000001, -0.0000001, 0.0000001, 0.00000001), maxExtent: new OpenLayers.Bounds(#{openLayers.minx}, #{openLayers.miny}, #{openLayers.maxx}, #{openLayers.maxy})}">
+        <h:form id="mapForm">
+            <h:panelGroup id="mapPanel" binding="#{openLayers.mapPanel}">
+                <m:map width="70%" height="90%" id="map" jsVariable="map" binding="#{layerDatabase.openlayersMap}"
+                    options="{projection: '#{openLayers.coordinateSystem}', allOverlays: true, maxResolution: 'auto', minResolution: 'auto', minExtent: new OpenLayers.Bounds(-0.00000001, -0.0000001, 0.0000001, 0.00000001), maxExtent: new OpenLayers.Bounds(#{openLayers.minx}, #{openLayers.miny}, #{openLayers.maxx}, #{openLayers.maxy})}">
 
-            <m:layerSwitcherControl />
+                    <m:layerSwitcherControl />
 
-            <ui:repeat value="#{openLayers.layers}" var="layer">
-                <m:wmsLayer name="#{layer.title}" url="#{openLayers.url}"
-                    params="{layers: '#{layer.name}', transparent: true, format: 'image/png'}"
-                    jsVariable="#{layer.jsName}" />
-            </ui:repeat>
+                    <ui:repeat value="#{openLayers.layers}" var="layer">
+                        <m:wmsLayer name="#{layer.title}" url="#{openLayers.url}"
+                            params="{layers: '#{layer.name}', transparent: true, format: 'image/png' #{layer.extraParams}}"
+                            jsVariable="#{layer.jsName}" />
+                    </ui:repeat>
 
-            <m:script>
-                <ui:repeat value="#{openLayers.layers}" var="layer">
-                    <h:outputText value="#{layer.jsName}.setVisibility(false);" />
-                </ui:repeat>
-            </m:script>
+                    <m:script>
+                        <ui:repeat value="#{openLayers.layers}" var="layer">
+                            <h:outputText value="#{layer.jsName}.setVisibility(false);" />
+                            <h:outputText value="#{layer.jsName}.id = '#{layer.name}';" />
+                        </ui:repeat>
+                    </m:script>
 
-        </m:map>
+                </m:map>
+            </h:panelGroup>
+
+        </h:form>
+
+        <h:outputScript>
+            function dumpln(s){
+                dump(s)
+                dump('\n')
+            }
+            function reloadStatistics(){
+                var value = document.getElementById('management:from').value + "/" + document.getElementById('management:until').value + '/'
+                var stats = map.getLayer('statistics')
+                dumpln(stats.mergeNewParams({time: value}))
+                dumpln(stats.getFullRequestString())
+                dumpln(stats.redraw())
+            }
+        </h:outputScript>
+
 
         <h:panelGroup styleClass="management">
             <h:form id="management">
@@ -95,6 +116,32 @@
                             </h:panelGrid>
                         </h:panelGroup>
                     </h:panelGroup>
+                </h:panelGrid>
+
+                <h:panelGrid render="#{openLayers.statisticsAvailable}">
+                    <h:panelGrid>
+                        <h:column>
+                            Select the time span of requests to be shown for the statistics layer:
+                        </h:column>
+                        <h:column>
+                            <h:inputText id="from" value="#{openLayers.from}"
+                                valueChangeListener="#{openLayers.timeChanged}">
+                                <f:convertDateTime pattern="yyyyMMdd'T'HHmmss'Z'" />
+                                <f:ajax onevent="reloadStatistics">
+                                </f:ajax>
+                            </h:inputText>
+                        </h:column>
+                        <h:column>
+                            until
+                        </h:column>
+                        <h:column>
+                            <h:inputText id="until" value="#{openLayers.until}"
+                                valueChangeListener="${openLayers.timeChanged}">
+                                <f:convertDateTime pattern="yyyyMMdd'T'HHmmss'Z'" />
+                                <f:ajax onevent="reloadStatistics" />
+                            </h:inputText>
+                        </h:column>
+                    </h:panelGrid>
                 </h:panelGrid>
 
             </h:form>
