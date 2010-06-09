@@ -45,9 +45,13 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.geom.RasterRect;
@@ -56,8 +60,11 @@ import org.deegree.geometry.Envelope;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
+import org.deegree.tools.crs.georeferencing.communication.PointTablePanel;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
+import org.deegree.tools.crs.georeferencing.model.FootprintPoint;
+import org.deegree.tools.crs.georeferencing.model.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 
@@ -80,6 +87,8 @@ public class Controller {
     private BuildingFootprintPanel footPanel;
 
     private NavigationBarPanel navPanel;
+
+    private PointTablePanel tablePanel;
 
     private MouseModel mouse;
 
@@ -131,12 +140,15 @@ public class Controller {
         footPanel = view.getFootprintPanel();
         navPanel = view.getNavigationPanel();
         this.footPrint = new Footprint();
+        tablePanel = view.getPointTablePanel();
         // this.geomFactory = new GeometryFactory();
 
         view.addScene2DurlListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
         navPanel.addHorizontalRefListener( new ButtonListener() );
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
+        tablePanel.addHorizontalRefListener( new ButtonListener() );
+        tablePanel.addTableModelListener( new TableListener() );
 
         isHorizontalRef = false;
 
@@ -162,7 +174,7 @@ public class Controller {
         public void actionPerformed( ActionEvent e ) {
             Object source = e.getSource();
             if ( source instanceof JCheckBox ) {
-                if ( ( (JCheckBox) source ).getText().startsWith( "Horizontal Referencing" ) ) {
+                if ( ( (JCheckBox) source ).getText().startsWith( NavigationBarPanel.HORIZONTAL_REFERENCING ) ) {
 
                     if ( isHorizontalRef == false ) {
                         isHorizontalRef = true;
@@ -174,8 +186,17 @@ public class Controller {
                 }
 
             }
+            if ( source instanceof JButton ) {
+                if ( ( (JButton) source ).getText().startsWith( PointTablePanel.BUTTON_DELETE_SELECTED ) ) {
+                    System.out.println( "you clicked on delete selected" );
+
+                }
+                if ( ( (JButton) source ).getText().startsWith( PointTablePanel.BUTTON_DELETE_ALL ) ) {
+                    System.out.println( "you clicked on delete all" );
+                }
+            }
             if ( source instanceof JMenuItem ) {
-                if ( ( (JMenuItem) source ).getText().startsWith( "Import 2D Map" ) ) {
+                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GETMAP ) ) {
                     mouse = new MouseModel();
                     model.reset();
                     options = new RasterIOOptions();
@@ -214,6 +235,18 @@ public class Controller {
             }
 
         }
+    }
+
+    class TableListener implements TableModelListener {
+
+        @Override
+        public void tableChanged( TableModelEvent e ) {
+            TableModel source = (TableModel) e.getSource();
+            int first = e.getFirstRow(), last = e.getLastRow();
+            System.out.println( first + " " + last );
+
+        }
+
     }
 
     /**
@@ -255,13 +288,15 @@ public class Controller {
         public void mouseReleased( MouseEvent m ) {
             Object source = m.getSource();
             if ( source instanceof JPanel ) {
-                if ( ( (JPanel) source ).getName().equals( "Scene2DPanel" ) ) {
+                if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
 
                     if ( isHorizontalRef == true ) {
                         int x = m.getX();
                         int y = m.getY();
-                        Point2d point2dScene = new Point2d( x, y );
-
+                        GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
+                        panel.addPoint( geoReferencedPoint );
+                        tablePanel.setCoords( geoReferencedPoint );
+                        panel.repaint();
                     } else {
 
                         mouse.setMouseChanging( new Point2d( ( mouse.getPointMousePressed().getX() - m.getX() ),
@@ -301,14 +336,14 @@ public class Controller {
                         panel.repaint();
                     }
                 }
-                if ( ( (JPanel) source ).getName().equals( "BuildingFootprintPanel" ) ) {
+                if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     if ( isHorizontalRef == true ) {
                         int x = m.getX();
                         int y = m.getY();
-                        Point2d point2dScene = new Point2d( x, y );
-                        // NearestNeighborInterpolation inter = new NearestNeighborInterpolation( rasterData );
-
-                        footPanel.addPoint( footPrint.getClosestPoint( point2dScene ) );
+                        FootprintPoint footprintPoint = new FootprintPoint( x, y );
+                        FootprintPoint point = (FootprintPoint) footPrint.getClosestPoint( footprintPoint );
+                        tablePanel.setCoords( point );
+                        footPanel.addPoint( point );
                         footPanel.repaint();
                         // TODO be aware of the insets!!
                     } else {

@@ -33,41 +33,58 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication;
+package org.deegree.tools.crs.georeferencing.model;
 
-import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
-
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
+import javax.vecmath.Point2d;
 
 /**
- * 
- * The NavigationBar above all the components.
+ * Abstract class for special points in the georeferencing tool.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class NavigationBarPanel extends JPanel {
+public abstract class AbstractPoint extends Point2d {
 
-    public final static String HORIZONTAL_REFERENCING = "Horizontal Referencing";
-
-    public final static String NAVIGATIONBAR_PANEL_NAME = "NavigationBarPanel";
-
-    JCheckBox checkBox1 = new JCheckBox( HORIZONTAL_REFERENCING );
-
-    public NavigationBarPanel() {
-        this.setName( NAVIGATIONBAR_PANEL_NAME );
-        this.setLayout( new FlowLayout( 10 ) );
-        this.add( checkBox1 );
-        this.repaint();
+    /**
+     * Creates a new instance of <Code>AbstractPoint</Code>.
+     * 
+     * @param x
+     *            the X-axis value of the point
+     * @param y
+     *            the Y-axis value of the point
+     */
+    public AbstractPoint( double x, double y ) {
+        super( x, y );
     }
 
-    public void addHorizontalRefListener( ActionListener c ) {
-        checkBox1.addActionListener( c );
+    /**
+     * 
+     * Enumeration for the specified types that are used in this component.
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public enum PointType {
 
+        /**
+         * points that are identified as footprint
+         */
+        FootprintPoint,
+
+        /**
+         * points that are identified as georeference
+         */
+        GeoreferencedPoint
     }
+
+    /**
+     * 
+     * @return the type of the point
+     */
+    public abstract PointType getPointType();
 
 }

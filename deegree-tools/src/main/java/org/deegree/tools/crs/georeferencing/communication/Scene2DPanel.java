@@ -60,6 +60,8 @@ public class Scene2DPanel extends JPanel {
      */
     private static final long serialVersionUID = 1L;
 
+    public final static String SCENE2D_PANEL_NAME = "Scene2DPanel";
+
     private BufferedImage imageToDraw;
 
     private Point2d beginDrawImageAtPosition;
@@ -68,12 +70,14 @@ public class Scene2DPanel extends JPanel {
 
     private Point2d imageMargin;
 
+    private Point2d point;
+
     private final double margin = 0.1;
 
     private double resolutionOfImage;
 
     public Scene2DPanel() {
-        this.setName( "Scene2DPanel" );
+        this.setName( SCENE2D_PANEL_NAME );
         resolutionOfImage = 1.0;
 
     }
@@ -93,9 +97,11 @@ public class Scene2DPanel extends JPanel {
 
             g2.drawImage( imageToDraw, (int) beginDrawImageAtPosition.getX(), (int) beginDrawImageAtPosition.getY(),
                           (int) imageDimension.getX(), (int) imageDimension.getY(), this );
-            System.out.println( imageToDraw );
-            System.out.println( "Begin: " + beginDrawImageAtPosition + " " + imageMargin + " " + imageDimension );
 
+        }
+
+        if ( point != null ) {
+            g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
         }
 
     }
@@ -174,6 +180,10 @@ public class Scene2DPanel extends JPanel {
      */
     public void reset() {
         beginDrawImageAtPosition = new Point2d( -imageMargin.x, -imageMargin.y );
+    }
+
+    public void addPoint( Point2d point ) {
+        this.point = point;
     }
 
 }

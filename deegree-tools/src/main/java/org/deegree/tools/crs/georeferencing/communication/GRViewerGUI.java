@@ -67,13 +67,17 @@ public class GRViewerGUI extends JFrame {
 
     private final static String WINDOW_TITLE = " deegree3 Georeferencing Client ";
 
+    public final static String MENUITEM_GETMAP = "Import 2D Map";
+
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
-    private final static Dimension FRAME_DIMENSION = new Dimension( 600, 600 );;
+    private final static Dimension FRAME_DIMENSION = new Dimension( 900, 600 );
 
     private Scene2DPanel scenePanel2D;
 
     private NavigationBarPanel navigationPanel;
+
+    private PointTablePanel pointTablePanel;
 
     private BuildingFootprintPanel footprintPanel;
 
@@ -91,15 +95,16 @@ public class GRViewerGUI extends JFrame {
         gbl.setConstraints( this, gbc );
 
         setLayout( gbl );
-        setMinimumSize( new Dimension( 600, 600 ) );
+        setMinimumSize( FRAME_DIMENSION );
 
-        setPreferredSize( new Dimension( 600, 600 ) );
+        setPreferredSize( FRAME_DIMENSION );
 
         setupMenubar();
         setup2DScene( gbl );
         setupPanelFootprint( gbl );
         setupOpenGL( gbl, true );
-        setuptNavigationBar( gbl );
+        setupNavigationBar( gbl );
+        setupPointTable( gbl );
         this.pack();
     }
 
@@ -111,7 +116,7 @@ public class GRViewerGUI extends JFrame {
         menuBar = new JMenuBar();
         menuFile = new JMenu( "File" );
         menuBar.add( menuFile );
-        import2DMapMenuItem = new JMenuItem( "Import 2D Map" );
+        import2DMapMenuItem = new JMenuItem( MENUITEM_GETMAP );
 
         // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
         ows7url = "http://localhost:8080/deegree-wms-cite111/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
@@ -120,12 +125,12 @@ public class GRViewerGUI extends JFrame {
         this.getRootPane().setJMenuBar( menuBar );
     }
 
-    private void setuptNavigationBar( GridBagLayout gbl ) {
+    private void setupNavigationBar( GridBagLayout gbl ) {
         navigationPanel = new NavigationBarPanel();
         navigationPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         navigationPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, navigationPanel, 0, 0, 2, 1, .15, .15 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, navigationPanel, 0, 0, 3, 1, .15, .15 );
     }
 
     private void setup2DScene( GridBagLayout gbl ) {
@@ -164,8 +169,17 @@ public class GRViewerGUI extends JFrame {
         canvas.addMouseMotionListener( openGLEventListener.getTrackBall() );
         canvas.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 1, 2, 1, 1, new Insets( 10, 10, 0, 0 ),
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 2, 1, 1, 1, new Insets( 10, 10, 0, 0 ),
                                           GridBagConstraints.LINE_END, 1, 1 );
+    }
+
+    private void setupPointTable( GridBagLayout gbl ) {
+        pointTablePanel = new PointTablePanel();
+
+        pointTablePanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+        pointTablePanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
+
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, pointTablePanel, 1, 2, 2, 1, 1.0, 1.0 );
     }
 
     /**
@@ -214,6 +228,10 @@ public class GRViewerGUI extends JFrame {
 
     public NavigationBarPanel getNavigationPanel() {
         return navigationPanel;
+    }
+
+    public PointTablePanel getPointTablePanel() {
+        return pointTablePanel;
     }
 
 }

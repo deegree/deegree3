@@ -33,41 +33,39 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication;
-
-import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
-
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
+package org.deegree.tools.crs.georeferencing.model;
 
 /**
  * 
- * The NavigationBar above all the components.
+ * The Point that identifies the point of the georeferenced map.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class NavigationBarPanel extends JPanel {
+public class GeoReferencedPoint extends AbstractPoint {
 
-    public final static String HORIZONTAL_REFERENCING = "Horizontal Referencing";
+    private double x;
 
-    public final static String NAVIGATIONBAR_PANEL_NAME = "NavigationBarPanel";
+    private double y;
 
-    JCheckBox checkBox1 = new JCheckBox( HORIZONTAL_REFERENCING );
-
-    public NavigationBarPanel() {
-        this.setName( NAVIGATIONBAR_PANEL_NAME );
-        this.setLayout( new FlowLayout( 10 ) );
-        this.add( checkBox1 );
-        this.repaint();
+    public GeoReferencedPoint( double x, double y ) {
+        super( x, y );
+        this.x = x;
+        this.y = y;
     }
 
-    public void addHorizontalRefListener( ActionListener c ) {
-        checkBox1.addActionListener( c );
+    @Override
+    public String toString() {
+        return x + "," + y;
 
+    }
+
+    @Override
+    public PointType getPointType() {
+
+        return PointType.GeoreferencedPoint;
     }
 
 }

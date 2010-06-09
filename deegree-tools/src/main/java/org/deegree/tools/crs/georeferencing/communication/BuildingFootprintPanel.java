@@ -62,6 +62,8 @@ public class BuildingFootprintPanel extends JPanel {
      */
     private static final long serialVersionUID = 1L;
 
+    public final static String BUILDINGFOOTPRINT_PANEL_NAME = "BuildingFootprintPanel";
+
     private int xValue = 0;
 
     private int yValue = 0;
@@ -76,7 +78,7 @@ public class BuildingFootprintPanel extends JPanel {
      * 
      */
     public BuildingFootprintPanel() {
-        this.setName( "BuildingFootprintPanel" );
+        this.setName( BUILDINGFOOTPRINT_PANEL_NAME );
     }
 
     @Override
