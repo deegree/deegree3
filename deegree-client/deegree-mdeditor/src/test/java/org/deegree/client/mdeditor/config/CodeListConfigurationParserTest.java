@@ -58,7 +58,7 @@ public class CodeListConfigurationParserTest extends TestCase {
     @Test
     public void testParseCodeLists()
                             throws ConfigurationException {
-        Configuration.setCodeListURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/codeListTestConfiguration.xml" );
+        Configuration.setCodeListURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping/guiSchemaMapping.xsd" );
         List<CodeList> codeLists = CodeListConfigurationFactory.getCodeLists();
 
         assertNotNull( codeLists );

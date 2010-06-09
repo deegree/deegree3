@@ -54,6 +54,8 @@ public class Configuration {
 
     private static String filesDirURL = "/home/lyn/workspace/deegree-mdeditor/tmp/";
 
+    private static String downloadDirURL = "/home/lyn/workspace/deegree-mdeditor/src/main/webapp/download/";
+
     public static void setFormConfURL( String formConfURL ) {
         Configuration.formConfURL = formConfURL;
     }
@@ -71,6 +73,13 @@ public class Configuration {
             return filesDirURL + File.separator;
         }
         return filesDirURL;
+    }
+
+    public static String getDownloadDirURL() {
+        if ( !downloadDirURL.endsWith( File.separator ) ) {
+            return downloadDirURL + File.separator;
+        }
+        return downloadDirURL;
     }
 
     public static String getCodeListURL() {

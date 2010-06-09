@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.config;
 
+import java.net.URL;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -142,6 +143,19 @@ public class FormConfigurationParserTest extends TestCase {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    
+
+    @Test
+    public void testParseMapping()
+                            throws ConfigurationException {
+        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
+        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        List<URL> mappings = configuration.getMappingURLs();
+        
+        assertNotNull( mappings );
+        assertEquals( 1, mappings.size() );
+        assertEquals( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/isoMapping.xml", mappings.get( 0 ).getFile() );
     }
 
 }
