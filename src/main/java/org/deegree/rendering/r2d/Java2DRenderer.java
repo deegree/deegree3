@@ -69,6 +69,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -586,6 +587,23 @@ public class Java2DRenderer implements Renderer {
         }
         if ( styling instanceof PolygonStyling ) {
             render( (PolygonStyling) styling, geom );
+        }
+    }
+
+    public void render( Styling styling, Collection<Geometry> geoms ) {
+        for ( Geometry geom : geoms ) {
+            if ( geom instanceof GeometryReference<?> ) {
+                render( styling, ( (GeometryReference<?>) geom ).getReferencedObject() );
+            }
+            if ( styling instanceof PointStyling ) {
+                render( (PointStyling) styling, geom );
+            }
+            if ( styling instanceof LineStyling ) {
+                render( (LineStyling) styling, geom );
+            }
+            if ( styling instanceof PolygonStyling ) {
+                render( (PolygonStyling) styling, geom );
+            }
         }
     }
 

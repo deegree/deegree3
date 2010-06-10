@@ -41,6 +41,7 @@ import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.LinkedList;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
@@ -169,7 +170,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
             LOG.trace( "Rendering image outline..." );
             Geometry geom = Raster2Feature.createPolygonGeometry( raster );
             Java2DRenderer vectorRenderer = new Java2DRenderer( graphics );
-            Pair<Styling, Geometry> pair = (Pair) styling.imageOutline.evaluate( null );
+            Pair<Styling, LinkedList<Geometry>> pair = (Pair) styling.imageOutline.evaluate( null );
             Styling ls = pair.first;
             vectorRenderer.render( ls, geom );
             LOG.trace( "Done rendering image outline." );
