@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.cs.CRS;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
@@ -137,6 +138,19 @@ public abstract class SpatialOperator implements Operator {
                 geom = (Geometry) value;
             } else if ( value instanceof Property && ( (Property) value ).getValue() instanceof Geometry ) {
                 geom = (Geometry) ( (Property) value ).getValue();
+            } else if ( value instanceof GenericXMLElement ) {
+                GenericXMLElement xml = (GenericXMLElement) value;
+                if ( xml.getChildren().isEmpty() ) {
+                    String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
+                    throw new FilterEvaluationException( msg );
+                }
+                TypedObjectNode maybeGeom = xml.getChildren().get( 0 );
+                if ( maybeGeom instanceof Geometry ) {
+                    return (Geometry) maybeGeom;
+                } else {
+                    String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
+                    throw new FilterEvaluationException( msg );
+                }
             } else {
                 String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
                 throw new FilterEvaluationException( msg );
