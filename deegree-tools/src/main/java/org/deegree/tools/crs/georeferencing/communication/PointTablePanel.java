@@ -43,6 +43,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -78,6 +79,8 @@ public class PointTablePanel extends JPanel {
 
     private JPanel tablePanel = new JPanel();
 
+    private JScrollPane tableScrollPane = new JScrollPane();
+
     public PointTablePanel() {
         for ( String s : columnNames ) {
             model.addColumn( s );
@@ -90,11 +93,11 @@ public class PointTablePanel extends JPanel {
         buttonPanel.add( deleteAllButton, BorderLayout.LINE_END );
         this.add( buttonPanel, BorderLayout.NORTH );
 
-        // table.setPreferredSize( new Dimension( this.getWidth(), this.getHeight() ) );
         tablePanel.setLayout( new BorderLayout() );
         tablePanel.add( table.getTableHeader(), BorderLayout.NORTH );
         tablePanel.add( table, BorderLayout.CENTER );
-        this.add( tablePanel, BorderLayout.CENTER );
+        this.add( tableScrollPane );
+        tableScrollPane.setViewportView( tablePanel );
 
     }
 
