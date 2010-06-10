@@ -44,26 +44,19 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
 import javax.vecmath.Point2d;
 
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.geometry.Envelope;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
 import org.deegree.tools.crs.georeferencing.communication.PointTablePanel;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
-import org.deegree.tools.crs.georeferencing.model.AbstractPoint;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.GeoReferencedPoint;
@@ -92,86 +85,38 @@ public class Controller {
 
     private PointTablePanel tablePanel;
 
-    private MouseModel mouse;
-
     private RasterIOOptions options;
 
+    private Footprint footPrint;
+
+    private MouseModel mouse;
+
     private Point2d changePoint;
-
-    private RasterRect rect;
-
-    private RasterRect rectangle;
 
     private boolean isHorizontalRef;
 
     private int start;
 
-    private int pointCounterFootprint;
-
-    private Vector<AbstractPoint> tableValueGeoRef;
-
-    private Vector<AbstractPoint> tableValueFootPrint;
-
     private FootprintPoint lastFootprintPoint;
 
     private GeoReferencedPoint lastGeoReferencedPoint;
 
-    // /**
-    // * idicates the initialization of the component. If one click first on the footprintPanel, then there is the
-    // * initalization. Here one get the information to start a new point running.
-    // */
-    // private boolean isInitialized;
-
-    private Footprint footPrint;
-
-    private static final String RASTERIO_LAYER = "RASTERIO_LAYER";
-
-    private static final String RASTER_FORMATLIST = "RASTER_FORMATLIST";
-
-    private static final String RASTER_URL = "RASTER_URL";
-
-    private static final String RIO_WMS_SYS_ID = "RASTERIO_WMS_SYS_ID";
-
-    private static final String RIO_WMS_MAX_SCALE = "RASTERIO_WMS_MAX_SCALE";
-
-    private static final String RIO_WMS_DEFAULT_FORMAT = "RASTERIO_WMS_DEFAULT_FORMAT";
-
-    private static final String RIO_WMS_MAX_WIDTH = "RASTERIO_WMS_MAX_WIDTH";
-
-    private static final String RIO_WMS_MAX_HEIGHT = "RASTERIO_WMS_MAX_HEIGHT";
-
-    private static final String RIO_WMS_LAYERS = "RASTERIO_WMS_REQUESTED_LAYERS";
-
-    private static final String RIO_WMS_ENABLE_TRANSPARENT = "RASTERIO_WMS_ENABLE_TRANSPARENCY";
-
-    private static final String RIO_WMS_TIMEOUT = "RIO_WMS_TIMEOUT";
-
-    /**
-     * Specifies the size of the full drawn side.
-     */
-    private static final String RESOLUTION = "RESOLUTION";
-
-    private Envelope bbox;
-
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
         this.model = model;
-        panel = view.getScenePanel2D();
-        footPanel = view.getFootprintPanel();
-        navPanel = view.getNavigationPanel();
+        this.panel = view.getScenePanel2D();
+        this.footPanel = view.getFootprintPanel();
+        this.navPanel = view.getNavigationPanel();
         this.footPrint = new Footprint();
-        tablePanel = view.getPointTablePanel();
-        start = 0;
-        tableValueGeoRef = new Vector();
-        tableValueFootPrint = new Vector();
-        // this.geomFactory = new GeometryFactory();
+        this.tablePanel = view.getPointTablePanel();
+        this.start = 0;
 
         view.addScene2DurlListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
         navPanel.addHorizontalRefListener( new ButtonListener() );
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
         tablePanel.addHorizontalRefListener( new ButtonListener() );
-        tablePanel.addTableModelListener( new TableListener() );
+        // tablePanel.addTableModelListener( new TableListener() );
 
         isHorizontalRef = false;
 
@@ -222,24 +167,7 @@ public class Controller {
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GETMAP ) ) {
                     mouse = new MouseModel();
                     model.reset();
-                    options = new RasterIOOptions();
-
-                    options.add( RasterIOOptions.CRS, "EPSG:4326" );
-                    // options.add( RasterIOOptions.CRS, "EPSG:32618" );
-                    // options.add( RIO_WMS_LAYERS, "populationgrid" );
-                    options.add( RESOLUTION, "1.0" );
-                    options.add( RIO_WMS_LAYERS, "root" );
-                    // options.add( RASTER_FORMATLIST, "image/jpeg" );
-                    options.add( RASTER_URL, view.openUrl() );
-                    options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
-                    options.add( RIO_WMS_SYS_ID, view.openUrl() );
-                    options.add( RIO_WMS_MAX_SCALE, "0.1" );
-                    options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
-                    // specify the quality
-                    options.add( RIO_WMS_MAX_WIDTH, Integer.toString( 200 ) );
-                    options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( 200 ) );
-                    options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
-                    // options.add( RIO_WMS_TIMEOUT, "1000" );
+                    options = new RasterOptions( view ).getOptions();
                     model.setResolution( 1 );
                     model.init( options, panel.getBounds() );
                     panel.setImageToDraw( model.generateImage( null ) );
@@ -258,18 +186,6 @@ public class Controller {
             }
 
         }
-    }
-
-    class TableListener implements TableModelListener {
-
-        @Override
-        public void tableChanged( TableModelEvent e ) {
-            TableModel source = (TableModel) e.getSource();
-            int first = e.getFirstRow(), last = e.getLastRow();
-            // System.out.println( "MyTableChanged :) " + first + " " + last + " " + e.getType() );
-
-        }
-
     }
 
     /**
@@ -316,14 +232,14 @@ public class Controller {
                             footPanel.setFocus( false );
                             panel.setFocus( true );
                         }
-                        if ( panel.getFocus() == true ) {
+                        if ( lastFootprintPoint != null && lastGeoReferencedPoint != null && panel.getFocus() == true ) {
                             setValues();
                         }
                         int x = m.getX();
                         int y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                         lastGeoReferencedPoint = geoReferencedPoint;
-                        panel.addPoint( tableValueGeoRef, lastGeoReferencedPoint );
+                        panel.addPoint( footPrint.getTableValueGeoRef(), geoReferencedPoint );
                         tablePanel.setCoords( geoReferencedPoint );
                         panel.repaint();
                     } else {
@@ -382,9 +298,8 @@ public class Controller {
                         FootprintPoint footprintPoint = new FootprintPoint( x, y );
                         FootprintPoint point = (FootprintPoint) footPrint.getClosestPoint( footprintPoint );
                         lastFootprintPoint = point;
-
                         tablePanel.setCoords( point );
-                        footPanel.addPoint( tableValueFootPrint, lastFootprintPoint );
+                        footPanel.addPoint( footPrint.getTableValueFootPrint(), point );
                         footPanel.repaint();
                     } else {
                         System.err.println( "not implemented yet." );
@@ -395,8 +310,8 @@ public class Controller {
         }
 
         private void setValues() {
-            tableValueFootPrint.add( lastFootprintPoint );
-            tableValueGeoRef.add( lastGeoReferencedPoint );
+            footPrint.addToTableValueFootPrint( lastFootprintPoint );
+            footPrint.addToTableValueGeoRef( lastGeoReferencedPoint );
             lastFootprintPoint = null;
             lastGeoReferencedPoint = null;
             tablePanel.addRow();

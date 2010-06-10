@@ -36,12 +36,13 @@
 package org.deegree.tools.crs.georeferencing.model;
 
 import java.awt.Polygon;
+import java.util.Vector;
 
 import javax.vecmath.Point2d;
 
 /**
  * 
- * Footprint of a 3D building.
+ * Model of the footprint of a 3D building.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -54,6 +55,32 @@ public class Footprint {
 
     private Point2d[] points;
 
+    private Vector<AbstractPoint> tableValueGeoRef;
+
+    private Vector<AbstractPoint> tableValueFootPrint;
+
+    /**
+     * Creates a new <Code>Footprint</Code> instance.
+     */
+    public Footprint() {
+        tableValueGeoRef = new Vector();
+        tableValueFootPrint = new Vector();
+    }
+
+    /**
+     * Creates a default instance of a <Code>Polygon</Code> from native Java AWT package.
+     * 
+     * <dl>
+     * <dt>first point</dt>
+     * <dd>50,50</dd>
+     * <dt>second point</dt>
+     * <dd>50,250</dd>
+     * <dt>third point</dt>
+     * <dd>200,200</dd>
+     * <dt>fourth point</dt>
+     * <dd>200,80</dd>
+     * </dl>
+     */
     public void setDefaultPolygon() {
         points = new Point2d[4];
         points[0] = new Point2d( 50, 50 );
@@ -68,14 +95,22 @@ public class Footprint {
 
     }
 
+    /**
+     * This should be a coverage later.
+     * 
+     * @return an AWT <Code>Polygon</Code>
+     */
     public Polygon getPolygon() {
         return polygon;
     }
 
-    public Point2d[] getPoints() {
-        return points;
-    }
-
+    /**
+     * Determines the closest point of a raster (a polygon at the moment) to a specified point.
+     * 
+     * @param point2d
+     *            the specified point
+     * @return an <Code>AbstractPoint</Code> of the raster that is the closest point to point2d
+     */
     public AbstractPoint getClosestPoint( AbstractPoint point2d ) {
         AbstractPoint closestPoint = null;
         if ( points != null || points.length != 0 ) {
@@ -105,6 +140,46 @@ public class Footprint {
         }
 
         return closestPoint;
+    }
+
+    /**
+     * Adds an <Code>AbstractPoint</Code> to the <Code>GeoReference</Code> value of the <Code>TableModel</Code>.
+     * 
+     * @param lastGeoReferencedPoint
+     */
+    public void addToTableValueGeoRef( AbstractPoint lastGeoReferencedPoint ) {
+        if ( lastGeoReferencedPoint != null ) {
+            this.tableValueGeoRef.add( lastGeoReferencedPoint );
+        }
+
+    }
+
+    /**
+     * 
+     * @return a Vector of <Code>GeoReferencedPoint</Code>s
+     */
+    public Vector<AbstractPoint> getTableValueGeoRef() {
+        return tableValueGeoRef;
+    }
+
+    /**
+     * Adds an <Code>AbstractPoint</Code> to the <Code>Footprint</Code> value of the <Code>TableModel</Code>.
+     * 
+     * @param lastFootprintPoint
+     */
+    public void addToTableValueFootPrint( AbstractPoint lastFootprintPoint ) {
+        if ( lastFootprintPoint != null ) {
+            this.tableValueFootPrint.add( lastFootprintPoint );
+        }
+
+    }
+
+    /**
+     * 
+     * @return a Vector of <Code>FootprintPoint</Code>s
+     */
+    public Vector<AbstractPoint> getTableValueFootPrint() {
+        return tableValueFootPrint;
     }
 
 }

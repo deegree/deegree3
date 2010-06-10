@@ -71,11 +71,12 @@ public class BuildingFootprintPanel extends JPanel {
 
     private Vector<AbstractPoint> points;
 
+    /**
+     * Temporal point
+     */
     private AbstractPoint tempPoint;
 
     private Polygon polygon;
-
-    private int pointCounter;
 
     private boolean focus;
 
@@ -86,7 +87,6 @@ public class BuildingFootprintPanel extends JPanel {
      */
     public BuildingFootprintPanel() {
         this.setName( BUILDINGFOOTPRINT_PANEL_NAME );
-        this.pointCounter = 0;
     }
 
     @Override
@@ -173,14 +173,6 @@ public class BuildingFootprintPanel extends JPanel {
 
     public boolean getFocus() {
         return focus;
-    }
-
-    public int getPointCounter() {
-        return pointCounter;
-    }
-
-    public void setPointCounter( int pointCounter ) {
-        this.pointCounter = pointCounter;
     }
 
 }
