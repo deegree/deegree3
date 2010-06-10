@@ -41,6 +41,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.Property;
@@ -154,17 +156,46 @@ public class Symbolizer<T extends Copyable<T>> {
                 } else if ( os[0] instanceof Geometry ) {
                     geom = (Geometry) os[0];
                 } else if ( os[0] instanceof Property ) {
-                    if ( ( (Property) os[0] ).getValue() instanceof Geometry ) {
-                        geom = (Geometry) ( (Property) os[0] ).getValue();
+                    TypedObjectNode p = ( (Property) os[0] ).getValue();
+                    if ( p instanceof Geometry ) {
+                        geom = (Geometry) p;
+                    } else if ( p instanceof GenericXMLElement ) {
+                        GenericXMLElement elem = (GenericXMLElement) p;
+                        if ( elem.getChildren().isEmpty() ) {
+                            LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated"
+                                      + " to a custom property with no children.", new Object[] { file, line, col } );
+                        } else {
+                            TypedObjectNode maybeGeom = elem.getChildren().get( 0 );
+                            if ( maybeGeom instanceof Geometry ) {
+                                geom = (Geometry) maybeGeom;
+                            } else {
+                                LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated"
+                                          + " to a custom property which is not geometry valued.", new Object[] { file,
+                                                                                                                 line,
+                                                                                                                 col } );
+                            }
+                        }
+                    }
+                } else if ( os[0] instanceof GenericXMLElement ) {
+                    GenericXMLElement elem = (GenericXMLElement) os[0];
+                    if ( elem.getChildren().isEmpty() ) {
+                        LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated"
+                                  + " to a custom property with no children.", new Object[] { file, line, col } );
                     } else {
-                        LOG.warn(
-                                  "The geometry expression in file '{}', line {}, column {} evaluated to something other than a geometry.",
-                                  new Object[] { file, line, col } );
+                        TypedObjectNode maybeGeom = elem.getChildren().get( 0 );
+                        if ( maybeGeom instanceof Geometry ) {
+                            geom = (Geometry) maybeGeom;
+                        } else {
+                            LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated"
+                                      + " to a custom property which is not geometry valued.",
+                                      new Object[] { file, line, col } );
+                        }
                     }
                 } else {
-                    LOG.warn(
-                              "The geometry expression in file '{}', line {}, column {} evaluated to something other than a geometry.",
+                    LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated "
+                              + "to to something that could not be interpreted as a geometry.",
                               new Object[] { file, line, col } );
+                    LOG.debug( "The object type was actually '{}'.", os[0].getClass() );
                 }
             } catch ( FilterEvaluationException e ) {
                 LOG.warn( "Could not evaluate a geometry expression." );
