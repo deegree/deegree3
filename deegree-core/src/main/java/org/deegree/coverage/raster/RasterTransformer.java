@@ -154,37 +154,40 @@ public class RasterTransformer extends Transformer {
                                      InterpolationType interpolationType )
                             throws TransformationException, UnknownCRSException {
 
-        CoordinateSystem srcCRS = sourceRaster.getCoordinateSystem().getWrappedCRS();
+        synchronized ( sourceRaster ) {
+            CoordinateSystem srcCRS = sourceRaster.getCoordinateSystem().getWrappedCRS();
 
-        // get the (transformed) subraster which intersects with the given envelope.
-        AbstractRaster source = getSubRaster( srcCRS, sourceRaster, dstEnvelope );
-        if ( source.getColumns() == dstHeight && source.getRows() == dstWidth ) {
-            // no need to interpolate.
-            return source;
+            // get the (transformed) subraster which intersects with the given envelope.
+            AbstractRaster source = getSubRaster( srcCRS, sourceRaster, dstEnvelope );
+            if ( source.getColumns() == dstHeight && source.getRows() == dstWidth ) {
+                // no need to interpolate.
+                return source;
+            }
+            SimpleRaster simpleSourceRaster = source.getAsSimpleRaster();
+            RasterData srcData = simpleSourceRaster.getReadOnlyRasterData();
+            RasterGeoReference srcREnv = simpleSourceRaster.getRasterReference();
+
+            if ( backgroundValue != null ) {
+                srcData.setNoDataValue( backgroundValue );
+            }
+
+            // interpolation is needed.
+            Interpolation interpolation = InterpolationFactory.getInterpolation( interpolationType, srcData );
+
+            RasterRect rr = new RasterRect( 0, 0, dstWidth, dstHeight );
+            RasterData dstData = srcData.createCompatibleWritableRasterData( rr, null );
+            RasterGeoReference dstREnv = RasterGeoReference.create(
+                                                                    sourceRaster.getRasterReference().getOriginLocation(),
+                                                                    dstEnvelope, dstWidth, dstHeight );
+
+            // use warp to calculate the correct sample positions in the source raster.
+            // the warp is a cubic polynomial function created of 100 points in the dstEnvelope. This function will map
+            // points from the source crs to the target crs very accurate.
+            WarpPolynomial warp = createWarp( dstWidth, dstHeight, srcCRS, srcREnv, dstREnv );
+            warpTransform( warp, interpolation, dstData );
+
+            return new SimpleRaster( dstData, dstEnvelope, dstREnv );
         }
-        SimpleRaster simpleSourceRaster = source.getAsSimpleRaster();
-        RasterData srcData = simpleSourceRaster.getReadOnlyRasterData();
-        RasterGeoReference srcREnv = simpleSourceRaster.getRasterReference();
-
-        if ( backgroundValue != null ) {
-            srcData.setNoDataValue( backgroundValue );
-        }
-
-        // interpolation is needed.
-        Interpolation interpolation = InterpolationFactory.getInterpolation( interpolationType, srcData );
-
-        RasterRect rr = new RasterRect( 0, 0, dstWidth, dstHeight );
-        RasterData dstData = srcData.createCompatibleWritableRasterData( rr, null );
-        RasterGeoReference dstREnv = RasterGeoReference.create( sourceRaster.getRasterReference().getOriginLocation(),
-                                                                dstEnvelope, dstWidth, dstHeight );
-
-        // use warp to calculate the correct sample positions in the source raster.
-        // the warp is a cubic polynomial function created of 100 points in the dstEnvelope. This function will map
-        // points from the source crs to the target crs very accurate.
-        WarpPolynomial warp = createWarp( dstWidth, dstHeight, srcCRS, srcREnv, dstREnv );
-        warpTransform( warp, interpolation, dstData );
-
-        return new SimpleRaster( dstData, dstEnvelope, dstREnv );
     }
 
     /**
