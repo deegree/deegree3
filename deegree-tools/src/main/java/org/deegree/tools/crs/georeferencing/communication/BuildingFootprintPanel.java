@@ -45,7 +45,7 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 import org.deegree.coverage.raster.geom.RasterRect;
-import org.deegree.tools.crs.georeferencing.model.AbstractPoint;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 
 /**
  * 
@@ -69,12 +69,12 @@ public class BuildingFootprintPanel extends JPanel {
 
     private int yValue = 0;
 
-    private Vector<AbstractPoint> points;
+    private Vector<AbstractGRPoint> points;
 
     /**
      * Temporal point
      */
-    private AbstractPoint tempPoint;
+    private AbstractGRPoint tempPoint;
 
     private Polygon polygon;
 
@@ -104,7 +104,7 @@ public class BuildingFootprintPanel extends JPanel {
         }
 
         if ( points != null ) {
-            for ( AbstractPoint point : points ) {
+            for ( AbstractGRPoint point : points ) {
                 g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
             }
         }
@@ -154,7 +154,7 @@ public class BuildingFootprintPanel extends JPanel {
 
     }
 
-    public void addPoint( Vector<AbstractPoint> points, AbstractPoint tempPoint ) {
+    public void addPoint( Vector<AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
         this.points = points;
         this.tempPoint = tempPoint;
     }

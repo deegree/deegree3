@@ -33,7 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.model;
+package org.deegree.tools.crs.georeferencing.model.points;
+
 
 /**
  * 
@@ -44,7 +45,7 @@ package org.deegree.tools.crs.georeferencing.model;
  * 
  * @version $Revision$, $Date$
  */
-public class GeoReferencedPoint extends AbstractPoint {
+public class GeoReferencedPoint extends AbstractGRPoint {
 
     private double x;
 

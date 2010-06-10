@@ -48,7 +48,7 @@ import javax.swing.JTable;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
-import org.deegree.tools.crs.georeferencing.model.AbstractPoint;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 
 /**
  * 
@@ -112,7 +112,7 @@ public class PointTablePanel extends JPanel {
 
     }
 
-    public void setCoords( AbstractPoint point ) {
+    public void setCoords( AbstractGRPoint point ) {
         if ( model.getRowCount() == 0 ) {
             addRow();
         }

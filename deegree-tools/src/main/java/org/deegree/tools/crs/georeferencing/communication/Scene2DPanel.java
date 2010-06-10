@@ -46,7 +46,7 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
-import org.deegree.tools.crs.georeferencing.model.AbstractPoint;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 
 /**
  * The JPanel that should display a BufferedImage.
@@ -73,7 +73,7 @@ public class Scene2DPanel extends JPanel {
 
     private Point2d imageMargin;
 
-    private Vector<AbstractPoint> points;
+    private Vector<AbstractGRPoint> points;
 
     private boolean focus;
 
@@ -81,7 +81,7 @@ public class Scene2DPanel extends JPanel {
 
     private double resolutionOfImage;
 
-    private AbstractPoint tempPoint;
+    private AbstractGRPoint tempPoint;
 
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
@@ -112,7 +112,7 @@ public class Scene2DPanel extends JPanel {
         }
 
         if ( points != null ) {
-            for ( AbstractPoint point : points ) {
+            for ( AbstractGRPoint point : points ) {
                 g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
             }
         }
@@ -195,7 +195,7 @@ public class Scene2DPanel extends JPanel {
         beginDrawImageAtPosition = new Point2d( -imageMargin.x, -imageMargin.y );
     }
 
-    public void addPoint( Vector<AbstractPoint> points, AbstractPoint tempPoint ) {
+    public void addPoint( Vector<AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
         this.points = points;
         this.tempPoint = tempPoint;
     }

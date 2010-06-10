@@ -49,6 +49,8 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -58,10 +60,10 @@ import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
 import org.deegree.tools.crs.georeferencing.communication.PointTablePanel;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
-import org.deegree.tools.crs.georeferencing.model.FootprintPoint;
-import org.deegree.tools.crs.georeferencing.model.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
+import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
+import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
 /**
  * The <Code>Controller</Code> is responsible to bind the view with the model.
@@ -116,7 +118,7 @@ public class Controller {
         navPanel.addHorizontalRefListener( new ButtonListener() );
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
         tablePanel.addHorizontalRefListener( new ButtonListener() );
-        // tablePanel.addTableModelListener( new TableListener() );
+        tablePanel.addTableModelListener( new TableListener() );
 
         isHorizontalRef = false;
 
@@ -186,6 +188,15 @@ public class Controller {
             }
 
         }
+    }
+
+    class TableListener implements TableModelListener {
+
+        @Override
+        public void tableChanged( TableModelEvent e ) {
+
+        }
+
     }
 
     /**

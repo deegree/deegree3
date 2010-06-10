@@ -40,6 +40,10 @@ import java.util.Vector;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
+import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
+
 /**
  * 
  * Model of the footprint of a 3D building.
@@ -55,9 +59,9 @@ public class Footprint {
 
     private Point2d[] points;
 
-    private Vector<AbstractPoint> tableValueGeoRef;
+    private Vector<AbstractGRPoint> tableValueGeoRef;
 
-    private Vector<AbstractPoint> tableValueFootPrint;
+    private Vector<AbstractGRPoint> tableValueFootPrint;
 
     /**
      * Creates a new <Code>Footprint</Code> instance.
@@ -111,8 +115,8 @@ public class Footprint {
      *            the specified point
      * @return an <Code>AbstractPoint</Code> of the raster that is the closest point to point2d
      */
-    public AbstractPoint getClosestPoint( AbstractPoint point2d ) {
-        AbstractPoint closestPoint = null;
+    public AbstractGRPoint getClosestPoint( AbstractGRPoint point2d ) {
+        AbstractGRPoint closestPoint = null;
         if ( points != null || points.length != 0 ) {
             double distance = 0.0;
 
@@ -147,7 +151,7 @@ public class Footprint {
      * 
      * @param lastGeoReferencedPoint
      */
-    public void addToTableValueGeoRef( AbstractPoint lastGeoReferencedPoint ) {
+    public void addToTableValueGeoRef( AbstractGRPoint lastGeoReferencedPoint ) {
         if ( lastGeoReferencedPoint != null ) {
             this.tableValueGeoRef.add( lastGeoReferencedPoint );
         }
@@ -158,7 +162,7 @@ public class Footprint {
      * 
      * @return a Vector of <Code>GeoReferencedPoint</Code>s
      */
-    public Vector<AbstractPoint> getTableValueGeoRef() {
+    public Vector<AbstractGRPoint> getTableValueGeoRef() {
         return tableValueGeoRef;
     }
 
@@ -167,7 +171,7 @@ public class Footprint {
      * 
      * @param lastFootprintPoint
      */
-    public void addToTableValueFootPrint( AbstractPoint lastFootprintPoint ) {
+    public void addToTableValueFootPrint( AbstractGRPoint lastFootprintPoint ) {
         if ( lastFootprintPoint != null ) {
             this.tableValueFootPrint.add( lastFootprintPoint );
         }
@@ -178,7 +182,7 @@ public class Footprint {
      * 
      * @return a Vector of <Code>FootprintPoint</Code>s
      */
-    public Vector<AbstractPoint> getTableValueFootPrint() {
+    public Vector<AbstractGRPoint> getTableValueFootPrint() {
         return tableValueFootPrint;
     }
 

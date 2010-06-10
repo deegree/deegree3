@@ -33,37 +33,58 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.model;
+package org.deegree.tools.crs.georeferencing.model.points;
+
+import javax.vecmath.Point2d;
 
 /**
- * 
- * The Point that identifies the point of the footprint.
+ * Abstract class for special points in the georeferencing tool.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FootprintPoint extends AbstractPoint {
-    private double x;
+public abstract class AbstractGRPoint extends Point2d {
 
-    private double y;
-
-    public FootprintPoint( double x, double y ) {
+    /**
+     * Creates a new instance of <Code>AbstractPoint</Code>.
+     * 
+     * @param x
+     *            the X-axis value of the point
+     * @param y
+     *            the Y-axis value of the point
+     */
+    public AbstractGRPoint( double x, double y ) {
         super( x, y );
-        this.x = x;
-        this.y = y;
     }
 
-    @Override
-    public String toString() {
-        return x + "," + y;
+    /**
+     * 
+     * Enumeration for the specified types that are used in this component.
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public enum PointType {
 
+        /**
+         * points that are identified as footprint
+         */
+        FootprintPoint,
+
+        /**
+         * points that are identified as georeference
+         */
+        GeoreferencedPoint
     }
 
-    @Override
-    public PointType getPointType() {
-        return PointType.FootprintPoint;
-    }
+    /**
+     * 
+     * @return the type of the point
+     */
+    public abstract PointType getPointType();
 
 }
