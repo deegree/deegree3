@@ -122,27 +122,25 @@ public class ShapeUpdater extends LayerUpdater {
                                 service.layers.put( layName, lay );
                                 parent.addOrReplace( lay );
                                 LOG.debug( "Loaded shape file layer {}", layName );
+                                try {
+                                    String file = fstr.substring( 0, fstr.length() - 4 );
+                                    File sld = new File( file + ".sld" );
+                                    if ( !sld.exists() ) {
+                                        sld = new File( file + ".SLD" );
+                                    }
+                                    if ( sld.exists() ) {
+                                        changed |= service.registry.register( lay.getName(), sld, true );
+                                    }
+                                } catch ( FactoryConfigurationError e ) {
+                                    LOG.warn( "Could not parse SLD/SE file for layer '{}'.", layName );
+                                    LOG.trace( "Stack trace: ", e );
+                                }
                             } catch ( FileNotFoundException e ) {
                                 LOG.warn( "Shape file {} could not be deployed: {}", layName, e.getLocalizedMessage() );
                                 LOG.trace( "Stack trace", e );
                             } catch ( IOException e ) {
                                 LOG.warn( "Shape file {} could not be deployed: {}", layName, e.getLocalizedMessage() );
                                 LOG.trace( "Stack trace", e );
-                            }
-                        } else if ( nm.toLowerCase().endsWith( ".shp" ) ) {
-                            try {
-                                String file = fstr.substring( 0, fstr.length() - 4 );
-                                Layer lay = parent.getChild( layName );
-                                File sld = new File( file + ".sld" );
-                                if ( !sld.exists() ) {
-                                    sld = new File( file + ".SLD" );
-                                }
-                                if ( sld.exists() ) {
-                                    changed |= service.registry.register( lay.getName(), sld, true );
-                                }
-                            } catch ( FactoryConfigurationError e ) {
-                                LOG.warn( "Could not parse SLD/SE file for layer '{}'.", layName );
-                                LOG.trace( "Stack trace: ", e );
                             }
                         }
                     }
