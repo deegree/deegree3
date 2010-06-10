@@ -659,7 +659,7 @@ public class MapService {
                                                       Style style, GetMap gm, HashMap<QName, FeatureLayer> ftToLayer,
                                                       HashMap<QName, Style> ftToStyle )
                             throws MissingDimensionValue, InvalidDimensionValue {
-        if ( l instanceof org.deegree.services.wms.model.layers.StatisticsLayer ) {
+        if ( !l.getClass().equals( FeatureLayer.class ) ) {
             return null;
         }
 
