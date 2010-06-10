@@ -35,10 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamReader;
+
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
+import org.deegree.protocol.wps.execute.ExecuteResponse;
+import org.deegree.protocol.wps.execute.Output;
+import org.deegree.protocol.wps.execute.ProcessOutputs;
 import org.deegree.protocol.wps.tools.BuildExecuteObjects;
 import org.deegree.protocol.wps.tools.InputObject;
 import org.deegree.protocol.wps.tools.OutputConfiguration;
@@ -49,7 +68,7 @@ import org.deegree.protocol.wps.tools.OutputConfiguration;
  * 
  * TODO impelement me!
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -65,6 +84,8 @@ public class ProcessExecution {
     private List<OutputConfiguration> outputConfigurationList = new ArrayList();
 
     private ProcessDescription processDescription;
+
+    private String executeRequestString;
 
     public ProcessExecution( ProcessDescription processDescription ) {
         this.processDescription = processDescription;
@@ -110,23 +131,234 @@ public class ProcessExecution {
         outputConfigurationList.add( outputConfiguration );
     }
 
-    public void buildExecuteRequest() {
+    public XMLAdapter sendExecuteRequest()
+                             {
+
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
-        buildExecuteObjects.createExecuteRequest();
-//        buildExecuteObjects.sendExecuteRequest();
 
+        ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
+
+        XMLAdapter xmlAdapter = null;
+        try {
+            // Construct data
+            String data = byteArrayOutputStream.toString();
+            // Send data
+            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URLConnection conn = url.openConnection();
+            conn.setDoInput( true );
+
+            conn.setDoOutput( true );
+            conn.setUseCaches( false );
+            conn.setRequestProperty( "Content-Type", "application/xml" );
+
+            OutputStreamWriter wr = new OutputStreamWriter( conn.getOutputStream() );
+            wr.write( data );
+            wr.flush();
+
+            // Get the response
+
+            xmlAdapter = new XMLAdapter( conn.getInputStream() );
+
+            wr.close();
+
+        } catch ( Exception e ) {
+        }
+                
+        return xmlAdapter;
+        
     }
+
+    public String sendExecuteRequestStringReturn() {
+        BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
+                                                                           processDescription );
+
+        ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
+
+        String inResponse="";
+        try {
+            // Construct data
+            String data = byteArrayOutputStream.toString();
+            // Send data
+            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URLConnection conn = url.openConnection();
+            conn.setDoInput( true );
+
+            conn.setDoOutput( true );
+            conn.setUseCaches( false );
+            conn.setRequestProperty( "Content-Type", "application/xml" );
+
+            OutputStreamWriter wr = new OutputStreamWriter( conn.getOutputStream() );
+            wr.write( data );
+            wr.flush();
+
+            // Get the response
+
+            BufferedReader bufferedReader = new BufferedReader( new InputStreamReader( conn.getInputStream() ) );
+
+            String inLine;
+            while ( ( inLine = bufferedReader.readLine() ) != null ) {
+                inResponse = inResponse + inLine;
+            }
+
+            wr.close();
+
+        } catch ( Exception e ) {
+        }
+
+        return inResponse;
+        
+    }
+    
+    public ExecuteResponse sendExecuteRequestExecuteResponseReturn(){
+        BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
+                                                                           processDescription );
+
+        ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
+
+        XMLAdapter xmlAdapter = null;
+        try {
+            // Construct data
+            String data = byteArrayOutputStream.toString();
+            // Send data
+            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URLConnection conn = url.openConnection();
+            conn.setDoInput( true );
+
+            conn.setDoOutput( true );
+            conn.setUseCaches( false );
+            conn.setRequestProperty( "Content-Type", "application/xml" );
+
+            OutputStreamWriter wr = new OutputStreamWriter( conn.getOutputStream() );
+            wr.write( data );
+            wr.flush();
+
+            // Get the response
+
+            xmlAdapter = new XMLAdapter( conn.getInputStream() );
+
+            wr.close();
+
+        } catch ( Exception e ) {
+        }
+                
+
+        ExecuteResponse executeResponse = new ExecuteResponse(xmlAdapter);
+        return executeResponse;
+        
+    }
+    
+    public Object sendExecuteRequestExecuteObjectReturn(){
+
+        BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
+                                                                           processDescription );
+
+        Object object = null;
+        ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
+
+        XMLAdapter xmlAdapter = null;
+        try {
+            // Construct data
+            String data = byteArrayOutputStream.toString();
+            // Send data
+            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URLConnection conn = url.openConnection();
+            conn.setDoInput( true );
+
+            conn.setDoOutput( true );
+            conn.setUseCaches( false );
+            conn.setRequestProperty( "Content-Type", "application/xml" );
+
+            OutputStreamWriter wr = new OutputStreamWriter( conn.getOutputStream() );
+            wr.write( data );
+            wr.flush();
+
+            // Get the response
+
+            xmlAdapter = new XMLAdapter( conn.getInputStream() );
+
+            wr.close();
+
+        } catch ( Exception e ) {
+        }
+                
+
+        ExecuteResponse executeResponse = new ExecuteResponse(xmlAdapter);
+       if (executeResponse.getProcessOutputs().getOutputs()!=null){
+        
+           if (executeResponse.getProcessOutputs().getOutputs().get(0).getOutputReference()!=null)
+               if (executeResponse.getProcessOutputs().getOutputs().get( 0 ).getOutputReference().getHref()!=null)
+                   object =executeResponse.getProcessOutputs().getOutputs().get( 0 ).getOutputReference().getHref();
+        if (executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType()!=null)
+        {
+           if(executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getComplexData().getObject()!=null)
+               object =executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getComplexData().getObject();
+           
+           if (executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData()!=null)
+        if (executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData().getLiteralData()!=null)
+               object =executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData().getLiteralData();
+       }
+        }
+        return object;
+    }
+    
+    
+    public List<Output> sendExecuteRequestOutputList(){
+
+        BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
+                                                                           processDescription );
+
+        Object object = null;
+        ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
+
+        XMLAdapter xmlAdapter = null;
+        try {
+            // Construct data
+            String data = byteArrayOutputStream.toString();
+            // Send data
+            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URLConnection conn = url.openConnection();
+            conn.setDoInput( true );
+
+            conn.setDoOutput( true );
+            conn.setUseCaches( false );
+            conn.setRequestProperty( "Content-Type", "application/xml" );
+
+            OutputStreamWriter wr = new OutputStreamWriter( conn.getOutputStream() );
+            wr.write( data );
+            wr.flush();
+
+            // Get the response
+
+            xmlAdapter = new XMLAdapter( conn.getInputStream() );
+
+            wr.close();
+
+        } catch ( Exception e ) {
+        }
+                
+
+        ExecuteResponse executeResponse = new ExecuteResponse(xmlAdapter);
+
+        List<Output> outputs =executeResponse.getProcessOutputs().getOutputs();
+        
+        return outputs;
+    }
+    
+
+    
 
     public String returnExecuteRequest() {
+
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
-        buildExecuteObjects.createExecuteRequest();
+        String request = buildExecuteObjects.createExecuteRequest().toString();
 
-        return null;
+        return request;
     }
 
-    public void sendExecuteRequest() {
 
-    }
+
+
+
 }

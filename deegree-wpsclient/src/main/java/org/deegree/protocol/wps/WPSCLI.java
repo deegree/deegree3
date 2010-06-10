@@ -42,6 +42,7 @@ import java.util.List;
 
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
+import org.deegree.protocol.wps.execute.ExecuteResponse;
 import org.deegree.protocol.wps.getcapabilities.WPSCapabilities;
 import org.deegree.protocol.wps.tools.BuildExecuteObjects;
 import org.deegree.protocol.wps.tools.InputObject;
@@ -84,10 +85,9 @@ public class WPSCLI {
 
         DescribeProcess dP = new DescribeProcess(
                                                   new URL(
-                                                           BASE_URL
-                                                                                   + "service=WPS&version=1.0.0&request=DescribeProcess&IDENTIFIER=Buffer" ) );
+                                                           BASE_URL + "service=WPS&version=1.0.0&request=DescribeProcess&IDENTIFIER=Buffer" ) );
 
-        System.out.println( "url:  " + BASE_URL + "service=WPS&version=1.0.0&request=DescribeProcess&IDENTIFIER=Buffer" );
+
         ProcessDescription processDescription = new ProcessDescription();
         processDescription = dP.getProcessDescriptions().get( 0 );
 
@@ -97,34 +97,15 @@ public class WPSCLI {
         LoadFile loadFile = new LoadFile( "curve.xml" );
         String input = loadFile.load();
 
-        InputObject inputObject = new InputObject( "GMLInput", input, false );
+        ProcessExecution processExecution = new ProcessExecution(processDescription);
+        processExecution.addInput(  "GMLInput", input, false );
+        processExecution.addInput( "BufferDistance", "23", false );
+        
+        
+        ExecuteResponse executeResponse = new ExecuteResponse(processExecution.sendExecuteRequest());
+        
+        
 
-        InputObject inputObject2 = new InputObject( "BufferDistance", "23", false );
-
-        List<InputObject> inputObjectList = new ArrayList();
-        inputObjectList.add( inputObject );
-        inputObjectList.add( inputObject2 );
-
-        OutputConfiguration outputConfiguration = new OutputConfiguration( "BufferedGeometry" );
-
-        outputConfiguration.setRawOrResp( false );
-        outputConfiguration.setAsReference( true );
-        outputConfiguration.setStore( true );
-
-        List<OutputConfiguration> outputConfigurationList = new ArrayList();
-        outputConfigurationList.add( outputConfiguration );
-
-        BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
-                                                                           processDescription );
-        buildExecuteObjects.createExecuteRequest();
-
-        // iterate over the process offerings of the service capabilities
-        for ( int i = 0; i < capabilities.getProcessOfferings().size(); i++ ) {
-            LOG.info( capabilities.getProcessOfferings().get( i ).getIdentifier() + ": "
-                      + capabilities.getProcessOfferings().get( i ).getAbstract() );
-        }
-        LOG.info( "WSDL: " + capabilities.getWSDL() );
-        // TODO add more useful output here
     }
 
 }

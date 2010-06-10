@@ -262,9 +262,9 @@ public class WPSCapabilities {
      * 
      * @return List of ProcessingOfferings
      */
-    public List<ProcessOffering> getProcessOfferings() {
+    public List<ProcessBrief> getProcessOfferings() {
 
-        List<ProcessOffering> processOfferingsList = new ArrayList<ProcessOffering>();
+        List<ProcessBrief> processOfferingsList = new ArrayList<ProcessBrief>();
 
         OMElement processOfferingsOMElement = capabilitiesDoc.getElement(
                                                                           capabilitiesDoc.getRootElement(),
@@ -275,7 +275,7 @@ public class WPSCapabilities {
 
         for ( Iterator iterator = processOfferingsOMElement.getChildElements(); iterator.hasNext(); ) {
 
-            ProcessOffering processOfferings = new ProcessOffering();
+            ProcessBrief processBrief = new ProcessBrief();
 
             OMElement processOMElement = (OMElement) iterator.next();
 
@@ -286,36 +286,36 @@ public class WPSCapabilities {
                 OMAttribute omAttribute = (OMAttribute) iterator2.next();
 
                 if ( omAttribute.getQName().getLocalPart().equalsIgnoreCase( "processVersion" ) )
-                    processOfferings.setProcessVersion( omAttribute.getAttributeValue() );
+                    processBrief.setProcessVersion( omAttribute.getAttributeValue() );
             }
 
-            processOfferings.setIdentifier( capabilitiesDoc.getNodeAsString( processOMElement,
+            processBrief.setIdentifier( capabilitiesDoc.getNodeAsString( processOMElement,
                                                                              new XPath( "ows:Identifier", NS_CONTEXT ),
                                                                              null ) );
 
-            processOfferings.setAbstract( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:Abstract",
+            processBrief.setAbstract( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:Abstract",
                                                                                                         NS_CONTEXT ),
                                                                            null ) );
 
-            processOfferings.setMetadata( capabilitiesDoc.getNodesAsStrings( processOMElement,
+            processBrief.setMetadata( capabilitiesDoc.getNodesAsStrings( processOMElement,
                                                                              new XPath( "ows:Abstract", NS_CONTEXT ) ) );
 
-            processOfferings.setProcessVersion( capabilitiesDoc.getNodeAsString( processOMElement,
+            processBrief.setProcessVersion( capabilitiesDoc.getNodeAsString( processOMElement,
                                                                                  new XPath( "ows:ProcessVersion",
                                                                                             NS_CONTEXT ), null ) );
 
-            processOfferings.setProfile( capabilitiesDoc.getNodeAsString(
+            processBrief.setProfiles( capabilitiesDoc.getNodesAsStrings(
                                                                           processOMElement,
-                                                                          new XPath( "ows:ProcessVersion", NS_CONTEXT ),
-                                                                          null ) );
+                                                                          new XPath( "ows:ProcessVersion", NS_CONTEXT )
+                                                                           ) );
 
-            processOfferings.setTitle( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:Title",
+            processBrief.setTitle( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:Title",
                                                                                                      NS_CONTEXT ), null ) );
 
-            processOfferings.setWsdl( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:WSDS",
+            processBrief.setWsdl( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:WSDS",
                                                                                                     NS_CONTEXT ), null ) );
 
-            processOfferingsList.add( processOfferings );
+            processOfferingsList.add( processBrief );
 
         }
 

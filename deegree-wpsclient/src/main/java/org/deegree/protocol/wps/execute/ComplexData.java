@@ -2,13 +2,13 @@ package org.deegree.protocol.wps.execute;
 
 public class ComplexData {
 
-    String mimeType;
+    private String mimeType;
 
-    String encoding;
+    private String encoding;
 
-    String schema;
+    private String schema;
 
-    Object object;
+    private Object object;
 
     public String getMimeType() {
         return mimeType;

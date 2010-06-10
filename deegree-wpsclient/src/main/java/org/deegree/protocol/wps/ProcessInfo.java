@@ -43,7 +43,7 @@ import java.util.List;
 import org.deegree.protocol.wps.describeprocess.DataInputDescribeProcess;
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
-import org.deegree.protocol.wps.getcapabilities.ProcessOffering;
+import org.deegree.protocol.wps.getcapabilities.ProcessBrief;
 import org.deegree.protocol.wps.tools.BuildExecuteObjects;
 import org.deegree.protocol.wps.tools.DataInputParameter;
 import org.deegree.protocol.wps.tools.DataOutputParameter;
@@ -101,12 +101,11 @@ public class ProcessInfo {
      * @param processIdentifier
      *            identifier of a single process
      */
-    public ProcessInfo( String processIdentifier ) {
+    public ProcessInfo(String baseURL, String processIdentifier ) {
 
-        // �bergabe URL anders Regeln...
         URL url = null;
         try {
-            url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0" + processIdentifier );
+            url = new URL(baseURL+ "service=WPS&version=1.0.0&request=DescribeProcess&identifier=" + processIdentifier );
         } catch ( MalformedURLException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -118,6 +117,7 @@ public class ProcessInfo {
             this.identifier = processIdentifier;
 
         }
+        
         this.abstraCt = processDescription.getAbstraCt();
         this.identifier = processDescription.getIdentifier();
         this.language = processDescription.getLanguage();

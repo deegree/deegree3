@@ -36,6 +36,7 @@
 
 package org.deegree.protocol.wps.tools;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,7 @@ import org.deegree.protocol.wps.execute.ResponseForm;
  * further configuration are stated
  * 
  * 
- * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
  * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
@@ -110,14 +111,14 @@ public class BuildExecuteObjects {
         this.store = processDesription.isStoreSupported();
         this.schemaLocation = processDesription.getSchemaLocation();
         setInputs( dataInputList );
+        System.out.println ("outputConfigurationList: " + outputConfigurationList.size());
 
-        if ( outputConfigurationList == null ) {
+        if ( outputConfigurationList.size() == 0 ) {
             this.outputConfigurationList = createOutputConfigurationList();
-            System.out.println( "outputConfigurationList==null" );
         }
-        System.out.println( outputConfigurationList.get( 0 ).isAsReference() );
 
-        this.setOutputs( outputConfigurationList );
+
+        this.setOutputs( this.outputConfigurationList );
 
     }
 
@@ -274,7 +275,6 @@ public class BuildExecuteObjects {
         if ( inputList != null ) {
             dataInputExecuteList = new ArrayList();
             for ( int i = 0; i < inputList.size(); i++ ) {
-                System.out.println( inputList.get( i ).getIdentifier() );
                 this.setInput( inputList.get( i ) );
             }
         }
@@ -357,10 +357,12 @@ public class BuildExecuteObjects {
 
     }
 
-    public void createExecuteRequest() {
-        Execute execute = new Execute( processDescription, dataInputExecuteList, responseFormList, null );
-        try {
-            execute.createExecuteRequest();
+    public ByteArrayOutputStream createExecuteRequest() {
+               Execute execute = new Execute( processDescription, dataInputExecuteList, responseFormList, null );
+               ByteArrayOutputStream out= new ByteArrayOutputStream();
+
+               try {
+                   out=execute.returnExecuteRequest();
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -368,6 +370,12 @@ public class BuildExecuteObjects {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        System.out.println (out);
+        return out;
+    }
+    
+    public void sendExecuteRequest(){
+        
     }
 
 }

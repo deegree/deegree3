@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.getcapabilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.deegree.commons.tom.ows.Version;
 
 /**
@@ -46,7 +49,7 @@ import org.deegree.commons.tom.ows.Version;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ProcessOffering {
+public class ProcessBrief {
 
     private String identifier;
 
@@ -58,11 +61,12 @@ public class ProcessOffering {
 
     private String[] metadata;
 
-    private String profile;
+    private String[] profiles;
 
-    private Version versionType;
+    private String versionType;
 
     private String wsdl;
+    
 
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
@@ -101,22 +105,22 @@ public class ProcessOffering {
     }
 
     public void setMetadata( String[] metadata ) {
-        this.metadata = metadata;
+        this.metadata=metadata;
     }
 
-    public String getProfile() {
-        return profile;
+    public String[] getProfiles() {
+        return profiles;
     }
 
-    public void setProfile( String profile ) {
-        this.profile = profile;
+    public void setProfiles( String[] profiles ) {
+        this.profiles=profiles;
     }
 
-    public Version getVersionType() {
+    public String getVersionType() {
         return versionType;
     }
 
-    public void setVersionType( Version versionType ) {
+    public void setVersionType( String versionType ) {
         this.versionType = versionType;
     }
 
@@ -139,7 +143,7 @@ public class ProcessOffering {
         for ( int i = 0; i < metadata.length; i++ ) {
             sb.append( metadata[i] );
         }
-        sb.append( "Profile: " + profile );
+        sb.append( "Profile: " + profiles );
         sb.append( "VersionType: " + versionType );
         sb.append( "WSDL: " + wsdl );
         return sb.toString();

@@ -48,10 +48,13 @@ package org.deegree.protocol.wps.execute;
 
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URL;
@@ -314,20 +317,18 @@ public class Execute {
 
     }
 
-    public OutputStream returnExecuteRequest()
+    public ByteArrayOutputStream returnExecuteRequest()
                             throws XMLStreamException, IOException {
 
-        OutputStream out = null;
-        try {
-            out = new FileOutputStream( "execute" + identifier + ".xml" );
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        ByteArrayOutputStream out = new ByteArrayOutputStream( );
+      
+            
+            
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
         XMLStreamWriter writer = null;
         try {
             writer = factory.createXMLStreamWriter( out );
+            
         } catch ( XMLStreamException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -347,8 +348,12 @@ public class Execute {
 
         writer.writeEndElement();
         writer.writeEndDocument();
+        writer.flush();
+        writer.close();
+        
 
         out.close();
+
         return out;
     }
 
