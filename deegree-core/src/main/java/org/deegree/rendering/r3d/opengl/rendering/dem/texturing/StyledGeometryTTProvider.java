@@ -328,8 +328,8 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
                 while ( it.hasNext() ) {
                     index++;
                     Feature feature = it.next();
-                    LinkedList<Triple<Styling, Geometry, String>> evald = style.evaluate( feature );
-                    for ( Triple<Styling, Geometry, String> tr : evald ) {
+                    LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evald = style.evaluate( feature );
+                    for ( Triple<Styling, LinkedList<Geometry>, String> tr : evald ) {
                         renderer.render( tr.first, tr.second );
                     }
 

@@ -52,6 +52,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Path2D.Double;
+import java.util.Collection;
 
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.geometry.Geometry;
@@ -141,6 +142,12 @@ public class Java2DTextRenderer implements TextRenderer {
         Double line = renderer.fromCurve( c );
 
         renderer.graphics.draw( line );
+    }
+
+    public void render( TextStyling styling, String text, Collection<Geometry> geoms ) {
+        for ( Geometry g : geoms ) {
+            render( styling, text, g );
+        }
     }
 
     public void render( TextStyling styling, String text, Geometry geom ) {

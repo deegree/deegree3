@@ -36,6 +36,8 @@
 
 package org.deegree.rendering.r2d;
 
+import java.util.Collection;
+
 import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
@@ -69,6 +71,12 @@ public interface Renderer {
      * @param geom
      */
     public void render( PolygonStyling styling, Geometry geom );
+
+    /**
+     * @param styling
+     * @param geoms
+     */
+    public void render( Styling styling, Collection<Geometry> geoms );
 
     /**
      * @param styling

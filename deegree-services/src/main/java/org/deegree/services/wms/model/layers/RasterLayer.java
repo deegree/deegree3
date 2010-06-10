@@ -256,9 +256,10 @@ public class RasterLayer extends Layer {
                 warnings.addAll( p.second );
             }
 
-            LinkedList<Triple<Styling, Geometry, String>> list = style == null ? null : style.evaluate( null );
+            LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = style == null ? null
+                                                                                          : style.evaluate( null );
             if ( list != null && list.size() > 0 ) {
-                for ( Triple<Styling, Geometry, String> t : list ) {
+                for ( Triple<Styling, LinkedList<Geometry>, String> t : list ) {
                     renderer.render( (RasterStyling) t.first, raster );
                 }
             } else {

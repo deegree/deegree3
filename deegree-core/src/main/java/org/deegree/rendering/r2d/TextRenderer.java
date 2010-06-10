@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
+import java.util.Collection;
+
 import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r2d.styling.TextStyling;
 
@@ -56,5 +58,12 @@ public interface TextRenderer {
      * @param geom
      */
     public void render( TextStyling styling, String text, Geometry geom );
+
+    /**
+     * @param styling
+     * @param text
+     * @param geoms
+     */
+    public void render( TextStyling styling, String text, Collection<Geometry> geoms );
 
 }

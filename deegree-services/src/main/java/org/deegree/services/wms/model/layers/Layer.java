@@ -286,8 +286,8 @@ public abstract class Layer {
         }
         s = s.filter( scale );
 
-        LinkedList<Triple<Styling, Geometry, String>> evalds = s.evaluate( f );
-        for ( Triple<Styling, Geometry, String> evald : evalds ) {
+        LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = s.evaluate( f );
+        for ( Triple<Styling, LinkedList<Geometry>, String> evald : evalds ) {
             if ( evald.first instanceof TextStyling ) {
                 textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );
             } else {

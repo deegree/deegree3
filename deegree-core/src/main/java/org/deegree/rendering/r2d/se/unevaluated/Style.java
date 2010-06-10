@@ -189,21 +189,25 @@ public class Style {
      * @param f
      * @return a pair suitable for rendering
      */
-    public LinkedList<Triple<Styling, Geometry, String>> evaluate( Feature f ) {
+    public LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate( Feature f ) {
         if ( useDefault ) {
-            LinkedList<Triple<Styling, Geometry, String>> list = new LinkedList<Triple<Styling, Geometry, String>>();
+            LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = new LinkedList<Triple<Styling, LinkedList<Geometry>, String>>();
 
             Property[] geoms = f.getGeometryProperties();
             if ( geoms != null ) {
                 for ( Property p : geoms ) {
+                    LinkedList<Geometry> geometries = new LinkedList<Geometry>();
                     Geometry geom = (Geometry) p.getValue();
+                    geometries.add( geom );
                     if ( geom instanceof Point || geom instanceof MultiPoint ) {
-                        list.add( new Triple<Styling, Geometry, String>( defaultPointStyle, geom, null ) );
+                        list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultPointStyle, geometries,
+                                                                                     null ) );
                     } else if ( geom instanceof Curve || geom instanceof MultiCurve || geom instanceof MultiLineString ) {
-                        list.add( new Triple<Styling, Geometry, String>( defaultLineStyle, geom, null ) );
+                        list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultLineStyle, geometries, null ) );
                     } else if ( geom instanceof Surface || geom instanceof MultiSurface || geom instanceof MultiPolygon
                                 || geom instanceof Envelope ) {
-                        list.add( new Triple<Styling, Geometry, String>( defaultPolygonStyle, geom, null ) );
+                        list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultPolygonStyle, geometries,
+                                                                                     null ) );
                     } else {
                         LOG.error( "Geometries of type '{}' are not supported/known. Please report!", geom.getClass() );
                     }
