@@ -46,6 +46,7 @@ import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.CollectionUtils.unzip;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
+import static org.deegree.rendering.r2d.se.parser.SymbologyParser.ELSEFILTER;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.services.controller.ows.OWSException.LAYER_NOT_DEFINED;
 import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
@@ -78,6 +79,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.CRS;
@@ -86,12 +88,16 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.logical.And;
+import org.deegree.filter.logical.Or;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.dims.DimensionLexer;
 import org.deegree.protocol.wms.dims.parser;
+import org.deegree.rendering.r2d.se.parser.SymbologyParser.FilterContinuation;
+import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
+import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.wms.WMSController111;
 import org.deegree.services.controller.wms.WMSController130;
@@ -683,11 +689,50 @@ public class GetMap {
     /**
      * @param name
      * @param filter
+     * @param style
      * @return a new filter for the layer, fulfilling the filter parameter as well
      */
-    public Filter getFilterForLayer( String name, Filter filter ) {
+    public Filter getFilterForLayer( String name, Filter filter, Style style ) {
+        Filter sldFilter = null;
+        outer: if ( style != null ) {
+            LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = style.getRules();
+            for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : rules ) {
+                if ( p.first == null ) {
+                    sldFilter = null;
+                    break outer;
+                }
+                if ( p.first instanceof FilterContinuation ) {
+                    FilterContinuation contn = (FilterContinuation) p.first;
+                    if ( contn.filter == ELSEFILTER ) {
+                        sldFilter = null;
+                        break outer;
+                    }
+                    if ( contn.filter == null ) {
+                        sldFilter = null;
+                        break outer;
+                    }
+                    if ( sldFilter == null ) {
+                        sldFilter = contn.filter;
+                    } else {
+                        Operator op1 = ( (OperatorFilter) sldFilter ).getOperator();
+                        Operator op2 = ( (OperatorFilter) contn.filter ).getOperator();
+                        sldFilter = new OperatorFilter( new Or( op1, op2 ) );
+                    }
+                }
+            }
+        }
+
+        Filter extra = filters.get( name );
+        if ( extra == null ) {
+            extra = sldFilter;
+        } else {
+            if ( sldFilter != null ) {
+                Operator op1 = ( (OperatorFilter) sldFilter ).getOperator();
+                Operator op2 = ( (OperatorFilter) extra ).getOperator();
+                extra = new OperatorFilter( new Or( op1, op2 ) );
+            }
+        }
         if ( filter != null ) {
-            Filter extra = filters.get( name );
             if ( extra != null ) {
                 Operator op = ( (OperatorFilter) extra ).getOperator();
                 Operator op2 = ( (OperatorFilter) filter ).getOperator();
@@ -695,7 +740,7 @@ public class GetMap {
             }
             return filter;
         }
-        return filters.get( name );
+        return extra;
     }
 
     /**

@@ -218,8 +218,7 @@ public class FeatureLayer extends Layer {
         final Envelope bbox = gm.getBoundingBox();
 
         final Pair<Filter, LinkedList<String>> dimFilter = getDimensionFilter( gm.getDimensions() );
-        final Filter filter = gm.getFilterForLayer( this.getName(), dimFilter == null ? null : dimFilter.first );
-
+        final Filter filter = gm.getFilterForLayer( this.getName(), dimFilter == null ? null : dimFilter.first, style );
         if ( style != null ) {
             QName ftName = style.getFeatureType();
             if ( ftName != null && datastore.getSchema().getFeatureType( ftName ) == null ) {
