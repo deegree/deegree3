@@ -37,6 +37,7 @@ package org.deegree.tools.crs.georeferencing.communication;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
@@ -69,41 +70,27 @@ public class Scene2DPanel extends JPanel {
 
     private Point2d beginDrawImageAtPosition;
 
-    private Point2d imageDimension;
-
-    private Point2d imageMargin;
+    private Rectangle imageDimension;
 
     private Vector<AbstractGRPoint> points;
 
     private boolean focus;
 
-    private final double margin = 0.1;
-
-    private double resolutionOfImage;
-
     private AbstractGRPoint tempPoint;
 
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
-        resolutionOfImage = 1.0;
-
     }
 
     @Override
     public void paintComponent( Graphics g ) {
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
-        if ( beginDrawImageAtPosition == null ) {
-            imageMargin = new Point2d( this.getBounds().width * margin, this.getBounds().height * margin );
-            beginDrawImageAtPosition = new Point2d( -imageMargin.x, -imageMargin.y );
-            imageDimension = new Point2d( this.getBounds().width + imageMargin.x * 2, this.getBounds().height
-                                                                                      + imageMargin.y * 2 );
 
-        }
         if ( imageToDraw != null ) {
 
             g2.drawImage( imageToDraw, (int) beginDrawImageAtPosition.getX(), (int) beginDrawImageAtPosition.getY(),
-                          (int) imageDimension.getX(), (int) imageDimension.getY(), this );
+                          (int) imageDimension.width, (int) imageDimension.height, this );
 
         }
 
@@ -119,15 +106,6 @@ public class Scene2DPanel extends JPanel {
 
     }
 
-    /**
-     * The relative margin that should be used...like 10%
-     * 
-     * @return
-     */
-    public double getMargin() {
-        return margin;
-    }
-
     public Point2d getBeginDrawImageAtPosition() {
         return beginDrawImageAtPosition;
     }
@@ -136,13 +114,12 @@ public class Scene2DPanel extends JPanel {
         this.beginDrawImageAtPosition = beginDrawImageAtPosition;
     }
 
-    /**
-     * The absolute margin of an image
-     * 
-     * @return
-     */
-    public Point2d getImageMargin() {
-        return imageMargin;
+    public Rectangle getImageDimension() {
+        return imageDimension;
+    }
+
+    public void setImageDimension( Rectangle imageDimension ) {
+        this.imageDimension = imageDimension;
     }
 
     public void addScene2DMouseListener( MouseListener m ) {
@@ -160,39 +137,9 @@ public class Scene2DPanel extends JPanel {
         this.addMouseWheelListener( m );
     }
 
-    /**
-     * The resolution that is specified to create the window that should be displayed
-     * 
-     * @return
-     */
-    public double getResolutionOfImage() {
-        return resolutionOfImage;
-    }
-
-    /**
-     * Sets the resolution of the image
-     * 
-     * @param resolutionOfImage
-     */
-    public void setResolutionOfImage( double resolutionOfImage ) {
-
-        this.resolutionOfImage = resolutionOfImage;
-    }
-
     public void setImageToDraw( BufferedImage imageToDraw ) {
         this.imageToDraw = imageToDraw;
 
-    }
-
-    public BufferedImage getImageToDraw() {
-        return imageToDraw;
-    }
-
-    /**
-     * Resets variables that should be set every time when there is a new image is incoming.
-     */
-    public void reset() {
-        beginDrawImageAtPosition = new Point2d( -imageMargin.x, -imageMargin.y );
     }
 
     public void addPoint( Vector<AbstractGRPoint> points, AbstractGRPoint tempPoint ) {

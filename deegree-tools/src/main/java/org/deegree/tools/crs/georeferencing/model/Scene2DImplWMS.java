@@ -48,6 +48,8 @@ import javax.vecmath.Point2d;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -75,7 +77,13 @@ public class Scene2DImplWMS implements Scene2D {
 
     private RasterGeoReference ref;
 
+    private RasterDataInfo rasterDataInfo;
+
+    private RasterData rasterData;
+
     private RasterRect rasterRect;
+
+    private SimpleRaster simpleMapRaster;
 
     // SampleResolution sampleRes;
 
@@ -97,12 +105,14 @@ public class Scene2DImplWMS implements Scene2D {
 
     // private Point2d sample;
 
-    private double minX, minY, maxX, maxY, size, resolution;
+    private Point2d min;
+
+    private double size, resolution;
 
     private int imageWidth, imageHeight;
 
     @Override
-    public void init( RasterIOOptions options, Rectangle bounds ) {
+    public void init( RasterIOOptions options ) {
         this.options = options;
         URL url = null;
 
@@ -116,6 +126,7 @@ public class Scene2DImplWMS implements Scene2D {
             raster = RasterFactory.loadRasterFromStream( in, options );
             ref = raster.getRasterReference();
             rasterRect = ref.convertEnvelopeToRasterCRS( raster.getEnvelope() );
+            // rasterDataInfo = raster.getRasterDataInfo();
             in.close();
         } catch ( IOException e ) {
             e.printStackTrace();
@@ -124,20 +135,18 @@ public class Scene2DImplWMS implements Scene2D {
         wmsClient = new WMSClient111( url );
         size = Double.parseDouble( options.get( "RESOLUTION" ) ) * resolution;
 
-        transformedBounds = transformProportion( bounds, size, rasterRect );
         // sample = getSample( bounds, size, raster.getEnvelope() );
         // sampleRes = new SampleResolution( new double[] { sample.x, sample.y } );
 
-        System.out.println( "transformedBounds: " + transformedBounds );
-        System.out.println( "rasterRect: " + rasterRect + " " + ref.getResolutionX() + " " + ref.getResolutionY() );
+        // System.out.println( "rasterRect: " + rasterRect + " " + ref.getResolutionX() + " " + ref.getResolutionY() );
         lays = getLayers( options );
         format = options.get( "RASTERIO_WMS_DEFAULT_FORMAT" );
         srs = options.getCRS();
         imageWidth = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_WIDTH" ) );
         imageHeight = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_HEIGHT" ) );
 
-        minX = transformedBounds.x;
-        minY = transformedBounds.y;
+        // minX = transformedBounds.x;
+        // minY = transformedBounds.y;
 
     }
 
@@ -155,7 +164,8 @@ public class Scene2DImplWMS implements Scene2D {
     private BufferedImage generateMap( Envelope imageBoundingbox ) {
 
         try {
-
+            // simpleMapRaster = wmsClient.getMapAsSimpleRaster( lays, imageWidth, imageHeight, imageBoundingbox, srs,
+            // format, true, false, 1000, false, null ).first;
             return wmsClient.getMap( lays, imageWidth, imageHeight, imageBoundingbox, srs, format, true, false, 1000,
                                      false, null ).first;
 
@@ -196,50 +206,53 @@ public class Scene2DImplWMS implements Scene2D {
     }
 
     @Override
-    public BufferedImage generateImage( Point2d startPoint ) {
+    public BufferedImage generateSubImage( Rectangle bounds ) {
+        transformedBounds = transformProportion( bounds, size, rasterRect );
+        System.out.println( "transformedBounds: " + transformedBounds );
 
-        if ( startPoint != null ) {
-
-            minX += startPoint.x * ref.getResolutionX();
-            minY -= startPoint.y * ref.getResolutionY();
-            // double maxX = minX + transformedBounds.x;
-            // double maxY = minY + transformedBounds.y;
-
-            // System.out.println( "new subRaster: " + minX + " " + minY + ", " + maxX + " " + maxY );
-            // double[] worldCoordLeftLower = ref.getWorldCoordinate( minX, maxY );
-            // double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, minY );
-            //
-            // predictedRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0],
-            // worldCoordLeftLower[1],
-            // worldCoordRightUpper[0], worldCoordRightUpper[1] );
-            //
-            // // RasterGeoReference ref2 = RasterGeoReference.merger( subRaster.getRasterReference(),
-            // // predictedRaster.getRasterReference() );
-            // Envelope env = subRaster.getEnvelope().merge( predictedRaster.getEnvelope() );
-            // // System.out.println( ref2. );
-            // subRaster = predictedRaster;
-            //
-            // System.out.println( worldCoordLeftLower[0] + " " + worldCoordRightUpper[0] );
-            // return predictedImage = generateMap( env );
-
-        } else {
-            minX = rasterRect.x;
-            minY = rasterRect.y;
-
+        // if ( startPoint != null ) {
+        // //
+        // minX = startPoint.x * ref.getResolutionX();
+        // minY = -startPoint.y * ref.getResolutionY();
+        // // double maxX = minX + transformedBounds.x;
+        // // double maxY = minY + transformedBounds.y;
+        //
+        // // System.out.println( "new subRaster: " + minX + " " + minY + ", " + maxX + " " + maxY );
+        // // double[] worldCoordLeftLower = ref.getWorldCoordinate( minX, maxY );
+        // // double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, minY );
+        // //
+        // // predictedRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0],
+        // // worldCoordLeftLower[1],
+        // // worldCoordRightUpper[0], worldCoordRightUpper[1] );
+        // //
+        // // // RasterGeoReference ref2 = RasterGeoReference.merger( subRaster.getRasterReference(),
+        // // // predictedRaster.getRasterReference() );
+        // // Envelope env = subRaster.getEnvelope().merge( predictedRaster.getEnvelope() );
+        // // // System.out.println( ref2. );
+        // // subRaster = predictedRaster;
+        // //
+        // // System.out.println( worldCoordLeftLower[0] + " " + worldCoordRightUpper[0] );
+        // // return predictedImage = generateMap( env );
+        //
+        // } else {
+        if ( min == null ) {
+            min = new Point2d( rasterRect.x, rasterRect.y );
         }
+        // }
 
-        double maxX = minX + transformedBounds.x;
-        double maxY = minY + transformedBounds.y;
+        double maxX = min.x + transformedBounds.x;
+        double maxY = min.y + transformedBounds.y;
 
         // transform to get the boundingbox coordinates
-        double[] worldCoordLeftLower = ref.getWorldCoordinate( minX, maxY );
-        double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, minY );
+        double[] worldCoordLeftLower = ref.getWorldCoordinate( min.x, maxY );
+        double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, min.y );
 
-        System.out.println( "minmax: " + minX + " " + minY + " " + maxX + " " + maxY );
+        // System.out.println( "minmax: " + minX + " " + minY + " " + maxX + " " + maxY );
 
         subRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0], worldCoordLeftLower[1],
                                                              worldCoordRightUpper[0], worldCoordRightUpper[1] );
         subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
+        rasterData = subRaster.getRasterData();
         System.out.println( "subRaster: " + subRaster );
         return generatedImage = generateMap( subRaster.getEnvelope() );
 
@@ -268,7 +281,7 @@ public class Scene2DImplWMS implements Scene2D {
                                                                            worldCoordLeftLower[1],
                                                                            worldCoordRightUpper[0],
                                                                            worldCoordRightUpper[1] );
-        System.out.println( "predictedRaster: " + predRaster );
+        // System.out.println( "predictedRaster: " + predRaster );
         // System.out.println( "world: " + worldCoordLeftLower[0] + " " + worldCoordLeftLower[1] + " "
         // + worldCoordRightUpper[0] + " " + worldCoordRightUpper[1] );
 
@@ -294,12 +307,6 @@ public class Scene2DImplWMS implements Scene2D {
         double oneX = bbox.getSpan0() / w;
         double oneY = bbox.getSpan1() / h;
         return new Point2d( oneX * size, oneY * size );
-    }
-
-    @Override
-    public void reset() {
-        generatedImage = null;
-        transformedBounds = null;
     }
 
     @Override
@@ -329,6 +336,15 @@ public class Scene2DImplWMS implements Scene2D {
     }
 
     @Override
+    public Point2d getWorldCoords( Point2d point ) {
+        double x = point.x * ref.getResolutionX();
+        double y = point.y * ref.getResolutionY();
+        double[] pointArray = ref.getWorldCoordinate( x, y );
+        return new Point2d( pointArray[0], pointArray[1] );
+
+    }
+
+    @Override
     public void setResolution( double resolution ) {
         this.resolution = resolution;
 
@@ -338,6 +354,16 @@ public class Scene2DImplWMS implements Scene2D {
     public BufferedImage getPredictedImage() {
 
         return predictedImage;
+    }
+
+    @Override
+    public Point2d getMin() {
+        return min;
+    }
+
+    @Override
+    public void setMin( Point2d min ) {
+        this.min = min;
     }
 
     // @Override

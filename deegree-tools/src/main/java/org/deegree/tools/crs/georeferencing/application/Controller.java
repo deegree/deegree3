@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -97,6 +98,12 @@ public class Controller {
 
     private boolean isHorizontalRef;
 
+    private Point2d imageMargin;
+
+    private Rectangle imageDimension;
+
+    private Point2d imageDrawStartPos;
+
     private int start;
 
     private FootprintPoint lastFootprintPoint;
@@ -112,7 +119,9 @@ public class Controller {
         this.footPrint = new Footprint();
         this.tablePanel = view.getPointTablePanel();
         this.start = 0;
-
+        options = new RasterOptions( view ).getOptions();
+        model.setResolution( 1 );
+        model.init( options );
         view.addScene2DurlListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
         navPanel.addHorizontalRefListener( new ButtonListener() );
@@ -145,13 +154,10 @@ public class Controller {
             Object source = e.getSource();
             if ( source instanceof JCheckBox ) {
                 if ( ( (JCheckBox) source ).getText().startsWith( NavigationBarPanel.HORIZONTAL_REFERENCING ) ) {
-
                     if ( isHorizontalRef == false ) {
                         isHorizontalRef = true;
-                        System.out.println( "hier sollte ein boolean rein! " + isHorizontalRef );
                     } else {
                         isHorizontalRef = false;
-                        System.out.println( "hier sollte ein boolean rein! " + isHorizontalRef );
                     }
                 }
 
@@ -164,17 +170,14 @@ public class Controller {
                 if ( ( (JButton) source ).getText().startsWith( PointTablePanel.BUTTON_DELETE_ALL ) ) {
                     System.out.println( "you clicked on delete all" );
                 }
+                if ( ( (JButton) source ).getText().startsWith( NavigationBarPanel.COMPUTE_BUTTON_NAME ) ) {
+                    System.out.println( "you clicked on computation" );
+                }
             }
             if ( source instanceof JMenuItem ) {
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GETMAP ) ) {
                     mouse = new MouseModel();
-                    model.reset();
-                    options = new RasterOptions( view ).getOptions();
-                    model.setResolution( 1 );
-                    model.init( options, panel.getBounds() );
-                    panel.setImageToDraw( model.generateImage( null ) );
-
-                    panel.repaint();
+                    init();
                     panel.addScene2DMouseListener( new Scene2DMouseListener() );
                     // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
                     panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
@@ -251,7 +254,10 @@ public class Controller {
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                         lastGeoReferencedPoint = geoReferencedPoint;
                         panel.addPoint( footPrint.getTableValueGeoRef(), geoReferencedPoint );
-                        tablePanel.setCoords( geoReferencedPoint );
+                        GeoReferencedPoint point = new GeoReferencedPoint(
+                                                                           model.getWorldCoords( geoReferencedPoint ).x,
+                                                                           model.getWorldCoords( geoReferencedPoint ).y );
+                        tablePanel.setCoords( point );
                         panel.repaint();
                     } else {
 
@@ -259,8 +265,8 @@ public class Controller {
                                                              ( mouse.getPointMousePressed().getY() - m.getY() ) ) );
                         System.out.println( "MouseChanging: " + mouse.getMouseChanging() );
 
-                        Prediction pred = new Prediction( mouse.getMouseChanging() );
-                        pred.start();
+                        // Prediction pred = new Prediction( mouse.getMouseChanging() );
+                        // pred.start();
 
                         mouse.setCumulatedMouseChanging( new Point2d(
                                                                       mouse.getCumulatedMouseChanging().getX()
@@ -275,18 +281,19 @@ public class Controller {
                                                                                                 - mouse.getMouseChanging().getY() ) );
                         // 
                         // if the user went into any critical region
-                        if ( mouse.getCumulatedMouseChanging().getX() >= panel.getImageMargin().getX()
-                             || mouse.getCumulatedMouseChanging().getX() <= -panel.getImageMargin().getX()
-                             || mouse.getCumulatedMouseChanging().getY() >= panel.getImageMargin().getY()
-                             || mouse.getCumulatedMouseChanging().getY() <= -panel.getImageMargin().getY() ) {
+                        if ( mouse.getCumulatedMouseChanging().getX() >= imageMargin.getX()
+                             || mouse.getCumulatedMouseChanging().getX() <= -imageMargin.getX()
+                             || mouse.getCumulatedMouseChanging().getY() >= imageMargin.getY()
+                             || mouse.getCumulatedMouseChanging().getY() <= -imageMargin.getY() ) {
 
                             Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
                                                                              mouse.getCumulatedMouseChanging().getY() );
                             System.out.println( "updatePos: " + updateDrawImageAtPosition );
 
-                            panel.setImageToDraw( model.getGeneratedImage() );
+                            // panel.setImageToDraw( model.getGeneratedImage() );
+                            panel.setImageToDraw( model.generateSubImage( imageDimension ) );
                             mouse.reset();
-                            panel.reset();
+                            // panel.reset();
 
                         }
                         panel.repaint();
@@ -354,7 +361,7 @@ public class Controller {
             System.out.println( "Threadchange: " + changePoint );
 
             // model.generatePredictedImage( changing );
-            model.generateImage( changing );
+            // model.generateImage( changing );
 
         }
 
@@ -398,18 +405,18 @@ public class Controller {
 
         @Override
         public void mouseWheelMoved( MouseWheelEvent m ) {
-            if ( m.getWheelRotation() < 0 ) {
-                panel.setResolutionOfImage( panel.getResolutionOfImage() - .1 );
-            } else {
-                panel.setResolutionOfImage( panel.getResolutionOfImage() + .1 );
-            }
-            model.reset();
-            System.out.println( panel.getResolutionOfImage() );
-
-            model.setResolution( panel.getResolutionOfImage() );
-            model.init( options, panel.getBounds() );
-            panel.setImageToDraw( model.generateImage( null ) );
-            panel.repaint();
+            // if ( m.getWheelRotation() < 0 ) {
+            // panel.setResolutionOfImage( panel.getResolutionOfImage() - .1 );
+            // } else {
+            // panel.setResolutionOfImage( panel.getResolutionOfImage() + .1 );
+            // }
+            // model.reset();
+            // System.out.println( panel.getResolutionOfImage() );
+            //
+            // model.setResolution( panel.getResolutionOfImage() );
+            // model.init( options, panel.getBounds() );
+            // panel.setImageToDraw( model.generateSubImage() );
+            // panel.repaint();
 
         }
 
@@ -441,12 +448,10 @@ public class Controller {
         @Override
         public void componentResized( ComponentEvent c ) {
             if ( model.getGeneratedImage() != null ) {
-                model.init( options, panel.getBounds() );
-                panel.setImageToDraw( model.generateImage( null ) );
-                panel.repaint();
+                init();
 
             }
-            panel.setBeginDrawImageAtPosition( null );
+
         }
 
         @Override
@@ -455,6 +460,20 @@ public class Controller {
 
         }
 
+    }
+
+    private void init() {
+        // model.reset();
+        imageMargin = new Point2d( panel.getBounds().width * 0.1, panel.getBounds().height * 0.1 );
+        imageDimension = new Rectangle( (int) ( panel.getBounds().width + 2 * imageMargin.x ),
+                                        (int) ( panel.getBounds().height + 2 * imageMargin.y ) );
+        imageDrawStartPos = new Point2d( -imageMargin.x, -imageMargin.y );
+        panel.setBeginDrawImageAtPosition( imageDrawStartPos );
+        panel.setImageDimension( imageDimension );
+
+        panel.setImageToDraw( model.generateSubImage( imageDimension ) );
+
+        panel.repaint();
     }
 
 }

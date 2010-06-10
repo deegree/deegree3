@@ -61,28 +61,25 @@ public interface Scene2D {
     public BufferedImage getGeneratedImage();
 
     /**
-     * Resets all of the variables to initial value.
-     */
-    public void reset();
-
-    /**
      * Initializes the image generation from a rasterinput. There will be generated the information that is needed for
      * every image generation like the {@link RasterGeoReference}.
      * 
      * @param options
      *            for the request, must not be <Code>null</Code>
-     * @param bounds
-     *            of the size of the scene, must not be <Code>null</Code>
+     * 
      */
-    public void init( RasterIOOptions options, Rectangle bounds );
+    public void init( RasterIOOptions options );
 
     /**
+     * Generates everything that is needed for a subImage, so the subRaster can be generated, as well.
      * 
      * @param startPoint
      *            can be <Code>null</Code>. If not specified the defaultValue of initialisation will be taken.
+     * @param bounds
+     *            of the size of the scene, must not be <Code>null</Code>
      * @return
      */
-    public BufferedImage generateImage( Point2d startPoint );
+    public BufferedImage generateSubImage( Rectangle bounds );
 
     /**
      * To set the resolution interactively.
@@ -94,5 +91,11 @@ public interface Scene2D {
     public void generatePredictedImage( Point2d changePoint );
 
     public BufferedImage getPredictedImage();
+
+    Point2d getWorldCoords( Point2d point );
+
+    void setMin( Point2d min );
+
+    Point2d getMin();
 
 }
