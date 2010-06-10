@@ -135,6 +135,7 @@ public class ApplicationSchemaXSDEncoder {
     private final Map<String, String> importURLs;
 
     // set to "gml:_Feature" (GML 2 and 3.1) or "gml:AbstractFeatureType" (GML 3.2)
+    // ai: in CITE 1.0.0 the element ComplexFeatureCollection requires substitution group gml:_FeatureCollection
     private String abstractGMLFeatureElement;
 
     // set to "gml:FeatureAssociationType" (GML 2) or "gml:FeaturePropertyType" (GML 3.1 / GML 3.2)
@@ -307,7 +308,6 @@ public class ApplicationSchemaXSDEncoder {
             LOG.debug( "Exporting ft " + ft.getName() );
             export( writer, ft );
         }
-        writer.writeComment( "Finished with exporting feature types" );
 
         // export custom simple type declarations
         for ( XSSimpleTypeDefinition xsSimpleType : customSimpleTypes.values() ) {
@@ -319,7 +319,6 @@ public class ApplicationSchemaXSDEncoder {
             customStNames.add( xsSimpleType.getName() );
         }
 
-        writer.writeComment( "Starting exporting separate type" );
         int index = 0;
         while ( index < customExportedTypes.size() ) {
             XSTypeDefinition xsTypeDef = customExportedTypes.get( index );
@@ -530,7 +529,7 @@ public class ApplicationSchemaXSDEncoder {
             } else {
 
                 if ( !type.getAnonymous() ) {
-                    writer.writeAttribute( "type", type.getName() );
+                    writer.writeAttribute( "type", targetPrefix + ":" + type.getName() );
                     if ( !customExportedTypes.contains( type ) ) {
                         customExportedTypes.add( type );
                     }
@@ -597,6 +596,7 @@ public class ApplicationSchemaXSDEncoder {
         if ( parentFt != null ) {
             writer.writeAttribute( "substitutionGroup", "app:" + parentFt.getName().getLocalPart() );
         } else {
+            // ai: in CITE 1.0.0 the element ComplexFeatureCollection requires substitution group gml:_FeatureCollection
             writer.writeAttribute( "substitutionGroup", abstractGMLFeatureElement );
         }
         // end 'xs:element'
@@ -604,6 +604,8 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeEndElement();
         }
 
+        // ai: not everytime one should write the complexType definition; need to check if the type extends another type
+        // from the same namespace
         writer.writeStartElement( XSNS, "complexType" );
         if ( hasSubTypes ) {
             writer.writeAttribute( "name", ft.getName().getLocalPart() + "Type" );
@@ -734,7 +736,7 @@ public class ApplicationSchemaXSDEncoder {
                         if ( !customExportedTypes.contains( xsTypeDef ) ) {
                             customExportedTypes.add( xsTypeDef );
                         }
-                        writer.writeAttribute( "type", xsTypeDef.getName() );
+                        writer.writeAttribute( "type", targetPrefix + ":" + xsTypeDef.getName() );
                     } else {
                         LOG.debug( "Exporting anonymous Type " + xsTypeDef );
                         exportType( writer, xsTypeDef, targetPrefix, targetNs );
