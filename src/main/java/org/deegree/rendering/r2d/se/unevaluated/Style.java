@@ -241,6 +241,13 @@ public class Style {
     }
 
     /**
+     * @return the live list of rules
+     */
+    public LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> getRules() {
+        return rules;
+    }
+
+    /**
      * @return the name
      */
     public String getName() {

@@ -150,7 +150,10 @@ public class SymbologyParser {
 
     static final Logger LOG = getLogger( SymbologyParser.class );
 
-    static final ElseFilter ELSEFILTER = new ElseFilter();
+    /**
+     * A static elsefilter instance (think of it as a marker).
+     */
+    public static final ElseFilter ELSEFILTER = new ElseFilter();
 
     /**
      * A default instance.
