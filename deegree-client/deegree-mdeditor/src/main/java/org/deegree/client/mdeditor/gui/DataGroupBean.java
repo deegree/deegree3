@@ -69,8 +69,10 @@ public class DataGroupBean implements Serializable {
 
     private static final Logger LOG = getLogger( DataGroupBean.class );
 
+    // grpId, data groups
     private Map<String, List<DataGroup>> dataGroups = new HashMap<String, List<DataGroup>>();
 
+    // grpId, id of the data group
     private Map<String, String> selectedDataGroups = new HashMap<String, String>();
 
     private boolean fgiLoaded = false;
@@ -95,22 +97,31 @@ public class DataGroupBean implements Serializable {
         return selectedDataGroups;
     }
 
-    public void addSelectedDataGroup( String groupId, String fileName ) {
-        selectedDataGroups.put( groupId, fileName );
+    public void addSelectedDataGroup( String groupId, String id ) {
+        selectedDataGroups.put( groupId, id );
     }
 
-    public void reloadFormGroup( String grpId ) {
+    public void reloadFormGroup( String grpId, boolean isReferencedGrp ) {
         LOG.debug( "Form Group with id " + grpId + " has changed. Force reload." );
-        dataGroups.put( grpId, DataHandler.getInstance().getDataGroups( grpId ) );
+        if ( isReferencedGrp ) {
+            dataGroups.put( grpId, DataHandler.getInstance().getDataGroups( grpId ) );
+        } else {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue(
+                                                                                                        fc.getELContext(),
+                                                                                                        null,
+                                                                                                        "formFieldBean" );
+            dataGroups.put( grpId, formFieldBean.getDataGroups( grpId ) );
+        }
     }
 
     // TODO
     private void loadDataGroups() {
         HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession( false );
         try {
-            List<String> formGroupIds = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() ).getReferencedFormGroupIds();
-            for ( String id : formGroupIds ) {
-                reloadFormGroup( id );
+            Map<String, Boolean> formGroupIds = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() ).getReferencedFormGroupIds();
+            for ( String id : formGroupIds.keySet() ) {
+                reloadFormGroup( id, formGroupIds.get( id ) );
             }
         } catch ( ConfigurationException e ) {
             // TODO Auto-generated catch block

@@ -74,6 +74,8 @@ public class GuiUtils {
     }
 
     public static final String DG_ID_PARAM = "dataGroupId";
+    
+    public static final String IS_REFERENCED_PARAM = "isReferencedGrp";
 
     public static String getUniqueId() {
         return "id_" + UUID.randomUUID();

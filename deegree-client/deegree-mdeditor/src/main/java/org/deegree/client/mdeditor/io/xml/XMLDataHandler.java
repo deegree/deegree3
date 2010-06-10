@@ -48,6 +48,7 @@ import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.io.DataIOException;
+import org.deegree.client.mdeditor.model.Dataset;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.DataGroup;
 import org.slf4j.Logger;
@@ -62,9 +63,21 @@ import org.slf4j.Logger;
  */
 public class XMLDataHandler extends DataHandler {
 
+    private static final Logger LOG = getLogger( XMLDataHandler.class );
+
     static final String FILE_SUFFIX = ".xml";
 
-    private static final Logger LOG = getLogger( XMLDataHandler.class );
+    static final String DG_ELEM = "DataGroup";
+
+    static final String DS_ELEM = "Dataset";
+
+    static final String ELEM_ELEM = "Element";
+
+    static final String GRP_ELEM = "Group";
+
+    static final String VALUE_ELEM = "value";
+
+    static final String ID_ELEM = "id";
 
     @Override
     public List<UISelectItem> getSelectItems( String grpId, String referenceLabel ) {
@@ -78,7 +91,7 @@ public class XMLDataHandler extends DataHandler {
                 String value = listFiles[i].getName();
                 try {
                     if ( referenceLabel != null ) {
-                        label = replaceProperties( referenceLabel, DataReader.read( listFiles[i] ) );
+                        label = replaceProperties( referenceLabel, DataReader.readDataGroup( listFiles[i] ) );
                     }
                     UISelectItem item = new UISelectItem();
                     item.setId( GuiUtils.getUniqueId() );
@@ -126,13 +139,13 @@ public class XMLDataHandler extends DataHandler {
     }
 
     @Override
-    public Map<String, Object> getDataset( String id )
+    public Dataset getDataset( String id )
                             throws DataIOException {
         String fileName = id;
         if ( !fileName.endsWith( FILE_SUFFIX ) ) {
             fileName = fileName + FILE_SUFFIX;
         }
-        return DataReader.read( new File( Configuration.getFilesDirURL(), fileName ) );
+        return DataReader.readDataset( new File( Configuration.getFilesDirURL(), fileName ) );
     }
 
     @Override
@@ -158,7 +171,7 @@ public class XMLDataHandler extends DataHandler {
         if ( f.exists() && f.isFile() ) {
             LOG.debug( "Read file " + id + " from group " + grpId );
             try {
-                return new DataGroup( f.getName(), DataReader.read( f ) );
+                return new DataGroup( f.getName(), DataReader.readDataGroup( f ) );
             } catch ( Exception e ) {
                 LOG.debug( "Could not read file " + f.getAbsolutePath(), e );
                 LOG.error( "Could not read file " + f.getAbsolutePath() + ": ", e.getMessage() );
@@ -177,7 +190,7 @@ public class XMLDataHandler extends DataHandler {
             for ( int i = 0; i < listFiles.length; i++ ) {
                 if ( listFiles[i].isFile() ) {
                     try {
-                        DataGroup dg = new DataGroup( listFiles[i].getName(), DataReader.read( listFiles[i] ) );
+                        DataGroup dg = new DataGroup( listFiles[i].getName(), DataReader.readDataGroup( listFiles[i] ) );
                         dataGroups.add( dg );
                     } catch ( Exception e ) {
                         LOG.debug( "Could not read file " + listFiles[i].getAbsolutePath(), e );
@@ -198,9 +211,9 @@ public class XMLDataHandler extends DataHandler {
     }
 
     @Override
-    public String writeDataset( String id, List<FormGroup> formGroups )
+    public String writeDataset( String id, List<FormGroup> formGroups, Map<String, List<DataGroup>> dataGroups )
                             throws DataIOException {
-        return DataWriter.writeDataset( id, formGroups );
+        return DataWriter.writeDataset( id, formGroups, dataGroups );
     }
 
     @Override

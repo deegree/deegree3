@@ -58,10 +58,13 @@ public class FormGroup implements FormElement {
 
     private List<FormElement> formElements = new ArrayList<FormElement>();
 
-    public FormGroup( String id, String label, String title ) {
+    private int occurence = 1;
+
+    public FormGroup( String id, String label, String title, int occurence ) {
         this.id = id;
         this.label = label;
         this.title = title;
+        this.occurence = occurence;
     }
 
     public void setFormElements( List<FormElement> formElements ) {
@@ -94,6 +97,14 @@ public class FormGroup implements FormElement {
 
     public String getLabel() {
         return label;
+    }
+
+    public void setOccurence( int occurence ) {
+        this.occurence = occurence;
+    }
+
+    public int getOccurence() {
+        return occurence;
     }
 
     public void addFormElement( FormElement parseFormGroup ) {

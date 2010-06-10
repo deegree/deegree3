@@ -41,6 +41,7 @@ import java.util.Map;
 import javax.faces.component.UISelectItem;
 
 import org.deegree.client.mdeditor.io.xml.XMLDataHandler;
+import org.deegree.client.mdeditor.model.Dataset;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.DataGroup;
 
@@ -128,11 +129,13 @@ public abstract class DataHandler {
      *            the id of the dataset
      * @param formGroups
      *            the elements of the dataset to write
+     * @param dataGroups
+     *            the data groups assigne dto this dataset
      * @return the id of the dataset
      * @throws DataIOException
      *             if the dataset could not be written
      */
-    public abstract String writeDataset( String id, List<FormGroup> formGroups )
+    public abstract String writeDataset( String id, List<FormGroup> formGroups, Map<String, List<DataGroup>> dataGroups )
                             throws DataIOException;
 
     /**
@@ -141,10 +144,10 @@ public abstract class DataHandler {
      * 
      * @param id
      *            the id of the dataset to read
-     * @return a list of elements of the datset
+     * @return the datset
      * @throws DataIOException
      */
-    public abstract Map<String, Object> getDataset( String id )
+    public abstract Dataset getDataset( String id )
                             throws DataIOException;
 
     /**

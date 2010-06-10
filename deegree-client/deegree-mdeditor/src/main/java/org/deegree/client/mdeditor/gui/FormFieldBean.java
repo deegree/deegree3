@@ -50,6 +50,7 @@ import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.io.Utils;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
@@ -77,6 +78,9 @@ public class FormFieldBean implements Serializable {
     private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
     private Map<String, FormField> formFields = new HashMap<String, FormField>();
+
+    // grpId, datat groups
+    private Map<String, List<DataGroup>> dataGroups = new HashMap<String, List<DataGroup>>();
 
     public FormFieldBean() {
         forceReloaded();
@@ -171,6 +175,97 @@ public class FormFieldBean implements Serializable {
         for ( FormGroup fg : formGroups ) {
             fg.reset();
         }
+    }
+
+    public Map<String, List<DataGroup>> getDataGroups() {
+        return dataGroups;
+    }
+
+    public List<DataGroup> getDataGroups( String grpId ) {
+        if ( dataGroups.containsKey( grpId ) ) {
+            return dataGroups.get( grpId );
+        }
+        return new ArrayList<DataGroup>();
+    }
+
+    public DataGroup getDataGroup( String grpId, String id ) {
+        if ( id != null && dataGroups.containsKey( grpId ) ) {
+            for ( DataGroup dg : dataGroups.get( grpId ) ) {
+                if ( id.equals( dg.getId() ) ) {
+                    return dg;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void removeDataGroup( String grpId, String id ) {
+        if ( id == null ) {
+            return;
+        }
+        if ( dataGroups.containsKey( grpId ) ) {
+            for ( DataGroup dg : dataGroups.get( grpId ) ) {
+                if ( id.equals( dg.getId() ) ) {
+                    dataGroups.get( grpId ).remove( dg );
+                    break;
+                }
+            }
+        }
+    }
+
+    public String saveDataGroup( String grpId, String id ) {
+        if ( !dataGroups.containsKey( grpId ) ) {
+            dataGroups.put( grpId, new ArrayList<DataGroup>() );
+        }
+        // add new datagroup, if id is null
+        String newId = id;
+        if ( newId == null ) {
+            newId = Utils.createId();
+            DataGroup dg = new DataGroup( newId );
+            dataGroups.get( grpId ).add( dg );
+        }
+        // set values
+        Map<String, Object> values = getValuesAsMap( getFormGroup( grpId ) );
+        for ( DataGroup dg : dataGroups.get( grpId ) ) {
+            if ( newId.equals( dg.getId() ) ) {
+                dg.setValues( values );
+                break;
+            }
+        }
+        return newId;
+    }
+
+    private Map<String, Object> getValuesAsMap( FormGroup fg ) {
+        Map<String, Object> values = new HashMap<String, Object>();
+        if ( fg != null ) {
+            for ( FormElement fe : fg.getFormElements() ) {
+                if ( fe instanceof FormField ) {
+                    FormField ff = (FormField) fe;
+                    values.put( ff.getPath().toString(), ff.getValue() );
+                } else if ( fe instanceof FormGroup ) {
+                    values.putAll( getValuesAsMap( (FormGroup) fe ) );
+                }
+            }
+        }
+        return values;
+    }
+
+    public void resetToDataGroup( String grpId, String id ) {
+        if ( id == null ) {
+            return;
+        }
+        if ( dataGroups.containsKey( grpId ) ) {
+            for ( DataGroup dg : dataGroups.get( grpId ) ) {
+                if ( id.equals( dg.getId() ) ) {
+                    setValues( grpId, dg );
+                    break;
+                }
+            }
+        }
+    }
+
+    public void setDataGroups( Map<String, List<DataGroup>> dgs ) {
+        dataGroups.putAll( dgs );
     }
 
 }

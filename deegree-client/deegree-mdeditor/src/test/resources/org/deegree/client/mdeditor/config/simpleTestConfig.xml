@@ -23,7 +23,7 @@
         </ReferencedFormElement>
     </FormGroup>
 
-    <FormGroup id="FormGroup">
+    <FormGroup id="FormGroup" occurence="unbounded">
         <label>Allgemeine Angaben</label>
         <title>Allgemeine Angaben zum Metadatensatz</title>
         <SelectFormElement id="selectOne1" visible="true" required="true">
@@ -58,6 +58,20 @@
                 <selectType>many</selectType>
             </SelectFormElement>
         </FormGroup>
+    </FormGroup>
+    
+    
+    <FormGroup id="SimpleUnboundedFormGroup" occurence="unbounded">
+        <label>NFach</label>
+        <title>nFacheGruppe</title>
+        <InputFormElement id="in1">
+            <label>Problem1:</label>
+            <inputType>text</inputType>
+        </InputFormElement>
+        <InputFormElement id="in2">
+            <label>Problem2:</label>
+            <inputType>text</inputType>
+        </InputFormElement>
     </FormGroup>
 
 </FormConfiguration>

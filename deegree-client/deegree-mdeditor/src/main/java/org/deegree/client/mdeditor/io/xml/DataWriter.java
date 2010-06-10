@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.io.xml;
 
-import static org.deegree.client.mdeditor.io.xml.XMLDataHandler.FILE_SUFFIX;
+import static org.deegree.client.mdeditor.io.xml.XMLDataHandler.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -43,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -51,6 +52,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.io.DataIOException;
 import org.deegree.client.mdeditor.io.Utils;
+import org.deegree.client.mdeditor.model.DataGroup;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
@@ -68,10 +70,6 @@ public class DataWriter {
 
     private static final Logger LOG = getLogger( DataWriter.class );
 
-    protected static final String DG_ELEM = "DataGroup";
-
-    protected static final String DS_ELEM = "Dataset";
-
     /**
      * Writes the dataset. If a dataset with the given id exists, the dataset will be overwritten.
      * 
@@ -79,10 +77,11 @@ public class DataWriter {
      *            the id of the dataset to write, if the id is null a new id is created
      * @param formGroups
      *            a list of form groups to write as dataset
+     * @param dataGroups
      * @return the id of the written dataset
      * @throws DataIOException
      */
-    static String writeDataset( String id, List<FormGroup> formGroups )
+    static String writeDataset( String id, List<FormGroup> formGroups, Map<String, List<DataGroup>> dataGroups )
                             throws DataIOException {
         if ( id == null ) {
             id = Utils.createId();
@@ -111,7 +110,7 @@ public class DataWriter {
 
             for ( FormGroup fg : formGroups ) {
                 if ( !fg.isReferenced() ) {
-                    append( writer, fg );
+                    append( writer, fg, dataGroups.get( fg.getId() ) );
                 }
             }
 
@@ -170,7 +169,7 @@ public class DataWriter {
 
             writer.writeStartDocument();
             writer.writeStartElement( DS_ELEM );
-            writer.writeAttribute( "id", formGroup.getId() );
+            writer.writeAttribute( ID_ELEM, formGroup.getId() );
 
             append( writer, formGroup );
 
@@ -189,55 +188,79 @@ public class DataWriter {
         return id;
     }
 
+    private static void append( XMLStreamWriter writer, FormGroup fg, List<DataGroup> dataGroups )
+                            throws XMLStreamException {
+        if ( dataGroups == null || dataGroups.size() == 0 ) {
+            append( writer, fg );
+        } else if ( dataGroups.size() == 1 ) {
+            DataGroup dg = dataGroups.get( 0 );
+            for ( String path : dg.getValues().keySet() ) {
+                appendElement( writer, path, dg.getValues().get( path ) );
+            }
+        } else if ( dataGroups.size() > 1 ) {
+            writer.writeStartElement( DG_ELEM );
+            writeId( writer, fg.getId() );
+            for ( DataGroup dg : dataGroups ) {
+                writer.writeStartElement( GRP_ELEM );
+                for ( String path : dg.getValues().keySet() ) {
+                    appendElement( writer, path, dg.getValues().get( path ) );
+                }
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        }
+    }
+
     private static void append( XMLStreamWriter writer, FormGroup fg )
                             throws XMLStreamException {
-        // writer.writeStartElement( FG_ELEM );
-        // writer.writeAttribute( "id", fg.getId() );
-
         for ( FormElement fe : fg.getFormElements() ) {
             if ( fe instanceof FormField ) {
                 FormField ff = (FormField) fe;
-                Object value = ff.getValue();
-                if ( value != null ) {
-
-                    if ( value instanceof List<?> && ( (List<?>) value ).size() > 0 ) {
-                        writer.writeStartElement( "Element" );
-                        writeId( writer, ff.getPath().toString() );
-                        for ( Object o : (List<?>) value ) {
-                            writeValue( writer, String.valueOf( o ) );
-                        }
-                        writer.writeEndElement();
-                    } else if ( value instanceof Object[] && ( (Object[]) value ).length > 0 ) {
-                        writer.writeStartElement( "Element" );
-                        writeId( writer, ff.getPath().toString() );
-                        Object[] array = (Object[]) value;
-                        for ( int i = 0; i < array.length; i++ ) {
-                            writeValue( writer, String.valueOf( array[i] ) );
-                        }
-                        writer.writeEndElement();
-                    } else if ( ( String.valueOf( value ) ).length() > 0 ) {
-                        writer.writeStartElement( "Element" );
-                        writeId( writer, ff.getPath().toString() );
-                        writeValue( writer, String.valueOf( value ) );
-                        writer.writeEndElement();
-                    }
-                }
+                appendElement( writer, ff.getPath().toString(), ff.getValue() );
             } else if ( fe instanceof FormGroup ) {
                 append( writer, (FormGroup) fe );
             }
         }
     }
 
+    private static void appendElement( XMLStreamWriter writer, String path, Object value )
+                            throws XMLStreamException {
+        if ( value != null ) {
+
+            if ( value instanceof List<?> && ( (List<?>) value ).size() > 0 ) {
+                writer.writeStartElement( ELEM_ELEM );
+                writeId( writer, path );
+                for ( Object o : (List<?>) value ) {
+                    writeValue( writer, String.valueOf( o ) );
+                }
+                writer.writeEndElement();
+            } else if ( value instanceof Object[] && ( (Object[]) value ).length > 0 ) {
+                writer.writeStartElement( ELEM_ELEM );
+                writeId( writer, path );
+                Object[] array = (Object[]) value;
+                for ( int i = 0; i < array.length; i++ ) {
+                    writeValue( writer, String.valueOf( array[i] ) );
+                }
+                writer.writeEndElement();
+            } else if ( ( String.valueOf( value ) ).length() > 0 ) {
+                writer.writeStartElement( ELEM_ELEM );
+                writeId( writer, path );
+                writeValue( writer, String.valueOf( value ) );
+                writer.writeEndElement();
+            }
+        }
+    }
+
     private static void writeValue( XMLStreamWriter writer, String value )
                             throws XMLStreamException {
-        writer.writeStartElement( "value" );
+        writer.writeStartElement( VALUE_ELEM );
         writer.writeCharacters( value );
         writer.writeEndElement();
     }
 
     private static void writeId( XMLStreamWriter writer, String path )
                             throws XMLStreamException {
-        writer.writeStartElement( "id" );
+        writer.writeStartElement( ID_ELEM );
         writer.writeCharacters( path );
         writer.writeEndElement();
     }

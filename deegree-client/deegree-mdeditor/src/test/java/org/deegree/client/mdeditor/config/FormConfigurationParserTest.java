@@ -144,7 +144,6 @@ public class FormConfigurationParserTest extends TestCase {
             e.printStackTrace();
         }
     }
-    
 
     @Test
     public void testParseMapping()
@@ -152,10 +151,27 @@ public class FormConfigurationParserTest extends TestCase {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
         FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
         List<URL> mappings = configuration.getMappingURLs();
-        
+
         assertNotNull( mappings );
         assertEquals( 1, mappings.size() );
-        assertEquals( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/isoMapping.xml", mappings.get( 0 ).getFile() );
+        assertEquals(
+                      "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/isoMapping.xml",
+                      mappings.get( 0 ).getFile() );
+    }
+
+    @Test
+    public void testParseOccurence()
+                            throws ConfigurationException {
+        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
+        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        List<FormGroup> formGroups = configuration.getFormGroups();
+
+        assertNotNull( formGroups );
+        assertTrue( formGroups.size() == 2 );
+
+        assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
+        System.out.println("aa" + formGroups.get( 1 ).getOccurence());
+        assertTrue( formGroups.get( 1 ).getOccurence() < 1 );
     }
 
 }

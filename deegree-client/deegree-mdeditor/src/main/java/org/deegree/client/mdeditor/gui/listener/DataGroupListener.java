@@ -41,6 +41,7 @@ import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
 import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.IS_REFERENCED_PARAM;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
@@ -77,38 +78,90 @@ public class DataGroupListener implements AjaxBehaviorListener {
         String grpId = (String) comp.getAttributes().get( GROUPID_ATT_KEY );
         ACTION_ATT_VALUES action = (ACTION_ATT_VALUES) comp.getAttributes().get( ACTION_ATT_KEY );
 
-        String fileId = null;
+        String id = null;
+        boolean isReferencedGrp = true;
         for ( UIComponent child : comp.getChildren() ) {
-            if ( child instanceof UIParameter && DG_ID_PARAM.equals( ( (UIParameter) child ).getName() ) ) {
-                fileId = (String) ( (UIParameter) child ).getValue();
+            if ( child instanceof UIParameter ) {
+                UIParameter param = (UIParameter) child;
+                if ( DG_ID_PARAM.equals( param.getName() ) ) {
+                    id = (String) param.getValue();
+                } else if ( IS_REFERENCED_PARAM.equals( param.getName() ) ) {
+                    isReferencedGrp = (Boolean) param.getValue();
+                }
             }
         }
 
-        LOG.debug( "FormGroup with id " + grpId + " action: " + action + " file is is " + fileId );
+        LOG.debug( "FormGroup with id " + grpId + " action: " + action + " id is " + id );
         FacesContext fc = FacesContext.getCurrentInstance();
         FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "formFieldBean" );
-
         DataGroupBean dataGroupBean = (DataGroupBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "dataGroupBean" );
+
+        if ( grpId == null ) {
+            // TODO: throw exception!
+            return;
+        }
+
+        if ( isReferencedGrp ) {
+            handleReferencedGrp( grpId, action, id, fc, formFieldBean, dataGroupBean );
+        } else {
+            handleInlineGrp( grpId, action, id, fc, formFieldBean, dataGroupBean );
+        }
+        dataGroupBean.reloadFormGroup( grpId, isReferencedGrp );
+
+    }
+
+    private void handleInlineGrp( String grpId, ACTION_ATT_VALUES action, String id, FacesContext fc,
+                                  FormFieldBean formFieldBean, DataGroupBean dataGroupBean ) {
+
+        switch ( action ) {
+        case DELETE:
+            formFieldBean.removeDataGroup( grpId, id );
+            dataGroupBean.addSelectedDataGroup( grpId, null );
+            break;
+        case EDIT:
+            formFieldBean.saveDataGroup( grpId, id );
+            break;
+        case RESET:
+            formFieldBean.resetToDataGroup( grpId, id );
+            break;
+        case NEW:
+        case SAVE:
+            String dgId = formFieldBean.saveDataGroup( grpId, null );
+            dataGroupBean.addSelectedDataGroup( grpId, dgId );
+            break;
+        }
+    }
+
+    /**
+     * @param grpId
+     * @param action
+     * @param id
+     * @param fc
+     * @param formFieldBean
+     * @param dataGroupBean
+     */
+    private void handleReferencedGrp( String grpId, ACTION_ATT_VALUES action, String id, FacesContext fc,
+                                      FormFieldBean formFieldBean, DataGroupBean dataGroupBean ) {
         DataHandler handler = DataHandler.getInstance();
         switch ( action ) {
         case DELETE:
-            handler.deleteDataGroup( grpId, fileId );
+            handler.deleteDataGroup( grpId, id );
             dataGroupBean.addSelectedDataGroup( grpId, null );
             break;
         case EDIT:
             try {
-                handler.writeDataGroup( fileId, formFieldBean.getFormGroup( grpId ) );
+                handler.writeDataGroup( id, formFieldBean.getFormGroup( grpId ) );
             } catch ( DataIOException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             break;
         case RESET:
-            DataGroup dgReset = handler.getDataGroup( grpId, fileId );
+            DataGroup dgReset = handler.getDataGroup( grpId, id );
             if ( dgReset != null ) {
                 formFieldBean.setValues( grpId, dgReset );
             }
@@ -124,6 +177,5 @@ public class DataGroupListener implements AjaxBehaviorListener {
             }
             break;
         }
-        dataGroupBean.reloadFormGroup( grpId );
     }
 }

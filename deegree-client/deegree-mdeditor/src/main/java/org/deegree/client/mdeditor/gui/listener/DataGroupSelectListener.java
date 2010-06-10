@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.listener;
 
+import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.IS_REFERENCED_PARAM;
 import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.List;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
@@ -68,34 +68,41 @@ public class DataGroupSelectListener implements AjaxBehaviorListener {
     @Override
     public void processAjaxBehavior( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
-        String fileName = null;
-        String groupId = (String) event.getComponent().getAttributes().get( GuiUtils.GROUPID_ATT_KEY );
-
-        List<UIComponent> children = event.getComponent().getChildren();
-        for ( UIComponent child : children ) {
-            if ( child instanceof UIParameter
-                 && GuiUtils.DG_ID_PARAM.equals( ( (UIParameter) child ).getName() ) ) {
-                fileName = String.valueOf( ( (UIParameter) child ).getValue() );
+        String grpId = (String) event.getComponent().getAttributes().get( GuiUtils.GROUPID_ATT_KEY );
+        String id = null;
+        boolean isReferencedGrp = true;
+        for ( UIComponent child : event.getComponent().getChildren() ) {
+            if ( child instanceof UIParameter ) {
+                UIParameter param = (UIParameter) child;
+                if ( DG_ID_PARAM.equals( param.getName() ) ) {
+                    id = (String) param.getValue();
+                } else if ( IS_REFERENCED_PARAM.equals( param.getName() ) ) {
+                    isReferencedGrp = (Boolean) param.getValue();
+                }
             }
         }
 
-        LOG.debug( "Select " + fileName + " from group " + groupId );
+        LOG.debug( "Select " + id + " from group " + grpId );
         FacesContext fc = FacesContext.getCurrentInstance();
         FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "formFieldBean" );
-        DataGroup dataGroup = DataHandler.getInstance().getDataGroup( groupId, fileName );
+        DataGroup dataGroup = null;
+        if ( isReferencedGrp ) {
+            dataGroup = DataHandler.getInstance().getDataGroup( grpId, id );
+        } else {
+            dataGroup = formFieldBean.getDataGroup( grpId, id );
+        }
         if ( dataGroup != null ) {
-            formFieldBean.setValues( groupId, dataGroup );
+            formFieldBean.setValues( grpId, dataGroup );
 
             DataGroupBean dataGroupBean = (DataGroupBean) fc.getApplication().getELResolver().getValue(
                                                                                                         fc.getELContext(),
                                                                                                         null,
                                                                                                         "dataGroupBean" );
-            dataGroupBean.addSelectedDataGroup( groupId, fileName );
+            dataGroupBean.addSelectedDataGroup( grpId, id );
         } else {
             // TODO message
         }
     }
-
 }

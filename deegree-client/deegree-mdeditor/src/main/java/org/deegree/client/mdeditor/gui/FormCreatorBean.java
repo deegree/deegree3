@@ -174,7 +174,7 @@ public class FormCreatorBean implements Serializable {
 
         parentGrid.getChildren().add( grid );
 
-        if ( fg.isReferenced() ) {
+        if ( fg.isReferenced() || fg.getOccurence() != 1 ) {
             HtmlPanelGrid referencedGrid = new HtmlPanelGrid();
             addReferencedFormGroup( fg, referencedGrid );
             parentGrid.getChildren().add( referencedGrid );
@@ -187,7 +187,7 @@ public class FormCreatorBean implements Serializable {
         ExpressionFactory ef = app.getExpressionFactory();
         ELContext elContext = FacesContext.getCurrentInstance().getELContext();
 
-        addButtons( grpId, grid );
+        addButtons( grpId, grid, fg.isReferenced() );
 
         // list
         HtmlDataTable dataTable = new HtmlDataTable();
@@ -229,7 +229,7 @@ public class FormCreatorBean implements Serializable {
         }
 
         HtmlColumn col = new HtmlColumn();
-        HtmlCommandButton selectButton = createSelectButton( fg.getId() );
+        HtmlCommandButton selectButton = createSelectButton( fg );
         col.getChildren().add( selectButton );
         HtmlOutputText header = new HtmlOutputText();
         header.setValue( "Optionen" );
@@ -245,14 +245,19 @@ public class FormCreatorBean implements Serializable {
 
     }
 
-    private void addButtons( String grpId, HtmlPanelGrid grid ) {
+    private void addButtons( String grpId, HtmlPanelGrid grid, boolean isReferencedGrp ) {
         HtmlPanelGrid btGrid = new HtmlPanelGrid();
         btGrid.setColumns( 5 );
-        HtmlCommandButton saveButton = createButton( grpId, "saveFormGroup", ACTION_ATT_VALUES.SAVE, true );
-        HtmlCommandButton newButton = createButton( grpId, "newFormGroup", ACTION_ATT_VALUES.NEW, false );
-        HtmlCommandButton editButton = createButton( grpId, "editFormGroup", ACTION_ATT_VALUES.EDIT, false );
-        HtmlCommandButton resetButton = createButton( grpId, "resetFormGroup", ACTION_ATT_VALUES.RESET, false );
-        HtmlCommandButton deleteButton = createButton( grpId, "deleteFormGroup", ACTION_ATT_VALUES.DELETE, false );
+        HtmlCommandButton saveButton = createButton( grpId, "saveFormGroup", ACTION_ATT_VALUES.SAVE, true,
+                                                     isReferencedGrp );
+        HtmlCommandButton newButton = createButton( grpId, "newFormGroup", ACTION_ATT_VALUES.NEW, false,
+                                                    isReferencedGrp );
+        HtmlCommandButton editButton = createButton( grpId, "editFormGroup", ACTION_ATT_VALUES.EDIT, false,
+                                                     isReferencedGrp );
+        HtmlCommandButton resetButton = createButton( grpId, "resetFormGroup", ACTION_ATT_VALUES.RESET, false,
+                                                      isReferencedGrp );
+        HtmlCommandButton deleteButton = createButton( grpId, "deleteFormGroup", ACTION_ATT_VALUES.DELETE, false,
+                                                       isReferencedGrp );
         deleteButton.setOnclick( "return fgListConfirmDelete('Möchten Sie wirklich löschen?')" );
 
         btGrid.getChildren().add( saveButton );
@@ -263,7 +268,8 @@ public class FormCreatorBean implements Serializable {
         grid.getChildren().add( btGrid );
     }
 
-    private HtmlCommandButton createButton( String grpId, String labelKey, ACTION_ATT_VALUES action, boolean ifNull ) {
+    private HtmlCommandButton createButton( String grpId, String labelKey, ACTION_ATT_VALUES action, boolean ifNull,
+                                            boolean isReferencedGrp ) {
 
         Application app = FacesContext.getCurrentInstance().getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
@@ -295,10 +301,16 @@ public class FormCreatorBean implements Serializable {
         bt.setValueExpression( "rendered", veVisibility );
 
         bt.getChildren().add( param );
+
+        UIParameter refParam = new UIParameter();
+        refParam.setName( IS_REFERENCED_PARAM );
+        refParam.setValue( isReferencedGrp );
+        bt.getChildren().add( refParam );
+
         return bt;
     }
 
-    private HtmlCommandButton createSelectButton( String groupId ) {
+    private HtmlCommandButton createSelectButton( FormGroup formGroup ) {
         FacesContext context = FacesContext.getCurrentInstance();
         ExpressionFactory ef = context.getApplication().getExpressionFactory();
         ELContext elContext = context.getELContext();
@@ -308,15 +320,21 @@ public class FormCreatorBean implements Serializable {
         String elBtImg = "/resources/deegree/images/pencil.png";
         ValueExpression veBtImg = ef.createValueExpression( elContext, elBtImg, String.class );
         bt.setValueExpression( "image", veBtImg );
-        bt.getAttributes().put( GROUPID_ATT_KEY, groupId );
+        bt.getAttributes().put( GROUPID_ATT_KEY, formGroup.getId() );
 
         // file name param
-        UIParameter fileNameParam = new UIParameter();
-        fileNameParam.setName( DG_ID_PARAM );
-        String elFileName = "#{fgi.fileName}";
+        UIParameter idParam = new UIParameter();
+        idParam.setName( DG_ID_PARAM );
+        String elFileName = "#{fgi.id}";
         ValueExpression veFileName = ef.createValueExpression( elContext, elFileName, String.class );
-        fileNameParam.setValueExpression( "value", veFileName );
-        bt.getChildren().add( fileNameParam );
+        idParam.setValueExpression( "value", veFileName );
+        bt.getChildren().add( idParam );
+
+        // is referenced param
+        UIParameter refParam = new UIParameter();
+        refParam.setName( IS_REFERENCED_PARAM );
+        refParam.setValue( formGroup.isReferenced() );
+        bt.getChildren().add( refParam );
 
         AjaxBehavior ajaxSelectBt = new AjaxBehavior();
         List<String> render = new ArrayList<String>();

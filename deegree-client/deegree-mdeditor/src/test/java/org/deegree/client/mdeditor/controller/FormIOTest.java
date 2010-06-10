@@ -36,8 +36,8 @@
 package org.deegree.client.mdeditor.controller;
 
 import java.io.FileNotFoundException;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +50,8 @@ import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.io.DataIOException;
+import org.deegree.client.mdeditor.model.DataGroup;
+import org.deegree.client.mdeditor.model.Dataset;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.InputFormField;
@@ -93,10 +95,40 @@ public class FormIOTest extends TestCase {
         v3.add( v31 );
         v3.add( v32 );
 
-        try {
-            DataHandler.getInstance().writeDataset( "testWriting", formGroups );
+        HashMap<String, List<DataGroup>> dataGroups = new HashMap<String, List<DataGroup>>();
+        FormGroup formGroup = formGroups.get( 2 );
+        String grpID = formGroup.getId();
+        List<DataGroup> dgs = new ArrayList<DataGroup>();
+        DataGroup dg1 = new DataGroup( grpID );
+        Map<String, Object> values1 = new HashMap<String, Object>();
+        values1.put( "SimpleUnboundedFormGroup/in1", "dg1 1" );
+        values1.put( "SimpleUnboundedFormGroup/in2", "dg1 2" );
+        dg1.setValues( values1 );
+        dgs.add( dg1 );
 
-            Map<String, Object> values = DataHandler.getInstance().getDataset( "testWriting" );
+        DataGroup dg2 = new DataGroup( grpID );
+        Map<String, Object> values2 = new HashMap<String, Object>();
+        values2.put( "SimpleUnboundedFormGroup/in1", "dg2 1" );
+        values2.put( "SimpleUnboundedFormGroup/in2", "dg2 2" );
+        dg2.setValues( values2 );
+        dgs.add( dg2 );
+
+        DataGroup dg3 = new DataGroup( grpID );
+        Map<String, Object> values3 = new HashMap<String, Object>();
+        values3.put( "SimpleUnboundedFormGroup/in1", "dg3 1" );
+        dg3.setValues( values3 );
+        dgs.add( dg3 );
+
+        dataGroups.put( formGroup.getId(), dgs );
+
+        try {
+            // write
+            DataHandler.getInstance().writeDataset( "testWriting", formGroups, dataGroups );
+
+            // and read
+            Dataset dataset = DataHandler.getInstance().getDataset( "testWriting" );
+
+            Map<String, Object> values = dataset.getValues();
             assertEquals( 4, values.size() );
 
             String v4 = String.valueOf( ( (InputFormField) fg.getFormElements().get( 2 ) ).getValue() );
@@ -121,11 +153,29 @@ public class FormIOTest extends TestCase {
             assertEquals( v2, values.get( p2 ) );
             assertEquals( v3, values.get( p3 ) );
             assertEquals( v4, values.get( p4 ) );
+
+            Map<String, List<DataGroup>> resultDG = dataset.getDataGroups();
+
+            assertNotNull( resultDG );
+            assertEquals( 1, resultDG.size() );
+            assertTrue( resultDG.containsKey( grpID ) );
+
+            List<DataGroup> list = resultDG.get( grpID );
+            assertEquals( 3, list.size() );
+
+            DataGroup dataGroup1 = list.get( 0 );
+            assertNotNull( dataGroup1.getValues() );
+            assertEquals( 2, dataGroup1.getValues().size() );
+
+            DataGroup dataGroup3 = list.get( 2 );
+            assertNotNull( dataGroup3.getValues() );
+            assertEquals( 1, dataGroup3.getValues().size() );
+            assertEquals( "dg3 1", dataGroup3.getValues().get( "SimpleUnboundedFormGroup/in1" ) );
+
         } catch ( DataIOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
     }
-
 }

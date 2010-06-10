@@ -124,6 +124,22 @@
         </FormGroup>
     </FormGroup>
 
+
+    <FormGroup id="FormatFormGroup" occurence="unbounded">
+        <label>Abgabeformat</label>
+        <title>Abgabeformat der Daten</title>
+        <InputFormElement id="FormatName">
+            <label>Bezeichnung:</label>
+            <help>Bezeichnung des Datenformats</help>
+            <inputType>text</inputType>
+        </InputFormElement>
+        <InputFormElement id="FormatVersion">
+            <label>Version:</label>
+            <help>Version des Datenformats</help>
+            <inputType>text</inputType>
+        </InputFormElement>
+    </FormGroup>
+    
     <FormGroup id="ContactFormGroup">
         <label>Kontakt</label>
         <title>Kontaktdaten</title>

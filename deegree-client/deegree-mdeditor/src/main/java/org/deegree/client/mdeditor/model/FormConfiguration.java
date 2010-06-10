@@ -149,11 +149,11 @@ public class FormConfiguration {
         return null;
     }
 
-    public List<String> getReferencedFormGroupIds() {
-        List<String> ids = new ArrayList<String>();
+    public Map<String, Boolean> getReferencedFormGroupIds() {
+        Map<String, Boolean> ids = new HashMap<String, Boolean>();
         for ( FormGroup fg : formGroups ) {
-            if ( fg.isReferenced() ) {
-                ids.add( fg.getId() );
+            if ( fg.isReferenced() || fg.getOccurence() != 0 ) {
+                ids.put( fg.getId(), fg.isReferenced() );
             }
         }
         return ids;

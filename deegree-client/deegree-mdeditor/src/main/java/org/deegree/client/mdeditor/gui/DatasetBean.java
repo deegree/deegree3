@@ -51,6 +51,7 @@ import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 import org.deegree.client.mdeditor.io.DataHandler;
+import org.deegree.client.mdeditor.model.Dataset;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
@@ -95,16 +96,17 @@ public class DatasetBean implements Serializable {
             fc.addMessage( "LOAD_FAILED_INVALID_ID", msg );
             return "/page/form/errorPage.xhtml";
         }
-
-        Map<String, Object> values;
+        Dataset ds;
         try {
-            values = DataHandler.getInstance().getDataset( id );
+            ds = DataHandler.getInstance().getDataset( id );
         } catch ( Exception e ) {
             FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.LOAD", id,
                                                          e.getMessage() );
             fc.addMessage( "LOAD_FAILED", msg );
             return "/page/form/errorPage.xhtml";
         }
+
+        Map<String, Object> values = ds.getValues();
 
         FormFieldBean formfieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
@@ -115,6 +117,8 @@ public class DatasetBean implements Serializable {
                 formFields.get( path ).setValue( values.get( path ) );
             }
         }
+
+        formfieldBean.setDataGroups( ds.getDataGroups() );
 
         boolean asTemplate = false;
         for ( Iterator<String> iterator = fc.getExternalContext().getRequestParameterNames(); iterator.hasNext(); ) {
@@ -154,13 +158,14 @@ public class DatasetBean implements Serializable {
         FacesContext fc = FacesContext.getCurrentInstance();
         String id = selectedDataset;
         if ( selectedDataset == null || selectedDataset.length() == 0 ) {
-            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.DELETE_DATASET.INVALID_ID", id );
+            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL,
+                                                         "ERROR.DELETE_DATASET.INVALID_ID", id );
             fc.addMessage( "DELETE_DATASET_INVALID_ID", msg );
             return "/page/form/errorPage.xhtml";
         }
-        
+
         DataHandler.getInstance().deleteDataset( id );
-        
+
         FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.DELETE_DATASET", id );
         fc.addMessage( "DELETE_DATASET_SUCCESS", msg );
         return "/page/form/successPage.xhtml";
@@ -170,17 +175,18 @@ public class DatasetBean implements Serializable {
         LOG.debug( "Save dataset" );
         String id;
         FacesContext fc = FacesContext.getCurrentInstance();
-        FormFieldBean formfields = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                 null, "formFieldBean" );
+        FormFieldBean formfieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+                                                                                                    null,
+                                                                                                    "formFieldBean" );
 
         HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
         try {
             FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
 
             FormFieldPath pathToIdentifier = manager.getPathToIdentifier();
-            Object value = formfields.getFormFields().get( pathToIdentifier.toString() ).getValue();
-            id = String.valueOf( value );
-            if ( value == null || id == null || id.length() == 0 ) {
+            Object datasetId = formfieldBean.getFormFields().get( pathToIdentifier.toString() ).getValue();
+            id = String.valueOf( datasetId );
+            if ( datasetId == null || id == null || id.length() == 0 ) {
                 FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL,
                                                              "ERROR.SAVE_DATASET.INVALID_ID" );
                 fc.addMessage( "SAVE_FAILED_INVALID_ID", msg );
@@ -188,7 +194,7 @@ public class DatasetBean implements Serializable {
                 return "/page/form/errorPage.xhtml";
             }
 
-            DataHandler.getInstance().writeDataset( id, formfields.getFormGroups() );
+            DataHandler.getInstance().writeDataset( id, formfieldBean.getFormGroups(), formfieldBean.getDataGroups() );
 
         } catch ( Exception e ) {
             FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.SAVE_DATASET",

@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,20 +48,13 @@ import java.util.Map;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DataGroup {
+public class Dataset {
 
     private String id;
 
     private Map<String, Object> values = new HashMap<String, Object>();
 
-    public DataGroup( String id ) {
-        this.id = id;
-    }
-
-    public DataGroup( String id, Map<String, Object> values ) {
-        this.id = id;
-        this.values = values;
-    }
+    private Map<String, List<DataGroup>> dataGroups = new HashMap<String, List<DataGroup>>();
 
     public void setId( String id ) {
         this.id = id;
@@ -75,6 +70,18 @@ public class DataGroup {
 
     public Map<String, Object> getValues() {
         return values;
+    }
+
+    public void setDataGroups( Map<String, List<DataGroup>> dataGroups ) {
+        this.dataGroups = dataGroups;
+    }
+
+    public Map<String, List<DataGroup>> getDataGroups() {
+        return dataGroups;
+    }
+
+    public void addDataGroup( String grpId, List<DataGroup> dgs ) {
+        dataGroups.put( grpId, dgs );
     }
 
 }

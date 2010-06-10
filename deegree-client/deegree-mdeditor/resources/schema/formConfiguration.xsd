@@ -52,6 +52,12 @@
                 </xs:choice>
             </xs:sequence>
             <xs:attribute name="id" type="xs:string" use="required" />
+            <xs:attribute name="occurence" type="xs:string" default="1">
+                <xs:annotation>
+                    <xs:documentation>the count of maximum occurence of this formGroup, default is 1. Can be a number or
+                        'unbounded', if count is unlimited.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
     <xs:element name="FormElement" type="FormElement_Type" abstract="true" />
@@ -88,7 +94,7 @@
                 <xs:attribute name="occurence" type="xs:string" default="1">
                     <xs:annotation>
                         <xs:documentation>the count of maximum occurence of this field, default is 1. Can be a number or
-                            unbounded, if count is unlimited.</xs:documentation>
+                            'unbounded', if count is unlimited.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
             </xs:extension>

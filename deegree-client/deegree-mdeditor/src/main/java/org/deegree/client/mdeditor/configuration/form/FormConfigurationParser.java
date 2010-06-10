@@ -184,6 +184,8 @@ public class FormConfigurationParser extends Parser {
                             throws XMLStreamException, IOException, ConfigurationException {
 
         String formGroupId = getId( xmlStream );
+        int occurence = getOccurence( xmlStream, formGroupId );
+
         path.push( formGroupId );
         if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
             xmlStream.nextTag();
@@ -193,7 +195,7 @@ public class FormConfigurationParser extends Parser {
         LOG.debug( "Found group with id " + formGroupId + ", title " + title + ", label " + label
                    + ". Start to parse form elements and groups." );
 
-        FormGroup fg = new FormGroup( formGroupId, label, title );
+        FormGroup fg = new FormGroup( formGroupId, label, title, occurence );
 
         while ( !( xmlStream.isEndElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) ) {
             if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
@@ -306,20 +308,7 @@ public class FormConfigurationParser extends Parser {
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
         boolean isIdentifier = getBooleanAttribute( xmlStream, "isIdentifier", false );
 
-        int occurence = 1;
-        String occurenceAtt = xmlStream.getAttributeValue( null, "occurence" );
-        if ( occurenceAtt != null ) {
-            if ( !"unbounded".equals( occurenceAtt ) ) {
-                try {
-                    occurence = Integer.parseInt( occurenceAtt );
-                } catch ( Exception e ) {
-                    throw new ConfigurationException( "the attribute occurence of input form field with id " + id
-                                                      + " is not a valid integer: " + occurenceAtt );
-                }
-            } else {
-                occurence = Integer.MIN_VALUE;
-            }
-        }
+        int occurence = getOccurence( xmlStream, id );
         xmlStream.nextTag();
 
         String label = getElementText( xmlStream, "label", id );
@@ -345,6 +334,26 @@ public class FormConfigurationParser extends Parser {
                                                 occurence, defaultValue, validation );
         setPathToIdentifier( ff );
         return ff;
+    }
+
+    private int getOccurence( XMLStreamReader xmlStream, String id )
+                            throws ConfigurationException {
+        int occurence = 1;
+        String occurenceAtt = xmlStream.getAttributeValue( null, "occurence" );
+        if ( occurenceAtt != null ) {
+            if ( !"unbounded".equals( occurenceAtt ) ) {
+                try {
+                    occurence = Integer.parseInt( occurenceAtt );
+                } catch ( Exception e ) {
+                    throw new ConfigurationException( "the attribute occurence of component with id " + id
+                                                      + " is not a valid integer: " + occurenceAtt
+                                                      + " nor equals unbounded" );
+                }
+            } else {
+                occurence = Integer.MIN_VALUE;
+            }
+        }
+        return occurence;
     }
 
     private INPUT_TYPE getInputType( XMLStreamReader xmlStream )
