@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.execute;
 
 /**
@@ -44,14 +44,21 @@ package org.deegree.protocol.wps.execute;
  * @version $Revision: $, $Date: $
  */
 public class DocumentOutputDefinition {
-    
+
     String mimeType;
+
     String encoding;
+
     String schema;
+
     String uom;
+
     boolean asReference;
+
     String Identifier;
+
     String title;
+
     String abstraCt;
 
 }

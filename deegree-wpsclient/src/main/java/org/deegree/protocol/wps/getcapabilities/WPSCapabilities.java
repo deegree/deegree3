@@ -289,31 +289,28 @@ public class WPSCapabilities {
                     processBrief.setProcessVersion( omAttribute.getAttributeValue() );
             }
 
-            processBrief.setIdentifier( capabilitiesDoc.getNodeAsString( processOMElement,
-                                                                             new XPath( "ows:Identifier", NS_CONTEXT ),
-                                                                             null ) );
+            processBrief.setIdentifier( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:Identifier",
+                                                                                                      NS_CONTEXT ),
+                                                                         null ) );
 
             processBrief.setAbstract( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:Abstract",
-                                                                                                        NS_CONTEXT ),
-                                                                           null ) );
+                                                                                                    NS_CONTEXT ), null ) );
 
-            processBrief.setMetadata( capabilitiesDoc.getNodesAsStrings( processOMElement,
-                                                                             new XPath( "ows:Abstract", NS_CONTEXT ) ) );
+            processBrief.setMetadata( capabilitiesDoc.getNodesAsStrings( processOMElement, new XPath( "ows:Abstract",
+                                                                                                      NS_CONTEXT ) ) );
 
             processBrief.setProcessVersion( capabilitiesDoc.getNodeAsString( processOMElement,
-                                                                                 new XPath( "ows:ProcessVersion",
-                                                                                            NS_CONTEXT ), null ) );
+                                                                             new XPath( "ows:ProcessVersion",
+                                                                                        NS_CONTEXT ), null ) );
 
-            processBrief.setProfiles( capabilitiesDoc.getNodesAsStrings(
-                                                                          processOMElement,
-                                                                          new XPath( "ows:ProcessVersion", NS_CONTEXT )
-                                                                           ) );
+            processBrief.setProfiles( capabilitiesDoc.getNodesAsStrings( processOMElement,
+                                                                         new XPath( "ows:ProcessVersion", NS_CONTEXT ) ) );
 
             processBrief.setTitle( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:Title",
-                                                                                                     NS_CONTEXT ), null ) );
+                                                                                                 NS_CONTEXT ), null ) );
 
-            processBrief.setWsdl( capabilitiesDoc.getNodeAsString( processOMElement, new XPath( "ows:WSDS",
-                                                                                                    NS_CONTEXT ), null ) );
+            processBrief.setWsdl( capabilitiesDoc.getNodeAsString( processOMElement,
+                                                                   new XPath( "ows:WSDS", NS_CONTEXT ), null ) );
 
             processOfferingsList.add( processBrief );
 

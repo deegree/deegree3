@@ -111,12 +111,11 @@ public class BuildExecuteObjects {
         this.store = processDesription.isStoreSupported();
         this.schemaLocation = processDesription.getSchemaLocation();
         setInputs( dataInputList );
-        System.out.println ("outputConfigurationList: " + outputConfigurationList.size());
+        System.out.println( "outputConfigurationList: " + outputConfigurationList.size() );
 
         if ( outputConfigurationList.size() == 0 ) {
             this.outputConfigurationList = createOutputConfigurationList();
         }
-
 
         this.setOutputs( this.outputConfigurationList );
 
@@ -358,11 +357,11 @@ public class BuildExecuteObjects {
     }
 
     public ByteArrayOutputStream createExecuteRequest() {
-               Execute execute = new Execute( processDescription, dataInputExecuteList, responseFormList, null );
-               ByteArrayOutputStream out= new ByteArrayOutputStream();
+        Execute execute = new Execute( processDescription, dataInputExecuteList, responseFormList, null );
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-               try {
-                   out=execute.returnExecuteRequest();
+        try {
+            out = execute.returnExecuteRequest();
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -370,12 +369,12 @@ public class BuildExecuteObjects {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        System.out.println (out);
+        System.out.println( out );
         return out;
     }
-    
-    public void sendExecuteRequest(){
-        
+
+    public void sendExecuteRequest() {
+
     }
 
 }

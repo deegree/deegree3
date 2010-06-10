@@ -85,8 +85,8 @@ public class WPSCLI {
 
         DescribeProcess dP = new DescribeProcess(
                                                   new URL(
-                                                           BASE_URL + "service=WPS&version=1.0.0&request=DescribeProcess&IDENTIFIER=Buffer" ) );
-
+                                                           BASE_URL
+                                                                                   + "service=WPS&version=1.0.0&request=DescribeProcess&IDENTIFIER=Buffer" ) );
 
         ProcessDescription processDescription = new ProcessDescription();
         processDescription = dP.getProcessDescriptions().get( 0 );
@@ -97,14 +97,11 @@ public class WPSCLI {
         LoadFile loadFile = new LoadFile( "curve.xml" );
         String input = loadFile.load();
 
-        ProcessExecution processExecution = new ProcessExecution(processDescription);
-        processExecution.addInput(  "GMLInput", input, false );
+        ProcessExecution processExecution = new ProcessExecution( processDescription );
+        processExecution.addInput( "GMLInput", input, false );
         processExecution.addInput( "BufferDistance", "23", false );
-        
-        
-        ExecuteResponse executeResponse = new ExecuteResponse(processExecution.sendExecuteRequest());
-        
-        
+
+        ExecuteResponse executeResponse = new ExecuteResponse( processExecution.sendExecuteRequest() );
 
     }
 

@@ -72,12 +72,10 @@ public class WPSClient100 {
     private Map<String, ProcessInfo> processIdToProcess = new HashMap<String, ProcessInfo>();
 
     private XMLAdapter capabilitesDoc;
-    
+
     private static final String BASE_URL = "http://ows7.lat-lon.de/d3WPS_JTS/services?";
-    
+
     private static final String FULL_SERVICE_URL = "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities";
-
-
 
     /**
      * Public constructor to access a WPS instance based on it's GetCapabilities URL
@@ -212,7 +210,7 @@ public class WPSClient100 {
      */
     public ProcessInfo fetchProcessInfo( String processIdentifier )
                             throws Exception {
-        ProcessInfo processInfo = new ProcessInfo( this.BASE_URL,processIdentifier );
+        ProcessInfo processInfo = new ProcessInfo( this.BASE_URL, processIdentifier );
         URL operationsURL = null;
         StringBuilder sb = new StringBuilder( serviceCapabilities.getOperationURLasString( "DescribeProcess", true ) );
         sb.append( "request=DescribeProcess&Version=1.0.0&identifier=" );
@@ -226,37 +224,31 @@ public class WPSClient100 {
     private void executeRequest() {
 
     }
-    
-    
-    public String[] getProcessIdentifiers(){
-        int size=this.serviceCapabilities.getProcessOfferings().size();
-        String[] identifier=new String[size];
-        
-        for (int i=0; i<size; i++){
-           identifier[i]=serviceCapabilities.getProcessOfferings().get( i ).getIdentifier();
+
+    public String[] getProcessIdentifiers() {
+        int size = this.serviceCapabilities.getProcessOfferings().size();
+        String[] identifier = new String[size];
+
+        for ( int i = 0; i < size; i++ ) {
+            identifier[i] = serviceCapabilities.getProcessOfferings().get( i ).getIdentifier();
         }
-        
+
         return identifier;
-        
+
     }
-    
-    public ProcessInfo getProcessInfo(String processIdentifier){
-       return (new ProcessInfo (this.BASE_URL, processIdentifier));
+
+    public ProcessInfo getProcessInfo( String processIdentifier ) {
+        return ( new ProcessInfo( this.BASE_URL, processIdentifier ) );
     }
-    
-    
-    
-    
-    
-    
-    
-    public static void main (String args[]) throws Exception{
-        URL processUrl = new URL(FULL_SERVICE_URL);
-        WPSClient100 wpsClient100 = new WPSClient100(processUrl);
-     
-        ProcessInfo bufferInfo=wpsClient100.getProcessInfo(  "Buffer" );
-        System.out.println (bufferInfo.getAbstraCt());
-        
+
+    public static void main( String args[] )
+                            throws Exception {
+        URL processUrl = new URL( FULL_SERVICE_URL );
+        WPSClient100 wpsClient100 = new WPSClient100( processUrl );
+
+        ProcessInfo bufferInfo = wpsClient100.getProcessInfo( "Buffer" );
+        System.out.println( bufferInfo.getAbstraCt() );
+
     }
 
 }

@@ -320,15 +320,13 @@ public class Execute {
     public ByteArrayOutputStream returnExecuteRequest()
                             throws XMLStreamException, IOException {
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream( );
-      
-            
-            
-            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
         XMLStreamWriter writer = null;
         try {
             writer = factory.createXMLStreamWriter( out );
-            
+
         } catch ( XMLStreamException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -350,7 +348,6 @@ public class Execute {
         writer.writeEndDocument();
         writer.flush();
         writer.close();
-        
 
         out.close();
 

@@ -66,7 +66,6 @@ public class ProcessBrief {
     private String versionType;
 
     private String wsdl;
-    
 
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
@@ -105,7 +104,7 @@ public class ProcessBrief {
     }
 
     public void setMetadata( String[] metadata ) {
-        this.metadata=metadata;
+        this.metadata = metadata;
     }
 
     public String[] getProfiles() {
@@ -113,7 +112,7 @@ public class ProcessBrief {
     }
 
     public void setProfiles( String[] profiles ) {
-        this.profiles=profiles;
+        this.profiles = profiles;
     }
 
     public String getVersionType() {

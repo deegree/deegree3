@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.execute;
 
 /**
@@ -44,45 +44,55 @@ package org.deegree.protocol.wps.execute;
  * @version $Revision: $, $Date: $
  */
 public class Output {
-    
+
     private String identifier;
+
     private String title;
+
     private String abstraCt;
+
     private OutputReference outputReference;
+
     private DataType dataType;
+
     public String getIdentifier() {
         return identifier;
     }
+
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
+
     public String getTitle() {
         return title;
     }
+
     public void setTitle( String title ) {
         this.title = title;
     }
+
     public String getAbstraCt() {
         return abstraCt;
     }
+
     public void setAbstraCt( String abstraCt ) {
         this.abstraCt = abstraCt;
     }
+
     public OutputReference getOutputReference() {
         return outputReference;
     }
+
     public void setOutputReference( OutputReference outputReference ) {
         this.outputReference = outputReference;
     }
+
     public DataType getDataType() {
         return dataType;
     }
+
     public void setDataType( DataType dataType ) {
         this.dataType = dataType;
     }
-    
-    
-    
-    
 
 }

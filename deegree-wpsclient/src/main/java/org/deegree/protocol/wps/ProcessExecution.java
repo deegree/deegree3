@@ -131,8 +131,7 @@ public class ProcessExecution {
         outputConfigurationList.add( outputConfiguration );
     }
 
-    public XMLAdapter sendExecuteRequest()
-                             {
+    public XMLAdapter sendExecuteRequest() {
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
@@ -164,9 +163,9 @@ public class ProcessExecution {
 
         } catch ( Exception e ) {
         }
-                
+
         return xmlAdapter;
-        
+
     }
 
     public String sendExecuteRequestStringReturn() {
@@ -175,7 +174,7 @@ public class ProcessExecution {
 
         ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
 
-        String inResponse="";
+        String inResponse = "";
         try {
             // Construct data
             String data = byteArrayOutputStream.toString();
@@ -207,10 +206,10 @@ public class ProcessExecution {
         }
 
         return inResponse;
-        
+
     }
-    
-    public ExecuteResponse sendExecuteRequestExecuteResponseReturn(){
+
+    public ExecuteResponse sendExecuteRequestExecuteResponseReturn() {
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
 
@@ -241,14 +240,13 @@ public class ProcessExecution {
 
         } catch ( Exception e ) {
         }
-                
 
-        ExecuteResponse executeResponse = new ExecuteResponse(xmlAdapter);
+        ExecuteResponse executeResponse = new ExecuteResponse( xmlAdapter );
         return executeResponse;
-        
+
     }
-    
-    public Object sendExecuteRequestExecuteObjectReturn(){
+
+    public Object sendExecuteRequestExecuteObjectReturn() {
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
@@ -281,29 +279,26 @@ public class ProcessExecution {
 
         } catch ( Exception e ) {
         }
-                
 
-        ExecuteResponse executeResponse = new ExecuteResponse(xmlAdapter);
-       if (executeResponse.getProcessOutputs().getOutputs()!=null){
-        
-           if (executeResponse.getProcessOutputs().getOutputs().get(0).getOutputReference()!=null)
-               if (executeResponse.getProcessOutputs().getOutputs().get( 0 ).getOutputReference().getHref()!=null)
-                   object =executeResponse.getProcessOutputs().getOutputs().get( 0 ).getOutputReference().getHref();
-        if (executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType()!=null)
-        {
-           if(executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getComplexData().getObject()!=null)
-               object =executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getComplexData().getObject();
-           
-           if (executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData()!=null)
-        if (executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData().getLiteralData()!=null)
-               object =executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData().getLiteralData();
-       }
+        ExecuteResponse executeResponse = new ExecuteResponse( xmlAdapter );
+        if ( executeResponse.getProcessOutputs().getOutputs() != null ) {
+
+            if ( executeResponse.getProcessOutputs().getOutputs().get( 0 ).getOutputReference() != null )
+                if ( executeResponse.getProcessOutputs().getOutputs().get( 0 ).getOutputReference().getHref() != null )
+                    object = executeResponse.getProcessOutputs().getOutputs().get( 0 ).getOutputReference().getHref();
+            if ( executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType() != null ) {
+                if ( executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getComplexData().getObject() != null )
+                    object = executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getComplexData().getObject();
+
+                if ( executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData() != null )
+                    if ( executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData().getLiteralData() != null )
+                        object = executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData().getLiteralData();
+            }
         }
         return object;
     }
-    
-    
-    public List<Output> sendExecuteRequestOutputList(){
+
+    public List<Output> sendExecuteRequestOutputList() {
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
@@ -336,17 +331,13 @@ public class ProcessExecution {
 
         } catch ( Exception e ) {
         }
-                
 
-        ExecuteResponse executeResponse = new ExecuteResponse(xmlAdapter);
+        ExecuteResponse executeResponse = new ExecuteResponse( xmlAdapter );
 
-        List<Output> outputs =executeResponse.getProcessOutputs().getOutputs();
-        
+        List<Output> outputs = executeResponse.getProcessOutputs().getOutputs();
+
         return outputs;
     }
-    
-
-    
 
     public String returnExecuteRequest() {
 
@@ -356,9 +347,5 @@ public class ProcessExecution {
 
         return request;
     }
-
-
-
-
 
 }

@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.execute;
 
 import java.util.ArrayList;
@@ -47,17 +47,15 @@ import java.util.List;
  * @version $Revision: $, $Date: $
  */
 public class ProcessOutputs {
-    
-    private List<Output> outputList=new ArrayList();
+
+    private List<Output> outputList = new ArrayList();
 
     public List<Output> getOutputs() {
         return outputList;
     }
 
     public void addOutput( Output output ) {
-        this.outputList.add( output);
+        this.outputList.add( output );
     }
-    
-    
 
 }

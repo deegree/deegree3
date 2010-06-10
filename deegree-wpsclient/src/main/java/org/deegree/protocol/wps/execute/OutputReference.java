@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.execute;
 
 import org.deegree.protocol.wps.describeprocess.Format;
@@ -46,24 +46,25 @@ import org.deegree.protocol.wps.describeprocess.Format;
  * @version $Revision: $, $Date: $
  */
 public class OutputReference {
-    
+
     private Format format;
+
     private String href;
-    
+
     public Format getFormat() {
         return format;
     }
+
     public void setFormat( Format format ) {
         this.format = format;
     }
+
     public String getHref() {
         return href;
     }
+
     public void setHref( String href ) {
         this.href = href;
     }
-    
-    
-    
 
 }
