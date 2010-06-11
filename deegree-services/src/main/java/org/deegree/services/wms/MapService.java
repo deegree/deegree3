@@ -1094,4 +1094,11 @@ public class MapService {
         return defaultFeatureInfoRadius;
     }
 
+    /**
+     * @return the global max features setting
+     */
+    public int getGlobalMaxFeatures() {
+        return globalDefaultMaxFeatures;
+    }
+
 }

@@ -349,8 +349,8 @@ public class GetMap {
             for ( Layer l : this.layers ) {
                 Integer max = service.getDefaultMaxFeatures().get( l );
                 if ( max == null ) {
-                    LOG.debug( "Using default max features of 10000." );
-                    max = 10000;
+                    max = service.getGlobalMaxFeatures();
+                    LOG.debug( "Using global max features setting of {}." );
                 }
                 this.maxFeatures.put( l, max );
             }
