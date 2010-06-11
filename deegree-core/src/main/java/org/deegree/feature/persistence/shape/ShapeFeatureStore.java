@@ -292,8 +292,6 @@ public class ShapeFeatureStore implements FeatureStore {
             } catch ( ClassNotFoundException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Existing rtree index could not be read. Generating a new one..." );
-            } finally {
-                raf.close();
             }
             if ( shp != null ) {
                 return shp;
@@ -305,7 +303,6 @@ public class ShapeFeatureStore implements FeatureStore {
         LOG.debug( "Building rtree index in memory for '{}'", new File( shpName ).getName() );
 
         Pair<RTree<Long>, Boolean> p = createIndex( shp );
-        shp.close();
         LOG.debug( "done." );
         shp = new SHPReader( raf, crs, p.first, p.second );
         RandomAccessFile output = new RandomAccessFile( shpName + ".rti", "rw" );
