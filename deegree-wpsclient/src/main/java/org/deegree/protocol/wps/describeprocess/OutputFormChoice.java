@@ -37,10 +37,10 @@ package org.deegree.protocol.wps.describeprocess;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the OutputFormChoice section of the DescribeProcess response document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -52,26 +52,51 @@ public class OutputFormChoice {
 
     private BoundingBoxData boundingBoxData;
 
+    /**
+     *  
+     * @return ComplexData object
+     */
     public ComplexData getComplexOutput() {
         return complexOutput;
     }
-
+    
+    /**
+     *  
+     * @param ComplexData object
+     */
     public void setComplexOutput( ComplexData complexOutput ) {
         this.complexOutput = complexOutput;
     }
 
+
+    /**
+     *  
+     * @return LiteralOutputData object
+     */
     public LiteralOutputData getLiteralOutput() {
         return literalOutput;
     }
 
+    /**
+     *  
+     * @param LiteralOutputData object
+     */
     public void setLiteralOutput( LiteralOutputData literalOutput ) {
         this.literalOutput = literalOutput;
     }
 
+    /**
+     *  
+     * @return BoundingBoxData object
+     */
     public BoundingBoxData getBoundingBoxData() {
         return boundingBoxData;
     }
 
+    /**
+     *  
+     * @param BoundingBoxData object
+     */
     public void setBoundingBoxData( BoundingBoxData boundingBoxData ) {
         this.boundingBoxData = boundingBoxData;
     }

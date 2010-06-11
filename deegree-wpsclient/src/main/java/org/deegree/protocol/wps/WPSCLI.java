@@ -97,7 +97,7 @@ public class WPSCLI {
         LoadFile loadFile = new LoadFile( "curve.xml" );
         String input = loadFile.load();
 
-        ProcessExecution processExecution = new ProcessExecution( processDescription );
+        ProcessExecution processExecution = new ProcessExecution( processDescription, BASE_URL );
         processExecution.addInput( "GMLInput", input, false );
         processExecution.addInput( "BufferDistance", "23", false );
 

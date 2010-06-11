@@ -37,33 +37,47 @@ package org.deegree.protocol.wps.describeprocess;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the LiteralInputData section of the DescribeProcess response document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
 public class LiteralInputData extends LiteralOutputData {
 
-    // To Do LiteralValuesChoice
-
     private LiteralValuesChoice literalValuesChoice;
 
     private String defaulValue;
 
+    /**
+     *  
+     * @return LiteralValuesChoice
+     */
     public LiteralValuesChoice getLiteralValuesChoice() {
         return literalValuesChoice;
     }
 
+    /**
+     *  
+     * @param literalValuesChoice
+     */
     public void setLiteralValuesChoice( LiteralValuesChoice literalValuesChoice ) {
         this.literalValuesChoice = literalValuesChoice;
     }
 
+    /**
+     *  
+     * @return default Value
+     */
     public String getDefaulValue() {
         return defaulValue;
     }
 
+    /**
+     *  
+     * @param defaultValue
+     */
     public void setDefaulValue( String defaulValue ) {
         this.defaulValue = defaulValue;
     }

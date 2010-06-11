@@ -39,31 +39,47 @@ import java.util.List;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the UOM section of the DescribeProcess response document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
 public class Uom {
 
-    String defauLt;
+    private String defauLt;
 
-    List<String> supported;
+    private List<String> supported;
 
+    /**
+     *  
+     * @return default unit of measurement
+     */
     public String getDefauLt() {
         return defauLt;
     }
 
+    /**
+     *  
+     * @param default unit of measurement
+     */
     public void setDefauLt( String defauLt ) {
         this.defauLt = defauLt;
     }
 
+    /**
+     *  
+     * @return supported units of measurement
+     */
     public List<String> getSupported() {
         return supported;
     }
-
+    
+    /**
+     *  
+     * @param supported units of measurement
+     */
     public void setSupported( List<String> supported ) {
         this.supported = supported;
     }

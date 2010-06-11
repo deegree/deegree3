@@ -35,24 +35,49 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.describeprocess;
 
+/**
+ * 
+ * Represents the LiteralOutputData section of the DescribeProcess response document of the WPS specification 1.0
+ * 
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class LiteralOutputData {
 
     private String dataType;
 
     private Uom uom;
 
+    /**
+     *  
+     * @return dataType of literal value
+     */
     public String getDataType() {
         return dataType;
     }
 
+    /**
+     *  
+     * @param dataType of literal value
+     */
     public void setDataType( String dataType ) {
         this.dataType = dataType;
     }
 
+    /**
+     *  
+     * @return units of measurement
+     */
     public Uom getUom() {
         return uom;
     }
-
+    
+    /**
+     *  
+     * @param units of measurement
+     */
     public void setUom( Uom uom ) {
         this.uom = uom;
     }

@@ -92,7 +92,7 @@ public class WPSClient {
         serviceCapabilities = new WPSCapabilities( new XMLAdapter( capabilitiesURL ) );
 
     }
-    
+
     /**
      * 
      * @return String[] identifiers of all processes deliverd by the WPS
@@ -106,14 +106,15 @@ public class WPSClient {
         }
 
         return identifier;
-   
+
     }
 
     /**
      * 
      * @return ProcessInfo Object which holds all Information of the DescribeProcess Document
      * 
-     * @param processIdentifier identifier of the process
+     * @param processIdentifier
+     *            identifier of the process
      */
     public ProcessInfo getProcessInfo( String processIdentifier ) {
         return ( new ProcessInfo( WPSClient.BASE_URL, processIdentifier ) );
@@ -123,15 +124,18 @@ public class WPSClient {
      * 
      * @return String response of the executeRequest as a String
      * 
-     * @param InputObject[] Input of the process
+     * @param InputObject
+     *            [] Input of the process
      * 
-     * @param processIdentifier identifier of the process
+     * @param processIdentifier
+     *            identifier of the process
      * 
      */
     public String executeProcessStringResult( InputObject[] inputobject, String processIdentifier ) {
 
         ProcessExecution processExecution = new ProcessExecution(
-                                                                  getProcessInfo( processIdentifier ).getProcessDescription() );
+                                                                  getProcessInfo( processIdentifier ).getProcessDescription(),
+                                                                  BASE_URL );
 
         for ( int i = 0; i < inputObjectList.size(); i++ ) {
             processExecution.addInput( this.inputObjectList.get( i ) );
@@ -140,26 +144,27 @@ public class WPSClient {
 
         return processExecution.sendExecuteRequestStringReturn();
     }
-    
+
     /**
      * 
      * @return Object result the of process as object
      * 
      * @param InputObject[] Input of the process
      * 
-     * @param processIdentifier identifier of the process
+     * @param processIdentifier
+     *            identifier of the process
      * 
      */
     public Object executeProcessObejctResult( InputObject[] inputobject, String processIdentifier ) {
 
         ProcessExecution processExecution = new ProcessExecution(
-                                                                  getProcessInfo( processIdentifier ).getProcessDescription() );
+                                                                  getProcessInfo( processIdentifier ).getProcessDescription(),
+                                                                  this.BASE_URL );
 
         for ( int i = 0; i < inputobject.length; i++ ) {
             processExecution.addInput( inputobject[i] );
         }
 
-        inputObjectList = null;
         return processExecution.sendExecuteRequestExecuteObjectReturn();
     }
 
@@ -167,15 +172,18 @@ public class WPSClient {
      * 
      * @return Object result the of process as ExecuteResponse object
      * 
-     * @param InputObject[] Input of the process
+     * @param InputObject
+     *            [] Input of the process
      * 
-     * @param processIdentifier identifier of the process
+     * @param processIdentifier
+     *            identifier of the process
      * 
      */
     public ExecuteResponse executeProcessExecuteResponseResult( InputObject[] inputobject, String processIdentifier ) {
 
         ProcessExecution processExecution = new ProcessExecution(
-                                                                  getProcessInfo( processIdentifier ).getProcessDescription() );
+                                                                  getProcessInfo( processIdentifier ).getProcessDescription(),
+                                                                  BASE_URL );
 
         for ( int i = 0; i < this.inputObjectList.size(); i++ ) {
             processExecution.addInput( this.inputObjectList.get( i ) );
@@ -185,12 +193,12 @@ public class WPSClient {
         return processExecution.sendExecuteRequestExecuteResponseReturn();
     }
 
-    
     /**
      * 
      * @return InputObject input of the process
      * 
-     * @param identifier identifier of the input
+     * @param identifier
+     *            identifier of the input
      * 
      * @param input
      * 
@@ -201,14 +209,16 @@ public class WPSClient {
 
         return inputObject;
     }
-    
+
     /**
      * 
      * @return InputObject input of the process
      * 
-     * @param identifier identifier of the input
+     * @param identifier
+     *            identifier of the input
      * 
-     * @param filePath path to the file of the input
+     * @param filePath
+     *            path to the file of the input
      * 
      */
     public InputObject setInputasFile( String identifier, String filePath )
@@ -224,9 +234,11 @@ public class WPSClient {
      * 
      * @return InputObject input of the process
      * 
-     * @param identifier identifier of the input
+     * @param identifier
+     *            identifier of the input
      * 
-     * @param url of the input
+     * @param url
+     *            of the input
      * 
      */
     public InputObject setInputasURL( String identifier, String url ) {
@@ -241,20 +253,19 @@ public class WPSClient {
 
     public void test()
                             throws Exception {
+
+        // started process centroid
         InputObject[] inputObject = new InputObject[1];
 
         InputObject inputObject1 = setInputasFile( "GMLInput", "curve.xml" );
         inputObject[0] = inputObject1;
-        // InputObject inputObject2 =setInputasObject("BufferDistance","43");
-        // inputObject[1]=inputObject2;
-
         Object ergebnis = executeProcessObejctResult( inputObject, "Centroid" );
 
         System.out.println( "ergebnis Centroid" );
         System.out.println( String.valueOf( ergebnis ) );
 
+        // started process Buffer
         InputObject[] inputObjectBuffer = new InputObject[2];
-
         inputObject1 = setInputasFile( "GMLInput", "curve.xml" );
         inputObjectBuffer[0] = inputObject1;
         InputObject inputObject2 = setInputasObject( "BufferDistance", "43" );

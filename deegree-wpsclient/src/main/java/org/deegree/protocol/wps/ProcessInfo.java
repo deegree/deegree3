@@ -220,10 +220,10 @@ public class ProcessInfo {
      * @param inputParams
      * @return
      */
-    public ProcessExecution executeAsync( Object[] inputParams ) {
-        // TODO Implement asynchronous execution here;
-        return new ProcessExecution( this.processDescription );
-    }
+    // public ProcessExecution executeAsync( Object[] inputParams ) {
+    // // TODO Implement asynchronous execution here;
+    // return new ProcessExecution( this.processDescription, this.b );
+    // }
 
     /**
      * 

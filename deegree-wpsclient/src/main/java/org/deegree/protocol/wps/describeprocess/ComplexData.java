@@ -40,10 +40,10 @@ import java.util.List;
 
 /**
  * 
- * TODO add class documentation here
+ * represents the Element ComplexData section of the DescribeProcess response document of the WPS 1.0 specification
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="walenciak@uni-heidelberg">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -55,26 +55,50 @@ public class ComplexData {
 
     private String maximumMegaBytes;
 
+    /**
+     *  
+     * @return Format of ComplexData
+     */
     public Format getDefaulT() {
         return defaulT;
     }
-
+    
+    /**
+     *  
+     * @param Format of ComplexData
+     */
     public void setDefaulT( Format defaulT ) {
         this.defaulT = defaulT;
     }
 
+    /**
+     *  
+     * @return List of supported formats of ComplexData
+     */
     public List<Format> getSupported() {
         return supportedList;
     }
 
+    /**
+     *  
+     * @param supported Format of ComplexData
+     */
     public void addSupported( Format supported ) {
         supportedList.add( supported );
     }
 
+    /**
+     *  
+     * @return maximum size of ComplexData
+     */
     public String getMaximumMegaBytes() {
         return maximumMegaBytes;
     }
 
+    /**
+     *  
+     * @param maximumMegaBytes of ComplexData
+     */
     public void setMaximumMegaBytes( String maximumMegaBytes ) {
         this.maximumMegaBytes = maximumMegaBytes;
     }

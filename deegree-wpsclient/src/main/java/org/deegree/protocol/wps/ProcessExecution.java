@@ -87,8 +87,11 @@ public class ProcessExecution {
 
     private String executeRequestString;
 
-    public ProcessExecution( ProcessDescription processDescription ) {
+    private String baseURL;
+
+    public ProcessExecution( ProcessDescription processDescription, String baseURL ) {
         this.processDescription = processDescription;
+        this.baseURL = baseURL;
     }
 
     /**
@@ -143,7 +146,7 @@ public class ProcessExecution {
             // Construct data
             String data = byteArrayOutputStream.toString();
             // Send data
-            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URL url = new URL( this.baseURL );
             URLConnection conn = url.openConnection();
             conn.setDoInput( true );
 
@@ -179,7 +182,7 @@ public class ProcessExecution {
             // Construct data
             String data = byteArrayOutputStream.toString();
             // Send data
-            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URL url = new URL( this.baseURL );
             URLConnection conn = url.openConnection();
             conn.setDoInput( true );
 
@@ -220,7 +223,7 @@ public class ProcessExecution {
             // Construct data
             String data = byteArrayOutputStream.toString();
             // Send data
-            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URL url = new URL( this.baseURL );
             URLConnection conn = url.openConnection();
             conn.setDoInput( true );
 
@@ -259,7 +262,7 @@ public class ProcessExecution {
             // Construct data
             String data = byteArrayOutputStream.toString();
             // Send data
-            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URL url = new URL( this.baseURL );
             URLConnection conn = url.openConnection();
             conn.setDoInput( true );
 
@@ -311,7 +314,7 @@ public class ProcessExecution {
             // Construct data
             String data = byteArrayOutputStream.toString();
             // Send data
-            URL url = new URL( "http://ows7.lat-lon.de/d3WPS_JTS/services?" );
+            URL url = new URL( this.baseURL );
             URLConnection conn = url.openConnection();
             conn.setDoInput( true );
 

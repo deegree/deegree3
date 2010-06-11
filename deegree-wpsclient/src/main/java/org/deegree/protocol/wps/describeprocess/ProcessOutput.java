@@ -40,21 +40,29 @@ import java.util.List;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the ProcessOutput section of the DescribeProcess response document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
 public class ProcessOutput {
 
-    OutputDescription outputDescription = new OutputDescription();
+   private OutputDescription outputDescription = new OutputDescription();
 
+    /**
+     *  
+     * @return OutputDescription object
+     */
     public OutputDescription getOutputDescripton() {
         return this.outputDescription;
     }
 
+    /**
+     *  
+     * @param OutputDescription object
+     */
     public void setOutputDescription( OutputDescription outputDescription ) {
         this.outputDescription = outputDescription;
     }

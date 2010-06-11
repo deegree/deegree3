@@ -37,10 +37,10 @@ package org.deegree.protocol.wps.describeprocess;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the OutputDescription section of the DescribeProcess response document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -54,34 +54,66 @@ public class OutputDescription {
 
     private OutputFormChoice outputFormChoice;
 
+    /**
+     *  
+     * @return identifier of output element
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     *  
+     * @param identifier of output element
+     */
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
 
+    /**
+     *  
+     * @return title of output element
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     *  
+     * @param title of output element
+     */
     public void setTitle( String title ) {
         this.title = title;
     }
 
+    /**
+     *  
+     * @return abstract of output element
+     */
     public String getAbstraCt() {
         return abstraCt;
     }
 
+    /**
+     *  
+     * @param abstract of output element
+     */
     public void setAbstraCt( String abstraCt ) {
         this.abstraCt = abstraCt;
     }
 
+    /**
+     *  
+     * @return outputformchoice of output element
+     */
     public OutputFormChoice getOutputFormChoice() {
         return outputFormChoice;
     }
 
+    /**
+     *  
+     * @param outputformchoice of output element
+     */
     public void setOutputFormChoice( OutputFormChoice outputFormChoice ) {
         this.outputFormChoice = outputFormChoice;
     }

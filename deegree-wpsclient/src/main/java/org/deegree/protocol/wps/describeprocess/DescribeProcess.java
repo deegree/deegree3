@@ -55,8 +55,8 @@ import org.slf4j.LoggerFactory;
  * 
  * TODO This class parses the DescribeProcess Document and writes the elements into the class "ProcessDescription"
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -96,6 +96,11 @@ public class DescribeProcess {
         }
     }
 
+    /**
+     *  
+     * @param describeProcessDoc
+         maximum number of pixels in y-direction, or -1 for unrestricted height
+     */
     public DescribeProcess( XMLAdapter describeProcessDoc ) {
         this.describeProcessDoc = describeProcessDoc;
         OMElement rootElement = describeProcessDoc.getRootElement();
@@ -107,6 +112,7 @@ public class DescribeProcess {
     }
 
     /**
+     * parses the DescribeProcess Document and writes the Elements to processDescription object
      * 
      * @return List of processDescription
      */

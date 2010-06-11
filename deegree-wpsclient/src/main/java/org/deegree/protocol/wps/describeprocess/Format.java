@@ -37,10 +37,10 @@ package org.deegree.protocol.wps.describeprocess;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the Format section of the DescribeProcess response document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-bonn.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -52,26 +52,51 @@ public class Format {
 
     private String schema;
 
+    
+    /**
+     *  
+     * @return mimeType
+     */
     public String getMimeType() {
         return mimeType;
     }
 
+    /**
+     *  
+     * @param mimeType
+     */
     public void setMimeType( String mimeType ) {
         this.mimeType = mimeType;
     }
 
+    /**
+     *  
+     * @return encoding
+     */
     public String getEncoding() {
         return encoding;
     }
 
+    /**
+     *  
+     * @param encoding
+     */
     public void setEncoding( String encoding ) {
         this.encoding = encoding;
     }
 
+    /**
+     *  
+     * @return schema
+     */
     public String getSchema() {
         return schema;
     }
 
+    /**
+     *  
+     * @return schema
+     */
     public void setSchema( String schema ) {
         this.schema = schema;
     }

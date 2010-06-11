@@ -37,10 +37,10 @@ package org.deegree.protocol.wps.describeprocess;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the InputFormChoice section of the DescribeProcess response document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -52,26 +52,50 @@ public class InputFormChoiceDescribeProcess {
 
     private BoundingBoxData boundingBoxData;
 
+    /**
+     *  
+     * @return ComplexData object 
+     */
     public ComplexData getComplexData() {
         return complexData;
     }
 
+    /**
+     *  
+     * @param ComplexData
+     */
     public void setComplexData( ComplexData complexData ) {
         this.complexData = complexData;
     }
-
+    
+    /**
+     *  
+     * @return LiteralData object
+     */
     public LiteralInputData getLiteralData() {
         return literalData;
     }
 
+    /**
+     *  
+     * @param LiteralData object
+     */
     public void setLiteralData( LiteralInputData literalData ) {
         this.literalData = literalData;
     }
 
+    /**
+     *  
+     * @return BoundingBoxData object
+     */
     public BoundingBoxData getBoundingBoxData() {
         return boundingBoxData;
     }
 
+    /**
+     *  
+     * @param BoundingBoxData object
+     */
     public void setBoundingBoxData( BoundingBoxData boundingBoxData ) {
         this.boundingBoxData = boundingBoxData;
     }

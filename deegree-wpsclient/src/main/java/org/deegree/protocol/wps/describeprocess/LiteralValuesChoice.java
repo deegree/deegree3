@@ -38,6 +38,15 @@ package org.deegree.protocol.wps.describeprocess;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * Represents the LiteralValuesChoice section of the DescribeProcess response document of the WPS specification 1.0
+ * 
+ * @author <a href="mailto:walenciak@uni-bonn.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class LiteralValuesChoice {
 
     // To do String values Reference
@@ -48,26 +57,50 @@ public class LiteralValuesChoice {
 
     private String valuesReference;
 
+    /**
+     *  
+     * @return allowed Values of literal data element
+     */
     public List<String> getAllowedValues() {
         return allowedValues;
     }
 
+    /**
+     *  
+     * @param allowed Values of literal data element
+     */
     public void addAllowedValues( String allowedValue ) {
         this.allowedValues.add( allowedValue );
     }
 
+    /**
+     *  
+     * @return any value of literal data element
+     */
     public String getAnyValue() {
         return anyValue;
     }
 
+    /**
+     *  
+     * @param any value of literal data element
+     */
     public void setAnyValue( String anyValue ) {
         this.anyValue = anyValue;
     }
 
+    /**
+     *  
+     * @return value reference of literal data element
+     */
     public String getValuesReference() {
         return valuesReference;
     }
 
+    /**
+     *  
+     * @param value reference of literal data element
+     */
     public void setValuesReference( String valuesReference ) {
         this.valuesReference = valuesReference;
     }
