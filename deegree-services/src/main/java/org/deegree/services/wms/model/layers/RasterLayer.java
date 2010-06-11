@@ -124,6 +124,8 @@ public class RasterLayer extends Layer {
 
     private GenericFeatureType featureType;
 
+    private boolean available;
+
     /**
      * @param lay
      * @param parent
@@ -133,6 +135,13 @@ public class RasterLayer extends Layer {
         AbstractCoverage cov = CoverageBuilderManager.get( lay.getCoverageStoreId() );
         this.raster = (AbstractRaster) ( cov instanceof AbstractRaster ? cov : null );
         this.multiraster = (MultiResolutionRaster) ( cov instanceof MultiResolutionRaster ? cov : null );
+
+        if ( raster == null && multiraster == null ) {
+            available = false;
+            LOG.info( "Raster layer with name '{}' is not available, because the coverage "
+                      + "store with id '{}' cannot be loaded.", getName(), lay.getCoverageStoreId() );
+            return;
+        }
 
         CRS crs = raster == null ? multiraster.getCoordinateSystem() : raster.getCoordinateSystem();
         try {
@@ -151,6 +160,11 @@ public class RasterLayer extends Layer {
     @Override
     public FeatureType getFeatureType() {
         return featureType;
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return available;
     }
 
     @Override
