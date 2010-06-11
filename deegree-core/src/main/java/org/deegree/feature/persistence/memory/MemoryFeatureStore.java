@@ -65,7 +65,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.CachedFeatureResultSet;
+import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
@@ -268,7 +268,7 @@ public class MemoryFeatureStore implements FeatureStore {
             fc = Features.sortFc( fc, sortCrit );
         }
 
-        return new CachedFeatureResultSet( fc );
+        return new MemoryFeatureResultSet( fc );
     }
 
     @Override

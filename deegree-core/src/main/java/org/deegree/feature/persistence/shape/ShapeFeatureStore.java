@@ -77,12 +77,13 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.CachedFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
+import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.query.ThreadedResultSet;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
@@ -282,6 +283,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
         File rtfile = new File( shpName + ".rti" );
         RandomAccessFile raf = new RandomAccessFile( shpFile, "r" );
+
         if ( rtfile.exists() && !( rtfile.lastModified() < shpFile.lastModified() ) && !forceIndexRebuild ) {
             try {
                 RTree<Long> rtree = new RTree<Long>( new FileInputStream( shpName + ".rti" ) );
@@ -393,7 +395,7 @@ public class ShapeFeatureStore implements FeatureStore {
         QName featureType = query.getTypeNames()[0].getFeatureTypeName();
         if ( featureType != null && !featureType.equals( ft.getName() ) ) {
             // or null?
-            return new CachedFeatureResultSet( new GenericFeatureCollection() );
+            return new MemoryFeatureResultSet( new GenericFeatureCollection() );
         }
 
         checkForUpdate();
@@ -413,14 +415,15 @@ public class ShapeFeatureStore implements FeatureStore {
         }
 
         FeatureResultSet rs = new IteratorResultSet( new FeatureIterator( recNumsAndPos.iterator() ) );
+//        rs = new ThreadedResultSet( rs, 100, 10 );
         if ( query.getFilter() != null ) {
-            LOG.debug( "Applying in-memory filtering." );
+            LOG.info( "Applying in-memory filtering." );
             rs = new FilteredFeatureResultSet( rs, query.getFilter() );
         }
 
         if ( query.getSortProperties() != null && query.getSortProperties().length > 0 ) {
-            LOG.debug( "Applying in-memory sorting." );
-            rs = new CachedFeatureResultSet( Features.sortFc( rs.toCollection(), query.getSortProperties() ) );
+            LOG.info( "Applying in-memory sorting." );
+            rs = new MemoryFeatureResultSet( Features.sortFc( rs.toCollection(), query.getSortProperties() ) );
         }
 
         return rs;
