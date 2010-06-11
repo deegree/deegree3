@@ -41,24 +41,24 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 
 /**
- * {@link FeatureResultSet} backed by a {@link FeatureCollection}
+ * {@link FeatureResultSet} that stores all features in memory.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class CachedFeatureResultSet implements FeatureResultSet {
+public class MemoryFeatureResultSet implements FeatureResultSet {
 
     private FeatureCollection fc;
 
     /**
-     * Creates a new {@link CachedFeatureResultSet} that is backed by the given {@link FeatureCollection}.
+     * Creates a new {@link MemoryFeatureResultSet} that is backed by the given {@link FeatureCollection}.
      * 
      * @param fc
      *            FeatureCollection to back the result set
      */
-    public CachedFeatureResultSet( FeatureCollection fc ) {
+    public MemoryFeatureResultSet( FeatureCollection fc ) {
         this.fc = fc;
     }
 

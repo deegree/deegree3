@@ -61,7 +61,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.CachedFeatureResultSet;
+import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
@@ -547,7 +547,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
         // sort features
         if ( sortCrit != null ) {
-            result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
+            result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
         }
         return result;
     }
@@ -621,7 +621,7 @@ public class PostGISFeatureStore implements FeatureStore {
                 result = new FilteredFeatureResultSet( result, filter );
             }
             if ( sortCrit != null ) {
-                result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
+                result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
             }
         } else {
             if ( wb != null && wb.getPostFilter() != null ) {
@@ -630,7 +630,7 @@ public class PostGISFeatureStore implements FeatureStore {
             }
             if ( wb != null && wb.getPostSortCriteria() != null ) {
                 LOG.debug( "Applying in-memory post-sorting." );
-                result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
+                result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
             }
         }
         return result;

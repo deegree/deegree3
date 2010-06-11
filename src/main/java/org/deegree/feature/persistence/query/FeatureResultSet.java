@@ -36,12 +36,42 @@
 package org.deegree.feature.persistence.query;
 
 import java.sql.ResultSet;
+import java.util.Iterator;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 
 /**
  * Provides access to the results of a {@link Query} operation.
+ * <p>
+ * The primary means of accessing the individual result features is to use the {@link #iterator()} method and
+ * subsequently call it's {@link Iterator#next()} methods. Depending on the implementation (e.g. when backed by an SQL
+ * result set), this enables the processing of arbitrary large numbers of results without causing memory issues. Also,
+ * it's essential to ensure that the {@link #close()} method is called afterwards, or resource leaks may occur (e.g.
+ * open SQL result sets).
+ * </p>
+ * <p>
+ * A typical use of a {@link FeatureResultSet} looks like this:
+ * <pre>
+ *   ...
+ *   FeatureResultSet rs = null;
+ *    try {
+ *        // retrieve the FeatureResultSet
+ *        rs = ...
+ *        for ( Feature f : rs ) {
+ *            // do something with the feature
+ *            // ...
+ *        }
+ *    } finally {
+ *        // make sure that the FeatureResultSet always gets closed
+ *        if ( rs != null ) {
+ *            rs.close();
+ *        }
+ *    }
+ *    ...
+ * </pre>
+ * 
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
