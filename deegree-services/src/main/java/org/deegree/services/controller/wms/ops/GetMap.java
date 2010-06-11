@@ -350,7 +350,7 @@ public class GetMap {
                 Integer max = service.getDefaultMaxFeatures().get( l );
                 if ( max == null ) {
                     max = service.getGlobalMaxFeatures();
-                    LOG.debug( "Using global max features setting of {}." );
+                    LOG.debug( "Using global max features setting of {}.", max );
                 }
                 this.maxFeatures.put( l, max );
             }
