@@ -281,33 +281,39 @@ public class ShapeFeatureStore implements FeatureStore {
         shp = null;
 
         File rtfile = new File( shpName + ".rti" );
+        RandomAccessFile raf = new RandomAccessFile( shpFile, "r" );
         if ( rtfile.exists() && !( rtfile.lastModified() < shpFile.lastModified() ) && !forceIndexRebuild ) {
             try {
                 RTree<Long> rtree = new RTree<Long>( new FileInputStream( shpName + ".rti" ) );
-                shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree, rtree.getExtraFlag() );
+                shp = new SHPReader( raf, crs, rtree, rtree.getExtraFlag() );
             } catch ( IOException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Existing rtree index could not be read. Generating a new one..." );
             } catch ( ClassNotFoundException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Existing rtree index could not be read. Generating a new one..." );
+            } finally {
+                raf.close();
             }
             if ( shp != null ) {
                 return shp;
             }
         }
 
-        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, null, false );
+        shp = new SHPReader( raf, crs, null, false );
 
         LOG.debug( "Building rtree index in memory for '{}'", new File( shpName ).getName() );
 
         Pair<RTree<Long>, Boolean> p = createIndex( shp );
         shp.close();
         LOG.debug( "done." );
-        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, p.first, p.second );
+        shp = new SHPReader( raf, crs, p.first, p.second );
         RandomAccessFile output = new RandomAccessFile( shpName + ".rti", "rw" );
-        p.first.write( output, p.second );
-        output.close();
+        try {
+            p.first.write( output, p.second );
+        } finally {
+            output.close();
+        }
         return shp;
     }
 
