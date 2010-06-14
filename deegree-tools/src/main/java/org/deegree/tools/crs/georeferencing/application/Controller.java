@@ -63,6 +63,7 @@ import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
+import org.deegree.tools.crs.georeferencing.model.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
@@ -82,6 +83,8 @@ public class Controller {
 
     private Scene2DPanel panel;
 
+    private Scene2DValues sceneValues;
+
     private BuildingFootprintPanel footPanel;
 
     private NavigationBarPanel navPanel;
@@ -98,11 +101,11 @@ public class Controller {
 
     private boolean isHorizontalRef;
 
-    private Point2d imageMargin;
+    // private Point2d imageMargin;
 
-    private Rectangle imageDimension;
-
-    private Point2d imageDrawStartPos;
+    // private Rectangle imageDimension;
+    //
+    // private Point2d imageDrawStartPos;
 
     private int start;
 
@@ -120,8 +123,8 @@ public class Controller {
         this.tablePanel = view.getPointTablePanel();
         this.start = 0;
         options = new RasterOptions( view ).getOptions();
-        model.setResolution( 1 );
-        model.init( options );
+        sceneValues = new Scene2DValues( options );
+        model.init( options, sceneValues );
         view.addScene2DurlListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
         navPanel.addHorizontalRefListener( new ButtonListener() );
@@ -254,9 +257,10 @@ public class Controller {
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                         lastGeoReferencedPoint = geoReferencedPoint;
                         panel.addPoint( footPrint.getTableValueGeoRef(), geoReferencedPoint );
-                        GeoReferencedPoint point = new GeoReferencedPoint(
-                                                                           model.getWorldCoords( geoReferencedPoint ).x,
-                                                                           model.getWorldCoords( geoReferencedPoint ).y );
+                        GeoReferencedPoint point = (GeoReferencedPoint) sceneValues.getRasterPoint( geoReferencedPoint );
+                        // GeoReferencedPoint point = new GeoReferencedPoint(
+                        // model.getWorldCoords( geoReferencedPoint ).x,
+                        // model.getWorldCoords( geoReferencedPoint ).y );
                         tablePanel.setCoords( point );
                         panel.repaint();
                     } else {
@@ -281,21 +285,20 @@ public class Controller {
                                                                                                 - mouse.getMouseChanging().getY() ) );
                         // 
                         // if the user went into any critical region
-                        if ( mouse.getCumulatedMouseChanging().getX() >= imageMargin.getX()
-                             || mouse.getCumulatedMouseChanging().getX() <= -imageMargin.getX()
-                             || mouse.getCumulatedMouseChanging().getY() >= imageMargin.getY()
-                             || mouse.getCumulatedMouseChanging().getY() <= -imageMargin.getY() ) {
+                        if ( mouse.getCumulatedMouseChanging().getX() >= sceneValues.getImageMargin().getX()
+                             || mouse.getCumulatedMouseChanging().getX() <= -sceneValues.getImageMargin().getX()
+                             || mouse.getCumulatedMouseChanging().getY() >= sceneValues.getImageMargin().getY()
+                             || mouse.getCumulatedMouseChanging().getY() <= -sceneValues.getImageMargin().getY() ) {
 
                             Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
                                                                              mouse.getCumulatedMouseChanging().getY() );
                             System.out.println( "updatePos: " + updateDrawImageAtPosition );
 
                             // panel.setImageToDraw( model.getGeneratedImage() );
-                            model.setStartRasterEnvelopePosition( updateDrawImageAtPosition );
-                            panel.setImageToDraw( model.generateSubImage( imageDimension ) );
+                            sceneValues.setStartRasterEnvelopePosition( updateDrawImageAtPosition );
+                            panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
                             mouse.reset();
-                            panel.setBeginDrawImageAtPosition( imageDrawStartPos );
-                            // panel.reset();
+                            panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
 
                         }
                         panel.repaint();
@@ -466,14 +469,18 @@ public class Controller {
 
     private void init() {
         // model.reset();
-        imageMargin = new Point2d( panel.getBounds().width * 0.1, panel.getBounds().height * 0.1 );
-        imageDimension = new Rectangle( (int) ( panel.getBounds().width + 2 * imageMargin.x ),
-                                        (int) ( panel.getBounds().height + 2 * imageMargin.y ) );
-        imageDrawStartPos = new Point2d( -imageMargin.x, -imageMargin.y );
-        panel.setBeginDrawImageAtPosition( imageDrawStartPos );
-        panel.setImageDimension( imageDimension );
+        sceneValues.setImageMargin( new Point2d( panel.getBounds().width * 0.1, panel.getBounds().height * 0.1 ) );
+        sceneValues.setImageDimension( new Rectangle(
+                                                      (int) ( panel.getBounds().width + 2 * sceneValues.getImageMargin().x ),
+                                                      (int) ( panel.getBounds().height + 2 * sceneValues.getImageMargin().y ) ) );
+        sceneValues.setImageStartPosition( new Point2d( -sceneValues.getImageMargin().x,
+                                                        -sceneValues.getImageMargin().y ) );
 
-        panel.setImageToDraw( model.generateSubImage( imageDimension ) );
+        sceneValues.setSize( 1 );
+        panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
+        panel.setImageDimension( sceneValues.getImageDimension() );
+
+        panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
 
         panel.repaint();
     }

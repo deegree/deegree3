@@ -68,7 +68,7 @@ public interface Scene2D {
      *            for the request, must not be <Code>null</Code>
      * 
      */
-    public void init( RasterIOOptions options );
+    public void init( RasterIOOptions options, Scene2DValues values );
 
     /**
      * Generates everything that is needed for a subImage, so the subRaster can be generated, as well.
@@ -81,19 +81,10 @@ public interface Scene2D {
      */
     public BufferedImage generateSubImage( Rectangle bounds );
 
-    /**
-     * To set the resolution interactively.
-     * 
-     * @param resolution
-     */
-    public void setResolution( double resolution );
-
     public void generatePredictedImage( Point2d changePoint );
 
     public BufferedImage getPredictedImage();
 
     Point2d getWorldCoords( Point2d point );
-
-    void setStartRasterEnvelopePosition( Point2d min );
 
 }
