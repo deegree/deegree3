@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.query;
 
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
+import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_RESOLUTION;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 
 import java.util.HashMap;
@@ -75,7 +76,9 @@ public class Query {
         /** If present, the store shall apply the argument (an {@link Envelope} as a pre-filtering step. */
         HINT_LOOSE_BBOX,
         /** If present, the store can use a different LOD for the scale. */
-        HINT_SCALE
+        HINT_SCALE,
+        /** If present, the store can simplify geometries according to the resolution. */
+        HINT_RESOLUTION
     }
 
     private final TypeName[] typeNames;
@@ -106,8 +109,10 @@ public class Query {
      *            if scale is positive, a scale query hint will be used
      * @param maxFeatures
      *            may be -1 if no limit needs to be exercised
+     * @param resolution
+     *            if resolution is positive, a pixel resolution hint will be used
      */
-    public Query( QName ftName, Envelope looseBbox, Filter filter, int scale, int maxFeatures ) {
+    public Query( QName ftName, Envelope looseBbox, Filter filter, int scale, int maxFeatures, double resolution ) {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
         this.filter = filter;
         this.featureVersion = null;
@@ -117,6 +122,9 @@ public class Query {
         hints.put( HINT_LOOSE_BBOX, looseBbox );
         if ( scale > 0 ) {
             hints.put( HINT_SCALE, scale );
+        }
+        if ( resolution > 0 ) {
+            hints.put( HINT_RESOLUTION, resolution );
         }
     }
 
