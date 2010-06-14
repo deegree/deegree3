@@ -94,8 +94,6 @@ public interface Scene2D {
 
     Point2d getWorldCoords( Point2d point );
 
-    void setMin( Point2d min );
-
-    Point2d getMin();
+    void setStartRasterEnvelopePosition( Point2d min );
 
 }

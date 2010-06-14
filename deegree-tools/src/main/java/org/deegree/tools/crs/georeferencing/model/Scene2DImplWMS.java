@@ -103,6 +103,8 @@ public class Scene2DImplWMS implements Scene2D {
 
     private Point2d transformedBounds;
 
+    private Point2d convertedPixelToRasterPoint;
+
     // private Point2d sample;
 
     private Point2d min;
@@ -181,6 +183,8 @@ public class Scene2DImplWMS implements Scene2D {
      * should influence the display of the image returned by the WMS to prevent any deformation. <li>pos - orientation
      * on width because width is larger</li> <li>neg - orientation on hight because hight is larger</li> <li>other -
      * orientation on width/hight because they are even</li>
+     * <p>
+     * Additionally it generates a converted point that represents a rasterPoint converted from a pixelPoint
      * 
      * @param panelBounds
      *            the rectangle bounds, not <Code>null</Code>
@@ -195,10 +199,15 @@ public class Scene2DImplWMS implements Scene2D {
         if ( ratio < 1 ) {
             // if < 1 then do orientation on h
             double newWidth = ( w / h ) * size * rect.width;
+            convertedPixelToRasterPoint = new Point2d( newWidth / panelBounds.width, rect.height * size
+                                                                                     / panelBounds.height );
+
             return new Point2d( newWidth, rect.height * size );
         } else if ( ratio > 1 ) {
             // if > 1 then do orientation on w
             double newHeight = ( h / w ) * size * rect.height;
+            convertedPixelToRasterPoint = new Point2d( rect.width * size / panelBounds.width, newHeight
+                                                                                              / panelBounds.height );
             return new Point2d( rect.width * size, newHeight );
         }
         // if w = h then return 0
@@ -287,28 +296,6 @@ public class Scene2DImplWMS implements Scene2D {
 
     }
 
-    /**
-     * Based on bounds from an upper component this method normalizes the bounds of the upper component regarding to an
-     * envelope to one pixel.
-     * <p>
-     * Sets the relation between panelBounds as the rectangle of the panel and bbox as the envelope of the requested
-     * image.
-     * 
-     * @param panelBounds
-     *            the rectangle bounds, not <Code>null</Code>
-     * @param bbox
-     *            the boundingbox, not <Code>null</Code>
-     * @return a point, not <Code>null</Code>
-     */
-    private Point2d getSample( Rectangle panelBounds, double size, Envelope bbox ) {
-
-        double w = panelBounds.width;
-        double h = panelBounds.height;
-        double oneX = bbox.getSpan0() / w;
-        double oneY = bbox.getSpan1() / h;
-        return new Point2d( oneX * size, oneY * size );
-    }
-
     @Override
     public BufferedImage getGeneratedImage() {
         return generatedImage;
@@ -357,13 +344,12 @@ public class Scene2DImplWMS implements Scene2D {
     }
 
     @Override
-    public Point2d getMin() {
-        return min;
-    }
+    public void setStartRasterEnvelopePosition( Point2d minPoint ) {
 
-    @Override
-    public void setMin( Point2d min ) {
-        this.min = min;
+        double minX = this.min.x + minPoint.x * convertedPixelToRasterPoint.x;
+        double minY = this.min.y + minPoint.y * convertedPixelToRasterPoint.y;
+
+        this.min = new Point2d( minX, minY );
     }
 
     // @Override

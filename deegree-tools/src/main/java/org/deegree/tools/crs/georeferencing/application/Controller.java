@@ -291,8 +291,10 @@ public class Controller {
                             System.out.println( "updatePos: " + updateDrawImageAtPosition );
 
                             // panel.setImageToDraw( model.getGeneratedImage() );
+                            model.setStartRasterEnvelopePosition( updateDrawImageAtPosition );
                             panel.setImageToDraw( model.generateSubImage( imageDimension ) );
                             mouse.reset();
+                            panel.setBeginDrawImageAtPosition( imageDrawStartPos );
                             // panel.reset();
 
                         }
