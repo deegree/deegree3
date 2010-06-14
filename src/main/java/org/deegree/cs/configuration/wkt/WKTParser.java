@@ -911,6 +911,7 @@ public class WKTParser {
 
         Axis[] axes = new Axis[] { axis1, axis2 };
         if ( projectionType.equalsIgnoreCase( "transverse_mercator" )
+             || ( projectionType.equalsIgnoreCase( "transverse mercator" ) )
              || projectionType.equalsIgnoreCase( "Gauss_Kruger" ) ) {
             return new ProjectedCRS( new TransverseMercator( true, geographicCRS,
                                                              params.get( FALSE_NORTHING.toString() ),
