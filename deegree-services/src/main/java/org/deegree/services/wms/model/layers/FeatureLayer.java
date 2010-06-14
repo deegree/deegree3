@@ -235,11 +235,11 @@ public class FeatureLayer extends Layer {
                                  new Mapper<Query, FeatureType>() {
                                      public Query apply( FeatureType u ) {
                                          return new Query( u.getName(), bbox, filter, round( gm.getScale() ),
-                                                           maxFeatures );
+                                                           maxFeatures, gm.getResolution() );
                                      }
                                  } ) );
         } else {
-            Query query = new Query( featureType, bbox, filter, round( gm.getScale() ), maxFeatures );
+            Query query = new Query( featureType, bbox, filter, round( gm.getScale() ), maxFeatures, gm.getResolution() );
             queries.add( query );
         }
         return dimFilter == null ? new LinkedList<String>() : dimFilter.second;
@@ -267,7 +267,7 @@ public class FeatureLayer extends Layer {
             int max = maxFeats == null ? -1 : maxFeats;
             int cnt = 0;
             for ( Feature f : rs ) {
-                render( f, style, renderer, textRenderer, gm.getScale() );
+                render( f, style, renderer, textRenderer, gm.getScale(), gm.getResolution() );
                 if ( max > 0 && ++cnt == max ) {
                     LOG.debug( "Reached max features of {} for layer '{}', stopping.", max, this );
                     break;
@@ -347,14 +347,14 @@ public class FeatureLayer extends Layer {
                                                public Query apply( FeatureType u ) {
                                                    return new Query( u.getName(), clickBox, buildFilter( operator, u,
                                                                                                          clickBox ),
-                                                                     -1, fi.getFeatureCount() );
+                                                                     -1, fi.getFeatureCount(), -1 );
                                                }
                                            } );
                 col = datastore.query( queries.toArray( new Query[queries.size()] ) ).toCollection();
             } else {
                 Query query = new Query( featureType, clickBox,
                                          buildFilter( operator, datastore.getSchema().getFeatureType( featureType ),
-                                                      clickBox ), -1, fi.getFeatureCount() );
+                                                      clickBox ), -1, fi.getFeatureCount(), -1 );
                 col = datastore.query( query ).toCollection();
             }
 

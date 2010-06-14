@@ -228,7 +228,7 @@ public class StatisticsLayer extends FeatureLayer {
                         LOG.debug( "Filter could not be evaluated: '{}'", e.getLocalizedMessage() );
                         LOG.trace( "Stack trace:", e );
                     }
-                    render( f, style, renderer, null, gm.getScale() );
+                    render( f, style, renderer, null, gm.getScale(), gm.getResolution() );
                 } catch ( UnsupportedEncodingException e ) {
                     LOG.trace( "Stack trace:", e );
                 }

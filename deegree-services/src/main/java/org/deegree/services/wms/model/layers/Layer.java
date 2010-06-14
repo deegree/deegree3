@@ -69,6 +69,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.wms.dims.DimensionLexer;
 import org.deegree.protocol.wms.dims.parser;
 import org.deegree.rendering.r2d.Renderer;
@@ -238,7 +239,7 @@ public abstract class Layer {
         internalName = name;
     }
 
-    private Envelope parseBoundingBox( BoundingBoxType box ) {
+    private static Envelope parseBoundingBox( BoundingBoxType box ) {
         Envelope bbox = null;
 
         if ( box != null ) {
@@ -277,9 +278,10 @@ public abstract class Layer {
      * @param renderer
      * @param textRenderer
      * @param scale
+     * @param resolution
      */
-    public void render( final Feature f, final Style style, final Renderer renderer, final TextRenderer textRenderer,
-                        final double scale ) {
+    public static void render( final Feature f, final Style style, final Renderer renderer,
+                               final TextRenderer textRenderer, final double scale, final double resolution ) {
         Style s = style;
         if ( s == null ) {
             s = new Style();
@@ -288,10 +290,25 @@ public abstract class Layer {
 
         LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = s.evaluate( f );
         for ( Triple<Styling, LinkedList<Geometry>, String> evald : evalds ) {
-            if ( evald.first instanceof TextStyling ) {
-                textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );
-            } else {
-                renderer.render( evald.first, evald.second );
+            boolean invisible = true;
+
+            inner: for ( Geometry g : evald.second ) {
+                if ( g instanceof Point ) {
+                    invisible = false;
+                    break inner;
+                }
+                if ( !( g.getEnvelope().getSpan0() < resolution && g.getEnvelope().getSpan1() < resolution ) ) {
+                    invisible = false;
+                    break inner;
+                }
+            }
+
+            if ( !invisible ) {
+                if ( evald.first instanceof TextStyling ) {
+                    textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );
+                } else {
+                    renderer.render( evald.first, evald.second );
+                }
             }
         }
     }

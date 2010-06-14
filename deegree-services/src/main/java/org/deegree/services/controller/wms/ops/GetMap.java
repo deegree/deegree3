@@ -40,6 +40,7 @@ import static java.awt.Color.decode;
 import static java.awt.Color.white;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
@@ -153,6 +154,8 @@ public class GetMap {
 
     private double pixelSize = 0.28;
 
+    private double resolution;
+
     /**
      * @param map
      * @param version
@@ -169,6 +172,8 @@ public class GetMap {
         try {
             scale = Utils.calcScaleWMS130( width, height, bbox, crs.getWrappedCRS() );
             LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}'.", scale );
+            resolution = max( bbox.getSpan0() / width, bbox.getSpan1() / height );
+            LOG.debug( "Resolution per pixel is {}.", resolution );
         } catch ( UnknownCRSException e ) {
             LOG.trace( "Stack trace:", e );
             LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
@@ -776,6 +781,13 @@ public class GetMap {
      */
     public double getPixelSize() {
         return pixelSize;
+    }
+
+    /**
+     * @return max(horizontal/vertical) resolution
+     */
+    public double getResolution() {
+        return resolution;
     }
 
     /**

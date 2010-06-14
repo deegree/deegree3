@@ -132,7 +132,7 @@ public class DynamicSQLLayer extends Layer {
             GenericFeatureType ft = datastore.getFeatureType();
             PropertyName propName = new PropertyName( ft.getDefaultGeometryPropertyDeclaration().getName() );
             OperatorFilter fil = new OperatorFilter( new Intersects( propName, clickBox ) );
-            rs = datastore.query( new Query( ft.getName(), clickBox, fil, -1, fi.getFeatureCount() ) );
+            rs = datastore.query( new Query( ft.getName(), clickBox, fil, -1, fi.getFeatureCount(), -1 ) );
             FeatureCollection col = rs.toCollection();
             return new Pair<FeatureCollection, LinkedList<String>>( col, new LinkedList<String>() );
         } catch ( FilterEvaluationException e ) {
@@ -164,13 +164,14 @@ public class DynamicSQLLayer extends Layer {
         Integer maxFeats = gm.getMaxFeatures().get( this );
         int maxFeatures = maxFeats == null ? -1 : maxFeats;
         FeatureResultSet rs = null;
+        final double resolution = gm.getResolution();
         try {
             rs = datastore.query( new Query( datastore.getFeatureType().getName(), gm.getBoundingBox(), null,
-                                             round( gm.getScale() ), maxFeatures ) );
+                                             round( gm.getScale() ), maxFeatures, resolution ) );
 
             for ( Feature f : rs ) {
                 if ( style != null ) {
-                    render( f, style, renderer, textRenderer, gm.getScale() );
+                    render( f, style, renderer, textRenderer, gm.getScale(), resolution );
                 }
                 boolean painted = false;
                 if ( symbolField != null ) {
@@ -184,7 +185,7 @@ public class DynamicSQLLayer extends Layer {
                                     try {
                                         Style sty = styles.getStyle( Integer.parseInt( s ) );
                                         if ( sty != null ) {
-                                            render( f, sty, renderer, textRenderer, gm.getScale() );
+                                            render( f, sty, renderer, textRenderer, gm.getScale(), resolution );
                                             painted = true;
                                         } else {
                                             LOG.debug( "Style with symbol code {} was not found in the database.", s );
@@ -203,12 +204,12 @@ public class DynamicSQLLayer extends Layer {
                 }
                 if ( !painted ) { // then use default (layer level) styles
                     for ( Style s : defStyles ) {
-                        render( f, s, renderer, textRenderer, gm.getScale() );
+                        render( f, s, renderer, textRenderer, gm.getScale(), resolution );
                         painted = true;
                     }
                 }
                 if ( !painted ) { // then use gray default style
-                    render( f, null, renderer, textRenderer, gm.getScale() );
+                    render( f, null, renderer, textRenderer, gm.getScale(), resolution );
                 }
             }
         } catch ( FilterEvaluationException e ) {

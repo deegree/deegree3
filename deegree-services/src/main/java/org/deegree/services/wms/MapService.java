@@ -69,6 +69,7 @@ import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
 import static org.deegree.services.controller.wms.ops.GetMap.Antialias.BOTH;
 import static org.deegree.services.controller.wms.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
 import static org.deegree.services.controller.wms.ops.GetMap.Quality.NORMAL;
+import static org.deegree.services.wms.model.layers.Layer.render;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -760,7 +761,7 @@ public class MapService {
 
                             applyHints( l, qualities, interpolations, antialiases, g );
 
-                            l.render( f, ftToStyle.get( name ), renderer, textRenderer, gm.getScale() );
+                            render( f, ftToStyle.get( name ), renderer, textRenderer, gm.getScale(), gm.getResolution() );
                         }
                     } else {
                         LOG.warn( "No queries were found for the requested layers." );
