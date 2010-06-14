@@ -9,8 +9,8 @@
   <name>deegree-core</name>
   <url>http://www.deegree.org</url>
   <scm>
-    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/core/trunk</developerConnection>
-    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/core/trunk</url>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-core</url>
   </scm>
   <build>
     <resources>
