@@ -516,6 +516,43 @@ public class StAXParsingHelper {
     }
 
     /**
+     * Post: reader will be unchanged or on success at {@link XMLStreamConstants #END_ELEMENT} of the matching element
+     * or at {@link XMLStreamConstants #START_ELEMENT} of the next element if requested.
+     * 
+     * @param reader
+     *            pointing to the current element.
+     * @param elementName
+     *            of the current element.
+     * @param defaultValue
+     *            to return if the current name was not the one given or the value could not be parsed as a integer.
+     * @param nextElemOnSucces
+     *            if true the reader will be moved to the next tag if the retrieval was successful.
+     * @return the text of the current element (which should have element name) parsed as a integer.
+     * @throws XMLStreamException
+     *             from {@link XMLStreamReader#getElementText()}.
+     */
+    public static int getElementTextAsInteger( XMLStreamReader reader, QName elementName, int defaultValue,
+                                               boolean nextElemOnSucces )
+                            throws XMLStreamException {
+        int value = defaultValue;
+        if ( elementName.equals( reader.getName() ) && reader.isStartElement() ) {
+            String s = reader.getElementText();
+            if ( s != null ) {
+                try {
+                    value = Integer.parseInt( s );
+                    if ( nextElemOnSucces ) {
+                        nextElement( reader );
+                    }
+                } catch ( NumberFormatException nfe ) {
+                    LOG.debug( reader.getLocation() + ") Value " + s + " in element: " + elementName
+                               + " was not a parsable integer, returning integer value: " + defaultValue );
+                }
+            }
+        }
+        return value;
+    }
+
+    /**
      * Returns the text in the required element as a double. If the name of the reader does not match the given qName,
      * an exception will be thrown. If the value is not a double, an exception will be thrown. Post: reader will be
      * unchanged or at {@link XMLStreamConstants #END_ELEMENT} of the matching element or at
