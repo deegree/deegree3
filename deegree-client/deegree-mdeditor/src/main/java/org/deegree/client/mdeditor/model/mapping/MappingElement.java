@@ -40,8 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.xml.NamespaceContext;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
@@ -87,11 +85,10 @@ public class MappingElement {
         return schemaPath;
     }
 
-    public List<QName> getSchemaPathAsSteps( NamespaceContext nsContext ) {
-        List<QName> steps = new ArrayList<QName>();
+    public List<NameStep> getSchemaPathAsSteps( NamespaceContext nsContext ) {
+        List<NameStep> steps = new ArrayList<NameStep>();
         try {
             Expr xpath = new BaseXPath( schemaPath, null ).getRootExpr();
-
             if ( !( xpath instanceof LocationPath ) ) {
                 LOG.debug( "Unable to map schemaPath '" + schemaPath + "': the root expression is not a LocationPath." );
             } else {
@@ -101,11 +98,7 @@ public class MappingElement {
                         LOG.debug( "Unable to map schemaPath '" + schemaPath
                                    + "': contains an expression that is not a NameStep." );
                     } else {
-                        NameStep namestep = (NameStep) step;
-                        String prefix = namestep.getPrefix();
-                        String localPart = namestep.getLocalName();
-                        String namespace = nsContext.getURI( prefix );
-                        steps.add( new QName( namespace, localPart, prefix ) );
+                        steps.add( (NameStep) step );
                     }
                 }
             }

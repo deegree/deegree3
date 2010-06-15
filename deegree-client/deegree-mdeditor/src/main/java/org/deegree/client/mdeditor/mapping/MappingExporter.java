@@ -37,6 +37,7 @@ package org.deegree.client.mdeditor.mapping;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,7 +46,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -55,6 +55,8 @@ import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.mapping.MappingElement;
 import org.deegree.client.mdeditor.model.mapping.MappingGroup;
 import org.deegree.client.mdeditor.model.mapping.MappingInformation;
+import org.jaxen.expr.NameStep;
+import org.jaxen.saxpath.Axis;
 import org.slf4j.Logger;
 
 /**
@@ -89,7 +91,7 @@ public class MappingExporter {
                         nextElement = it.next();
                     }
                     String ffPath = currentElement.getFormFieldPath();
-                    List<QName> nextSteps = new ArrayList<QName>();
+                    List<NameStep> nextSteps = new ArrayList<NameStep>();
                     if ( nextElement != null ) {
                         nextSteps = nextElement.getSchemaPathAsSteps( mapping.getNsContext() );
                     }
@@ -99,10 +101,10 @@ public class MappingExporter {
                                                           (MappingGroup) currentElement, dataGroups.get( ffPath ),
                                                           ffPath, mapping );
                     } else {
-                        List<QName> currentSteps = currentElement.getSchemaPathAsSteps( mapping.getNsContext() );
+                        List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps( mapping.getNsContext() );
                         if ( formFields.containsKey( ffPath ) && formFields.get( ffPath ) != null ) {
                             currentIndex = writeMappingElement( writer, currentSteps, nextSteps, currentIndex,
-                                                                formFields.get( ffPath ).getValue(), ffPath );
+                                                                formFields.get( ffPath ).getValue(), ffPath, mapping );
                         }
                     }
                     currentElement = nextElement;
@@ -133,14 +135,14 @@ public class MappingExporter {
                 }
                 String ffPath = currentElement.getFormFieldPath();
                 if ( values.containsKey( ffPath ) && values.get( ffPath ) != null ) {
-                    List<QName> nextSteps = new ArrayList<QName>();
+                    List<NameStep> nextSteps = new ArrayList<NameStep>();
                     if ( nextElement != null ) {
                         nextSteps = nextElement.getSchemaPathAsSteps( mapping.getNsContext() );
                     }
-                    List<QName> currentSteps = currentElement.getSchemaPathAsSteps( mapping.getNsContext() );
+                    List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps( mapping.getNsContext() );
 
                     currentIndex = writeMappingElement( writer, currentSteps, nextSteps, currentIndex,
-                                                        values.get( ffPath ), ffPath );
+                                                        values.get( ffPath ), ffPath, mapping );
 
                 }
                 currentElement = nextElement;
@@ -148,15 +150,16 @@ public class MappingExporter {
         }
     }
 
-    private static int writeMappingGroup( XMLStreamWriter writer, List<QName> nextSteps, int currentIndex,
+    private static int writeMappingGroup( XMLStreamWriter writer, List<NameStep> nextSteps, int currentIndex,
                                           MappingGroup group, List<DataGroup> dataGroups, String ffPath,
                                           MappingInformation mapping )
                             throws XMLStreamException {
         if ( dataGroups != null ) {
-            List<QName> groupSteps = group.getSchemaPathAsSteps( mapping.getNsContext() );
+            List<NameStep> groupSteps = group.getSchemaPathAsSteps( mapping.getNsContext() );
             for ( ; currentIndex < groupSteps.size(); currentIndex++ ) {
-                QName qName = groupSteps.get( currentIndex );
-                writer.writeStartElement( qName.getPrefix(), qName.getLocalPart(), qName.getNamespaceURI() );
+                NameStep qName = groupSteps.get( currentIndex );
+                String prefix = qName.getPrefix();
+                writer.writeStartElement( prefix, qName.getLocalName(), mapping.getNsContext().getURI( prefix ) );
             }
             for ( DataGroup dg : dataGroups ) {
                 Map<String, Object> values = dg.getValues();
@@ -170,18 +173,23 @@ public class MappingExporter {
         return currentIndex;
     }
 
-    private static int writeMappingElement( XMLStreamWriter writer, List<QName> currentSteps, List<QName> nextSteps,
-                                            int currentIndex, Object value, String ffPath )
+    private static int writeMappingElement( XMLStreamWriter writer, List<NameStep> currentSteps,
+                                            List<NameStep> nextSteps, int currentIndex, Object value, String ffPath,
+                                            MappingInformation mapping )
                             throws XMLStreamException {
         if ( value != null ) {
             for ( ; currentIndex < currentSteps.size(); currentIndex++ ) {
-                QName qName = currentSteps.get( currentIndex );
+                NameStep nameStep = currentSteps.get( currentIndex );
                 // found list of elements
-                if ( "*".equals( qName.getLocalPart() ) ) {
-                    writeValue( writer, currentSteps.subList( currentIndex + 1, currentSteps.size() ), value );
+                if ( "*".equals( nameStep.getLocalName() ) ) {
+                    writeValue( writer, currentSteps.subList( currentIndex + 1, currentSteps.size() ), value, mapping );
+                    break;
+                } else if ( Axis.ATTRIBUTE == nameStep.getAxis() ) {
+                    writeAttribute( writer, nameStep, value, mapping );
                     break;
                 } else {
-                    writer.writeStartElement( qName.getPrefix(), qName.getLocalPart(), qName.getNamespaceURI() );
+                    String prefix = nameStep.getPrefix();
+                    writer.writeStartElement( prefix, nameStep.getLocalName(), mapping.getNsContext().getURI( prefix ) );
                     if ( currentIndex == currentSteps.size() - 1 ) {
                         writer.writeCharacters( value.toString() );
                     }
@@ -191,21 +199,36 @@ public class MappingExporter {
         return finishStepsUntilNextCommon( writer, currentSteps, nextSteps, currentIndex );
     }
 
-    private static void writeValue( XMLStreamWriter writer, List<QName> currentSteps, Object value )
+    private static void writeAttribute( XMLStreamWriter writer, NameStep nameStep, Object value,
+                                        MappingInformation mapping )
                             throws XMLStreamException {
-        if ( value instanceof List<?> ) {
-            for ( Object o : (List<?>) value ) {
-                writeSteps( writer, currentSteps, o.toString() );
-            }
+        String prefix = nameStep.getPrefix();
+        String ns = mapping.getNsContext().getURI( prefix );
+        if ( ns != null ) {
+            writer.writeAttribute( prefix, ns, nameStep.getLocalName(), value.toString() );
         } else {
-            writeSteps( writer, currentSteps, value.toString() );
+            writer.writeAttribute( nameStep.getLocalName(), value.toString() );
         }
     }
 
-    private static void writeSteps( XMLStreamWriter writer, List<QName> currentSteps, String value )
+    private static void writeValue( XMLStreamWriter writer, List<NameStep> currentSteps, Object value,
+                                    MappingInformation mapping )
                             throws XMLStreamException {
-        for ( QName step : currentSteps ) {
-            writer.writeStartElement( step.getPrefix(), step.getLocalPart(), step.getNamespaceURI() );
+        if ( value instanceof List<?> ) {
+            for ( Object o : (List<?>) value ) {
+                writeSteps( writer, currentSteps, o.toString(), mapping );
+            }
+        } else {
+            writeSteps( writer, currentSteps, value.toString(), mapping );
+        }
+    }
+
+    private static void writeSteps( XMLStreamWriter writer, List<NameStep> currentSteps, String value,
+                                    MappingInformation mapping )
+                            throws XMLStreamException {
+        for ( NameStep step : currentSteps ) {
+            String prefix = step.getPrefix();
+            writer.writeStartElement( prefix, step.getLocalName(), mapping.getNsContext().getURI( prefix ) );
         }
         writer.writeCharacters( value );
         for ( int i = 0; i < currentSteps.size(); i++ ) {
@@ -213,8 +236,8 @@ public class MappingExporter {
         }
     }
 
-    private static int finishStepsUntilNextCommon( XMLStreamWriter writer, List<QName> currentSteps,
-                                                   List<QName> nextSteps, int currentIndex )
+    private static int finishStepsUntilNextCommon( XMLStreamWriter writer, List<NameStep> currentSteps,
+                                                   List<NameStep> nextSteps, int currentIndex )
                             throws XMLStreamException {
         int stepsToClose = nextSteps.size() - currentIndex;
         int equalSteps = 0;
@@ -226,6 +249,7 @@ public class MappingExporter {
             }
         }
         stepsToClose = currentSteps.size() - equalSteps - ( currentSteps.size() - currentIndex );
+        System.out.println( stepsToClose );
         for ( int i = 0; i < stepsToClose; i++ ) {
             writer.writeEndElement();
         }

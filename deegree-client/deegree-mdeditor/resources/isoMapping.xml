@@ -24,7 +24,7 @@
         </MappingElement>
         <MappingElement>
             <formFieldPath>AllgFormGroup/hierarchylevelS</formFieldPath>
-            <schemaPath>gmd:MD_Metadata/gmd:MD_ScopeCode@codeListValue</schemaPath>
+            <schemaPath>gmd:MD_Metadata/gmd:MD_ScopeCode/@codeListValue</schemaPath>
         </MappingElement>
         <MappingElement>
             <formFieldPath>AllgFormGroup/InhFormGroup/titel</formFieldPath>
