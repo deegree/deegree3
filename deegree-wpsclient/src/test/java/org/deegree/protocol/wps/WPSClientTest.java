@@ -36,9 +36,11 @@
 package org.deegree.protocol.wps;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.deegree.protocol.wps.tools.InputObject;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -56,6 +58,38 @@ public class WPSClientTest {
     private static final String FULL_SERVICE_URL = "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities";
 
     @Test
+    public void testGetProcessIdentifiers()
+                            throws MalformedURLException {
+        URL processUrl = new URL( FULL_SERVICE_URL );
+        WPSClient wpsClient = new WPSClient( processUrl );
+        String[] processIds = wpsClient.getProcessIdentifiers();
+        Assert.assertNotNull( processIds );
+        Assert.assertEquals( 11, processIds.length );
+    }
+
+    @Test
+    public void testGetProcessInfo()
+                            throws MalformedURLException {
+        URL processUrl = new URL( FULL_SERVICE_URL );
+        WPSClient wpsClient = new WPSClient( processUrl );
+        ProcessInfo pi = wpsClient.getProcessInfo( "Buffer" );
+        Assert.assertNotNull( pi );
+        Assert.assertEquals( "Buffer", pi.getIdentifier() );
+        // TODO test abstract and input and output parameters.
+    }
+    
+//    @Test
+//    public void testGetProcessInfoBroken()
+//                            throws MalformedURLException {
+//        URL processUrl = new URL( FULL_SERVICE_URL );
+//        WPSClient wpsClient = new WPSClient( processUrl );
+//        ProcessInfo pi = wpsClient.getProcessInfo( "Buffers" );
+//        Assert.assertNotNull( pi );
+//        Assert.assertEquals( "Buffer", pi.getIdentifier() );
+//        // TODO test abstract and input and output parameters.
+//    }
+
+    @Test
     public void testExecuteCentroid()
                             throws Exception {
 
@@ -66,8 +100,8 @@ public class WPSClientTest {
         InputObject[] inputObject = new InputObject[1];
 
         URL curveResource = WPSClientTest.class.getResource( "curve.xml" );
-        File curveFile = new File (curveResource.toURI());
-        
+        File curveFile = new File( curveResource.toURI() );
+
         InputObject inputObject1 = wpsClient.setInputasFile( "GMLInput", curveFile.getPath() );
         inputObject[0] = inputObject1;
         Object ergebnis = wpsClient.executeProcessObejctResult( inputObject, "Centroid" );
@@ -86,9 +120,9 @@ public class WPSClientTest {
         // started process Buffer
         InputObject[] inputObjectBuffer = new InputObject[2];
         URL curveResource = WPSClientTest.class.getResource( "curve.xml" );
-        File curveFile = new File (curveResource.toURI());
-        
-        InputObject inputObject1 = wpsClient.setInputasFile( "GMLInput", curveFile.getPath() );        
+        File curveFile = new File( curveResource.toURI() );
+
+        InputObject inputObject1 = wpsClient.setInputasFile( "GMLInput", curveFile.getPath() );
         inputObjectBuffer[0] = inputObject1;
         InputObject inputObject2 = wpsClient.setInputasObject( "BufferDistance", "43" );
         inputObjectBuffer[1] = inputObject2;
