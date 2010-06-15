@@ -46,7 +46,7 @@ import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
 /**
  * 
- * Model of the footprint of a 3D building.
+ * Model of the footprint of a 3D building. Basis for georeferencing.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -67,8 +67,8 @@ public class Footprint {
      * Creates a new <Code>Footprint</Code> instance.
      */
     public Footprint() {
-        tableValueGeoRef = new Vector();
-        tableValueFootPrint = new Vector();
+        tableValueGeoRef = new Vector<AbstractGRPoint>();
+        tableValueFootPrint = new Vector<AbstractGRPoint>();
     }
 
     /**
