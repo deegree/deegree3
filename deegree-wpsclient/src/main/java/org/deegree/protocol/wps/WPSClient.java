@@ -38,7 +38,9 @@ package org.deegree.protocol.wps;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wps.execute.ExecuteResponse;
@@ -62,11 +64,13 @@ public class WPSClient {
 
     private final WPSCapabilities serviceCapabilities;
 
+    private final Map<String, ProcessInfo> processIdToProcess = new HashMap<String, ProcessInfo>();
+
     private String executeURL;
 
     private String describeProcessURL;
 
-    private List<InputObject> inputObjectList = new ArrayList();
+    private List<InputObject> inputObjectList = new ArrayList<InputObject>();
 
     /**
      * Public constructor to access a WPS instance based on it's GetCapabilities URL
@@ -97,30 +101,37 @@ public class WPSClient {
     }
 
     /**
+     * Returns the identifiers of all processes known to the WPS instance.
      * 
-     * @return String[] identifiers of all processes deliverd by the WPS
+     * @return identifiers of all processes known to the WPS instance, never <code>null</code> 
      */
     public String[] getProcessIdentifiers() {
         int size = this.serviceCapabilities.getProcessOfferings().size();
-        String[] identifier = new String[size];
+        String[] identifiers = new String[size];
 
         for ( int i = 0; i < size; i++ ) {
-            identifier[i] = serviceCapabilities.getProcessOfferings().get( i ).getIdentifier();
+            identifiers[i] = serviceCapabilities.getProcessOfferings().get( i ).getIdentifier();
         }
-
-        return identifier;
-
+        return identifiers;
     }
 
     /**
+     * Returns the the process information for the process with the given identifier.
      * 
-     * @return ProcessInfo Object which holds all Information of the DescribeProcess Document
-     * 
-     * @param processIdentifier
-     *            identifier of the process
+     * @param processId
+     *            identifier of the process, must not be <code>null</code>
+     * @return process information
      */
-    public ProcessInfo getProcessInfo( String processIdentifier ) {
-        return ( new ProcessInfo( describeProcessURL, processIdentifier ) );
+    public ProcessInfo getProcessInfo( String processId ) {
+        ProcessInfo pi = null;
+        synchronized ( processIdToProcess ) {
+            pi = processIdToProcess.get( processId );
+            if ( pi == null ) {
+                pi = new ProcessInfo( describeProcessURL, processId );
+            }
+            processIdToProcess.put( processId, pi );
+        }
+        return pi;
     }
 
     /**
