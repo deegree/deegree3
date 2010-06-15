@@ -35,9 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.configuration.mapping;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredText;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getText;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.moveReaderToFirstMatch;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -45,6 +46,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -54,8 +57,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.Parser;
+import org.deegree.client.mdeditor.model.mapping.MappingElement;
+import org.deegree.client.mdeditor.model.mapping.MappingGroup;
 import org.deegree.client.mdeditor.model.mapping.MappingInformation;
-import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.NamespaceContext;
 import org.slf4j.Logger;
 
 /**
@@ -76,7 +81,31 @@ public class MappingParser extends Parser {
 
     private static QName MAPPING = new QName( NS, "Mapping" );
 
+    private static QName MAPPING_GROUP = new QName( NS, "MappingGroup" );
+
     private static QName MAPPING_ELEMENT = new QName( NS, "MappingElement" );
+
+    private static QName id = new QName( NS, "id" );
+
+    private static QName name = new QName( NS, "name" );
+
+    private static QName version = new QName( NS, "version" );
+
+    private static QName describtion = new QName( NS, "describtion" );
+
+    private static QName schema = new QName( NS, "schema" );
+
+    private static QName formFieldPath = new QName( NS, "formFieldPath" );
+
+    private static QName schemaPath = new QName( NS, "schemaPath" );
+
+    private static QName namespaceDef = new QName( NS, "NamespaceDefinitions" );
+
+    private static QName namespace = new QName( NS, "Namespace" );
+
+    private static QName pref = new QName( NS, "prefix" );
+
+    private static QName ns = new QName( NS, "namespace" );
 
     public static MappingInformation parseMapping( URL mappingURL )
                             throws ConfigurationException {
@@ -85,24 +114,21 @@ public class MappingParser extends Parser {
             File f = new File( mappingURL.toURI() );
             XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( f ) );
 
-            if ( xmlStream.getEventType() == START_DOCUMENT ) {
-                xmlStream.nextTag();
+            if ( !moveReaderToFirstMatch( xmlStream, ROOT ) ) {
+                throw new ConfigurationException( "could not parse mapping" + f.getAbsolutePath()
+                                                  + ": root element does not exist" );
             }
-            xmlStream.require( START_ELEMENT, NS, ROOT.getLocalPart() );
-            xmlStream.nextTag();
-            if ( xmlStream.getEventType() != START_ELEMENT ) {
-                throw new XMLParsingException( xmlStream, "Empty GuiSchemaMapping" );
-            }
-            while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( ROOT ) ) ) {
+
+            while ( !( xmlStream.isEndElement() && ROOT.equals( xmlStream.getName() ) ) ) {
                 if ( SCHEMA.equals( xmlStream.getName() ) ) {
                     mappingInformation = parseSchemaInformation( xmlStream );
                     LOG.debug( "parsed mapping information: " + mappingInformation.toString() );
                 } else if ( MAPPING.equals( xmlStream.getName() ) ) {
                     parseMapping( xmlStream, mappingInformation );
+                } else {
+                    nextElement( xmlStream );
                 }
             }
-            xmlStream.require( END_ELEMENT, NS, ROOT.getLocalPart() );
-
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -121,64 +147,108 @@ public class MappingParser extends Parser {
 
     private static MappingInformation parseSchemaInformation( XMLStreamReader xmlStream )
                             throws XMLStreamException, ConfigurationException {
-        xmlStream.nextTag();
-        String name = null;
-        String version = null;
-        String describtion = null;
-        String schema = null;
-        xmlStream.require( START_ELEMENT, NS, "id" );
-        String id = getElementText( xmlStream, "id", null );
+        nextElement( xmlStream );
+        String nameValue = null;
+        String versionValue = null;
+        String describtionValue = null;
+        String schemaValue = null;
 
-        while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( SCHEMA ) ) ) {
-            String elementName = xmlStream.getLocalName();
-            if ( "name".equals( elementName ) ) {
-                name = getElementText( xmlStream, "name", null );
-            } else if ( "version".equals( elementName ) ) {
-                version = getElementText( xmlStream, "version", null );
-            } else if ( "describtion".equals( elementName ) ) {
-                describtion = getElementText( xmlStream, "describtion", null );
-            } else if ( "schema".equals( elementName ) ) {
-                schema = getElementText( xmlStream, "schema", null );
+        String idValue = getRequiredText( xmlStream, id, true );
+        while ( !( xmlStream.isEndElement() && SCHEMA.equals( xmlStream.getName() ) ) ) {
+            QName elementName = xmlStream.getName();
+            if ( name.equals( elementName ) ) {
+                nameValue = getText( xmlStream, name, null, true );
+            } else if ( version.equals( elementName ) ) {
+                versionValue = getText( xmlStream, version, null, true );
+            } else if ( describtion.equals( elementName ) ) {
+                describtionValue = getText( xmlStream, describtion, null, true );
+            } else if ( schema.equals( elementName ) ) {
+                schemaValue = getText( xmlStream, schema, null, true );
             } else {
-                xmlStream.nextTag();
+                nextElement( xmlStream );
             }
         }
-        if ( schema == null || schema.length() < 1 ) {
+        if ( schemaValue == null || schemaValue.length() < 1 ) {
             throw new ConfigurationException( "Schema URL of the mapping with id " + id + " is invalid: " + schema );
         }
-        xmlStream.nextTag();
-        return new MappingInformation( id, name, version, describtion, schema );
+        nextElement( xmlStream );
+        return new MappingInformation( idValue, nameValue, versionValue, describtionValue, schemaValue );
     }
 
     private static void parseMapping( XMLStreamReader xmlStream, MappingInformation mappingInformation )
                             throws XMLStreamException, ConfigurationException {
+        nextElement( xmlStream );
         while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( MAPPING ) ) ) {
-            if ( "MappingElement".equals( xmlStream.getLocalName() ) ) {
-                String fieldPath = null;
-                String schemaPath = null;
-                while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( MAPPING_ELEMENT ) ) ) {
-                    if ( "formFieldPath".equals( xmlStream.getLocalName() ) ) {
-                        fieldPath = getElementText( xmlStream, "formFieldPath", null );
-                    } else if ( "schemaPath".equals( xmlStream.getLocalName() ) ) {
-                        schemaPath = getElementText( xmlStream, "schemaPath", null );
-                    } else {
-                        xmlStream.nextTag();
+            if ( namespaceDef.equals( xmlStream.getName() ) ) {
+                mappingInformation.setNsContext( parseNamespaceDefinitions( xmlStream ) );
+            } else if ( MAPPING_ELEMENT.equals( xmlStream.getName() ) ) {
+                mappingInformation.addMappingElement( parseMappingElement( xmlStream ) );
+            } else if ( MAPPING_GROUP.equals( xmlStream.getName() ) ) {
+                nextElement( xmlStream );
+                String fPath = getText( xmlStream, formFieldPath, null, true );
+                String sPath = getText( xmlStream, schemaPath, null, true );
+                List<MappingElement> mappings = new ArrayList<MappingElement>();
+                while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( MAPPING_GROUP ) ) ) {
+                    if ( MAPPING_ELEMENT.equals( xmlStream.getName() ) ) {
+                        mappings.add( parseMappingElement( xmlStream ) );
                     }
                 }
-                xmlStream.nextTag();
-                if ( fieldPath != null && schemaPath != null ) {
-                    LOG.debug( "found mapping element: " + fieldPath + " - " + schemaPath );
-                    mappingInformation.addMappingElement( fieldPath, schemaPath );
+                if ( fPath != null && sPath != null ) {
+                    fPath = fPath.trim();
+                    sPath = sPath.trim();
+                    LOG.debug( "found mapping group: " + fPath + " - " + sPath );
+                    MappingElement mapping = new MappingGroup( fPath, sPath, mappings );
+                    mappingInformation.addMappingElement( mapping );
                 } else {
-                    LOG.info( " Found invalid mapping element with formFieldPath " + fieldPath + " and schemaPath "
-                              + schemaPath + " ignore this element." );
+                    LOG.info( " Found invalid mapping group with formFieldPath " + fPath + " and schemaPath " + sPath
+                              + " ignore this element." );
                 }
-            } else if ( "template".equals( xmlStream.getLocalName() ) ) {
-                mappingInformation.setTemplate( getElementText( xmlStream, "template", null ) );
-            } else {
-                xmlStream.nextTag();
+                nextElement( xmlStream );
             }
         }
-        xmlStream.nextTag();
+        nextElement( xmlStream );
+    }
+
+    private static MappingElement parseMappingElement( XMLStreamReader xmlStream )
+                            throws XMLStreamException, ConfigurationException {
+        MappingElement mappingSingle = null;
+        nextElement( xmlStream );
+
+        String fPath = getText( xmlStream, formFieldPath, null, true );
+        String sPath = getText( xmlStream, schemaPath, null, true );
+
+        if ( fPath != null && sPath != null ) {
+            fPath = fPath.trim();
+            sPath = sPath.trim();
+            LOG.debug( "found mapping element: " + fPath + " - " + sPath );
+            mappingSingle = new MappingElement( fPath, sPath );
+        } else {
+            LOG.info( " Found invalid mapping element with formFieldPath " + fPath + " and schemaPath " + sPath
+                      + " ignore this element." );
+        }
+        nextElement( xmlStream );
+        return mappingSingle;
+    }
+
+    private static NamespaceContext parseNamespaceDefinitions( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        NamespaceContext nsContext = new NamespaceContext();
+        nextElement( xmlStream );
+
+        while ( !( xmlStream.isEndElement() && namespaceDef.equals( xmlStream.getName() ) ) ) {
+            if ( namespace.equals( xmlStream.getName() ) ) {
+                nextElement( xmlStream );
+                String prefix = getText( xmlStream, pref, null, true );
+                String namespaceUrl = getText( xmlStream, ns, null, true );
+                if ( prefix != null && namespaceUrl != null ) {
+                    nsContext.addNamespace( prefix, namespaceUrl );
+                }
+                nextElement( xmlStream );
+            } else {
+                nextElement( xmlStream );
+            }
+        }
+        nextElement( xmlStream );
+        return nsContext;
     }
 }

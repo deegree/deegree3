@@ -98,7 +98,7 @@ public class ExportBean {
             if ( value != null ) {
                 id = String.valueOf( value );
             }
-            String fileName = SchemaManager.export( id, selectedMapping, formFields );
+            String fileName = SchemaManager.export( id, selectedMapping, formFields, formfieldBean.getDataGroups() );
 
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
 

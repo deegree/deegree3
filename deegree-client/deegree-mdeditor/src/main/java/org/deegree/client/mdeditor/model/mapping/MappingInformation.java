@@ -35,7 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model.mapping;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.commons.xml.NamespaceContext;
 
 /**
  * TODO add class documentation here
@@ -55,11 +58,11 @@ public class MappingInformation {
 
     private String describtion;
 
-    private LinkedHashMap<String, String> mappingElements = new LinkedHashMap<String, String>();
+    private List<MappingElement> mappingElements = new ArrayList<MappingElement>();
 
     private String schema;
 
-    private String template;
+    private NamespaceContext nsContext = new NamespaceContext();;
 
     public MappingInformation( String id, String name, String version, String describtion, String schema ) {
         this.id = id;
@@ -109,11 +112,11 @@ public class MappingInformation {
         return schema;
     }
 
-    public void addMappingElement( String fieldPath, String schemaPath ) {
-        getMappingElements().put( fieldPath, schemaPath );
+    public void addMappingElement( MappingElement mappingElement ) {
+        mappingElements.add( mappingElement );
     }
 
-    public LinkedHashMap<String, String> getMappingElements() {
+    public List<MappingElement> getMappingElements() {
         return mappingElements;
     }
 
@@ -131,12 +134,12 @@ public class MappingInformation {
         return name + v;
     }
 
-    public void setTemplate( String string ) {
-        this.template = string;
+    public void setNsContext( NamespaceContext nsContext ) {
+        this.nsContext = nsContext;
     }
 
-    public String getTemplate() {
-        return template;
+    public NamespaceContext getNsContext() {
+        return nsContext;
     }
 
 }
