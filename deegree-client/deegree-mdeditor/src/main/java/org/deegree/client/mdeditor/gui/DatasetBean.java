@@ -135,7 +135,7 @@ public class DatasetBean implements Serializable {
 
         FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.LOAD", id );
         fc.addMessage( "LOAD_SUCCESS", msg );
-        return "/page/form/emptyForm.xhtml";
+        return "forms";
     }
 
     public Object newDataset() {
@@ -145,7 +145,7 @@ public class DatasetBean implements Serializable {
                                                                                                     null,
                                                                                                     "formFieldBean" );
         formfieldBean.clearFormFields();
-        return "/page/form/emptyForm.xhtml";
+        return "forms";
     }
 
     public Object validateDataset() {
@@ -190,27 +190,23 @@ public class DatasetBean implements Serializable {
                 FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL,
                                                              "ERROR.SAVE_DATASET.INVALID_ID" );
                 fc.addMessage( "SAVE_FAILED_INVALID_ID", msg );
+            } else {
+                DataHandler.getInstance().writeDataset( id, formfieldBean.getFormGroups(),
+                                                        formfieldBean.getDataGroups() );
 
-                return "/page/form/errorPage.xhtml";
+                FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.SAVE_DATASET", id );
+                fc.addMessage( "SAVE_SUCCESS", msg );
+
+                // set the selected dataset
+                setSelectedDataset( id );
             }
-
-            DataHandler.getInstance().writeDataset( id, formfieldBean.getFormGroups(), formfieldBean.getDataGroups() );
 
         } catch ( Exception e ) {
             FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.SAVE_DATASET",
                                                          e.getMessage() );
             fc.addMessage( "SAVE_FAILED", msg );
-
-            return "/page/form/errorPage.xhtml";
         }
-
-        FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.SAVE_DATASET", id );
-        fc.addMessage( "SAVE_SUCCESS", msg );
-
-        // set the selected dataset
-        setSelectedDataset( id );
-
-        return "/page/form/successPage.xhtml";
+        return "forms";
     }
 
 }

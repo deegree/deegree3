@@ -194,3 +194,29 @@
 #mdEditor .dgListOptionColumn input[type="image"] {
 	background-repeat: no-repeat;
 }
+
+/***** styles for the status message *****/
+#mdEditor .statusMsgTitle {
+	font-size: larger;
+	font-style: italic;
+}
+
+#mdEditor .statusMsgError {
+	color: red;
+}
+
+#mdEditor .statusMsgFatal {
+	color: red;
+}
+
+#mdEditor .statusMsgInfo {
+	
+}
+
+#mdEditor .statusMsgWarn {
+	color: yellow;
+}
+
+#mdEditor .statusMsg {
+	
+}

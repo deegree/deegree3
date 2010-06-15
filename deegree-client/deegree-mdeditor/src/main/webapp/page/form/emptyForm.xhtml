@@ -28,6 +28,12 @@
 																								<f:ajax render="@none" />
 																				</h:inputText>
 																</h:form>
+																
+																<h:panelGrid rendered="#{!empty facesContext.messageList}">
+																		<h:outputText styleClass="statusMsgTitle" value="#{mdLabels['statusMsgTitle']}"/>
+																		<h:messages id="statusMsgs" showDetail="true" showSummary="true" 
+																		errorClass="statusMsgError" fatalClass="statusMsgFatal" infoClass="statusMsgInfo" warnClass="statusMsgWarn" styleClass="statusMsg"/>
+																</h:panelGrid>
 												</f:subview>
 								</ui:define>
 				</ui:composition>

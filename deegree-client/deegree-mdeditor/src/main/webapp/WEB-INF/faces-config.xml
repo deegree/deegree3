@@ -116,5 +116,13 @@
     <factory>
         <exception-handler-factory>org.deegree.client.mdeditor.ExceptionHandlerFactory</exception-handler-factory>
     </factory>
+    
+    <navigation-rule>
+        <from-view-id>*</from-view-id>
+        <navigation-case>
+            <from-outcome>forms</from-outcome>
+            <to-view-id>/page/form/emptyForm.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
 
 </faces-config>
