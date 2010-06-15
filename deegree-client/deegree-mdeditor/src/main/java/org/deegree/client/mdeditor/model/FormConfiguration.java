@@ -57,13 +57,19 @@ public class FormConfiguration {
 
     private FormFieldPath pathToIdentifier;
 
+    private FormFieldPath pathToTitle;
+
+    private FormFieldPath pathToDescription;
+
     private final List<URL> mappingURLs;
 
     public FormConfiguration( List<FormGroup> formGroups, LAYOUT_TYPE layoutType, FormFieldPath pathToIdentifier,
-                              List<URL> mappingURLs ) {
+                              FormFieldPath pathToTitle, FormFieldPath pathToDescription, List<URL> mappingURLs ) {
         this.formGroups = formGroups;
         this.layoutType = layoutType;
         this.pathToIdentifier = pathToIdentifier;
+        this.pathToTitle = pathToTitle;
+        this.pathToDescription = pathToDescription;
         this.mappingURLs = mappingURLs;
     }
 
@@ -161,5 +167,21 @@ public class FormConfiguration {
 
     public List<URL> getMappingURLs() {
         return mappingURLs;
+    }
+
+    public void setPathToTitle( FormFieldPath pathToTitle ) {
+        this.pathToTitle = pathToTitle;
+    }
+
+    public FormFieldPath getPathToTitle() {
+        return pathToTitle;
+    }
+
+    public void setPathToDescription( FormFieldPath pathToDescription ) {
+        this.pathToDescription = pathToDescription;
+    }
+
+    public FormFieldPath getPathToDescription() {
+        return pathToDescription;
     }
 }

@@ -79,7 +79,7 @@ public class MappingExporter {
 
             XMLStreamWriter writer = outputFactory.createXMLStreamWriter( fos );
             writer.writeStartDocument();
-
+            
             List<MappingElement> mappingElements = mapping.getMappingElements();
             Iterator<MappingElement> it = mappingElements.iterator();
             if ( it.hasNext() ) {
@@ -249,7 +249,6 @@ public class MappingExporter {
             }
         }
         stepsToClose = currentSteps.size() - equalSteps - ( currentSteps.size() - currentIndex );
-        System.out.println( stepsToClose );
         for ( int i = 0; i < stepsToClose; i++ ) {
             writer.writeEndElement();
         }

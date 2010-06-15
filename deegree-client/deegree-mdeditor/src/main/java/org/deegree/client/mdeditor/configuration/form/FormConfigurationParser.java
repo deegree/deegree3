@@ -35,9 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.configuration.form;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValue;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsDouble;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsInteger;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredText;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getText;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.moveReaderToFirstMatch;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileNotFoundException;
@@ -59,7 +65,6 @@ import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.Parser;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
-import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.INPUT_TYPE;
@@ -84,7 +89,7 @@ public class FormConfigurationParser extends Parser {
 
     private static final Logger LOG = getLogger( FormConfigurationParser.class );
 
-    private static QName FORM_CONF_ELEMENT = new QName( NS, "FormConfiguration" );
+    private static QName ROOT = new QName( NS, "FormConfiguration" );
 
     private static QName MAPPING_ELEMENT = new QName( NS, "Mapping" );
 
@@ -104,8 +109,6 @@ public class FormConfigurationParser extends Parser {
 
     private Stack<String> path = new Stack<String>();
 
-    private FormFieldPath pathToIdentifier;
-
     FormConfiguration parseConfiguration( String formConfiguration )
                             throws ConfigurationException {
         try {
@@ -113,35 +116,39 @@ public class FormConfigurationParser extends Parser {
                                                                                              formConfiguration,
                                                                                              new FileReader(
                                                                                                              formConfiguration ) );
-            if ( xmlStream.getEventType() == START_DOCUMENT ) {
-                xmlStream.nextTag();
+
+            if ( !moveReaderToFirstMatch( xmlStream, ROOT ) ) {
+                throw new ConfigurationException( "could not parse form configuration" + formConfiguration
+                                                  + ": root element does not exist" );
             }
-            xmlStream.require( START_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
-            xmlStream.nextTag();
-            if ( xmlStream.getEventType() != START_ELEMENT ) {
-                throw new XMLParsingException( xmlStream, "Empty FormConfiguration" );
-            }
-            xmlStream.require( START_ELEMENT, NS, "layoutType" );
             layoutType = getLayoutType( xmlStream );
             LOG.debug( "Found layout type: " + layoutType );
-            xmlStream.nextTag();
+
+            FormFieldPath pathToIdentifier = getPath( getRequiredText( xmlStream, new QName( NS, "identifier" ), true ) );
+            if ( pathToIdentifier == null ) {
+                throw new ConfigurationException( "path to identifier must be set!" );
+            }
+            FormFieldPath pathToTitle = getPath( getText( xmlStream, new QName( NS, "title" ), null, true ) );
+            FormFieldPath pathToDescription = getPath( getText( xmlStream, new QName( NS, "description" ), null, true ) );
 
             List<URL> mappings = new ArrayList<URL>();
-            while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( FORM_CONF_ELEMENT ) ) ) {
+            while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( ROOT ) ) ) {
                 QName elementName = xmlStream.getName();
                 if ( MAPPING_ELEMENT.equals( elementName ) ) {
                     parseMappings( xmlStream, mappings );
-                }
-                if ( FORM_GROUP_ELEMENT.equals( elementName ) ) {
+                } else if ( FORM_GROUP_ELEMENT.equals( elementName ) ) {
                     formGroups.add( parseFormGroup( xmlStream ) );
+                } else {
+                    nextElement( xmlStream );
                 }
-                xmlStream.nextTag();
             }
 
-            xmlStream.require( END_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
-
+            if ( mappings.size() == 0 ) {
+                throw new ConfigurationException( "form configuration does not at least one valid mapping" );
+            }
             updateFormGroups();
-            return new FormConfiguration( formGroups, layoutType, pathToIdentifier, mappings );
+            return new FormConfiguration( formGroups, layoutType, pathToIdentifier, pathToTitle, pathToDescription,
+                                          mappings );
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -161,10 +168,10 @@ public class FormConfigurationParser extends Parser {
     private void parseMappings( XMLStreamReader xmlStream, List<URL> mappings )
                             throws XMLStreamException {
         LOG.debug( "Parse Mapping" );
+
         while ( !( xmlStream.isEndElement() && MAPPING_ELEMENT.equals( xmlStream.getName() ) ) ) {
-            System.out.println( xmlStream.getLocalName() );
             if ( "mappingURL".equals( xmlStream.getLocalName() ) ) {
-                String url = getElementText( xmlStream, "mappingURL", null );
+                String url = getText( xmlStream, new QName( NS, "mappingURL" ), null, true );
                 if ( url != null ) {
                     LOG.debug( "Found mappingURL: " + url );
                     try {
@@ -175,125 +182,101 @@ public class FormConfigurationParser extends Parser {
                     }
                 }
             } else {
-                xmlStream.nextTag();
+                nextElement( xmlStream );
             }
         }
+        nextElement( xmlStream );
     }
 
     private FormGroup parseFormGroup( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
-
         String formGroupId = getId( xmlStream );
         int occurence = getOccurence( xmlStream, formGroupId );
+        nextElement( xmlStream );
 
         path.push( formGroupId );
-        if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
-            xmlStream.nextTag();
-        }
-        String label = getElementText( xmlStream, "label", formGroupId );
-        String title = getElementText( xmlStream, "title", formGroupId );
+        String label = getText( xmlStream, new QName( NS, "label" ), null, true );
+        String title = getText( xmlStream, new QName( NS, "title" ), null, true );
         LOG.debug( "Found group with id " + formGroupId + ", title " + title + ", label " + label
                    + ". Start to parse form elements and groups." );
 
         FormGroup fg = new FormGroup( formGroupId, label, title, occurence );
-
         while ( !( xmlStream.isEndElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) ) {
-            if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
+            QName elementName = xmlStream.getName();
+            if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( elementName ) ) {
                 fg.addFormElement( parseFormGroup( xmlStream ) );
-            } else if ( xmlStream.isStartElement() && INPUT_FORM_ELEMENT.equals( xmlStream.getName() ) ) {
+            } else if ( xmlStream.isStartElement() && INPUT_FORM_ELEMENT.equals( elementName ) ) {
                 fg.addFormElement( parseInputFormElement( xmlStream ) );
-            } else if ( xmlStream.isStartElement() && SELECT_FORM_ELEMENT.equals( xmlStream.getName() ) ) {
+            } else if ( xmlStream.isStartElement() && SELECT_FORM_ELEMENT.equals( elementName ) ) {
                 fg.addFormElement( parseSelectFormElement( xmlStream ) );
-            } else if ( xmlStream.isStartElement() && REF_FORM_ELEMENT.equals( xmlStream.getName() ) ) {
+            } else if ( xmlStream.isStartElement() && REF_FORM_ELEMENT.equals( elementName ) ) {
                 fg.addFormElement( parseRefFormElement( xmlStream ) );
+            } else {
+                nextElement( xmlStream );
             }
-            xmlStream.next();
         }
         path.pop();
-        xmlStream.require( END_ELEMENT, NS, FORM_GROUP_ELEMENT.getLocalPart() );
+        nextElement( xmlStream );
         return fg;
 
     }
 
-    /**
-     * @param xmlStream
-     * @return
-     * @throws ConfigurationException
-     * @throws XMLStreamException
-     */
     private FormElement parseRefFormElement( XMLStreamReader xmlStream )
                             throws ConfigurationException, XMLStreamException {
         String id = getId( xmlStream );
-        boolean visible = getBooleanAttribute( xmlStream, "visible", true );
-        boolean isIdentifier = getBooleanAttribute( xmlStream, "isIdentifier", false );
-        xmlStream.nextTag();
+        boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
+        nextElement( xmlStream );
+        String label = getText( xmlStream, new QName( NS, "label" ), null, true );
+        String help = getText( xmlStream, new QName( NS, "help" ), null, true );
+        String defaultValue = getText( xmlStream, new QName( NS, "defaultValue" ), null, true );
 
-        String label = getElementText( xmlStream, "label", id );
-        String help = getElementText( xmlStream, "help", "Keine Hilfe verfügbar" );
-
-        LOG.debug( "Found SelectFormElement with id " + id + "; label " + label + "; help " + help );
-
-        xmlStream.require( START_ELEMENT, null, "bean-name" );
-        String beanName = getElementText( xmlStream, "bean-name", null );
-
-        String defaultValue = getElementText( xmlStream, "selectedValue", null );
-        ReferencedElement re = new ReferencedElement( getPath( id ), id, label, visible, help, defaultValue,
-                                                      isIdentifier, beanName );
-        setPathToIdentifier( re );
+        LOG.debug( "Found ReferencedFormElement with id " + id + "; label " + label + "; help " + help );
+        String beanName = getRequiredText( xmlStream, new QName( NS, "bean-name" ), true );
+        ReferencedElement re = new ReferencedElement( getPath( id ), id, label, visible, help, defaultValue, beanName );
         return re;
-    }
-
-    private void setPathToIdentifier( FormField ff )
-                            throws ConfigurationException {
-        if ( ff.isIdentifier() ) {
-            if ( pathToIdentifier == null ) {
-                pathToIdentifier = ff.getPath();
-            } else {
-                throw new ConfigurationException( "attribute isIdentifer can not be true for more than one element" );
-            }
-        }
     }
 
     private SelectFormField parseSelectFormElement( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
-        boolean visible = getBooleanAttribute( xmlStream, "visible", true );
-        boolean isIdentifier = getBooleanAttribute( xmlStream, "isIdentifier", false );
-        xmlStream.nextTag();
-
-        String label = getElementText( xmlStream, "label", id );
-        String help = getElementText( xmlStream, "help", "Keine Hilfe verfügbar" );
+        boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
+        nextElement( xmlStream );
+        String label = getText( xmlStream, new QName( NS, "label" ), null, true );
+        String help = getText( xmlStream, new QName( NS, "help" ), null, true );
+        String defaultValueAsString = getText( xmlStream, new QName( NS, "defaultValue" ), null, true );
 
         LOG.debug( "Found SelectFormElement with id " + id + "; label " + label + "; help " + help );
 
         xmlStream.require( START_ELEMENT, null, "selectType" );
         SELECT_TYPE selectType = getSelectType( xmlStream );
 
-        String referenceToGroup = getElementText( xmlStream, "referenceToGroup", null );
+        String referenceToGroup = getText( xmlStream, new QName( NS, "referenceToGroup" ), null, true );
         if ( referenceToGroup != null ) {
             referencedGroups.add( referenceToGroup );
         }
-        String referenceText = getElementText( xmlStream, "referenceText", null );
-        String referenceToCodeList = getElementText( xmlStream, "referenceToCodeList", null );
-        String selectedValueAsString = getElementText( xmlStream, "selectedValue", null );
-        Object selectedValue = selectedValueAsString;
-        if ( SELECT_TYPE.MANY.equals( selectType ) && selectedValueAsString != null ) {
+        String referenceText = getText( xmlStream, new QName( NS, "referenceText" ), null, true );
+        String referenceToCodeList = getText( xmlStream, new QName( NS, "referenceToCodeList" ), null, true );
+
+        Object defaultValue = defaultValueAsString;
+        if ( SELECT_TYPE.MANY.equals( selectType ) && defaultValueAsString != null ) {
             List<String> selValues = new ArrayList<String>();
-            String[] split = selectedValueAsString.split( "," );
+            String[] split = defaultValueAsString.split( "," );
             for ( int i = 0; i < split.length; i++ ) {
                 selValues.add( split[i].trim() );
             }
-            selectedValue = selValues;
+            defaultValue = selValues;
         }
 
-        SelectFormField ff = new SelectFormField( getPath( id ), id, label, visible, help, isIdentifier, selectedValue,
-                                                  selectType, referenceToCodeList, referenceToGroup, referenceText );
-        setPathToIdentifier( ff );
+        SelectFormField ff = new SelectFormField( getPath( id ), id, label, visible, help, defaultValue, selectType,
+                                                  referenceToCodeList, referenceToGroup, referenceText );
         return ff;
 
     }
 
     private FormFieldPath getPath( String fieldId ) {
+        if ( fieldId == null ) {
+            return null;
+        }
         FormFieldPath ffPath = new FormFieldPath();
         for ( String id : path ) {
             ffPath.addStep( id );
@@ -305,41 +288,40 @@ public class FormConfigurationParser extends Parser {
     private InputFormField parseInputFormElement( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
-        boolean visible = getBooleanAttribute( xmlStream, "visible", true );
-        boolean isIdentifier = getBooleanAttribute( xmlStream, "isIdentifier", false );
-
+        boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
         int occurence = getOccurence( xmlStream, id );
-        xmlStream.nextTag();
+        nextElement( xmlStream );
 
-        String label = getElementText( xmlStream, "label", id );
-        String help = getElementText( xmlStream, "help", "Keine Hilfe verfügbar" );
+        String label = getText( xmlStream, new QName( NS, "label" ), null, true );
+        String help = getText( xmlStream, new QName( NS, "help" ), null, true );
+        String defaultValue = getText( xmlStream, new QName( NS, "defaultValue" ), null, true );
 
         LOG.debug( "Found InputFormElement with id " + id + "; label " + label + "; help " + help );
 
-        xmlStream.require( START_ELEMENT, null, "inputType" );
         INPUT_TYPE inputType = getInputType( xmlStream );
-
-        String defaultValue = getElementText( xmlStream, "defaultValue", null );
 
         Validation validation = null;
         if ( "Validation".equals( xmlStream.getLocalName() ) ) {
             validation = new Validation();
-            xmlStream.nextTag();
-            validation.setLength( getElementInteger( xmlStream, "length", Integer.MIN_VALUE ) );
-            validation.setTimestampPattern( getElementText( xmlStream, "timestampPattern", null ) );
-            validation.setMinValue( getElementDouble( xmlStream, "minValue", Double.MIN_VALUE ) );
-            validation.setMaxValue( getElementDouble( xmlStream, "maxValue", Double.MAX_VALUE ) );
+            nextElement( xmlStream );
+            getElementTextAsDouble( xmlStream, new QName( NS, "maxValue" ), Double.MAX_VALUE, true );
+            validation.setLength( getElementTextAsInteger( xmlStream, new QName( NS, "length" ), Integer.MIN_VALUE,
+                                                           true ) );
+            validation.setTimestampPattern( getText( xmlStream, new QName( NS, "timestampPattern" ), null, true ) );
+            validation.setMinValue( getElementTextAsDouble( xmlStream, new QName( NS, "minValue" ), Double.MIN_VALUE,
+                                                            true ) );
+            validation.setMaxValue( getElementTextAsDouble( xmlStream, new QName( NS, "maxValue" ), Double.MAX_VALUE,
+                                                            true ) );
         }
-        InputFormField ff = new InputFormField( getPath( id ), id, label, visible, help, isIdentifier, inputType,
-                                                occurence, defaultValue, validation );
-        setPathToIdentifier( ff );
+        InputFormField ff = new InputFormField( getPath( id ), id, label, visible, help, inputType, occurence,
+                                                defaultValue, validation );
         return ff;
     }
 
     private int getOccurence( XMLStreamReader xmlStream, String id )
                             throws ConfigurationException {
         int occurence = 1;
-        String occurenceAtt = xmlStream.getAttributeValue( null, "occurence" );
+        String occurenceAtt = getAttributeValue( xmlStream, "occurence" );
         if ( occurenceAtt != null ) {
             if ( !"unbounded".equals( occurenceAtt ) ) {
                 try {
@@ -358,7 +340,7 @@ public class FormConfigurationParser extends Parser {
 
     private INPUT_TYPE getInputType( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        String elementText = getElementText( xmlStream, "inputType", null );
+        String elementText = getRequiredText( xmlStream, new QName( NS, "inputType" ), true );
         if ( "text".equals( elementText ) ) {
             return INPUT_TYPE.TEXT;
         } else if ( "textarea".equals( elementText ) ) {
@@ -375,7 +357,7 @@ public class FormConfigurationParser extends Parser {
 
     private SELECT_TYPE getSelectType( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        String elementText = getElementText( xmlStream, "selectType", null );
+        String elementText = getRequiredText( xmlStream, new QName( NS, "selectType" ), true );
         if ( "many".equals( elementText ) ) {
             return SELECT_TYPE.MANY;
         } else if ( "one".equals( elementText ) ) {
@@ -385,8 +367,11 @@ public class FormConfigurationParser extends Parser {
     }
 
     private LAYOUT_TYPE getLayoutType( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        String elementText = xmlStream.getElementText();
+                            throws ConfigurationException, XMLStreamException {
+        if ( !moveReaderToFirstMatch( xmlStream, new QName( NS, "layoutType" ) ) ) {
+            throw new ConfigurationException( "layout type is not set" );
+        }
+        String elementText = getRequiredText( xmlStream, new QName( NS, "layoutType" ), true );
         if ( "menu".equals( elementText ) ) {
             return LAYOUT_TYPE.MENU;
         } else if ( "tab".equals( elementText ) ) {
@@ -396,51 +381,7 @@ public class FormConfigurationParser extends Parser {
         } else if ( "wizard".equals( elementText ) ) {
             return LAYOUT_TYPE.WIZARD;
         }
-        throw new XMLParsingException( xmlStream, "layoutType " + elementText + "is not valid" );
-    }
-
-    private boolean getBooleanAttribute( XMLStreamReader xmlStream, String name, boolean defaultValue ) {
-        try {
-            String attributeValue = xmlStream.getAttributeValue( null, name );
-            if ( attributeValue != null ) {
-                return Boolean.parseBoolean( attributeValue );
-            }
-        } catch ( Exception e ) {
-            LOG.debug( "Attribute with name " + name + "is not set, return defaultValue: " + defaultValue );
-        }
-        return defaultValue;
-    }
-
-    private int getElementInteger( XMLStreamReader xmlStream, String name, int defaultValue )
-                            throws XMLStreamException {
-        int i = defaultValue;
-        if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
-            String element = xmlStream.getElementText();
-            try {
-                i = Integer.valueOf( element );
-            } catch ( NumberFormatException e ) {
-                LOG.info( "Found invalid integer (" + element + ") in element " + name + "return defaultValue ("
-                          + defaultValue + ")" );
-            }
-            xmlStream.nextTag();
-        }
-        return i;
-    }
-
-    private double getElementDouble( XMLStreamReader xmlStream, String name, double defaultValue )
-                            throws XMLStreamException {
-        double d = defaultValue;
-        if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
-            String element = xmlStream.getElementText();
-            try {
-                d = Double.valueOf( element );
-            } catch ( NumberFormatException e ) {
-                LOG.info( "Found invalid double (" + element + ") in element " + name + "return defaultValue ("
-                          + defaultValue + ")" );
-            }
-            xmlStream.nextTag();
-        }
-        return d;
+        throw new ConfigurationException( "layoutType " + elementText + "is not valid" );
     }
 
     private void updateFormGroups()

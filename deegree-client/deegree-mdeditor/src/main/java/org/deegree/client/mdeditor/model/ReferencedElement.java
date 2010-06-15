@@ -48,8 +48,8 @@ public class ReferencedElement extends FormField {
     private String beanName;
 
     public ReferencedElement( FormFieldPath path, String id, String label, boolean visible, String help,
-                              Object defaultValue, boolean isIdentifier, String beanName ) {
-        super( path, id, label, visible, help, defaultValue, isIdentifier );
+                              Object defaultValue, String beanName ) {
+        super( path, id, label, visible, help, defaultValue );
         this.beanName = beanName;
 
     }

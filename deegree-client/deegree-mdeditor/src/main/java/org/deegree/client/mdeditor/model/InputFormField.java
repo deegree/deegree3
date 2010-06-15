@@ -59,9 +59,8 @@ public class InputFormField extends FormField {
     private int occurence;
 
     public InputFormField( FormFieldPath path, String id, String label, boolean visible, String help,
-                           boolean isIdentifier, INPUT_TYPE inputType, int occurence, String defaultValue,
-                           Validation validation ) {
-        super( path, id, label, visible, help, defaultValue, isIdentifier );
+                           INPUT_TYPE inputType, int occurence, String defaultValue, Validation validation ) {
+        super( path, id, label, visible, help, defaultValue );
         this.inputType = inputType;
         this.validation = validation;
         this.occurence = occurence;
@@ -111,8 +110,8 @@ public class InputFormField extends FormField {
                 switch ( inputType ) {
                 case TIMESTAMP:
                     try {
-                        if ( validation != null && validation.getTimestampPattern() != null ) {
-                            timePattern = validation.getTimestampPattern();
+                        if ( getValidation() != null && getValidation().getTimestampPattern() != null ) {
+                            timePattern = getValidation().getTimestampPattern();
                         }
                         SimpleDateFormat format = new SimpleDateFormat( timePattern );
                         format.parse( (String) value );
@@ -123,10 +122,10 @@ public class InputFormField extends FormField {
                 case DOUBLE:
                     try {
                         double d = Double.parseDouble( (String) value );
-                        if ( !( validation != null && d >= validation.getMinValue() ) ) {
+                        if ( !( getValidation() != null && d >= getValidation().getMinValue() ) ) {
                             invalid = true;
                         }
-                        if ( !( validation != null && d <= validation.getMaxValue() ) ) {
+                        if ( !( getValidation() != null && d <= getValidation().getMaxValue() ) ) {
                             invalid = true;
                         }
                     } catch ( Exception e ) {
@@ -136,10 +135,10 @@ public class InputFormField extends FormField {
                 case INT:
                     try {
                         int i = Integer.parseInt( (String) value );
-                        if ( !( validation != null && i >= validation.getMinValue() ) ) {
+                        if ( !( getValidation() != null && i >= getValidation().getMinValue() ) ) {
                             invalid = true;
                         }
-                        if ( !( validation != null && i <= validation.getMaxValue() ) ) {
+                        if ( !( getValidation() != null && i <= getValidation().getMaxValue() ) ) {
                             invalid = true;
                         }
                     } catch ( Exception e ) {
@@ -148,7 +147,7 @@ public class InputFormField extends FormField {
                     break;
                 case TEXT:
                     String s = (String) value;
-                    if ( ( validation != null && validation.getLength() > 0 && s.length() >= validation.getLength() ) ) {
+                    if ( ( getValidation() != null && getValidation().getLength() > 0 && s.length() >= getValidation().getLength() ) ) {
                         invalid = true;
                     }
                     break;
@@ -165,6 +164,14 @@ public class InputFormField extends FormField {
             return valueList;
         }
         return value;
+    }
+
+    public void setValidation( Validation validation ) {
+        this.validation = validation;
+    }
+
+    public Validation getValidation() {
+        return validation;
     }
 
 }

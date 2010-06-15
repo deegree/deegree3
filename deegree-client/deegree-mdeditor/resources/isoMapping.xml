@@ -38,21 +38,21 @@
 
         <MappingElement>
             <formFieldPath>AllgFormGroup/InhFormGroup/keywords</formFieldPath>
-            <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword[i]/gco:CharacterString
+            <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/*/gmd:keyword/gco:CharacterString
             </schemaPath>
         </MappingElement>
 
         <MappingGroup>
             <formFieldPath>FormatFormGroup</formFieldPath>
-            <schemaPath>gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format
+            <schemaPath>gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor
             </schemaPath>
             <MappingElement>
                 <formFieldPath>FormatFormGroup/FormatName</formFieldPath>
-                <schemaPath>gmd:name/gco:CharacterString</schemaPath>
+                <schemaPath>gmd:distributorFormat/gmd:MD_Format/gmd:name/gco:CharacterString</schemaPath>
             </MappingElement>
             <MappingElement>
                 <formFieldPath>FormatFormGroup/FormatVersion</formFieldPath>
-                <schemaPath>gmd:version/gco:CharacterString</schemaPath>
+                <schemaPath>gmd:distributorFormat/gmd:MD_Format/gmd:version/gco:CharacterString</schemaPath>
             </MappingElement>
         </MappingGroup>
 

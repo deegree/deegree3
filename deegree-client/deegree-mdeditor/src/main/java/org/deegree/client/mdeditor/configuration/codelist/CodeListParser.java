@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.configuration.codelist;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredText;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.moveReaderToFirstMatch;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileNotFoundException;
@@ -54,7 +54,6 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.Parser;
 import org.deegree.client.mdeditor.model.CodeList;
-import org.deegree.commons.xml.XMLParsingException;
 import org.slf4j.Logger;
 
 /**
@@ -69,7 +68,7 @@ public class CodeListParser extends Parser {
 
     private static final Logger LOG = getLogger( CodeListParser.class );
 
-    private static QName CODELIST_CONF_ELEMENT = new QName( NS, "CodeListConfiguration" );
+    private static QName ROOT = new QName( NS, "CodeListConfiguration" );
 
     private static QName CODELIST_ELEMENT = new QName( NS, "CodeList" );
 
@@ -81,25 +80,19 @@ public class CodeListParser extends Parser {
             XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                              new FileReader(
                                                                                                              configurationURL ) );
-
-            if ( xmlStream.getEventType() == START_DOCUMENT ) {
-                xmlStream.nextTag();
-            }
-            xmlStream.require( START_ELEMENT, NS, CODELIST_CONF_ELEMENT.getLocalPart() );
-            xmlStream.nextTag();
-            if ( xmlStream.getEventType() != START_ELEMENT ) {
-                throw new XMLParsingException( xmlStream, "Empty FormConfiguration" );
+            if ( !moveReaderToFirstMatch( xmlStream, ROOT ) ) {
+                throw new ConfigurationException( "could not parse code list configuration" + configurationURL
+                                                  + ": root element does not exist" );
             }
 
-            while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( CODELIST_CONF_ELEMENT ) ) ) {
+            while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( ROOT ) ) ) {
                 QName elementName = xmlStream.getName();
                 if ( CODELIST_ELEMENT.equals( elementName ) ) {
                     parseCodeList( xmlStream );
+                } else {
+                    nextElement( xmlStream );
                 }
-                xmlStream.nextTag();
             }
-
-            xmlStream.require( END_ELEMENT, NS, CODELIST_CONF_ELEMENT.getLocalPart() );
 
             return new CodeListConfiguration( codeLists );
         } catch ( FileNotFoundException e ) {
@@ -118,26 +111,21 @@ public class CodeListParser extends Parser {
     private void parseCodeList( XMLStreamReader xmlStream )
                             throws XMLStreamException, ConfigurationException {
         String clId = getId( xmlStream );
+        nextElement( xmlStream );
         CodeList cl = new CodeList( clId );
-
-        QName code_element = new QName( NS, "Code" );
         LOG.debug( "Found CodeList with id " + clId );
-        if ( xmlStream.isStartElement() && xmlStream.getName().equals( CODELIST_ELEMENT ) ) {
-            xmlStream.nextTag();
-        }
         while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( CODELIST_ELEMENT ) ) ) {
-            if ( xmlStream.isStartElement() && code_element.equals( xmlStream.getName() ) ) {
-                xmlStream.nextTag();
-                xmlStream.require( START_ELEMENT, null, "value" );
-                String value = getElementText( xmlStream, "value", null );
-                xmlStream.require( START_ELEMENT, null, "label" );
-                String label = getElementText( xmlStream, "label", null );
+            if ( xmlStream.isStartElement() && new QName( NS, "Code" ).equals( xmlStream.getName() ) ) {
+                nextElement( xmlStream );
+                String value = getRequiredText( xmlStream, new QName( NS, "value" ), true );
+                String label = getRequiredText( xmlStream, new QName( NS, "label" ), true );
                 cl.addCode( value, label );
+            } else {
+                nextElement( xmlStream );
             }
-            xmlStream.next();
         }
-        xmlStream.require( END_ELEMENT, NS, CODELIST_ELEMENT.getLocalPart() );
         LOG.debug( "Found " + cl.getCodes().size() + " codes for codeList " + clId );
         codeLists.add( cl );
+        nextElement( xmlStream );
     }
 }

@@ -48,6 +48,7 @@ import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.LAYOUT_TYPE;
 import org.deegree.client.mdeditor.model.ReferencedElement;
 import org.deegree.client.mdeditor.model.SelectFormField;
 import org.junit.Test;
@@ -61,6 +62,24 @@ import org.junit.Test;
  * @version $Revision: $, $Date: $
  */
 public class FormConfigurationParserTest extends TestCase {
+
+    @Test
+    public void testParseFormConfiguration()
+                            throws ConfigurationException {
+        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
+        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+
+        assertEquals( LAYOUT_TYPE.TAB, configuration.getLayoutType() );
+
+        assertNotNull( configuration.getPathToIdentifier() );
+        assertEquals( "FormGroup3/ref", configuration.getPathToIdentifier().toString() );
+
+        assertNotNull( configuration.getPathToTitle() );
+        assertEquals( "FormGroup/text1", configuration.getPathToTitle().toString() );
+
+        assertNotNull( configuration.getPathToDescription() );
+        assertEquals( "FormGroup/FormGroup11/text2", configuration.getPathToDescription().toString() );
+    }
 
     @Test
     public void testParseFormGroups()
@@ -102,7 +121,6 @@ public class FormConfigurationParserTest extends TestCase {
         FormElement refFormElement = formGroups.get( 0 ).getFormElements().get( 1 );
         assertTrue( refFormElement instanceof ReferencedElement );
         assertEquals( "generateIdBean", ( (ReferencedElement) refFormElement ).getBeanName() );
-        assertEquals( true, ( (ReferencedElement) refFormElement ).isIdentifier() );
 
     }
 
@@ -123,6 +141,9 @@ public class FormConfigurationParserTest extends TestCase {
         assertTrue( input instanceof InputFormField );
         FormFieldPath inputPath = new FormFieldPath( "FormGroup", "text1" );
         assertEquals( inputPath, ( (InputFormField) input ).getPath() );
+        InputFormField iff = (InputFormField) input;
+        assertNotNull( iff.getValidation() );
+        assertEquals( 5, iff.getValidation().getLength() );
 
         FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
         assertTrue( formElement instanceof FormGroup );
@@ -170,7 +191,6 @@ public class FormConfigurationParserTest extends TestCase {
         assertTrue( formGroups.size() == 3 );
 
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
-        System.out.println("aa" + formGroups.get( 1 ).getOccurence());
         assertTrue( formGroups.get( 1 ).getOccurence() < 1 );
     }
 

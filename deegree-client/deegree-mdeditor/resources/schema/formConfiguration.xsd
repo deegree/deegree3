@@ -9,6 +9,22 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="layoutType" />
+                <xs:element name="identifier" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>the path to the identifier of the dataset</xs:documentation>
+                    </xs:annotation>
+
+                </xs:element>
+                <xs:element name="title" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>the path to the title of the dataset</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="description" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>the path to the short description of the dataset</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
                 <xs:element ref="Mapping" />
                 <xs:element ref="FormGroup" maxOccurs="unbounded" />
             </xs:sequence>
@@ -20,7 +36,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                 <xs:element name="mappingURL" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="mappingURL" type="xs:string" maxOccurs="unbounded">
                     <xs:annotation>
                         <xs:documentation>the url of the defined schema mapping</xs:documentation>
                     </xs:annotation>
@@ -69,10 +85,15 @@
         <xs:sequence>
             <xs:element name="label" type="xs:string" minOccurs="0" />
             <xs:element name="help" type="xs:string" minOccurs="0" />
+            <xs:element name="defaultValue" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>the default value for this input field. The entered value must match to
+                        the inputType and the validation, if noted.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:sequence>
         <xs:attribute name="id" use="required" />
         <xs:attribute name="visible" type="xs:boolean" default="true" />
-        <xs:attribute name="isIdentifier" type="xs:boolean" default="false" />
     </xs:complexType>
     <xs:element name="InputFormElement" type="InputFormElement" substitutionGroup="FormElement" />
     <xs:complexType name="InputFormElement">
@@ -83,12 +104,6 @@
             <xs:extension base="FormElement_Type">
                 <xs:sequence>
                     <xs:element ref="inputType" />
-                    <xs:element name="defaultValue" type="xs:string" minOccurs="0">
-                        <xs:annotation>
-                            <xs:documentation>the default value for this input field. The entered value must match to
-                                the inputType and the validation, if noted.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
                     <xs:element ref="Validation" minOccurs="0" />
                 </xs:sequence>
                 <xs:attribute name="occurence" type="xs:string" default="1">
@@ -143,12 +158,6 @@
                             </xs:annotation>
                         </xs:element>
                     </xs:choice>
-                    <xs:element name="selectedValue" type="xs:string" minOccurs="0">
-                        <xs:annotation>
-                            <xs:documentation>if a referenceToCodeList is set, the value of the code to select can be
-                                entered, can be a comma seperated list, if select type is 'many'</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>

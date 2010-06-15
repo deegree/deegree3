@@ -54,9 +54,9 @@ public class SelectFormField extends FormField {
     private String referenceText;
 
     public SelectFormField( FormFieldPath path, String id, String label, boolean visible, String help,
-                            boolean isIdentifier, Object selectedValue, SELECT_TYPE selectType,
-                            String referenceToCodeList, String referenceToGroup, String referenceText ) {
-        super( path, id, label, visible, help, selectedValue, isIdentifier );
+                            Object selectedValue, SELECT_TYPE selectType, String referenceToCodeList,
+                            String referenceToGroup, String referenceText ) {
+        super( path, id, label, visible, help, selectedValue );
         this.selectType = selectType;
         this.referenceToCodeList = referenceToCodeList;
         this.referenceToGroup = referenceToGroup;

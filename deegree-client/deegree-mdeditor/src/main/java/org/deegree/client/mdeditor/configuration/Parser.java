@@ -41,12 +41,12 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.slf4j.Logger;
 
 /**
@@ -67,27 +67,18 @@ public abstract class Parser {
 
     protected String getId( XMLStreamReader xmlStream )
                             throws ConfigurationException {
-        String id = xmlStream.getAttributeValue( null, "id" );
-        if ( id == null || id.length() == 0 ) {
+        try {
+            String id = StAXParsingHelper.getRequiredAttributeValue( xmlStream, "id" );
+            if ( idList.contains( id ) ) {
+                throw new ConfigurationException( "An element with id " + id
+                                                  + " exists! Ids must be unique in the complete configuration." );
+            } else {
+                idList.add( id );
+            }
+            return id;
+        } catch ( XMLParsingException e ) {
             throw new ConfigurationException( "missing id" );
         }
-        if ( idList.contains( id ) ) {
-            throw new ConfigurationException( "An element with id " + id
-                                              + " exists! Ids must be unique in the complete configuration." );
-        } else {
-            idList.add( id );
-        }
-        return id;
-    }
-
-    protected static String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
-                            throws XMLStreamException {
-        String s = defaultValue;
-        if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
-            s = xmlStream.getElementText();
-            xmlStream.nextTag();
-        }
-        return s;
     }
 
     public static URL resolve( String url, XMLStreamReader in )
