@@ -70,7 +70,7 @@ public class FormConfigurationParserTest extends TestCase {
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 2 );
+        assertTrue( formGroups.size() == 3 );
 
         assertEquals( "FormGroup3", formGroups.get( 0 ).getId() );
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
@@ -91,7 +91,7 @@ public class FormConfigurationParserTest extends TestCase {
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 2 );
+        assertTrue( formGroups.size() == 3 );
 
         assertEquals( "FormGroup3", formGroups.get( 0 ).getId() );
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
@@ -114,7 +114,7 @@ public class FormConfigurationParserTest extends TestCase {
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 2 );
+        assertTrue( formGroups.size() == 3 );
 
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
         assertEquals( 3, formGroups.get( 1 ).getFormElements().size() );
@@ -155,7 +155,7 @@ public class FormConfigurationParserTest extends TestCase {
         assertNotNull( mappings );
         assertEquals( 1, mappings.size() );
         assertEquals(
-                      "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/isoMapping.xml",
+                      "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping/mappingTest.xml",
                       mappings.get( 0 ).getFile() );
     }
 
@@ -167,7 +167,7 @@ public class FormConfigurationParserTest extends TestCase {
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 2 );
+        assertTrue( formGroups.size() == 3 );
 
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
         System.out.println("aa" + formGroups.get( 1 ).getOccurence());

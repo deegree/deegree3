@@ -38,7 +38,9 @@ package org.deegree.client.mdeditor.mapping;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -48,9 +50,13 @@ import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 import org.deegree.client.mdeditor.configuration.mapping.MappingParser;
+import org.deegree.client.mdeditor.io.DataHandler;
+import org.deegree.client.mdeditor.io.DataIOException;
+import org.deegree.client.mdeditor.model.Dataset;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.SelectFormField;
 import org.deegree.client.mdeditor.model.mapping.MappingInformation;
 import org.junit.Test;
 
@@ -66,7 +72,30 @@ public class MappingExporterTest extends TestCase {
 
     @Test
     public void test()
-                            throws ConfigurationException, IOException {
+                            throws ConfigurationException, IOException, DataIOException {
+        Map<String, FormField> formFields = prepareFormFields();
+
+        Dataset readTestDataset = prepareDataset();
+        URL url = new URL(
+                           "file:///home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping/mappingTest.xml" );
+        MappingInformation mapping = MappingParser.parseMapping( url );
+
+        File f = new File( "/home/lyn/workspace/deegree-mdeditor/tmp/test/output.xml" );
+        if ( f.exists() ) {
+            f.delete();
+        }
+        f.createNewFile();
+        MappingExporter.export( f, mapping, formFields, readTestDataset.getDataGroups() );
+    }
+
+    private Dataset prepareDataset()
+                            throws DataIOException {
+        Configuration.setFilesDirURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping" );
+        return DataHandler.getInstance().getDataset( "exampleDataset.xml" );
+    }
+
+    private Map<String, FormField> prepareFormFields()
+                            throws ConfigurationException {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
         FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
         Map<String, FormField> formFields = configuration.getFormFields();
@@ -83,18 +112,21 @@ public class MappingExporterTest extends TestCase {
                     ff.setValue( "text" + RandomUtils.nextInt( 50 ) );
                     break;
                 }
+            } else if( ff instanceof SelectFormField ){
+                SelectFormField ffSelect = (SelectFormField) ff;
+                switch ( ffSelect.getSelectType() ) {
+                case MANY:
+                    List<String> list = new ArrayList<String>();
+                    list.add( "selectMany" + RandomUtils.nextInt( 5 ) );
+                    list.add( "selectMany" + RandomUtils.nextInt( 5 ) );
+                    ff.setValue( list );
+                    break;
+                default:
+                    ff.setValue( "select" + RandomUtils.nextInt( 5 ) );
+                    break;
+                }
             }
         }
-        URL url = new URL(
-                           "file:///home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping/mappingTest.xml" );
-        MappingInformation mapping = MappingParser.parseMapping( url );
-
-        File f = new File(
-                           "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping/output.xml" );
-        if ( f.exists() ) {
-            f.delete();
-        }
-        f.createNewFile();
-        MappingExporter.export( f, mapping.getMappingElements(), formFields );
+        return formFields;
     }
 }

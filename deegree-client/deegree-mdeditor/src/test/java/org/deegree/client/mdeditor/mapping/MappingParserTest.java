@@ -36,11 +36,14 @@
 package org.deegree.client.mdeditor.mapping;
 
 import java.net.MalformedURLException;
+
 import java.net.URL;
-import java.util.Map;
+import java.util.List;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.mapping.MappingParser;
+import org.deegree.client.mdeditor.model.mapping.MappingElement;
+import org.deegree.client.mdeditor.model.mapping.MappingGroup;
 import org.deegree.client.mdeditor.model.mapping.MappingInformation;
 import org.junit.Test;
 
@@ -69,15 +72,24 @@ public class MappingParserTest extends TestCase {
         assertNull( mapping.getDescribtion() );
         assertEquals( "http://schemas.opengis.net/iso/19139/20060504/gmd/metadataEntity.xsd", mapping.getSchema() );
 
-        assertEquals( "/home/lyn/workspace/deegree-mdeditor/resources/isoMappingTemplate.xml", mapping.getTemplate() );
-
-        Map<String, String> me = mapping.getMappingElements();
+        List<MappingElement> me = mapping.getMappingElements();
         assertNotNull( me );
-        assertEquals( 4, me.size() );
+        assertEquals( 6, me.size() );
 
-        assertTrue( me.containsKey( "AllgFormGroup/ref" ) );
-        assertEquals( "gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", me.get( "AllgFormGroup/ref" ) );
+        assertEquals( "FormGroup3/text5", me.get( 0 ).getFormFieldPath() );
+        assertEquals( "gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", me.get( 0 ).getSchemaPath() );
 
+        assertTrue( me.get( 5 ) instanceof MappingGroup );
+        MappingGroup mg = (MappingGroup) me.get( 5 );
+        assertEquals( "SimpleUnboundedFormGroup", mg.getFormFieldPath() );
+        assertEquals(
+                      "gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format",
+                      mg.getSchemaPath() );
+        List<MappingElement> elements = mg.getMappingElements();
+        assertNotNull( elements );
+        assertEquals( 2, elements.size() );
+
+        assertEquals( "SimpleUnboundedFormGroup/in1", elements.get( 0 ).getFormFieldPath() );
+        assertEquals( "gmd:name/gco:CharacterString", elements.get( 0 ).getSchemaPath() );
     }
-
 }

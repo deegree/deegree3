@@ -58,7 +58,7 @@ public class CodeListConfigurationParserTest extends TestCase {
     @Test
     public void testParseCodeLists()
                             throws ConfigurationException {
-        Configuration.setCodeListURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping/guiSchemaMapping.xsd" );
+        Configuration.setCodeListURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/codeListTestConfiguration.xml" );
         List<CodeList> codeLists = CodeListConfigurationFactory.getCodeLists();
 
         assertNotNull( codeLists );
@@ -79,7 +79,7 @@ public class CodeListConfigurationParserTest extends TestCase {
     @Test
     public void testParseCode()
                             throws ConfigurationException {
-        Configuration.setCodeListURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/codelistTestConfiguration.xsd" );
+        Configuration.setCodeListURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/codeListTestConfiguration.xml" );
         CodeList codeList = CodeListConfigurationFactory.getCodeList( "hierarchylevel" );
 
         assertNotNull( codeList );

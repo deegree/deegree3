@@ -5,7 +5,7 @@
     <layoutType>tab</layoutType>
     
     <Mapping>
-        <mappingURL>isoMapping.xml</mappingURL>
+        <mappingURL>../mapping/mappingTest.xml</mappingURL>
     </Mapping>
 
     <FormGroup id="FormGroup3">

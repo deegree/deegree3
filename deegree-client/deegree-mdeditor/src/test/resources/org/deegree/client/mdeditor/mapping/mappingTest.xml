@@ -8,7 +8,16 @@
         <schema>http://schemas.opengis.net/iso/19139/20060504/gmd/metadataEntity.xsd</schema>
     </Schema>
     <Mapping>
-        <template>/home/lyn/workspace/deegree-mdeditor/resources/isoMappingTemplate.xml</template>
+        <NamespaceDefinitions>
+            <Namespace>
+                <prefix>gmd</prefix>
+                <namespace>http://www.isotc211.org/2005/gmd</namespace>
+            </Namespace>
+            <Namespace>
+                <prefix>gco</prefix>
+                <namespace>http://www.isotc211.org/2005/gco</namespace>
+            </Namespace>
+        </NamespaceDefinitions>
         <MappingElement>
             <formFieldPath>FormGroup3/text5</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString</schemaPath>
@@ -19,11 +28,34 @@
         </MappingElement>
         <MappingElement>
             <formFieldPath>FormGroup/FormGroup11/text2</formFieldPath>
-            <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString</schemaPath>
+            <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString
+            </schemaPath>
         </MappingElement>
         <MappingElement>
             <formFieldPath>FormGroup/FormGroup11/text4</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract</schemaPath>
         </MappingElement>
+
+        <MappingElement>
+            <formFieldPath>FormGroup/FormGroup11/selectOne2</formFieldPath>
+            <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/*/gmd:keyword/gco:CharacterString
+            </schemaPath>
+        </MappingElement>
+
+
+        <MappingGroup>
+            <formFieldPath>SimpleUnboundedFormGroup</formFieldPath>
+            <schemaPath>gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor
+            </schemaPath>
+            <MappingElement>
+                <formFieldPath>SimpleUnboundedFormGroup/in1</formFieldPath>
+                <schemaPath>gmd:distributorFormat/gmd:MD_Format/gmd:name/gco:CharacterString</schemaPath>
+            </MappingElement>
+            <MappingElement>
+                <formFieldPath>SimpleUnboundedFormGroup/in2</formFieldPath>
+                <schemaPath>gmd:distributorFormat/gmd:MD_Format/gmd:version/gco:CharacterString</schemaPath>
+            </MappingElement>
+        </MappingGroup>
+
     </Mapping>
 </GuiSchemaMapping>
