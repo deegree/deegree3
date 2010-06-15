@@ -59,7 +59,6 @@ public class CodeListConfigurationFactory {
         try {
             // TODO
             CodeListConfiguration parseConfiguration = parser.parseConfiguration( Configuration.getCodeListURL() );
-            System.out.println(parseConfiguration.getCodeLists().size());
             codeListConfiguration.add( parseConfiguration );
         } catch ( ConfigurationException e ) {
             // TODO Auto-generated catch block

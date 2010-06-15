@@ -189,7 +189,6 @@ public class DataReader {
         }
         List<DataGroup> dgs = new ArrayList<DataGroup>();
         while ( grpQName.equals( xmlStream.getName() ) ) {
-            System.out.println( xmlStream.getLocalName() );
             nextElement( xmlStream );
             DataGroup dg = new DataGroup( Utils.createId() );
             Map<String, Object> values = new HashMap<String, Object>();
