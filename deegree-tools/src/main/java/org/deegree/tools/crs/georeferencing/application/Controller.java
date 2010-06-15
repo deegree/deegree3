@@ -162,10 +162,15 @@ public class Controller {
             if ( source instanceof JButton ) {
                 if ( ( (JButton) source ).getText().startsWith( PointTablePanel.BUTTON_DELETE_SELECTED ) ) {
                     System.out.println( "you clicked on delete selected" );
+                    int[] tableRows = tablePanel.getTable().getSelectedRows();
+                    for ( int tableRow : tableRows ) {
+                        tablePanel.removeRow( tableRow );
+                    }
 
                 }
                 if ( ( (JButton) source ).getText().startsWith( PointTablePanel.BUTTON_DELETE_ALL ) ) {
                     System.out.println( "you clicked on delete all" );
+                    tablePanel.removeAllRows();
                 }
                 if ( ( (JButton) source ).getText().startsWith( NavigationBarPanel.COMPUTE_BUTTON_NAME ) ) {
                     System.out.println( "you clicked on computation" );

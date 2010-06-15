@@ -106,6 +106,18 @@ public class Scene2DValues {
             // System.out.println( "rasta: " + rasterPosX + " " + rasterPosY );
 
             worldPos = subRaster.getRasterReference().getWorldCoordinate( rasterPosX, rasterPosY );
+            // CoordinateSystem d;
+            // Helmert h;
+            //
+            // try {
+            // d = subRaster.getCoordinateSystem().getWrappedCRS();
+            // h = new Helmert( d, d, d.getCode() );
+            // System.out.println( "" );
+            // } catch ( UnknownCRSException e ) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // }
+
             switch ( pixelPoint.getPointType() ) {
 
             case GeoreferencedPoint:

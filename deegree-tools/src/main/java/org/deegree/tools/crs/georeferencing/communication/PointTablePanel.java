@@ -133,11 +133,41 @@ public class PointTablePanel extends JPanel {
 
     }
 
+    /**
+     * Adds a row to the view with empty values.
+     */
     public void addRow() {
 
         Object[] emptyRow = new Object[] {};
         model.addRow( emptyRow );
 
+    }
+
+    /**
+     * Removes the specified row from the view.
+     * 
+     * @param rowNumber
+     */
+    public void removeRow( int rowNumber ) {
+        model.removeRow( rowNumber );
+    }
+
+    /**
+     * Removes all rows of the table.
+     */
+    public void removeAllRows() {
+        int length = model.getRowCount();
+        for ( int row = 0; row < length; row++ ) {
+            this.removeRow( 0 );
+        }
+    }
+
+    public DefaultTableModel getModel() {
+        return model;
+    }
+
+    public JTable getTable() {
+        return table;
     }
 
 }

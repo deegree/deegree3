@@ -186,4 +186,12 @@ public class Footprint {
         return tableValueFootPrint;
     }
 
+    public void removeFromTableValueFootPrint( AbstractGRPoint footprintPoint ) {
+        this.tableValueFootPrint.remove( footprintPoint );
+    }
+
+    public void removeFromTableValueGeoRef( AbstractGRPoint geoRefPoint ) {
+        this.tableValueGeoRef.remove( geoRefPoint );
+    }
+
 }
