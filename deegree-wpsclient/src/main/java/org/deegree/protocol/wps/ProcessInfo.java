@@ -37,13 +37,10 @@ package org.deegree.protocol.wps;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.protocol.wps.describeprocess.DataInputDescribeProcess;
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
-import org.deegree.protocol.wps.getcapabilities.ProcessBrief;
 import org.deegree.protocol.wps.tools.BuildExecuteObjects;
 import org.deegree.protocol.wps.tools.DataInputParameter;
 import org.deegree.protocol.wps.tools.DataOutputParameter;
@@ -51,7 +48,6 @@ import org.deegree.protocol.wps.tools.InputObject;
 import org.deegree.protocol.wps.tools.OutputConfiguration;
 
 /**
- * 
  * ProcessInfo object containing all information relevant to a single process.
  * 
  * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>

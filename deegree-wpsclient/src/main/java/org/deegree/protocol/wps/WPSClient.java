@@ -56,18 +56,15 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-
 public class WPSClient {
 
     private static Logger LOG = LoggerFactory.getLogger( WPSClient.class );
 
-    private static final String BASE_URL = "http://ows7.lat-lon.de/d3WPS_JTS/services?";
+    private final WPSCapabilities serviceCapabilities;
 
-    private static final String FULL_SERVICE_URL = "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities";
+    private String executeURL;
 
-    private WPSCapabilities serviceCapabilities;
-
-    private XMLAdapter capabilitesDoc;
+    private String describeProcessURL;
 
     private List<InputObject> inputObjectList = new ArrayList();
 
@@ -78,19 +75,25 @@ public class WPSClient {
      *            url to a WPS instance
      * @throws MalformedURLException
      *             in case a GetCapabilities URL could not constructed from WPS Capabilities response
-     * 
      */
     public WPSClient( URL capabilitiesURL ) throws MalformedURLException {
         try {
-            this.capabilitesDoc = new XMLAdapter( capabilitiesURL );
+            serviceCapabilities = new WPSCapabilities( new XMLAdapter( capabilitiesURL ) );
+            describeProcessURL = serviceCapabilities.getOperationURLasString( "DescribeProcess", true );
+            if ( !describeProcessURL.endsWith( "?" ) ) {
+                describeProcessURL += "?";
+            }
+            LOG.debug( "Using '" + describeProcessURL + "' for DescribeProcess requests (GET)." );
+            executeURL = serviceCapabilities.getOperationURLasString( "Execute", false );
+            if ( executeURL.endsWith( "?" ) ) {
+                executeURL = executeURL.substring( 0, executeURL.length() - 1 );
+            }
+            LOG.debug( "Using '" + executeURL + "' for Execute requests (POST)." );
         } catch ( Exception e ) {
             LOG.error( e.getLocalizedMessage(), e );
             throw new NullPointerException( "Could not read from URL: " + capabilitiesURL + " error was: "
                                             + e.getLocalizedMessage() );
         }
-
-        serviceCapabilities = new WPSCapabilities( new XMLAdapter( capabilitiesURL ) );
-
     }
 
     /**
@@ -117,7 +120,7 @@ public class WPSClient {
      *            identifier of the process
      */
     public ProcessInfo getProcessInfo( String processIdentifier ) {
-        return ( new ProcessInfo( WPSClient.BASE_URL, processIdentifier ) );
+        return ( new ProcessInfo( describeProcessURL, processIdentifier ) );
     }
 
     /**
@@ -135,7 +138,7 @@ public class WPSClient {
 
         ProcessExecution processExecution = new ProcessExecution(
                                                                   getProcessInfo( processIdentifier ).getProcessDescription(),
-                                                                  BASE_URL );
+                                                                  executeURL );
 
         for ( int i = 0; i < inputObjectList.size(); i++ ) {
             processExecution.addInput( this.inputObjectList.get( i ) );
@@ -149,7 +152,8 @@ public class WPSClient {
      * 
      * @return Object result the of process as object
      * 
-     * @param InputObject[] Input of the process
+     * @param InputObject
+     *            [] Input of the process
      * 
      * @param processIdentifier
      *            identifier of the process
@@ -159,7 +163,7 @@ public class WPSClient {
 
         ProcessExecution processExecution = new ProcessExecution(
                                                                   getProcessInfo( processIdentifier ).getProcessDescription(),
-                                                                  this.BASE_URL );
+                                                                  executeURL );
 
         for ( int i = 0; i < inputobject.length; i++ ) {
             processExecution.addInput( inputobject[i] );
@@ -183,7 +187,7 @@ public class WPSClient {
 
         ProcessExecution processExecution = new ProcessExecution(
                                                                   getProcessInfo( processIdentifier ).getProcessDescription(),
-                                                                  BASE_URL );
+                                                                  describeProcessURL );
 
         for ( int i = 0; i < this.inputObjectList.size(); i++ ) {
             processExecution.addInput( this.inputObjectList.get( i ) );
@@ -250,52 +254,4 @@ public class WPSClient {
     public void setOutput() {
 
     }
-
-    public void test()
-                            throws Exception {
-
-        // started process centroid
-        InputObject[] inputObject = new InputObject[1];
-
-        InputObject inputObject1 = setInputasFile( "GMLInput", "curve.xml" );
-        inputObject[0] = inputObject1;
-        Object ergebnis = executeProcessObejctResult( inputObject, "Centroid" );
-
-        System.out.println( "ergebnis Centroid" );
-        System.out.println( String.valueOf( ergebnis ) );
-
-        // started process Buffer
-        InputObject[] inputObjectBuffer = new InputObject[2];
-        inputObject1 = setInputasFile( "GMLInput", "curve.xml" );
-        inputObjectBuffer[0] = inputObject1;
-        InputObject inputObject2 = setInputasObject( "BufferDistance", "43" );
-        inputObjectBuffer[1] = inputObject2;
-
-        ergebnis = executeProcessObejctResult( inputObjectBuffer, "Buffer" );
-
-        System.out.println( "ergebnis Buffer:" );
-        System.out.println( String.valueOf( ergebnis ) );
-
-    }
-
-    public static void main( String args[] )
-                            throws Exception {
-        URL processUrl = new URL( FULL_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
-        // String[] identifiers= wpsClient.getProcessIdentifiers();
-        //       
-        // for (int i=0; i<wpsClient.getProcessIdentifiers().length;i++){
-        // System.out.println (identifiers[i]);
-        // }
-        //        
-        // ProcessInfo bufferProcess=wpsClient.getProcessInfo( "Buffer" );
-        //        
-        // System.out.println (bufferProcess.getIdentifier());
-        // System.out.println (bufferProcess.getAbstraCt());
-        // System.out.println (bufferProcess.getTitle());
-        //        
-        wpsClient.test();
-
-    }
-
 }
