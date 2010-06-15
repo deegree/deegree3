@@ -85,6 +85,4 @@ public interface Scene2D {
 
     public BufferedImage getPredictedImage();
 
-    Point2d getWorldCoords( Point2d point );
-
 }

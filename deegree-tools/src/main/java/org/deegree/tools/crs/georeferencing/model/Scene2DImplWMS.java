@@ -121,7 +121,6 @@ public class Scene2DImplWMS implements Scene2D {
             ref = raster.getRasterReference();
             rasterRect = ref.convertEnvelopeToRasterCRS( raster.getEnvelope() );
             this.sceneValues.setRasterRect( rasterRect );
-            this.sceneValues.setRasterReference( ref );
             in.close();
         } catch ( IOException e ) {
             e.printStackTrace();
@@ -165,37 +164,12 @@ public class Scene2DImplWMS implements Scene2D {
     public BufferedImage generateSubImage( Rectangle bounds ) {
         Point2d transformedBounds = sceneValues.getTransformedBounds();
         System.out.println( "transformedBounds: " + transformedBounds );
+        if ( sceneValues.getMinPointRaster() == null ) {
+            sceneValues.setMinPointRaster( new Point2d( rasterRect.x, rasterRect.y ) );
 
-        // if ( startPoint != null ) {
-        // //
-        // minX = startPoint.x * ref.getResolutionX();
-        // minY = -startPoint.y * ref.getResolutionY();
-        // // double maxX = minX + transformedBounds.x;
-        // // double maxY = minY + transformedBounds.y;
-        //
-        // // System.out.println( "new subRaster: " + minX + " " + minY + ", " + maxX + " " + maxY );
-        // // double[] worldCoordLeftLower = ref.getWorldCoordinate( minX, maxY );
-        // // double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, minY );
-        // //
-        // // predictedRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0],
-        // // worldCoordLeftLower[1],
-        // // worldCoordRightUpper[0], worldCoordRightUpper[1] );
-        // //
-        // // // RasterGeoReference ref2 = RasterGeoReference.merger( subRaster.getRasterReference(),
-        // // // predictedRaster.getRasterReference() );
-        // // Envelope env = subRaster.getEnvelope().merge( predictedRaster.getEnvelope() );
-        // // // System.out.println( ref2. );
-        // // subRaster = predictedRaster;
-        // //
-        // // System.out.println( worldCoordLeftLower[0] + " " + worldCoordRightUpper[0] );
-        // // return predictedImage = generateMap( env );
-        //
-        // } else {
-        if ( sceneValues.getMin() == null ) {
-            sceneValues.setMin( new Point2d( rasterRect.x, rasterRect.y ) );
         }
-        // }
-        Point2d min = sceneValues.getMin();
+
+        Point2d min = sceneValues.getMinPointRaster();
 
         double maxX = min.x + transformedBounds.x;
         double maxY = min.y + transformedBounds.y;
@@ -267,15 +241,6 @@ public class Scene2DImplWMS implements Scene2D {
             }
         }
         return configuredLayers;
-    }
-
-    @Override
-    public Point2d getWorldCoords( Point2d point ) {
-        double x = point.x * ref.getResolutionX();
-        double y = point.y * ref.getResolutionY();
-        double[] pointArray = ref.getWorldCoordinate( x, y );
-        return new Point2d( pointArray[0], pointArray[1] );
-
     }
 
     @Override

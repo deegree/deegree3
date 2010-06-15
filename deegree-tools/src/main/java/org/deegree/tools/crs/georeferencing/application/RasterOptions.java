@@ -92,8 +92,8 @@ public class RasterOptions {
         options.add( RIO_WMS_MAX_SCALE, "0.1" );
         options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
         // specify the quality
-        options.add( RIO_WMS_MAX_WIDTH, Integer.toString( 200 ) );
-        options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( 200 ) );
+        options.add( RIO_WMS_MAX_WIDTH, Integer.toString( 500 ) );
+        options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( 500 ) );
         options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
         // options.add( RIO_WMS_TIMEOUT, "1000" );
     }

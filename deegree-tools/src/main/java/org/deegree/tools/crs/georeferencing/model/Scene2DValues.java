@@ -41,7 +41,6 @@ import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
@@ -76,25 +75,37 @@ public class Scene2DValues {
 
     private double size;
 
-    private Point2d min;
+    private Point2d minPointRaster;
+
+    private Point2d minPointPixel;
 
     private RasterIOOptions options;
-
-    private RasterGeoReference rasterReference;
 
     public Scene2DValues( RasterIOOptions options ) {
         this.options = options;
     }
 
-    public AbstractGRPoint getRasterPoint( AbstractGRPoint pixelPoint ) {
+    /**
+     * Converts the pixelPoint to a point with world coordinates.
+     * 
+     * @param pixelPoint
+     * @return
+     */
+    public AbstractGRPoint getWorldPoint( AbstractGRPoint pixelPoint ) {
         if ( subRaster != null ) {
-            double[] worldPos;
-            double pixelPosX = imageStartPosition.x - pixelPoint.x;
-            double pixelPosY = imageStartPosition.y - pixelPoint.y;
-            double rasterPosX = -( pixelPosX ) * convertedPixelToRasterPoint.x;
-            double rasterPosY = -( pixelPosY ) * convertedPixelToRasterPoint.y;
 
-            worldPos = rasterReference.getWorldCoordinate( rasterPosX, rasterPosY );
+            double[] worldPos;
+            if ( minPointPixel == null ) {
+                minPointPixel = new Point2d( 0.0, 0.0 );
+            }
+            double pixelPosX = imageStartPosition.x - minPointPixel.x - pixelPoint.x;
+            double pixelPosY = imageStartPosition.y - minPointPixel.y - pixelPoint.y;
+            double rasterPosX = -( pixelPosX * convertedPixelToRasterPoint.x );
+            double rasterPosY = -( pixelPosY * convertedPixelToRasterPoint.y );
+            // System.out.println( "pos: " + minPointPixel );
+            // System.out.println( "rasta: " + rasterPosX + " " + rasterPosY );
+
+            worldPos = subRaster.getRasterReference().getWorldCoordinate( rasterPosX, rasterPosY );
             switch ( pixelPoint.getPointType() ) {
 
             case GeoreferencedPoint:
@@ -222,21 +233,34 @@ public class Scene2DValues {
         return 0;
     }
 
+    /**
+     * 
+     * @param minPoint
+     *            the pixel representation of the point
+     */
     public void setStartRasterEnvelopePosition( Point2d minPoint ) {
+        if ( minPointPixel == null ) {
+            minPointPixel = new Point2d( 0.0, 0.0 );
+        }
 
-        double minX = this.min.x + minPoint.x * convertedPixelToRasterPoint.x;
-        double minY = this.min.y + minPoint.y * convertedPixelToRasterPoint.y;
+        double minRX = this.minPointRaster.x + ( minPoint.x * convertedPixelToRasterPoint.x );
+        double minRY = this.minPointRaster.y + ( minPoint.y * convertedPixelToRasterPoint.y );
 
-        this.min = new Point2d( minX, minY );
+        double minPX = this.minPointPixel.x + minPoint.x;
+        double minPY = this.minPointPixel.y + minPoint.y;
+
+        this.minPointRaster = new Point2d( minRX, minRY );
+        this.minPointPixel = new Point2d( minPX, minPY );
+        // System.out.println( "minPixel: " + minPointPixel + " minRaster: " + minPointRaster );
     }
 
-    public Point2d getMin() {
+    public Point2d getMinPointRaster() {
 
-        return min;
+        return minPointRaster;
     }
 
-    public void setMin( Point2d min ) {
-        this.min = min;
+    public void setMinPointRaster( Point2d min ) {
+        this.minPointRaster = min;
     }
 
     public void setRasterRect( RasterRect rasterRect ) {
@@ -244,9 +268,12 @@ public class Scene2DValues {
 
     }
 
-    public void setRasterReference( RasterGeoReference ref ) {
-        this.rasterReference = ref;
+    public Point2d getMinPointPixel() {
+        return minPointPixel;
+    }
 
+    public void setMinPointPixel( Point2d minPointPixel ) {
+        this.minPointPixel = minPointPixel;
     }
 
 }

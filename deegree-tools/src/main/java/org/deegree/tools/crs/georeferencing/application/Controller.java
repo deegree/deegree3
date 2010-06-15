@@ -101,12 +101,6 @@ public class Controller {
 
     private boolean isHorizontalRef;
 
-    // private Point2d imageMargin;
-
-    // private Rectangle imageDimension;
-    //
-    // private Point2d imageDrawStartPos;
-
     private int start;
 
     private FootprintPoint lastFootprintPoint;
@@ -241,6 +235,7 @@ public class Controller {
         public void mouseReleased( MouseEvent m ) {
             Object source = m.getSource();
             if ( source instanceof JPanel ) {
+                // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
 
                     if ( isHorizontalRef == true ) {
@@ -257,12 +252,9 @@ public class Controller {
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                         lastGeoReferencedPoint = geoReferencedPoint;
                         panel.addPoint( footPrint.getTableValueGeoRef(), geoReferencedPoint );
-                        GeoReferencedPoint point = (GeoReferencedPoint) sceneValues.getRasterPoint( geoReferencedPoint );
-                        // GeoReferencedPoint point = new GeoReferencedPoint(
-                        // model.getWorldCoords( geoReferencedPoint ).x,
-                        // model.getWorldCoords( geoReferencedPoint ).y );
+                        GeoReferencedPoint point = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                         tablePanel.setCoords( point );
-                        panel.repaint();
+
                     } else {
 
                         mouse.setMouseChanging( new Point2d( ( mouse.getPointMousePressed().getX() - m.getX() ),
@@ -283,6 +275,7 @@ public class Controller {
                                                                                                 - mouse.getMouseChanging().getX(),
                                                                         panel.getBeginDrawImageAtPosition().getY()
                                                                                                 - mouse.getMouseChanging().getY() ) );
+                        sceneValues.setStartRasterEnvelopePosition( mouse.getMouseChanging() );
                         // 
                         // if the user went into any critical region
                         if ( mouse.getCumulatedMouseChanging().getX() >= sceneValues.getImageMargin().getX()
@@ -295,15 +288,18 @@ public class Controller {
                             System.out.println( "updatePos: " + updateDrawImageAtPosition );
 
                             // panel.setImageToDraw( model.getGeneratedImage() );
-                            sceneValues.setStartRasterEnvelopePosition( updateDrawImageAtPosition );
+                            // sceneValues.setStartRasterEnvelopePosition( updateDrawImageAtPosition );
+                            sceneValues.setMinPointPixel( null );
                             panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
                             mouse.reset();
                             panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
 
                         }
-                        panel.repaint();
+
                     }
+                    panel.repaint();
                 }
+                // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     if ( isHorizontalRef == true ) {
 
@@ -325,13 +321,16 @@ public class Controller {
                         footPanel.addPoint( footPrint.getTableValueFootPrint(), point );
                         footPanel.repaint();
                     } else {
-                        System.err.println( "not implemented yet." );
+                        System.err.println( "not yet implemented." );
                     }
 
                 }
             }
         }
 
+        /**
+         * Sets values to the JTableModel and adds a new row to it.
+         */
         private void setValues() {
             footPrint.addToTableValueFootPrint( lastFootprintPoint );
             footPrint.addToTableValueGeoRef( lastGeoReferencedPoint );
@@ -469,7 +468,7 @@ public class Controller {
 
     private void init() {
         // model.reset();
-        sceneValues.setImageMargin( new Point2d( panel.getBounds().width * 0.1, panel.getBounds().height * 0.1 ) );
+        sceneValues.setImageMargin( new Point2d( panel.getBounds().width * 2.1, panel.getBounds().height * 2.1 ) );
         sceneValues.setImageDimension( new Rectangle(
                                                       (int) ( panel.getBounds().width + 2 * sceneValues.getImageMargin().x ),
                                                       (int) ( panel.getBounds().height + 2 * sceneValues.getImageMargin().y ) ) );
