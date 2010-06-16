@@ -100,9 +100,7 @@ public class Controller {
 
     private Point2d changePoint;
 
-    private boolean isHorizontalRef;
-
-    private int start;
+    private boolean isHorizontalRef, start;
 
     private FootprintPoint lastFootprintPoint;
 
@@ -116,7 +114,7 @@ public class Controller {
         this.navPanel = view.getNavigationPanel();
         this.footPrint = new Footprint();
         this.tablePanel = view.getPointTablePanel();
-        this.start = 0;
+        this.start = false;
         options = new RasterOptions( view ).getOptions();
         sceneValues = new Scene2DValues( options );
         model.init( options, sceneValues );
@@ -272,8 +270,8 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
 
                     if ( isHorizontalRef == true ) {
-                        if ( start == 0 ) {
-                            start = 1;
+                        if ( start == false ) {
+                            start = true;
                             footPanel.setFocus( false );
                             panel.setFocus( true );
                         }
@@ -336,8 +334,8 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     if ( isHorizontalRef == true ) {
 
-                        if ( start == 0 ) {
-                            start = 1;
+                        if ( start == false ) {
+                            start = true;
                             footPanel.setFocus( true );
                             panel.setFocus( false );
                         }
@@ -365,8 +363,6 @@ public class Controller {
          * Sets values to the JTableModel and adds a new row to it.
          */
         private void setValues() {
-            // footPrint.addToTableValueFootPrint( lastFootprintPoint );
-            // footPrint.addToTableValueGeoRef( lastGeoReferencedPoint );
             footPrint.addToMappedPoints( lastFootprintPoint, lastGeoReferencedPoint );
             lastFootprintPoint = null;
             lastGeoReferencedPoint = null;
