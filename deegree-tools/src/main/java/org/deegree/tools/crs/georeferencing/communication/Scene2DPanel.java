@@ -42,7 +42,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.util.Vector;
+import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.vecmath.Point2d;
@@ -72,7 +72,7 @@ public class Scene2DPanel extends JPanel {
 
     private Rectangle imageDimension;
 
-    private Vector<AbstractGRPoint> points;
+    private Map<AbstractGRPoint, AbstractGRPoint> points;
 
     private boolean focus;
 
@@ -99,7 +99,7 @@ public class Scene2DPanel extends JPanel {
         }
 
         if ( points != null ) {
-            for ( AbstractGRPoint point : points ) {
+            for ( AbstractGRPoint point : points.values() ) {
                 g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
             }
         }
@@ -142,7 +142,7 @@ public class Scene2DPanel extends JPanel {
 
     }
 
-    public void addPoint( Vector<AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
+    public void addPoint( Map<AbstractGRPoint, AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
         this.points = points;
         this.tempPoint = tempPoint;
     }

@@ -40,7 +40,7 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.event.MouseListener;
-import java.util.Vector;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
@@ -69,7 +69,7 @@ public class BuildingFootprintPanel extends JPanel {
 
     private int yValue = 0;
 
-    private Vector<AbstractGRPoint> points;
+    private Map<AbstractGRPoint, AbstractGRPoint> points;
 
     /**
      * Temporal point
@@ -104,7 +104,7 @@ public class BuildingFootprintPanel extends JPanel {
         }
 
         if ( points != null ) {
-            for ( AbstractGRPoint point : points ) {
+            for ( AbstractGRPoint point : points.keySet() ) {
                 g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
             }
         }
@@ -154,7 +154,7 @@ public class BuildingFootprintPanel extends JPanel {
 
     }
 
-    public void addPoint( Vector<AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
+    public void addPoint( Map<AbstractGRPoint, AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
         this.points = points;
         this.tempPoint = tempPoint;
     }

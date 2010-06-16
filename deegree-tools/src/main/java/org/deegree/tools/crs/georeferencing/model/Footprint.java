@@ -36,7 +36,8 @@
 package org.deegree.tools.crs.georeferencing.model;
 
 import java.awt.Polygon;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.vecmath.Point2d;
 
@@ -59,16 +60,13 @@ public class Footprint {
 
     private Point2d[] points;
 
-    private Vector<AbstractGRPoint> tableValueGeoRef;
-
-    private Vector<AbstractGRPoint> tableValueFootPrint;
+    private Map<AbstractGRPoint, AbstractGRPoint> mappedPoints;
 
     /**
      * Creates a new <Code>Footprint</Code> instance.
      */
     public Footprint() {
-        tableValueGeoRef = new Vector<AbstractGRPoint>();
-        tableValueFootPrint = new Vector<AbstractGRPoint>();
+        mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
     }
 
     /**
@@ -146,52 +144,40 @@ public class Footprint {
         return closestPoint;
     }
 
+    public Map<AbstractGRPoint, AbstractGRPoint> getMappedPoints() {
+        return mappedPoints;
+    }
+
+    public void setMappedPoints( Map<AbstractGRPoint, AbstractGRPoint> mappedPoints ) {
+        this.mappedPoints = mappedPoints;
+    }
+
     /**
-     * Adds an <Code>AbstractPoint</Code> to the <Code>GeoReference</Code> value of the <Code>TableModel</Code>.
+     * Adds the <Code>AbstractPoint</Code>s to a map
      * 
-     * @param lastGeoReferencedPoint
+     * @param mappedPointKey
+     * @param mappedPointValue
      */
-    public void addToTableValueGeoRef( AbstractGRPoint lastGeoReferencedPoint ) {
-        if ( lastGeoReferencedPoint != null ) {
-            this.tableValueGeoRef.add( lastGeoReferencedPoint );
+    public void addToMappedPoints( AbstractGRPoint mappedPointKey, AbstractGRPoint mappedPointValue ) {
+        if ( mappedPointKey != null && mappedPointValue != null ) {
+            this.mappedPoints.put( mappedPointKey, mappedPointValue );
         }
 
     }
 
-    /**
-     * 
-     * @return a Vector of <Code>GeoReferencedPoint</Code>s
-     */
-    public Vector<AbstractGRPoint> getTableValueGeoRef() {
-        return tableValueGeoRef;
-    }
+    public void removeFromMappedPoints( AbstractGRPoint mappedPointKey ) {
+        if ( mappedPointKey != null ) {
+            this.mappedPoints.remove( mappedPointKey );
+            for ( AbstractGRPoint g : mappedPoints.keySet() ) {
+                System.out.println( "key: " + g + " value: " + mappedPoints.get( g ) );
 
-    /**
-     * Adds an <Code>AbstractPoint</Code> to the <Code>Footprint</Code> value of the <Code>TableModel</Code>.
-     * 
-     * @param lastFootprintPoint
-     */
-    public void addToTableValueFootPrint( AbstractGRPoint lastFootprintPoint ) {
-        if ( lastFootprintPoint != null ) {
-            this.tableValueFootPrint.add( lastFootprintPoint );
+            }
         }
-
     }
 
-    /**
-     * 
-     * @return a Vector of <Code>FootprintPoint</Code>s
-     */
-    public Vector<AbstractGRPoint> getTableValueFootPrint() {
-        return tableValueFootPrint;
-    }
+    public void removeAllFromMappedPoints() {
+        mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
 
-    public void removeFromTableValueFootPrint( AbstractGRPoint footprintPoint ) {
-        this.tableValueFootPrint.remove( footprintPoint );
-    }
-
-    public void removeFromTableValueGeoRef( AbstractGRPoint geoRefPoint ) {
-        this.tableValueGeoRef.remove( geoRefPoint );
     }
 
 }

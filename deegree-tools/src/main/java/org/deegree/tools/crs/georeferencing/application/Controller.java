@@ -64,6 +64,7 @@ import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.Scene2DValues;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
@@ -163,14 +164,41 @@ public class Controller {
                 if ( ( (JButton) source ).getText().startsWith( PointTablePanel.BUTTON_DELETE_SELECTED ) ) {
                     System.out.println( "you clicked on delete selected" );
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
+
                     for ( int tableRow : tableRows ) {
+                        AbstractGRPoint keyPoint = new FootprintPoint(
+                                                                       (Double) tablePanel.getModel().getValueAt(
+                                                                                                                  tableRow,
+                                                                                                                  2 ),
+                                                                       (Double) tablePanel.getModel().getValueAt(
+                                                                                                                  tableRow,
+                                                                                                                  3 ) );
+
+                        if ( footPrint.getMappedPoints().containsKey( keyPoint ) ) {
+                            footPrint.removeFromMappedPoints( keyPoint );
+                        } else {
+                            lastFootprintPoint = null;
+                            lastGeoReferencedPoint = null;
+                        }
+
                         tablePanel.removeRow( tableRow );
                     }
 
+                    panel.addPoint( footPrint.getMappedPoints(), lastGeoReferencedPoint );
+                    footPanel.addPoint( footPrint.getMappedPoints(), lastFootprintPoint );
+                    panel.repaint();
+                    footPanel.repaint();
                 }
                 if ( ( (JButton) source ).getText().startsWith( PointTablePanel.BUTTON_DELETE_ALL ) ) {
                     System.out.println( "you clicked on delete all" );
                     tablePanel.removeAllRows();
+                    footPrint.removeAllFromMappedPoints();
+                    panel.addPoint( null, null );
+                    footPanel.addPoint( null, null );
+                    lastFootprintPoint = null;
+                    lastGeoReferencedPoint = null;
+                    panel.repaint();
+                    footPanel.repaint();
                 }
                 if ( ( (JButton) source ).getText().startsWith( NavigationBarPanel.COMPUTE_BUTTON_NAME ) ) {
                     System.out.println( "you clicked on computation" );
@@ -256,7 +284,7 @@ public class Controller {
                         int y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                         lastGeoReferencedPoint = geoReferencedPoint;
-                        panel.addPoint( footPrint.getTableValueGeoRef(), geoReferencedPoint );
+                        panel.addPoint( footPrint.getMappedPoints(), geoReferencedPoint );
                         GeoReferencedPoint point = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                         tablePanel.setCoords( point );
 
@@ -323,7 +351,7 @@ public class Controller {
                         FootprintPoint point = (FootprintPoint) footPrint.getClosestPoint( footprintPoint );
                         lastFootprintPoint = point;
                         tablePanel.setCoords( point );
-                        footPanel.addPoint( footPrint.getTableValueFootPrint(), point );
+                        footPanel.addPoint( footPrint.getMappedPoints(), point );
                         footPanel.repaint();
                     } else {
                         System.err.println( "not yet implemented." );
@@ -337,8 +365,9 @@ public class Controller {
          * Sets values to the JTableModel and adds a new row to it.
          */
         private void setValues() {
-            footPrint.addToTableValueFootPrint( lastFootprintPoint );
-            footPrint.addToTableValueGeoRef( lastGeoReferencedPoint );
+            // footPrint.addToTableValueFootPrint( lastFootprintPoint );
+            // footPrint.addToTableValueGeoRef( lastGeoReferencedPoint );
+            footPrint.addToMappedPoints( lastFootprintPoint, lastGeoReferencedPoint );
             lastFootprintPoint = null;
             lastGeoReferencedPoint = null;
             tablePanel.addRow();
