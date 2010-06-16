@@ -9,6 +9,17 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="layoutType" />
+                <xs:element ref="DatasetConfiguration" minOccurs="0" />
+                <xs:element ref="FormGroup" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="DatasetConfiguration">
+        <xs:annotation>
+            <xs:documentation>root element describing the configuration of the gui</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
                 <xs:element name="identifier" type="xs:string">
                     <xs:annotation>
                         <xs:documentation>the path to the identifier of the dataset</xs:documentation>
@@ -26,7 +37,6 @@
                     </xs:annotation>
                 </xs:element>
                 <xs:element ref="Mapping" />
-                <xs:element ref="FormGroup" maxOccurs="unbounded" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>

@@ -48,7 +48,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -56,7 +55,6 @@ import java.util.List;
 import java.util.Stack;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -91,19 +89,21 @@ public class FormConfigurationParser extends Parser {
 
     private static QName ROOT = new QName( NS, "FormConfiguration" );
 
-    private static QName MAPPING_ELEMENT = new QName( NS, "Mapping" );
+    private static QName DATASET_CONF = new QName( NS, "DatasetConfiguration" );
 
-    private static QName FORM_GROUP_ELEMENT = new QName( NS, "FormGroup" );
+    private static QName MAPPING = new QName( NS, "Mapping" );
 
-    private static QName INPUT_FORM_ELEMENT = new QName( NS, "InputFormElement" );
+    private static QName FORM_GROUP = new QName( NS, "FormGroup" );
 
-    private static QName SELECT_FORM_ELEMENT = new QName( NS, "SelectFormElement" );
+    private static QName INPUT_FORM = new QName( NS, "InputFormElement" );
 
-    private static QName REF_FORM_ELEMENT = new QName( NS, "ReferencedFormElement" );
+    private static QName SELECT_FORM = new QName( NS, "SelectFormElement" );
 
-    private List<FormGroup> formGroups = new ArrayList<FormGroup>();
+    private static QName REF_FORM = new QName( NS, "ReferencedFormElement" );
 
     private List<String> referencedGroups = new ArrayList<String>();
+
+    private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
     private LAYOUT_TYPE layoutType;
 
@@ -112,64 +112,73 @@ public class FormConfigurationParser extends Parser {
     FormConfiguration parseConfiguration( String formConfiguration )
                             throws ConfigurationException {
         try {
+
             XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                              formConfiguration,
                                                                                              new FileReader(
                                                                                                              formConfiguration ) );
-
             if ( !moveReaderToFirstMatch( xmlStream, ROOT ) ) {
-                throw new ConfigurationException( "could not parse form configuration" + formConfiguration
+                throw new ConfigurationException( "could not parse form configuration" + xmlStream.getLocation()
                                                   + ": root element does not exist" );
             }
             layoutType = getLayoutType( xmlStream );
             LOG.debug( "Found layout type: " + layoutType );
 
-            FormFieldPath pathToIdentifier = getPath( getRequiredText( xmlStream, new QName( NS, "identifier" ), true ) );
-            if ( pathToIdentifier == null ) {
-                throw new ConfigurationException( "path to identifier must be set!" );
-            }
-            FormFieldPath pathToTitle = getPath( getText( xmlStream, new QName( NS, "title" ), null, true ) );
-            FormFieldPath pathToDescription = getPath( getText( xmlStream, new QName( NS, "description" ), null, true ) );
+            FormConfiguration conf = new FormConfiguration( layoutType );
 
-            List<URL> mappings = new ArrayList<URL>();
             while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( ROOT ) ) ) {
                 QName elementName = xmlStream.getName();
-                if ( MAPPING_ELEMENT.equals( elementName ) ) {
-                    parseMappings( xmlStream, mappings );
-                } else if ( FORM_GROUP_ELEMENT.equals( elementName ) ) {
+                if ( DATASET_CONF.equals( elementName ) ) {
+                    parseDatasetConfiguration( xmlStream, conf );
+                } else if ( FORM_GROUP.equals( elementName ) ) {
                     formGroups.add( parseFormGroup( xmlStream ) );
                 } else {
                     nextElement( xmlStream );
                 }
             }
-
-            if ( mappings.size() == 0 ) {
-                throw new ConfigurationException( "form configuration does not at least one valid mapping" );
-            }
             updateFormGroups();
-            return new FormConfiguration( formGroups, layoutType, pathToIdentifier, pathToTitle, pathToDescription,
-                                          mappings );
+            conf.setFormGroups( formGroups );
+            return conf;
+
         } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( FactoryConfigurationError e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "could not find form configuration: " + formConfiguration, e );
+            throw new ConfigurationException( "could not find form configuration: " + formConfiguration );
+
+        } catch ( Exception e ) {
+            LOG.debug( "could not parse form configuration: " + formConfiguration, e );
+            throw new ConfigurationException( "could not parse form configuration: " + formConfiguration );
         }
-        return null;
     }
 
-    private void parseMappings( XMLStreamReader xmlStream, List<URL> mappings )
+    private void parseDatasetConfiguration( XMLStreamReader xmlStream, FormConfiguration conf )
+                            throws XMLStreamException, ConfigurationException {
+        LOG.debug( "parse DatasetConfiguration" );
+        nextElement( xmlStream );
+        FormFieldPath pathToIdentifier = getPath( getRequiredText( xmlStream, new QName( NS, "identifier" ), true ) );
+        if ( pathToIdentifier == null ) {
+            throw new ConfigurationException( "path to identifier must be set!" );
+        }
+        conf.setPathToIdentifier( pathToIdentifier );
+        conf.setPathToTitle( getPath( getText( xmlStream, new QName( NS, "title" ), null, true ) ) );
+        conf.setPathToDescription( getPath( getText( xmlStream, new QName( NS, "description" ), null, true ) ) );
+
+        if ( !moveReaderToFirstMatch( xmlStream, MAPPING ) ) {
+            throw new ConfigurationException( "could not parse mapping: element does not exist" );
+        }
+
+        List<URL> mappings = parseMappings( xmlStream );
+        if ( mappings.size() == 0 ) {
+            throw new ConfigurationException( "form configuration does not contain at least one valid mapping" );
+        }
+        conf.setMappingURLs( mappings );
+        nextElement( xmlStream );
+    }
+
+    private List<URL> parseMappings( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         LOG.debug( "Parse Mapping" );
-
-        while ( !( xmlStream.isEndElement() && MAPPING_ELEMENT.equals( xmlStream.getName() ) ) ) {
+        List<URL> mappings = new ArrayList<URL>();
+        while ( !( xmlStream.isEndElement() && MAPPING.equals( xmlStream.getName() ) ) ) {
             if ( "mappingURL".equals( xmlStream.getLocalName() ) ) {
                 String url = getText( xmlStream, new QName( NS, "mappingURL" ), null, true );
                 if ( url != null ) {
@@ -186,10 +195,11 @@ public class FormConfigurationParser extends Parser {
             }
         }
         nextElement( xmlStream );
+        return mappings;
     }
 
     private FormGroup parseFormGroup( XMLStreamReader xmlStream )
-                            throws XMLStreamException, IOException, ConfigurationException {
+                            throws XMLStreamException, ConfigurationException {
         String formGroupId = getId( xmlStream );
         int occurence = getOccurence( xmlStream, formGroupId );
         nextElement( xmlStream );
@@ -201,15 +211,15 @@ public class FormConfigurationParser extends Parser {
                    + ". Start to parse form elements and groups." );
 
         FormGroup fg = new FormGroup( formGroupId, label, title, occurence );
-        while ( !( xmlStream.isEndElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) ) {
+        while ( !( xmlStream.isEndElement() && FORM_GROUP.equals( xmlStream.getName() ) ) ) {
             QName elementName = xmlStream.getName();
-            if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( elementName ) ) {
+            if ( xmlStream.isStartElement() && FORM_GROUP.equals( elementName ) ) {
                 fg.addFormElement( parseFormGroup( xmlStream ) );
-            } else if ( xmlStream.isStartElement() && INPUT_FORM_ELEMENT.equals( elementName ) ) {
+            } else if ( xmlStream.isStartElement() && INPUT_FORM.equals( elementName ) ) {
                 fg.addFormElement( parseInputFormElement( xmlStream ) );
-            } else if ( xmlStream.isStartElement() && SELECT_FORM_ELEMENT.equals( elementName ) ) {
+            } else if ( xmlStream.isStartElement() && SELECT_FORM.equals( elementName ) ) {
                 fg.addFormElement( parseSelectFormElement( xmlStream ) );
-            } else if ( xmlStream.isStartElement() && REF_FORM_ELEMENT.equals( elementName ) ) {
+            } else if ( xmlStream.isStartElement() && REF_FORM.equals( elementName ) ) {
                 fg.addFormElement( parseRefFormElement( xmlStream ) );
             } else {
                 nextElement( xmlStream );
@@ -237,7 +247,7 @@ public class FormConfigurationParser extends Parser {
     }
 
     private SelectFormField parseSelectFormElement( XMLStreamReader xmlStream )
-                            throws XMLStreamException, IOException, ConfigurationException {
+                            throws XMLStreamException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
         nextElement( xmlStream );
@@ -286,7 +296,7 @@ public class FormConfigurationParser extends Parser {
     }
 
     private InputFormField parseInputFormElement( XMLStreamReader xmlStream )
-                            throws XMLStreamException, IOException, ConfigurationException {
+                            throws XMLStreamException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
         int occurence = getOccurence( xmlStream, id );

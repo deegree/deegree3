@@ -3,12 +3,16 @@
 <FormConfiguration xsi:schemaLocation="http://www.deegree.org/igeoportal schema/formConfiguration.xsd"
     xmlns="http://www.deegree.org/igeoportal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <layoutType>tab</layoutType>
-    <identifier>AllgFormGroup/ref</identifier>
-    <title>InhFormGroup/titel</title>
-    <description>InhFormGroup/description</description>
-    <Mapping>
-        <mappingURL>isoMapping.xml</mappingURL>
-    </Mapping>
+    
+    <DatasetConfiguration>
+        <identifier>AllgFormGroup/ref</identifier>
+        <title>InhFormGroup/titel</title>
+        <description>InhFormGroup/description</description>
+        <Mapping>
+            <mappingURL>isoMapping.xml</mappingURL>
+        </Mapping>
+    </DatasetConfiguration>
+    
     <FormGroup id="AllgFormGroup">
         <label>Allgemein</label>
         <title>Allgemeine Angaben zum Metadatensatz</title>

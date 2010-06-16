@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO add class documentation here
+ * FormConfiguration
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -61,7 +61,11 @@ public class FormConfiguration {
 
     private FormFieldPath pathToDescription;
 
-    private final List<URL> mappingURLs;
+    private List<URL> mappingURLs = new ArrayList<URL>();
+
+    public FormConfiguration( LAYOUT_TYPE layoutType ) {
+        this.layoutType = layoutType;
+    }
 
     public FormConfiguration( List<FormGroup> formGroups, LAYOUT_TYPE layoutType, FormFieldPath pathToIdentifier,
                               FormFieldPath pathToTitle, FormFieldPath pathToDescription, List<URL> mappingURLs ) {
@@ -71,27 +75,6 @@ public class FormConfiguration {
         this.pathToTitle = pathToTitle;
         this.pathToDescription = pathToDescription;
         this.mappingURLs = mappingURLs;
-    }
-
-    /**
-     * @return a list of all top level formGroups
-     */
-    public List<FormGroup> getFormGroups() {
-        return formGroups;
-    }
-
-    /**
-     * @return the layout type
-     */
-    public LAYOUT_TYPE getLayoutType() {
-        return layoutType;
-    }
-
-    /**
-     * @return the identifer
-     */
-    public FormFieldPath getPathToIdentifier() {
-        return pathToIdentifier;
     }
 
     /**
@@ -135,7 +118,8 @@ public class FormConfiguration {
 
     /**
      * @param path
-     * @return
+     *            the path of the form field
+     * @return the form field with the given path; null if no form field exists
      */
     public FormField getFormField( FormFieldPath path ) {
         for ( FormGroup fg : formGroups ) {
@@ -144,6 +128,14 @@ public class FormConfiguration {
         return null;
     }
 
+    /**
+     * 
+     * @param fg
+     *            the form group
+     * @param path
+     *            the path of the form field
+     * @return the form field with the given path of the given group; null if no form field exists
+     */
     public FormField getFormField( FormGroup fg, FormFieldPath path ) {
         for ( FormElement fe : fg.getFormElements() ) {
             if ( fe instanceof FormField && path.equals( ( (FormField) fe ).getPath() ) ) {
@@ -165,8 +157,31 @@ public class FormConfiguration {
         return ids;
     }
 
-    public List<URL> getMappingURLs() {
-        return mappingURLs;
+    /**
+     * @return a list of all top level formGroups
+     */
+    public List<FormGroup> getFormGroups() {
+        return formGroups;
+    }
+
+    /**
+     * @param formGroups
+     *            the list of all top level form groups
+     */
+    public void setFormGroups( List<FormGroup> formGroups ) {
+        this.formGroups = formGroups;
+    }
+
+    public LAYOUT_TYPE getLayoutType() {
+        return layoutType;
+    }
+
+    public FormFieldPath getPathToIdentifier() {
+        return pathToIdentifier;
+    }
+
+    public void setPathToIdentifier( FormFieldPath pathToIdentifier ) {
+        this.pathToIdentifier = pathToIdentifier;
     }
 
     public void setPathToTitle( FormFieldPath pathToTitle ) {
@@ -183,5 +198,13 @@ public class FormConfiguration {
 
     public FormFieldPath getPathToDescription() {
         return pathToDescription;
+    }
+
+    public void setMappingURLs( List<URL> mappingURLs ) {
+        this.mappingURLs = mappingURLs;
+    }
+
+    public List<URL> getMappingURLs() {
+        return mappingURLs;
     }
 }
