@@ -206,18 +206,21 @@ public class OpenGLEventHandler implements GLEventListener {
      * 
      * @param b
      */
-    public void addDataObjectToScene( WorldRenderableObject b ) {
-        if ( b != null ) {
-            Envelope env = b.getBbox();
-            if ( env != null ) {
-                if ( isDefaultBBox() ) {
-                    bbox = env;
-                } else {
-                    bbox.merge( env );
+    public void addDataObjectToScene( List<WorldRenderableObject> w ) {
+        if ( w != null ) {
+            for ( WorldRenderableObject b : w ) {
+                Envelope env = b.getBbox();
+                if ( env != null ) {
+                    if ( isDefaultBBox() ) {
+                        bbox = env;
+                    } else {
+                        bbox = bbox.merge( env );
+                    }
                 }
+                worldRenderableObjects.add( b );
             }
             calcViewParameters();
-            worldRenderableObjects.add( b );
+
         }
     }
 
