@@ -177,11 +177,11 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
      * Returns an {@link XMLStreamWriter} for writing a response with XML content.
      * <p>
      * NOTE: This method may be called more than once -- the first call will create an {@link XMLStreamWriter} object
-     * and subsequent calls return the same object. This provides a very convenient way to produce plain XML responses
-     * and SOAP wrapped response bodies with the same code.
+     * and subsequent calls return the same object. This provides a convenient means to produce plain XML responses and
+     * SOAP wrapped response bodies with the same code.
      * </p>
      * 
-     * @return {@link XMLStreamWriter} for writing the response
+     * @return {@link XMLStreamWriter} for writing the response, with XML preamble already written
      * @throws IOException
      * @throws XMLStreamException
      */
@@ -192,6 +192,7 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
             factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
             String encoding = "UTF-8";
             xmlWriter = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), encoding ) );
+            xmlWriter.writeStartDocument(encoding, "1.0");
         }
         return xmlWriter;
     }

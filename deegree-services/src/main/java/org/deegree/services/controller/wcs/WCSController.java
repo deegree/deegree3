@@ -502,8 +502,6 @@ public class WCSController extends AbstractOGCServiceController {
 
         response.setContentType( "text/xml" );
         XMLStreamWriter xmlWriter = getXMLStreamWriter( response.getWriter() );
-        xmlWriter.writeStartDocument();
-
         if ( negotiateVersion.equals( VERSION_100 ) ) {
             Capabilities100XMLAdapter.export( xmlWriter, request, identification, provider, allowedOperations,
                                               sections, wcsService.getAllCoverages(), mainControllerConf, xmlWriter,

@@ -368,8 +368,6 @@ public class SOSController extends AbstractOGCServiceController {
         xmlWriter.setPrefix( XLINK_PREFIX, XLNNS );
         xmlWriter.setPrefix( GML_PREFIX, GMLNS );
 
-        xmlWriter.writeStartDocument();
-
         List<String> foiIDs = Arrays.asList( foi.getFoiID() );
 
         xmlWriter.writeStartElement( SA_PREFIX, "SamplingFeatureCollection", SA_NS );

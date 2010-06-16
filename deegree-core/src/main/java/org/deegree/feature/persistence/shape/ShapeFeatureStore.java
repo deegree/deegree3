@@ -415,14 +415,14 @@ public class ShapeFeatureStore implements FeatureStore {
         }
 
         FeatureResultSet rs = new IteratorResultSet( new FeatureIterator( recNumsAndPos.iterator() ) );
-//        rs = new ThreadedResultSet( rs, 100, 10 );
+
         if ( query.getFilter() != null ) {
-            LOG.info( "Applying in-memory filtering." );
+            LOG.debug( "Applying in-memory filtering." );
             rs = new FilteredFeatureResultSet( rs, query.getFilter() );
         }
 
         if ( query.getSortProperties() != null && query.getSortProperties().length > 0 ) {
-            LOG.info( "Applying in-memory sorting." );
+            LOG.debug( "Applying in-memory sorting." );
             rs = new MemoryFeatureResultSet( Features.sortFc( rs.toCollection(), query.getSortProperties() ) );
         }
 

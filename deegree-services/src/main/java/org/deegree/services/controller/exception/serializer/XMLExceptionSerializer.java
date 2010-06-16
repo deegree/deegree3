@@ -82,7 +82,7 @@ public abstract class XMLExceptionSerializer<T extends ControllerException> exte
                                                                                  factory.createXMLStreamWriter(
                                                                                                                 outputStream,
                                                                                                                 requestedEncoding ) );
-            xmlWriter.writeStartDocument();
+            xmlWriter.writeStartDocument("UTF-8", "1.0");
             serializeExceptionToXML( xmlWriter, exception );
             xmlWriter.writeEndDocument();
         } catch ( XMLStreamException e ) {

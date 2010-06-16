@@ -145,8 +145,6 @@ class LockFeatureHandler extends GetFeatureHandler {
 
             response.setContentType( "text/xml" );
             XMLStreamWriter writer = WFSController.getXMLResponseWriter( response, schemaLocation );
-
-            writer.writeStartDocument();
             if ( request.getVersion() == WFSConstants.VERSION_100 ) {
                 writer.writeStartElement( "wfs", "WFS_LockFeatureResponse", ns );
             } else {

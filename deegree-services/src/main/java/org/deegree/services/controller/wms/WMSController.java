@@ -555,7 +555,6 @@ public class WMSController extends AbstractOGCServiceController {
         try {
             response.setContentType( "text/xml" );
             XMLStreamWriter writer = response.getXMLWriter();
-            writer.writeStartDocument();
             new ApplicationSchemaXSDEncoder( GMLVersion.GML_2, null ).export( writer, schema );
             writer.writeEndDocument();
         } catch ( XMLStreamException e ) {

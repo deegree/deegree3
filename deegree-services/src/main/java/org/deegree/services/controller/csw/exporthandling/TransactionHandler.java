@@ -172,9 +172,7 @@ public class TransactionHandler {
 
         writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
-        if ( !isSoap ) {
-            writer.writeStartDocument();
-        }
+
         writer.writeStartElement( CSW_202_NS, "TransactionResponse" );
         writer.writeAttribute( "version", version.toString() );
 

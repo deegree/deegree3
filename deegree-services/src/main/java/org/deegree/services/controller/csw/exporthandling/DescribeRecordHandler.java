@@ -216,9 +216,6 @@ public class DescribeRecordHandler {
 
         writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
-        if ( !isSoap ) {
-            writer.writeStartDocument();
-        }
         writer.writeStartElement( CSW_202_NS, "DescribeRecordResponse" );
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", CSW_202_NS + " "
                                                                                 + CSW_202_DISCOVERY_SCHEMA );

@@ -143,10 +143,10 @@ public class TestSoapRequests {
 
     private static void createSoap( SOAPFactory factory, XMLStreamWriter writer )
                             throws XMLStreamException {
+
         String ns = factory.getNamespace().getNamespaceURI();
         SOAPEnvelope env = factory.getDefaultEnvelope();
 
-        writer.writeStartDocument();
         writer.setPrefix( "soapenv", ns );
         writer.writeStartElement( ns, env.getLocalName() );
         writeAttributes( writer, env );

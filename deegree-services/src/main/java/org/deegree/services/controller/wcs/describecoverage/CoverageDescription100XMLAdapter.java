@@ -96,7 +96,6 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
         writer.setPrefix( "xsi", XSINS );
         writer.setPrefix( "xlink", XLN_NS );
 
-        writer.writeStartDocument();
         writer.writeStartElement( WCS_100_NS, "CoverageDescription" );
         writer.writeAttribute( XSINS, "schemaLocation", WCS_100_NS + " " + WCS_100_SCHEMA );
         writer.writeAttribute( "version", VERSION_100.toString() );

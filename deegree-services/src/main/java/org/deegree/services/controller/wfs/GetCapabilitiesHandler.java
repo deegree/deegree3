@@ -195,7 +195,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.setPrefix( GML_PREFIX, GML_NS );
         writer.setPrefix( "xlink", XLN_NS );
 
-        writer.writeStartDocument();
         writer.writeStartElement( WFS_NS, "WFS_Capabilities" );
         writer.writeAttribute( "version", "1.0.0" );
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", WFS_NS + " "
@@ -459,7 +458,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.setPrefix( GML_PREFIX, GML_NS );
         writer.setPrefix( "xlink", XLN_NS );
 
-        writer.writeStartDocument();
         writer.writeStartElement( WFS_NS, "WFS_Capabilities" );
         writer.writeAttribute( "version", "1.1.0" );
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", WFS_NS + " " + WFS_110_SCHEMA_URL );
@@ -650,7 +648,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.setPrefix( GML_PREFIX, GML_NS );
         writer.setPrefix( "xlink", XLN_NS );
 
-        writer.writeStartDocument();
         writer.writeStartElement( WFS_200_NS, "WFS_Capabilities" );
         writer.writeAttribute( "version", "2.0.0" );
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", WFS_200_NS + " " + WFS_200_SCHEMA_URL );

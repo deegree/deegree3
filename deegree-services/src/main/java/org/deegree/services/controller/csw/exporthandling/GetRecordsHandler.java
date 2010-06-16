@@ -168,9 +168,6 @@ public class GetRecordsHandler {
 
         writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
-        if ( !isSoap ) {
-            writer.writeStartDocument();
-        }
         if ( getRec.getResultType() != ResultType.validate ) {
             writer.writeStartElement( CSW_202_NS, "GetRecordsResponse" );
 

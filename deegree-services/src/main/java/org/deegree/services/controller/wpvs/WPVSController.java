@@ -360,7 +360,6 @@ public class WPVSController extends AbstractOGCServiceController {
         try {
             XMLStreamWriter xsw = factory.createXMLStreamWriter( response.getOutputStream(), "UTF-8" );
             FormattingXMLStreamWriter xmlWriter = new FormattingXMLStreamWriter( xsw );
-            xmlWriter.writeStartDocument();
             new CapabilitiesXMLAdapter().export040( xmlWriter, req, identification, provider, allowedOperations,
                                                     wpvsDCP, service.getServiceConfiguration() );
             xmlWriter.writeEndDocument();

@@ -151,10 +151,6 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.setPrefix( OGC_PREFIX, OGC_NS );
         writer.setPrefix( "xlink", XLN_NS );
 
-        if ( !isSoap ) {
-            writer.writeStartDocument();
-        }
-
         writer.writeStartElement( CSW_202_NS, "Capabilities" );
         writer.writeAttribute( "version", "2.0.2" );
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", CSW_202_NS + " "

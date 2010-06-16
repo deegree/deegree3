@@ -151,9 +151,6 @@ public class GetRecordByIdHandler {
 
         writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
-        if ( !isSoap ) {
-            writer.writeStartDocument();
-        }
         writer.writeStartElement( CSW_202_NS, "GetRecordByIdResponse" );
 
         if ( service.getRecordStore() != null ) {

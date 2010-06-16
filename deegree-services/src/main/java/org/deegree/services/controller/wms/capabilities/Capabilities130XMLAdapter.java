@@ -133,7 +133,6 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
      */
     public void export( XMLStreamWriter writer )
                             throws XMLStreamException {
-        writer.writeStartDocument();
         writer.setDefaultNamespace( WMSNS );
         writer.setPrefix( "xsi", XSINS );
         writer.setPrefix( "xlink", XLNNS );

@@ -119,7 +119,6 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
         writer.setPrefix( "xsi", XSINS );
         writer.setPrefix( "xlink", XLN_NS );
 
-        writer.writeStartDocument();
         writer.writeStartElement( SOS_NS, "Capabilities" );
         writer.writeAttribute( XSINS, "schemaLocation", SOS_NS + " " + SOS_SCHEMA );
         writer.writeAttribute( "version", "1.0.0" );

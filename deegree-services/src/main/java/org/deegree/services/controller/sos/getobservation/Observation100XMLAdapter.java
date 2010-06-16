@@ -122,7 +122,6 @@ public class Observation100XMLAdapter extends XMLAdapter {
         writer.setPrefix( "xlink", XLN_NS );
         writer.setPrefix( "xsi", XSINS );
 
-        writer.writeStartDocument();
         writer.writeStartElement( OM_NS, "ObservationCollection" );
         writer.writeAttribute( XSINS, "schemaLocation", OM_NS + " " + OM_SCHEMA + " " + SA_NS + " " + SA_SCHEMA );
 
