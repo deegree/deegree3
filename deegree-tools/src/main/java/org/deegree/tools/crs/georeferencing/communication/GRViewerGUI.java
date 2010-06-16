@@ -43,6 +43,7 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
@@ -54,6 +55,8 @@ import javax.swing.JMenuItem;
 import javax.swing.border.BevelBorder;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+import org.deegree.tools.rendering.viewer.File3dImporter;
 
 /**
  * The <Code>GRViewerGUI</Code> class provides the client to view georeferencing tools/windows.
@@ -102,7 +105,7 @@ public class GRViewerGUI extends JFrame {
         setupMenubar();
         setup2DScene( gbl );
         setupPanelFootprint( gbl );
-        setupOpenGL( gbl, true );
+        setupOpenGL( gbl, false );
         setupNavigationBar( gbl );
         setupPointTable( gbl );
         this.pack();
@@ -161,6 +164,10 @@ public class GRViewerGUI extends JFrame {
         caps.setAlphaBits( 8 );
         caps.setAccumAlphaBits( 8 );
         OpenGLEventHandler openGLEventListener = new OpenGLEventHandler( testSphere );
+        // TODO remove static null
+        // at the moment the file which is used is static in the File3dImporter!!!
+        List<WorldRenderableObject> res = File3dImporter.open( this, null );
+        openGLEventListener.addDataObjectToScene( res );
 
         GLCanvas canvas = new GLCanvas( caps );
         canvas.addGLEventListener( openGLEventListener );
