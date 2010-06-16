@@ -37,9 +37,10 @@ package org.deegree.feature.persistence.oracle;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
@@ -50,6 +51,7 @@ import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -57,6 +59,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -120,114 +123,179 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public int performDelete( QName ftName, OperatorFilter filter, Lock lock )
                             throws FeatureStoreException {
-        throw new FeatureStoreException(
-                                         "The delete operation is currently not available for this feature store implementation." );
+        throw new UnsupportedOperationException( "Deletes based on non-id filters are currently not implemented "
+                                                 + "for this feature store." );
     }
 
     @Override
     public int performDelete( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
 
-        throw new FeatureStoreException(
-                                         "The delete operation is currently not available for this feature store implementation" );
-        //        
-        // if ( filter.getMatchingIds().isEmpty() ) {
-        // return 0;
-        // }
-        // int deleted = -1;
-        //
-        // PreparedStatement stmt = null;
-        // try {
-        // LOG.warn( "Deleting from table GGD (needs configurability)" );
-        // StringBuilder sql = new StringBuilder( "DELETE FROM GGD WHERE GMLID IN(?" );
-        // for ( int i = 1; i < filter.getMatchingIds().size(); i++ ) {
-        // sql.append( ",?" );
-        // }
-        // sql.append( ")" );
-        // stmt = conn.prepareStatement( sql.toString() );
-        // int i = 1;
-        // for ( String fid : filter.getMatchingIds() ) {
-        // // TODO
-        // fid = fid.substring( 4 );
-        // stmt.setString( i++, fid );
-        // }
-        // deleted = stmt.executeUpdate();
-        // } catch ( SQLException e ) {
-        // String msg = "Error deleting features using id filter: " + e.getMessage();
-        // throw new FeatureStoreException( msg, e );
-        // } finally {
-        // if ( stmt != null ) {
-        // JDBCUtils.close( stmt );
-        // }
-        // }
-        // return deleted;
+        if ( filter.getMatchingIds().isEmpty() ) {
+            return 0;
+        }
+
+        FeatureTypeMapping ftMapping = null;
+        for ( String fid : filter.getMatchingIds() ) {
+            if ( ftMapping != null && fs.getMapping( fid ) != ftMapping ) {
+                String msg = "Trying to delete multiple feature types at once. This is currently not supported";
+                throw new UnsupportedOperationException( msg );
+            }
+            ftMapping = fs.getMapping( fid );
+        }
+
+        int deleted = -1;
+        PreparedStatement stmt = null;
+        try {
+            StringBuilder sql = new StringBuilder( "DELETE FROM " );
+            sql.append( ftMapping.getTable() );
+            sql.append( " WHERE " );
+            sql.append( ftMapping.getFidColumn() );
+            sql.append( " IN(?" );
+            for ( int i = 1; i < filter.getMatchingIds().size(); i++ ) {
+                sql.append( ",?" );
+            }
+            sql.append( ")" );
+
+            LOG.debug( "Deleting: " + sql );
+            stmt = conn.prepareStatement( sql.toString() );
+
+            int i = 1;
+            for ( String fid : filter.getMatchingIds() ) {
+                int fidColumnValue = getFidColumnValue( fid, ftMapping );
+                stmt.setInt( i++, fidColumnValue );
+            }
+            deleted = stmt.executeUpdate();
+
+        } catch ( SQLException e ) {
+            String msg = "Error deleting features using id filter: " + e.getMessage();
+            throw new FeatureStoreException( msg, e );
+        } finally {
+            if ( stmt != null ) {
+                JDBCUtils.close( stmt );
+            }
+        }
+        return deleted;
     }
 
     @Override
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
-        throw new FeatureStoreException(
-                                         "The insert operation is currently not available for this feature store implementation" );
-        //        
-        // if ( mode == IDGenMode.REPLACE_DUPLICATE ) {
-        // throw new FeatureStoreException( "REPLACE_DUPLICATE is not available yet." );
-        // }
-        //
-        // List<String> fids = new ArrayList<String>( fc.size() );
-        // for ( Feature f : fc ) {
-        // String fid = f.getId();
-        // if ( mode == IDGenMode.GENERATE_NEW ) {
-        // fid = generateNewId();
-        // } else if ( fid == null ) {
-        // String msg =
-        // "Unable to perform insert. Id generation mode is USE_EXISTING, but feature collection contains features without ids.";
-        // throw new FeatureStoreException( msg );
-        // }
-        // fids.add( fid );
-        //
-        // FeatureType ft = fs.getFeatureType( f.getName() );
-        // if ( ft == null ) {
-        // String msg = "Unable to insert feature with type '" + f.getName()
-        // + "': feature type is not served by this feature store.";
-        // throw new FeatureStoreException( msg );
-        // }
-        // FeatureTypeMapping ftMapping = fs.getMapping( f.getName() );
-        //
-        // StringBuffer sql = new StringBuffer( "INSERT INTO " );
-        // sql.append( ftMapping.getTable() );
-        // // TODO
-        // sql.append( " (GMLID" );
-        // StringBuffer qMarks = new StringBuffer( "?" );
-        // for ( Property prop : f.getProperties() ) {
-        // if ( prop.getValue() != null ) {
-        // qMarks.append( ",?" );
-        // sql.append( "," );
-        // sql.append( ftMapping.getColumn( prop.getName() ) );
-        // }
-        // }
-        // sql.append( ") VALUES (" );
-        // sql.append( qMarks );
-        // sql.append( ")" );
-        // try {
-        // PreparedStatement stmt = conn.prepareStatement( sql.toString() );
-        // stmt.setString( 1, fid );
-        // int i = 2;
-        // for ( Property prop : f.getProperties() ) {
-        // if ( prop.getValue() != null ) {
-        // Object oracleValue = getSQLValue(
-        // (OracleConnection) ( (DelegatingConnection) conn ).getInnermostDelegate(),
-        // prop );
-        // stmt.setObject( i++, oracleValue );
-        // }
-        // }
-        // stmt.execute();
-        // } catch ( SQLException e ) {
-        // throw new FeatureStoreException( "SQLException while inserting feature: " + e.getMessage(), e );
-        // }
-        // LOG.info( "Executing: " + sql );
-        // }
-        // return fids;
+        List<String> fids = new ArrayList<String>( fc.size() );
+        for ( Feature f : fc ) {
+            fids.add( insertFeature( f, mode ) );
+        }
+        return fids;
+    }
+
+    private String insertFeature( Feature f, IDGenMode mode )
+                            throws FeatureStoreException {
+
+        FeatureType ft = fs.getFeatureType( f.getName() );
+        if ( ft == null ) {
+            String msg = "Unable to insert feature with type '" + f.getName()
+                         + "': feature type is not served by this feature store.";
+            throw new FeatureStoreException( msg );
+        }
+
+        FeatureTypeMapping ftMapping = fs.getMapping( f.getName() );
+        String fid = determineNewFid( mode, f.getId(), ftMapping );
+
+        StringBuilder sql = new StringBuilder( "INSERT INTO " );
+        sql.append( ftMapping.getTable() );
+        sql.append( " (" );
+        sql.append( ftMapping.getFidColumn() );
+        StringBuffer qMarks = new StringBuffer( "?" );
+        for ( Property prop : f.getProperties() ) {
+            if ( prop.getValue() != null ) {
+                qMarks.append( ",?" );
+                sql.append( "," );
+                sql.append( ftMapping.getColumn( prop.getName() ) );
+            }
+        }
+        sql.append( ") VALUES (" );
+        sql.append( qMarks );
+        sql.append( ")" );
+
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement( sql.toString() );
+            int fidColumnValue = getFidColumnValue( fid, ftMapping );
+            stmt.setInt( 1, fidColumnValue );
+            int i = 2;
+            for ( Property prop : f.getProperties() ) {
+                if ( prop.getValue() != null ) {
+                    Object oracleValue = getSQLValue(
+                                                      (OracleConnection) ( (DelegatingConnection) conn ).getInnermostDelegate(),
+                                                      prop );
+                    stmt.setObject( i++, oracleValue );
+                }
+            }
+            LOG.debug( "Executing: " + sql );
+            stmt.execute();
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( "SQLException while inserting feature: " + e.getMessage(), e );
+        } finally {
+            JDBCUtils.close( stmt );
+        }
+        return fid;
+    }
+
+    private int getFidColumnValue( String fid, FeatureTypeMapping ftMapping )
+                            throws FeatureStoreException {
+        String prefix = ftMapping.getFeatureType().getLocalPart().toUpperCase() + "_";
+        if ( !fid.startsWith( prefix ) ) {
+            throw new FeatureStoreException( "Internal error. Cannot map fid '" + fid + "' to integer column." );
+        }
+        String substring = fid.substring( prefix.length() );
+        int fidColumnValue = -1;
+        try {
+            fidColumnValue = Integer.parseInt( substring );
+        } catch ( NumberFormatException e ) {
+            throw new FeatureStoreException( "Internal error. Cannot map fid '" + fid + "' to integer column." );
+        }
+        return fidColumnValue;
+    }
+
+    private String determineNewFid( IDGenMode mode, String presentFid, FeatureTypeMapping ftMapping )
+                            throws FeatureStoreException {
+
+        String fid = null;
+        switch ( mode ) {
+        case GENERATE_NEW: {
+            PreparedStatement stmt = null;
+            ResultSet rs = null;
+            try {
+                stmt = conn.prepareStatement( "SELECT MAX(" + ftMapping.getFidColumn() + ") + 1 FROM "
+                                              + ftMapping.getTable() );
+                rs = stmt.executeQuery();
+                rs.next();
+                String prefix = ftMapping.getFeatureType().getLocalPart().toUpperCase();
+                fid = prefix + "_" + rs.getInt( 1 );
+            } catch ( SQLException e ) {
+                String msg = "SQLException during generation of new feature id: " + e.getMessage();
+                LOG.error( msg, e );
+                throw new FeatureStoreException( msg, e );
+            } finally {
+                JDBCUtils.close( rs, stmt, null, LOG );
+            }
+            break;
+        }
+        case REPLACE_DUPLICATE: {
+            throw new FeatureStoreException( "Id generation mode REPLACE_DUPLICATE is not available yet." );
+        }
+        case USE_EXISTING: {
+            String prefix = ftMapping.getFeatureType().getLocalPart().toUpperCase() + "_";
+            if ( presentFid == null || !presentFid.startsWith( prefix ) ) {
+                throw new FeatureStoreException( "Id generation mode is USE_EXISTING, but present id (" + presentFid
+                                                 + ") does not start with canonical prefix '" + prefix + "'." );
+            }
+            fid = presentFid;
+            break;
+        }
+        }
+        return fid;
     }
 
     private Object getSQLValue( OracleConnection conn, Property prop )
@@ -279,7 +347,8 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
         if ( filter instanceof IdFilter ) {
             return performUpdate( (IdFilter) filter, replacementProps, lock );
         } else if ( filter instanceof OperatorFilter ) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException( "Updates based on non-id filters are currently not implemented "
+                                                     + "for this feature store." );
         }
         return 0;
     }
@@ -331,8 +400,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
             }
             sql.append( ")" );
 
-            LOG.info( "Updating: " + sql );
-
+            LOG.debug( "Updating: " + sql );
             stmt = conn.prepareStatement( sql.toString() );
 
             int i = 1;
@@ -369,9 +437,5 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
         } finally {
             fs.releaseTransaction( this );
         }
-    }
-
-    private String generateNewId() {
-        return UUID.randomUUID().toString();
     }
 }
