@@ -47,7 +47,7 @@ import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 
 /**
- * TODO add class documentation here
+ * Handles navigation not directly connected with the data.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -65,29 +65,29 @@ public class NavigationBean implements Serializable {
         HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
         try {
             FormConfigurationFactory.reloadFormConfiguration( session.getId() );
+
+            fc.getELContext();
+            FormCreatorBean formCreator = (FormCreatorBean) fc.getApplication().getELResolver().getValue(
+                                                                                                          fc.getELContext(),
+                                                                                                          null,
+                                                                                                          "formCreatorBean" );
+            formCreator.forceReloaded();
+
+            MenuCreatorBean menuCreator = (MenuCreatorBean) fc.getApplication().getELResolver().getValue(
+                                                                                                          fc.getELContext(),
+                                                                                                          null,
+                                                                                                          "menuCreatorBean" );
+            menuCreator.forceReloaded();
+
+            FormFieldBean ff = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                             "formFieldBean" );
+            ff.forceReloaded();
         } catch ( ConfigurationException e ) {
             FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.CONF.RELOAD",
                                                          e.getMessage() );
             fc.addMessage( "RELOAD_FAILED", msg );
             return "/page/form/errorPage.xhtml";
         }
-
-        fc.getELContext();
-        FormCreatorBean formCreator = (FormCreatorBean) fc.getApplication().getELResolver().getValue(
-                                                                                                      fc.getELContext(),
-                                                                                                      null,
-                                                                                                      "formCreatorBean" );
-        formCreator.forceReloaded();
-
-        MenuCreatorBean menuCreator = (MenuCreatorBean) fc.getApplication().getELResolver().getValue(
-                                                                                                      fc.getELContext(),
-                                                                                                      null,
-                                                                                                      "menuCreatorBean" );
-        menuCreator.forceReloaded();
-
-        FormFieldBean ff = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
-                                                                                         "formFieldBean" );
-        ff.forceReloaded();
 
         FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.RELOAD" );
         fc.addMessage( "RELOAD_SUCCESS", msg );

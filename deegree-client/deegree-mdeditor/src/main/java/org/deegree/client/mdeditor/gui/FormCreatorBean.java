@@ -98,7 +98,7 @@ import org.deegree.client.mdeditor.model.SelectFormField;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Create the form elements out of the given configuration.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -121,6 +121,14 @@ public class FormCreatorBean implements Serializable {
 
     private FormConfiguration configuration;
 
+    /**
+     * Sets the form element @see #form for the selected group @see #grpId.
+     * 
+     * 
+     * @param event
+     * @throws AbortProcessingException
+     * @throws ConfigurationException
+     */
     public void load( ComponentSystemEvent event )
                             throws AbortProcessingException, ConfigurationException {
 
@@ -517,22 +525,39 @@ public class FormCreatorBean implements Serializable {
         component.setValueExpression( "title", ve );
     }
 
+    /**
+     * @param form
+     *            the gui element
+     */
     public void setForm( UIForm form ) {
         this.form = form;
     }
 
+    /**
+     * @return the gui element
+     */
     public UIForm getForm() {
         return form;
     }
 
+    /**
+     * @param grpId
+     *            the id of the selected grp
+     */
     public void setGrpId( String grpId ) {
         this.grpId = grpId;
     }
 
+    /**
+     * @return the id of the selected grp
+     */
     public String getGrpId() {
         return grpId;
     }
 
+    /**
+     * Recreate the forms next time.
+     */
     public void forceReloaded() {
         forms.clear();
     }

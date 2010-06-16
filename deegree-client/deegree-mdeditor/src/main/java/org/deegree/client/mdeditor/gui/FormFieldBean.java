@@ -60,7 +60,7 @@ import org.deegree.client.mdeditor.model.DataGroup;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * This Bean allows access to the values of the actual edited dataset.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -79,17 +79,47 @@ public class FormFieldBean implements Serializable {
 
     private Map<String, FormField> formFields = new HashMap<String, FormField>();
 
-    // grpId, datat groups
+    // form group id, data groups
     private Map<String, List<DataGroup>> dataGroups = new HashMap<String, List<DataGroup>>();
 
-    public FormFieldBean() {
+    /**
+     * Reload form groups when initializing this bean.
+     * 
+     * @throws ConfigurationException
+     */
+    public FormFieldBean() throws ConfigurationException {
         forceReloaded();
     }
 
+    /**
+     * 
+     * @return a map of all form fields; the key of the map contains the form field path of the form field
+     */
+    public Map<String, FormField> getFormFields() {
+        return formFields;
+    }
+
+    /**
+     * 
+     * @param formFields
+     *            a map of the form fields to set; the key of the map contains the form field path of the form field
+     */
+    public void setFormFields( Map<String, FormField> formFields ) {
+        this.formFields = formFields;
+    }
+
+    /**
+     * @return a list of all form groups
+     */
     public List<FormGroup> getFormGroups() {
         return formGroups;
     }
 
+    /**
+     * @param id
+     *            the id of the form group to return
+     * @return the form group with the given id; null, if a form group with the given id does not exist
+     */
     public FormGroup getFormGroup( String id ) {
         for ( FormGroup fg : formGroups ) {
             if ( id.equals( fg.getId() ) ) {
@@ -99,88 +129,70 @@ public class FormFieldBean implements Serializable {
         return null;
     }
 
-    public Map<String, FormField> getFormFields() {
-        return formFields;
-    }
-
-    public void setFormFields( Map<String, FormField> formFields ) {
-        this.formFields = formFields;
-    }
-
-    public void forceReloaded() {
+    /**
+     * Reload form groups and form fields from configuration
+     * 
+     * @throws ConfigurationException
+     */
+    public void forceReloaded()
+                            throws ConfigurationException {
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
-        try {
-            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-            formGroups = manager.getFormGroups();
-            formFields = manager.getFormFields();
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+        formGroups = manager.getFormGroups();
+        formFields = manager.getFormFields();
     }
 
-    public void setValues( String grpId, DataGroup fgi ) {
+    /**
+     * @param grpId
+     *            the id of the data group
+     * @param dataGroup
+     *            the values to set
+     */
+    public void setValues( String grpId, DataGroup dataGroup ) {
         for ( FormGroup fg : formGroups ) {
             if ( grpId.equals( fg.getId() ) ) {
-                setValues( fg, fgi.getValues() );
+                setValues( fg, dataGroup.getValues() );
             }
         }
     }
 
-    private void setValues( FormGroup fg, Map<String, Object> values ) {
-        LOG.debug( "update form group with id " + fg.getId() );
-        for ( FormElement fe : fg.getFormElements() ) {
-            if ( fe instanceof FormGroup ) {
-                setValues( ( (FormGroup) fe ), values );
-            } else if ( fe instanceof FormField ) {
-                FormField ff = (FormField) fe;
-                ff.setValue( values.get( ff.getPath().toString() ) );
-            }
-        }
-    }
-
+    /**
+     * @param path
+     *            the path of the form field
+     * @param value
+     *            the value to set
+     */
     public void setValue( FormFieldPath path, Object value ) {
-        path.resetIterator();
-        String fgId = path.next();
-        FormField ffToUpdate = null;
-        for ( FormGroup fg : formGroups ) {
-            if ( fgId.equals( fg.getId() ) ) {
-                ffToUpdate = getFormField( fg.getFormElements(), path );
-            }
-        }
+        FormField ffToUpdate = getFormField( path );
         if ( ffToUpdate != null ) {
             LOG.debug( "Update element with id " + path + ". New Value is " + value + "." );
             ffToUpdate.setValue( value );
         }
     }
 
-    private FormField getFormField( List<FormElement> fes, FormFieldPath path ) {
-        if ( path.hasNext() ) {
-            String next = path.next();
-            for ( FormElement fe : fes ) {
-                if ( next.equals( fe.getId() ) ) {
-                    if ( fe instanceof FormGroup ) {
-                        return getFormField( ( (FormGroup) fe ).getFormElements(), path );
-                    } else {
-                        return (FormField) fe;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
+    /**
+     * Sets the values of all form fields to the default value.
+     */
     public void clearFormFields() {
         for ( FormGroup fg : formGroups ) {
             fg.reset();
         }
     }
 
+    /**
+     * @return a map of all data groups; the key of the map contains the form group id
+     */
     public Map<String, List<DataGroup>> getDataGroups() {
         return dataGroups;
     }
 
+    /**
+     * @param grpId
+     *            the id of the form group to return
+     * @return a list of the data groups of the form group with the given id; an empty list, if no data group for the
+     *         form group exist
+     */
     public List<DataGroup> getDataGroups( String grpId ) {
         if ( dataGroups.containsKey( grpId ) ) {
             return dataGroups.get( grpId );
@@ -188,6 +200,13 @@ public class FormFieldBean implements Serializable {
         return new ArrayList<DataGroup>();
     }
 
+    /**
+     * @param grpId
+     *            the id of the form group
+     * @param id
+     *            the id of the data group
+     * @return the data group with the given id assigned to the form group with the given grpId
+     */
     public DataGroup getDataGroup( String grpId, String id ) {
         if ( id != null && dataGroups.containsKey( grpId ) ) {
             for ( DataGroup dg : dataGroups.get( grpId ) ) {
@@ -199,6 +218,14 @@ public class FormFieldBean implements Serializable {
         return null;
     }
 
+    /**
+     * Removes the data group with the given id assigned to the form group with the given grpId
+     * 
+     * @param grpId
+     *            the id of the form group
+     * @param id
+     *            the id of the datagroup
+     * */
     public void removeDataGroup( String grpId, String id ) {
         if ( id == null ) {
             return;
@@ -213,6 +240,17 @@ public class FormFieldBean implements Serializable {
         }
     }
 
+    /**
+     * Passes the current values of the form fields assigned to the form group with the given id to the list of data
+     * groups; If a data group with the given id exist, the values will be overwritten, otherwise a new data group will
+     * be created.
+     * 
+     * @param grpId
+     *            the id of the form group
+     * @param id
+     *            the id of the data group; if null, a new id will be created
+     * @return the id of the stored data group
+     */
     public String saveDataGroup( String grpId, String id ) {
         if ( !dataGroups.containsKey( grpId ) ) {
             dataGroups.put( grpId, new ArrayList<DataGroup>() );
@@ -235,6 +273,66 @@ public class FormFieldBean implements Serializable {
         return newId;
     }
 
+    /**
+     * Sets the values of the form fields to the values of the data group identified with the given grpId and id
+     * 
+     * @param grpId
+     *            the id of the form group
+     * @param id
+     *            the id of the data group
+     */
+    public void resetToDataGroup( String grpId, String id ) {
+        if ( id == null ) {
+            return;
+        }
+        if ( dataGroups.containsKey( grpId ) ) {
+            for ( DataGroup dg : dataGroups.get( grpId ) ) {
+                if ( id.equals( dg.getId() ) ) {
+                    setValues( grpId, dg );
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param datagroups
+     *            the data groups to put in the list of data groups
+     */
+    public void setDataGroups( Map<String, List<DataGroup>> datagroups ) {
+        dataGroups.putAll( datagroups );
+    }
+
+    private FormField getFormField( FormFieldPath path ) {
+        FormField ffToUpdate = null;
+        if ( path != null ) {
+            path.resetIterator();
+            String fgId = path.next();
+            for ( FormGroup fg : formGroups ) {
+                if ( fgId.equals( fg.getId() ) ) {
+                    ffToUpdate = getFormField( fg.getFormElements(), path );
+                }
+            }
+        }
+        return ffToUpdate;
+    }
+
+    private FormField getFormField( List<FormElement> fes, FormFieldPath path ) {
+        if ( path.hasNext() ) {
+            String next = path.next();
+            for ( FormElement fe : fes ) {
+                if ( next.equals( fe.getId() ) ) {
+                    if ( fe instanceof FormGroup ) {
+                        return getFormField( ( (FormGroup) fe ).getFormElements(), path );
+                    } else {
+                        return (FormField) fe;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private Map<String, Object> getValuesAsMap( FormGroup fg ) {
         Map<String, Object> values = new HashMap<String, Object>();
         if ( fg != null ) {
@@ -250,22 +348,16 @@ public class FormFieldBean implements Serializable {
         return values;
     }
 
-    public void resetToDataGroup( String grpId, String id ) {
-        if ( id == null ) {
-            return;
-        }
-        if ( dataGroups.containsKey( grpId ) ) {
-            for ( DataGroup dg : dataGroups.get( grpId ) ) {
-                if ( id.equals( dg.getId() ) ) {
-                    setValues( grpId, dg );
-                    break;
-                }
+    private void setValues( FormGroup fg, Map<String, Object> values ) {
+        LOG.debug( "update form group with id " + fg.getId() );
+        for ( FormElement fe : fg.getFormElements() ) {
+            if ( fe instanceof FormGroup ) {
+                setValues( ( (FormGroup) fe ), values );
+            } else if ( fe instanceof FormField ) {
+                FormField ff = (FormField) fe;
+                ff.setValue( values.get( ff.getPath().toString() ) );
             }
         }
-    }
-
-    public void setDataGroups( Map<String, List<DataGroup>> dgs ) {
-        dataGroups.putAll( dgs );
     }
 
 }
