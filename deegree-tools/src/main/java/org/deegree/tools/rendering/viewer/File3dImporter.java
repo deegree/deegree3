@@ -37,7 +37,9 @@ package org.deegree.tools.rendering.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -58,14 +60,17 @@ import org.deegree.tools.rendering.manager.buildings.importers.CityGMLImporter;
  */
 public class File3dImporter {
 
-    public static WorldRenderableObject open( Frame parent, String fileName ) {
+    public static List<WorldRenderableObject> open( Frame parent, String fileName ) {
+
+        fileName = "/home/thomas/test_building.gml";
 
         if ( fileName == null || "".equals( fileName.trim() ) ) {
             throw new InvalidParameterException( "the file name may not be null or empty" );
         }
         fileName = fileName.trim();
 
-        final CityGMLImporter openFile = new CityGMLImporter( null, null, null, true );
+        // TODO determine CityGML type (OpenGIS or citygml.org)
+        final CityGMLImporter openFile = new CityGMLImporter( null, null, null, false );
 
         final JDialog dialog = new JDialog( parent, "Loading", true );
 
@@ -99,7 +104,13 @@ public class File3dImporter {
         openThread.start();
 
         dialog.setVisible( true );
-        WorldRenderableObject result = null;// openFile.getOpenedFile();
+        List<WorldRenderableObject> result = null;
+        try {
+            result = openFile.importFromFile( fileName, 6, 2 );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         //
         // if ( result != null ) {
         // openGLEventListener.addDataObjectToScene( result );

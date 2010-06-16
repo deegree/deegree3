@@ -140,11 +140,13 @@ public class GLViewer extends JFrame implements ActionListener {
 
     }
 
-    private void addGeometries( WorldRenderableObject model, boolean remove ) {
+    private void addGeometries( List<WorldRenderableObject> model, boolean remove ) {
         if ( remove ) {
             openGLEventListener.removeAllData();
         }
+
         openGLEventListener.addDataObjectToScene( model );
+
     }
 
     /**
@@ -314,9 +316,10 @@ public class GLViewer extends JFrame implements ActionListener {
                         String path = f.getAbsolutePath();
                         prefs.put( LAST_EXTENSION, ( (ViewerFileFilter) fileChooser.getFileFilter() ).getExtension( f ) );
                         prefs.put( OPEN_KEY, f.getParent() );
-                        WorldRenderableObject res = File3dImporter.open( this, path );
+                        List<WorldRenderableObject> res = File3dImporter.open( this, path );
                         // add res to scene.
                         addGeometries( res, true );
+
                     }
 
                 }
@@ -349,7 +352,7 @@ public class GLViewer extends JFrame implements ActionListener {
         // RenderableQualityModel loadedModel = (RenderableQualityModel) read( file );
         // rqm.addGeometryData( createBillboard() );
 
-        GLViewer viewer = new GLViewer( true );
+        GLViewer viewer = new GLViewer( false );
         // for ( WorldRenderableObject wro : objects ) {
         // viewer.openGLEventListener.addDataObjectToScene( wro );
         // }
