@@ -3,14 +3,15 @@
 <FormConfiguration xsi:schemaLocation="http://www.deegree.org/igeoportal schema/formConfiguration.xsd"
     xmlns="http://www.deegree.org/igeoportal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <layoutType>tab</layoutType>
-    
-    <identifier>FormGroup3/ref</identifier>
-    <title>FormGroup/text1</title>
-    <description>FormGroup/FormGroup11/text2</description>
-    
-    <Mapping>
-        <mappingURL>../mapping/mappingTest.xml</mappingURL>
-    </Mapping>
+
+    <DatasetConfiguration>
+        <identifier>FormGroup3/ref</identifier>
+        <title>FormGroup/text1</title>
+        <description>FormGroup/FormGroup11/text2</description>
+        <Mapping>
+            <mappingURL>../mapping/mappingTest.xml</mappingURL>
+        </Mapping>
+    </DatasetConfiguration>
 
     <FormGroup id="FormGroup3">
         <label>Test</label>
@@ -66,8 +67,8 @@
             </SelectFormElement>
         </FormGroup>
     </FormGroup>
-    
-    
+
+
     <FormGroup id="SimpleUnboundedFormGroup" occurence="unbounded">
         <label>NFach</label>
         <title>nFacheGruppe</title>
