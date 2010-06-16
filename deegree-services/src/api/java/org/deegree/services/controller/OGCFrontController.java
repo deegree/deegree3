@@ -454,7 +454,7 @@ public class OGCFrontController extends HttpServlet {
                 }
                 dispatchKVPRequest( normalizedKVPParams, request, response, multiParts );
             } else {
-                // if( handle multiparts, get first mulitpart body(?).
+                // if( handle multiparts, get first body from multipart (?)
                 // body->requestDoc
 
                 InputStream requestInputStream = null;

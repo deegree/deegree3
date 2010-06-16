@@ -122,6 +122,7 @@ import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
+import org.deegree.services.jaxb.wfs.PublishedInformation;
 import org.deegree.services.wfs.WFService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,6 +159,8 @@ public class WFSController extends AbstractOGCServiceController {
             supportedConfigVersions = new Version[] { Version.parseVersion( "0.5.0" ) };
         }
     };
+
+    private static final int DEFAULT_MAX_FEATURES = 15000;
 
     private WFService service;
 
@@ -206,10 +209,13 @@ public class WFSController extends AbstractOGCServiceController {
             throw new ControllerInitException( "Error parsing WFS configuration: " + e.getMessage(), e );
         }
 
-        validateAndSetOfferedVersions( jaxbConfig.getPublishedInformation().getSupportedVersions().getVersion() );
-        enableTransactions = jaxbConfig.getPublishedInformation().isEnableTransactions();
-        enableStreaming = ( jaxbConfig.getPublishedInformation().isEnableStreaming() != null ) ? jaxbConfig.getPublishedInformation().isEnableStreaming()
-                                                                                              : false;
+        PublishedInformation pi = jaxbConfig.getPublishedInformation();
+
+        validateAndSetOfferedVersions( pi.getSupportedVersions().getVersion() );
+        enableTransactions = pi.isEnableTransactions();
+        enableStreaming = ( pi.isEnableStreaming() != null ) ? pi.isEnableStreaming() : false;
+        int maxFeatures = pi.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES : pi.getQueryMaxFeatures().intValue();
+        boolean checkAreaOfUse = pi.isCheckAreaOfUse() == null ? false : pi.isCheckAreaOfUse();
 
         try {
             if ( jaxbConfig.getPublishedInformation().getQuerySRS() != null ) {
@@ -239,9 +245,9 @@ public class WFSController extends AbstractOGCServiceController {
             throw new ControllerInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
         }
         dftHandler = new DescribeFeatureTypeHandler( service );
-        getFeatureHandler = new GetFeatureHandler( this, service, enableStreaming );
+        getFeatureHandler = new GetFeatureHandler( this, service, enableStreaming, maxFeatures, checkAreaOfUse );
         getGmlObjectHandler = new GetGmlObjectHandler( this, service );
-        lockFeatureHandler = new LockFeatureHandler( this, service, enableStreaming );
+        lockFeatureHandler = new LockFeatureHandler( this, service, enableStreaming, maxFeatures, checkAreaOfUse );
     }
 
     @Override

@@ -86,9 +86,15 @@ class LockFeatureHandler extends GetFeatureHandler {
      * @param streamMode
      *            if <code>true</code>, features are streamed (implies that the FeatureCollection's boundedBy-element
      *            cannot be populated and that the numberOfFeatures attribute cannot be written)
+     * @param featureLimit
+     *            hard limit for returned features (-1 means no limit)
+     * @param checkInputDomain
+     *            true, if geometries in query constraints should be checked agains validity domain of the SRS (needed
+     *            for CITE 1.1.0 compliance)
      */
-    LockFeatureHandler( WFSController master, WFService service, boolean streamMode ) {
-        super( master, service, streamMode );
+    LockFeatureHandler( WFSController master, WFService service, boolean streamMode, int featureLimit,
+                        boolean checkInputDomain ) {
+        super( master, service, streamMode, featureLimit, checkInputDomain );
     }
 
     /**

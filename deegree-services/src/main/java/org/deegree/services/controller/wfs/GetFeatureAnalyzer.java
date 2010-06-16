@@ -118,6 +118,8 @@ class GetFeatureAnalyzer {
 
     private boolean allFtsPossible;
 
+    private final boolean checkAreaOfUse;
+
     /**
      * Creates a new {@link GetFeatureAnalyzer}.
      * 
@@ -127,13 +129,18 @@ class GetFeatureAnalyzer {
      *            {@link WFService} to be used, must not be <code>null</code>
      * @param outputFormat
      *            requested GML version, must not be <code>null</code>
+     * @param checkInputDomain
+     *            true, if geometries in query constraints should be checked against validity domain of the SRS (needed
+     *            for CITE 1.1.0 compliance)
      * @throws OWSException
      *             if the request cannot be performed, e.g. because it queries feature types that are not served
      */
-    GetFeatureAnalyzer( GetFeature request, WFService service, GMLVersion outputFormat ) throws OWSException {
+    GetFeatureAnalyzer( GetFeature request, WFService service, GMLVersion outputFormat, boolean checkInputDomain )
+                            throws OWSException {
 
         this.service = service;
         this.outputFormat = outputFormat;
+        this.checkAreaOfUse = checkInputDomain;
 
         // generate validated feature store queries
         org.deegree.protocol.wfs.getfeature.Query[] wfsQueries = request.getQueries();
@@ -327,8 +334,10 @@ class GetFeatureAnalyzer {
                 for ( PropertyName pt : Filters.getPropertyNames( fQuery.getFilter() ) ) {
                     validatePropertyName( pt, typeNames );
                 }
-                for ( Geometry geom : Filters.getGeometries( fQuery.getFilter() ) ) {
-                    validateGeometryConstraint( geom, wfsQuery.getSrsName() );
+                if ( checkAreaOfUse ) {
+                    for ( Geometry geom : Filters.getGeometries( fQuery.getFilter() ) ) {
+                        validateGeometryConstraint( geom, wfsQuery.getSrsName() );
+                    }
                 }
             }
             filter = fQuery.getFilter();

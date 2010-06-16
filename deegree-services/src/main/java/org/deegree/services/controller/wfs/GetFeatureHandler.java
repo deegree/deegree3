@@ -123,6 +123,10 @@ class GetFeatureHandler {
 
     protected final WFService service;
 
+    private final int featureLimit;
+
+    private final boolean checkAreaOfUse;
+
     /**
      * Creates a new {@link GetFeatureHandler} instance that uses the given service to lookup requested
      * {@link FeatureType}s.
@@ -134,11 +138,19 @@ class GetFeatureHandler {
      * @param streamMode
      *            if <code>true</code>, features are streamed (implies that the FeatureCollection's boundedBy-element
      *            cannot be populated and that the numberOfFeatures attribute cannot be written)
+     * @param featureLimit
+     *            hard limit for returned features (-1 means no limit)
+     * @param checkAreaOfUse
+     *            true, if geometries in query constraints should be checked agains validity domain of the SRS (needed
+     *            for CITE 1.1.0 compliance)
      */
-    GetFeatureHandler( WFSController master, WFService service, boolean streamMode ) {
+    GetFeatureHandler( WFSController master, WFService service, boolean streamMode, int featureLimit,
+                       boolean checkAreaOfUse ) {
         this.master = master;
         this.service = service;
         this.streamMode = streamMode;
+        this.featureLimit = featureLimit;
+        this.checkAreaOfUse = checkAreaOfUse;
     }
 
     /**
@@ -166,7 +178,7 @@ class GetFeatureHandler {
         LOG.debug( "Performing GetFeature (results) request." );
 
         GMLVersion outputFormat = determineOutputFormat( request );
-        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, outputFormat );
+        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, outputFormat, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
         String schemaLocation = getSchemaLocation( request.getVersion(), outputFormat, analyzer.getFeatureTypes() );
 
@@ -221,8 +233,8 @@ class GetFeatureHandler {
             xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "GML_32_FEATURECOLLECTION" );
         }
 
-        int maxFeatures = -1;
-        if ( request.getMaxFeatures() != null ) {
+        int maxFeatures = featureLimit;
+        if ( request.getMaxFeatures() != null && request.getMaxFeatures() < maxFeatures ) {
             maxFeatures = request.getMaxFeatures();
         }
 
@@ -492,7 +504,7 @@ class GetFeatureHandler {
         LOG.debug( "Performing GetFeature (hits) request." );
 
         GMLVersion outputFormat = determineOutputFormat( request );
-        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, outputFormat );
+        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, outputFormat, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
         String schemaLocation = getSchemaLocation( request.getVersion(), outputFormat, analyzer.getFeatureTypes() );
 

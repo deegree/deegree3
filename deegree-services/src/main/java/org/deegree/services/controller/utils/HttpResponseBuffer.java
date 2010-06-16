@@ -193,6 +193,7 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
             String encoding = "UTF-8";
             xmlWriter = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), encoding ) );
             xmlWriter.writeStartDocument(encoding, "1.0");
+            setCharacterEncoding( "UTF-8" );
         }
         return xmlWriter;
     }
