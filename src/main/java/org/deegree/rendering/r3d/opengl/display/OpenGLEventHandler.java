@@ -201,10 +201,11 @@ public class OpenGLEventHandler implements GLEventListener {
     }
 
     /**
-     * Add the given branch group to the scene and set the appropriate distance etc. After adding the branch group to
+     * Adds the given branch group to the scene and set the appropriate distance etc. After adding the branch group to
      * the rotation group which is controlled by the mouse rotator.
      * 
      * @param b
+     *            a list of WorldRenderableObjects, can be <Code>null</Code>.
      */
     public void addDataObjectToScene( List<WorldRenderableObject> w ) {
         if ( w != null ) {
