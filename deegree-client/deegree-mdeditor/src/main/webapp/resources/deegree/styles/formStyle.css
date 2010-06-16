@@ -1,3 +1,5 @@
+/***** styles for the menu *****/
+/*** horizontal menu ***/
 #mdEditor ul#horizontalList {
 	margin: 0;
 	padding: 0.8em;
@@ -11,7 +13,18 @@
 	padding: 0;
 }
 
-#mdEditor ul#horizontalList a,#mdEditor ul#horizontalList span {
+#mdEditor ul#horizontalList a.menuItemActive {
+	padding: 0.2em 1em;
+	text-decoration: none;
+	font-weight: bold;
+	border: 1px solid white;
+	border-left-color: black;
+	border-top-color: black;
+	color: #FFFFFF;
+	background-color: gray;
+}
+
+#mdEditor ul#horizontalList a.menuItemInactive {
 	padding: 0.2em 1em;
 	text-decoration: none;
 	font-weight: bold;
@@ -22,7 +35,7 @@
 	background-color: #ccc;
 }
 
-#mdEditor ul#horizontalList a:hover,#mdEditor ul#horizontalList span {
+#mdEditor ul#horizontalList a:hover {
 	border-color: white;
 	border-left-color: black;
 	border-top-color: black;
@@ -30,6 +43,7 @@
 	background-color: gray;
 }
 
+/*** vertical menu ***/
 #mdEditor ul#verticalList {
 	text-align: left;
 }
@@ -71,6 +85,7 @@
 	border-right: 2px solid #194c6b;
 }
 
+/*****  *****/
 #mdEditor .mdFormHeader {
 	text-align: left;
 }

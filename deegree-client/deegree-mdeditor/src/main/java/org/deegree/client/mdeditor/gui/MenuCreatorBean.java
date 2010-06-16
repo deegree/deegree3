@@ -36,12 +36,12 @@
 package org.deegree.client.mdeditor.gui;
 
 import static org.deegree.client.mdeditor.model.LAYOUT_TYPE.MENU;
-
 import static org.deegree.client.mdeditor.model.LAYOUT_TYPE.TAB;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
 
+import javax.el.ValueExpression;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIParameter;
@@ -58,7 +58,7 @@ import org.deegree.client.mdeditor.model.LAYOUT_TYPE;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Creates the menu structure out of the configuration.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -77,61 +77,77 @@ public class MenuCreatorBean implements Serializable {
 
     private boolean isRendered = false;
 
-    public void setListGroup( ListGroup menuForm ) {
+    /**
+     * Sets the menu after creating the menu entries.
+     * 
+     * @param menuForm
+     * @throws ConfigurationException
+     *             if the configuration could not be parsed
+     */
+    public void setListGroup( ListGroup menuForm )
+                            throws ConfigurationException {
         this.listGroup = menuForm;
         if ( listGroup != null && !isRendered ) {
 
             FacesContext fc = FacesContext.getCurrentInstance();
             HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
 
-            FormConfiguration manager;
-            try {
-                manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
 
-                LAYOUT_TYPE layoutType = manager.getLayoutType();
-                LOG.debug( "create menu for layout type: " + layoutType );
+            LAYOUT_TYPE layoutType = manager.getLayoutType();
+            LOG.debug( "create menu for layout type: " + layoutType );
 
-                String menuId = null;
-                String listId = null;
-                if ( MENU.equals( layoutType ) ) {
-                    menuId = "verticalMenu";
-                    listId = "verticalList";
-                } else if ( TAB.equals( layoutType ) ) {
-                    menuId = "horizontalMenu";
-                    listId = "horizontalList";
+            String menuId = null;
+            String listId = null;
+            if ( MENU.equals( layoutType ) ) {
+                menuId = "verticalMenu";
+                listId = "verticalList";
+            } else if ( TAB.equals( layoutType ) ) {
+                menuId = "horizontalMenu";
+                listId = "horizontalList";
+            }
+
+            if ( listId != null ) {
+                listGroup.setRendererType( "org.deegree.ListGroupRenderer" );
+                listGroup.setId( GuiUtils.getUniqueId() );
+                listGroup.getAttributes().put( "listId", listId );
+                listGroup.getAttributes().put( "menuId", menuId );
+                for ( FormGroup formGroup : manager.getFormGroups() ) {
+                    HtmlOutcomeTargetLink link = new HtmlOutcomeTargetLink();
+                    link.setId( GuiUtils.getUniqueId() );
+                    link.setValue( formGroup.getLabel() );
+                    link.setOutcome( "emptyForm" );
+                    UIParameter param = new UIParameter();
+                    param.setId( GuiUtils.getUniqueId() );
+                    param.setName( "grpId" );
+                    param.setValue( formGroup.getId() );
+                    link.getChildren().add( param );
+
+                    String el = "#{formCreatorBean.grpId == '" + formGroup.getId()
+                                + "' ? 'menuItemActive' : 'menuItemInactive'}";
+                    ValueExpression ve = fc.getApplication().getExpressionFactory().createValueExpression(
+                                                                                                           fc.getELContext(),
+                                                                                                           el,
+                                                                                                           String.class );
+                    link.setValueExpression( "styleClass", ve );
+
+                    listGroup.getChildren().add( link );
                 }
-
-                if ( listId != null ) {
-                    System.out.println( "create!" );
-                    listGroup.setRendererType( "org.deegree.ListGroupRenderer" );
-                    listGroup.setId( GuiUtils.getUniqueId() );
-                    listGroup.getAttributes().put( "listId", listId );
-                    listGroup.getAttributes().put( "menuId", menuId );
-                    for ( FormGroup formGroup : manager.getFormGroups() ) {
-                        HtmlOutcomeTargetLink link = new HtmlOutcomeTargetLink();
-                        link.setId( GuiUtils.getUniqueId() );
-                        link.setValue( formGroup.getLabel() );
-                        link.setOutcome( "emptyForm" );
-                        UIParameter param = new UIParameter();
-                        param.setId( GuiUtils.getUniqueId() );
-                        param.setName( "grpId" );
-                        param.setValue( formGroup.getId() );
-                        link.getChildren().add( param );
-                        listGroup.getChildren().add( link );
-                    }
-                    isRendered = true;
-                }
-            } catch ( ConfigurationException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                isRendered = true;
             }
         }
     }
 
+    /**
+     * @return the created menu as list group
+     */
     public ListGroup getListGroup() {
         return listGroup;
     }
 
+    /**
+     * Recreate the menu next time.
+     */
     public void forceReloaded() {
         listGroup = null;
     }
