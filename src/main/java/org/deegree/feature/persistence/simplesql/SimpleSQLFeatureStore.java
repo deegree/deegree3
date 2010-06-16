@@ -54,7 +54,6 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.jdbc.Util;
-import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.CRS;
@@ -369,16 +368,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                             } else {
                                 Object obj = rs.getObject( pt.getName().getLocalPart() );
                                 if ( obj != null ) {
-                                    if ( obj instanceof Integer ) {
-                                        props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
-                                                                       PrimitiveType.INTEGER ) );
-                                    } else if ( obj instanceof Double ) {
-                                        props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
-                                                                       PrimitiveType.DOUBLE ) );
-                                    } else {
-                                        props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
-                                                                       PrimitiveType.STRING ) );
-                                    }
+                                    SimplePropertyType spt = (SimplePropertyType) pt;
+                                    props.add( new SimpleProperty( spt, "" + obj, spt.getPrimitiveType() ) );
                                 }
                             }
                         }
