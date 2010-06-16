@@ -197,6 +197,8 @@ public class Controller {
                     lastGeoReferencedPoint = null;
                     panel.repaint();
                     footPanel.repaint();
+                    panel.setFocus( false );
+                    footPanel.setFocus( false );
                 }
                 if ( ( (JButton) source ).getText().startsWith( NavigationBarPanel.COMPUTE_BUTTON_NAME ) ) {
                     System.out.println( "you clicked on computation" );
