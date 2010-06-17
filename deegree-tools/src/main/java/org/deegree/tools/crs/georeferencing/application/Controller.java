@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,6 +46,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -55,6 +58,10 @@ import javax.swing.event.TableModelListener;
 import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.io.RasterIOOptions;
+import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
+import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
+import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
@@ -67,6 +74,7 @@ import org.deegree.tools.crs.georeferencing.model.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
+import org.deegree.tools.rendering.viewer.File3dImporter;
 
 /**
  * The <Code>Controller</Code> is responsible to bind the view with the model.
@@ -96,6 +104,8 @@ public class Controller {
 
     private Footprint footPrint;
 
+    private OpenGLEventHandler glHandler;
+
     private MouseModel mouse;
 
     private Point2d changePoint;
@@ -115,10 +125,11 @@ public class Controller {
         this.footPrint = new Footprint();
         this.tablePanel = view.getPointTablePanel();
         this.start = false;
+        this.glHandler = view.getOpenGLEventListener();
         options = new RasterOptions( view ).getOptions();
         sceneValues = new Scene2DValues( options );
         model.init( options, sceneValues );
-        view.addScene2DurlListener( new ButtonListener() );
+        view.addMenuItemListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
         navPanel.addHorizontalRefListener( new ButtonListener() );
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
@@ -212,12 +223,115 @@ public class Controller {
                     // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
                     panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
-                    footPrint.setDefaultPolygon();
+                    // footPrint.setDefaultPolygon();
                     // rectangle = new RasterRect( 50, 50, 200, 200 );
-                    footPanel.setPolygon( footPrint.getPolygon() );
+                    // footPanel.setPolygon( footPrint.getPolygon() );
                     // footPanel.setGeometry( rectangle );
-                    footPanel.repaint();
+                    // footPanel.repaint();
                 }
+                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GET_3DOBJECT ) ) {
+                    // TODO remove static null
+                    // at the moment the file which is used is static in the File3dImporter!!!
+                    List<WorldRenderableObject> rese = File3dImporter.open( view, view.fileName() );
+
+                    for ( WorldRenderableObject res : rese ) {
+                        glHandler.addDataObjectToScene( res );
+                    }
+                    List<float[]> geometryThatIsTaken = new ArrayList<float[]>();
+                    for ( GeometryQualityModel g : File3dImporter.gm ) {
+                        ArrayList<SimpleAccessGeometry> h = g.getQualityModelParts();
+                        boolean isfirstOccurrence = false;
+                        float minimalZ = 0;
+
+                        for ( SimpleAccessGeometry b : h ) {
+                            float[] a = b.getHorizontalGeometries( b.getGeometry() );
+                            if ( a != null ) {
+                                if ( isfirstOccurrence == false ) {
+                                    minimalZ = a[2];
+                                    geometryThatIsTaken.add( a );
+                                    isfirstOccurrence = true;
+                                } else {
+                                    if ( minimalZ < a[2] ) {
+
+                                    } else {
+                                        geometryThatIsTaken.remove( geometryThatIsTaken.size() - 1 );
+                                        minimalZ = a[2];
+                                        geometryThatIsTaken.add( a );
+                                    }
+                                }
+                                System.out.println( a );
+                            }
+                        }
+
+                    }
+
+                    List<Polygon> polyList = new ArrayList<Polygon>();
+                    List<Polygon> polyList2 = new ArrayList<Polygon>();
+                    List<Rectangle> rect = new ArrayList<Rectangle>();
+                    for ( float[] f : geometryThatIsTaken ) {
+                        int size = f.length / 3;
+                        int[] x = new int[size];
+                        int[] y = new int[size];
+                        int count = 0;
+
+                        for ( int i = 0; i < f.length; i += 3 ) {
+                            x[count] = (int) f[i];
+                            y[count] = (int) f[i + 1];
+                            count++;
+                        }
+                        Polygon p = new Polygon( x, y, size );
+                        rect.add( p.getBounds() );
+                        System.out.println( p.getBounds() );
+                        polyList.add( p );
+                    }
+
+                    Rectangle temp = null;
+                    // get minimum X
+                    for ( Rectangle rec : rect ) {
+                        if ( temp == null ) {
+                            temp = rec;
+                        } else {
+                            if ( rec.x < temp.x ) {
+                                temp = rec;
+                            }
+                        }
+                    }
+                    int x = temp.x - 10;
+
+                    Rectangle tempY = null;
+                    // get minimum Y
+                    for ( Rectangle rec : rect ) {
+                        if ( tempY == null ) {
+                            tempY = rec;
+                        } else {
+                            if ( rec.y < temp.y ) {
+                                tempY = rec;
+                            }
+                        }
+                    }
+                    int y = temp.y - 10;
+
+                    for ( Polygon po : polyList ) {
+                        int[] x2 = new int[po.npoints];
+                        int[] y2 = new int[po.npoints];
+                        for ( int i = 0; i < po.npoints; i++ ) {
+                            x2[i] = (int) ( ( po.xpoints[i] - x ) * 4.5 );
+                            y2[i] = (int) ( ( po.ypoints[i] - y ) * 4.5 );
+
+                        }
+                        Polygon p = new Polygon( x2, y2, po.npoints );
+                        polyList2.add( p );
+
+                    }
+
+                    Rectangle panelBounds = footPanel.getBounds();
+
+                    footPanel.setPolygonList( polyList2 );
+
+                    footPanel.repaint();
+
+                }
+
             }
 
         }

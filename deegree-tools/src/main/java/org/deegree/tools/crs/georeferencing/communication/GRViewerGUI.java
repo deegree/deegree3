@@ -43,7 +43,6 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
@@ -55,8 +54,6 @@ import javax.swing.JMenuItem;
 import javax.swing.border.BevelBorder;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
-import org.deegree.tools.rendering.viewer.File3dImporter;
 
 /**
  * The <Code>GRViewerGUI</Code> class provides the client to view georeferencing tools/windows.
@@ -72,6 +69,8 @@ public class GRViewerGUI extends JFrame {
 
     public final static String MENUITEM_GETMAP = "Import 2D Map";
 
+    public final static String MENUITEM_GET_3DOBJECT = "Import 3D Object";
+
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
     private final static Dimension FRAME_DIMENSION = new Dimension( 900, 600 );
@@ -80,13 +79,19 @@ public class GRViewerGUI extends JFrame {
 
     private NavigationBarPanel navigationPanel;
 
+    private OpenGLEventHandler openGLEventListener;
+
     private PointTablePanel pointTablePanel;
 
     private BuildingFootprintPanel footprintPanel;
 
     private JMenuItem import2DMapMenuItem;
 
+    private JMenuItem import3DObjectMenuItem;
+
     private String ows7url;
+
+    private String fileName;
 
     public GRViewerGUI() {
         super( WINDOW_TITLE );
@@ -120,11 +125,13 @@ public class GRViewerGUI extends JFrame {
         menuFile = new JMenu( "File" );
         menuBar.add( menuFile );
         import2DMapMenuItem = new JMenuItem( MENUITEM_GETMAP );
+        import3DObjectMenuItem = new JMenuItem( MENUITEM_GET_3DOBJECT );
 
         // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
         ows7url = "http://localhost:8080/deegree-wms-cite111/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
-
+        fileName = "/home/thomas/test_building.gml";
         menuFile.add( import2DMapMenuItem );
+        menuFile.add( import3DObjectMenuItem );
         this.getRootPane().setJMenuBar( menuBar );
     }
 
@@ -163,11 +170,7 @@ public class GRViewerGUI extends JFrame {
         caps.setHardwareAccelerated( true );
         caps.setAlphaBits( 8 );
         caps.setAccumAlphaBits( 8 );
-        OpenGLEventHandler openGLEventListener = new OpenGLEventHandler( testSphere );
-        // TODO remove static null
-        // at the moment the file which is used is static in the File3dImporter!!!
-        List<WorldRenderableObject> res = File3dImporter.open( this, null );
-        openGLEventListener.addDataObjectToScene( res );
+        openGLEventListener = new OpenGLEventHandler( testSphere );
 
         GLCanvas canvas = new GLCanvas( caps );
         canvas.addGLEventListener( openGLEventListener );
@@ -197,12 +200,13 @@ public class GRViewerGUI extends JFrame {
     }
 
     /**
-     * Adds the actionListener to the menuItem that specify the URL to the resource.
+     * Adds the actionListener to the menuItems.
      * 
      * @param e
      */
-    public void addScene2DurlListener( ActionListener e ) {
+    public void addMenuItemListener( ActionListener e ) {
         import2DMapMenuItem.addActionListener( e );
+        import3DObjectMenuItem.addActionListener( e );
 
     }
 
@@ -213,6 +217,10 @@ public class GRViewerGUI extends JFrame {
      */
     public String openUrl() {
         return ows7url;
+    }
+
+    public String fileName() {
+        return fileName;
     }
 
     /**
@@ -239,6 +247,10 @@ public class GRViewerGUI extends JFrame {
 
     public PointTablePanel getPointTablePanel() {
         return pointTablePanel;
+    }
+
+    public OpenGLEventHandler getOpenGLEventListener() {
+        return openGLEventListener;
     }
 
 }

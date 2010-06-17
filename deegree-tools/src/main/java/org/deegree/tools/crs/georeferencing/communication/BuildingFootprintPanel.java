@@ -40,11 +40,11 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.event.MouseListener;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JPanel;
 
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 
 /**
@@ -76,7 +76,7 @@ public class BuildingFootprintPanel extends JPanel {
      */
     private AbstractGRPoint tempPoint;
 
-    private Polygon polygon;
+    private List<Polygon> polygonList;
 
     private boolean focus;
 
@@ -94,8 +94,10 @@ public class BuildingFootprintPanel extends JPanel {
 
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
-        if ( polygon != null ) {
-            g2.drawPolygon( polygon );
+        if ( polygonList != null ) {
+            for ( Polygon polygon : polygonList ) {
+                g2.drawPolygon( polygon );
+            }
 
         }
 
@@ -132,21 +134,25 @@ public class BuildingFootprintPanel extends JPanel {
         return insets;
     }
 
-    public Polygon getPolygon() {
-        return polygon;
+    public List<Polygon> getPolygonList() {
+        return polygonList;
     }
 
-    public void setPolygon( Polygon polygon ) {
-        try {
-            // org.deegree.geometry.primitive.Polygon pol = (org.deegree.geometry.primitive.Polygon) geometry;
-            // Ring ring = pol.getExteriorRing();
-            // Points points = ring.getControlPoints();
-
-            this.polygon = polygon;// new Polygon( new int[] { 50, 50, 200, 200 }, new int[] { 50, 250, 200, 80 }, 4 );
-        } catch ( ClassCastException e ) {
-            System.err.println( "No Polygon provided: " + e.getMessage() );
-        }
+    public void setPolygonList( List<Polygon> polygonList ) {
+        this.polygonList = polygonList;
     }
+
+    // public void setPolygon( Polygon polygon ) {
+    // try {
+    // // org.deegree.geometry.primitive.Polygon pol = (org.deegree.geometry.primitive.Polygon) geometry;
+    // // Ring ring = pol.getExteriorRing();
+    // // Points points = ring.getControlPoints();
+    //
+    // this.polygon = polygon;// new Polygon( new int[] { 50, 50, 200, 200 }, new int[] { 50, 250, 200, 80 }, 4 );
+    // } catch ( ClassCastException e ) {
+    // System.err.println( "No Polygon provided: " + e.getMessage() );
+    // }
+    // }
 
     public void addScene2DMouseListener( MouseListener m ) {
 
@@ -159,13 +165,13 @@ public class BuildingFootprintPanel extends JPanel {
         this.tempPoint = tempPoint;
     }
 
-    public void setGeometry( RasterRect rect ) {
-        this.polygon = new Polygon( new int[] { rect.x, rect.x, rect.width, rect.width }, new int[] { rect.y,
-                                                                                                     rect.height,
-                                                                                                     rect.height,
-                                                                                                     rect.y }, 4 );
-
-    }
+    // public void setGeometry( RasterRect rect ) {
+    // this.polygon = new Polygon( new int[] { rect.x, rect.x, rect.width, rect.width }, new int[] { rect.y,
+    // rect.height,
+    // rect.height,
+    // rect.y }, 4 );
+    //
+    // }
 
     public void setFocus( boolean focus ) {
         this.focus = focus;
