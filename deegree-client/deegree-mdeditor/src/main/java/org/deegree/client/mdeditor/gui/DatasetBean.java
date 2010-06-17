@@ -39,7 +39,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -124,7 +123,8 @@ public class DatasetBean implements Serializable {
         return datasetInformations;
     }
 
-    public Object loadDataset() {
+    public Object loadDataset()
+                            throws ConfigurationException {
         LOG.debug( "Load dataset with id " + selectedDataset );
         FacesContext fc = FacesContext.getCurrentInstance();
         String id = selectedDataset;
@@ -159,16 +159,22 @@ public class DatasetBean implements Serializable {
         formfieldBean.setDataGroups( ds.getDataGroups() );
 
         boolean asTemplate = false;
-        for ( Iterator<String> iterator = fc.getExternalContext().getRequestParameterNames(); iterator.hasNext(); ) {
-            String reqName = iterator.next();
+        Map<String, String> params = fc.getExternalContext().getRequestParameterMap();
+        for ( String reqName : params.keySet() ) {
             if ( reqName.endsWith( "asTemplate" ) ) {
-                asTemplate = Boolean.getBoolean( fc.getExternalContext().getRequestParameterMap().get( reqName ) );
+                asTemplate = Boolean.parseBoolean( params.get( reqName ) );
                 break;
             }
         }
         // set selected dataset to null => dataset is a NEW one
         if ( asTemplate ) {
             setSelectedDataset( null );
+
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(
+                                                                                                                   false );
+            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+            formfieldBean.clearFormField( manager.getPathToIdentifier() );
+
         }
 
         FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.LOAD", id );

@@ -303,18 +303,31 @@ public class FormFieldBean implements Serializable {
         dataGroups.putAll( datagroups );
     }
 
+    /**
+     * Resets the form field with the given path.
+     * 
+     * @param path
+     *            the path to identify the form field
+     */
+    public void clearFormField( FormFieldPath path ) {
+        FormField formField = getFormField( path );
+        if ( formField != null ) {
+            formField.reset();
+        }
+    }
+
     private FormField getFormField( FormFieldPath path ) {
-        FormField ffToUpdate = null;
+        FormField formField = null;
         if ( path != null ) {
             path.resetIterator();
             String fgId = path.next();
             for ( FormGroup fg : formGroups ) {
                 if ( fgId.equals( fg.getId() ) ) {
-                    ffToUpdate = getFormField( fg.getFormElements(), path );
+                    formField = getFormField( fg.getFormElements(), path );
                 }
             }
         }
-        return ffToUpdate;
+        return formField;
     }
 
     private FormField getFormField( List<FormElement> fes, FormFieldPath path ) {

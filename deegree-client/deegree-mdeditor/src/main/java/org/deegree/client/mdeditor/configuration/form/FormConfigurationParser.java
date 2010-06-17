@@ -154,13 +154,13 @@ public class FormConfigurationParser extends Parser {
                             throws XMLStreamException, ConfigurationException {
         LOG.debug( "parse DatasetConfiguration" );
         nextElement( xmlStream );
-        FormFieldPath pathToIdentifier = getPath( getRequiredText( xmlStream, new QName( NS, "identifier" ), true ) );
+        FormFieldPath pathToIdentifier = getAsPath( getRequiredText( xmlStream, new QName( NS, "identifier" ), true ) );
         if ( pathToIdentifier == null ) {
             throw new ConfigurationException( "path to identifier must be set!" );
         }
         conf.setPathToIdentifier( pathToIdentifier );
-        conf.setPathToTitle( getPath( getText( xmlStream, new QName( NS, "title" ), null, true ) ) );
-        conf.setPathToDescription( getPath( getText( xmlStream, new QName( NS, "description" ), null, true ) ) );
+        conf.setPathToTitle( getAsPath( getText( xmlStream, new QName( NS, "title" ), null, true ) ) );
+        conf.setPathToDescription( getAsPath( getText( xmlStream, new QName( NS, "description" ), null, true ) ) );
 
         if ( !moveReaderToFirstMatch( xmlStream, MAPPING ) ) {
             throw new ConfigurationException( "could not parse mapping: element does not exist" );
@@ -281,6 +281,14 @@ public class FormConfigurationParser extends Parser {
                                                   referenceToCodeList, referenceToGroup, referenceText );
         return ff;
 
+    }
+
+    private FormFieldPath getAsPath( String path ) {
+        if ( path != null && path.length() > 0 ) {
+            return new FormFieldPath( path.split( "/" ) );
+
+        }
+        return null;
     }
 
     private FormFieldPath getPath( String fieldId ) {
