@@ -193,7 +193,8 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
             String encoding = "UTF-8";
             xmlWriter = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), encoding ) );
             xmlWriter.writeStartDocument(encoding, "1.0");
-//            setCharacterEncoding( "UTF-8" );
+            // TODO decide again if character encoding should be set (WFS CITE 1.1.0 tests don't like it, but iGeoDesktop/OpenJUMP currently require it) 
+            setCharacterEncoding( "UTF-8" );
         }
         return xmlWriter;
     }
