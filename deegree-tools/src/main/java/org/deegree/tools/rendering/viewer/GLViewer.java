@@ -140,7 +140,7 @@ public class GLViewer extends JFrame implements ActionListener {
 
     }
 
-    private void addGeometries( List<WorldRenderableObject> model, boolean remove ) {
+    private void addGeometries( WorldRenderableObject model, boolean remove ) {
         if ( remove ) {
             openGLEventListener.removeAllData();
         }
@@ -316,10 +316,11 @@ public class GLViewer extends JFrame implements ActionListener {
                         String path = f.getAbsolutePath();
                         prefs.put( LAST_EXTENSION, ( (ViewerFileFilter) fileChooser.getFileFilter() ).getExtension( f ) );
                         prefs.put( OPEN_KEY, f.getParent() );
-                        List<WorldRenderableObject> res = File3dImporter.open( this, path );
+                        List<WorldRenderableObject> rese = File3dImporter.open( this, path );
                         // add res to scene.
-                        addGeometries( res, true );
-
+                        for ( WorldRenderableObject res : rese ) {
+                            addGeometries( res, true );
+                        }
                     }
 
                 }
