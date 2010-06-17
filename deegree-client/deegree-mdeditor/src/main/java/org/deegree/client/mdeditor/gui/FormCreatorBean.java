@@ -150,6 +150,7 @@ public class FormCreatorBean implements Serializable {
                     forms.put( grpId, grid );
                     form.getChildren().add( grid );
                 }
+                grpId = fg.getId();
             }
         }
     }
