@@ -7,16 +7,22 @@
 	
 			<ui:define name="content">
 				<f:subview id="mdChooseDataset">
-						<h:outputText rendered="#{empty datasetBean.datasets}" value="#{mdLabels['loadDataset_noDatasets']}"/>
-						<h:form id="loadDsForm" rendered="#{!empty datasetBean.datasets}" >
-						<h:panelGrid >
-							<h:outputText value="#{mdLabels['loadDataset_text']}" />
-							<h:selectOneListbox id="dsSelectLB" value="#{datasetBean.selectedDataset}" required="true">
-								<f:selectItems value="#{datasetBean.datasets}" />
-							</h:selectOneListbox>
-							<h:message for="dsSelectLB" />
-							<h:commandButton id="chooseDsBt" value="#{mdLabels['loadDataset_bt']}" action="#{datasetBean.loadDataset}" />
+						<h:outputText rendered="#{empty datasetBean.datasetInformation}" value="#{mdLabels['loadDataset_noDatasets']}"/>
+							<h:form id="loadDsForm" rendered="#{!empty datasetBean.datasetInformation}" >
+								<h:outputText value="#{mdLabels['loadDataset_text']}" />
+								
+								<h:panelGrid columns="2" >
+									<h:outputLabel value="#{mdLabels['loadDataset_title']}" />
+									<h:outputLabel value="#{mdLabels['loadDataset_describtion']}"  />
+									
+									<h:selectOneListbox id="chooseDatasetLb" value="#{datasetBean.selectedDataset}" required="true" styleClass="chooseDatasetListBox">
+										<f:selectItems value="#{datasetBean.datasetInformation}" var="dat" itemLabel="#{dat.title}" itemValue="#{dat.identifier}"/>
+										<f:ajax render="chooseDatasetIT" execute="@this"/>
+									</h:selectOneListbox>
+									<h:inputTextarea id="chooseDatasetIT" value="#{datasetBean.datasetDescribtion}" styleClass="chooseDatasetDescribtionTA" disabled="true"/>
 							</h:panelGrid>
+							<h:message for="chooseDatasetLb" />
+							<h:commandButton id="chooseDatasetBt" value="#{mdLabels['loadDataset_bt']}" action="#{datasetBean.loadDataset}" />
 						</h:form>
 					</f:subview>
 			</ui:define>

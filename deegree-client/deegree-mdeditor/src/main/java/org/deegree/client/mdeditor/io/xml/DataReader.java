@@ -123,14 +123,14 @@ public class DataReader {
         }
     }
 
-    static Dataset readDataset( File file )
+    static Dataset readDataset( String id, File file )
                             throws DataIOException {
         if ( !file.exists() ) {
             throw new DataIOException( "File " + file.getAbsolutePath() + " does not exist." );
         }
         LOG.debug( "Read dataset from file " + file.getAbsolutePath() );
         try {
-            Dataset ds = new Dataset();
+            Dataset ds = new Dataset(id);
 
             XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( file ) );
 

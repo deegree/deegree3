@@ -39,6 +39,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -78,6 +79,11 @@ public class XMLDataHandler extends DataHandler {
     static final String VALUE_ELEM = "value";
 
     static final String ID_ELEM = "id";
+
+    private static Map<String, Dataset> datasetCache = new HashMap<String, Dataset>();
+
+    // TODO
+    // private static Map<String, List<DataGroup>> dataGroupCache = new HashMap<String, List<DataGroup>>();
 
     @Override
     public List<UISelectItem> getSelectItems( String grpId, String referenceLabel ) {
@@ -122,8 +128,8 @@ public class XMLDataHandler extends DataHandler {
     }
 
     @Override
-    public List<String> getDatasetIds() {
-        List<String> datasets = new ArrayList<String>();
+    public List<Dataset> getDatasets() {
+        List<Dataset> datasets = new ArrayList<Dataset>();
         String dir = Configuration.getFilesDirURL();
         File d = new File( dir );
         if ( d.exists() && d.isDirectory() ) {
@@ -131,7 +137,12 @@ public class XMLDataHandler extends DataHandler {
             for ( int i = 0; i < listFiles.length; i++ ) {
                 String fileName = listFiles[i].getName();
                 if ( listFiles[i].isFile() && fileName.endsWith( FILE_SUFFIX ) ) {
-                    datasets.add( fileName.substring( 0, fileName.indexOf( FILE_SUFFIX ) ) );
+                    try {
+                        datasets.add( getDataset( fileName.substring( 0, fileName.indexOf( FILE_SUFFIX ) ) ) );
+                    } catch ( DataIOException e ) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -141,11 +152,25 @@ public class XMLDataHandler extends DataHandler {
     @Override
     public Dataset getDataset( String id )
                             throws DataIOException {
+        if ( datasetCache.containsKey( id ) ) {
+            return datasetCache.get( id );
+        }
         String fileName = id;
         if ( !fileName.endsWith( FILE_SUFFIX ) ) {
             fileName = fileName + FILE_SUFFIX;
         }
-        return DataReader.readDataset( new File( Configuration.getFilesDirURL(), fileName ) );
+        Dataset dataset = DataReader.readDataset( id, new File( Configuration.getFilesDirURL(), fileName ) );
+        datasetCache.put( id, dataset );
+        return dataset;
+    }
+
+    @Override
+    public String writeDataset( String id, List<FormGroup> formGroups, Map<String, List<DataGroup>> dataGroups )
+                            throws DataIOException {
+        if ( datasetCache.containsKey( id ) ) {
+            datasetCache.remove( id );
+        }
+        return DataWriter.writeDataset( id, formGroups, dataGroups );
     }
 
     @Override
@@ -158,26 +183,10 @@ public class XMLDataHandler extends DataHandler {
         if ( f.exists() && f.isFile() ) {
             LOG.debug( "Delete file " + id + " from group " + grpId );
             f.delete();
-        }
-    }
-
-    @Override
-    public DataGroup getDataGroup( String grpId, String id ) {
-        String fileName = id;
-        if ( !id.endsWith( FILE_SUFFIX ) ) {
-            fileName = fileName + FILE_SUFFIX;
-        }
-        File f = new File( Configuration.getFilesDirURL() + grpId, fileName );
-        if ( f.exists() && f.isFile() ) {
-            LOG.debug( "Read file " + id + " from group " + grpId );
-            try {
-                return new DataGroup( f.getName(), DataReader.readDataGroup( f ) );
-            } catch ( Exception e ) {
-                LOG.debug( "Could not read file " + f.getAbsolutePath(), e );
-                LOG.error( "Could not read file " + f.getAbsolutePath() + ": ", e.getMessage() );
+            if ( datasetCache.containsKey( id ) ) {
+                datasetCache.remove( id );
             }
         }
-        return null;
     }
 
     @Override
@@ -205,15 +214,28 @@ public class XMLDataHandler extends DataHandler {
     }
 
     @Override
-    public String writeDataGroup( String id, FormGroup formGroup )
-                            throws DataIOException {
-        return DataWriter.writeDataGroup( id, formGroup );
+    public DataGroup getDataGroup( String grpId, String id ) {
+        String fileName = id;
+        if ( !id.endsWith( FILE_SUFFIX ) ) {
+            fileName = fileName + FILE_SUFFIX;
+        }
+        File f = new File( Configuration.getFilesDirURL() + grpId, fileName );
+        if ( f.exists() && f.isFile() ) {
+            LOG.debug( "Read file " + id + " from group " + grpId );
+            try {
+                return new DataGroup( f.getName(), DataReader.readDataGroup( f ) );
+            } catch ( Exception e ) {
+                LOG.debug( "Could not read file " + f.getAbsolutePath(), e );
+                LOG.error( "Could not read file " + f.getAbsolutePath() + ": ", e.getMessage() );
+            }
+        }
+        return null;
     }
 
     @Override
-    public String writeDataset( String id, List<FormGroup> formGroups, Map<String, List<DataGroup>> dataGroups )
+    public String writeDataGroup( String id, FormGroup formGroup )
                             throws DataIOException {
-        return DataWriter.writeDataset( id, formGroups, dataGroups );
+        return DataWriter.writeDataGroup( id, formGroup );
     }
 
     @Override

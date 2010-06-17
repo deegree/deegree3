@@ -235,3 +235,29 @@
 #mdEditor .statusMsg {
 	
 }
+
+/***** styles for the list of available datasets *****/
+#mdEditor .chooseDatasetDescribtionTA {
+	width: 200px;
+	height: 250px;
+	margin: 0px 5px;
+}
+
+#mdEditor .chooseDatasetListBox {
+	width: 200px;
+	height: 250px;
+	margin: 0px 5px;
+}
+
+/***** styles for the list of available templates *****/
+#mdEditor .chooseTemplateDescribtionTA {
+	width: 200px;
+	height: 250px;
+	margin: 0px 5px;
+}
+
+#mdEditor .chooseTemplateListBox {
+	width: 200px;
+	height: 250px;
+	margin: 0px 5px;
+}

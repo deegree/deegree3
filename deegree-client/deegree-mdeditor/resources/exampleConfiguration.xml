@@ -6,8 +6,8 @@
     
     <DatasetConfiguration>
         <identifier>AllgFormGroup/ref</identifier>
-        <title>InhFormGroup/titel</title>
-        <description>InhFormGroup/description</description>
+        <title>AllgFormGroup/InhFormGroup/titel</title>
+        <description>AllgFormGroup/InhFormGroup/description</description>
         <Mapping>
             <mappingURL>isoMapping.xml</mappingURL>
         </Mapping>

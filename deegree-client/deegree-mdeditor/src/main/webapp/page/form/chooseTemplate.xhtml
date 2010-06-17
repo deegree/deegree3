@@ -7,17 +7,23 @@
 	
 			<ui:define name="content">
 				<f:subview id="mdChooseTemplate">
-						<h:outputText rendered="#{empty datasetBean.datasets}" value="#{mdLabels['loadTemplate_noTemplates']}"/>
-						<h:form id="loadDsForm" rendered="#{!empty datasetBean.datasets}" >
-							<h:inputHidden id="asTemplate" name="asTemplate" value="true"/>
-							<h:panelGrid >
+						<h:outputText rendered="#{empty datasetBean.datasetInformation}" value="#{mdLabels['loadTemplate_noTemplates']}"/>
+							<h:form id="loadTemplateForm" rendered="#{!empty datasetBean.datasetInformation}" >
+								<h:inputHidden id="asTemplate" name="asTemplate" value="true"/>
 								<h:outputText value="#{mdLabels['loadTemplate_text']}" />
-								<h:selectOneListbox id="dsSelectLB" value="#{datasetBean.selectedDataset}" required="true">
-									<f:selectItems value="#{datasetBean.datasets}" />
-								</h:selectOneListbox>
-								<h:message for="dsSelectLB" />
-								<h:commandButton id="chooseDsBt" value="#{mdLabels['loadTemplate_bt']}" action="#{datasetBean.loadDataset}" />
+								
+								<h:panelGrid columns="2" >
+									<h:outputLabel value="#{mdLabels['loadTemplate_title']}" />
+									<h:outputLabel value="#{mdLabels['loadTemplate_describtion']}"  />
+							
+									<h:selectOneListbox id="chooseTemplatLb" value="#{datasetBean.selectedDataset}" required="true" styleClass="chooseTemplateListBox">
+										<f:selectItems value="#{datasetBean.datasetInformation}" var="dat" itemLabel="#{dat.title}" itemValue="#{dat.identifier}"/>
+										<f:ajax render="chooseTemplateIT" execute="@this"/>
+									</h:selectOneListbox>
+									<h:inputTextarea id="chooseTemplateIT" value="#{datasetBean.datasetDescribtion}" styleClass="chooseTemplateDescribtionTA" disabled="true"/>
 								</h:panelGrid>
+								<h:message for="chooseTemplatLb" />
+								<h:commandButton id="chooseTemplazeBt" value="#{mdLabels['loadTemplate_bt']}" action="#{datasetBean.loadDataset}" />
 						</h:form>
 					</f:subview>
 			</ui:define>

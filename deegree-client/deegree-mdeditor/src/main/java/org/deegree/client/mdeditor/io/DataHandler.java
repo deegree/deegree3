@@ -76,10 +76,11 @@ public abstract class DataHandler {
     public abstract List<UISelectItem> getSelectItems( String grpId, String referenceLabel );
 
     /**
-     * @return the ids of all datasets
+     * @return a list of all datasets
      */
-    public abstract List<String> getDatasetIds();
+    public abstract List<Dataset> getDatasets();
 
+    
     /**
      * @param grpId
      *            the id of the group

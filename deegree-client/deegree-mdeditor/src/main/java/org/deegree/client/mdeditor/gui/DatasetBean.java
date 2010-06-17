@@ -38,9 +38,9 @@ package org.deegree.client.mdeditor.gui;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -49,9 +49,11 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.model.Dataset;
+import org.deegree.client.mdeditor.model.DatasetInformation;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
@@ -75,16 +77,51 @@ public class DatasetBean implements Serializable {
 
     private String selectedDataset;
 
-    public List<String> getDatasets() {
-        return DataHandler.getInstance().getDatasetIds();
-    }
-
     public void setSelectedDataset( String selectedDataset ) {
         this.selectedDataset = selectedDataset;
     }
 
     public String getSelectedDataset() {
         return selectedDataset;
+    }
+
+    public String getDatasetDescribtion()
+                            throws ConfigurationException {
+        if ( selectedDataset != null ) {
+            for ( DatasetInformation di : getDatasetInformation() ) {
+                if ( selectedDataset.equals( di.getIdentifier() ) ) {
+                    return di.getDescribtion();
+                }
+            }
+        }
+        return null;
+    }
+
+    public List<DatasetInformation> getDatasetInformation()
+                            throws ConfigurationException {
+        List<DatasetInformation> datasetInformations = new ArrayList<DatasetInformation>();
+        List<Dataset> datasets = DataHandler.getInstance().getDatasets();
+
+        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession( false );
+        FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+
+        for ( Dataset dataset : datasets ) {
+            Map<String, Object> values = dataset.getValues();
+            String id = dataset.getId();
+            String title = null;
+            String desc = null;
+            if ( manager.getPathToIdentifier() != null ) {
+                if ( manager.getPathToTitle() != null && values.get( manager.getPathToTitle().toString() ) != null ) {
+                    title = values.get( manager.getPathToTitle().toString() ).toString();
+                }
+                if ( manager.getPathToDescription() != null
+                     && values.get( manager.getPathToDescription().toString() ) != null ) {
+                    desc = values.get( manager.getPathToDescription().toString() ).toString();
+                }
+            }
+            datasetInformations.add( new DatasetInformation( id, title, desc ) );
+        }
+        return datasetInformations;
     }
 
     public Object loadDataset() {
@@ -111,6 +148,7 @@ public class DatasetBean implements Serializable {
         FormFieldBean formfieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "formFieldBean" );
+        formfieldBean.clearFormFields();
         Map<String, FormField> formFields = formfieldBean.getFormFields();
         for ( String path : values.keySet() ) {
             if ( formFields.containsKey( path ) ) {

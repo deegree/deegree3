@@ -35,10 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * TODO add class documentation here
  * 
@@ -47,44 +43,47 @@ import java.util.Map;
  * 
  * @version $Revision: $, $Date: $
  */
-public class Dataset {
+public class DatasetInformation {
 
-    private String id;
+    private String identifier;
 
-    private Map<String, Object> values = new HashMap<String, Object>();
+    private String title;
 
-    private Map<String, List<DataGroup>> dataGroups = new HashMap<String, List<DataGroup>>();
+    private String describtion;
 
-    public Dataset( String id ) {
-        this.id = id;
+    public DatasetInformation( String identifier, String title, String describtion ) {
+        this.identifier = identifier;
+        this.title = title;
+        this.describtion = describtion;
     }
 
-    public void setId( String id ) {
-        this.id = id;
+    public void setIdentifier( String identifier ) {
+        this.identifier = identifier;
     }
 
-    public String getId() {
-        return id;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setValues( Map<String, Object> values ) {
-        this.values = values;
+    public void setTitle( String title ) {
+        this.title = title;
     }
 
-    public Map<String, Object> getValues() {
-        return values;
+    public String getTitle() {
+        return title;
     }
 
-    public void setDataGroups( Map<String, List<DataGroup>> dataGroups ) {
-        this.dataGroups = dataGroups;
+    public void setDescribtion( String describtion ) {
+        this.describtion = describtion;
     }
 
-    public Map<String, List<DataGroup>> getDataGroups() {
-        return dataGroups;
+    public String getDescribtion() {
+        return describtion;
     }
 
-    public void addDataGroup( String grpId, List<DataGroup> dgs ) {
-        dataGroups.put( grpId, dgs );
+    @Override
+    public String toString() {
+        return identifier;
     }
 
 }
