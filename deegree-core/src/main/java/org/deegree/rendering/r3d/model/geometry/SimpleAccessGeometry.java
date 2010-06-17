@@ -45,8 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>SimpleAccessGeometry</code> class, defines geometry by a coordinate array with or without innerrings and
- * a set of colors.
+ * The <code>SimpleAccessGeometry</code> class, defines geometry by a coordinate array with or without innerrings and a
+ * set of colors.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -140,6 +140,28 @@ public class SimpleAccessGeometry implements QualityModelPart {
      */
     public final void setInnerRings( int[] innerRings ) {
         this.innerRings = innerRings;
+    }
+
+    /**
+     * If the geometry is horizontal lying.
+     * 
+     * @param coordinates
+     * @return the coordinates that are horizontal, can be <Code>null</Code>.
+     */
+    public float[] getHorizontalGeometries( float[] coordinates ) {
+
+        if ( coordinates.length / vertexCount == 3 ) {
+            float comparefloat = coordinates[2];
+            for ( int t = 2; t < coordinates.length; t += 3 ) {
+
+                float temp = coordinates[t];
+                if ( temp != comparefloat ) {
+                    return null;
+                }
+            }
+        }
+
+        return coordinates;
     }
 
     /**
