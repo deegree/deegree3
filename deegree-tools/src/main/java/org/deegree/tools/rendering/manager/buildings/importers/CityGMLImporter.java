@@ -134,6 +134,8 @@ public class CityGMLImporter implements ModelImporter {
 
     private SimpleGeometryStyle defaultStyle;
 
+    private List<GeometryQualityModel> qmList;
+
     /**
      * @param schemaLocation
      *            to create the schema xsd apapter from.
@@ -187,6 +189,8 @@ public class CityGMLImporter implements ModelImporter {
         } else {
             this.defaultStyle = new SimpleGeometryStyle();
         }
+
+        qmList = new ArrayList<GeometryQualityModel>();
     }
 
     private String determineSchemaLocation( String schemaLocation ) {
@@ -485,6 +489,10 @@ public class CityGMLImporter implements ModelImporter {
         }
     }
 
+    public List<GeometryQualityModel> getQmList() {
+        return qmList;
+    }
+
     /**
      * Create a {@link WorldRenderableObject} from the given citygml building.
      * 
@@ -508,6 +516,7 @@ public class CityGMLImporter implements ModelImporter {
                 mapGeometryToSAG( (Geometry) props.getValue(), qm, min, max );
             }
         }
+        qmList.add( qm );
 
         Envelope env = geomFac.createEnvelope( min, max, null );
         WorldRenderableObject rwo = new WorldRenderableObject( id,
@@ -592,4 +601,5 @@ public class CityGMLImporter implements ModelImporter {
         result.addAll( bMap.values() );
         return result;
     }
+
 }
