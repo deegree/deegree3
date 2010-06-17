@@ -70,7 +70,6 @@ public class WPSClient {
 
     private String describeProcessURL;
 
-    private List<InputObject> inputObjectList = new ArrayList<InputObject>();
 
     /**
      * Public constructor to access a WPS instance based on it's GetCapabilities URL
@@ -151,10 +150,9 @@ public class WPSClient {
                                                                   getProcessInfo( processIdentifier ).getProcessDescription(),
                                                                   executeURL );
 
-        for ( int i = 0; i < inputObjectList.size(); i++ ) {
-            processExecution.addInput( this.inputObjectList.get( i ) );
+        for ( int i = 0; i < inputobject.length; i++ ) {
+            processExecution.addInput(inputobject[i] );
         }
-        inputObjectList = null;
 
         return processExecution.sendExecuteRequestStringReturn();
     }
@@ -200,10 +198,9 @@ public class WPSClient {
                                                                   getProcessInfo( processIdentifier ).getProcessDescription(),
                                                                   describeProcessURL );
 
-        for ( int i = 0; i < this.inputObjectList.size(); i++ ) {
-            processExecution.addInput( this.inputObjectList.get( i ) );
+        for ( int i = 0; i < inputobject.length; i++ ) {
+            processExecution.addInput(inputobject[i] );
         }
-        inputObjectList = null;
 
         return processExecution.sendExecuteRequestExecuteResponseReturn();
     }
