@@ -47,6 +47,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.tools.rendering.manager.buildings.importers.CityGMLImporter;
 
@@ -60,9 +61,9 @@ import org.deegree.tools.rendering.manager.buildings.importers.CityGMLImporter;
  */
 public class File3dImporter {
 
-    public static List<WorldRenderableObject> open( Frame parent, String fileName ) {
+    public static List<GeometryQualityModel> gm;
 
-        fileName = "/home/thomas/test_building.gml";
+    public static List<WorldRenderableObject> open( Frame parent, String fileName ) {
 
         if ( fileName == null || "".equals( fileName.trim() ) ) {
             throw new InvalidParameterException( "the file name may not be null or empty" );
@@ -111,6 +112,8 @@ public class File3dImporter {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        gm = openFile.getQmList();
+
         //
         // if ( result != null ) {
         // openGLEventListener.addDataObjectToScene( result );
