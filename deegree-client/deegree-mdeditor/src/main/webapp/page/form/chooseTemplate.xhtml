@@ -16,14 +16,14 @@
 									<h:outputLabel value="#{mdLabels['loadTemplate_title']}" />
 									<h:outputLabel value="#{mdLabels['loadTemplate_describtion']}"  />
 							
-									<h:selectOneListbox id="chooseTemplatLb" value="#{datasetBean.selectedDataset}" required="true" styleClass="chooseTemplateListBox">
+									<h:selectOneListbox id="chooseTemplateLb" value="#{datasetBean.selectedDataset}" required="true" styleClass="chooseTemplateListBox">
 										<f:selectItems value="#{datasetBean.datasetInformation}" var="dat" itemLabel="#{dat.title}" itemValue="#{dat.identifier}"/>
 										<f:ajax render="chooseTemplateIT" execute="@this"/>
 									</h:selectOneListbox>
 									<h:inputTextarea id="chooseTemplateIT" value="#{datasetBean.datasetDescribtion}" styleClass="chooseTemplateDescribtionTA" disabled="true"/>
 								</h:panelGrid>
-								<h:message for="chooseTemplatLb" />
-								<h:commandButton id="chooseTemplazeBt" value="#{mdLabels['loadTemplate_bt']}" action="#{datasetBean.loadDataset}" />
+								<h:message for="chooseTemplateLb" />
+								<h:commandButton id="chooseTemplateBt" value="#{mdLabels['loadTemplate_bt']}" action="#{datasetBean.loadDataset}" />
 						</h:form>
 					</f:subview>
 			</ui:define>
