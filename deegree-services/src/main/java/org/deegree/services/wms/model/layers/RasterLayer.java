@@ -124,7 +124,7 @@ public class RasterLayer extends Layer {
 
     private GenericFeatureType featureType;
 
-    private boolean available;
+    private boolean available = true;
 
     /**
      * @param lay
