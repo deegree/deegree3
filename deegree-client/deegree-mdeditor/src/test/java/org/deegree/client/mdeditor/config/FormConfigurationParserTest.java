@@ -137,6 +137,11 @@ public class FormConfigurationParserTest extends TestCase {
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
         assertEquals( 3, formGroups.get( 1 ).getFormElements().size() );
 
+        FormElement select1 = formGroups.get( 1 ).getFormElements().get( 0 );
+        assertTrue( select1 instanceof SelectFormField );
+        assertEquals( "selectOne1", select1.getId() );
+        assertFalse( ( (SelectFormField) select1 ).isRequired() );
+
         FormElement input = formGroups.get( 1 ).getFormElements().get( 1 );
         assertTrue( input instanceof InputFormField );
         FormFieldPath inputPath = new FormFieldPath( "FormGroup", "text1" );
@@ -144,6 +149,7 @@ public class FormConfigurationParserTest extends TestCase {
         InputFormField iff = (InputFormField) input;
         assertNotNull( iff.getValidation() );
         assertEquals( 5, iff.getValidation().getLength() );
+        assertTrue( iff.isRequired() );
 
         FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
         assertTrue( formElement instanceof FormGroup );
@@ -153,6 +159,8 @@ public class FormConfigurationParserTest extends TestCase {
         assertTrue( select instanceof SelectFormField );
         FormFieldPath selectPath = new FormFieldPath( "FormGroup", "FormGroup11", "selectOne2" );
         assertEquals( selectPath, ( (SelectFormField) select ).getPath() );
+        assertFalse( ( (SelectFormField) select ).isRequired() );
+
     }
 
     @Test(expected = org.deegree.client.mdeditor.configuration.ConfigurationException.class)
