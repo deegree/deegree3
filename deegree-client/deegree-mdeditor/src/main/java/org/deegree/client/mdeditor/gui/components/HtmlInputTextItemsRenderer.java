@@ -77,12 +77,14 @@ public class HtmlInputTextItemsRenderer extends Renderer {
         Map<String, String> params = external.getRequestParameterMap();
         String behaviorEvent = params.get( "javax.faces.behavior.event" );
 
-        int itemIndex = Integer.parseInt( params.get( INDEX_PARAM ) );
-        if ( TREE_CHANGED_EVENT.equals( behaviorEvent ) ) {
-            updateItems( ( (UIInput) component ), itemIndex );
-        } else {
-            String itemId = params.get( ITEM_ID_PARAM );
-            valueChange( ( (UIInput) component ), params.get( itemId ), itemIndex );
+        if ( params.containsKey( INDEX_PARAM ) ) {
+            int itemIndex = Integer.parseInt( params.get( INDEX_PARAM ) );
+            if ( TREE_CHANGED_EVENT.equals( behaviorEvent ) ) {
+                updateItems( ( (UIInput) component ), itemIndex );
+            } else {
+                String itemId = params.get( ITEM_ID_PARAM );
+                valueChange( ( (UIInput) component ), params.get( itemId ), itemIndex );
+            }
         }
     }
 
