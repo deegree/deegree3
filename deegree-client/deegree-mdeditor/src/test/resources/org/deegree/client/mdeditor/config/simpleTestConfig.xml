@@ -31,12 +31,12 @@
     <FormGroup id="FormGroup" occurence="unbounded">
         <label>Allgemeine Angaben</label>
         <title>Allgemeine Angaben zum Metadatensatz</title>
-        <SelectFormElement id="selectOne1" visible="true" required="true">
+        <SelectFormElement id="selectOne1" visible="true">
             <label>Hierarchieebene:</label>
             <selectType>one</selectType>
             <referenceToCodeList>hierarchylevel</referenceToCodeList>
         </SelectFormElement>
-        <InputFormElement id="text1">
+        <InputFormElement id="text1" required="true">
             <label>Titel:</label>
             <inputType>text</inputType>
             <Validation>
@@ -62,7 +62,7 @@
                     <maxValue>99999</maxValue>
                 </Validation>
             </InputFormElement>
-            <SelectFormElement id="selectOne2">
+            <SelectFormElement id="selectOne2" required="false">
                 <selectType>many</selectType>
             </SelectFormElement>
         </FormGroup>
