@@ -235,6 +235,7 @@ public class FormConfigurationParser extends Parser {
                             throws ConfigurationException, XMLStreamException {
         String id = getId( xmlStream );
         boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
+        boolean required = getAttributeValueAsBoolean( xmlStream, null, "required", false );
         nextElement( xmlStream );
         String label = getText( xmlStream, new QName( NS, "label" ), null, true );
         String help = getText( xmlStream, new QName( NS, "help" ), null, true );
@@ -242,7 +243,8 @@ public class FormConfigurationParser extends Parser {
 
         LOG.debug( "Found ReferencedFormElement with id " + id + "; label " + label + "; help " + help );
         String beanName = getRequiredText( xmlStream, new QName( NS, "bean-name" ), true );
-        ReferencedElement re = new ReferencedElement( getPath( id ), id, label, visible, help, defaultValue, beanName );
+        ReferencedElement re = new ReferencedElement( getPath( id ), id, label, visible, required, help, defaultValue,
+                                                      beanName );
         return re;
     }
 
@@ -250,6 +252,7 @@ public class FormConfigurationParser extends Parser {
                             throws XMLStreamException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
+        boolean required = getAttributeValueAsBoolean( xmlStream, null, "required", false );
         nextElement( xmlStream );
         String label = getText( xmlStream, new QName( NS, "label" ), null, true );
         String help = getText( xmlStream, new QName( NS, "help" ), null, true );
@@ -277,8 +280,8 @@ public class FormConfigurationParser extends Parser {
             defaultValue = selValues;
         }
 
-        SelectFormField ff = new SelectFormField( getPath( id ), id, label, visible, help, defaultValue, selectType,
-                                                  referenceToCodeList, referenceToGroup, referenceText );
+        SelectFormField ff = new SelectFormField( getPath( id ), id, label, visible, required, help, defaultValue,
+                                                  selectType, referenceToCodeList, referenceToGroup, referenceText );
         return ff;
 
     }
@@ -307,6 +310,7 @@ public class FormConfigurationParser extends Parser {
                             throws XMLStreamException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
+        boolean required = getAttributeValueAsBoolean( xmlStream, null, "required", false );
         int occurence = getOccurence( xmlStream, id );
         nextElement( xmlStream );
 
@@ -331,8 +335,8 @@ public class FormConfigurationParser extends Parser {
             validation.setMaxValue( getElementTextAsDouble( xmlStream, new QName( NS, "maxValue" ), Double.MAX_VALUE,
                                                             true ) );
         }
-        InputFormField ff = new InputFormField( getPath( id ), id, label, visible, help, inputType, occurence,
-                                                defaultValue, validation );
+        InputFormField ff = new InputFormField( getPath( id ), id, label, visible, required, help, inputType,
+                                                occurence, defaultValue, validation );
         return ff;
     }
 

@@ -122,6 +122,12 @@ public class MenuCreatorBean implements Serializable {
                     param.setName( "grpId" );
                     param.setValue( formGroup.getId() );
                     link.getChildren().add( param );
+                    
+                    UIParameter paramV = new UIParameter();
+                    paramV.setId( GuiUtils.getUniqueId() );
+                    paramV.setName( "visibility" );
+                    paramV.setValue( true );
+                    link.getChildren().add( paramV );
 
                     String el = "#{formCreatorBean.grpId == '" + formGroup.getId()
                                 + "' ? 'menuItemActive' : 'menuItemInactive'}";

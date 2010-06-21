@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * TODO add class documentation here
  * 
@@ -57,17 +61,21 @@ public abstract class FormField implements FormElement {
 
     private FormFieldPath path;
 
-    protected boolean invalid = false;
+    protected boolean valid = true;
 
     private String title;
 
     private Object defaultValue;
 
-    public FormField( FormFieldPath path, String id, String label, boolean visible, String help, Object defaultValue ) {
+    private boolean required;
+
+    public FormField( FormFieldPath path, String id, String label, boolean visible, boolean required, String help,
+                      Object defaultValue ) {
         this.path = path;
         this.id = id;
         this.label = label;
         this.visibility = visible;
+        this.required = required;
         this.help = help;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
@@ -97,6 +105,14 @@ public abstract class FormField implements FormElement {
         this.visibility = visibility;
     }
 
+    public void setRequired( boolean required ) {
+        this.required = required;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
     public void setLabel( String label ) {
         this.label = label;
     }
@@ -117,8 +133,12 @@ public abstract class FormField implements FormElement {
         return path;
     }
 
-    public boolean isInvalid() {
-        return invalid;
+    public boolean isValid() {
+        Map<VALIDATION_TYPE, String[]> validate = validate();
+        if ( validate != null && validate.size() > 0 ) {
+            return false;
+        }
+        return true;
     }
 
     public void setTitle( String title ) {
@@ -144,6 +164,26 @@ public abstract class FormField implements FormElement {
     @Override
     public String toString() {
         return getPath().toString() + ": " + getValue();
+    }
+
+    public Map<VALIDATION_TYPE, String[]> validate() {
+        Map<VALIDATION_TYPE, String[]> validationMap = new HashMap<VALIDATION_TYPE, String[]>();
+        if ( required ) {
+            if ( value == null ) {
+                addValidation( validationMap, VALIDATION_TYPE.REQUIRED );
+            } else if ( value instanceof List<?> ) {
+                if ( ( (List<?>) value ).size() == 0 ) {
+                    addValidation( validationMap, VALIDATION_TYPE.REQUIRED );
+                }
+            } else if ( !( value.toString().length() > 0 ) ) {
+                addValidation( validationMap, VALIDATION_TYPE.REQUIRED );
+            }
+        }
+        return validationMap;
+    }
+
+    protected void addValidation( Map<VALIDATION_TYPE, String[]> validationMap, VALIDATION_TYPE type, String... params ) {
+        validationMap.put( type, params );
     }
 
 }

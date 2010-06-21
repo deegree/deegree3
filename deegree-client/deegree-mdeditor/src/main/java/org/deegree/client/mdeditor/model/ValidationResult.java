@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * TODO add class documentation here
  * 
@@ -43,56 +46,43 @@ package org.deegree.client.mdeditor.model;
  * 
  * @version $Revision: $, $Date: $
  */
-public class SelectFormField extends FormField {
+public class ValidationResult {
 
-    private SELECT_TYPE selectType;
+    private String formGroupLabel;
 
-    private String referenceToCodeList;
+    private String formGroupId;
 
-    private String referenceToGroup;
+    private List<String> errors = new ArrayList<String>();
 
-    private String referenceText;
-
-    public SelectFormField( FormFieldPath path, String id, String label, boolean visible, boolean required,
-                            String help, Object selectedValue, SELECT_TYPE selectType, String referenceToCodeList,
-                            String referenceToGroup, String referenceText ) {
-        super( path, id, label, visible, required, help, selectedValue );
-        this.selectType = selectType;
-        this.referenceToCodeList = referenceToCodeList;
-        this.referenceToGroup = referenceToGroup;
-        this.referenceText = referenceText;
+    public ValidationResult( String formGroupLabel, String formGroupId, List<String> errors ) {
+        super();
+        this.formGroupLabel = formGroupLabel;
+        this.formGroupId = formGroupId;
+        this.errors = errors;
     }
 
-    public void setSelectType( SELECT_TYPE selectType ) {
-        this.selectType = selectType;
+    public String getFormGroupLabel() {
+        return formGroupLabel;
     }
 
-    public SELECT_TYPE getSelectType() {
-        return selectType;
+    public void setFormGroupLabel( String formGroupLabel ) {
+        this.formGroupLabel = formGroupLabel;
     }
 
-    public void setReferenceToCodeList( String referenceToCodeList ) {
-        this.referenceToCodeList = referenceToCodeList;
+    public List<String> getErrors() {
+        return errors;
     }
 
-    public String getReferenceToCodeList() {
-        return referenceToCodeList;
+    public void setErrors( List<String> errors ) {
+        this.errors = errors;
     }
 
-    public void setReferenceToGroup( String referenceToGroup ) {
-        this.referenceToGroup = referenceToGroup;
+    public void setFormGroupId( String formGroupId ) {
+        this.formGroupId = formGroupId;
     }
 
-    public String getReferenceToGroup() {
-        return referenceToGroup;
-    }
-
-    public void setReferenceText( String referenceText ) {
-        this.referenceText = referenceText;
-    }
-
-    public String getReferenceText() {
-        return referenceText;
+    public String getFormGroupId() {
+        return formGroupId;
     }
 
 }

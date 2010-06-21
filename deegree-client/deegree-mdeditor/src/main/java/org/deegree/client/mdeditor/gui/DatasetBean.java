@@ -172,8 +172,8 @@ public class DatasetBean implements Serializable {
 
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(
                                                                                                                    false );
-            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-            formfieldBean.clearFormField( manager.getPathToIdentifier() );
+            FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+            formfieldBean.clearFormField( configuration.getPathToIdentifier() );
 
         }
 
@@ -190,11 +190,6 @@ public class DatasetBean implements Serializable {
                                                                                                     "formFieldBean" );
         formfieldBean.clearFormFields();
         return "forms";
-    }
-
-    public Object validateDataset() {
-        LOG.debug( "Validate dataset with id " + selectedDataset );
-        return null;
     }
 
     public Object deleteDataset() {
@@ -225,9 +220,9 @@ public class DatasetBean implements Serializable {
 
         HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
         try {
-            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+            FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
 
-            FormFieldPath pathToIdentifier = manager.getPathToIdentifier();
+            FormFieldPath pathToIdentifier = configuration.getPathToIdentifier();
             Object datasetId = formfieldBean.getFormFields().get( pathToIdentifier.toString() ).getValue();
             id = String.valueOf( datasetId );
             if ( datasetId == null || id == null || id.length() == 0 ) {

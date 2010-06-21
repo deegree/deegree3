@@ -38,6 +38,7 @@ package org.deegree.client.mdeditor.model;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO add class documentation here
@@ -58,9 +59,9 @@ public class InputFormField extends FormField {
 
     private int occurence;
 
-    public InputFormField( FormFieldPath path, String id, String label, boolean visible, String help,
+    public InputFormField( FormFieldPath path, String id, String label, boolean visible, boolean required, String help,
                            INPUT_TYPE inputType, int occurence, String defaultValue, Validation validation ) {
-        super( path, id, label, visible, help, defaultValue );
+        super( path, id, label, visible, required, help, defaultValue );
         this.inputType = inputType;
         this.validation = validation;
         this.occurence = occurence;
@@ -101,62 +102,6 @@ public class InputFormField extends FormField {
         return occurence;
     }
 
-    public void setValue( Object value ) {
-        invalid = false;
-        if ( value != null ) {
-            if ( value instanceof List<?> ) {
-                // TODO: validate list
-            } else {
-                switch ( inputType ) {
-                case TIMESTAMP:
-                    try {
-                        if ( getValidation() != null && getValidation().getTimestampPattern() != null ) {
-                            timePattern = getValidation().getTimestampPattern();
-                        }
-                        SimpleDateFormat format = new SimpleDateFormat( timePattern );
-                        format.parse( (String) value );
-                    } catch ( Exception e ) {
-                        invalid = true;
-                    }
-                    break;
-                case DOUBLE:
-                    try {
-                        double d = Double.parseDouble( (String) value );
-                        if ( !( getValidation() != null && d >= getValidation().getMinValue() ) ) {
-                            invalid = true;
-                        }
-                        if ( !( getValidation() != null && d <= getValidation().getMaxValue() ) ) {
-                            invalid = true;
-                        }
-                    } catch ( Exception e ) {
-                        invalid = true;
-                    }
-                    break;
-                case INT:
-                    try {
-                        int i = Integer.parseInt( (String) value );
-                        if ( !( getValidation() != null && i >= getValidation().getMinValue() ) ) {
-                            invalid = true;
-                        }
-                        if ( !( getValidation() != null && i <= getValidation().getMaxValue() ) ) {
-                            invalid = true;
-                        }
-                    } catch ( Exception e ) {
-                        invalid = true;
-                    }
-                    break;
-                case TEXT:
-                    String s = (String) value;
-                    if ( ( getValidation() != null && getValidation().getLength() > 0 && s.length() >= getValidation().getLength() ) ) {
-                        invalid = true;
-                    }
-                    break;
-                }
-            }
-        }
-        super.setValue( value );
-    }
-
     public Object getValue() {
         if ( !( value instanceof List<?> ) && occurence != 1 ) {
             ArrayList<Object> valueList = new ArrayList<Object>();
@@ -174,4 +119,64 @@ public class InputFormField extends FormField {
         return validation;
     }
 
+    @Override
+    public Map<VALIDATION_TYPE, String[]> validate() {
+        Map<VALIDATION_TYPE, String[]> validationMap = super.validate();
+        if ( value != null ) {
+            if ( value instanceof List<?> ) {
+                // TODO: validate list
+            } else {
+                switch ( inputType ) {
+                case TIMESTAMP:
+                    try {
+                        if ( validation != null && validation.getTimestampPattern() != null ) {
+                            timePattern = validation.getTimestampPattern();
+                        }
+                        SimpleDateFormat format = new SimpleDateFormat( timePattern );
+                        format.parse( (String) value );
+                    } catch ( Exception e ) {
+                        addValidation( validationMap, VALIDATION_TYPE.DATE, timePattern );
+                    }
+                    break;
+                case DOUBLE:
+                    try {
+                        double d = Double.parseDouble( (String) value );
+                        validateNumber( validationMap, d );
+                    } catch ( Exception e ) {
+                        addValidation( validationMap, VALIDATION_TYPE.DOUBLE );
+                    }
+                    break;
+                case INT:
+                    try {
+                        int i = Integer.parseInt( (String) value );
+                        validateNumber( validationMap, i );
+                    } catch ( Exception e ) {
+                        addValidation( validationMap, VALIDATION_TYPE.INT );
+                    }
+                    break;
+                case TEXT:
+                    String s = (String) value;
+                    if ( ( validation != null && validation.getLength() > 0 && s.length() >= validation.getLength() ) ) {
+                        addValidation( validationMap, VALIDATION_TYPE.LENGTH, Integer.toString( validation.getLength() ) );
+                    }
+                    break;
+                }
+            }
+        }
+        return validationMap;
+    }
+
+    private void validateNumber( Map<VALIDATION_TYPE, String[]> validationMap, double i ) {
+        boolean minInvalid = !( validation != null && i >= validation.getMinValue() );
+        boolean maxInvalid = !( validation != null && i <= validation.getMaxValue() );
+        if ( minInvalid && maxInvalid ) {
+            addValidation( validationMap, VALIDATION_TYPE.RANGE, Double.toString( validation.getMinValue() ),
+                           Double.toString( validation.getMaxValue() ) );
+
+        } else if ( minInvalid ) {
+            addValidation( validationMap, VALIDATION_TYPE.MIN, Double.toString( validation.getMinValue() ) );
+        } else if ( maxInvalid ) {
+            addValidation( validationMap, VALIDATION_TYPE.MAX, Double.toString( validation.getMaxValue() ) );
+        }
+    }
 }

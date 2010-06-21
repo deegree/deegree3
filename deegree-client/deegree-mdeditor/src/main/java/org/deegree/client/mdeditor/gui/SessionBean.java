@@ -33,7 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.model;
+package org.deegree.client.mdeditor.gui;
+
+import java.io.Serializable;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 
 /**
  * TODO add class documentation here
@@ -43,56 +49,33 @@ package org.deegree.client.mdeditor.model;
  * 
  * @version $Revision: $, $Date: $
  */
-public class SelectFormField extends FormField {
+@ManagedBean
+@SessionScoped
+public class SessionBean implements Serializable {
 
-    private SELECT_TYPE selectType;
+    private static final long serialVersionUID = 7210003542122508664L;
 
-    private String referenceToCodeList;
+    private boolean visible = false;
 
-    private String referenceToGroup;
-
-    private String referenceText;
-
-    public SelectFormField( FormFieldPath path, String id, String label, boolean visible, boolean required,
-                            String help, Object selectedValue, SELECT_TYPE selectType, String referenceToCodeList,
-                            String referenceToGroup, String referenceText ) {
-        super( path, id, label, visible, required, help, selectedValue );
-        this.selectType = selectType;
-        this.referenceToCodeList = referenceToCodeList;
-        this.referenceToGroup = referenceToGroup;
-        this.referenceText = referenceText;
+    public void setVisible( boolean visible ) {
+        this.visible = visible;
     }
 
-    public void setSelectType( SELECT_TYPE selectType ) {
-        this.selectType = selectType;
+    public boolean isVisible() {
+        return visible;
     }
 
-    public SELECT_TYPE getSelectType() {
-        return selectType;
-    }
-
-    public void setReferenceToCodeList( String referenceToCodeList ) {
-        this.referenceToCodeList = referenceToCodeList;
-    }
-
-    public String getReferenceToCodeList() {
-        return referenceToCodeList;
-    }
-
-    public void setReferenceToGroup( String referenceToGroup ) {
-        this.referenceToGroup = referenceToGroup;
-    }
-
-    public String getReferenceToGroup() {
-        return referenceToGroup;
-    }
-
-    public void setReferenceText( String referenceText ) {
-        this.referenceText = referenceText;
-    }
-
-    public String getReferenceText() {
-        return referenceText;
+    public String getFormId() {
+        String formId = null;
+        if ( visible ) {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            FormCreatorBean formCreatorBean = (FormCreatorBean) fc.getApplication().getELResolver().getValue(
+                                                                                                              fc.getELContext(),
+                                                                                                              null,
+                                                                                                              "formCreatorBean" );
+            formId = ":" + formCreatorBean.getFormId();
+        }
+        return formId;
     }
 
 }

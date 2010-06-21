@@ -35,8 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui;
 
+import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
+import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
+import static org.deegree.client.mdeditor.gui.GuiUtils.IS_REFERENCED_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.getUniqueId;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.deegree.client.mdeditor.gui.GuiUtils.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -50,7 +54,6 @@ import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.component.UIComponent;
 import javax.faces.component.UIForm;
 import javax.faces.component.UIInput;
 import javax.faces.component.UIOutput;
@@ -78,11 +81,11 @@ import javax.servlet.http.HttpSession;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.codelist.CodeListConfigurationFactory;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
 import org.deegree.client.mdeditor.gui.components.HtmlInputManyText;
 import org.deegree.client.mdeditor.gui.components.HtmlInputTextItems;
-import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
-import org.deegree.client.mdeditor.gui.listener.DataGroupSelectListener;
 import org.deegree.client.mdeditor.gui.listener.DataGroupListener;
+import org.deegree.client.mdeditor.gui.listener.DataGroupSelectListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
 import org.deegree.client.mdeditor.gui.listener.ListPreRenderedListener;
 import org.deegree.client.mdeditor.model.CodeList;
@@ -107,7 +110,7 @@ import org.slf4j.Logger;
  */
 @ManagedBean
 @SessionScoped
-public class FormCreatorBean implements Serializable {
+public class FormCreatorBean extends FormFieldContainer implements Serializable {
 
     private static final long serialVersionUID = -1348293091143699536L;
 
@@ -365,7 +368,7 @@ public class FormCreatorBean implements Serializable {
         // label
         UIOutput newOutput = new UIOutput();
         newOutput.setValue( fe.getLabel() );
-        setVisibility( fe, newOutput, ef, elContext );
+        setVisibility( fe.getPath().toString(), newOutput, ef, elContext );
         newOutput.setId( GuiUtils.getUniqueId() );
         newOutput.setValueExpression( "styleClass", ef.createValueExpression( elContext, "mdFormLabel", String.class ) );
 
@@ -397,14 +400,13 @@ public class FormCreatorBean implements Serializable {
         ajaxHelp.addAjaxBehaviorListener( new HelpClickedListener() );
         helpLink.addClientBehavior( helpLink.getDefaultEventName(), ajaxHelp );
 
-        setVisibility( fe, helpLink, ef, elContext );
+        setVisibility( fe.getPath().toString(), helpLink, ef, elContext );
 
         parentGrid.getChildren().add( helpLink );
     }
 
     private void addValueField( FormField fe, HtmlPanelGrid parentGrid, ExpressionFactory ef, ELContext elContext ) {
         String id = fe.getId();
-        String msgId = "msg_" + id;
         UIInput input = null;
         String eventName = null;
         if ( fe instanceof InputFormField ) {
@@ -452,20 +454,20 @@ public class FormCreatorBean implements Serializable {
         if ( input != null ) {
             input.setId( id );
             input.getAttributes().put( GuiUtils.FIELDPATH_ATT_KEY, fe.getPath() );
-            setStyleClass( fe, input, ef, elContext );
+            setStyleClass( fe.getPath().toString(), input, ef, elContext );
             if ( input instanceof HtmlInputManyText ) {
                 // add items
                 HtmlInputTextItems items = new HtmlInputTextItems();
                 items.setId( GuiUtils.getUniqueId() );
-                setValue( fe, items, ef, elContext );
-                setValueChangedAjaxBehavior( items, msgId, eventName );
+                setValue( fe.getPath().toString(), items, ef, elContext );
+                setFormFieldChangedAjaxBehavior( items, eventName );
                 input.getChildren().add( items );
             } else {
-                setValue( fe, input, ef, elContext );
-                setValueChangedAjaxBehavior( input, msgId, eventName );
+                setValue( fe.getPath().toString(), input, ef, elContext );
+                setFormFieldChangedAjaxBehavior( input, eventName );
             }
-            setVisibility( fe, input, ef, elContext );
-            setTitle( fe, input, ef, elContext );
+            setVisibility( fe.getPath().toString(), input, ef, elContext );
+            setTitle( fe.getPath().toString(), input, ef, elContext );
             parentGrid.getChildren().add( input );
         }
     }
@@ -484,46 +486,6 @@ public class FormCreatorBean implements Serializable {
         } catch ( ConfigurationException e ) {
             LOG.error( e.getMessage() );
         }
-    }
-
-    private void setValueChangedAjaxBehavior( UIInput component, String msgId, String eventName ) {
-        AjaxBehavior ajaxInput = new AjaxBehavior();
-        List<String> executes = new ArrayList<String>();
-        executes.add( "@this" );
-        ajaxInput.setExecute( executes );
-        List<String> render = new ArrayList<String>();
-        render.add( "@none" );
-        ajaxInput.setRender( render );
-        ajaxInput.addAjaxBehaviorListener( new FormFieldValueChangedListener() );
-        if ( eventName == null ) {
-            eventName = component.getDefaultEventName();
-        }
-        component.addClientBehavior( eventName, ajaxInput );
-    }
-
-    private void setVisibility( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
-        String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].visibility}";
-        ValueExpression ve = ef.createValueExpression( elContext, el, Boolean.class );
-        component.setValueExpression( "rendered", ve );
-    }
-
-    private void setValue( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
-        String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].value}";
-        ValueExpression ve = ef.createValueExpression( elContext, el, Object.class );
-        component.setValueExpression( "value", ve );
-    }
-
-    private void setStyleClass( FormField fe, UIInput input, ExpressionFactory ef, ELContext elContext ) {
-        String el = "#{formFieldBean.formFields['" + fe.getPath().toString()
-                    + "'].invalid ? 'invalidFF' : ''} mdFormInput";
-        ValueExpression ve = ef.createValueExpression( elContext, el, String.class );
-        input.setValueExpression( "styleClass", ve );
-    }
-
-    private void setTitle( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
-        String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].title}";
-        ValueExpression ve = ef.createValueExpression( elContext, el, String.class );
-        component.setValueExpression( "title", ve );
     }
 
     /**
@@ -561,6 +523,16 @@ public class FormCreatorBean implements Serializable {
      */
     public void forceReloaded() {
         forms.clear();
+    }
+
+    /**
+     * @return the client id of the form; null, if the form is null
+     */
+    public String getFormId() {
+        if ( form != null ) {
+            return form.getClientId();
+        }
+        return null;
     }
 
 }

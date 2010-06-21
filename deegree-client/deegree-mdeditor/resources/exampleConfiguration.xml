@@ -16,7 +16,7 @@
     <FormGroup id="AllgFormGroup">
         <label>Allgemein</label>
         <title>Allgemeine Angaben zum Metadatensatz</title>
-        <ReferencedFormElement id="ref">
+        <ReferencedFormElement id="ref" required="true">
             <label>Id:</label>
             <help>Hiermit können sie eine eindeutige Id für den Datensatz generieren</help>
             <bean-name>generateIdBean</bean-name>
@@ -38,6 +38,10 @@
             <inputType>text</inputType>
             <defaultValue>defaultValue</defaultValue>
         </InputFormElement>
+        <InputFormElement id="required" required="true">
+            <label>Required:</label>
+            <inputType>text</inputType>
+        </InputFormElement>
         <!--
             TODO <SelectFormElement id="selectOneK" visible="true"> <label>Eltern-Objekt:</label>
             <selectType>one</selectType> <referenceToGroup></referenceToGroup> </SelectFormElement>
@@ -45,12 +49,12 @@
         <FormGroup id="InhFormGroup">
             <label>Inhaltlich</label>
             <title>Inhaltliche Angaben zu den beschriebenen Daten</title>
-            <InputFormElement id="titel">
+            <InputFormElement id="titel" required="true">
                 <label>Titel/Name:</label>
                 <help>Bezeichnung, unter der die Ressource bekannt ist</help>
                 <inputType>text</inputType>
             </InputFormElement>
-            <InputFormElement id="description">
+            <InputFormElement id="description" required="true">
                 <label>Beschreibung:</label>
                 <help>kurze, beschreibende Zusammenfassung des Inhalts der Ressource</help>
                 <inputType>textarea</inputType>
@@ -69,6 +73,25 @@
             <InputFormElement id="origin">
                 <label>Herkunft des Datenbestandes:</label>
                 <inputType>textarea</inputType>
+            </InputFormElement>
+            <InputFormElement id="lenght">
+                <label>Länge:</label>
+                <inputType>text</inputType>
+                <Validation>
+                    <length>10</length>
+                </Validation>
+            </InputFormElement>
+            <InputFormElement id="date">
+                <label>Datum:</label>
+                <inputType>timestamp</inputType>
+            </InputFormElement>
+            <InputFormElement id="range">
+                <label>Range:</label>
+                <inputType>int</inputType>
+                <Validation>
+                    <minValue>10</minValue>
+                    <maxValue>99</maxValue>
+                </Validation>
             </InputFormElement>
             <SelectFormElement id="contactData" visible="true">
                 <label>Zuständige Stelle/Person (Daten):</label>

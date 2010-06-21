@@ -44,6 +44,7 @@ package org.deegree.client.mdeditor.model;
  * @version $Revision: $, $Date: $
  */
 public class Validation {
+
     private int length;
 
     private String timestampPattern;
@@ -84,11 +85,6 @@ public class Validation {
         this.maxValue = maxValue;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return "Length: " + length + "; TimestampPattern: " + timestampPattern + "; MinValue: " + minValue

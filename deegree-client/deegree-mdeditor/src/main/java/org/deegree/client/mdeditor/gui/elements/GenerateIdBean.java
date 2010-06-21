@@ -36,12 +36,12 @@
 package org.deegree.client.mdeditor.gui.elements;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
-import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -52,6 +52,7 @@ import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 
+import org.deegree.client.mdeditor.gui.FormFieldContainer;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.gui.ReferencedElementBean;
 import org.deegree.client.mdeditor.model.ReferencedElement;
@@ -67,7 +68,7 @@ import org.deegree.client.mdeditor.model.ReferencedElement;
 
 @ManagedBean
 @SessionScoped
-public class GenerateIdBean implements ReferencedElementBean, Serializable {
+public class GenerateIdBean extends FormFieldContainer implements ReferencedElementBean, Serializable {
 
     private static final long serialVersionUID = 7045997278465081712L;
 
@@ -85,15 +86,18 @@ public class GenerateIdBean implements ReferencedElementBean, Serializable {
             HtmlInputText text = new HtmlInputText();
             String textId = GuiUtils.getUniqueId();
             text.setId( textId );
+            text.setDisabled( true );
 
-            String el = "#{formFieldBean.formFields['" + element.getPath().toString() + "'].value}";
-            ValueExpression ve = ef.createValueExpression( elContext, el, Object.class );
-            text.setValueExpression( "value", ve );
+            setValue( element.getPath().toString(), text, ef, elContext );
+            setVisibility( element.getPath().toString(), text, ef, elContext );
+            setStyleClass( element.getPath().toString(), text, ef, elContext );
+            setTitle( element.getPath().toString(), text, ef, elContext );
 
             HtmlCommandButton button = new HtmlCommandButton();
             button.setId( GuiUtils.getUniqueId() );
             button.setValue( "generieren" );
             button.getAttributes().put( GuiUtils.FIELDPATH_ATT_KEY, element.getPath() );
+            setVisibility( element.getPath().toString(), button, ef, elContext );
 
             AjaxBehavior ajaxBt = new AjaxBehavior();
             List<String> render = new ArrayList<String>();
