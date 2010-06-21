@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.services.wps.example;
+package org.deegree.services.wps;
 
 import java.util.Arrays;
 import java.util.Iterator;

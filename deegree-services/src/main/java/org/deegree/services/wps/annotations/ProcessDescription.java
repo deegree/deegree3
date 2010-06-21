@@ -46,11 +46,10 @@ import java.lang.annotation.Target;
 import org.deegree.services.wps.annotations.commons.Metadata;
 import org.deegree.services.wps.annotations.input.InputParameter;
 import org.deegree.services.wps.annotations.output.OutputParameter;
-import org.deegree.services.wps.example.BufferProcesslet;
 
 /**
  * The <code>ProcessDescription</code> annotation can be used to annotate a process with a description. For a live
- * example usage see {@link BufferProcesslet}. Basically it looks like this:
+ * example usage see. Basically it looks like this:
  * <ul>
  * <li>Assigning a String or native type to an annotation-method: <code>methodName = "value"</code></li>
  * <li>Assigning a native type/String array to an annotation-method: <code>methodName= { 1, 2, 3, 4}</code></li>
