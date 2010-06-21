@@ -94,6 +94,8 @@ public class DescribeProcess {
         } catch ( XMLProcessingException e ) {
             LOG.error( e.getMessage() );
         }
+        
+        LOG.info("DescribeProcess initalized");        
     }
 
     /**
@@ -109,6 +111,7 @@ public class DescribeProcess {
         this.lang = rootElement.getAttributeValue( new QName( "lang" ) );
         this.schemaLocation = rootElement.getAttributeValue( new QName( "schemaLocation" ) );
 
+        LOG.info("DescribeProcess initalized");        
     }
 
     /**
@@ -431,6 +434,9 @@ public class DescribeProcess {
         }
 
         processDescriptionList.add( processDescription );
+        
+        LOG.info(" DescribeProcess parsed successfully");        
+
 
         return processDescriptionList;
     }

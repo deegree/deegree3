@@ -47,6 +47,8 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.wps.getcapabilities.ProcessBrief;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -81,6 +83,9 @@ public class ExecuteResponse {
     private OutputDefintion outputDefinition;
 
     private ProcessOutputs processOutputs;
+    
+    private static Logger LOG = LoggerFactory.getLogger( ExecuteResponse.class );
+
 
     static {
         NS_CONTEXT = new NamespaceContext();
@@ -90,6 +95,9 @@ public class ExecuteResponse {
     }
 
     public ExecuteResponse( XMLAdapter xmlAdapter ) {
+        
+        LOG.info("parsing response...");
+        
         this.xmlAdapter = xmlAdapter;
 
         OMElement rootElement = xmlAdapter.getRootElement();
@@ -187,6 +195,9 @@ public class ExecuteResponse {
 
         }
         this.processOutputs = procssOutputs;
+        
+        LOG.info("parsing response done");
+
 
     }
 

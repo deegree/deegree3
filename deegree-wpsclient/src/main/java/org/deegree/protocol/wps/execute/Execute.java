@@ -68,6 +68,8 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.protocol.wps.describeprocess.DescribeProcess;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
 import org.deegree.protocol.wps.tools.BuildExecuteObjects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Execute {
 
@@ -102,6 +104,9 @@ public class Execute {
     private static final NamespaceContext NS_CONTEXT;
 
     private OutputStream outputStream;
+    
+    private static Logger LOG = LoggerFactory.getLogger( Execute.class );
+
 
     static {
         NS_CONTEXT = new NamespaceContext();
@@ -315,6 +320,7 @@ public class Execute {
         writer.close();
         out.close();
 
+        LOG.info("ExecuteRequest generated successfully");
     }
 
     public ByteArrayOutputStream returnExecuteRequest()
@@ -350,6 +356,8 @@ public class Execute {
         writer.close();
 
         out.close();
+        
+        LOG.info("ExecuteRequest generated successfully");
 
         return out;
     }
