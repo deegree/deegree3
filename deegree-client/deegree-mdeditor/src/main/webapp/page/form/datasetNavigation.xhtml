@@ -22,8 +22,9 @@
 								</span>
 								<span class="dsNavBt">
 									<h:commandButton id="dsNavValidateDSBt" title="#{mdLabels['validateDataset']}"
-												action="#{datasetBean.validateDataset}" 
-												image="/resources/deegree/images/page_white_gear.gif" />
+												image="/resources/deegree/images/page_white_gear.gif" >
+												<f:ajax render=":validationResult #{sessionBean.formId}" event="click" listener="#{validationBean.validateDataset}"/>
+									</h:commandButton>
 								</span>
 								<span class="dsNavBt">
 									<h:commandButton id="dsNavSaveDSBt" title="#{mdLabels['saveDataset']}"

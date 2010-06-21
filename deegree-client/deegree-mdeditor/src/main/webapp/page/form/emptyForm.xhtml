@@ -6,18 +6,19 @@
 </h:head>
 <h:body>
 				<ui:composition template="/page/templates/formLayout.xhtml">
-		
+
 								<ui:define name="metadata">
 												<f:metadata>
+																<f:viewParam id="visibilityVP" name="visibility" value="#{sessionBean.visible}" />
 																<f:viewParam id="grpVP" name="grpId" value="#{formCreatorBean.grpId}" />
 																<f:event type="preRenderView" listener="#{formCreatorBean.load}" />
 												</f:metadata>
 								</ui:define>
-								
+
 								<ui:define name="menu">
-									<ui:include src="/page/form/emptyMenu.xhtml"/>
+												<ui:include src="/page/form/emptyMenu.xhtml" />
 								</ui:define>
-		
+
 								<ui:define name="content">
 												<f:subview id="mdForm">
 																<h:form id="emptyForm" binding="#{formCreatorBean.form}" />
@@ -28,11 +29,12 @@
 																								<f:ajax render="@none" />
 																				</h:inputText>
 																</h:form>
-																
+
 																<h:panelGrid rendered="#{!empty facesContext.messageList}">
-																		<h:outputText styleClass="statusMsgTitle" value="#{mdLabels['statusMsgTitle']}"/>
-																		<h:messages id="statusMsgs" showDetail="true" showSummary="true" 
-																		errorClass="statusMsgError" fatalClass="statusMsgFatal" infoClass="statusMsgInfo" warnClass="statusMsgWarn" styleClass="statusMsg"/>
+																				<h:outputText styleClass="statusMsgTitle" value="#{mdLabels['statusMsgTitle']}" />
+																				<h:messages id="statusMsgs" showDetail="true" showSummary="true" errorClass="statusMsgError"
+																								fatalClass="statusMsgFatal" infoClass="statusMsgInfo" warnClass="statusMsgWarn"
+																								styleClass="statusMsg" />
 																</h:panelGrid>
 												</f:subview>
 								</ui:define>

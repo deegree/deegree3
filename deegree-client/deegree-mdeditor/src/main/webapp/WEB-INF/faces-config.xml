@@ -64,11 +64,22 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
-    
     <managed-bean>
         <managed-bean-name>exportBean</managed-bean-name>
         <managed-bean-class>org.deegree.client.mdeditor.gui.ExportBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>validationBean</managed-bean-name>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.ValidationBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>sessionBean</managed-bean-name>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.SessionBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
     <render-kit>
