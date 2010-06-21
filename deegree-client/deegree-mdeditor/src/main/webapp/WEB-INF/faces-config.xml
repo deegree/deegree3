@@ -133,6 +133,12 @@
         <navigation-case>
             <from-outcome>forms</from-outcome>
             <to-view-id>/page/form/emptyForm.xhtml</to-view-id>
+            <redirect>
+                <view-param>
+                    <name>visibility</name>
+                    <value>true</value>
+                </view-param>
+        		</redirect>
         </navigation-case>
     </navigation-rule>
 
