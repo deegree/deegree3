@@ -145,6 +145,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
                 HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
                 configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
                 FormGroup fg = configuration.getFormGroup( grpId );
+                grpId = fg.getId();
                 if ( fg != null ) {
                     HtmlPanelGrid grid = new HtmlPanelGrid();
                     grid.setId( GuiUtils.getUniqueId() );
@@ -153,7 +154,6 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
                     forms.put( grpId, grid );
                     form.getChildren().add( grid );
                 }
-                grpId = fg.getId();
             }
         }
     }
