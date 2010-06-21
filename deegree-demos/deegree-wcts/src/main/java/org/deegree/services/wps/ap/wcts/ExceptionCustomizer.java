@@ -44,7 +44,7 @@ import java.util.List;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.wps.example.DefaultExceptionCustomizer;
+import org.deegree.services.wps.DefaultExceptionCustomizer;
 
 /**
  * The <code>ExceptionCustomizer</code> class TODO add class documentation here.
