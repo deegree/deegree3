@@ -36,7 +36,6 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-
 package org.deegree.services.wps;
 
 import java.util.List;
@@ -49,10 +48,12 @@ import org.deegree.services.controller.ows.OWSException;
  * The <code>ExceptionCustomizer</code> can be implemented to let a {@link Processlet} create an appropriate
  * {@link Exception} for an invalid (validation) status.
  * 
+ * @see ExceptionAwareProcesslet
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
 public interface ExceptionCustomizer {
 
@@ -76,7 +77,6 @@ public interface ExceptionCustomizer {
 
     public OWSException inputInvalidBBoxCoordinates( CodeType inputParameterId, String[] suppliedCoordinates );
 
-
     public OWSException inputEvalutationNotSupported( CodeType inputParameterId, Pair<String, String> kvp,
                                                       String explanation );
 
@@ -91,8 +91,5 @@ public interface ExceptionCustomizer {
     public OWSException outputInvalidCombination( CodeType outputParameterId, List<Pair<String, String>> conflictingKVPs );
 
     public OWSException invalidAttributedParameter( Pair<String, String> kvp );
-
-
-
 
 }

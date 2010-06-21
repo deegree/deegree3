@@ -48,13 +48,13 @@ package org.deegree.services.wps;
  * global climate change model.
  * </p>
  * <p>
- * The deegree WPS is a feature-complete, efficient and scalable container for processlets (Java classes implementing the {@link Processlet} interface). The WPS
- * handles the protocol as defined by the OGC Web Processing Service specification while a {@link Processlet} implements
- * the computational logic of a concrete process.
+ * The deegree WPS is a feature-complete, efficient and scalable container for processlets (Java classes implementing
+ * the {@link Processlet} interface). The WPS handles the protocol as defined by the OGC Web Processing Service
+ * specification while a {@link Processlet} implements the computational logic of a concrete process.
  * </p>
  * <p>
- * A deegree WPS process consists of a Java class implementing the {@link Processlet} interface and an XML configuration file that
- * has to validate against <a href="http://schemas.deegree.org/wps/0.5.0/process_definition.xsd">
+ * A deegree WPS process consists of a Java class implementing the {@link Processlet} interface and an XML configuration
+ * file that has to validate against <a href="http://schemas.deegree.org/wps/0.5.0/process_definition.xsd">
  * http://schemas.deegree.org/wps/0.5.0/process_definition.xsd</a>). Besides the definition of metadata, the XML
  * configuration file references the implementation class with its fully qualified class name.
  * </p>
@@ -89,9 +89,9 @@ package org.deegree.services.wps;
  * As the {@link Processlet} lifecycle concept is analogous to that of Java <code>Servlet</code>s, the implementer is
  * responsible of ensuring thread-safety: The container only creates one instance of a specific {@link Processlet},
  * regardless of the number of simultaneous executions. This implies that the implementation of the
- * {@link #process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)} method <b>must not</b> change
- * any static or member variables to perform the computation. If you're unsure about this, please check out
- * documentation on the thread-safe implementation of <code>Servlet</code>s.
+ * {@link #process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)} method <b>must not</b> change any
+ * static or member variables to perform the computation. If you're unsure about this, please check out documentation on
+ * the thread-safe implementation of <code>Servlet</code>s.
  * </p>
  * <p>
  * For a more detailed tutorial on implementing your own process please refer to the <a
@@ -117,8 +117,8 @@ public interface Processlet {
      * <li>Transform computational results into required format (e.g. GML)</li>
      * <li>Write results to <code>out</code> parameter</li>
      * </ol>
-     * Please consider {@link org.deegree.services.wps.example.ParameterDemoProcesslet} as best practice.
-     * </p>
+     * Please consider the corresponding <a
+     * href="http://wiki.deegree.org/deegreeWiki/deegree3/HowToCreateWPSProcesses">wiki howto</a>.
      * 
      * @param in
      *            input arguments to be processed, never <code>null</code>
@@ -141,9 +141,9 @@ public interface Processlet {
     /**
      * Called by the {@link WPService} to indicate to a {@link Processlet} that it is being taken out of service.
      * <p>
-     * This method gives the {@link Processlet} an opportunity to clean up any resources that are being held (for example,
-     * memory, file handles, threads) and make sure that any persistent state is synchronized with the {@link Processlet}'s
-     * current state in memory.
+     * This method gives the {@link Processlet} an opportunity to clean up any resources that are being held (for
+     * example, memory, file handles, threads) and make sure that any persistent state is synchronized with the
+     * {@link Processlet}'s current state in memory.
      * </p>
      */
     public void destroy();

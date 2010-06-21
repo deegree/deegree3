@@ -36,31 +36,29 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-
 package org.deegree.services.wps;
 
 import org.deegree.services.controller.ows.OWSException;
 
 /**
- * The <code>ExceptionAwareProcesslet</code> adds a method to retrieve an {@link ExceptionCustomizer} to a
- * {@link Processlet}
+ * {@link Processlet} that provides customized exception generation.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
 public interface ExceptionAwareProcesslet extends Processlet {
+
     /**
      * Called by the {@link WPService} if an exception occurred while parsing and/or validating an incoming request.
      * <p>
      * Implementations may supply an {@link ExceptionCustomizer} which will create an {@link OWSException} appropriate
      * for a number of exceptional events. If an implementations wants the {@link WPService} to generate a 'standard'
-     * exception <code>null</code> should be returned.
-     * 
+     * exception, <code>null</code> should be returned.
      * 
      * @return an {@link ExceptionCustomizer} or <code>null</code> if the {@link Processlet} prefers standard exception
-     *         handling.
+     *         handling
      */
     public ExceptionCustomizer getExceptionCustomizer();
 }
