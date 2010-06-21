@@ -38,7 +38,7 @@ package org.deegree.client.mdeditor.gui;
 import java.io.Serializable;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
 /**
@@ -50,7 +50,7 @@ import javax.faces.context.FacesContext;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@SessionScoped
+@RequestScoped
 public class SessionBean implements Serializable {
 
     private static final long serialVersionUID = 7210003542122508664L;
@@ -73,7 +73,9 @@ public class SessionBean implements Serializable {
                                                                                                               fc.getELContext(),
                                                                                                               null,
                                                                                                               "formCreatorBean" );
-            formId = ":" + formCreatorBean.getFormId();
+            if ( formCreatorBean.getFormId() != null ) {
+                formId = ":" + formCreatorBean.getFormId();
+            }
         }
         return formId;
     }
