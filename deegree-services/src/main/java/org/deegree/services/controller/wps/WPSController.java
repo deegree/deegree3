@@ -52,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -115,7 +114,6 @@ import org.deegree.services.jaxb.wps.ServiceConfiguration;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPService;
 import org.deegree.services.wps.annotations.ProcessDescription;
-import org.deegree.services.wps.ap.wcts.TransformCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -557,13 +555,14 @@ public class WPSController extends AbstractOGCServiceController {
                 }
             }
 
-            TransformCoordinates tc = new TransformCoordinates();
-            ProcessDescription pd = tc.getClass().getAnnotation( ProcessDescription.class );
-            List<ProcessDescription> pdA = new LinkedList<ProcessDescription>();
-            if ( pd != null ) {
-                pdA.add( pd );
-            }
-            DescribeProcessResponseXMLAdapter.export100( xmlWriter, processDefinitions, processDefToWSDLUrl, pdA );
+//            TransformCoordinates tc = new TransformCoordinates();
+//            ProcessDescription pd = tc.getClass().getAnnotation( ProcessDescription.class );
+//            List<ProcessDescription> pdA = new LinkedList<ProcessDescription>();
+//            if ( pd != null ) {
+//                pdA.add( pd );
+//            }
+            // TODO what about annotations?
+            DescribeProcessResponseXMLAdapter.export100( xmlWriter, processDefinitions, processDefToWSDLUrl, null );
             xmlWriter.flush();
         } catch ( XMLStreamException e ) {
             e.printStackTrace();

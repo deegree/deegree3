@@ -47,7 +47,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.wps.annotations.ProcessDescription;
 import org.deegree.services.jaxb.wps.BoundingBoxInputDefinition;
 import org.deegree.services.jaxb.wps.BoundingBoxOutputDefinition;
 import org.deegree.services.jaxb.wps.ComplexFormatType;
@@ -64,6 +63,7 @@ import org.deegree.services.jaxb.wps.LiteralOutputDefinition.DataType;
 import org.deegree.services.jaxb.wps.LiteralOutputDefinition.DefaultUOM;
 import org.deegree.services.jaxb.wps.LiteralOutputDefinition.OtherUOM;
 import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
+import org.deegree.services.wps.annotations.ProcessDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
