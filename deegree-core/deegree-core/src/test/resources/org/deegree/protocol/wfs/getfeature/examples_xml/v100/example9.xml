@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<GetFeature version="1.0.0" service="WFS"
+	xmlns="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc"
+	xmlns:gml="http://www.opengis.net/gml" xmlns:myns="http://www.someserver.com/myns"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd
+http://www.opengis.net/myns Person.xsd">
+	<Query typeName="Person">
+		<ogc:PropertyName>myns:Person/myns:LastName</ogc:PropertyName>
+		<ogc:Filter>
+			<ogc:And>
+				<ogc:And>
+					<ogc:PropertyIsGreaterThanOrEqualTo>
+						<ogc:PropertyName>myns:Person/myns:Address/myns:StreetNumber
+						</ogc:PropertyName>
+						<ogc:Literal>10000</ogc:Literal>
+					</ogc:PropertyIsGreaterThanOrEqualTo>
+					<ogc:PropertyIsLessThanOrEqualTo>
+						<ogc:PropertyName>myns:Person/myns:Address/myns:StreetNumber
+						</ogc:PropertyName>
+						<ogc:Literal>10999</ogc:Literal>
+					</ogc:PropertyIsLessThanOrEqualTo>
+				</ogc:And>
+				<ogc:And>
+					<ogc:PropertyIsEqualTo>
+						<ogc:PropertyName>myns:Person/myns:Address/myns:StreetName
+						</ogc:PropertyName>
+						<ogc:Literal>Main St.</ogc:Literal>
+					</ogc:PropertyIsEqualTo>
+					<ogc:PropertyIsEqualTo>
+						<ogc:PropertyName>myns:Person/myns:Address/myns:City
+						</ogc:PropertyName>
+						<ogc:Literal>SomeTown</ogc:Literal>
+					</ogc:PropertyIsEqualTo>
+					<ogc:PropertyIsEqualTo>
+						<ogc:PropertyName>myns:Person/myns:Sex</ogc:PropertyName>
+						<ogc:Literal>Female</ogc:Literal>
+					</ogc:PropertyIsEqualTo>
+					<ogc:PropertyIsGreaterThan>
+						<ogc:PropertyName>myns:Person/myns:Salary</ogc:PropertyName>
+						<ogc:Literal>35000</ogc:Literal>
+					</ogc:PropertyIsGreaterThan>
+				</ogc:And>
+			</ogc:And>
+		</ogc:Filter>
+	</Query>
+</GetFeature>
