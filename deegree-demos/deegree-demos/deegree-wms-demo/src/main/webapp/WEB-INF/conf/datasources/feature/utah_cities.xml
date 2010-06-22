@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ShapeFeatureStore configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/shape"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape http://schemas.deegree.org/datasource/0.5.0/feature/shape.xsd">
-  <StorageSRS>EPSG:26912</StorageSRS>
-  <Namespace>http://www.deegree.org/app</Namespace>
-  <File>../../../data/utah/vector/SGID93_TownDemographics2000</File>
-</ShapeFeatureStore>
