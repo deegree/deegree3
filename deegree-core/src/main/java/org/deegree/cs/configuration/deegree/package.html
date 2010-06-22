@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+   $HeadURL: svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/crs/configuration/package.html $
+-->
+</head>
+<body bgcolor="white">
+This package contains the classes used for reading deegrees own crs configuration backends.
+<p>The default crs configuration can be changed by editing the <code>org.deegree.cs.configuration.crs_providers.properties</code>
+file, the default provider is {@link org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider}.</p>
+
+<h2>Automatic loading of projection/transformation classes</h2>
+It is possible to create your own projection/transformation classes,
+which the default provider will load automatically.
+<p>You can achieve this loading by supplying the <b><code>class</code></b>
+attribute to a <code>crs:ProjectionDefinitions/crs:UserDefined</code> or
+<code>crs:TransformationDefinitions/crs:UserDefined</code> element in
+the 'projection|transformation-definitions.xml'. This attribute must
+contain the full class name (with package), e.g. &lt;crs:projection
+class='my.package.and.projection.Implementation'&gt;</p>
+Because the loading is done with reflections your classes must sustain
+following criteria:
+<h3>Projections</h3>
+<ol>
+	<li>It must be a sub class of {@link
+	org.deegree.cs.projections.Projection}</li>
+	<li>A constructor with following signature must be supplied: <br />
+	<code> public MyProjection( <br />
+	&emsp;&emsp;&emsp;&emsp;{@link
+	org.deegree.cs.coordinatesystems.GeographicCRS} underlyingCRS,<br />
+	&emsp;&emsp;&emsp;&emsp;double falseNorthing,<br />
+	&emsp;&emsp;&emsp;&emsp;double falseEasting,<br />
+	&emsp;&emsp;&emsp;&emsp;javax.vecmath.Point2d naturalOrigin,<br />
+	&emsp;&emsp;&emsp;&emsp;{@link org.deegree.cs.components.Unit} units,<br />
+	&emsp;&emsp;&emsp;&emsp;double scale,<br />
+	&emsp;&emsp;&emsp;&emsp;{@link javax.xml.stream.XMLStreamReader reader<br />
+	);<br />
+	</code>
+	<p>The first six parameters are common to all projections (for an
+	explanation of their meaning take a look at {@link
+	org.deegree.cs.projections.Projection}). The reader, will point to the
+	next element you supplied in the deegree configuration (child elements
+	of the crs:ProjectionDefinitions/crs:UserDefined), thus relieving you
+	of the parsing of the projection-definitions.xml document.</p>
+	</li>
+</ol>
+<h3>Automatic loading of transformation classes</h3>
+It is possible to create your own transformation classes, which the
+default provider {@link
+org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider} will load
+automatically.
+<p>You can achieve this loading by supplying the <b><code>class</code></b>
+attribute to a <code>crs:TransformationDefinitions/crs:UserDefined</code>
+element in the 'transformation-definitions.xml'. This attribute must
+contain the full class name (with package), e.g. <code>&lt;crs:UserDefined
+class='my.package.and.transformation.Implementation'&gt;</code></p>
+Because the loading is done with reflections your classes must sustain
+following criteria:
+<ol>
+	<li>It must be a sub class of {@link
+	org.deegree.cs.transformations}</li>
+	<li>A constructor with following signature must be supplied: <br />
+	<code> public MyTransformation( <br />
+	&emsp;&emsp;&emsp;&emsp;{@link org.deegree.cs.CRSIdentifiable},<br />
+	&emsp;&emsp;&emsp;&emsp;{@link
+	org.deegree.cs.coordinatesystems.CoordinateSystem} sourceCRS,<br />
+	&emsp;&emsp;&emsp;&emsp;{@link
+	org.deegree.cs.coordinatesystems.CoordinateSystem} targetCRS,<br />
+	&emsp;&emsp;&emsp;&emsp;{@link javax.xml.stream.XMLStreamReader reader<br />
+	);<br />
+	</code>
+	<p>The first three parameters are common to all transformations
+	(for an explanation of their meaning take a look at {@link
+	org.deegree.cs.transformations.Transformation}). Again, the reader,
+	will point to the next element you supplied in the deegree
+	configuration (child elements of the
+	crs:TransformationDefinitions/crs:UserDefined/), thus relieving you of
+	the parsing of the transformation-definitions.xml document.</p>
+	</li>
+</ol>
+@author
+<a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+@author last edited by: $Author: rbezema $ @version $Revision: 17229 $,
+$Date: 2007-03-20 10:15:15 +0100 (Di, 20 Mrz 2007)$
+</body>
+</html>
