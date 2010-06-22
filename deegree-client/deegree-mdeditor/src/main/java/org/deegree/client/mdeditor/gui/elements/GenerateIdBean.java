@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.elements;
 
+import static org.deegree.client.mdeditor.gui.GuiUtils.*;
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -53,7 +54,6 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 
 import org.deegree.client.mdeditor.gui.FormFieldContainer;
-import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.gui.ReferencedElementBean;
 import org.deegree.client.mdeditor.model.ReferencedElement;
 
@@ -77,14 +77,15 @@ public class GenerateIdBean extends FormFieldContainer implements ReferencedElem
     @Override
     public UIComponent getComponent( ReferencedElement element ) {
         if ( component == null ) {
-            Application app = FacesContext.getCurrentInstance().getApplication();
+            FacesContext fc = FacesContext.getCurrentInstance();
+            Application app = fc.getApplication();
             ExpressionFactory ef = app.getExpressionFactory();
             ELContext elContext = FacesContext.getCurrentInstance().getELContext();
 
             component = new HtmlPanelGroup();
-            component.setId( GuiUtils.getUniqueId() );
+            component.setId( getUniqueId() );
             HtmlInputText text = new HtmlInputText();
-            String textId = GuiUtils.getUniqueId();
+            String textId = getUniqueId();
             text.setId( textId );
             text.setDisabled( true );
 
@@ -94,9 +95,9 @@ public class GenerateIdBean extends FormFieldContainer implements ReferencedElem
             setTitle( element.getPath().toString(), text, ef, elContext );
 
             HtmlCommandButton button = new HtmlCommandButton();
-            button.setId( GuiUtils.getUniqueId() );
-            button.setValue( "generieren" );
-            button.getAttributes().put( GuiUtils.FIELDPATH_ATT_KEY, element.getPath() );
+            button.setId( getUniqueId() );
+            button.setValue( getResourceText( fc, "mdLabels", "generateIdBean_btLabel" ) );
+            button.getAttributes().put( FIELDPATH_ATT_KEY, element.getPath() );
             setVisibility( element.getPath().toString(), button, ef, elContext );
 
             AjaxBehavior ajaxBt = new AjaxBehavior();
