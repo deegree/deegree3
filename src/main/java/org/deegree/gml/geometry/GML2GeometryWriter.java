@@ -473,7 +473,6 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     public void exportCurve( Curve curve )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        exportLineString( curve );
         switch ( curve.getCurveType() ) {
         case Ring: {
             exportRing( (Ring) curve );
