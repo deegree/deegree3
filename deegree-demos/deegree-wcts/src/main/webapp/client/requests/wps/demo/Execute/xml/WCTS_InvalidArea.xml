@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+  <!--
+    An example TransformCoordinates Process (inspire WPS application profile equivalent to the OGC:WCTS) execute request. 
+    Demonstrates: exception report for a geometry which lies outside the valid bbox of the source crs
+  -->
+  <ows:Identifier>TransformCoordinates</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>SourceCRS</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>epsg:31466</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>TargetCRS</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>epsg:25832</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>InputData</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData mimeType="text/xml; subtype=gml/3.1.1">
+          <Curve gml:id="C1" xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:31466"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryPrimitives.xsd">
+            <segments>
+              <LineStringSegment interpolation="linear">
+              <!-- last ordinates tuple is outside the valid area of epsg:31466 which is defined as:2490550.509429804m, 5440317.246894929, 2598987.932042166m, 5958696.645174539 -->
+                <posList srsName="EPSG:4326">2490550.6 5440317.3 2598987.0 5958696.0 2598988.0 5958697.0</posList>
+              </LineStringSegment>
+            </segments>
+          </Curve>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:RawDataOutput mimeType="text/xml; subtype=gml/3.1.1">
+      <ows:Identifier>TransformedData</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>
