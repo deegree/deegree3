@@ -37,15 +37,15 @@ package org.deegree.client.mdeditor.mapping;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -72,53 +72,45 @@ public class MappingExporter {
     private static final Logger LOG = getLogger( MappingExporter.class );
 
     public static void export( File file, MappingInformation mapping, Map<String, FormField> formFields,
-                               Map<String, List<DataGroup>> dataGroups ) {
-        try {
-            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            FileOutputStream fos = new FileOutputStream( file );
+                               Map<String, List<DataGroup>> dataGroups )
+                            throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
+        LOG.debug( "Export dataset in file " + file.getAbsolutePath() + " selected mapping is " + mapping.toString() );
+        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream( file ) );
+        writer.writeStartDocument();
 
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( fos );
-            writer.writeStartDocument();
-            
-            List<MappingElement> mappingElements = mapping.getMappingElements();
-            Iterator<MappingElement> it = mappingElements.iterator();
-            if ( it.hasNext() ) {
-                MappingElement currentElement = it.next();
-                int currentIndex = 0;
-                while ( currentElement != null ) {
-                    MappingElement nextElement = null;
-                    if ( it.hasNext() ) {
-                        nextElement = it.next();
-                    }
-                    String ffPath = currentElement.getFormFieldPath();
-                    List<NameStep> nextSteps = new ArrayList<NameStep>();
-                    if ( nextElement != null ) {
-                        nextSteps = nextElement.getSchemaPathAsSteps( mapping.getNsContext() );
-                    }
-
-                    if ( currentElement instanceof MappingGroup ) {
-                        currentIndex = writeMappingGroup( writer, nextSteps, currentIndex,
-                                                          (MappingGroup) currentElement, dataGroups.get( ffPath ),
-                                                          ffPath, mapping );
-                    } else {
-                        List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps( mapping.getNsContext() );
-                        if ( formFields.containsKey( ffPath ) && formFields.get( ffPath ) != null ) {
-                            currentIndex = writeMappingElement( writer, currentSteps, nextSteps, currentIndex,
-                                                                formFields.get( ffPath ).getValue(), ffPath, mapping );
-                        }
-                    }
-                    currentElement = nextElement;
+        List<MappingElement> mappingElements = mapping.getMappingElements();
+        Iterator<MappingElement> it = mappingElements.iterator();
+        if ( it.hasNext() ) {
+            MappingElement currentElement = it.next();
+            int currentIndex = 0;
+            while ( currentElement != null ) {
+                LOG.debug( "handle mapping element " + currentElement );
+                MappingElement nextElement = null;
+                if ( it.hasNext() ) {
+                    nextElement = it.next();
                 }
-            }
+                String ffPath = currentElement.getFormFieldPath();
+                List<NameStep> nextSteps = new ArrayList<NameStep>();
+                if ( nextElement != null ) {
+                    nextSteps = nextElement.getSchemaPathAsSteps( mapping.getNsContext() );
+                }
 
-            writer.writeEndDocument();
-            writer.close();
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                if ( currentElement instanceof MappingGroup ) {
+                    currentIndex = writeMappingGroup( writer, nextSteps, currentIndex, (MappingGroup) currentElement,
+                                                      dataGroups.get( ffPath ), ffPath, mapping );
+                } else {
+                    List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps( mapping.getNsContext() );
+                    if ( formFields.containsKey( ffPath ) && formFields.get( ffPath ) != null ) {
+                        currentIndex = writeMappingElement( writer, currentSteps, nextSteps, currentIndex,
+                                                            formFields.get( ffPath ).getValue(), ffPath, mapping );
+                    }
+                }
+                currentElement = nextElement;
+            }
         }
+
+        writer.writeEndDocument();
+        writer.close();
     }
 
     private static void wtiteDataGroup( XMLStreamWriter writer, MappingInformation mapping,
@@ -155,6 +147,7 @@ public class MappingExporter {
                                           MappingInformation mapping )
                             throws XMLStreamException {
         if ( dataGroups != null ) {
+            LOG.debug( "write mapping group" );
             List<NameStep> groupSteps = group.getSchemaPathAsSteps( mapping.getNsContext() );
             for ( ; currentIndex < groupSteps.size(); currentIndex++ ) {
                 NameStep qName = groupSteps.get( currentIndex );
@@ -182,6 +175,7 @@ public class MappingExporter {
                 NameStep nameStep = currentSteps.get( currentIndex );
                 // found list of elements
                 if ( "*".equals( nameStep.getLocalName() ) ) {
+                    LOG.debug( "found mapping to list of single element" );
                     writeValue( writer, currentSteps.subList( currentIndex + 1, currentSteps.size() ), value, mapping );
                     break;
                 } else if ( Axis.ATTRIBUTE == nameStep.getAxis() ) {
@@ -202,6 +196,7 @@ public class MappingExporter {
     private static void writeAttribute( XMLStreamWriter writer, NameStep nameStep, Object value,
                                         MappingInformation mapping )
                             throws XMLStreamException {
+        LOG.debug( "write attribute " + nameStep + ", value is " + value );
         String prefix = nameStep.getPrefix();
         String ns = mapping.getNsContext().getURI( prefix );
         if ( ns != null ) {
@@ -215,6 +210,7 @@ public class MappingExporter {
                                     MappingInformation mapping )
                             throws XMLStreamException {
         if ( value instanceof List<?> ) {
+            LOG.debug( "write list of values" );
             for ( Object o : (List<?>) value ) {
                 writeSteps( writer, currentSteps, o.toString(), mapping );
             }
@@ -239,20 +235,31 @@ public class MappingExporter {
     private static int finishStepsUntilNextCommon( XMLStreamWriter writer, List<NameStep> currentSteps,
                                                    List<NameStep> nextSteps, int currentIndex )
                             throws XMLStreamException {
-        int stepsToClose = nextSteps.size() - currentIndex;
         int equalSteps = 0;
         for ( int i = 0; i < currentSteps.size() && i < nextSteps.size(); i++ ) {
-            if ( currentSteps.get( i ).equals( nextSteps.get( i ) ) ) {
+            if ( isSame( currentSteps.get( i ), nextSteps.get( i ) ) ) {
                 equalSteps++;
             } else {
                 break;
             }
         }
-        stepsToClose = currentSteps.size() - equalSteps - ( currentSteps.size() - currentIndex );
+        int stepsToClose = currentSteps.size() - equalSteps - ( currentSteps.size() - currentIndex );
         for ( int i = 0; i < stepsToClose; i++ ) {
             writer.writeEndElement();
         }
 
         return equalSteps;
+    }
+
+    private static boolean isSame( NameStep one, NameStep two ) {
+        if ( one != null && two != null ) {
+            if ( one.getAxis() == two.getAxis()
+                 && one.getLocalName().equals( two.getLocalName() )
+                 && ( ( one.getPrefix() == null && two.getPrefix() == null ) || ( one.getPrefix() != null && one.getPrefix().equals(
+                                                                                                                                     two.getPrefix() ) ) ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 }

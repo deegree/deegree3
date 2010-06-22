@@ -43,6 +43,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.math.RandomUtils;
@@ -72,7 +75,8 @@ public class MappingExporterTest extends TestCase {
 
     @Test
     public void test()
-                            throws ConfigurationException, IOException, DataIOException {
+                            throws ConfigurationException, IOException, DataIOException, XMLStreamException,
+                            FactoryConfigurationError {
         Map<String, FormField> formFields = prepareFormFields();
 
         Dataset readTestDataset = prepareDataset();
@@ -112,7 +116,7 @@ public class MappingExporterTest extends TestCase {
                     ff.setValue( "text" + RandomUtils.nextInt( 50 ) );
                     break;
                 }
-            } else if( ff instanceof SelectFormField ){
+            } else if ( ff instanceof SelectFormField ) {
                 SelectFormField ffSelect = (SelectFormField) ff;
                 switch ( ffSelect.getSelectType() ) {
                 case MANY:

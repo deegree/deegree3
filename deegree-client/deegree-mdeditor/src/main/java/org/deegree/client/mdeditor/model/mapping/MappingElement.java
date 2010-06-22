@@ -92,7 +92,6 @@ public class MappingElement {
             if ( !( xpath instanceof LocationPath ) ) {
                 LOG.debug( "Unable to map schemaPath '" + schemaPath + "': the root expression is not a LocationPath." );
             } else {
-
                 for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
                     if ( !( step instanceof NameStep ) ) {
                         LOG.debug( "Unable to map schemaPath '" + schemaPath
@@ -102,12 +101,15 @@ public class MappingElement {
                     }
                 }
             }
-            return steps;
         } catch ( JaxenException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "Invalid xpath: " + schemaPath );
         }
         return steps;
+    }
+
+    @Override
+    public String toString() {
+        return formFieldPath + "mapped to: " + schemaPath;
     }
 
 }

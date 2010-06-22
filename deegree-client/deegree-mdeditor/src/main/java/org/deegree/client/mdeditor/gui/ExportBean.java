@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
@@ -52,6 +53,7 @@ import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.io.DataIOException;
 import org.deegree.client.mdeditor.mapping.SchemaManager;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormField;
@@ -80,7 +82,7 @@ public class ExportBean {
     private String resultLink;
 
     public void exportDataset( AjaxBehaviorEvent event )
-                            throws AbortProcessingException {
+                            throws AbortProcessingException, ConfigurationException {
         LOG.debug( "Export dataset; id of the selected mapping: " + selectedMapping );
         FacesContext fc = FacesContext.getCurrentInstance();
         FormFieldBean formfieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
@@ -89,24 +91,26 @@ public class ExportBean {
         Map<String, FormField> formFields = formfieldBean.getFormFields();
         HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
 
-        try {
-            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+        FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
 
-            FormFieldPath pathToIdentifier = manager.getPathToIdentifier();
-            Object value = formFields.get( pathToIdentifier.toString() ).getValue();
-            String id = null;
-            if ( value != null ) {
-                id = String.valueOf( value );
-            }
+        FormFieldPath pathToIdentifier = manager.getPathToIdentifier();
+        Object value = formFields.get( pathToIdentifier.toString() ).getValue();
+        String id = null;
+        if ( value != null ) {
+            id = String.valueOf( value );
+        }
+
+        try {
             String fileName = SchemaManager.export( id, selectedMapping, formFields, formfieldBean.getDataGroups() );
 
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
 
             resultLink = ctx.getRequestContextPath() + File.separatorChar + "download" + File.separatorChar + fileName;
             resultLabel = fileName;
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch ( DataIOException e ) {
+            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.EXPORT_DATASET",
+                                                         e.getMessage() );
+            fc.addMessage( "EXPORT_FAILED", msg );
         }
     }
 

@@ -38,7 +38,6 @@ package org.deegree.client.mdeditor.mapping;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +47,7 @@ import java.util.Map;
 import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.mapping.MappingParser;
+import org.deegree.client.mdeditor.io.DataIOException;
 import org.deegree.client.mdeditor.io.Utils;
 import org.deegree.client.mdeditor.model.DataGroup;
 import org.deegree.client.mdeditor.model.FormField;
@@ -101,11 +101,11 @@ public class SchemaManager {
      *            the form fields to export
      * @param map
      * @return the name of the created file
-     * @throws ConfigurationException
+     * @throws DataIOException
      */
     public static String export( String id, String mappingId, Map<String, FormField> formFields,
                                  Map<String, List<DataGroup>> dataGroups )
-                            throws ConfigurationException {
+                            throws DataIOException {
         String fileName = id;
         if ( fileName == null ) {
             fileName = Utils.createId();
@@ -131,12 +131,12 @@ public class SchemaManager {
                 }
                 MappingExporter.export( f, mapping, formFields, dataGroups );
 
-            } catch ( IOException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch ( Exception e ) {
+                LOG.debug( "Could not export dataset: ", e );
+                throw new DataIOException( "Could not export dataset. The following error occured: " + e.getMessage() );
             }
         } else {
-            // TODO throw exception!
+            throw new DataIOException( "Could not find schema mapping with id " + mappingId );
         }
         return fileName;
     }
