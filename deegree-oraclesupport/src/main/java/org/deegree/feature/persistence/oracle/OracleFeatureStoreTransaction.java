@@ -228,7 +228,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
                 if ( prop.getValue() != null ) {
                     Object oracleValue = getSQLValue(
                                                       (OracleConnection) ( (DelegatingConnection) conn ).getInnermostDelegate(),
-                                                      prop );
+                                                      f.getName(), prop );
                     stmt.setObject( i++, oracleValue );
                 }
             }
@@ -298,7 +298,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
         return fid;
     }
 
-    private Object getSQLValue( OracleConnection conn, Property prop )
+    private Object getSQLValue( OracleConnection conn, QName ft, Property prop )
                             throws FeatureStoreException {
         Object value = null;
         PropertyType pt = prop.getType();
@@ -322,7 +322,8 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
                     throw new FeatureStoreException( msg, e );
                 }
             }
-            JGeometry jg = fs.getJGeometryAdapter().toJGeometry( g );
+            JGeometryAdapter jGeometryAdapter = fs.getJGeometryAdapter( ft, prop.getName() );
+            JGeometry jg = jGeometryAdapter.toJGeometry( g );
             try {
                 value = JGeometry.store( conn, jg );
             } catch ( Exception e ) {
@@ -405,7 +406,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
 
             int i = 1;
             for ( Property property : replacementProps ) {
-                Object sqlValue = getSQLValue( oraConn, property );
+                Object sqlValue = getSQLValue( oraConn, ftMapping.getFeatureType(), property );
                 stmt.setObject( i++, sqlValue );
             }
             for ( String fid : filter.getMatchingIds() ) {

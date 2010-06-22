@@ -120,8 +120,6 @@ public class OracleFeatureStore implements FeatureStore {
 
     private final GeometryTransformer geomTransformer;
 
-    private final JGeometryAdapter jGeometryAdapter;
-
     private final CRS storageSRS;
 
     private final String connId;
@@ -155,7 +153,6 @@ public class OracleFeatureStore implements FeatureStore {
         } catch ( Exception e ) {
             throw new FeatureStoreException( e.getMessage(), e );
         }
-        jGeometryAdapter = new JGeometryAdapter( storageSRS, -1 );
 
         // TODO
         lockManager = new DefaultLockManager( this, "LOCK_DB" );
@@ -296,7 +293,7 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     private FeatureResultSet queryByTypeNames( Query query )
-                            throws FeatureStoreException, FilterEvaluationException {
+                            throws FeatureStoreException {
 
         if ( query.getTypeNames().length > 1 ) {
             String msg = "Join queries are currently not supported by the OracleFeatureStore.";
@@ -476,6 +473,7 @@ public class OracleFeatureStore implements FeatureStore {
                 STRUCT struct = (STRUCT) rs.getObject( i );
                 if ( struct != null ) {
                     JGeometry jg = JGeometry.load( struct );
+                    JGeometryAdapter jGeometryAdapter = getJGeometryAdapter( ft.getName(), pt.getName() );
                     Geometry g = jGeometryAdapter.toGeometry( jg );
                     if ( g != null ) {
                         Property prop = new GenericProperty( pt, g );
@@ -499,8 +497,12 @@ public class OracleFeatureStore implements FeatureStore {
         return schema.getMapping( ftName );
     }
 
-    JGeometryAdapter getJGeometryAdapter() {
-        return jGeometryAdapter;
+    int getSrid( QName ftName, QName propName ) {
+        return Integer.parseInt( schema.getMapping( ftName ).getBackendSrs() );
+    }
+
+    JGeometryAdapter getJGeometryAdapter( QName ftName, QName ptName ) {
+        return new JGeometryAdapter( storageSRS, getSrid( ftName, ptName ) );
     }
 
     GeometryTransformer getGeometryTransformer() {
