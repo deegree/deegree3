@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApplicationSchema targetNamespace="http://www.deegree.org/app"
+    xmlns="http://www.deegree.org/feature/featuretype"
+    xmlns:app="http://www.deegree.org/app"
+    xmlns:gml="http://www.opengis.net/gml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/feature/featuretype ./0.2.0/featuretype_definition.xsd">
+
+  <FeatureType name="Philosopher">
+<!--
+    <CustomProperty name="gml:metaDataProperty" minOccurs="0" maxOccurs="unbounded"/>
+    <CustomProperty name="gml:description"/>
+    <CodeProperty name="gml:name" minOccurs="0" maxOccurs="unbounded"/>
+    <BoundingShapeProperty name="gml:boundedBy"/>
+    <CustomProperty name="gml:location"/> 
+ -->
+    <SimpleProperty name="id" type="integer"/>
+    <SimpleProperty name="name" type="string"/>
+    <SimpleProperty name="sex" type="string"/>
+    <SimpleProperty name="subject" type="string" minOccurs="0" maxOccurs="unbounded" />
+    <FeatureProperty name="isAuthorOf" type="Book" minOccurs="0" maxOccurs="unbounded" />
+    <SimpleProperty name="dateOfBirth" type="date"/>
+    <FeatureProperty name="placeOfBirth" type="Place" />
+    <SimpleProperty name="dateOfDeath" type="date"/>
+    <FeatureProperty name="placeOfDeath" type="Place" />
+    <FeatureProperty name="friend" type="Philosopher" maxOccurs="unbounded" />
+  </FeatureType>
+
+  <FeatureType name="Book">
+    <SimpleProperty name="title" type="string"/>
+    <SimpleProperty name="publicationDate" type="date"/>
+  </FeatureType>
+
+  <FeatureType name="Place">
+    <SimpleProperty name="name" type="string"/>
+    <FeatureProperty name="country" type="Country" />
+  </FeatureType>
+
+  <FeatureType name="Country">
+    <SimpleProperty name="name" type="string"/>
+    <SimpleProperty name="upperName" type="string" minOccurs="0"/>
+    <SimpleProperty name="dataOrigin" type="string" minOccurs="0"/>
+    <SimpleProperty name="area" type="float" minOccurs="0" />
+    <SimpleProperty name="queryBBoxOverlap" type="float" minOccurs="0" />
+    <GeometryProperty name="geom" type="MultiSurface" coordinateDimension="2D"/>
+  </FeatureType>
+
+  <FeatureType name="Book">
+    <SimpleProperty name="title" type="string"/>
+    <SimpleProperty name="publicationDate" type="date"/>
+  </FeatureType>
+ 
+</ApplicationSchema>

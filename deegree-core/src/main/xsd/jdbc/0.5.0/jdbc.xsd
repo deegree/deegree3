@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+    This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+  -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:jdbc="http://www.deegree.org/jdbc" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  targetNamespace="http://www.deegree.org/jdbc" elementFormDefault="qualified" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.commons.jdbc.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="PooledConnection">
+    <complexType>
+      <annotation>
+        <documentation>Defines a connection pool that can be referenced in other documents using its identifier.
+        </documentation>
+      </annotation>
+      <sequence>
+        <element name="Url" type="string" />
+        <element name="User" type="string" />
+        <element name="Password" type="string" />
+        <element name="PoolMinSize" type="positiveInteger" minOccurs="0" />
+        <element name="PoolMaxSize" type="positiveInteger" minOccurs="0" />
+        <element name="ReadOnly" type="boolean" minOccurs="0" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0"/>
+    </complexType>
+  </element>
+</schema>
