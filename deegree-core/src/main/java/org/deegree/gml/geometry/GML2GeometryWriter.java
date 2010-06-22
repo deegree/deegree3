@@ -58,10 +58,12 @@ import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
+import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
+import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
@@ -352,20 +354,46 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     public void exportMultiGeometry( MultiGeometry<? extends Geometry> multiGeometry )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        startGeometry( "MultiGeometry", multiGeometry );
-
-        for ( Geometry geom : multiGeometry ) {
-            if ( exportedIds.contains( geom.getId() ) ) {
-                writer.writeEmptyElement( "gml", "geometryMember", GML21NS );
-                writer.writeAttribute( "xlink", XLNNS, "href", "#" + geom.getId() );
-            } else {
-                writer.writeStartElement( "gml", "geometryMember", GML21NS );
-                export( geom );
-                writer.writeEndElement();
-            }
+        switch ( multiGeometry.getMultiGeometryType() ) {
+        case MULTI_POINT: {
+            exportMultiPoint( (MultiPoint) multiGeometry );
+            break;
         }
-
-        writer.writeEndElement(); // </gml:MultiGeometry>
+        case MULTI_LINE_STRING: {
+            exportMultiLineString( (MultiLineString) multiGeometry );
+            break;
+        }
+        case MULTI_CURVE: {
+            exportMultiLineString( (MultiCurve) multiGeometry );
+            break;
+        }
+        case MULTI_POLYGON: {
+            exportMultiPolygon( (MultiPolygon) multiGeometry );
+            break;
+        }
+        case MULTI_SURFACE: {
+            exportMultiPolygon( (MultiSurface) multiGeometry );
+            break;
+        }
+        case MULTI_GEOMETRY: {
+            startGeometry( "MultiGeometry", multiGeometry );
+            for ( Geometry geom : multiGeometry ) {
+                if ( exportedIds.contains( geom.getId() ) ) {
+                    writer.writeEmptyElement( "gml", "geometryMember", GML21NS );
+                    writer.writeAttribute( "xlink", XLNNS, "href", "#" + geom.getId() );
+                } else {
+                    writer.writeStartElement( "gml", "geometryMember", GML21NS );
+                    export( geom );
+                    writer.writeEndElement();
+                }
+            }
+            writer.writeEndElement(); // </gml:MultiGeometry>
+            break;
+        }
+        case MULTI_SOLID: {
+            throw new UnsupportedOperationException();
+        }
+        }
     }
 
     /**
@@ -420,6 +448,32 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     }
 
     /**
+     * @param multiCurve
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */
+    public void exportMultiLineString( MultiCurve multiCurve )
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
+
+        startGeometry( "MultiLineString", multiCurve );
+
+        for ( Curve curve : multiCurve ) {
+            if ( exportedIds.contains( curve.getId() ) ) {
+                writer.writeEmptyElement( "gml", "lineStringMember", GML21NS );
+                writer.writeAttribute( "xlink", XLNNS, "href", "#" + curve.getId() );
+
+            } else {
+                writer.writeStartElement( "gml", "lineStringMember", GML21NS );
+                exportLineString( curve );
+                writer.writeEndElement();
+            }
+        }
+
+        writer.writeEndElement(); // </gml:MultiLineString>
+    }
+
+    /**
      * @param multiPolygon
      * @throws XMLStreamException
      * @throws UnknownCRSException
@@ -438,6 +492,31 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
             } else {
                 writer.writeStartElement( "gml", "polygonMember", GML21NS );
                 exportPolygon( polygon );
+                writer.writeEndElement();
+            }
+        }
+
+        writer.writeEndElement(); // </gml:MultiPolygon>
+    }
+
+    /**
+     * @param multiPolygon
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */
+    public void exportMultiPolygon( MultiSurface multiSurface )
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
+
+        startGeometry( "MultiPolygon", multiSurface );
+
+        for ( Surface polygon : multiSurface ) {
+            if ( polygon.getId() != null && exportedIds.contains( polygon.getId() ) ) {
+                writer.writeEmptyElement( "gml", "polygonMember", GML21NS );
+                writer.writeAttribute( "xlink", XLNNS, "href", "#" + polygon.getId() );
+            } else {
+                writer.writeStartElement( "gml", "polygonMember", GML21NS );
+                exportSurface( polygon );
                 writer.writeEndElement();
             }
         }
