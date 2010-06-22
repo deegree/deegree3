@@ -35,11 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui;
 
-import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
-import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
-import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
-import static org.deegree.client.mdeditor.gui.GuiUtils.IS_REFERENCED_PARAM;
-import static org.deegree.client.mdeditor.gui.GuiUtils.getUniqueId;
+import static org.deegree.client.mdeditor.gui.GuiUtils.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
@@ -148,7 +144,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
                 grpId = fg.getId();
                 if ( fg != null ) {
                     HtmlPanelGrid grid = new HtmlPanelGrid();
-                    grid.setId( GuiUtils.getUniqueId() );
+                    grid.setId( getUniqueId() );
                     addFormGroup( grid, fg, true );
 
                     forms.put( grpId, grid );
@@ -163,7 +159,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         LOG.debug( "Add FormGroup " + fg.getId() );
 
         HtmlPanelGrid grid = new HtmlPanelGrid();
-        grid.setId( GuiUtils.getUniqueId() );
+        grid.setId( getUniqueId() );
         grid.setColumns( 3 );
         grid.setHeaderClass( "mdFormHeader" + ( isMain ? "" : " mdFormHeaderSub" ) );
         grid.setStyleClass( "mdForm" + ( isMain ? "" : " mdFormSub" ) );
@@ -194,16 +190,16 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
     }
 
     private void addReferencedFormGroup( FormGroup fg, HtmlPanelGrid grid ) {
-
-        Application app = FacesContext.getCurrentInstance().getApplication();
+        FacesContext fc = FacesContext.getCurrentInstance();
+        Application app = fc.getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
         ELContext elContext = FacesContext.getCurrentInstance().getELContext();
 
-        addButtons( grpId, grid, fg.isReferenced() );
+        addButtons( fc, grpId, grid, fg.isReferenced() );
 
         // list
         HtmlDataTable dataTable = new HtmlDataTable();
-        dataTable.setId( GuiUtils.getUniqueId() );
+        dataTable.setId( getUniqueId() );
         dataTable.setStyleClass( "dgList" );
         dataTable.setHeaderClass( "dgListHeader" );
         dataTable.setRowClasses( "dgListRowOdd, dgListRowEven" );
@@ -220,7 +216,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         for ( FormElement fe : fg.getFormElements() ) {
             if ( fe instanceof FormField ) {
                 HtmlColumn col = new HtmlColumn();
-                col.setId( GuiUtils.getUniqueId() );
+                col.setId( getUniqueId() );
                 HtmlOutputText value = new HtmlOutputText();
 
                 String elValue = "#{fgi.values['" + ( (FormField) fe ).getPath() + "']}";
@@ -228,7 +224,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
                 value.setValueExpression( "value", veValue );
 
                 HtmlOutputText header = new HtmlOutputText();
-                header.setValue( ( (FormField) fe ).getTitle() );
+                header.setValue( ( (FormField) fe ).getLabel() );
                 col.getChildren().add( value );
                 col.getFacets().put( "header", header );
                 dataTable.getChildren().add( col );
@@ -257,7 +253,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
 
     }
 
-    private void addButtons( String grpId, HtmlPanelGrid grid, boolean isReferencedGrp ) {
+    private void addButtons( FacesContext fc, String grpId, HtmlPanelGrid grid, boolean isReferencedGrp ) {
         HtmlPanelGrid btGrid = new HtmlPanelGrid();
         btGrid.setColumns( 5 );
         HtmlCommandButton saveButton = createButton( grpId, "saveFormGroup", ACTION_ATT_VALUES.SAVE, true,
@@ -270,7 +266,9 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
                                                       isReferencedGrp );
         HtmlCommandButton deleteButton = createButton( grpId, "deleteFormGroup", ACTION_ATT_VALUES.DELETE, false,
                                                        isReferencedGrp );
-        deleteButton.setOnclick( "return fgListConfirmDelete('Möchten Sie wirklich löschen?')" );
+
+        String confirmMsg = getResourceText( fc, "mdLabels", "deleteFormGroup_confirmMsg" );
+        deleteButton.setOnclick( "return fgListConfirmDelete('" + confirmMsg + "')" );
 
         btGrid.getChildren().add( saveButton );
         btGrid.getChildren().add( newButton );
@@ -289,7 +287,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
 
         HtmlCommandButton bt = new HtmlCommandButton();
         bt.setId( getUniqueId() );
-        bt.setValue( GuiUtils.getResourceText( FacesContext.getCurrentInstance(), "mdLabels", labelKey ) );
+        bt.setValue( getResourceText( FacesContext.getCurrentInstance(), "mdLabels", labelKey ) );
         bt.getAttributes().put( GROUPID_ATT_KEY, grpId );
         bt.getAttributes().put( ACTION_ATT_KEY, action );
 
@@ -360,8 +358,8 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
     private void addFormField( HtmlPanelGrid parentGrid, FormField fe ) {
 
         LOG.debug( "Add FormField " + fe.getPath() );
-
-        Application app = FacesContext.getCurrentInstance().getApplication();
+        FacesContext fc = FacesContext.getCurrentInstance();
+        Application app = fc.getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
         ELContext elContext = FacesContext.getCurrentInstance().getELContext();
 
@@ -369,7 +367,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         UIOutput newOutput = new UIOutput();
         newOutput.setValue( fe.getLabel() );
         setVisibility( fe.getPath().toString(), newOutput, ef, elContext );
-        newOutput.setId( GuiUtils.getUniqueId() );
+        newOutput.setId( getUniqueId() );
         newOutput.setValueExpression( "styleClass", ef.createValueExpression( elContext, "mdFormLabel", String.class ) );
 
         parentGrid.getChildren().add( newOutput );
@@ -378,16 +376,17 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
 
         // help
         HtmlCommandLink helpLink = new HtmlCommandLink();
-        helpLink.setId( GuiUtils.getUniqueId() );
+        helpLink.setId( getUniqueId() );
         helpLink.setStyleClass( "helpLink" );
         HtmlGraphicImage img = new HtmlGraphicImage();
-        img.setTitle( "Hilfe" );
+
+        img.setTitle( getResourceText( fc, "mdLabels", "helpTooltip" ) );
         img.setValueExpression( "library", ef.createValueExpression( elContext, "deegree/images", String.class ) );
         img.setValueExpression( "name", ef.createValueExpression( elContext, "help.gif", String.class ) );
         helpLink.getChildren().add( img );
 
         UIParameter param = new UIParameter();
-        param.setId( GuiUtils.getUniqueId() );
+        param.setId( getUniqueId() );
         param.setName( "mdHelp" );
         param.setValue( fe.getHelp() );
         helpLink.getChildren().add( param );
@@ -427,7 +426,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
                 if ( se.getReferenceToCodeList() != null ) {
                     addCodeListItems( input, se.getReferenceToCodeList() );
                 } else if ( se.getReferenceToGroup() != null ) {
-                    input.getAttributes().put( GuiUtils.GROUPREF_ATT_KEY, se.getReferenceToGroup() );
+                    input.getAttributes().put( GROUPREF_ATT_KEY, se.getReferenceToGroup() );
                     input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
                 }
             } else {
@@ -435,7 +434,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
                 if ( se.getReferenceToCodeList() != null ) {
                     addCodeListItems( input, se.getReferenceToCodeList() );
                 } else if ( se.getReferenceToGroup() != null ) {
-                    input.getAttributes().put( GuiUtils.GROUPREF_ATT_KEY, se.getReferenceToGroup() );
+                    input.getAttributes().put( GROUPREF_ATT_KEY, se.getReferenceToGroup() );
                     input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
                 }
             }
@@ -453,12 +452,12 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         }
         if ( input != null ) {
             input.setId( id );
-            input.getAttributes().put( GuiUtils.FIELDPATH_ATT_KEY, fe.getPath() );
+            input.getAttributes().put( FIELDPATH_ATT_KEY, fe.getPath() );
             setStyleClass( fe.getPath().toString(), input, ef, elContext );
             if ( input instanceof HtmlInputManyText ) {
                 // add items
                 HtmlInputTextItems items = new HtmlInputTextItems();
-                items.setId( GuiUtils.getUniqueId() );
+                items.setId( getUniqueId() );
                 setValue( fe.getPath().toString(), items, ef, elContext );
                 setFormFieldChangedAjaxBehavior( items, eventName );
                 input.getChildren().add( items );
@@ -478,7 +477,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
             codeList = CodeListConfigurationFactory.getCodeList( codeListRef );
             for ( String value : codeList.getCodes().keySet() ) {
                 UISelectItem si = new UISelectItem();
-                si.setId( GuiUtils.getUniqueId() );
+                si.setId( getUniqueId() );
                 si.setItemValue( value );
                 si.setItemLabel( codeList.getCodes().get( value ) );
                 select.getChildren().add( si );
