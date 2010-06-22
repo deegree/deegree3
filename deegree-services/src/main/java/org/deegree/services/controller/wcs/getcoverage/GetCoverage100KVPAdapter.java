@@ -146,7 +146,7 @@ public class GetCoverage100KVPAdapter {
         try {
             targetEnvelope = GeometryUtils.createConvertedEnvelope( requestedEnvelope, new CRS( responseCRS ) );
         } catch ( TransformationException e ) {
-            throw new OWSException( "You envelope has no dependance in the given response CRS because: "
+            throw new OWSException( "Specified envelope can not be converted into the response CRS: "
                                     + e.getLocalizedMessage(), OWSException.OPERATION_NOT_SUPPORTED, "responseCRS" );
         }
 
