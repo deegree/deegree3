@@ -90,6 +90,8 @@ import org.slf4j.Logger;
  */
 public class HttpResponseBuffer extends HttpServletResponseWrapper {
 
+    private boolean addEncoding = true;
+
     private static final Logger LOG = getLogger( HttpResponseBuffer.class );
 
     // if buffer == null, buffering is disabled
@@ -192,9 +194,12 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
             factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
             String encoding = "UTF-8";
             xmlWriter = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), encoding ) );
-            xmlWriter.writeStartDocument(encoding, "1.0");
-            // TODO decide again if character encoding should be set (WFS CITE 1.1.0 tests don't like it, but iGeoDesktop/OpenJUMP currently require it) 
-            setCharacterEncoding( "UTF-8" );
+            xmlWriter.writeStartDocument( encoding, "1.0" );
+            // TODO decide again if character encoding should be set (WFS CITE 1.1.0 tests don't like it, but
+            // iGeoDesktop/OpenJUMP currently require it)
+            if ( addEncoding ) {
+                setCharacterEncoding( "UTF-8" );
+            }
         }
         return xmlWriter;
     }
