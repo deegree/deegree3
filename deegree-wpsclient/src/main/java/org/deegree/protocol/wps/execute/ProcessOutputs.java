@@ -39,10 +39,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO add class documentation here
  * 
- * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author: Admin $
+ * Represents the ProcessOutputs section of the Execute chapter of the WPS specification 1.0
+ * 
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -50,10 +51,18 @@ public class ProcessOutputs {
 
     private List<Output> outputList = new ArrayList();
 
+    /**
+     *  
+     * @return outputList
+     */
     public List<Output> getOutputs() {
         return outputList;
     }
-
+    
+    /**
+     *  
+     * @param outputList
+     */
     public void addOutput( Output output ) {
         this.outputList.add( output );
     }

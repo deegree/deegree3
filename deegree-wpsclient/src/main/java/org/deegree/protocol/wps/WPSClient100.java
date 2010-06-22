@@ -40,6 +40,7 @@ import static org.deegree.protocol.i18n.Messages.get;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -226,11 +227,16 @@ public class WPSClient100 {
     }
 
     public String[] getProcessIdentifiers() {
-        int size = this.serviceCapabilities.getProcessOfferings().size();
+        
+        List<ProcessBrief> processBriefList=this.serviceCapabilities.getProcessOfferings();
+
+        int size = processBriefList.size();
         String[] identifier = new String[size];
 
+        
+        
         for ( int i = 0; i < size; i++ ) {
-            identifier[i] = serviceCapabilities.getProcessOfferings().get( i ).getIdentifier();
+            identifier[i] = processBriefList.get( i ).getIdentifier();
         }
 
         return identifier;

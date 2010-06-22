@@ -101,7 +101,7 @@ public class WPSCLI {
         processExecution.addInput( "GMLInput", input, false );
         processExecution.addInput( "BufferDistance", "23", false );
 
-        ExecuteResponse executeResponse = new ExecuteResponse( processExecution.sendExecuteRequest() );
+        ExecuteResponse executeResponse = new ExecuteResponse( processExecution.sendExecuteRequestXMLAdapterReturn() );
 
     }
 

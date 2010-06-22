@@ -36,11 +36,11 @@
 package org.deegree.protocol.wps.execute;
 
 /**
- * 
+ * Generates Execute Request
  * InputObject is used to assign one input
  * Identifier and InputObject are mandatory, input will be set on "as Reference" as default
  * 
- * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
  * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
@@ -117,22 +117,39 @@ public class Execute {
 
     }
 
-    String wpsNamespace = "wps";
+    private String wpsNamespace = "wps";
 
-    String owsNamespace = "ows";
+    private String owsNamespace = "ows";
 
-    String xsiNamespace = "xsi";
+    private String xsiNamespace = "xsi";
 
     public Execute( DescribeProcess describeProcess ) {
         this.desribeProcess = describeProcess;
     }
 
+    /**
+     * 
+     * @param url
+     * 
+     */
     public Execute( URL url ) {
         DescribeProcess describeProcess = new DescribeProcess( url );
 
         this.desribeProcess = describeProcess;
     }
 
+
+    /**
+     * 
+     * @param processDesription
+     * 
+     * @param dataInputExecuteList
+     * 
+     * @param responseFormList
+     * 
+     * @param url
+     * 
+     */
     public Execute( ProcessDescription processDesription, List<DataInputExecute> dataInputExecuteList,
                     List<ResponseForm> responseFormList, URL url ) {
         identifier = processDesription.getIdentifier();
@@ -145,6 +162,13 @@ public class Execute {
         this.responseFormList = responseFormList;
     }
 
+    /**
+     * 
+     * @return XMLStreamWriter
+     * 
+     * @param XMLStreamWriter
+     * 
+     */
     private XMLStreamWriter writeHeader( XMLStreamWriter writer )
                             throws XMLStreamException {
 
@@ -162,6 +186,13 @@ public class Execute {
 
     }
 
+    /**
+     * 
+     * @return XMLStreamWriter
+     * 
+     * @param XMLStreamWriter
+     * 
+     */
     private XMLStreamWriter writeInputs( XMLStreamWriter writer )
                             throws XMLStreamException {
         if ( dataInputExecuteList != null ) {
@@ -233,6 +264,13 @@ public class Execute {
         return writer;
     }
 
+    /**
+     * 
+     * @return XMLStreamWriter
+     * 
+     * @param XMLStreamWriter
+     * 
+     */
     private XMLStreamWriter writeOutputs( XMLStreamWriter writer )
                             throws XMLStreamException {
         for ( int j = 0; j < responseFormList.size(); j++ ) {
@@ -252,10 +290,10 @@ public class Execute {
                 writer.writeStartElement( wpsNamespace, "ResponseDocument", NS_CONTEXT.getURI( wpsNamespace ) );
 
                 writer.writeAttribute( "storeExecuteResponse",
-                                       String.valueOf( responseForm.getResponseDocument().storeExecuteResponse ) );
-                writer.writeAttribute( "lineage", String.valueOf( responseForm.getResponseDocument().lineage ) );
+                                       String.valueOf( responseForm.getResponseDocument().isStoreExecuteResponse() ) );
+                writer.writeAttribute( "lineage", String.valueOf( responseForm.getResponseDocument().isLineage() ) );
 
-                writer.writeAttribute( "status", String.valueOf( responseForm.getResponseDocument().status ) );
+                writer.writeAttribute( "status", String.valueOf( responseForm.getResponseDocument().isStatus() ) );
 
                 for ( int i = 0; i < responseForm.getResponseDocument().getOutput().size(); i++ ) {
                     writer.writeStartElement( wpsNamespace, "Output", NS_CONTEXT.getURI( wpsNamespace ) );
@@ -282,6 +320,7 @@ public class Execute {
 
     }
 
+    
     public void createExecuteRequest()
                             throws XMLStreamException, IOException {
 
@@ -323,6 +362,11 @@ public class Execute {
         LOG.info("ExecuteRequest generated successfully");
     }
 
+    /**
+     * 
+     * @return ByteArrayOutputStream
+     * 
+     */
     public ByteArrayOutputStream returnExecuteRequest()
                             throws XMLStreamException, IOException {
 

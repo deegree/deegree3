@@ -38,10 +38,11 @@ package org.deegree.protocol.wps.execute;
 import org.deegree.protocol.wps.describeprocess.Format;
 
 /**
- * TODO add class documentation here
  * 
- * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author: Admin $
+ * Represents the OutputReference section of the Execute chapter of the WPS specification 1.0
+ * 
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -51,18 +52,34 @@ public class OutputReference {
 
     private String href;
 
+    /**
+     *  
+     * @return format
+     */
     public Format getFormat() {
         return format;
     }
 
+    /**
+     *  
+     * @param format
+     */
     public void setFormat( Format format ) {
         this.format = format;
     }
 
+    /**
+     *  
+     * @return href
+     */
     public String getHref() {
         return href;
     }
 
+    /**
+     *  
+     * @param href
+     */
     public void setHref( String href ) {
         this.href = href;
     }

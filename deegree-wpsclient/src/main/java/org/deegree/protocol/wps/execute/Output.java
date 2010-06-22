@@ -36,10 +36,11 @@
 package org.deegree.protocol.wps.execute;
 
 /**
- * TODO add class documentation here
  * 
- * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author: Admin $
+ * Represents the Output section of the Execute chapter of the WPS specification 1.0
+ * 
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -59,38 +60,74 @@ public class Output {
         return identifier;
     }
 
+    /**
+     *  
+     * @param identifier
+     */
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
 
+    /**
+     *  
+     * @return title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     *  
+     * @param title
+     */
     public void setTitle( String title ) {
         this.title = title;
     }
 
+    /**
+     *  
+     * @return abstract
+     */
     public String getAbstraCt() {
         return abstraCt;
     }
 
+    /**
+     *  
+     * @param abstract
+     */
     public void setAbstraCt( String abstraCt ) {
         this.abstraCt = abstraCt;
     }
 
+    /**
+     *  
+     * @return outputReference
+     */
     public OutputReference getOutputReference() {
         return outputReference;
     }
 
+    /**
+     *  
+     * @param outputReference
+     */
     public void setOutputReference( OutputReference outputReference ) {
         this.outputReference = outputReference;
     }
 
+    /**
+     *  
+     * @return dataType
+     */
     public DataType getDataType() {
         return dataType;
     }
 
+    /**
+     *  
+     * @param dataType
+     */
     public void setDataType( DataType dataType ) {
         this.dataType = dataType;
     }

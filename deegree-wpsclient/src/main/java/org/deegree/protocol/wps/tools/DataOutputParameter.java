@@ -26,9 +26,9 @@ public class DataOutputParameter {
     private String schema;
 
     public DataOutputParameter( OutputDescription outputDescription ) {
-        outputDescription.getAbstraCt();
-        outputDescription.getIdentifier();
-        outputDescription.getTitle();
+        this.abstraCt=outputDescription.getAbstraCt();
+        this.identifier=outputDescription.getIdentifier();
+        this.title= outputDescription.getTitle();
         if ( outputDescription.getOutputFormChoice().getLiteralOutput() != null ) {
             LiteralOutputData literalOutput = outputDescription.getOutputFormChoice().getLiteralOutput();
             this.dataType = literalOutput.getDataType();

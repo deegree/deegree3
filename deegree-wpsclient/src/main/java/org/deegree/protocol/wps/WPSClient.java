@@ -44,6 +44,7 @@ import java.util.Map;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.wps.execute.ExecuteResponse;
+import org.deegree.protocol.wps.getcapabilities.ProcessBrief;
 import org.deegree.protocol.wps.getcapabilities.WPSCapabilities;
 import org.deegree.protocol.wps.tools.InputObject;
 import org.deegree.protocol.wps.tools.LoadFile;
@@ -53,8 +54,8 @@ import org.slf4j.LoggerFactory;
 /**
  * TODO add class documentation here
  * 
- * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author: Admin $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -105,13 +106,19 @@ public class WPSClient {
      * @return identifiers of all processes known to the WPS instance, never <code>null</code> 
      */
     public String[] getProcessIdentifiers() {
-        int size = this.serviceCapabilities.getProcessOfferings().size();
-        String[] identifiers = new String[size];
+        
+        
+        List<ProcessBrief> processBriefList=this.serviceCapabilities.getProcessOfferings();
 
+        int size = processBriefList.size();
+        String[] identifier = new String[size];
+
+        
+        
         for ( int i = 0; i < size; i++ ) {
-            identifiers[i] = serviceCapabilities.getProcessOfferings().get( i ).getIdentifier();
+            identifier[i] = processBriefList.get( i ).getIdentifier();
         }
-        return identifiers;
+        return identifier;
     }
 
     /**
@@ -204,6 +211,21 @@ public class WPSClient {
 
         return processExecution.sendExecuteRequestExecuteResponseReturn();
     }
+    
+    public XMLAdapter executeProcessXMLAdapterResult( InputObject[] inputobject, String processIdentifier ) {
+
+        ProcessExecution processExecution = new ProcessExecution(
+                                                                  getProcessInfo( processIdentifier ).getProcessDescription(),
+                                                                  describeProcessURL );
+
+        for ( int i = 0; i < inputobject.length; i++ ) {
+            processExecution.addInput(inputobject[i] );
+        }
+
+        return processExecution.sendExecuteRequestXMLAdapterReturn();
+    }
+    
+    
 
     /**
      * 

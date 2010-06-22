@@ -51,10 +51,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * Parses the Execute Response and generates objects
  * 
- * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author: Admin $
+ * @author <a href="mailto:walencia@uni-heidelberg.de">Your Name</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -62,7 +62,7 @@ public class ExecuteResponse {
 
     private static NamespaceContext NS_CONTEXT;
 
-    XMLAdapter xmlAdapter;
+    private XMLAdapter xmlAdapter;
 
     private String service;
 
@@ -80,7 +80,7 @@ public class ExecuteResponse {
 
     private DataInputExecute dataInputExecute;
 
-    private OutputDefintion outputDefinition;
+    private OutputDefinition outputDefinition;
 
     private ProcessOutputs processOutputs;
     
@@ -94,14 +94,20 @@ public class ExecuteResponse {
 
     }
 
+    /**
+     *  
+     * @param xmlAdapter
+     */
     public ExecuteResponse( XMLAdapter xmlAdapter ) {
         
         LOG.info("parsing response...");
-        
+
+        try{
         this.xmlAdapter = xmlAdapter;
 
         OMElement rootElement = xmlAdapter.getRootElement();
 
+ 
         this.service = rootElement.getAttributeValue( new QName( "service" ) );
         this.version = rootElement.getAttributeValue( new QName( "version" ) );
         this.lang = rootElement.getAttributeValue( new QName( "http://www.w3.org/XML/1998/namespace", "lang", "xml" ) );
@@ -196,47 +202,94 @@ public class ExecuteResponse {
         }
         this.processOutputs = procssOutputs;
         
-        LOG.info("parsing response done");
+        LOG.info("parsing response successfully");
+        }
+        catch(Exception e){
+            LOG.error( e.toString() );
+            LOG.info( "xmlAdapter: " + xmlAdapter.getRootElement());
+           
+            
+        }
 
 
     }
 
+    /**
+     *  
+     * @return service
+     */
     public String getService() {
         return service;
     }
 
+    /**
+     *  
+     * @return version
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     *  
+     * @return language
+     */
     public String getLang() {
         return lang;
     }
 
+    /**
+     *  
+     * @return statusLocation
+     */
     public String getStatusLocation() {
         return statusLocation;
     }
 
+    /**
+     *  
+     * @return serviceInstance
+     */
     public String getSericeInstance() {
         return serviceInstance;
     }
 
-    public ProcessBrief getProcess() {
+    /**
+     *  
+     * @return process
+     */
+    public ProcessBrief getProcessBrief() {
         return process;
     }
 
+    /**
+     *  
+     * @return status
+     */
     public Status getStatus() {
         return status;
     }
 
+    /**
+     *  
+     * @return dataInputExecute
+     */
     public DataInputExecute getDataInputExecute() {
         return dataInputExecute;
     }
 
-    public OutputDefintion getOutputDefinition() {
+    /**
+     *  
+     * @return outputDefinition
+     */
+    public OutputDefinition getOutputDefinition() {
         return outputDefinition;
     }
 
+    /**
+     *  
+     * @return processOutputs
+     */
     public ProcessOutputs getProcessOutputs() {
         return processOutputs;
     }

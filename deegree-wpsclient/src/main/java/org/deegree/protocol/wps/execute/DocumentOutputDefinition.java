@@ -38,27 +38,27 @@ package org.deegree.protocol.wps.execute;
 /**
  * TODO add class documentation here
  * 
- * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author: Admin $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
 public class DocumentOutputDefinition {
 
-    String mimeType;
+    private String mimeType;
 
-    String encoding;
+    private String encoding;
 
-    String schema;
+    private String schema;
 
-    String uom;
+    private String uom;
 
     boolean asReference;
 
-    String Identifier;
+    private String Identifier;
 
-    String title;
+    private String title;
 
-    String abstraCt;
+    private String abstraCt;
 
 }

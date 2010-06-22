@@ -140,7 +140,7 @@ public class ProcessExecution {
         outputConfigurationList.add( outputConfiguration );
     }
 
-    public XMLAdapter sendExecuteRequest() {
+    public XMLAdapter sendExecuteRequestXMLAdapterReturn() {
 
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
@@ -266,6 +266,9 @@ public class ProcessExecution {
         return executeResponse;
 
     }
+    
+    
+    
 
     public Object sendExecuteRequestExecuteObjectReturn() {
         

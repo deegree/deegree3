@@ -39,6 +39,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.deegree.protocol.wps.execute.ExecuteResponse;
 import org.deegree.protocol.wps.tools.InputObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -57,6 +58,8 @@ public class WPSClientTest {
 
     private static final String FULL_SERVICE_URL = "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities";
 
+   
+    
     @Test
     public void testGetProcessIdentifiers()
                             throws MalformedURLException {
@@ -75,6 +78,7 @@ public class WPSClientTest {
         ProcessInfo pi = wpsClient.getProcessInfo( "Buffer" );
         Assert.assertNotNull( pi );
         Assert.assertEquals( "Buffer", pi.getIdentifier() );
+        
         // TODO test abstract and input and output parameters.
     }
     
@@ -127,9 +131,10 @@ public class WPSClientTest {
         InputObject inputObject2 = wpsClient.setInputasObject( "BufferDistance", "43" );
         inputObjectBuffer[1] = inputObject2;
 
-        Object ergebnis = wpsClient.executeProcessObejctResult( inputObjectBuffer, "Buffer" );
+        ExecuteResponse ergebnis = wpsClient.executeProcessExecuteResponseResult( inputObjectBuffer, "Buffer" );
 
-        System.out.println( "ergebnis Buffer:" );
-        System.out.println( String.valueOf( ergebnis ) );
+        
+      Assert.assertEquals(ergebnis.getProcessOutputs().getOutputs().get( 0 ).getIdentifier(), "BufferedGeometry");
+        
     }
 }
