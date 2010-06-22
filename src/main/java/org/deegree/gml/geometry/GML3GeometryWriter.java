@@ -445,8 +445,8 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     @Override
     public void exportCurve( Curve curve )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        switch ( curve.getCurveType() ) {
 
+        switch ( curve.getCurveType() ) {
         case CompositeCurve:
             exportCompositeCurve( (CompositeCurve) curve );
             break;
@@ -510,43 +510,42 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     @Override
     public void exportSurface( Surface surface )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        switch ( surface.getSurfaceType() ) {
 
-        case CompositeSurface:
+        switch ( surface.getSurfaceType() ) {
+        case CompositeSurface: {
             exportCompositeSurface( (CompositeSurface) surface );
             break;
-
-        case OrientableSurface:
+        }
+        case OrientableSurface: {
             exportOrientableSurface( (OrientableSurface) surface );
             break;
-
-        case Polygon:
+        }
+        case Polygon: {
             exportPolygon( (Polygon) surface );
             break;
-
-        case PolyhedralSurface:
+        }
+        case PolyhedralSurface: {
             exportPolyhedralSurface( (PolyhedralSurface) surface );
             break;
-
-        case Surface:
+        }
+        case Surface: {
             startGeometry( "Surface", surface );
-
             writer.writeStartElement( gmlNs, "patches" );
             for ( SurfacePatch surfacePatch : surface.getPatches() ) {
                 exportSurfacePatch( surfacePatch );
             }
             writer.writeEndElement();
-
             writer.writeEndElement();
             break;
-
-        case Tin:
+        }
+        case Tin: {
             exportTin( (Tin) surface );
             break;
-
-        case TriangulatedSurface:
+        }
+        case TriangulatedSurface: {
             exportTriangulatedSurface( (TriangulatedSurface) surface );
             break;
+        }
         }
     }
 
@@ -744,8 +743,8 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     @Override
     public void exportRing( Ring ring )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        switch ( ring.getRingType() ) {
 
+        switch ( ring.getRingType() ) {
         case Ring:
             if ( GML_32 != version ) {
                 startGeometry( "Ring", ring );
@@ -761,7 +760,6 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             }
             writer.writeEndElement();
             break;
-
         case LinearRing:
             LinearRing linearRing = (LinearRing) ring;
 

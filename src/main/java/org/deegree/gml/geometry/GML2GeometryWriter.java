@@ -66,7 +66,6 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
@@ -158,34 +157,45 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         }
     }
 
-    /**
-     * @param geometry
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
+    @SuppressWarnings("unchecked")
     @Override
     public void export( Geometry geometry )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        if ( geometry instanceof Point ) {
-            exportPoint( (Point) geometry );
-        } else if ( geometry instanceof Polygon ) {
-            exportPolygon( (Polygon) geometry );
-        } else if ( geometry instanceof LinearRing ) {
-            exportLinearRing( (LinearRing) geometry );
-        } else if ( geometry instanceof LineString ) {
-            exportLineString( (LineString) geometry );
-        } else if ( geometry instanceof Envelope ) {
+        switch ( geometry.getGeometryType() ) {
+        case COMPOSITE_GEOMETRY: {
+            exportCompositeGeometry( (CompositeGeometry<GeometricPrimitive>) geometry );
+            break;
+        }
+        case ENVELOPE: {
             exportEnvelope( (Envelope) geometry );
-        } else if ( geometry instanceof MultiPoint ) {
-            exportMultiPoint( (MultiPoint) geometry );
-        } else if ( geometry instanceof MultiLineString ) {
-            exportMultiLineString( (MultiLineString) geometry );
-        } else if ( geometry instanceof MultiPolygon ) {
-            exportMultiPolygon( (MultiPolygon) geometry );
-        } else if ( geometry instanceof MultiGeometry<?> ) {
-            exportMultiGeometry( (MultiGeometry<?>) geometry );
+            break;
+        }
+        case MULTI_GEOMETRY: {
+            exportMultiGeometry( (MultiGeometry<? extends Geometry>) geometry );
+            break;
+        }
+        case PRIMITIVE_GEOMETRY: {
+            switch ( ( (GeometricPrimitive) geometry ).getPrimitiveType() ) {
+            case Curve: {
+                exportCurve( (Curve) geometry );
+                break;
+            }
+            case Point: {
+                exportPoint( (Point) geometry );
+                break;
+            }
+            case Solid: {
+                exportSolid( (Solid) geometry );
+                break;
+            }
+            case Surface: {
+                exportSurface( (Surface) geometry );
+                break;
+            }
+            }
+            break;
+        }
         }
     }
 
@@ -208,7 +218,6 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                             throws XMLStreamException, TransformationException, UnknownCRSException {
 
         double[] ords = getTransformedCoordinate( point.getCoordinateSystem(), point.getAsArray() );
-
         writer.writeStartElement( "gml", "coord", GML21NS );
         writer.writeStartElement( "gml", "X", GML21NS );
         writer.writeCharacters( formatter.format( ords[0] ) );
@@ -266,7 +275,6 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         if ( outerRing.getId() != null && exportedIds.contains( outerRing.getId() ) ) {
             writer.writeEmptyElement( "gml", "outerBoundaryIs", GML21NS );
             writer.writeAttribute( "xlink", XLNNS, "href", "#" + outerRing.getId() );
-
         } else {
             writer.writeStartElement( "gml", "outerBoundaryIs", GML21NS );
             exportLinearRing( outerRing );
@@ -345,6 +353,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                             throws XMLStreamException, TransformationException, UnknownCRSException {
 
         startGeometry( "MultiGeometry", multiGeometry );
+
         for ( Geometry geom : multiGeometry ) {
             if ( exportedIds.contains( geom.getId() ) ) {
                 writer.writeEmptyElement( "gml", "geometryMember", GML21NS );
@@ -355,6 +364,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                 writer.writeEndElement();
             }
         }
+
         writer.writeEndElement(); // </gml:MultiGeometry>
     }
 
@@ -391,14 +401,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
      */
     public void exportMultiLineString( MultiLineString multiLineString )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
-        writer.writeStartElement( "gml", "MultiLineString", GML21NS );
 
-        if ( multiLineString.getId() != null ) {
-            writer.writeAttribute( "gid", multiLineString.getId() );
-        }
-        if ( multiLineString.getCoordinateSystem().getName() != null ) {
-            writer.writeAttribute( "srsName", multiLineString.getCoordinateSystem().getName() );
-        }
+        startGeometry( "MultiLineString", multiLineString );
 
         for ( LineString lineString : multiLineString ) {
             if ( exportedIds.contains( lineString.getId() ) ) {
@@ -411,6 +415,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                 writer.writeEndElement();
             }
         }
+
         writer.writeEndElement(); // </gml:MultiLineString>
     }
 
@@ -422,12 +427,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
      */
     public void exportMultiPolygon( MultiPolygon multiPolygon )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
-        writer.writeStartElement( "gml", "MultiPolygon", GML21NS );
 
-        if ( multiPolygon.getId() != null ) {
-            writer.writeAttribute( "gid", multiPolygon.getId() );
-        }
-        writer.writeAttribute( "srsName", multiPolygon.getCoordinateSystem().getName() );
+        startGeometry( "MultiPolygon", multiPolygon );
 
         for ( Polygon polygon : multiPolygon ) {
             if ( polygon.getId() != null && exportedIds.contains( polygon.getId() ) ) {
@@ -440,6 +441,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                 writer.writeEndElement();
             }
         }
+
         writer.writeEndElement(); // </gml:MultiPolygon>
     }
 
@@ -468,9 +470,19 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     }
 
     @Override
-    public void exportCurve( Curve curve ) {
-        throw new UnsupportedOperationException(
-                                                 "Cannot export Curve in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportCurve( Curve curve )
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
+
+        exportLineString( curve );
+        switch ( curve.getCurveType() ) {
+        case Ring: {
+            exportRing( (Ring) curve );
+            break;
+        }
+        default: {
+            exportLineString( curve );
+        }
+        }
     }
 
     @Override
@@ -480,9 +492,10 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     }
 
     @Override
-    public void exportRing( Ring ring ) {
-        throw new UnsupportedOperationException(
-                                                 "Cannot export Ring in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportRing( Ring ring )
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
+        // always export as LinearRing (it's the only Ring type supported by GML 2)
+        exportLinearRing( ring );
     }
 
     @Override
@@ -492,9 +505,34 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     }
 
     @Override
-    public void exportSurface( Surface surface ) {
-        throw new UnsupportedOperationException(
-                                                 "Cannot export Surface in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportSurface( Surface surface )
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
+
+        switch ( surface.getSurfaceType() ) {
+        case Polygon: {
+            exportPolygon( (Polygon) surface );
+            break;
+        }
+        default: {
+            // try to export generic Surface as gml:Polygon
+            startGeometry( "Polygon", surface );
+            writer.writeStartElement( "gml", "outerBoundaryIs", GML21NS );
+            writer.writeStartElement( "gml", "LinearRing", GML21NS );
+            exportCoordinates( surface.getExteriorRingCoordinates() );
+            writer.writeEndElement(); // </gml:LinearRing>
+            writer.writeEndElement(); // </gml:outerBoundaryIs>
+
+            List<Points> rings = surface.getInteriorRingsCoordinates();
+            if ( rings != null ) {
+                for ( Points ring : rings ) {
+                    writer.writeStartElement( "gml", "innerBoundaryIs", GML21NS );
+                    exportCoordinates( ring );
+                    writer.writeEndElement(); // </gml:innerBoundaryIs>
+                }
+            }
+            writer.writeEndElement(); // </gml:Polygon>
+        }
+        }
     }
 
     @Override
