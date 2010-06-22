@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Execute service="WPS" version="1.0.0"
+  xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+  <!--
+      Executes the ParameterDemoProcess with a single complex output parameter returned as a raw result.
+      
+      Only the binary output parameter is returned as response.
+   -->
+  <ows:Identifier>ParameterDemoProcess</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>LiteralInput</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>0</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>BBOXInput</ows:Identifier>
+      <wps:Data>
+        <wps:BoundingBoxData crs="EPSG:4326">
+          <ows:LowerCorner>0 0</ows:LowerCorner>
+          <ows:UpperCorner>90 180</ows:UpperCorner>
+        </wps:BoundingBoxData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>XMLInput</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData>
+          <Curve gml:id="C1" xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml"
+            srsName="EPSG:4326" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryPrimitives.xsd">
+            <segments>
+              <Arc interpolation="circularArc3Points">
+                <posList srsName="EPSG:4326">2 0 0 2 -2 0</posList>
+              </Arc>
+              <LineStringSegment interpolation="linear">
+                <posList srsName="EPSG:4326">-2 0 0 -2 2 0</posList>
+              </LineStringSegment>
+            </segments>
+          </Curve>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>BinaryInput</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData encoding="base64" mimeType="image/png">
+          iVBORw0KGgoAAAANSUhEUgAAAMgAAAAwCAMAAABjR8XYAAADAFBMVEUAAQAAAgABBAACBQEEBwIF
+          CAQHCQUICwcKDAgLDQoMDwsOEAwPEQ4RExASFBETFBIUFRMVFhQWGBUYGRcZGxgaHBkbHBocHRsd
+          HxweIB0gIR8hIyAiJCEjJCIkJSMlJyQmKCUnKCYoKScqLCkrLSosLSstLywvMS4xMzAyMzEzNDI1
+          NjQ2ODU5Ojg6Ozk7PTo8Pjs+QD0/QD5AQT9BQkBBQ0FDRUJFRkRGSEVISUdJSkhKTEpMTktNT0xP
+          UU5RU1BTVVJVVlRWWFVZWlhcXVtdX1xgYl9iZGFjZWJlZmRmaGVoamdpa2hqbGlsbmttb2xvcW5y
+          dHF0dnN1d3R4end6fHl8fXt/gX7/WgD/WwCDhYL+YAv/YQyGiIX/Yg7/YxCJi4j+Zw6KjIn/aBCL
+          jYr/aRL/aR2Nj4z/ah+PkY7+bh7/bx+Rk5D/cCD/cSGSlJH/cSqUlZL+dSqVl5T/diyWmJX/dy2Y
+          mpf/eDWbnZn/fTb/fzidn5z+gjifoZ7/g0Cgop+ho6D/hUL/hUmipKGjpaKkpqP/ikqlp6T/i0v/
+          jEynqab/jFOoqqepq6j+kFOrrar/k12tr6yusK3+l13/mF6wsq6xs7D/m2iztbL+nmi1t7T/oXC3
+          ubb/onG4ure5u7j/pnP/pnm7vbq8vrv/qXu+wL3+rHzAwr//roTCxMH/sIbDxcL+s4fExsP+tY/G
+          yMX/t5DHysb/uJH+u5LKzMn9vJnLzsr/vprNz8z/wJ3R08/+xaXS1NH/xqbT1dL/x6fU1tP/ya/W
+          2NXY2tb/zrHZ29f/z7Pb3dr/0bvc3tvd39z91bze4N3f4d7/177h4+D/2cb/2sf/28jj5eH/3Mrk
+          5uP+38rl5+Tm6OX94dLn6eb/49Tp6+j/5NXq7On/5tfs7uv86d7u8O3+69/v8e7/7OHw8u//7uPx
+          8/D/7+Ty9PH/7+rz9fL88+z/8uz09/P2+PT+9u73+fb/9+/4+vf++Pf5+/j/+fj6/Pn/+vn7/fr/
+          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
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:RawDataOutput mimeType="image/png">
+      <ows:Identifier>BinaryOutput</ows:Identifier>
+    </wps:RawDataOutput>    
+  </wps:ResponseForm>
+</wps:Execute>
