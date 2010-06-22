@@ -49,9 +49,9 @@ public class Validation {
 
     private String timestampPattern;
 
-    private double minValue;
+    private double minValue = Double.NaN;
 
-    private double maxValue;
+    private double maxValue = Double.NaN;
 
     public int getLength() {
         return length;

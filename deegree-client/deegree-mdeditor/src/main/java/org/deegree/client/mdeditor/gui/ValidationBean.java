@@ -40,7 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -52,7 +51,9 @@ import org.deegree.client.mdeditor.model.DataGroup;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
+import org.deegree.client.mdeditor.model.InputFormField;
 import org.deegree.client.mdeditor.model.VALIDATION_TYPE;
+import org.deegree.client.mdeditor.model.Validation;
 import org.deegree.client.mdeditor.model.ValidationResult;
 import org.slf4j.Logger;
 
@@ -107,17 +108,40 @@ public class ValidationBean implements Serializable {
                 msgs.addAll( validateFormFields( fc, (FormGroup) fe ) );
             } else {
                 FormField ff = (FormField) fe;
-                Map<VALIDATION_TYPE, String[]> validationMap = ff.validate();
-                addValidationMsg( fc, msgs, validationMap, ff.getLabel() );
+                List<VALIDATION_TYPE> validationMap = ff.validate();
+                addValidationMsg( fc, msgs, validationMap, ff );
             }
         }
         return msgs;
     }
 
-    private void addValidationMsg( FacesContext fc, List<String> msgs, Map<VALIDATION_TYPE, String[]> validationMap,
-                                   String label ) {
-        for ( VALIDATION_TYPE key : validationMap.keySet() ) {
-            msgs.add( GuiUtils.getResourceText( fc, "mdLabels", "invalid_" + key, label, validationMap.get( key ) ) );
+    private void addValidationMsg( FacesContext fc, List<String> msgs, List<VALIDATION_TYPE> validationErrors,
+                                   FormField ff ) {
+        for ( VALIDATION_TYPE key : validationErrors ) {
+            String label = ff.getLabel();
+            if ( ff instanceof InputFormField && ( (InputFormField) ff ).getValidation() != null ) {
+                Validation v = ( (InputFormField) ff ).getValidation();
+                switch ( key ) {
+                case RANGE:
+                    msgs.add( GuiUtils.getResourceText( fc, "mdLabels", "invalid_" + key, label, v.getMinValue(),
+                                                        v.getMaxValue() ) );
+                    break;
+                case MIN:
+                    msgs.add( GuiUtils.getResourceText( fc, "mdLabels", "invalid_" + key, label, v.getMaxValue() ) );
+                    break;
+                case MAX:
+                    msgs.add( GuiUtils.getResourceText( fc, "mdLabels", "invalid_" + key, label, v.getMinValue() ) );
+                    break;
+                case LENGTH:
+                    msgs.add( GuiUtils.getResourceText( fc, "mdLabels", "invalid_" + key, label, v.getLength() ) );
+                    break;
+                default:
+                    msgs.add( GuiUtils.getResourceText( fc, "mdLabels", "invalid_" + key, label ) );
+                    break;
+                }
+            } else {
+                msgs.add( GuiUtils.getResourceText( fc, "mdLabels", "invalid_" + key, label ) );
+            }
         }
     }
 

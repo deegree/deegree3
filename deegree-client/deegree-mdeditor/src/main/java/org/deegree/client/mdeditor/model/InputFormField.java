@@ -36,9 +36,9 @@
 package org.deegree.client.mdeditor.model;
 
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * TODO add class documentation here
@@ -120,8 +120,8 @@ public class InputFormField extends FormField {
     }
 
     @Override
-    public Map<VALIDATION_TYPE, String[]> validate() {
-        Map<VALIDATION_TYPE, String[]> validationMap = super.validate();
+    public List<VALIDATION_TYPE> validate() {
+        List<VALIDATION_TYPE> validationMap = super.validate();
         if ( value != null ) {
             if ( value instanceof List<?> ) {
                 // TODO: validate list
@@ -135,7 +135,7 @@ public class InputFormField extends FormField {
                         SimpleDateFormat format = new SimpleDateFormat( timePattern );
                         format.parse( (String) value );
                     } catch ( Exception e ) {
-                        addValidation( validationMap, VALIDATION_TYPE.DATE, timePattern );
+                        validationMap.add( VALIDATION_TYPE.DATE );
                     }
                     break;
                 case DOUBLE:
@@ -143,7 +143,7 @@ public class InputFormField extends FormField {
                         double d = Double.parseDouble( (String) value );
                         validateNumber( validationMap, d );
                     } catch ( Exception e ) {
-                        addValidation( validationMap, VALIDATION_TYPE.DOUBLE );
+                        validationMap.add( VALIDATION_TYPE.DOUBLE );
                     }
                     break;
                 case INT:
@@ -151,13 +151,13 @@ public class InputFormField extends FormField {
                         int i = Integer.parseInt( (String) value );
                         validateNumber( validationMap, i );
                     } catch ( Exception e ) {
-                        addValidation( validationMap, VALIDATION_TYPE.INT );
+                        validationMap.add( VALIDATION_TYPE.INT );
                     }
                     break;
                 case TEXT:
                     String s = (String) value;
                     if ( ( validation != null && validation.getLength() > 0 && s.length() >= validation.getLength() ) ) {
-                        addValidation( validationMap, VALIDATION_TYPE.LENGTH, Integer.toString( validation.getLength() ) );
+                        validationMap.add( VALIDATION_TYPE.LENGTH );
                     }
                     break;
                 }
@@ -166,17 +166,17 @@ public class InputFormField extends FormField {
         return validationMap;
     }
 
-    private void validateNumber( Map<VALIDATION_TYPE, String[]> validationMap, double i ) {
-        boolean minInvalid = !( validation != null && i >= validation.getMinValue() );
-        boolean maxInvalid = !( validation != null && i <= validation.getMaxValue() );
-        if ( minInvalid && maxInvalid ) {
-            addValidation( validationMap, VALIDATION_TYPE.RANGE, Double.toString( validation.getMinValue() ),
-                           Double.toString( validation.getMaxValue() ) );
-
-        } else if ( minInvalid ) {
-            addValidation( validationMap, VALIDATION_TYPE.MIN, Double.toString( validation.getMinValue() ) );
-        } else if ( maxInvalid ) {
-            addValidation( validationMap, VALIDATION_TYPE.MAX, Double.toString( validation.getMaxValue() ) );
+    private void validateNumber( List<VALIDATION_TYPE> validationMap, double i ) {
+        if ( validation == null ) {
+            return;
+        }
+        if ( validation.getMinValue() != Double.NaN && validation.getMaxValue() != Double.NaN
+             && ( i < validation.getMinValue() || i > validation.getMaxValue() ) ) {
+            validationMap.add( VALIDATION_TYPE.RANGE );
+        } else if ( validation.getMinValue() != Double.NaN && i < validation.getMinValue() ) {
+            validationMap.add( VALIDATION_TYPE.MIN );
+        } else if ( validation.getMaxValue() != Double.NaN && i > validation.getMaxValue() ) {
+            validationMap.add( VALIDATION_TYPE.MAX );
         }
     }
 }

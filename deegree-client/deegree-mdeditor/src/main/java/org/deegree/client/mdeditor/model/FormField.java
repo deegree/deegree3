@@ -35,9 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * TODO add class documentation here
@@ -134,7 +133,7 @@ public abstract class FormField implements FormElement {
     }
 
     public boolean isValid() {
-        Map<VALIDATION_TYPE, String[]> validate = validate();
+        List<VALIDATION_TYPE> validate = validate();
         if ( validate != null && validate.size() > 0 ) {
             return false;
         }
@@ -166,24 +165,15 @@ public abstract class FormField implements FormElement {
         return getPath().toString() + ": " + getValue();
     }
 
-    public Map<VALIDATION_TYPE, String[]> validate() {
-        Map<VALIDATION_TYPE, String[]> validationMap = new HashMap<VALIDATION_TYPE, String[]>();
+    public List<VALIDATION_TYPE> validate() {
+        List<VALIDATION_TYPE> validationMap = new ArrayList<VALIDATION_TYPE>();
         if ( required ) {
-            if ( value == null ) {
-                addValidation( validationMap, VALIDATION_TYPE.REQUIRED );
-            } else if ( value instanceof List<?> ) {
-                if ( ( (List<?>) value ).size() == 0 ) {
-                    addValidation( validationMap, VALIDATION_TYPE.REQUIRED );
-                }
-            } else if ( !( value.toString().length() > 0 ) ) {
-                addValidation( validationMap, VALIDATION_TYPE.REQUIRED );
+            if ( value == null || ( value instanceof List<?> && ( (List<?>) value ).size() == 0 )
+                 || ( !( value.toString().length() > 0 ) ) ) {
+                validationMap.add( VALIDATION_TYPE.REQUIRED );
             }
         }
         return validationMap;
-    }
-
-    protected void addValidation( Map<VALIDATION_TYPE, String[]> validationMap, VALIDATION_TYPE type, String... params ) {
-        validationMap.put( type, params );
     }
 
 }

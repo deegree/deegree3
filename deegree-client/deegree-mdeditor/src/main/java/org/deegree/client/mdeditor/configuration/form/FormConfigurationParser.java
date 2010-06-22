@@ -330,9 +330,9 @@ public class FormConfigurationParser extends Parser {
             validation.setLength( getElementTextAsInteger( xmlStream, new QName( NS, "length" ), Integer.MIN_VALUE,
                                                            true ) );
             validation.setTimestampPattern( getText( xmlStream, new QName( NS, "timestampPattern" ), null, true ) );
-            validation.setMinValue( getElementTextAsDouble( xmlStream, new QName( NS, "minValue" ), Double.MIN_VALUE,
+            validation.setMinValue( getElementTextAsDouble( xmlStream, new QName( NS, "minValue" ), Double.NaN,
                                                             true ) );
-            validation.setMaxValue( getElementTextAsDouble( xmlStream, new QName( NS, "maxValue" ), Double.MAX_VALUE,
+            validation.setMaxValue( getElementTextAsDouble( xmlStream, new QName( NS, "maxValue" ), Double.NaN,
                                                             true ) );
         }
         InputFormField ff = new InputFormField( getPath( id ), id, label, visible, required, help, inputType,
