@@ -135,7 +135,7 @@ public class MappedApplicationSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, isAbstract );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, "-1" );
         ftNameToMapping.put( ftName, ftMapping );
     }
 

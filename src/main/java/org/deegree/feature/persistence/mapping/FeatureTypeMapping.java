@@ -60,14 +60,17 @@ public class FeatureTypeMapping {
 
     private String fidColumn;
 
+    private String backendSrs;
+
     // TODO: enable more mapping possibilities (e.g. app:Country/gmlName[1]/text()='Blabla')
     private Map<QName, String> propToColumn = new HashMap<QName, String>();
 
-    public FeatureTypeMapping (QName ftName, String table, String fidColumn, Map<QName,String> propToColumn) {
+    public FeatureTypeMapping (QName ftName, String table, String fidColumn, Map<QName,String> propToColumn, String backendSrs) {
         this.ftName = ftName;
         this.table = table;
         this.fidColumn = fidColumn;
         this.propToColumn = propToColumn;
+        this.backendSrs = backendSrs;
     }
     
     /**
@@ -106,5 +109,9 @@ public class FeatureTypeMapping {
      */
     public String getColumn( QName propName ) {
         return propToColumn.get( propName );
-    }    
+    }
+    
+    public String getBackendSrs () {
+        return backendSrs;
+    }
 }
