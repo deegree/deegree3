@@ -157,7 +157,7 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
     public void writeCharacters( char[] text, int start, int len )
                             throws XMLStreamException {
         if ( stripWhitespace ) {
-            s.writeCharacters( new String( text ).substring( start, start + len - 1 ).trim() );
+            s.writeCharacters( new String( text ).substring( start, start + len ).trim() );
         } else {
             s.writeCharacters( text, start, len );
         }

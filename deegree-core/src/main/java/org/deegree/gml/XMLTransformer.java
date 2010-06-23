@@ -71,8 +71,8 @@ import org.deegree.geometry.GeometryTransformer;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$ 
+ * 
+ * @version $Revision$, $Date$
  */
 public class XMLTransformer extends GeometryTransformer {
 
@@ -119,6 +119,7 @@ public class XMLTransformer extends GeometryTransformer {
      *            true if the incoming geometries should be checked against the valid domain of the crs they are defined
      *            in.
      * @param requestedTransformation
+     *            can be <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
      * @throws IllegalArgumentException
