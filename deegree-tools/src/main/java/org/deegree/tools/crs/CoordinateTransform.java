@@ -59,7 +59,6 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.tools.CommandUtils;
 import org.deegree.tools.annotations.Tool;
-import org.deegree.tools.rendering.manager.DataManager;
 import org.slf4j.Logger;
 
 /**
@@ -317,7 +316,7 @@ public class CoordinateTransform {
     }
 
     private static void printHelp( Options options ) {
-        CommandUtils.printHelp( options, DataManager.class.getCanonicalName(), null, null );
+        CommandUtils.printHelp( options, CoordinateTransform.class.getCanonicalName(), null, null );
     }
 
 }

@@ -76,6 +76,7 @@ public class ToolBox {
                                       new ToolInfo( org.deegree.tools.crs.CRSInfo.class ),
                                       new ToolInfo( org.deegree.tools.crs.ConfigurationConverger.class ),
                                       new ToolInfo( org.deegree.tools.crs.CoordinateTransform.class ),
+                                      new ToolInfo( org.deegree.tools.crs.XMLCoordinateTransform.class ),
                                       new ToolInfo( org.deegree.tools.rendering.dem.builder.DEMDatasetGenerator.class ),
                                       new ToolInfo( org.deegree.tools.rendering.dem.filtering.DEMRasterFilterer.class ),
                                       new ToolInfo( org.deegree.tools.rendering.manager.DataManager.class ),
