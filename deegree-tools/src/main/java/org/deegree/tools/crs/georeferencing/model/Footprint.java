@@ -130,6 +130,7 @@ public class Footprint {
             double distance = 0.0;
 
             for ( Point2d point : pointsPixelToWorld.keySet() ) {
+                System.out.println( point + " - " + pointsPixelToWorld.get( point ) );
                 if ( distance == 0.0 ) {
                     distance = point.distance( point2d );
                     if ( point2d instanceof FootprintPoint ) {
@@ -230,8 +231,6 @@ public class Footprint {
             int[] x2 = new int[po.npoints];
             int[] y2 = new int[po.npoints];
             for ( int i = 0; i < po.npoints; i++ ) {
-                // TODO make the size configurable
-
                 x2[i] = (int) ( ( po.xpoints[i] - x ) * resize );
                 y2[i] = (int) ( ( po.ypoints[i] - y ) * resize );
                 pointsPixelToWorld.put( new Point2d( x2[i], y2[i] ), new Point2d( po.xpoints[i], po.ypoints[i] ) );
@@ -279,14 +278,13 @@ public class Footprint {
         Map<Point2d, Point2d> pointsPixelToWorldTemp = new HashMap<Point2d, Point2d>();
         for ( Point2d p : pointsPixelToWorld.keySet() ) {
             Point2d key = p;
-            Point2d value = pointsPixelToWorld.get( key );
             Point2d newKey = new Point2d( key.x - changePoint.x, key.y - changePoint.y );
-            Point2d newValue = new Point2d( value.x - changePoint.x, value.y - changePoint.y );
-            pointsPixelToWorldTemp.put( newKey, newValue );
+            pointsPixelToWorldTemp.put( newKey, pointsPixelToWorld.get( key ) );
 
         }
         pointsPixelToWorld = new HashMap<Point2d, Point2d>();
         pointsPixelToWorld.putAll( pointsPixelToWorldTemp );
+
     }
 
 }
