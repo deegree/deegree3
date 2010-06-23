@@ -42,6 +42,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -58,9 +60,11 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.cs.CRS;
+import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.transformations.Transformation;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.XMLTransformer;
 import org.deegree.tools.CommandUtils;
@@ -135,18 +139,33 @@ public class XMLCoordinateTransform {
                             throws IllegalArgumentException, TransformationException, UnknownCRSException, IOException,
                             XMLStreamException, FactoryConfigurationError {
 
-        CoordinateSystem source = null;
-        String sourceCRS = line.getOptionValue( OPT_S_SRS );
-        if ( sourceCRS != null ) {
-            source = new CRS( sourceCRS ).getWrappedCRS();
+        // TODO source srs should actually override all srsName attributes in document, not just be the default
+        CoordinateSystem sourceCRS = null;
+        String sourceCRSId = line.getOptionValue( OPT_S_SRS );
+        if ( sourceCRSId != null ) {
+            sourceCRS = new CRS( sourceCRSId ).getWrappedCRS();
         }
 
-        String targetCRS = line.getOptionValue( OPT_T_SRS );
-        CoordinateSystem target = new CRS( targetCRS ).getWrappedCRS();
+        String targetCRSId = line.getOptionValue( OPT_T_SRS );
+        CoordinateSystem targetCRS = new CRS( targetCRSId ).getWrappedCRS();
 
-        GMLVersion gmlVersion = null;
+        String transId = line.getOptionValue( OPT_TRANSFORMATION );
+        List<Transformation> trans = null;
+        if ( transId != null ) {
+            Transformation t = CRSRegistry.getTransformation( null, transId );
+            if ( t != null ) {
+                trans = Collections.singletonList( CRSRegistry.getTransformation( null, transId ) );
+            } else {
+                throw new IllegalArgumentException( "Specified transformation id '" + transId
+                                                    + "' does not exist in CRS database." );
+            }
+        }
+
+        GMLVersion gmlVersion = GMLVersion.GML_31;
         String gmlVersionString = line.getOptionValue( OPT_GML_VERSION );
-        gmlVersion = GMLVersion.valueOf( gmlVersionString );
+        if ( gmlVersionString != null ) {
+            gmlVersion = GMLVersion.valueOf( gmlVersionString );
+        }
 
         String i = line.getOptionValue( OPT_INPUT );
         File inputFile = new File( i );
@@ -157,15 +176,19 @@ public class XMLCoordinateTransform {
                                                                                          new FileInputStream( inputFile ) );
 
         String o = line.getOptionValue( OPT_OUTPUT );
-        File outputFile = new File( o );
-        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                          new FileOutputStream(
-                                                                                                                outputFile ),
-                                                                                          "UTF-8" );
+        XMLStreamWriter xmlWriter = null;
+        if ( o != null ) {
+            File outputFile = new File( o );
+            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream( outputFile ),
+                                                                              "UTF-8" );
+        } else {
+            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( System.out, "UTF-8" );
+        }
+
         xmlWriter = new FormattingXMLStreamWriter( xmlWriter, "    ", true );
         xmlWriter.writeStartDocument( "UTF-8", "1.0" );
         XMLTransformer transformer = new XMLTransformer( targetCRS );
-        transformer.transform( xmlReader, xmlWriter, source, gmlVersion, false, null );
+        transformer.transform( xmlReader, xmlWriter, sourceCRS, gmlVersion, false, trans );
         xmlWriter.close();
     }
 
@@ -182,18 +205,21 @@ public class XMLCoordinateTransform {
         option.setRequired( true );
         options.addOption( option );
 
-        option = new Option( OPT_INPUT, true, "Path to the XML file to be transformed" );
+        option = new Option( OPT_TRANSFORMATION, true, "Identifier of the transformation to be used, e.g. 'EPSG:4326'." );
+        option.setArgs( 1 );
+        options.addOption( option );
+
+        option = new Option( OPT_INPUT, true, "Filename of the XML file to be transformed" );
         option.setArgs( 1 );
         option.setRequired( true );
         options.addOption( option );
 
         option = new Option( OPT_GML_VERSION, true,
-                             "GML version used for encoding geometries (GML_2, GML_30, GML_31 or GML_32)" );
+                             "GML version (GML_2, GML_30, GML_31 or GML_32). Defaults to GML_31 if omitted." );
         option.setArgs( 1 );
-        option.setRequired( true );
         options.addOption( option );
 
-        option = new Option( OPT_OUTPUT, true, "Path to the output file" );
+        option = new Option( OPT_OUTPUT, true, "Filename of the output file. If omitted, output is directed to console." );
         option.setArgs( 1 );
         options.addOption( option );
 
