@@ -81,19 +81,22 @@ public class RasterOptions {
         options = new RasterIOOptions();
 
         options.add( RasterIOOptions.CRS, "EPSG:4326" );
-        // options.add( RasterIOOptions.CRS, "EPSG:32618" );
-        // options.add( RIO_WMS_LAYERS, "populationgrid" );
-        options.add( RESOLUTION, "1.0" );
+        options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
         options.add( RIO_WMS_LAYERS, "root" );
-        // options.add( RASTER_FORMATLIST, "image/jpeg" );
+
+        // options.add( RasterIOOptions.CRS, "EPSG:32618" );
+        // options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
+        // options.add( RIO_WMS_LAYERS, "populationgrid" );
+
+        options.add( RESOLUTION, "1.0" );
         options.add( RASTER_URL, view.openUrl() );
         options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
         options.add( RIO_WMS_SYS_ID, view.openUrl() );
         options.add( RIO_WMS_MAX_SCALE, "0.1" );
-        options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
+
         // specify the quality
-        options.add( RIO_WMS_MAX_WIDTH, Integer.toString( 50 ) );
-        options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( 50 ) );
+        options.add( RIO_WMS_MAX_WIDTH, Integer.toString( 500 ) );
+        options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( 500 ) );
         options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
         // options.add( RIO_WMS_TIMEOUT, "1000" );
     }

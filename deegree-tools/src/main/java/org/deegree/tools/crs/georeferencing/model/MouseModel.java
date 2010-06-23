@@ -53,10 +53,13 @@ public class MouseModel {
 
     private Point2d cumulatedMouseChanging;
 
+    private Point2d persistentCumulatedMouseChanging;
+
     private final static Point2d NULL_POINT = new Point2d( 0.0, 0.0 );
 
     public MouseModel() {
         reset();
+        persistentCumulatedMouseChanging = new Point2d( 0.0, 0.0 );
     }
 
     /**
@@ -103,14 +106,20 @@ public class MouseModel {
         this.cumulatedMouseChanging = cumulatedMouseChanging;
     }
 
+    public Point2d getPersistentCumulatedMouseChanging() {
+        return persistentCumulatedMouseChanging;
+    }
+
+    public void setPersistentCumulatedMouseChanging( Point2d persistentCumulatedMouseChanging ) {
+        this.persistentCumulatedMouseChanging = persistentCumulatedMouseChanging;
+    }
+
     /**
      * Resets the mouse values to initial values.
      */
     public void reset() {
         cumulatedMouseChanging = NULL_POINT;
         mouseChanging = null;
-        // cumulatedMouseChanging = null;
-        // pointMousePressed = null;
 
     }
 

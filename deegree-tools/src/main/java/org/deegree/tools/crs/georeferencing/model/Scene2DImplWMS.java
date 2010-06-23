@@ -117,11 +117,13 @@ public class Scene2DImplWMS implements Scene2D {
 
             InputStream in = url.openStream();
             raster = RasterFactory.loadRasterFromStream( in, options );
-            this.sceneValues.setRaster( raster );
-            ref = raster.getRasterReference();
-            rasterRect = ref.convertEnvelopeToRasterCRS( raster.getEnvelope() );
-            this.sceneValues.setRasterRect( rasterRect );
             in.close();
+            SimpleRaster ra = raster.getAsSimpleRaster().getSubRaster( -2.0, -1.0, -0.01, 6.0 );
+            this.sceneValues.setRaster( ra );
+            ref = ra.getRasterReference();
+            rasterRect = ref.convertEnvelopeToRasterCRS( ra.getEnvelope() );
+            this.sceneValues.setRasterRect( rasterRect );
+
         } catch ( IOException e ) {
             e.printStackTrace();
         }
@@ -148,16 +150,16 @@ public class Scene2DImplWMS implements Scene2D {
      * @return
      */
     private BufferedImage generateMap( Envelope imageBoundingbox ) {
-
+        BufferedImage i = null;
         try {
-            return wmsClient.getMap( lays, imageWidth, imageHeight, imageBoundingbox, srs, format, true, false, 1000,
-                                     false, null ).first;
+            i = wmsClient.getMap( lays, imageWidth, imageHeight, imageBoundingbox, srs, format, true, false, -1, false,
+                                  null ).first;
 
         } catch ( IOException e ) {
             e.printStackTrace();
         }
 
-        return null;
+        return i;
     }
 
     @Override

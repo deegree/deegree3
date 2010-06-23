@@ -275,4 +275,18 @@ public class Footprint {
         this.resize = resize;
     }
 
+    public void updatePoints( Point2d changePoint ) {
+        Map<Point2d, Point2d> pointsPixelToWorldTemp = new HashMap<Point2d, Point2d>();
+        for ( Point2d p : pointsPixelToWorld.keySet() ) {
+            Point2d key = p;
+            Point2d value = pointsPixelToWorld.get( key );
+            Point2d newKey = new Point2d( key.x - changePoint.x, key.y - changePoint.y );
+            Point2d newValue = new Point2d( value.x - changePoint.x, value.y - changePoint.y );
+            pointsPixelToWorldTemp.put( newKey, newValue );
+
+        }
+        pointsPixelToWorld = new HashMap<Point2d, Point2d>();
+        pointsPixelToWorld.putAll( pointsPixelToWorldTemp );
+    }
+
 }

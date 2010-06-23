@@ -80,6 +80,8 @@ public class Scene2DPanel extends JPanel {
 
     private AbstractGRPoint tempPoint;
 
+    // private boolean isTranslated;
+
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
     }
@@ -88,10 +90,10 @@ public class Scene2DPanel extends JPanel {
     public void paintComponent( Graphics g ) {
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
-        Graphics2D g2d = (Graphics2D) g;
-        // if ( translationPoint == null ) {
-        // translationPoint = new Point2d( 0.0, 0.0 );
-        // }
+
+        if ( translationPoint == null ) {
+            translationPoint = new Point2d( 0.0, 0.0 );
+        }
 
         if ( imageToDraw != null ) {
 
@@ -99,9 +101,11 @@ public class Scene2DPanel extends JPanel {
                           (int) imageDimension.width, (int) imageDimension.height, this );
 
         }
-        // g2d.translate( -translationPoint.x, -translationPoint.y );
+        g2.translate( -translationPoint.x, -translationPoint.y );
         if ( tempPoint != null ) {
+            // if ( isTranslated == false ) {
             g2.fillOval( (int) tempPoint.x - 5, (int) tempPoint.y - 5, 10, 10 );
+            // }
         }
 
         if ( points != null ) {
@@ -110,9 +114,14 @@ public class Scene2DPanel extends JPanel {
             }
         }
 
-        // g2d.draw3DRect( 20, 20, 40, 50, true );
-        //        
-        // g2d.translate( translationPoint.x, translationPoint.y );
+        g2.translate( translationPoint.x, translationPoint.y );
+
+        // if ( tempPoint != null ) {
+        // // if ( isTranslated == true ) {
+        // g2.fillOval( (int) ( tempPoint.x - 5 ), (int) ( tempPoint.y - 5 ), 10, 10 );
+        //
+        // // }
+        // }
 
     }
 
@@ -172,5 +181,9 @@ public class Scene2DPanel extends JPanel {
     public void setTranslationPoint( Point2d translationPoint ) {
         this.translationPoint = translationPoint;
     }
+
+    // public void setTranslated( boolean isTranslated ) {
+    // this.isTranslated = isTranslated;
+    // }
 
 }

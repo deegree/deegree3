@@ -77,9 +77,11 @@ public class BuildingFootprintPanel extends JPanel {
 
     private boolean focus;
 
-    private Point2d translationPoint;
+    private Point2d cumTranslationPoint;
 
     private final Insets insets = new Insets( 10, 10, 0, 0 );
+
+    private boolean isTranslated;
 
     /**
      * 
@@ -94,27 +96,40 @@ public class BuildingFootprintPanel extends JPanel {
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
 
-        if ( translationPoint == null ) {
-            translationPoint = new Point2d( 0.0, 0.0 );
+        if ( cumTranslationPoint == null ) {
+            cumTranslationPoint = new Point2d( 0.0, 0.0 );
         }
-        g2.translate( -translationPoint.x, -translationPoint.y );
+
+        g2.translate( -cumTranslationPoint.x, -cumTranslationPoint.y );
         if ( polygonList != null ) {
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
 
             }
         }
-        if ( tempPoint != null ) {
-            g2.fillOval( (int) tempPoint.x - 5, (int) tempPoint.y - 5, 10, 10 );
-        }
-
         if ( points != null ) {
             for ( AbstractGRPoint point : points.keySet() ) {
                 g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
             }
         }
-        g2.translate( translationPoint.x, translationPoint.y );
+        if ( tempPoint != null ) {
+            if ( isTranslated == false ) {
 
+                Point2d p = new Point2d( tempPoint.x - 5, tempPoint.y - 5 );
+
+                g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
+
+            }
+        }
+        g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
+        System.out.println( "TranslationPoint: " + cumTranslationPoint );
+
+        if ( tempPoint != null ) {
+            if ( isTranslated == true ) {
+                g2.fillOval( (int) ( tempPoint.x - 5 ), (int) ( tempPoint.y - 5 ), 10, 10 );
+
+            }
+        }
     }
 
     @Override
@@ -149,12 +164,16 @@ public class BuildingFootprintPanel extends JPanel {
         return focus;
     }
 
-    public Point2d getTranslationPoint() {
-        return translationPoint;
+    public Point2d getCumTranslationPoint() {
+        return cumTranslationPoint;
     }
 
-    public void setTranslationPoint( Point2d translationPoint ) {
-        this.translationPoint = translationPoint;
+    public void setCumTranslationPoint( Point2d translationPoint ) {
+        this.cumTranslationPoint = translationPoint;
+    }
+
+    public void setTranslated( boolean isTranslated ) {
+        this.isTranslated = isTranslated;
     }
 
 }

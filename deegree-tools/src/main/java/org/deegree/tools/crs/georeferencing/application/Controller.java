@@ -136,7 +136,7 @@ public class Controller {
 
         this.mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
         this.footPrint.setOffset( 10 );
-        this.footPrint.setResize( 0.5f );
+        this.footPrint.setResize( 1.0f );
 
         options = new RasterOptions( view ).getOptions();
         sceneValues = new Scene2DValues( options );
@@ -359,6 +359,7 @@ public class Controller {
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                         lastGeoReferencedPoint = geoReferencedPoint;
                         panel.addPoint( mappedPoints, geoReferencedPoint );
+                        // panel.setTranslated( isHorizontalRef );
                         GeoReferencedPoint point = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                         tablePanel.setCoords( point );
 
@@ -377,8 +378,13 @@ public class Controller {
                                                                                                     + mouseGeoRef.getMouseChanging().getX(),
                                                                             mouseGeoRef.getCumulatedMouseChanging().getY()
                                                                                                     + mouseGeoRef.getMouseChanging().getY() ) );
-
-                        // panel.setTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
+                        mouseGeoRef.setPersistentCumulatedMouseChanging( new Point2d(
+                                                                                      mouseGeoRef.getPersistentCumulatedMouseChanging().getX()
+                                                                                                              + mouseGeoRef.getMouseChanging().getX(),
+                                                                                      mouseGeoRef.getPersistentCumulatedMouseChanging().getY()
+                                                                                                              + mouseGeoRef.getMouseChanging().getY() ) );
+                        panel.setTranslationPoint( mouseGeoRef.getPersistentCumulatedMouseChanging() );
+                        System.out.println( "persCum: " + mouseGeoRef.getPersistentCumulatedMouseChanging() );
                         panel.setBeginDrawImageAtPosition( new Point2d(
                                                                         panel.getBeginDrawImageAtPosition().getX()
                                                                                                 - mouseGeoRef.getMouseChanging().getX(),
@@ -400,6 +406,7 @@ public class Controller {
                             // panel.setImageToDraw( model.getGeneratedImage() );
                             // sceneValues.setStartRasterEnvelopePosition( updateDrawImageAtPosition );
                             sceneValues.setMinPointPixel( null );
+                            // panel.setTranslated( isHorizontalRef );
                             panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
                             mouseGeoRef.reset();
                             panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
@@ -428,6 +435,8 @@ public class Controller {
                         Pair<AbstractGRPoint, FootprintPoint> point = footPrint.getClosestPoint( footprintPoint );
                         lastFootprintPoint = (FootprintPoint) point.first;
                         tablePanel.setCoords( point.second );
+                        footPanel.setTranslated( isHorizontalRef );
+                        System.out.println( isHorizontalRef );
                         footPanel.addPoint( mappedPoints, point.first );
                         footPanel.repaint();
                     } else {
@@ -441,7 +450,10 @@ public class Controller {
                                                                                mouseFootprint.getCumulatedMouseChanging().getY()
                                                                                                        + mouseFootprint.getMouseChanging().getY() ) );
 
-                        footPanel.setTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
+                        footPanel.setCumTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
+                        footPrint.updatePoints( mouseFootprint.getMouseChanging() );
+                        footPanel.setTranslated( isHorizontalRef );
+                        System.out.println( isHorizontalRef );
                         footPanel.repaint();
                     }
 
@@ -602,7 +614,7 @@ public class Controller {
 
     private void init() {
         // model.reset();
-        sceneValues.setImageMargin( new Point2d( panel.getBounds().width * 2.1, panel.getBounds().height * 2.1 ) );
+        sceneValues.setImageMargin( new Point2d( panel.getBounds().width * 0.1, panel.getBounds().height * 0.1 ) );
         sceneValues.setImageDimension( new Rectangle(
                                                       (int) ( panel.getBounds().width + 2 * sceneValues.getImageMargin().x ),
                                                       (int) ( panel.getBounds().height + 2 * sceneValues.getImageMargin().y ) ) );
