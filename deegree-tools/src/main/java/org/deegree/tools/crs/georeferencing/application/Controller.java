@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,7 +46,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -57,7 +58,9 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.vecmath.Point2d;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.io.RasterIOOptions;
+import org.deegree.cs.CRS;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -106,7 +109,9 @@ public class Controller {
 
     private OpenGLEventHandler glHandler;
 
-    private MouseModel mouse;
+    private MouseModel mouseGeoRef;
+
+    private MouseModel mouseFootprint;
 
     private Point2d changePoint;
 
@@ -115,6 +120,8 @@ public class Controller {
     private FootprintPoint lastFootprintPoint;
 
     private GeoReferencedPoint lastGeoReferencedPoint;
+
+    private Map<AbstractGRPoint, AbstractGRPoint> mappedPoints;
 
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
@@ -126,6 +133,11 @@ public class Controller {
         this.tablePanel = view.getPointTablePanel();
         this.start = false;
         this.glHandler = view.getOpenGLEventListener();
+
+        this.mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
+        this.footPrint.setOffset( 10 );
+        this.footPrint.setResize( 0.5f );
+
         options = new RasterOptions( view ).getOptions();
         sceneValues = new Scene2DValues( options );
         model.init( options, sceneValues );
@@ -183,8 +195,8 @@ public class Controller {
                                                                                                                   tableRow,
                                                                                                                   3 ) );
 
-                        if ( footPrint.getMappedPoints().containsKey( keyPoint ) ) {
-                            footPrint.removeFromMappedPoints( keyPoint );
+                        if ( mappedPoints.containsKey( keyPoint ) ) {
+                            removeFromMappedPoints( keyPoint );
                         } else {
                             lastFootprintPoint = null;
                             lastGeoReferencedPoint = null;
@@ -193,15 +205,15 @@ public class Controller {
                         tablePanel.removeRow( tableRow );
                     }
 
-                    panel.addPoint( footPrint.getMappedPoints(), lastGeoReferencedPoint );
-                    footPanel.addPoint( footPrint.getMappedPoints(), lastFootprintPoint );
+                    panel.addPoint( mappedPoints, lastGeoReferencedPoint );
+                    footPanel.addPoint( mappedPoints, lastFootprintPoint );
                     panel.repaint();
                     footPanel.repaint();
                 }
                 if ( ( (JButton) source ).getText().startsWith( PointTablePanel.BUTTON_DELETE_ALL ) ) {
                     System.out.println( "you clicked on delete all" );
                     tablePanel.removeAllRows();
-                    footPrint.removeAllFromMappedPoints();
+                    removeAllFromMappedPoints();
                     panel.addPoint( null, null );
                     footPanel.addPoint( null, null );
                     lastFootprintPoint = null;
@@ -217,33 +229,31 @@ public class Controller {
             }
             if ( source instanceof JMenuItem ) {
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GETMAP ) ) {
-                    mouse = new MouseModel();
+                    mouseGeoRef = new MouseModel();
                     init();
                     panel.addScene2DMouseListener( new Scene2DMouseListener() );
                     // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
                     panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
-                    // footPrint.setDefaultPolygon();
-                    // rectangle = new RasterRect( 50, 50, 200, 200 );
-                    // footPanel.setPolygon( footPrint.getPolygon() );
-                    // footPanel.setGeometry( rectangle );
-                    // footPanel.repaint();
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GET_3DOBJECT ) ) {
-                    // TODO remove static null
-                    // at the moment the file which is used is static in the File3dImporter!!!
+                    mouseFootprint = new MouseModel();
+                    // TODO at the moment the file which is used is static in the GRViewerGUI!!!
                     List<WorldRenderableObject> rese = File3dImporter.open( view, view.fileName() );
-
+                    CRS crs = null;
                     for ( WorldRenderableObject res : rese ) {
+                        crs = res.getBbox().getCoordinateSystem();
                         glHandler.addDataObjectToScene( res );
                     }
                     List<float[]> geometryThatIsTaken = new ArrayList<float[]>();
                     for ( GeometryQualityModel g : File3dImporter.gm ) {
+
                         ArrayList<SimpleAccessGeometry> h = g.getQualityModelParts();
                         boolean isfirstOccurrence = false;
                         float minimalZ = 0;
 
                         for ( SimpleAccessGeometry b : h ) {
+
                             float[] a = b.getHorizontalGeometries( b.getGeometry() );
                             if ( a != null ) {
                                 if ( isfirstOccurrence == false ) {
@@ -265,68 +275,9 @@ public class Controller {
 
                     }
 
-                    List<Polygon> polyList = new ArrayList<Polygon>();
-                    List<Polygon> polyList2 = new ArrayList<Polygon>();
-                    List<Rectangle> rect = new ArrayList<Rectangle>();
-                    for ( float[] f : geometryThatIsTaken ) {
-                        int size = f.length / 3;
-                        int[] x = new int[size];
-                        int[] y = new int[size];
-                        int count = 0;
+                    footPrint.generateFootprints( geometryThatIsTaken );
 
-                        for ( int i = 0; i < f.length; i += 3 ) {
-                            x[count] = (int) f[i];
-                            y[count] = (int) f[i + 1];
-                            count++;
-                        }
-                        Polygon p = new Polygon( x, y, size );
-                        rect.add( p.getBounds() );
-                        System.out.println( p.getBounds() );
-                        polyList.add( p );
-                    }
-
-                    Rectangle temp = null;
-                    // get minimum X
-                    for ( Rectangle rec : rect ) {
-                        if ( temp == null ) {
-                            temp = rec;
-                        } else {
-                            if ( rec.x < temp.x ) {
-                                temp = rec;
-                            }
-                        }
-                    }
-                    int x = temp.x - 10;
-
-                    Rectangle tempY = null;
-                    // get minimum Y
-                    for ( Rectangle rec : rect ) {
-                        if ( tempY == null ) {
-                            tempY = rec;
-                        } else {
-                            if ( rec.y < temp.y ) {
-                                tempY = rec;
-                            }
-                        }
-                    }
-                    int y = temp.y - 10;
-
-                    for ( Polygon po : polyList ) {
-                        int[] x2 = new int[po.npoints];
-                        int[] y2 = new int[po.npoints];
-                        for ( int i = 0; i < po.npoints; i++ ) {
-                            x2[i] = (int) ( ( po.xpoints[i] - x ) * 4.5 );
-                            y2[i] = (int) ( ( po.ypoints[i] - y ) * 4.5 );
-
-                        }
-                        Polygon p = new Polygon( x2, y2, po.npoints );
-                        polyList2.add( p );
-
-                    }
-
-                    Rectangle panelBounds = footPanel.getBounds();
-
-                    footPanel.setPolygonList( polyList2 );
+                    footPanel.setPolygonList( footPrint.getPixelCoordinatePolygonList() );
 
                     footPanel.repaint();
 
@@ -374,7 +325,16 @@ public class Controller {
 
         @Override
         public void mousePressed( MouseEvent m ) {
-            mouse.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+            Object source = m.getSource();
+            if ( source instanceof JPanel ) {
+                // Scene2DPanel
+                if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
+                    mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+                }
+                if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
+                    mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+                }
+            }
 
         }
 
@@ -398,47 +358,50 @@ public class Controller {
                         int y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                         lastGeoReferencedPoint = geoReferencedPoint;
-                        panel.addPoint( footPrint.getMappedPoints(), geoReferencedPoint );
+                        panel.addPoint( mappedPoints, geoReferencedPoint );
                         GeoReferencedPoint point = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                         tablePanel.setCoords( point );
 
                     } else {
 
-                        mouse.setMouseChanging( new Point2d( ( mouse.getPointMousePressed().getX() - m.getX() ),
-                                                             ( mouse.getPointMousePressed().getY() - m.getY() ) ) );
-                        System.out.println( "MouseChanging: " + mouse.getMouseChanging() );
+                        mouseGeoRef.setMouseChanging( new Point2d(
+                                                                   ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
+                                                                   ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
+                        System.out.println( "MouseChanging: " + mouseGeoRef.getMouseChanging() );
 
                         // Prediction pred = new Prediction( mouse.getMouseChanging() );
                         // pred.start();
 
-                        mouse.setCumulatedMouseChanging( new Point2d(
-                                                                      mouse.getCumulatedMouseChanging().getX()
-                                                                                              + mouse.getMouseChanging().getX(),
-                                                                      mouse.getCumulatedMouseChanging().getY()
-                                                                                              + mouse.getMouseChanging().getY() ) );
+                        mouseGeoRef.setCumulatedMouseChanging( new Point2d(
+                                                                            mouseGeoRef.getCumulatedMouseChanging().getX()
+                                                                                                    + mouseGeoRef.getMouseChanging().getX(),
+                                                                            mouseGeoRef.getCumulatedMouseChanging().getY()
+                                                                                                    + mouseGeoRef.getMouseChanging().getY() ) );
 
+                        // panel.setTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
                         panel.setBeginDrawImageAtPosition( new Point2d(
                                                                         panel.getBeginDrawImageAtPosition().getX()
-                                                                                                - mouse.getMouseChanging().getX(),
+                                                                                                - mouseGeoRef.getMouseChanging().getX(),
                                                                         panel.getBeginDrawImageAtPosition().getY()
-                                                                                                - mouse.getMouseChanging().getY() ) );
-                        sceneValues.setStartRasterEnvelopePosition( mouse.getMouseChanging() );
+                                                                                                - mouseGeoRef.getMouseChanging().getY() ) );
+                        sceneValues.setStartRasterEnvelopePosition( mouseGeoRef.getMouseChanging() );
                         // 
                         // if the user went into any critical region
-                        if ( mouse.getCumulatedMouseChanging().getX() >= sceneValues.getImageMargin().getX()
-                             || mouse.getCumulatedMouseChanging().getX() <= -sceneValues.getImageMargin().getX()
-                             || mouse.getCumulatedMouseChanging().getY() >= sceneValues.getImageMargin().getY()
-                             || mouse.getCumulatedMouseChanging().getY() <= -sceneValues.getImageMargin().getY() ) {
+                        if ( mouseGeoRef.getCumulatedMouseChanging().getX() >= sceneValues.getImageMargin().getX()
+                             || mouseGeoRef.getCumulatedMouseChanging().getX() <= -sceneValues.getImageMargin().getX()
+                             || mouseGeoRef.getCumulatedMouseChanging().getY() >= sceneValues.getImageMargin().getY()
+                             || mouseGeoRef.getCumulatedMouseChanging().getY() <= -sceneValues.getImageMargin().getY() ) {
 
-                            Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
-                                                                             mouse.getCumulatedMouseChanging().getY() );
+                            Point2d updateDrawImageAtPosition = new Point2d(
+                                                                             mouseGeoRef.getCumulatedMouseChanging().getX(),
+                                                                             mouseGeoRef.getCumulatedMouseChanging().getY() );
                             System.out.println( "updatePos: " + updateDrawImageAtPosition );
 
                             // panel.setImageToDraw( model.getGeneratedImage() );
                             // sceneValues.setStartRasterEnvelopePosition( updateDrawImageAtPosition );
                             sceneValues.setMinPointPixel( null );
                             panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
-                            mouse.reset();
+                            mouseGeoRef.reset();
                             panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
 
                         }
@@ -462,13 +425,24 @@ public class Controller {
                         int x = m.getX();
                         int y = m.getY();
                         FootprintPoint footprintPoint = new FootprintPoint( x, y );
-                        FootprintPoint point = (FootprintPoint) footPrint.getClosestPoint( footprintPoint );
-                        lastFootprintPoint = point;
-                        tablePanel.setCoords( point );
-                        footPanel.addPoint( footPrint.getMappedPoints(), point );
+                        Pair<AbstractGRPoint, FootprintPoint> point = footPrint.getClosestPoint( footprintPoint );
+                        lastFootprintPoint = (FootprintPoint) point.first;
+                        tablePanel.setCoords( point.second );
+                        footPanel.addPoint( mappedPoints, point.first );
                         footPanel.repaint();
                     } else {
-                        System.err.println( "not yet implemented." );
+                        mouseFootprint.setMouseChanging( new Point2d(
+                                                                      ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
+                                                                      ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
+
+                        mouseFootprint.setCumulatedMouseChanging( new Point2d(
+                                                                               mouseFootprint.getCumulatedMouseChanging().getX()
+                                                                                                       + mouseFootprint.getMouseChanging().getX(),
+                                                                               mouseFootprint.getCumulatedMouseChanging().getY()
+                                                                                                       + mouseFootprint.getMouseChanging().getY() ) );
+
+                        footPanel.setTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
+                        footPanel.repaint();
                     }
 
                 }
@@ -479,7 +453,7 @@ public class Controller {
          * Sets values to the JTableModel and adds a new row to it.
          */
         private void setValues() {
-            footPrint.addToMappedPoints( lastFootprintPoint, lastGeoReferencedPoint );
+            addToMappedPoints( lastFootprintPoint, lastGeoReferencedPoint );
             lastFootprintPoint = null;
             lastGeoReferencedPoint = null;
             tablePanel.addRow();
@@ -555,6 +529,20 @@ public class Controller {
 
         @Override
         public void mouseWheelMoved( MouseWheelEvent m ) {
+
+            Object source = m.getSource();
+
+            if ( source instanceof JPanel ) {
+                // Scene2DPanel
+                if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
+
+                }
+                // footprintPanel
+                if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
+
+                }
+            }
+
             // if ( m.getWheelRotation() < 0 ) {
             // panel.setResolutionOfImage( panel.getResolutionOfImage() - .1 );
             // } else {
@@ -628,6 +616,34 @@ public class Controller {
         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
 
         panel.repaint();
+    }
+
+    /**
+     * Adds the <Code>AbstractPoint</Code>s to a map
+     * 
+     * @param mappedPointKey
+     * @param mappedPointValue
+     */
+    private void addToMappedPoints( AbstractGRPoint mappedPointKey, AbstractGRPoint mappedPointValue ) {
+        if ( mappedPointKey != null && mappedPointValue != null ) {
+            this.mappedPoints.put( mappedPointKey, mappedPointValue );
+        }
+
+    }
+
+    private void removeFromMappedPoints( AbstractGRPoint mappedPointKey ) {
+        if ( mappedPointKey != null ) {
+            this.mappedPoints.remove( mappedPointKey );
+            for ( AbstractGRPoint g : mappedPoints.keySet() ) {
+                System.out.println( "key: " + g + " value: " + mappedPoints.get( g ) );
+
+            }
+        }
+    }
+
+    private void removeAllFromMappedPoints() {
+        mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
+
     }
 
 }

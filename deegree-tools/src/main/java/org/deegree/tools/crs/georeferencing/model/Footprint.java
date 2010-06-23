@@ -36,14 +36,17 @@
 package org.deegree.tools.crs.georeferencing.model;
 
 import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
-import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
 /**
  * 
@@ -58,15 +61,21 @@ public class Footprint {
 
     private Polygon polygon;
 
-    private Point2d[] points;
+    private Map<Point2d, Point2d> pointsPixelToWorld;
 
-    private Map<AbstractGRPoint, AbstractGRPoint> mappedPoints;
+    private List<Polygon> pixelCoordinatePolygonList;
+
+    private List<Polygon> worldCoordinatePolygonList;
+
+    private int offset;
+
+    private float resize;
 
     /**
      * Creates a new <Code>Footprint</Code> instance.
      */
     public Footprint() {
-        mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
+        pointsPixelToWorld = new HashMap<Point2d, Point2d>();
     }
 
     /**
@@ -84,16 +93,17 @@ public class Footprint {
      * </dl>
      */
     public void setDefaultPolygon() {
-        points = new Point2d[4];
-        points[0] = new Point2d( 50, 50 );
-        points[1] = new Point2d( 50, 250 );
-        points[2] = new Point2d( 200, 200 );
-        points[3] = new Point2d( 200, 80 );
+        Point2d[] pointsWorldCoordinate = new Point2d[4];
+        pointsWorldCoordinate[0] = new Point2d( 50, 50 );
+        pointsWorldCoordinate[1] = new Point2d( 50, 250 );
+        pointsWorldCoordinate[2] = new Point2d( 200, 200 );
+        pointsWorldCoordinate[3] = new Point2d( 200, 80 );
 
-        this.polygon = new Polygon( new int[] { (int) points[0].x, (int) points[1].x, (int) points[2].x,
-                                               (int) points[3].x }, new int[] { (int) points[0].y, (int) points[1].y,
-                                                                               (int) points[2].y, (int) points[3].y },
-                                    points.length );
+        this.polygon = new Polygon( new int[] { (int) pointsWorldCoordinate[0].x, (int) pointsWorldCoordinate[1].x,
+                                               (int) pointsWorldCoordinate[2].x, (int) pointsWorldCoordinate[3].x },
+                                    new int[] { (int) pointsWorldCoordinate[0].y, (int) pointsWorldCoordinate[1].y,
+                                               (int) pointsWorldCoordinate[2].y, (int) pointsWorldCoordinate[3].y },
+                                    pointsWorldCoordinate.length );
 
     }
 
@@ -107,35 +117,42 @@ public class Footprint {
     }
 
     /**
-     * Determines the closest point of a raster (a polygon at the moment) to a specified point.
+     * Determines the closest point of the point2d in worldCoordinate.
      * 
      * @param point2d
      *            the specified point
-     * @return an <Code>AbstractPoint</Code> of the raster that is the closest point to point2d
+     * @return an <Code>AbstractPoint</Code> that is the closest point to point2d
      */
-    public AbstractGRPoint getClosestPoint( AbstractGRPoint point2d ) {
-        AbstractGRPoint closestPoint = null;
-        if ( points != null || points.length != 0 ) {
+    public Pair<AbstractGRPoint, FootprintPoint> getClosestPoint( AbstractGRPoint point2d ) {
+        Pair<AbstractGRPoint, FootprintPoint> closestPoint = new Pair<AbstractGRPoint, FootprintPoint>();
+
+        if ( pointsPixelToWorld.size() != 0 ) {
             double distance = 0.0;
 
-            for ( Point2d point : points ) {
+            for ( Point2d point : pointsPixelToWorld.keySet() ) {
                 if ( distance == 0.0 ) {
                     distance = point.distance( point2d );
                     if ( point2d instanceof FootprintPoint ) {
-                        closestPoint = new FootprintPoint( point.x, point.y );
-                    } else if ( point2d instanceof GeoReferencedPoint ) {
-                        closestPoint = new GeoReferencedPoint( point.x, point.y );
+                        closestPoint.first = new FootprintPoint( point.x, point.y );
+                        closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).x,
+                                                                  pointsPixelToWorld.get( point ).y );
                     }
+                    // else if ( point2d instanceof GeoReferencedPoint ) {
+                    // closestPoint = new GeoReferencedPoint( point.x, point.y );
+                    // }
 
                 } else {
                     double distanceTemp = point.distance( point2d );
                     if ( distanceTemp < distance ) {
                         distance = distanceTemp;
                         if ( point2d instanceof FootprintPoint ) {
-                            closestPoint = new FootprintPoint( point.x, point.y );
-                        } else if ( point2d instanceof GeoReferencedPoint ) {
-                            closestPoint = new GeoReferencedPoint( point.x, point.y );
+                            closestPoint.first = new FootprintPoint( point.x, point.y );
+                            closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).x,
+                                                                      pointsPixelToWorld.get( point ).y );
                         }
+                        // else if ( point2d instanceof GeoReferencedPoint ) {
+                        // closestPoint = new GeoReferencedPoint( point.x, point.y );
+                        // }
                     }
                 }
             }
@@ -144,40 +161,118 @@ public class Footprint {
         return closestPoint;
     }
 
-    public Map<AbstractGRPoint, AbstractGRPoint> getMappedPoints() {
-        return mappedPoints;
+    /**
+     * Generates the polygons in world- and pixel-coordinates.
+     * 
+     * @param footprintPointsList
+     *            the points from the <Code>WorldRenderableObject</Code>
+     */
+    public void generateFootprints( List<float[]> footprintPointsList ) {
+
+        worldCoordinatePolygonList = new ArrayList<Polygon>();
+        for ( float[] f : footprintPointsList ) {
+            int size = f.length / 3;
+            int[] x = new int[size];
+            int[] y = new int[size];
+            int count = 0;
+
+            // get all points in 2D, so z-axis is omitted
+            for ( int i = 0; i < f.length; i += 3 ) {
+                x[count] = (int) f[i];
+                y[count] = (int) f[i + 1];
+                count++;
+            }
+            Polygon p = new Polygon( x, y, size );
+            worldCoordinatePolygonList.add( p );
+        }
+        generateFootprintsPixelCoordinate( worldCoordinatePolygonList );
+
     }
 
-    public void setMappedPoints( Map<AbstractGRPoint, AbstractGRPoint> mappedPoints ) {
-        this.mappedPoints = mappedPoints;
+    private void generateFootprintsPixelCoordinate( List<Polygon> polyList ) {
+        if ( resize == 0.0f ) {
+            resize = 1.0f;
+        }
+        pixelCoordinatePolygonList = new ArrayList<Polygon>();
+        List<Rectangle> rect = new ArrayList<Rectangle>();
+
+        for ( Polygon p : polyList ) {
+
+            rect.add( p.getBounds() );
+        }
+        Rectangle temp = null;
+        // get minimum X
+        for ( Rectangle rec : rect ) {
+            if ( temp == null ) {
+                temp = rec;
+            } else {
+                if ( rec.x < temp.x ) {
+                    temp = rec;
+                }
+            }
+        }
+        int x = temp.x - offset;
+
+        Rectangle tempY = null;
+        // get minimum Y
+        for ( Rectangle rec : rect ) {
+            if ( tempY == null ) {
+                tempY = rec;
+            } else {
+                if ( rec.y < temp.y ) {
+                    tempY = rec;
+                }
+            }
+        }
+        int y = temp.y - offset;
+
+        for ( Polygon po : polyList ) {
+            int[] x2 = new int[po.npoints];
+            int[] y2 = new int[po.npoints];
+            for ( int i = 0; i < po.npoints; i++ ) {
+                // TODO make the size configurable
+
+                x2[i] = (int) ( ( po.xpoints[i] - x ) * resize );
+                y2[i] = (int) ( ( po.ypoints[i] - y ) * resize );
+                pointsPixelToWorld.put( new Point2d( x2[i], y2[i] ), new Point2d( po.xpoints[i], po.ypoints[i] ) );
+            }
+            Polygon p = new Polygon( x2, y2, po.npoints );
+            pixelCoordinatePolygonList.add( p );
+
+        }
+
     }
 
     /**
-     * Adds the <Code>AbstractPoint</Code>s to a map
      * 
-     * @param mappedPointKey
-     * @param mappedPointValue
+     * @return the list of polygons in pixel-coordinates
      */
-    public void addToMappedPoints( AbstractGRPoint mappedPointKey, AbstractGRPoint mappedPointValue ) {
-        if ( mappedPointKey != null && mappedPointValue != null ) {
-            this.mappedPoints.put( mappedPointKey, mappedPointValue );
-        }
-
+    public List<Polygon> getPixelCoordinatePolygonList() {
+        return pixelCoordinatePolygonList;
     }
 
-    public void removeFromMappedPoints( AbstractGRPoint mappedPointKey ) {
-        if ( mappedPointKey != null ) {
-            this.mappedPoints.remove( mappedPointKey );
-            for ( AbstractGRPoint g : mappedPoints.keySet() ) {
-                System.out.println( "key: " + g + " value: " + mappedPoints.get( g ) );
-
-            }
-        }
+    /**
+     * 
+     * @return the list of polygons in world-coordinates
+     */
+    public List<Polygon> getWorldCoordinatePolygonList() {
+        return worldCoordinatePolygonList;
     }
 
-    public void removeAllFromMappedPoints() {
-        mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
+    public int getOffset() {
+        return offset;
+    }
 
+    public void setOffset( int offset ) {
+        this.offset = offset;
+    }
+
+    public float getResize() {
+        return resize;
+    }
+
+    public void setResize( float resize ) {
+        this.resize = resize;
     }
 
 }

@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JPanel;
+import javax.vecmath.Point2d;
 
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 
@@ -65,10 +66,6 @@ public class BuildingFootprintPanel extends JPanel {
 
     public final static String BUILDINGFOOTPRINT_PANEL_NAME = "BuildingFootprintPanel";
 
-    private int xValue = 0;
-
-    private int yValue = 0;
-
     private Map<AbstractGRPoint, AbstractGRPoint> points;
 
     /**
@@ -79,6 +76,8 @@ public class BuildingFootprintPanel extends JPanel {
     private List<Polygon> polygonList;
 
     private boolean focus;
+
+    private Point2d translationPoint;
 
     private final Insets insets = new Insets( 10, 10, 0, 0 );
 
@@ -94,13 +93,17 @@ public class BuildingFootprintPanel extends JPanel {
 
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
+
+        if ( translationPoint == null ) {
+            translationPoint = new Point2d( 0.0, 0.0 );
+        }
+        g2.translate( -translationPoint.x, -translationPoint.y );
         if ( polygonList != null ) {
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
+
             }
-
         }
-
         if ( tempPoint != null ) {
             g2.fillOval( (int) tempPoint.x - 5, (int) tempPoint.y - 5, 10, 10 );
         }
@@ -110,23 +113,8 @@ public class BuildingFootprintPanel extends JPanel {
                 g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
             }
         }
+        g2.translate( translationPoint.x, translationPoint.y );
 
-    }
-
-    public int getXValue() {
-        return xValue;
-    }
-
-    public int getYValue() {
-        return yValue;
-    }
-
-    public void setXValue( int x ) {
-        xValue = x;
-    }
-
-    public void setYValue( int y ) {
-        yValue = y;
     }
 
     @Override
@@ -142,18 +130,6 @@ public class BuildingFootprintPanel extends JPanel {
         this.polygonList = polygonList;
     }
 
-    // public void setPolygon( Polygon polygon ) {
-    // try {
-    // // org.deegree.geometry.primitive.Polygon pol = (org.deegree.geometry.primitive.Polygon) geometry;
-    // // Ring ring = pol.getExteriorRing();
-    // // Points points = ring.getControlPoints();
-    //
-    // this.polygon = polygon;// new Polygon( new int[] { 50, 50, 200, 200 }, new int[] { 50, 250, 200, 80 }, 4 );
-    // } catch ( ClassCastException e ) {
-    // System.err.println( "No Polygon provided: " + e.getMessage() );
-    // }
-    // }
-
     public void addScene2DMouseListener( MouseListener m ) {
 
         this.addMouseListener( m );
@@ -165,20 +141,20 @@ public class BuildingFootprintPanel extends JPanel {
         this.tempPoint = tempPoint;
     }
 
-    // public void setGeometry( RasterRect rect ) {
-    // this.polygon = new Polygon( new int[] { rect.x, rect.x, rect.width, rect.width }, new int[] { rect.y,
-    // rect.height,
-    // rect.height,
-    // rect.y }, 4 );
-    //
-    // }
-
     public void setFocus( boolean focus ) {
         this.focus = focus;
     }
 
     public boolean getFocus() {
         return focus;
+    }
+
+    public Point2d getTranslationPoint() {
+        return translationPoint;
+    }
+
+    public void setTranslationPoint( Point2d translationPoint ) {
+        this.translationPoint = translationPoint;
     }
 
 }

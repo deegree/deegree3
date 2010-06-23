@@ -35,13 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 import javax.swing.JPanel;
@@ -50,70 +47,38 @@ import javax.vecmath.Point2d;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 
 /**
- * The JPanel that should display a BufferedImage.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Scene2DPanel extends JPanel {
+public abstract class AbstractPanel2D extends JPanel {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    protected Point2d beginDrawImageAtPosition;
 
-    public final static String SCENE2D_PANEL_NAME = "Scene2DPanel";
+    protected Rectangle imageDimension;
 
-    private BufferedImage imageToDraw;
+    protected Map<AbstractGRPoint, AbstractGRPoint> points;
 
-    private Point2d beginDrawImageAtPosition;
+    protected boolean focus;
 
-    private Point2d translationPoint;
+    protected AbstractGRPoint tempPoint;
 
-    private Rectangle imageDimension;
+    public void addScene2DMouseListener( MouseListener m ) {
 
-    private Map<AbstractGRPoint, AbstractGRPoint> points;
+        this.addMouseListener( m );
 
-    private boolean focus;
-
-    private AbstractGRPoint tempPoint;
-
-    public Scene2DPanel() {
-        this.setName( SCENE2D_PANEL_NAME );
     }
 
-    @Override
-    public void paintComponent( Graphics g ) {
-        super.paintComponent( g );
-        Graphics2D g2 = (Graphics2D) g;
-        Graphics2D g2d = (Graphics2D) g;
-        // if ( translationPoint == null ) {
-        // translationPoint = new Point2d( 0.0, 0.0 );
-        // }
+    public void addScene2DMouseMotionListener( MouseMotionListener m ) {
 
-        if ( imageToDraw != null ) {
+        this.addMouseMotionListener( m );
+    }
 
-            g2.drawImage( imageToDraw, (int) beginDrawImageAtPosition.getX(), (int) beginDrawImageAtPosition.getY(),
-                          (int) imageDimension.width, (int) imageDimension.height, this );
-
-        }
-        // g2d.translate( -translationPoint.x, -translationPoint.y );
-        if ( tempPoint != null ) {
-            g2.fillOval( (int) tempPoint.x - 5, (int) tempPoint.y - 5, 10, 10 );
-        }
-
-        if ( points != null ) {
-            for ( AbstractGRPoint point : points.values() ) {
-                g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
-            }
-        }
-
-        // g2d.draw3DRect( 20, 20, 40, 50, true );
-        //        
-        // g2d.translate( translationPoint.x, translationPoint.y );
-
+    public void addScene2DMouseWheelListener( MouseWheelListener m ) {
+        this.addMouseWheelListener( m );
     }
 
     public Point2d getBeginDrawImageAtPosition() {
@@ -132,26 +97,6 @@ public class Scene2DPanel extends JPanel {
         this.imageDimension = imageDimension;
     }
 
-    public void addScene2DMouseListener( MouseListener m ) {
-
-        this.addMouseListener( m );
-
-    }
-
-    public void addScene2DMouseMotionListener( MouseMotionListener m ) {
-
-        this.addMouseMotionListener( m );
-    }
-
-    public void addScene2DMouseWheelListener( MouseWheelListener m ) {
-        this.addMouseWheelListener( m );
-    }
-
-    public void setImageToDraw( BufferedImage imageToDraw ) {
-        this.imageToDraw = imageToDraw;
-
-    }
-
     public void addPoint( Map<AbstractGRPoint, AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
         this.points = points;
         this.tempPoint = tempPoint;
@@ -163,14 +108,6 @@ public class Scene2DPanel extends JPanel {
 
     public boolean getFocus() {
         return focus;
-    }
-
-    public Point2d getTranslationPoint() {
-        return translationPoint;
-    }
-
-    public void setTranslationPoint( Point2d translationPoint ) {
-        this.translationPoint = translationPoint;
     }
 
 }
