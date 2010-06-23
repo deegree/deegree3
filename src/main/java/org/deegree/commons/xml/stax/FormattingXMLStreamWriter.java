@@ -58,26 +58,32 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
     // if the last write element call was a start, print end element on the same line
     private boolean lastWasStart = false;
 
+    private final boolean stripWhitespace;
+
     /**
-     * Create a new wrapper for XMLStreamWriter that formats the xml output.
+     * Create a new {@link FormattingXMLStreamWriter} instance with default indentation and no whitespace stripping.
      * 
      * @param xmlStreamWriter
      */
     public FormattingXMLStreamWriter( XMLStreamWriter xmlStreamWriter ) {
         this.s = xmlStreamWriter;
         this.indent = "  ";
+        this.stripWhitespace = false;
     }
 
     /**
-     * Create a new wrapper for XMLStreamWriter that formats the xml output.
+     * Create a new {@link FormattingXMLStreamWriter} instance with the specified indentation and whitespace stripping
+     * policy.
      * 
-     * @param xmlStreamWriter
+     * @param xmlWriter
      * @param indent
-     *            the indent string for each indent level
+     *            the indent string for each indent level, must not be <code>null</code>
+     * @param stripWhitespace
      */
-    public FormattingXMLStreamWriter( XMLStreamWriter xmlStreamWriter, String indent ) {
-        this.s = xmlStreamWriter;
+    public FormattingXMLStreamWriter( XMLStreamWriter xmlWriter, String indent, boolean stripWhitespace ) {
+        this.s = xmlWriter;
         this.indent = indent;
+        this.stripWhitespace = stripWhitespace;
     }
 
     public void close()
@@ -141,12 +147,20 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
 
     public void writeCharacters( String text )
                             throws XMLStreamException {
-        s.writeCharacters( text );
+        if ( stripWhitespace ) {
+            s.writeCharacters( text.trim() );
+        } else {
+            s.writeCharacters( text );
+        }
     }
 
     public void writeCharacters( char[] text, int start, int len )
                             throws XMLStreamException {
-        s.writeCharacters( text, start, len );
+        if ( stripWhitespace ) {
+            s.writeCharacters( new String( text ).substring( start, start + len - 1 ).trim() );
+        } else {
+            s.writeCharacters( text, start, len );
+        }
     }
 
     public void writeComment( String data )
@@ -285,5 +299,4 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
             s.writeCharacters( b.toString() );
         }
     }
-
 }
