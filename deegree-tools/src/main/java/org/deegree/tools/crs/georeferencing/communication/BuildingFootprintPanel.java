@@ -40,6 +40,8 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelListener;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +49,7 @@ import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 
 /**
  * 
@@ -66,7 +69,7 @@ public class BuildingFootprintPanel extends JPanel {
 
     public final static String BUILDINGFOOTPRINT_PANEL_NAME = "BuildingFootprintPanel";
 
-    private Map<AbstractGRPoint, AbstractGRPoint> points;
+    private Map<FootprintPoint, FootprintPoint> points;
 
     /**
      * Temporal point
@@ -104,32 +107,33 @@ public class BuildingFootprintPanel extends JPanel {
         if ( polygonList != null ) {
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
+                System.out.println( "i'm to draw polygon" );
 
             }
         }
         if ( points != null ) {
-            for ( AbstractGRPoint point : points.keySet() ) {
-                g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
+            for ( FootprintPoint point : points.keySet() ) {
+                g2.fillOval( (int) point.getX() - 5, (int) point.getY() - 5, 10, 10 );
             }
         }
-        if ( tempPoint != null ) {
-            if ( isTranslated == false ) {
-
-                Point2d p = new Point2d( tempPoint.x - 5, tempPoint.y - 5 );
-
-                g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
-
-            }
-        }
+        // if ( tempPoint != null ) {
+        // if ( isTranslated == false ) {
+        //
+        // Point2d p = new Point2d( tempPoint.x - 5, tempPoint.y - 5 );
+        //
+        // g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
+        //
+        // }
+        // }
         g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
         System.out.println( "TranslationPoint: " + cumTranslationPoint );
 
-        if ( tempPoint != null ) {
-            if ( isTranslated == true ) {
-                g2.fillOval( (int) ( tempPoint.x - 5 ), (int) ( tempPoint.y - 5 ), 10, 10 );
-
-            }
-        }
+        // if ( tempPoint != null ) {
+        // if ( isTranslated == true ) {
+        // g2.fillOval( (int) ( tempPoint.x - 5 ), (int) ( tempPoint.y - 5 ), 10, 10 );
+        //
+        // }
+        // }
     }
 
     @Override
@@ -151,9 +155,21 @@ public class BuildingFootprintPanel extends JPanel {
 
     }
 
-    public void addPoint( Map<AbstractGRPoint, AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
+    public void addScene2DMouseMotionListener( MouseMotionListener m ) {
+        this.addMouseMotionListener( m );
+    }
+
+    public void addScene2DMouseWheelListener( MouseWheelListener m ) {
+        this.addMouseWheelListener( m );
+    }
+
+    // public void addPoint( Map<AbstractGRPoint, AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
+    // this.points = points;
+    // this.tempPoint = tempPoint;
+    // }
+
+    public void setPoints( Map<FootprintPoint, FootprintPoint> points ) {
         this.points = points;
-        this.tempPoint = tempPoint;
     }
 
     public void setFocus( boolean focus ) {

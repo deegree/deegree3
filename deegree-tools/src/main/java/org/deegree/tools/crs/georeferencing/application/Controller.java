@@ -46,9 +46,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -121,7 +119,7 @@ public class Controller {
 
     private GeoReferencedPoint lastGeoReferencedPoint;
 
-    private Map<AbstractGRPoint, AbstractGRPoint> mappedPoints;
+    // private Map<AbstractGRPoint, AbstractGRPoint> mappedPoints;
 
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
@@ -134,7 +132,7 @@ public class Controller {
         this.start = false;
         this.glHandler = view.getOpenGLEventListener();
 
-        this.mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
+        // this.mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
         this.footPrint.setOffset( 10 );
         this.footPrint.setResize( 1.0f );
 
@@ -145,6 +143,8 @@ public class Controller {
         view.addHoleWindowListener( new HoleWindowListener() );
         navPanel.addHorizontalRefListener( new ButtonListener() );
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
+        footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+        footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
         tablePanel.addHorizontalRefListener( new ButtonListener() );
         tablePanel.addTableModelListener( new TableListener() );
 
@@ -186,36 +186,36 @@ public class Controller {
                     System.out.println( "you clicked on delete selected" );
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
 
-                    for ( int tableRow : tableRows ) {
-                        AbstractGRPoint keyPoint = new FootprintPoint(
-                                                                       (Double) tablePanel.getModel().getValueAt(
-                                                                                                                  tableRow,
-                                                                                                                  2 ),
-                                                                       (Double) tablePanel.getModel().getValueAt(
-                                                                                                                  tableRow,
-                                                                                                                  3 ) );
-
-                        if ( mappedPoints.containsKey( keyPoint ) ) {
-                            removeFromMappedPoints( keyPoint );
-                        } else {
-                            lastFootprintPoint = null;
-                            lastGeoReferencedPoint = null;
-                        }
-
-                        tablePanel.removeRow( tableRow );
-                    }
-
-                    panel.addPoint( mappedPoints, lastGeoReferencedPoint );
-                    footPanel.addPoint( mappedPoints, lastFootprintPoint );
-                    panel.repaint();
-                    footPanel.repaint();
+                    // for ( int tableRow : tableRows ) {
+                    // AbstractGRPoint keyPoint = new FootprintPoint(
+                    // (Double) tablePanel.getModel().getValueAt(
+                    // tableRow,
+                    // 2 ),
+                    // (Double) tablePanel.getModel().getValueAt(
+                    // tableRow,
+                    // 3 ) );
+                    //
+                    // if ( mappedPoints.containsKey( keyPoint ) ) {
+                    // removeFromMappedPoints( keyPoint );
+                    // } else {
+                    // lastFootprintPoint = null;
+                    // lastGeoReferencedPoint = null;
+                    // }
+                    //
+                    // tablePanel.removeRow( tableRow );
+                    // }
+                    //
+                    // panel.addPoint( mappedPoints, lastGeoReferencedPoint );
+                    // footPanel.addPoint( mappedPoints, lastFootprintPoint );
+                    // panel.repaint();
+                    // footPanel.repaint();
                 }
                 if ( ( (JButton) source ).getText().startsWith( PointTablePanel.BUTTON_DELETE_ALL ) ) {
                     System.out.println( "you clicked on delete all" );
                     tablePanel.removeAllRows();
                     removeAllFromMappedPoints();
                     panel.addPoint( null, null );
-                    footPanel.addPoint( null, null );
+                    // footPanel.addPoint( null, null );
                     lastFootprintPoint = null;
                     lastGeoReferencedPoint = null;
                     panel.repaint();
@@ -358,7 +358,7 @@ public class Controller {
                         int y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                         lastGeoReferencedPoint = geoReferencedPoint;
-                        panel.addPoint( mappedPoints, geoReferencedPoint );
+                        // panel.addPoint( mappedPoints, geoReferencedPoint );
                         // panel.setTranslated( isHorizontalRef );
                         GeoReferencedPoint point = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                         tablePanel.setCoords( point );
@@ -433,12 +433,13 @@ public class Controller {
                         int y = m.getY();
                         FootprintPoint footprintPoint = new FootprintPoint( x, y );
                         Pair<AbstractGRPoint, FootprintPoint> point = footPrint.getClosestPoint( footprintPoint );
-                        lastFootprintPoint = (FootprintPoint) point.first;
+                        // lastFootprintPoint = (FootprintPoint) point.first;
                         tablePanel.setCoords( point.second );
-                        footPanel.setTranslated( isHorizontalRef );
-                        System.out.println( isHorizontalRef );
-                        footPanel.addPoint( mappedPoints, point.first );
-                        footPanel.repaint();
+                        footPrint.addPointToSelectedPointsList( (FootprintPoint) point.first );
+                        footPanel.setPoints( footPrint.getSelectedPoints() );
+                        // footPanel.setTranslated( isHorizontalRef );
+                        // footPanel.addPoint( mappedPoints, point.first );
+
                     } else {
                         mouseFootprint.setMouseChanging( new Point2d(
                                                                       ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
@@ -454,9 +455,9 @@ public class Controller {
                         footPrint.updatePoints( mouseFootprint.getMouseChanging() );
                         footPanel.setTranslated( isHorizontalRef );
                         System.out.println( isHorizontalRef );
-                        footPanel.repaint();
-                    }
 
+                    }
+                    footPanel.repaint();
                 }
             }
         }
@@ -521,9 +522,23 @@ public class Controller {
         }
 
         @Override
-        public void mouseMoved( MouseEvent arg0 ) {
-            // TODO Auto-generated method stub
+        public void mouseMoved( MouseEvent m ) {
 
+            Object source = m.getSource();
+
+            if ( source instanceof JPanel ) {
+                // Scene2DPanel
+                if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
+
+                }
+                // footprintPanel
+                if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
+                    // System.out.println( m.getPoint() );
+                    if ( mouseFootprint != null ) {
+                        mouseFootprint.setMouseMoved( new Point2d( m.getX(), m.getY() ) );
+                    }
+                }
+            }
         }
 
     }
@@ -551,22 +566,16 @@ public class Controller {
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-
+                    if ( m.getWheelRotation() < 0 ) {
+                        footPrint.setResize( footPrint.getResize() + .1f );
+                    } else {
+                        footPrint.setResize( footPrint.getResize() - .1f );
+                    }
+                    footPrint.updatePoints( footPrint.getResize() );
+                    footPanel.setPolygonList( footPrint.getPixelCoordinatePolygonList() );
+                    footPanel.repaint();
                 }
             }
-
-            // if ( m.getWheelRotation() < 0 ) {
-            // panel.setResolutionOfImage( panel.getResolutionOfImage() - .1 );
-            // } else {
-            // panel.setResolutionOfImage( panel.getResolutionOfImage() + .1 );
-            // }
-            // model.reset();
-            // System.out.println( panel.getResolutionOfImage() );
-            //
-            // model.setResolution( panel.getResolutionOfImage() );
-            // model.init( options, panel.getBounds() );
-            // panel.setImageToDraw( model.generateSubImage() );
-            // panel.repaint();
 
         }
 
@@ -637,24 +646,24 @@ public class Controller {
      * @param mappedPointValue
      */
     private void addToMappedPoints( AbstractGRPoint mappedPointKey, AbstractGRPoint mappedPointValue ) {
-        if ( mappedPointKey != null && mappedPointValue != null ) {
-            this.mappedPoints.put( mappedPointKey, mappedPointValue );
-        }
+        // if ( mappedPointKey != null && mappedPointValue != null ) {
+        // this.mappedPoints.put( mappedPointKey, mappedPointValue );
+        // }
 
     }
 
     private void removeFromMappedPoints( AbstractGRPoint mappedPointKey ) {
-        if ( mappedPointKey != null ) {
-            this.mappedPoints.remove( mappedPointKey );
-            for ( AbstractGRPoint g : mappedPoints.keySet() ) {
-                System.out.println( "key: " + g + " value: " + mappedPoints.get( g ) );
-
-            }
-        }
+        // if ( mappedPointKey != null ) {
+        // this.mappedPoints.remove( mappedPointKey );
+        // for ( AbstractGRPoint g : mappedPoints.keySet() ) {
+        // System.out.println( "key: " + g + " value: " + mappedPoints.get( g ) );
+        //
+        // }
+        // }
     }
 
     private void removeAllFromMappedPoints() {
-        mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
+        // mappedPoints = new HashMap<AbstractGRPoint, AbstractGRPoint>();
 
     }
 
