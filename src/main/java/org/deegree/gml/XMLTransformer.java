@@ -71,8 +71,8 @@ import org.deegree.geometry.GeometryTransformer;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
+ * @version $Revision$, $Date$ 
  */
 public class XMLTransformer extends GeometryTransformer {
 
@@ -168,21 +168,6 @@ public class XMLTransformer extends GeometryTransformer {
         transform( reader, writer, null, gmlVersion, false, null );
     }
 
-    /**
-     * @param sourceCRS
-     * @param sourceValidArea
-     * @param input
-     * @param output
-     * @param geomReader
-     * @param geomWriter
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws XMLParsingException
-     * @throws TransformationException
-     * @throws IllegalArgumentException
-     * @throws OutsideCRSDomainException
-     *             if a read geometry was outside the domain of validity of the crs it was defined in.
-     */
     private void transformStream( GMLStreamReader gmlReader, GMLStreamWriter gmlWriter, CoordinateSystem sourceCRS,
                                   boolean testValidArea, List<Transformation> toBeUsedTransformations )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
@@ -274,7 +259,5 @@ public class XMLTransformer extends GeometryTransformer {
                 input.next();
             }
         }
-
     }
-
 }
