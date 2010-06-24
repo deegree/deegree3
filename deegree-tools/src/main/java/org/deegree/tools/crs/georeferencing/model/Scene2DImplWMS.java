@@ -55,6 +55,7 @@ import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient111;
 
@@ -118,13 +119,16 @@ public class Scene2DImplWMS implements Scene2D {
             InputStream in = url.openStream();
             raster = RasterFactory.loadRasterFromStream( in, options );
             in.close();
-            SimpleRaster ra = raster.getAsSimpleRaster().getSubRaster( -2.0, -1.0, -0.01, 6.0 );
-            this.sceneValues.setRaster( ra );
-            ref = ra.getRasterReference();
-            rasterRect = ref.convertEnvelopeToRasterCRS( ra.getEnvelope() );
+            // SimpleRaster ra = raster.getAsSimpleRaster().getSubRaster( -2.0, -1.0, -0.01, 6.0 );
+            // this.sceneValues.setRaster( ra );
+            ref = raster.getRasterReference();
+            rasterRect = ref.convertEnvelopeToRasterCRS( raster.getEnvelope() );
             this.sceneValues.setRasterRect( rasterRect );
+            this.sceneValues.setCrs( raster.getCoordinateSystem().getWrappedCRS() );
 
         } catch ( IOException e ) {
+            e.printStackTrace();
+        } catch ( UnknownCRSException e ) {
             e.printStackTrace();
         }
 

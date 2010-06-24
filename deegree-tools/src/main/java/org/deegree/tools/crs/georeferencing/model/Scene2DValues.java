@@ -43,6 +43,7 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -80,6 +81,8 @@ public class Scene2DValues {
     private Point2d minPointPixel;
 
     private RasterIOOptions options;
+
+    private CoordinateSystem crs;
 
     public Scene2DValues( RasterIOOptions options ) {
         this.options = options;
@@ -221,6 +224,9 @@ public class Scene2DValues {
         double h = imageDimension.height;
 
         double ratio = w / h;
+        if ( size == 0.0 ) {
+            size = 1.0;
+        }
 
         if ( ratio < 1 ) {
             // if < 1 then do orientation on h
@@ -286,6 +292,14 @@ public class Scene2DValues {
 
     public void setMinPointPixel( Point2d minPointPixel ) {
         this.minPointPixel = minPointPixel;
+    }
+
+    public CoordinateSystem getCrs() {
+        return crs;
+    }
+
+    public void setCrs( CoordinateSystem crs ) {
+        this.crs = crs;
     }
 
 }

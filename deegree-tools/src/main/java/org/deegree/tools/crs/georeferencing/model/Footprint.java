@@ -73,7 +73,7 @@ public class Footprint {
 
     private int offset;
 
-    private float resize;
+    private float size;
 
     private List<float[]> footprintPointsList;
 
@@ -199,10 +199,10 @@ public class Footprint {
     }
 
     private void generateFootprintsPixelCoordinate( List<Polygon> polyList ) {
-        if ( resize == 0.0f ) {
-            resize = 1.0f;
+        if ( size == 0.0f ) {
+            size = 1.0f;
         }
-        System.out.println( "[Footprint] Resize: " + resize );
+        System.out.println( "[Footprint] Resize: " + size );
         pixelCoordinatePolygonList = new ArrayList<Polygon>();
         List<Rectangle> rect = new ArrayList<Rectangle>();
 
@@ -245,8 +245,8 @@ public class Footprint {
             int[] x2 = new int[po.npoints];
             int[] y2 = new int[po.npoints];
             for ( int i = 0; i < po.npoints; i++ ) {
-                x2[i] = (int) ( ( po.xpoints[i] - x ) * resize );
-                y2[i] = (int) ( ( po.ypoints[i] - y ) * resize );
+                x2[i] = (int) ( ( po.xpoints[i] - x ) * size );
+                y2[i] = (int) ( ( po.ypoints[i] - y ) * size );
                 pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ), new FootprintPoint( po.xpoints[i],
                                                                                                 po.ypoints[i] ) );
                 pointsWorldToPixel.put( new FootprintPoint( po.xpoints[i], po.ypoints[i] ), new FootprintPoint( x2[i],
@@ -284,13 +284,13 @@ public class Footprint {
         this.offset = offset;
     }
 
-    public float getResize() {
+    public float getSize() {
 
-        return resize;
+        return size;
     }
 
-    public void setResize( float resize ) {
-        this.resize = resize;
+    public void setSize( float resize ) {
+        this.size = resize;
     }
 
     public void updatePoints( Point2d changePoint ) {

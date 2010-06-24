@@ -105,6 +105,7 @@ public class BuildingFootprintPanel extends JPanel {
         }
 
         g2.translate( -cumTranslationPoint.x, -cumTranslationPoint.y );
+
         if ( polygonList != null ) {
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
@@ -124,7 +125,9 @@ public class BuildingFootprintPanel extends JPanel {
 
             }
         }
+
         g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
+
         System.out.println( "TranslationPoint: " + cumTranslationPoint );
 
         if ( tempPoint != null ) {

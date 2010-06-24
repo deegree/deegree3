@@ -45,6 +45,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +61,7 @@ import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -123,6 +124,10 @@ public class Controller {
 
     private Map<FootprintPoint, GeoReferencedPoint> mappedPoints;
 
+    private CoordinateSystem sourceCRS, targetCRS;
+
+    private AffineTransform coordTransform = new AffineTransform();
+
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
         this.model = model;
@@ -136,7 +141,7 @@ public class Controller {
 
         this.mappedPoints = new HashMap<FootprintPoint, GeoReferencedPoint>();
         this.footPrint.setOffset( 10 );
-        this.footPrint.setResize( 1.0f );
+        this.footPrint.setSize( 1.0f );
 
         options = new RasterOptions( view ).getOptions();
         sceneValues = new Scene2DValues( options );
@@ -228,15 +233,77 @@ public class Controller {
                     footPanel.repaint();
                     panel.setFocus( false );
                     footPanel.setFocus( false );
+                    start = false;
                 }
                 if ( ( (JButton) source ).getText().startsWith( NavigationBarPanel.COMPUTE_BUTTON_NAME ) ) {
                     System.out.println( "you clicked on computation" );
+
+                    // swap the tempPoints into the map now
+                    if ( lastFootprintPoint != null && lastGeoReferencedPoint != null ) {
+                        mappedPoints.put( lastFootprintPoint, lastGeoReferencedPoint );
+                        lastFootprintPoint = null;
+                        lastGeoReferencedPoint = null;
+                    }
+                    // int arraySize = mappedPoints.size() * 2;
+                    // if ( arraySize > 0 ) {
+                    //
+                    // CRSCodeType[] s = sourceCRS.getCodes();
+                    // CRSCodeType[] t = targetCRS.getCodes();
+                    // int size = s.length + t.length;
+                    // int countT = 0;
+                    // CRSCodeType[] codeTypes = new CRSCodeType[size];
+                    // for ( int i = 0; i < s.length; i++ ) {
+                    // codeTypes[i] = s[i];
+                    // }
+                    // for ( int i = s.length; i < size; i++ ) {
+                    // codeTypes[i] = t[countT];
+                    // countT++;
+                    // }
+                    //
+                    // final Helmert wgs_info = new Helmert( sourceCRS, targetCRS, codeTypes );
+                    //
+                    // double[] ordinatesSrc = new double[arraySize];
+                    // double[] ordinatesDst = new double[arraySize];
+                    // int counterSrc = 0;
+                    // int counterDst = 0;
+                    // for ( FootprintPoint p : mappedPoints.keySet() ) {
+                    // double x = p.getX();
+                    // double y = p.getY();
+                    // ordinatesSrc[counterSrc] = x;
+                    // ordinatesSrc[++counterSrc] = y;
+                    // counterSrc++;
+                    // GeoReferencedPoint pValue = mappedPoints.get( p );
+                    // x = pValue.getX();
+                    // y = pValue.getY();
+                    // ordinatesDst[counterDst] = x;
+                    // ordinatesDst[++counterDst] = y;
+                    // counterDst++;
+                    //
+                    // }
+                    //
+                    // try {
+                    // wgs_info.doTransform( ordinatesDst, 0, ordinatesSrc, 0, ordinatesSrc.length );
+                    // } catch ( TransformationException e1 ) {
+                    // e1.printStackTrace();
+                    // }
+                    // for ( double d : ordinatesDst ) {
+                    // System.out.println( "WGS_INFO: " + d );
+                    // }
+                    //                
+                    // } else {
+                    // try {
+                    // throw new Exception( "You must specify coordinates to transform" );
+                    // } catch ( Exception e1 ) {
+                    // e1.printStackTrace();
+                    // }
+                    // }
                 }
             }
             if ( source instanceof JMenuItem ) {
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GETMAP ) ) {
                     mouseGeoRef = new MouseModel();
                     init();
+                    sourceCRS = sceneValues.getCrs();
                     panel.addScene2DMouseListener( new Scene2DMouseListener() );
                     // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
                     panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
@@ -246,9 +313,13 @@ public class Controller {
                     mouseFootprint = new MouseModel();
                     // TODO at the moment the file which is used is static in the GRViewerGUI!!!
                     List<WorldRenderableObject> rese = File3dImporter.open( view, view.fileName() );
-                    CRS crs = null;
+                    // targetCRS = null;
                     for ( WorldRenderableObject res : rese ) {
-                        crs = res.getBbox().getCoordinateSystem();
+                        // try {
+                        // targetCRS = res.getBbox().getCoordinateSystem().getWrappedCRS();
+                        // } catch ( UnknownCRSException e1 ) {
+                        // e1.printStackTrace();
+                        // }
                         glHandler.addDataObjectToScene( res );
                     }
                     List<float[]> geometryThatIsTaken = new ArrayList<float[]>();
@@ -571,16 +642,23 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-
+                    if ( m.getWheelRotation() < 0 ) {
+                        sceneValues.setSize( sceneValues.getSize() - .05f );
+                    } else {
+                        sceneValues.setSize( sceneValues.getSize() + .05f );
+                    }
+                    init();
+                    panel.repaint();
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
+
                     if ( m.getWheelRotation() < 0 ) {
-                        footPrint.setResize( footPrint.getResize() + .1f );
+                        footPrint.setSize( footPrint.getSize() + .1f );
                     } else {
-                        footPrint.setResize( footPrint.getResize() - .1f );
+                        footPrint.setSize( footPrint.getSize() - .1f );
                     }
-                    footPrint.updatePoints( footPrint.getResize() );
+                    footPrint.updatePoints( footPrint.getSize() );
                     footPanel.setPolygonList( footPrint.getPixelCoordinatePolygonList() );
                     footPanel.repaint();
                 }
@@ -639,7 +717,6 @@ public class Controller {
         sceneValues.setImageStartPosition( new Point2d( -sceneValues.getImageMargin().x,
                                                         -sceneValues.getImageMargin().y ) );
 
-        sceneValues.setSize( 1 );
         panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
         panel.setImageDimension( sceneValues.getImageDimension() );
 
