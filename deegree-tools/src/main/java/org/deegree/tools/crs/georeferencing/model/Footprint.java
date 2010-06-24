@@ -63,6 +63,8 @@ public class Footprint {
 
     private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
 
+    private Map<FootprintPoint, FootprintPoint> pointsWorldToPixel;
+
     private Map<FootprintPoint, FootprintPoint> selectedPoints;
 
     private List<Polygon> pixelCoordinatePolygonList;
@@ -81,6 +83,7 @@ public class Footprint {
     public Footprint() {
         pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
         selectedPoints = new HashMap<FootprintPoint, FootprintPoint>();
+        pointsWorldToPixel = new HashMap<FootprintPoint, FootprintPoint>();
     }
 
     /**
@@ -205,6 +208,7 @@ public class Footprint {
 
         if ( pointsPixelToWorld.size() != 0 ) {
             pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
+            pointsWorldToPixel = new HashMap<FootprintPoint, FootprintPoint>();
         }
 
         for ( Polygon p : polyList ) {
@@ -245,23 +249,14 @@ public class Footprint {
                 y2[i] = (int) ( ( po.ypoints[i] - y ) * resize );
                 pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ), new FootprintPoint( po.xpoints[i],
                                                                                                 po.ypoints[i] ) );
+                pointsWorldToPixel.put( new FootprintPoint( po.xpoints[i], po.ypoints[i] ), new FootprintPoint( x2[i],
+                                                                                                                y2[i] ) );
                 System.out.println( "[Footprint] Polygon: " + x2[i] );
             }
             Polygon p = new Polygon( x2, y2, po.npoints );
             pixelCoordinatePolygonList.add( p );
 
         }
-        // if(){
-        // Map<Point2d, Point2d> pointsPixelToWorldTemp = new HashMap<Point2d, Point2d>();
-        // for ( Point2d p : pointsPixelToWorld.keySet() ) {
-        // Point2d key = p;
-        // Point2d newKey = new Point2d( key.x * changedSize, key.y * changedSize );
-        // pointsPixelToWorldTemp.put( newKey, pointsPixelToWorld.get( key ) );
-        //
-        // }
-        // pointsPixelToWorld = new HashMap<Point2d, Point2d>();
-        // pointsPixelToWorld.putAll( pointsPixelToWorldTemp );
-        // }
 
     }
 
@@ -353,6 +348,14 @@ public class Footprint {
                 break;
             }
         }
+    }
+
+    public Map<FootprintPoint, FootprintPoint> getPointsPixelToWorld() {
+        return pointsPixelToWorld;
+    }
+
+    public Map<FootprintPoint, FootprintPoint> getPointsWorldToPixel() {
+        return pointsWorldToPixel;
     }
 
 }

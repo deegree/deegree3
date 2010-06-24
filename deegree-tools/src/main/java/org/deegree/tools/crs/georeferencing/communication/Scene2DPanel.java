@@ -48,6 +48,8 @@ import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
+import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
 /**
  * The JPanel that should display a BufferedImage.
@@ -74,7 +76,7 @@ public class Scene2DPanel extends JPanel {
 
     private Rectangle imageDimension;
 
-    private Map<AbstractGRPoint, AbstractGRPoint> points;
+    private Map<FootprintPoint, GeoReferencedPoint> points;
 
     private boolean focus;
 
@@ -161,7 +163,7 @@ public class Scene2DPanel extends JPanel {
 
     }
 
-    public void addPoint( Map<AbstractGRPoint, AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
+    public void addPoint( Map<FootprintPoint, GeoReferencedPoint> points, AbstractGRPoint tempPoint ) {
         this.points = points;
         this.tempPoint = tempPoint;
     }
