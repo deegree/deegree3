@@ -17,7 +17,25 @@
               <SvgParameter name="stroke-width">1</SvgParameter>
             </Stroke>
           </Mark>
-          <Size>4</Size>
+          <Size>
+          <Interpolate fallbackValue="-1" method="numeric">
+                  <LookupValue>
+                    <ogc:PropertyName>app:POP_2000</ogc:PropertyName>
+                  </LookupValue>
+                  <InterpolationPoint>
+                    <Data>-1</Data>
+                    <Value>4</Value>
+                  </InterpolationPoint>
+                  <InterpolationPoint>
+                    <Data>10000</Data>
+                    <Value>6</Value>
+                  </InterpolationPoint>
+                  <InterpolationPoint>
+                    <Data>110000</Data>
+                    <Value>10</Value>
+                  </InterpolationPoint>
+                </Interpolate>
+          </Size>
         </Graphic>
       </PointSymbolizer>
   </Rule> 
@@ -37,7 +55,25 @@
               <SvgParameter name="stroke-width">1</SvgParameter>
             </Stroke>
           </Mark>
-          <Size>7</Size>
+          <Size>
+          <Interpolate fallbackValue="-1" method="numeric">
+                  <LookupValue>
+                    <ogc:PropertyName>app:POP_2000</ogc:PropertyName>
+                  </LookupValue>
+                  <InterpolationPoint>
+                    <Data>-1</Data>
+                    <Value>7</Value>
+                  </InterpolationPoint>
+                  <InterpolationPoint>
+                    <Data>10000</Data>
+                    <Value>10</Value>
+                  </InterpolationPoint>
+                  <InterpolationPoint>
+                    <Data>110000</Data>
+                    <Value>13</Value>
+                  </InterpolationPoint>
+                </Interpolate>
+          </Size>
         </Graphic>
       </PointSymbolizer>
   </Rule>
@@ -65,7 +101,7 @@
           <PointPlacement>
             <Displacement>
               <DisplacementX>0</DisplacementX>
-              <DisplacementY>8</DisplacementY>
+              <DisplacementY>13</DisplacementY>
             </Displacement>
           </PointPlacement>
         </LabelPlacement>
