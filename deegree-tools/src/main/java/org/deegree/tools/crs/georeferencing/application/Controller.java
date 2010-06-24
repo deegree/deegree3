@@ -195,6 +195,7 @@ public class Controller {
                                                                                                                           2 ),
                                                                                (Double) tablePanel.getModel().getValueAt(
                                                                                                                           tableRow,
+
                                                                                                                           3 ) );
                         if ( footPrint.getPointsWorldToPixel().containsKey( keyPointFromTable ) ) {
                             FootprintPoint keyPoint = footPrint.getPointsWorldToPixel().get( keyPointFromTable );
