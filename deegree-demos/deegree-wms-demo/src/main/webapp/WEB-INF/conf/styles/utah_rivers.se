@@ -17,7 +17,7 @@
     <ogc:Filter>
       <ogc:PropertyIsGreaterThan>
         <ogc:PropertyName>app:SHAPE_Leng</ogc:PropertyName>
-        <ogc:Literal>1000</ogc:Literal>
+        <ogc:Literal>2000</ogc:Literal>
       </ogc:PropertyIsGreaterThan>
     </ogc:Filter>
     <MaxScaleDenominator>100000</MaxScaleDenominator>
@@ -32,7 +32,7 @@
         <SvgParameter name="font-size">12</SvgParameter>
       </Font>
       <LabelPlacement>
-        <LinePlacement>
+        <!--<LinePlacement>
           <PerpendicularOffset>-20</PerpendicularOffset>
           <IsRepeated>false</IsRepeated>
           <InitialGap>
@@ -43,8 +43,25 @@
           </InitialGap>
           <IsAligned>false</IsAligned>
           <GeneralizeLine>true</GeneralizeLine>
-        </LinePlacement>
+        </LinePlacement>-->
+        <PointPlacement>
+          <AnchorPoint>
+            <AnchorPointX>0</AnchorPointX>
+            <AnchorPointY>0</AnchorPointY>
+          </AnchorPoint>
+          <Displacement>
+            <DisplacementX>0</DisplacementX>
+            <DisplacementY>-20</DisplacementY>
+          </Displacement>
+        </PointPlacement>
       </LabelPlacement>
+      <Halo>
+        <Radius>2.5</Radius>
+        <Fill>
+          <SvgParameter name="fill">#FFFFFF</SvgParameter>
+          <SvgParameter name="fill-opacity">0.8</SvgParameter>
+        </Fill>
+      </Halo>
       <Fill>
         <SvgParameter name="fill">#2CA2FB</SvgParameter>
       </Fill>

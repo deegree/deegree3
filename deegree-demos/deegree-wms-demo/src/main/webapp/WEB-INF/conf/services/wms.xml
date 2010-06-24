@@ -19,6 +19,12 @@
         </RequestableLayer>
         
         <RequestableLayer>
+          <Name>SatelliteProvo</Name>
+          <Title>Satellite Image of Provo</Title>
+          <CoverageStoreId>utah_sat</CoverageStoreId>
+        </RequestableLayer>
+        
+        <RequestableLayer>
           <Name>StateBoundary</Name>
           <Title>State of Utah</Title>
           <FeatureStoreId>utah_stateboundary</FeatureStoreId>
