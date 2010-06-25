@@ -2,8 +2,13 @@
 <FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se"
     xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+ <Name>Cities</Name>
+ <FeatureTypeName>app:SGID93_LOCATION_UDOTMap_CityLocations</FeatureTypeName>
  <Rule>
     <Name>Cities</Name>
+    <Description>
+      <Title>Cities of Utah County</Title>
+    </Description>
     <MinScaleDenominator>2000000</MinScaleDenominator>
       <PointSymbolizer>
         <Graphic>
@@ -41,6 +46,9 @@
   </Rule> 
   <Rule>
     <Name>Cities</Name>
+    <Description>
+      <Title>Cities of Utah County</Title>
+    </Description>
     <MinScaleDenominator>0</MinScaleDenominator>
     <MaxScaleDenominator>2000000</MaxScaleDenominator>
       <PointSymbolizer>
@@ -79,6 +87,9 @@
   </Rule>
   <Rule>
     <Name>CityNames</Name>
+    <Description>
+      <Title>Cities of Utah County</Title>
+    </Description>
       <ogc:Filter>
           <ogc:Not>
             <ogc:PropertyIsNull>

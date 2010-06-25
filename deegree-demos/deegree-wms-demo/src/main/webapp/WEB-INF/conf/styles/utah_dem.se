@@ -2,19 +2,28 @@
 <FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se"
   xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+  <Name>DEM</Name>
   <Rule>
     <Name>DEM 90m Raster</Name>
+    <Description>
+      <Title>DEM 90m Elevation Data</Title>
+    </Description>
     <RasterSymbolizer>
       <Opacity>0.5</Opacity>
+      
       <ColorMap>
         <Interpolate fallbackValue="#dddddd" method="color">
           <LookupValue>Rasterdata</LookupValue>
           <InterpolationPoint>
             <Data>-32767</Data>
-            <Value>#0000FF</Value>
+            <Value>#000000FF</Value>
           </InterpolationPoint>
           <InterpolationPoint>
             <Data>0</Data>
+            <Value>#000000FF</Value>
+          </InterpolationPoint>
+          <InterpolationPoint>
+            <Data>1</Data>
             <Value>#00FF00</Value>
           </InterpolationPoint>
           <InterpolationPoint>
@@ -35,6 +44,10 @@
           </InterpolationPoint>
         </Interpolate>
       </ColorMap>
+      <!--<ShadedRelief>
+        <BrightnessOnly>false</BrightnessOnly>
+        <ReliefFactor>55</ReliefFactor>
+      </ShadedRelief>-->
     </RasterSymbolizer>
   </Rule>
 </FeatureTypeStyle>                    
