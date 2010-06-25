@@ -42,7 +42,6 @@ import static org.deegree.coverage.rangeset.RangeSetBuilder.createBandRangeSetFr
 import static org.deegree.coverage.rangeset.ValueType.Void;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOR;
-import static org.deegree.coverage.raster.interpolation.InterpolationType.NONE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
@@ -249,23 +248,25 @@ public class RasterLayer extends Layer {
             }
 
             Pair<RangeSet, LinkedList<String>> p = getDimensionFilter( gm.getDimensions() );
-            InterpolationType interpol = NONE;
+            InterpolationType interpol = NEAREST_NEIGHBOR;
             Interpolation fromRequest = null;
             Layer parent = this;
             while ( interpol == null ) {
                 fromRequest = gm.getInterpolation().get( parent );
                 parent = getParent();
             }
-            switch ( fromRequest ) {
-            case BICUBIC:
-                LOG.warn( "Raster API does not support bicubic interpolation, using bilinear instead." );
-            case BILINEAR:
-                interpol = BILINEAR;
-                break;
-            case NEARESTNEIGHBOR:
-            case NEARESTNEIGHBOUR:
-                interpol = NEAREST_NEIGHBOR;
-                break;
+            if ( fromRequest != null ) {
+                switch ( fromRequest ) {
+                case BICUBIC:
+                    LOG.warn( "Raster API does not support bicubic interpolation, using bilinear instead." );
+                case BILINEAR:
+                    interpol = BILINEAR;
+                    break;
+                case NEARESTNEIGHBOR:
+                case NEARESTNEIGHBOUR:
+                    interpol = NEAREST_NEIGHBOR;
+                    break;
+                }
             }
 
             raster = CoverageTransform.transform( raster, bbox, Grid.fromSize( gm.getWidth(), gm.getHeight(),
@@ -276,6 +277,9 @@ public class RasterLayer extends Layer {
                 raster = new RasterFilter( raster ).apply( cbr, p.first );
                 warnings.addAll( p.second );
             }
+
+            // handle SLD/SE scale settings
+            style = style == null ? null : style.filter( gm.getScale() );
 
             LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = style == null ? null
                                                                                           : style.evaluate( null );
