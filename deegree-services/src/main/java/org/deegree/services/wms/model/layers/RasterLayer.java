@@ -94,6 +94,7 @@ import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetMap;
+import org.deegree.services.controller.wms.ops.GetMap.Interpolation;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wcs.WCServiceException;
 import org.deegree.services.wcs.coverages.CoverageTransform;
@@ -249,7 +250,13 @@ public class RasterLayer extends Layer {
 
             Pair<RangeSet, LinkedList<String>> p = getDimensionFilter( gm.getDimensions() );
             InterpolationType interpol = NONE;
-            switch ( gm.getInterpolation().get( this ) ) {
+            Interpolation fromRequest = null;
+            Layer parent = this;
+            while ( interpol == null ) {
+                fromRequest = gm.getInterpolation().get( parent );
+                parent = getParent();
+            }
+            switch ( fromRequest ) {
             case BICUBIC:
                 LOG.warn( "Raster API does not support bicubic interpolation, using bilinear instead." );
             case BILINEAR:
