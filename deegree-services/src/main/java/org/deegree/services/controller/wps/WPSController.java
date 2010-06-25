@@ -513,7 +513,6 @@ public class WPSController extends AbstractOGCServiceController {
             wsdlURL = OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetWPSWSDL";
         }
         CapabilitiesXMLAdapter.export100( xmlWriter, service.getAllProcessDefinitions(), mainControllerConf, wsdlURL );
-        xmlWriter.flush();
 
         LOG.trace( "doGetCapabilities finished" );
     }
