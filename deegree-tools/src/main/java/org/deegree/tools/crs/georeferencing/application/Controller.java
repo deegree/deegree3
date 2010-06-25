@@ -59,7 +59,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.vecmath.Point2d;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
@@ -128,6 +127,11 @@ public class Controller {
 
     private AffineTransform coordTransform = new AffineTransform();
 
+    /**
+     * determinanteFootprintPoint
+     */
+    private int df;
+
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
         this.model = model;
@@ -194,25 +198,23 @@ public class Controller {
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
 
                     for ( int tableRow : tableRows ) {
-                        FootprintPoint keyPointFromTable = new FootprintPoint(
-                                                                               (Double) tablePanel.getModel().getValueAt(
-                                                                                                                          tableRow,
-                                                                                                                          2 ),
-                                                                               (Double) tablePanel.getModel().getValueAt(
-                                                                                                                          tableRow,
+                        FootprintPoint pointFromTable = new FootprintPoint(
+                                                                            (Double) tablePanel.getModel().getValueAt(
+                                                                                                                       tableRow,
+                                                                                                                       2 ),
+                                                                            (Double) tablePanel.getModel().getValueAt(
+                                                                                                                       tableRow,
 
-                                                                                                                          3 ) );
-                        if ( footPrint.getPointsWorldToPixel().containsKey( keyPointFromTable ) ) {
-                            FootprintPoint keyPoint = footPrint.getPointsWorldToPixel().get( keyPointFromTable );
-                            if ( mappedPoints.containsKey( keyPoint ) ) {
-                                removeFromMappedPoints( keyPoint );
-                            } else {
-                                lastFootprintPoint = null;
-                                lastGeoReferencedPoint = null;
-                            }
+                                                                                                                       3 ) );
 
-                            tablePanel.removeRow( tableRow );
+                        if ( mappedPoints.containsKey( pointFromTable ) ) {
+                            removeFromMappedPoints( pointFromTable );
+                        } else {
+                            lastFootprintPoint = null;
+                            lastGeoReferencedPoint = null;
                         }
+
+                        tablePanel.removeRow( tableRow );
 
                     }
 
@@ -509,13 +511,13 @@ public class Controller {
                         int x = m.getX();
                         int y = m.getY();
                         FootprintPoint footprintPoint = new FootprintPoint( x, y );
-                        Pair<AbstractGRPoint, FootprintPoint> point = footPrint.getClosestPoint( footprintPoint );
-                        lastFootprintPoint = (FootprintPoint) point.first;
-                        tablePanel.setCoords( point.second );
-                        footPrint.addPointToSelectedPointsList( (FootprintPoint) point.first );
+                        FootprintPoint point = footPrint.getClosestPoint( footprintPoint );
+                        lastFootprintPoint = point;
+                        tablePanel.setCoords( point );
+                        // footPrint.addPointToSelectedPointsList( (FootprintPoint) point.first );
                         // footPanel.setPoints( footPrint.getSelectedPoints() );
                         // footPanel.setTranslated( isHorizontalRef );
-                        footPanel.addPoint( mappedPoints, point.first );
+                        footPanel.addPoint( mappedPoints, point );
 
                     } else {
                         mouseFootprint.setMouseChanging( new Point2d(
@@ -659,7 +661,9 @@ public class Controller {
                         footPrint.setSize( footPrint.getSize() - .1f );
                     }
                     footPrint.updatePoints( footPrint.getSize() );
+                    // updatePointsFootprint( footPrint.getSize() - .1f );
                     footPanel.setPolygonList( footPrint.getPixelCoordinatePolygonList() );
+                    // footPanel.addPoint( mappedPoints, lastFootprintPoint );
                     footPanel.repaint();
                 }
             }
@@ -741,16 +745,39 @@ public class Controller {
     private void removeFromMappedPoints( AbstractGRPoint mappedPointKey ) {
         if ( mappedPointKey != null ) {
             this.mappedPoints.remove( mappedPointKey );
-            // for ( AbstractGRPoint g : mappedPoints.keySet() ) {
-            // System.out.println( "key: " + g + " value: " + mappedPoints.get( g ) );
-            //
-            // }
+
         }
     }
 
     private void removeAllFromMappedPoints() {
         mappedPoints = new HashMap<FootprintPoint, GeoReferencedPoint>();
 
+    }
+
+    private void updatePointsFootprint( float resize ) {
+
+        Map<FootprintPoint, GeoReferencedPoint> mappedPointsTemp = new HashMap<FootprintPoint, GeoReferencedPoint>();
+        for ( FootprintPoint m : mappedPoints.keySet() ) {
+            FootprintPoint newKey = new FootprintPoint( m.getX() * resize, m.getY() * resize );
+            mappedPointsTemp.put( newKey, mappedPoints.get( m ) );
+        }
+        mappedPoints = mappedPointsTemp;
+        if ( lastFootprintPoint != null ) {
+            if ( df == 0 ) {
+                df = (int) ( (int) lastFootprintPoint.getX() * ( resize - 1 ) );
+            }
+            lastFootprintPoint = new FootprintPoint( lastFootprintPoint.getX() + df, lastFootprintPoint.getY() * resize );
+            System.out.println( "[Controller] movingLastFootPrintPoint: " + lastFootprintPoint );
+            FootprintPoint point = footPrint.getClosestPoint( lastFootprintPoint );
+            lastFootprintPoint = point;
+            System.out.println( "[Controller] movingLastFootPrintPoint_afterClosesestPoint: " + lastFootprintPoint );
+            // lastGeoReferencedPoint.setX( lastGeoReferencedPoint.getX() * resize );
+
+            // lastGeoReferencedPoint.setY( lastGeoReferencedPoint.getY() * resize );
+        }
+        // mappedPoints
+        // lastFootprintPoint
+        // lastGeoReferencedPoint
     }
 
 }

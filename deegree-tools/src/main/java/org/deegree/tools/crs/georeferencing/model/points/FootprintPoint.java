@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.model.points;
 
-
 /**
  * 
  * The Point that identifies the point of the footprint.

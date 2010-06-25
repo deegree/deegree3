@@ -37,14 +37,13 @@ package org.deegree.tools.crs.georeferencing.model;
 
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 
@@ -61,11 +60,7 @@ public class Footprint {
 
     private Polygon polygon;
 
-    private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
-
-    private Map<FootprintPoint, FootprintPoint> pointsWorldToPixel;
-
-    private Map<FootprintPoint, FootprintPoint> selectedPoints;
+    private FootprintPoint[] pixelCoordinates;
 
     private List<Polygon> pixelCoordinatePolygonList;
 
@@ -81,9 +76,6 @@ public class Footprint {
      * Creates a new <Code>Footprint</Code> instance.
      */
     public Footprint() {
-        pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
-        selectedPoints = new HashMap<FootprintPoint, FootprintPoint>();
-        pointsWorldToPixel = new HashMap<FootprintPoint, FootprintPoint>();
     }
 
     /**
@@ -131,38 +123,31 @@ public class Footprint {
      *            the specified point
      * @return an <Code>AbstractPoint</Code> that is the closest point to point2d
      */
-    public Pair<AbstractGRPoint, FootprintPoint> getClosestPoint( AbstractGRPoint point2d ) {
-        Pair<AbstractGRPoint, FootprintPoint> closestPoint = new Pair<AbstractGRPoint, FootprintPoint>();
+    public FootprintPoint getClosestPoint( AbstractGRPoint point2d ) {
+        FootprintPoint closestPoint = null;
+        double distance = 0.0;
 
-        if ( pointsPixelToWorld.size() != 0 ) {
-            double distance = 0.0;
+        for ( FootprintPoint point : pixelCoordinates ) {
+            System.out.println( "[Footprint] PixelPoint " + point );
+            if ( distance == 0.0 ) {
+                distance = point.distance( point2d );
+                if ( point2d instanceof FootprintPoint ) {
+                    closestPoint = new FootprintPoint( point.getX(), point.getY() );
+                }
+                // else if ( point2d instanceof GeoReferencedPoint ) {
+                // closestPoint = new GeoReferencedPoint( point.x, point.y );
+                // }
 
-            for ( Point2d point : pointsPixelToWorld.keySet() ) {
-                System.out.println( "[Footprint] Mapping: " + point + " - " + pointsPixelToWorld.get( point ) );
-                if ( distance == 0.0 ) {
-                    distance = point.distance( point2d );
+            } else {
+                double distanceTemp = point.distance( point2d );
+                if ( distanceTemp < distance ) {
+                    distance = distanceTemp;
                     if ( point2d instanceof FootprintPoint ) {
-                        closestPoint.first = new FootprintPoint( point.x, point.y );
-                        closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).getX(),
-                                                                  pointsPixelToWorld.get( point ).getY() );
+                        closestPoint = new FootprintPoint( point.getX(), point.getY() );
                     }
                     // else if ( point2d instanceof GeoReferencedPoint ) {
                     // closestPoint = new GeoReferencedPoint( point.x, point.y );
                     // }
-
-                } else {
-                    double distanceTemp = point.distance( point2d );
-                    if ( distanceTemp < distance ) {
-                        distance = distanceTemp;
-                        if ( point2d instanceof FootprintPoint ) {
-                            closestPoint.first = new FootprintPoint( point.x, point.y );
-                            closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).getX(),
-                                                                      pointsPixelToWorld.get( point ).getY() );
-                        }
-                        // else if ( point2d instanceof GeoReferencedPoint ) {
-                        // closestPoint = new GeoReferencedPoint( point.x, point.y );
-                        // }
-                    }
                 }
             }
         }
@@ -206,14 +191,14 @@ public class Footprint {
         pixelCoordinatePolygonList = new ArrayList<Polygon>();
         List<Rectangle> rect = new ArrayList<Rectangle>();
 
-        if ( pointsPixelToWorld.size() != 0 ) {
-            pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
-            pointsWorldToPixel = new HashMap<FootprintPoint, FootprintPoint>();
+        int sizeOfPoints = 0;
+        for ( Polygon p : polyList ) {
+            sizeOfPoints += p.npoints;
+            rect.add( p.getBounds() );
         }
 
-        for ( Polygon p : polyList ) {
-
-            rect.add( p.getBounds() );
+        if ( pixelCoordinates == null ) {
+            pixelCoordinates = new FootprintPoint[sizeOfPoints];
         }
         Rectangle temp = null;
         // get minimum X
@@ -240,17 +225,15 @@ public class Footprint {
             }
         }
         int y = temp.y - offset;
-
+        int counter = 0;
         for ( Polygon po : polyList ) {
             int[] x2 = new int[po.npoints];
             int[] y2 = new int[po.npoints];
             for ( int i = 0; i < po.npoints; i++ ) {
                 x2[i] = (int) ( ( po.xpoints[i] - x ) * size );
                 y2[i] = (int) ( ( po.ypoints[i] - y ) * size );
-                pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ), new FootprintPoint( po.xpoints[i],
-                                                                                                po.ypoints[i] ) );
-                pointsWorldToPixel.put( new FootprintPoint( po.xpoints[i], po.ypoints[i] ), new FootprintPoint( x2[i],
-                                                                                                                y2[i] ) );
+                pixelCoordinates[counter++] = new FootprintPoint( ( po.xpoints[i] - x ) * size, ( po.ypoints[i] - y )
+                                                                                                * size );
                 System.out.println( "[Footprint] Polygon: " + x2[i] );
             }
             Polygon p = new Polygon( x2, y2, po.npoints );
@@ -290,19 +273,16 @@ public class Footprint {
     }
 
     public void setSize( float resize ) {
-        this.size = resize;
+        BigDecimal b = new BigDecimal( resize );
+        b = b.round( new MathContext( 2 ) );
+        this.size = b.floatValue();
     }
 
     public void updatePoints( Point2d changePoint ) {
-        Map<FootprintPoint, FootprintPoint> pointsPixelToWorldTemp = new HashMap<FootprintPoint, FootprintPoint>();
-        for ( FootprintPoint p : pointsPixelToWorld.keySet() ) {
-            FootprintPoint key = p;
-            FootprintPoint newKey = new FootprintPoint( key.getX() - changePoint.x, key.getY() - changePoint.y );
-            pointsPixelToWorldTemp.put( newKey, pointsPixelToWorld.get( key ) );
-
+        for ( FootprintPoint p : pixelCoordinates ) {
+            p.setX( p.getX() - changePoint.x );
+            p.setY( p.getY() - changePoint.y );
         }
-        pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
-        pointsPixelToWorld.putAll( pointsPixelToWorldTemp );
 
     }
 
@@ -312,50 +292,8 @@ public class Footprint {
 
     }
 
-    public Map<FootprintPoint, FootprintPoint> getSelectedPoints() {
-        return selectedPoints;
-    }
-
-    public void setSelectedPoints( Map<FootprintPoint, FootprintPoint> selectedPoints ) {
-        this.selectedPoints = selectedPoints;
-    }
-
-    public void addPointToSelectedPointsList( FootprintPoint point ) {
-        selectedPoints.put( point, pointsPixelToWorld.get( point ) );
-
-    }
-
-    public void changePointInSelectedPointsList( FootprintPoint point ) {
-        FootprintPoint newKey = null;
-        FootprintPoint newValue = null;
-        for ( FootprintPoint fp : selectedPoints.keySet() ) {
-            if ( point == fp ) {
-                newKey = point;
-                newValue = pointsPixelToWorld.get( point );
-                selectedPoints.remove( fp );
-                break;
-            }
-        }
-        if ( newKey != null && newValue != null ) {
-            selectedPoints.put( newKey, newValue );
-        }
-    }
-
-    public void removePointFromSelectedPointsList( FootprintPoint point ) {
-        for ( FootprintPoint fp : selectedPoints.keySet() ) {
-            if ( point == fp ) {
-                selectedPoints.remove( fp );
-                break;
-            }
-        }
-    }
-
-    public Map<FootprintPoint, FootprintPoint> getPointsPixelToWorld() {
-        return pointsPixelToWorld;
-    }
-
-    public Map<FootprintPoint, FootprintPoint> getPointsWorldToPixel() {
-        return pointsWorldToPixel;
+    public FootprintPoint[] getPixelCoordinates() {
+        return pixelCoordinates;
     }
 
 }
