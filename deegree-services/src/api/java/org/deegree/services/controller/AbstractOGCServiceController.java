@@ -300,7 +300,6 @@ public abstract class AbstractOGCServiceController {
         xmlWriter.setPrefix( "soapenv", soapEnvNS );
         xmlWriter.setPrefix( "xsi", xsiNS );
 
-        xmlWriter.writeStartDocument();
         xmlWriter.writeStartElement( soapEnvNS, "Envelope" );
         xmlWriter.writeAttribute( xsiNS, "schemaLocation",
                                   "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope" );
