@@ -38,16 +38,11 @@ package org.deegree.tools.crs.georeferencing.communication;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.util.Map;
 
-import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
@@ -59,7 +54,7 @@ import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
  * 
  * @version $Revision$, $Date$
  */
-public class Scene2DPanel extends JPanel {
+public class Scene2DPanel extends AbstractPanel2D {
 
     /**
      * 
@@ -76,11 +71,11 @@ public class Scene2DPanel extends JPanel {
 
     private Rectangle imageDimension;
 
-    private Map<FootprintPoint, GeoReferencedPoint> points;
+    // private List<Pair<FootprintPoint, GeoReferencedPoint>> points;
 
-    private boolean focus;
+    // private boolean focus;
 
-    private AbstractGRPoint tempPoint;
+    // private AbstractGRPoint tempPoint;
 
     // private boolean isTranslated;
 
@@ -111,8 +106,8 @@ public class Scene2DPanel extends JPanel {
         }
 
         if ( points != null ) {
-            for ( AbstractGRPoint point : points.values() ) {
-                g2.fillOval( (int) point.x - 5, (int) point.y - 5, 10, 10 );
+            for ( Pair<FootprintPoint, GeoReferencedPoint> point : points ) {
+                g2.fillOval( (int) point.second.getX() - 5, (int) point.second.getY() - 5, 10, 10 );
             }
         }
 
@@ -143,37 +138,9 @@ public class Scene2DPanel extends JPanel {
         this.imageDimension = imageDimension;
     }
 
-    public void addScene2DMouseListener( MouseListener m ) {
-
-        this.addMouseListener( m );
-
-    }
-
-    public void addScene2DMouseMotionListener( MouseMotionListener m ) {
-
-        this.addMouseMotionListener( m );
-    }
-
-    public void addScene2DMouseWheelListener( MouseWheelListener m ) {
-        this.addMouseWheelListener( m );
-    }
-
     public void setImageToDraw( BufferedImage imageToDraw ) {
         this.imageToDraw = imageToDraw;
 
-    }
-
-    public void addPoint( Map<FootprintPoint, GeoReferencedPoint> points, AbstractGRPoint tempPoint ) {
-        this.points = points;
-        this.tempPoint = tempPoint;
-    }
-
-    public void setFocus( boolean focus ) {
-        this.focus = focus;
-    }
-
-    public boolean getFocus() {
-        return focus;
     }
 
     public Point2d getTranslationPoint() {

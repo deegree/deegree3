@@ -36,7 +36,7 @@
 package org.deegree.tools.crs.georeferencing.model.points;
 
 /**
- * TODO add class documentation here
+ * Datastructure for every information needed to manipulate a point.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -82,7 +82,7 @@ public class Point3Values {
 
     @Override
     public String toString() {
-        String s = "o: " + oldValue + " i: " + initialValue + " n: " + newValue;
+        String s = "<" + oldValue + ", " + initialValue + ", " + newValue + ">";
         return s;
     }
 

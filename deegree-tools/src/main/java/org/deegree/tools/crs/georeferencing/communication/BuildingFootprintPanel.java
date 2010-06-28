@@ -39,16 +39,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelListener;
 import java.util.List;
 
-import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
@@ -61,7 +56,7 @@ import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
  * 
  * @version $Revision$, $Date$
  */
-public class BuildingFootprintPanel extends JPanel {
+public class BuildingFootprintPanel extends AbstractPanel2D {
 
     /**
      * 
@@ -70,16 +65,16 @@ public class BuildingFootprintPanel extends JPanel {
 
     public final static String BUILDINGFOOTPRINT_PANEL_NAME = "BuildingFootprintPanel";
 
-    private List<Pair<FootprintPoint, GeoReferencedPoint>> points;
+    // private List<Pair<FootprintPoint, GeoReferencedPoint>> points;
 
     /**
      * Temporal point
      */
-    private AbstractGRPoint tempPoint;
+    // private AbstractGRPoint tempPoint;
 
     private List<Polygon> polygonList;
 
-    private boolean focus;
+    // private boolean focus;
 
     private Point2d cumTranslationPoint;
 
@@ -151,36 +146,36 @@ public class BuildingFootprintPanel extends JPanel {
         this.polygonList = polygonList;
     }
 
-    public void addScene2DMouseListener( MouseListener m ) {
+    // public void addScene2DMouseListener( MouseListener m ) {
+    //
+    // this.addMouseListener( m );
+    //
+    // }
+    //
+    // public void addScene2DMouseMotionListener( MouseMotionListener m ) {
+    // this.addMouseMotionListener( m );
+    // }
+    //
+    // public void addScene2DMouseWheelListener( MouseWheelListener m ) {
+    // this.addMouseWheelListener( m );
+    // }
 
-        this.addMouseListener( m );
-
-    }
-
-    public void addScene2DMouseMotionListener( MouseMotionListener m ) {
-        this.addMouseMotionListener( m );
-    }
-
-    public void addScene2DMouseWheelListener( MouseWheelListener m ) {
-        this.addMouseWheelListener( m );
-    }
-
-    public void addPoint( List<Pair<FootprintPoint, GeoReferencedPoint>> points, AbstractGRPoint tempPoint ) {
-        this.points = points;
-        this.tempPoint = tempPoint;
-    }
+    // public void addPoint( List<Pair<FootprintPoint, GeoReferencedPoint>> points, AbstractGRPoint tempPoint ) {
+    // this.points = points;
+    // this.tempPoint = tempPoint;
+    // }
 
     // public void setPoints( Map<FootprintPoint, FootprintPoint> points ) {
     // this.points = points;
     // }
 
-    public void setFocus( boolean focus ) {
-        this.focus = focus;
-    }
-
-    public boolean getFocus() {
-        return focus;
-    }
+    // public void setFocus( boolean focus ) {
+    // this.focus = focus;
+    // }
+    //
+    // public boolean getFocus() {
+    // return focus;
+    // }
 
     public Point2d getCumTranslationPoint() {
         return cumTranslationPoint;

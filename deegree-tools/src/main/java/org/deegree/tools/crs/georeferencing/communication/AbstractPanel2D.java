@@ -35,19 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
-import java.awt.Rectangle;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
-import java.util.Map;
+import java.util.List;
 
 import javax.swing.JPanel;
-import javax.vecmath.Point2d;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
+import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
 /**
- * TODO add class documentation here
+ * Abstract base class for the panels to show and draw and for mouse-communication.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -56,11 +57,7 @@ import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
  */
 public abstract class AbstractPanel2D extends JPanel {
 
-    protected Point2d beginDrawImageAtPosition;
-
-    protected Rectangle imageDimension;
-
-    protected Map<AbstractGRPoint, AbstractGRPoint> points;
+    protected List<Pair<FootprintPoint, GeoReferencedPoint>> points;
 
     protected boolean focus;
 
@@ -81,23 +78,7 @@ public abstract class AbstractPanel2D extends JPanel {
         this.addMouseWheelListener( m );
     }
 
-    public Point2d getBeginDrawImageAtPosition() {
-        return beginDrawImageAtPosition;
-    }
-
-    public void setBeginDrawImageAtPosition( Point2d beginDrawImageAtPosition ) {
-        this.beginDrawImageAtPosition = beginDrawImageAtPosition;
-    }
-
-    public Rectangle getImageDimension() {
-        return imageDimension;
-    }
-
-    public void setImageDimension( Rectangle imageDimension ) {
-        this.imageDimension = imageDimension;
-    }
-
-    public void addPoint( Map<AbstractGRPoint, AbstractGRPoint> points, AbstractGRPoint tempPoint ) {
+    public void addPoint( List<Pair<FootprintPoint, GeoReferencedPoint>> points, AbstractGRPoint tempPoint ) {
         this.points = points;
         this.tempPoint = tempPoint;
     }
