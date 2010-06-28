@@ -46,6 +46,7 @@ import javax.vecmath.Point2d;
 
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
+import org.deegree.tools.crs.georeferencing.model.points.Point3Values;
 
 /**
  * 
@@ -70,12 +71,25 @@ public class Footprint {
 
     private float size;
 
+    private float resizing;
+
     private List<float[]> footprintPointsList;
+
+    /**
+     * Map<initialValue,newValue>
+     */
+    private List<Point3Values> selectedPoints;
+
+    private Point3Values lastFootprintPoint;
+
+    private float initialResolution;
 
     /**
      * Creates a new <Code>Footprint</Code> instance.
      */
-    public Footprint() {
+    public Footprint( float initialResolution ) {
+        this.initialResolution = initialResolution;
+        selectedPoints = new ArrayList<Point3Values>();
     }
 
     /**
@@ -128,7 +142,7 @@ public class Footprint {
         double distance = 0.0;
 
         for ( FootprintPoint point : pixelCoordinates ) {
-            System.out.println( "[Footprint] PixelPoint " + point );
+            // System.out.println( "[Footprint] PixelPoint " + point );
             if ( distance == 0.0 ) {
                 distance = point.distance( point2d );
                 if ( point2d instanceof FootprintPoint ) {
@@ -184,8 +198,8 @@ public class Footprint {
     }
 
     private void generateFootprintsPixelCoordinate( List<Polygon> polyList ) {
-        if ( size == 0.0f ) {
-            size = 1.0f;
+        if ( this.size == 0.0f ) {
+            this.size = 4.0f;
         }
         System.out.println( "[Footprint] Resize: " + size );
         pixelCoordinatePolygonList = new ArrayList<Polygon>();
@@ -234,7 +248,7 @@ public class Footprint {
                 y2[i] = (int) ( ( po.ypoints[i] - y ) * size );
                 pixelCoordinates[counter++] = new FootprintPoint( ( po.xpoints[i] - x ) * size, ( po.ypoints[i] - y )
                                                                                                 * size );
-                System.out.println( "[Footprint] Polygon: " + x2[i] );
+                // System.out.println( "[Footprint] Polygon: " + x2[i] );
             }
             Polygon p = new Polygon( x2, y2, po.npoints );
             pixelCoordinatePolygonList.add( p );
@@ -263,19 +277,26 @@ public class Footprint {
         return offset;
     }
 
+    /**
+     * This value specifies how many pixels the lowest position should be.
+     * 
+     * @param offset
+     */
     public void setOffset( int offset ) {
         this.offset = offset;
     }
 
+    /**
+     * better to use resolution instead of size?
+     * 
+     * @return
+     */
     public float getSize() {
-
         return size;
     }
 
-    public void setSize( float resize ) {
-        BigDecimal b = new BigDecimal( resize );
-        b = b.round( new MathContext( 2 ) );
-        this.size = b.floatValue();
+    public void setSize( float size ) {
+        this.size = size;
     }
 
     public void updatePoints( Point2d changePoint ) {
@@ -286,14 +307,70 @@ public class Footprint {
 
     }
 
-    public void updatePoints( float changedSize ) {
+    public void updatePoints( float newSize ) {
+        this.resizing = newSize - this.size;
+        BigDecimal b = new BigDecimal( newSize );
+        b = b.round( new MathContext( 2 ) );
+        this.size = b.floatValue();
 
         generateFootprints( footprintPointsList );
 
+        updateSelectedPoints();
+
+    }
+
+    private float roundFloat( float value ) {
+        BigDecimal b = new BigDecimal( value );
+        b = b.round( new MathContext( 2 ) );
+        return b.floatValue();
+    }
+
+    private float roundDouble( double value ) {
+        BigDecimal b = new BigDecimal( value );
+        b = b.round( new MathContext( 2 ) );
+        return b.floatValue();
     }
 
     public FootprintPoint[] getPixelCoordinates() {
         return pixelCoordinates;
+    }
+
+    public Point3Values getLastFootprintPoint() {
+        return lastFootprintPoint;
+    }
+
+    public void setLastFootprintPoint( FootprintPoint lastFootprintPoint ) {
+        this.lastFootprintPoint = new Point3Values( lastFootprintPoint );
+    }
+
+    public void addToSelectedPoints( Point3Values point ) {
+
+        selectedPoints.add( point );
+
+    }
+
+    public List<Point3Values> getSelectedPoints() {
+        return selectedPoints;
+    }
+
+    private void updateSelectedPoints() {
+        FootprintPoint point = null;
+        List<Point3Values> selectedPointsTemp = new ArrayList<Point3Values>();
+        for ( Point3Values p : selectedPoints ) {
+            point = new FootprintPoint( ( p.getInitialValue().getX() / initialResolution ) * size,
+                                        ( p.getInitialValue().getY() / initialResolution ) * size );
+            selectedPointsTemp.add( new Point3Values( p.getNewValue(), p.getInitialValue(), point ) );
+        }
+        selectedPoints = selectedPointsTemp;
+        double x = lastFootprintPoint.getInitialValue().getX() / initialResolution;
+        double y = lastFootprintPoint.getInitialValue().getY() / initialResolution;
+        double x1 = roundDouble( x * resizing );
+        double y1 = roundDouble( y * resizing );
+        FootprintPoint pi = getClosestPoint( new FootprintPoint( lastFootprintPoint.getNewValue().getX() + x1,
+                                                                 lastFootprintPoint.getNewValue().getY() + y1 ) );
+
+        lastFootprintPoint.setNewValue( new FootprintPoint( pi.getX(), pi.getY() ) );
+
     }
 
 }

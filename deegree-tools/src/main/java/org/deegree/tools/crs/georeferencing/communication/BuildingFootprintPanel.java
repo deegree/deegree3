@@ -43,11 +43,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -70,7 +70,7 @@ public class BuildingFootprintPanel extends JPanel {
 
     public final static String BUILDINGFOOTPRINT_PANEL_NAME = "BuildingFootprintPanel";
 
-    private Map<FootprintPoint, GeoReferencedPoint> points;
+    private List<Pair<FootprintPoint, GeoReferencedPoint>> points;
 
     /**
      * Temporal point
@@ -112,8 +112,8 @@ public class BuildingFootprintPanel extends JPanel {
             }
         }
         if ( points != null ) {
-            for ( FootprintPoint point : points.keySet() ) {
-                g2.fillOval( (int) point.getX() - 5, (int) point.getY() - 5, 10, 10 );
+            for ( Pair<FootprintPoint, GeoReferencedPoint> point : points ) {
+                g2.fillOval( (int) point.first.getX() - 5, (int) point.first.getY() - 5, 10, 10 );
             }
         }
         if ( tempPoint != null ) {
@@ -165,7 +165,7 @@ public class BuildingFootprintPanel extends JPanel {
         this.addMouseWheelListener( m );
     }
 
-    public void addPoint( Map<FootprintPoint, GeoReferencedPoint> points, AbstractGRPoint tempPoint ) {
+    public void addPoint( List<Pair<FootprintPoint, GeoReferencedPoint>> points, AbstractGRPoint tempPoint ) {
         this.points = points;
         this.tempPoint = tempPoint;
     }
