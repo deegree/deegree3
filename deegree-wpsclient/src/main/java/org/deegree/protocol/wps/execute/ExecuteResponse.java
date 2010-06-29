@@ -59,8 +59,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  */
 public class ExecuteResponse {
-    
-   
+
     private static NamespaceContext NS_CONTEXT;
 
     private XMLAdapter xmlAdapter;
@@ -84,9 +83,8 @@ public class ExecuteResponse {
     private OutputDefinition outputDefinition;
 
     private ProcessOutputs processOutputs;
-    
-    private static Logger LOG = LoggerFactory.getLogger( ExecuteResponse.class );
 
+    private static Logger LOG = LoggerFactory.getLogger( ExecuteResponse.class );
 
     static {
         NS_CONTEXT = new NamespaceContext();
@@ -96,128 +94,130 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @param xmlAdapter
      */
     public ExecuteResponse( XMLAdapter xmlAdapter ) {
-        
-        LOG.info("parsing response...");
-        
 
-        try{
-        this.xmlAdapter = xmlAdapter;
+        LOG.info( "parsing response..." );
 
-        OMElement rootElement = xmlAdapter.getRootElement();
+        try {
+            this.xmlAdapter = xmlAdapter;
 
- 
-        this.service = rootElement.getAttributeValue( new QName( "service" ) );
-        this.version = rootElement.getAttributeValue( new QName( "version" ) );
-        this.lang = rootElement.getAttributeValue( new QName( "http://www.w3.org/XML/1998/namespace", "lang", "xml" ) );
-        this.statusLocation = rootElement.getAttributeValue( new QName( "http://www.w3.org/2001/XMLSchema-instance",
-                                                                        "schemaLocation", "xsi" ) );
-        this.serviceInstance = rootElement.getAttributeValue( new QName( "serviceInstance" ) );
+            OMElement rootElement = xmlAdapter.getRootElement();
 
-        OMElement processOMElement = xmlAdapter.getElement( rootElement, new XPath( "wps:Process", NS_CONTEXT ) );
+            this.service = rootElement.getAttributeValue( new QName( "service" ) );
+            this.version = rootElement.getAttributeValue( new QName( "version" ) );
+            this.lang = rootElement.getAttributeValue( new QName( "http://www.w3.org/XML/1998/namespace", "lang", "xml" ) );
+            this.statusLocation = rootElement.getAttributeValue( new QName(
+                                                                            "http://www.w3.org/2001/XMLSchema-instance",
+                                                                            "schemaLocation", "xsi" ) );
+            this.serviceInstance = rootElement.getAttributeValue( new QName( "serviceInstance" ) );
 
-        OMAttribute processVersionOMAttribute = processOMElement.getAttribute( new QName(
-                                                                                          "http://www.opengis.net/wps/1.0.0",
-                                                                                          "processVersion", "wps" ) );
+            OMElement processOMElement = xmlAdapter.getElement( rootElement, new XPath( "wps:Process", NS_CONTEXT ) );
 
-        ProcessBrief processBrief = new ProcessBrief();
+            OMAttribute processVersionOMAttribute = processOMElement.getAttribute( new QName(
+                                                                                              "http://www.opengis.net/wps/1.0.0",
+                                                                                              "processVersion", "wps" ) );
 
-        processBrief.setProcessVersion( " processVersionOMAttribute.getAttributeValue()" );
-        processBrief.setIdentifier( xmlAdapter.getNodeAsString( processOMElement, new XPath( "ows:Identifier",
-                                                                                             NS_CONTEXT ), null ) );
+            ProcessBrief processBrief = new ProcessBrief();
 
-        processBrief.setTitle( xmlAdapter.getNodeAsString( processOMElement, new XPath( "ows:Title", NS_CONTEXT ), null ) );
-        processBrief.setAbstract( xmlAdapter.getNodeAsString( processOMElement,
-                                                              new XPath( "ows:Abstract", NS_CONTEXT ), null ) );
+            processBrief.setProcessVersion( " processVersionOMAttribute.getAttributeValue()" );
+            processBrief.setIdentifier( xmlAdapter.getNodeAsString( processOMElement, new XPath( "ows:Identifier",
+                                                                                                 NS_CONTEXT ), null ) );
 
-        processBrief.setMetadata( xmlAdapter.getNodesAsStrings( processOMElement,
-                                                                new XPath( "ows:Metadata", NS_CONTEXT ) ) );
+            processBrief.setTitle( xmlAdapter.getNodeAsString( processOMElement, new XPath( "ows:Title", NS_CONTEXT ),
+                                                               null ) );
+            processBrief.setAbstract( xmlAdapter.getNodeAsString( processOMElement, new XPath( "ows:Abstract",
+                                                                                               NS_CONTEXT ), null ) );
 
-        processBrief.setWsdl( xmlAdapter.getNodeAsString( processOMElement, new XPath( "ows:WSDL", NS_CONTEXT ), null ) );
-        processBrief.setVersionType( xmlAdapter.getNodeAsString( processOMElement, new XPath( "ows:VersionType",
-                                                                                              NS_CONTEXT ), null ) );
+            processBrief.setMetadata( xmlAdapter.getNodesAsStrings( processOMElement, new XPath( "ows:Metadata",
+                                                                                                 NS_CONTEXT ) ) );
 
-        processBrief.setProfiles( xmlAdapter.getNodesAsStrings( processOMElement, new XPath( "ows:Profile", NS_CONTEXT ) ) );
-
-        // TO DO: DATA Inputs
-
-        // TO DO: OutputDefinition
-
-        OMElement processOutputsOMElement = xmlAdapter.getElement( rootElement, new XPath( "wps:ProcessOutputs",
-                                                                                           NS_CONTEXT ) );
-        List<OMElement> outputsElements = xmlAdapter.getElements( processOutputsOMElement, new XPath( "wps:Output",
-                                                                                                      NS_CONTEXT ) );
-        ProcessOutputs procssOutputs = new ProcessOutputs();
-        Output output;
-        for ( Iterator iterator = outputsElements.iterator(); iterator.hasNext(); ) {
-
-            OMElement outputOMElement = (OMElement) iterator.next();
-            output = new Output();
-            output.setIdentifier( xmlAdapter.getNodeAsString( outputOMElement,
-                                                              new XPath( "ows:Identifier", NS_CONTEXT ), null ) );
-            output.setIdentifier( xmlAdapter.getNodeAsString( outputOMElement, new XPath( "ows:Title", NS_CONTEXT ),
+            processBrief.setWsdl( xmlAdapter.getNodeAsString( processOMElement, new XPath( "ows:WSDL", NS_CONTEXT ),
                                                               null ) );
+            processBrief.setVersionType( xmlAdapter.getNodeAsString( processOMElement, new XPath( "ows:VersionType",
+                                                                                                  NS_CONTEXT ), null ) );
 
-            if ( xmlAdapter.getElement( outputOMElement, new XPath( "wps:Data", NS_CONTEXT ) ) != null ) {
-                OMElement dataOMElement = xmlAdapter.getElement( outputOMElement, new XPath( "wps:Data", NS_CONTEXT ) );
-                DataType dataType = new DataType();
-                output.setDataType( dataType );
+            processBrief.setProfiles( xmlAdapter.getNodesAsStrings( processOMElement, new XPath( "ows:Profile",
+                                                                                                 NS_CONTEXT ) ) );
 
-                if ( xmlAdapter.getElement( dataOMElement, new XPath( "wps:ComplexData", NS_CONTEXT ) ) != null ) {
-                    OMElement complexDataOMElement = ( xmlAdapter.getElement( dataOMElement,
-                                                                              new XPath( "wps:ComplexData", NS_CONTEXT ) ) );
+            // TO DO: DATA Inputs
 
-                    ComplexData complexData = new ComplexData();
-                    dataType.setComplexData( complexData );
-                    complexData.setEncoding( dataOMElement.getAttributeValue( new QName( "encoding" ) ) );
-                    complexData.setMimeType( dataOMElement.getAttributeValue( new QName( "mimeType" ) ) );
-                    complexData.setSchema( dataOMElement.getAttributeValue( new QName( "schema" ) ) );
+            // TO DO: OutputDefinition
 
-                    OMElement complexDataObjectOMElement = (OMElement) dataOMElement.getFirstElement();
-                    Object object = complexDataObjectOMElement.getFirstElement();
-                    complexData.setObject( object );
+            OMElement processOutputsOMElement = xmlAdapter.getElement( rootElement, new XPath( "wps:ProcessOutputs",
+                                                                                               NS_CONTEXT ) );
+            List<OMElement> outputsElements = xmlAdapter.getElements( processOutputsOMElement, new XPath( "wps:Output",
+                                                                                                          NS_CONTEXT ) );
+            ProcessOutputs procssOutputs = new ProcessOutputs();
+            Output output;
+            for ( Iterator iterator = outputsElements.iterator(); iterator.hasNext(); ) {
+
+                OMElement outputOMElement = (OMElement) iterator.next();
+                output = new Output();
+                output.setIdentifier( xmlAdapter.getNodeAsString( outputOMElement, new XPath( "ows:Identifier",
+                                                                                              NS_CONTEXT ), null ) );
+                output.setIdentifier( xmlAdapter.getNodeAsString( outputOMElement,
+                                                                  new XPath( "ows:Title", NS_CONTEXT ), null ) );
+
+                if ( xmlAdapter.getElement( outputOMElement, new XPath( "wps:Data", NS_CONTEXT ) ) != null ) {
+                    OMElement dataOMElement = xmlAdapter.getElement( outputOMElement,
+                                                                     new XPath( "wps:Data", NS_CONTEXT ) );
+                    DataType dataType = new DataType();
+                    output.setDataType( dataType );
+
+                    if ( xmlAdapter.getElement( dataOMElement, new XPath( "wps:ComplexData", NS_CONTEXT ) ) != null ) {
+                        OMElement complexDataOMElement = ( xmlAdapter.getElement( dataOMElement,
+                                                                                  new XPath( "wps:ComplexData",
+                                                                                             NS_CONTEXT ) ) );
+
+                        ComplexData complexData = new ComplexData();
+                        dataType.setComplexData( complexData );
+                        complexData.setEncoding( dataOMElement.getAttributeValue( new QName( "encoding" ) ) );
+                        complexData.setMimeType( dataOMElement.getAttributeValue( new QName( "mimeType" ) ) );
+                        complexData.setSchema( dataOMElement.getAttributeValue( new QName( "schema" ) ) );
+
+                        OMElement complexDataObjectOMElement = (OMElement) dataOMElement.getFirstElement();
+                        Object object = complexDataObjectOMElement.getFirstElement();
+                        complexData.setObject( object );
+                    }
+
+                    if ( xmlAdapter.getElement( dataOMElement, new XPath( "wps:LiteralData", NS_CONTEXT ) ) != null ) {
+                        OMElement literalDataOMElement = ( xmlAdapter.getElement( dataOMElement,
+                                                                                  new XPath( "wps:LiteralData",
+                                                                                             NS_CONTEXT ) ) );
+                        LiteralData literalData = new LiteralData();
+                        dataType.setLiteralData( literalData );
+                        literalData.setDataType( literalDataOMElement.getAttribute( new QName( "dataType" ) ).getLocalName() );
+
+                        literalData.setLiteralData( literalDataOMElement.getAttribute( new QName( "dataType" ) ).getAttributeValue() );
+                        // literalData.setUom( uom );
+
+                    }
+
+                    if ( xmlAdapter.getElement( dataOMElement, new XPath( "wps:BoundingBox", NS_CONTEXT ) ) != null ) {
+
+                    }
+
                 }
 
-                if ( xmlAdapter.getElement( dataOMElement, new XPath( "wps:LiteralData", NS_CONTEXT ) ) != null ) {
-                    OMElement literalDataOMElement = ( xmlAdapter.getElement( dataOMElement,
-                                                                              new XPath( "wps:LiteralData", NS_CONTEXT ) ) );
-                    LiteralData literalData = new LiteralData();
-                    dataType.setLiteralData( literalData );
-                    literalData.setDataType( literalDataOMElement.getAttribute( new QName( "dataType" ) ).getLocalName() );
-
-                    literalData.setLiteralData( literalDataOMElement.getAttribute( new QName( "dataType" ) ).getAttributeValue() );
-                    // literalData.setUom( uom );
-
-                }
-
-                if ( xmlAdapter.getElement( dataOMElement, new XPath( "wps:BoundingBox", NS_CONTEXT ) ) != null ) {
-
-                }
+                procssOutputs.addOutput( output );
 
             }
+            this.processOutputs = procssOutputs;
 
-            procssOutputs.addOutput( output );
-
-        }
-        this.processOutputs = procssOutputs;
-        
-        LOG.info("parsing response successfully");
-        }
-        catch(Exception e){
+            LOG.info( "parsing response successfully" );
+        } catch ( Exception e ) {
             LOG.error( e.toString() );
-            LOG.info( "xmlAdapter: " + xmlAdapter.getRootElement());
-           
-            
-        }
+            LOG.info( "xmlAdapter: " + xmlAdapter.getRootElement() );
 
+        }
 
     }
 
     /**
-     *  
+     * 
      * @return service
      */
     public String getService() {
@@ -225,7 +225,7 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @return version
      */
     public String getVersion() {
@@ -233,7 +233,7 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @return language
      */
     public String getLang() {
@@ -241,7 +241,7 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @return statusLocation
      */
     public String getStatusLocation() {
@@ -249,7 +249,7 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @return serviceInstance
      */
     public String getSericeInstance() {
@@ -257,7 +257,7 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @return process
      */
     public ProcessBrief getProcessBrief() {
@@ -265,7 +265,7 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @return status
      */
     public Status getStatus() {
@@ -273,7 +273,7 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @return dataInputExecute
      */
     public DataInputExecute getDataInputExecute() {
@@ -281,7 +281,7 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @return outputDefinition
      */
     public OutputDefinition getOutputDefinition() {
@@ -289,7 +289,7 @@ public class ExecuteResponse {
     }
 
     /**
-     *  
+     * 
      * @return processOutputs
      */
     public ProcessOutputs getProcessOutputs() {

@@ -52,15 +52,15 @@ public class ProcessOutputs {
     private List<Output> outputList = new ArrayList();
 
     /**
-     *  
+     * 
      * @return outputList
      */
     public List<Output> getOutputs() {
         return outputList;
     }
-    
+
     /**
-     *  
+     * 
      * @param outputList
      */
     public void addOutput( Output output ) {

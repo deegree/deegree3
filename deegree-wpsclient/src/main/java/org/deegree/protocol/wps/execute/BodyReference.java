@@ -49,7 +49,7 @@ public class BodyReference {
     private String href;
 
     /**
-     *  
+     * 
      * @return href
      */
     public String getHref() {
@@ -57,7 +57,7 @@ public class BodyReference {
     }
 
     /**
-     *  
+     * 
      * @param href
      */
     public void setHref( String href ) {

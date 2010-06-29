@@ -58,12 +58,12 @@ public class Reference {
 
     private Header header;
 
-    private  String body;
+    private String body;
 
     private BodyReference bodyReference;
 
     /**
-     *  
+     * 
      * @return mimeType
      */
     public String getMimeType() {
@@ -71,7 +71,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @param mimeType
      */
     public void setMimeType( String mimeType ) {
@@ -79,7 +79,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @return encoding
      */
     public String getEncoding() {
@@ -87,7 +87,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @param encoding
      */
     public void setEncoding( String encoding ) {
@@ -95,7 +95,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @return schema
      */
     public String getSchema() {
@@ -103,7 +103,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @param schema
      */
     public void setSchema( String schema ) {
@@ -111,7 +111,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @return href
      */
     public String getHref() {
@@ -119,7 +119,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @param href
      */
     public void setHref( String href ) {
@@ -127,7 +127,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @return method
      */
     public String getMethod() {
@@ -135,7 +135,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @param method
      */
     public void setMethod( String method ) {
@@ -143,7 +143,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @return header
      */
     public Header getHeader() {
@@ -151,7 +151,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @param header
      */
     public void setHeader( Header header ) {
@@ -159,7 +159,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @return body
      */
     public String getBody() {
@@ -167,7 +167,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @param body
      */
     public void setBody( String body ) {
@@ -175,7 +175,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @return bodyReference
      */
     public BodyReference getBodyReference() {
@@ -183,7 +183,7 @@ public class Reference {
     }
 
     /**
-     *  
+     * 
      * @param bodyReference
      */
     public void setBodyReference( BodyReference bodyReference ) {

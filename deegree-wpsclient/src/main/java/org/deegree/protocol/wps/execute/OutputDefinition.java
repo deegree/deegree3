@@ -63,7 +63,7 @@ public class OutputDefinition {
     private String abstraCt;
 
     /**
-     *  
+     * 
      * @return mimeType
      */
     public String getMimeType() {
@@ -71,7 +71,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @param mimeType
      */
     public void setMimeType( String mimeType ) {
@@ -79,7 +79,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @return encoding
      */
     public String getEncoding() {
@@ -87,7 +87,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @param encoding
      */
     public void setEncoding( String encoding ) {
@@ -95,7 +95,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @return schema
      */
     public String getSchema() {
@@ -103,7 +103,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @param schema
      */
     public void setSchema( String schema ) {
@@ -111,7 +111,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @return uom
      */
     public String getUom() {
@@ -119,7 +119,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @param uom
      */
     public void setUom( String uom ) {
@@ -127,7 +127,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @return asReference
      */
     public boolean isAsReference() {
@@ -135,7 +135,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @param asReference
      */
     public void setAsReference( boolean asReference ) {
@@ -143,7 +143,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @return identifier
      */
     public String getIdentifier() {
@@ -151,7 +151,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @param identifier
      */
     public void setIdentifier( String identifier ) {
@@ -159,7 +159,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @return title
      */
     public String getTitle() {
@@ -167,15 +167,15 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @param title
      */
     public void setTitle( String title ) {
         this.title = title;
     }
-    
+
     /**
-     *  
+     * 
      * @return abstract
      */
     public String getAbstraCt() {
@@ -183,7 +183,7 @@ public class OutputDefinition {
     }
 
     /**
-     *  
+     * 
      * @param abstract
      */
     public void setAbstraCt( String abstraCt ) {

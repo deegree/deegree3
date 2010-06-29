@@ -68,7 +68,7 @@ public class ProcessBrief {
     private String wsdl;
 
     /**
-     *  
+     * 
      * @param identifier
      */
     public void setIdentifier( String identifier ) {
@@ -76,7 +76,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @return identifier
      */
     public String getIdentifier() {
@@ -84,7 +84,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @param _abstract
      */
     public void setAbstract( String _abstract ) {
@@ -92,7 +92,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @return _abstract
      */
     public String getAbstract() {
@@ -100,7 +100,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @param title
      */
     public void setTitle( String title ) {
@@ -108,7 +108,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @return title
      */
     public String getTitle() {
@@ -116,7 +116,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @return processVersion
      */
     public String getProcessVersion() {
@@ -124,7 +124,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @param processVersion
      */
     public void setProcessVersion( String processVersion ) {
@@ -132,7 +132,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @return metadata
      */
     public String[] getMetadata() {
@@ -140,7 +140,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @param metadata
      */
     public void setMetadata( String[] metadata ) {
@@ -148,7 +148,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @return profiles
      */
     public String[] getProfiles() {
@@ -156,7 +156,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @param profiles
      */
     public void setProfiles( String[] profiles ) {
@@ -164,7 +164,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @return versionType
      */
     public String getVersionType() {
@@ -172,7 +172,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @param versionType
      */
     public void setVersionType( String versionType ) {
@@ -180,7 +180,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @return wsdl
      */
     public String getWsdl() {
@@ -188,7 +188,7 @@ public class ProcessBrief {
     }
 
     /**
-     *  
+     * 
      * @param wsdl
      */
     public void setWsdl( String wsdl ) {

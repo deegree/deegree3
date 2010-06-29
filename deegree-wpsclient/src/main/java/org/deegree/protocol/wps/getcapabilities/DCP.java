@@ -49,7 +49,7 @@ public class DCP {
     private Http http;
 
     /**
-     *  
+     * 
      * @return http
      */
     public Http getHttp() {
@@ -57,7 +57,7 @@ public class DCP {
     }
 
     /**
-     *  
+     * 
      * @param http
      */
     public void setHttp( Http http ) {

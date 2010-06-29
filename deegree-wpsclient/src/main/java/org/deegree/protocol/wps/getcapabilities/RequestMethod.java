@@ -53,7 +53,7 @@ public class RequestMethod {
     private String constraint; // ows:DomainType
 
     /**
-     *  
+     * 
      * @return url
      */
     public URL getUrl() {
@@ -61,7 +61,7 @@ public class RequestMethod {
     }
 
     /**
-     *  
+     * 
      * @param url
      */
     public void setUrl( URL url ) {
@@ -69,7 +69,7 @@ public class RequestMethod {
     }
 
     /**
-     *  
+     * 
      * @return constraint
      */
     public String getConstraint() {
@@ -77,7 +77,7 @@ public class RequestMethod {
     }
 
     /**
-     *  
+     * 
      * @param constraint
      */
     public void setConstraint( String constraint ) {

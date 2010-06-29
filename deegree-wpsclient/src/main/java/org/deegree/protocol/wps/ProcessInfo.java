@@ -91,7 +91,6 @@ public class ProcessInfo {
 
     private String processVersion;
 
-
     /**
      * Constructs a ProcessInfo for a single process known by it's processIdentifier
      * 
@@ -129,9 +128,8 @@ public class ProcessInfo {
         this.version = processDescription.getVersion();
         this.wsdl = processDescription.getWSDL();
 
-        this.inputParameters=getInputParams();
-        this.outputParameters=getOutputParams();
-        
+        this.inputParameters = getInputParams();
+        this.outputParameters = getOutputParams();
 
     }
 
@@ -140,7 +138,7 @@ public class ProcessInfo {
      * 
      * @return
      */
-     private DataInputParameter[] getInputParams() {
+    private DataInputParameter[] getInputParams() {
         DataInputParameter[] dataInputParamaters = new DataInputParameter[processDescription.getDataInputs().size()];
         for ( int i = 0; i < processDescription.getDataInputs().size(); i++ ) {
             dataInputParamaters[i] = new DataInputParameter( processDescription.getDataInputs().get( i ) );

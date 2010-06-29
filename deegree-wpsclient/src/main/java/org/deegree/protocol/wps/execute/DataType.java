@@ -53,7 +53,7 @@ public class DataType {
     private BoundingBoxData boundingBoxData;
 
     /**
-     *  
+     * 
      * @return complexData
      */
     public ComplexData getComplexData() {
@@ -61,7 +61,7 @@ public class DataType {
     }
 
     /**
-     *  
+     * 
      * @param dataType
      */
     public void setComplexData( ComplexData complexData ) {
@@ -69,7 +69,7 @@ public class DataType {
     }
 
     /**
-     *  
+     * 
      * @return literalData
      */
     public LiteralData getLiteralData() {
@@ -77,7 +77,7 @@ public class DataType {
     }
 
     /**
-     *  
+     * 
      * @param literalData
      */
     public void setLiteralData( LiteralData literalData ) {
@@ -85,7 +85,7 @@ public class DataType {
     }
 
     /**
-     *  
+     * 
      * @return boundingBoxData
      */
     public BoundingBoxData getBoundingBoxData() {
@@ -93,7 +93,7 @@ public class DataType {
     }
 
     /**
-     *  
+     * 
      * @param boundingBoxData
      */
     public void setBoundingBoxData( BoundingBoxData boundingBoxData ) {

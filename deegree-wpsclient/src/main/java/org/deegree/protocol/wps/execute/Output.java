@@ -61,7 +61,7 @@ public class Output {
     }
 
     /**
-     *  
+     * 
      * @param identifier
      */
     public void setIdentifier( String identifier ) {
@@ -69,7 +69,7 @@ public class Output {
     }
 
     /**
-     *  
+     * 
      * @return title
      */
     public String getTitle() {
@@ -77,7 +77,7 @@ public class Output {
     }
 
     /**
-     *  
+     * 
      * @param title
      */
     public void setTitle( String title ) {
@@ -85,7 +85,7 @@ public class Output {
     }
 
     /**
-     *  
+     * 
      * @return abstract
      */
     public String getAbstraCt() {
@@ -93,7 +93,7 @@ public class Output {
     }
 
     /**
-     *  
+     * 
      * @param abstract
      */
     public void setAbstraCt( String abstraCt ) {
@@ -101,7 +101,7 @@ public class Output {
     }
 
     /**
-     *  
+     * 
      * @return outputReference
      */
     public OutputReference getOutputReference() {
@@ -109,7 +109,7 @@ public class Output {
     }
 
     /**
-     *  
+     * 
      * @param outputReference
      */
     public void setOutputReference( OutputReference outputReference ) {
@@ -117,7 +117,7 @@ public class Output {
     }
 
     /**
-     *  
+     * 
      * @return dataType
      */
     public DataType getDataType() {
@@ -125,7 +125,7 @@ public class Output {
     }
 
     /**
-     *  
+     * 
      * @param dataType
      */
     public void setDataType( DataType dataType ) {

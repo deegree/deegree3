@@ -55,7 +55,7 @@ public class DataInputExecute {
     private InputFormChoiceExecute inputFormChoice;
 
     /**
-     *  
+     * 
      * @return identifier of DataInput
      */
     public String getIdentifier() {
@@ -63,15 +63,16 @@ public class DataInputExecute {
     }
 
     /**
-     *  
-     * @param title of DataInput
+     * 
+     * @param title
+     *            of DataInput
      */
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
 
     /**
-     *  
+     * 
      * @return title of DataInput
      */
     public String getTitle() {
@@ -79,15 +80,16 @@ public class DataInputExecute {
     }
 
     /**
-     *  
-     * @param identifier of DataInput
+     * 
+     * @param identifier
+     *            of DataInput
      */
     public void setTitle( String title ) {
         this.title = title;
     }
 
     /**
-     *  
+     * 
      * @return abstract of DataInput
      */
     public String getAbstraCt() {
@@ -95,7 +97,7 @@ public class DataInputExecute {
     }
 
     /**
-     *  
+     * 
      * @param abstract of DataInput
      */
     public void setAbstraCt( String abstraCt ) {
@@ -103,7 +105,7 @@ public class DataInputExecute {
     }
 
     /**
-     *  
+     * 
      * @return inputFormChoice of DataInput
      */
     public InputFormChoiceExecute getInputFormChoice() {
@@ -111,8 +113,9 @@ public class DataInputExecute {
     }
 
     /**
-     *  
-     * @param inputFormChoice of DataInput
+     * 
+     * @param inputFormChoice
+     *            of DataInput
      */
     public void setInputFormChoice( InputFormChoiceExecute inputFormChoice ) {
         this.inputFormChoice = inputFormChoice;

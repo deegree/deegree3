@@ -59,7 +59,7 @@ public class LoadFile {
     private String path;
 
     /**
-     *  
+     * 
      * @param path
      */
     public LoadFile( String path ) {
@@ -67,9 +67,8 @@ public class LoadFile {
 
     }
 
-    
     /**
-     *  
+     * 
      * @return String
      */
     public String load()

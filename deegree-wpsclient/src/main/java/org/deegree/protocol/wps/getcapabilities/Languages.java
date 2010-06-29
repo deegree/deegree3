@@ -51,7 +51,7 @@ public class Languages {
     private String[] supportedArray;
 
     /**
-     *  
+     * 
      * @return defauLt
      */
     public String getDefauLt() {
@@ -59,7 +59,7 @@ public class Languages {
     }
 
     /**
-     *  
+     * 
      * @param defauLt
      */
     public void setDefauLt( String defauLt ) {
@@ -67,7 +67,7 @@ public class Languages {
     }
 
     /**
-     *  
+     * 
      * @return supported[]
      */
     public String[] getSupported() {
@@ -75,8 +75,9 @@ public class Languages {
     }
 
     /**
-     *  
-     * @param supported[]
+     * 
+     * @param supported
+     *            []
      */
     public void setSupported( String[] supportedArray ) {
         this.supportedArray = supportedArray;

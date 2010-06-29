@@ -57,7 +57,7 @@ public class RawOutputData {
     private String uom;
 
     /**
-     *  
+     * 
      * @return identifier
      */
     public String getIdentifier() {
@@ -65,7 +65,7 @@ public class RawOutputData {
     }
 
     /**
-     *  
+     * 
      * @param identifier
      */
     public void setIdentifier( String identifier ) {
@@ -73,7 +73,7 @@ public class RawOutputData {
     }
 
     /**
-     *  
+     * 
      * @return mimeType
      */
     public String getMimeType() {
@@ -81,7 +81,7 @@ public class RawOutputData {
     }
 
     /**
-     *  
+     * 
      * @param mimeType
      */
     public void setMimeType( String mimeType ) {
@@ -89,7 +89,7 @@ public class RawOutputData {
     }
 
     /**
-     *  
+     * 
      * @return encoding
      */
     public String getEncoding() {
@@ -97,7 +97,7 @@ public class RawOutputData {
     }
 
     /**
-     *  
+     * 
      * @param encoding
      */
     public void setEncoding( String encoding ) {
@@ -105,7 +105,7 @@ public class RawOutputData {
     }
 
     /**
-     *  
+     * 
      * @return schema
      */
     public String getSchema() {
@@ -113,7 +113,7 @@ public class RawOutputData {
     }
 
     /**
-     *  
+     * 
      * @param schema
      */
     public void setSchema( String schema ) {
@@ -121,7 +121,7 @@ public class RawOutputData {
     }
 
     /**
-     *  
+     * 
      * @return uom
      */
     public String getUom() {
@@ -129,7 +129,7 @@ public class RawOutputData {
     }
 
     /**
-     *  
+     * 
      * @param uom
      */
     public void setUom( String uom ) {

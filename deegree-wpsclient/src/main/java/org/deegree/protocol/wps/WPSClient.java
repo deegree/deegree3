@@ -72,7 +72,6 @@ public class WPSClient {
 
     private String describeProcessURL;
 
-
     /**
      * Public constructor to access a WPS instance based on it's GetCapabilities URL
      * 
@@ -104,18 +103,15 @@ public class WPSClient {
     /**
      * Returns the identifiers of all processes known to the WPS instance.
      * 
-     * @return identifiers of all processes known to the WPS instance, never <code>null</code> 
+     * @return identifiers of all processes known to the WPS instance, never <code>null</code>
      */
     public String[] getProcessIdentifiers() {
-        
-        
-        List<ProcessBrief> processBriefList=this.serviceCapabilities.getProcessOfferings();
+
+        List<ProcessBrief> processBriefList = this.serviceCapabilities.getProcessOfferings();
 
         int size = processBriefList.size();
         String[] identifier = new String[size];
 
-        
-        
         for ( int i = 0; i < size; i++ ) {
             identifier[i] = processBriefList.get( i ).getIdentifier();
         }
@@ -145,26 +141,29 @@ public class WPSClient {
      * 
      * @return String response of the executeRequest as a String
      * 
-     * @param inputObject[]
-     *            
-     * @param outputConfiguration[]
+     * @param inputObject
+     *            []
+     * 
+     * @param outputConfiguration
+     *            []
      * 
      * @param processIdentifier
      *            identifier of the process
      * 
      */
-    public String executeProcessStringResult( InputObject[] inputobject, OutputConfiguration[] outputConfiguration, String processIdentifier ) {
+    public String executeProcessStringResult( InputObject[] inputobject, OutputConfiguration[] outputConfiguration,
+                                              String processIdentifier ) {
 
         ProcessExecution processExecution = new ProcessExecution(
                                                                   getProcessInfo( processIdentifier ).getProcessDescription(),
                                                                   executeURL );
 
         for ( int i = 0; i < inputobject.length; i++ ) {
-            processExecution.addInput(inputobject[i] );
+            processExecution.addInput( inputobject[i] );
         }
-        
+
         for ( int i = 0; i < outputConfiguration.length; i++ ) {
-            processExecution.addOutput(outputConfiguration[i]);
+            processExecution.addOutput( outputConfiguration[i] );
         }
 
         return processExecution.sendExecuteRequestStringReturn();
@@ -174,28 +173,31 @@ public class WPSClient {
      * 
      * @return Object result the of process as object
      * 
-     * @param inputObject[]
-     *            
-     * @param outputConfiguration[]
+     * @param inputObject
+     *            []
+     * 
+     * @param outputConfiguration
+     *            []
      * 
      * @param processIdentifier
      *            identifier of the process
      * 
      */
-    public Object executeProcessObejctResult( InputObject[] inputobject,OutputConfiguration[] outputConfiguration, String processIdentifier ) {
+    public Object executeProcessObejctResult( InputObject[] inputobject, OutputConfiguration[] outputConfiguration,
+                                              String processIdentifier ) {
 
         ProcessExecution processExecution = new ProcessExecution(
                                                                   getProcessInfo( processIdentifier ).getProcessDescription(),
                                                                   executeURL );
-        if (inputobject!=null)
-        for ( int i = 0; i < inputobject.length; i++ ) {
-            processExecution.addInput( inputobject[i] );
-        }
-        
-        if (outputConfiguration!=null)
-        for ( int i = 0; i < outputConfiguration.length; i++ ) {
-            processExecution.addOutput(outputConfiguration[i]);
-        }
+        if ( inputobject != null )
+            for ( int i = 0; i < inputobject.length; i++ ) {
+                processExecution.addInput( inputobject[i] );
+            }
+
+        if ( outputConfiguration != null )
+            for ( int i = 0; i < outputConfiguration.length; i++ ) {
+                processExecution.addOutput( outputConfiguration[i] );
+            }
 
         return processExecution.sendExecuteRequestExecuteObjectReturn();
     }
@@ -206,65 +208,68 @@ public class WPSClient {
      * 
      * @param InputObject
      *            [] Input of the process
-     *            
-     *@param outputConfiguration[]
+     * 
+     *@param outputConfiguration
+     *            []
      * 
      * @param processIdentifier
      *            identifier of the process
-     *            
-     *            
+     * 
+     * 
      * 
      */
-    public ExecuteResponse executeProcessExecuteResponseResult( InputObject[] inputobject, OutputConfiguration[] outputConfiguration, String processIdentifier ) {
+    public ExecuteResponse executeProcessExecuteResponseResult( InputObject[] inputobject,
+                                                                OutputConfiguration[] outputConfiguration,
+                                                                String processIdentifier ) {
 
         ProcessExecution processExecution = new ProcessExecution(
                                                                   getProcessInfo( processIdentifier ).getProcessDescription(),
                                                                   describeProcessURL );
-        if (inputobject!=null)
-        for ( int i = 0; i < inputobject.length; i++ ) {
-            processExecution.addInput(inputobject[i] );
-        }
+        if ( inputobject != null )
+            for ( int i = 0; i < inputobject.length; i++ ) {
+                processExecution.addInput( inputobject[i] );
+            }
 
-        if (outputConfiguration!=null)
-        for ( int i = 0; i < outputConfiguration.length; i++ ) {
-            processExecution.addOutput(outputConfiguration[i]);
-        }
+        if ( outputConfiguration != null )
+            for ( int i = 0; i < outputConfiguration.length; i++ ) {
+                processExecution.addOutput( outputConfiguration[i] );
+            }
         return processExecution.sendExecuteRequestExecuteResponseReturn();
     }
-    
-    
+
     /**
      * 
      * @return Object result the of process as ExecuteResponse object
      * 
      * @param InputObject
      *            [] Input of the process
-     *            
-     *@param outputConfiguration[]
+     * 
+     *@param outputConfiguration
+     *            []
      * 
      * @param processIdentifier
      *            identifier of the process
-     *            
+     * 
      * 
      */
-    public XMLAdapter executeProcessXMLAdapterResult( InputObject[] inputobject, OutputConfiguration[] outputConfiguration, String processIdentifier ) {
+    public XMLAdapter executeProcessXMLAdapterResult( InputObject[] inputobject,
+                                                      OutputConfiguration[] outputConfiguration,
+                                                      String processIdentifier ) {
 
         ProcessExecution processExecution = new ProcessExecution(
                                                                   getProcessInfo( processIdentifier ).getProcessDescription(),
                                                                   describeProcessURL );
 
         for ( int i = 0; i < inputobject.length; i++ ) {
-            processExecution.addInput(inputobject[i] );
+            processExecution.addInput( inputobject[i] );
         }
-        
+
         for ( int i = 0; i < outputConfiguration.length; i++ ) {
-            processExecution.addOutput(outputConfiguration[i]);
+            processExecution.addOutput( outputConfiguration[i] );
         }
 
         return processExecution.sendExecuteRequestXMLAdapterReturn();
     }
-    
-    
 
     /**
      * 
@@ -320,11 +325,10 @@ public class WPSClient {
         return inputObject;
     }
 
-    public OutputConfiguration setOutputConfiguration(String identifier) {
-        OutputConfiguration outputConfiguration = new OutputConfiguration(identifier);
+    public OutputConfiguration setOutputConfiguration( String identifier ) {
+        OutputConfiguration outputConfiguration = new OutputConfiguration( identifier );
         outputConfiguration.setAsReference( true );
         return outputConfiguration;
-        
 
     }
 }

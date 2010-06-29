@@ -53,23 +53,23 @@ public class InputFormChoiceDescribeProcess {
     private BoundingBoxData boundingBoxData;
 
     /**
-     *  
-     * @return ComplexData object 
+     * 
+     * @return ComplexData object
      */
     public ComplexData getComplexData() {
         return complexData;
     }
 
     /**
-     *  
+     * 
      * @param ComplexData
      */
     public void setComplexData( ComplexData complexData ) {
         this.complexData = complexData;
     }
-    
+
     /**
-     *  
+     * 
      * @return LiteralData object
      */
     public LiteralInputData getLiteralData() {
@@ -77,15 +77,16 @@ public class InputFormChoiceDescribeProcess {
     }
 
     /**
-     *  
-     * @param LiteralData object
+     * 
+     * @param LiteralData
+     *            object
      */
     public void setLiteralData( LiteralInputData literalData ) {
         this.literalData = literalData;
     }
 
     /**
-     *  
+     * 
      * @return BoundingBoxData object
      */
     public BoundingBoxData getBoundingBoxData() {
@@ -93,8 +94,9 @@ public class InputFormChoiceDescribeProcess {
     }
 
     /**
-     *  
-     * @param BoundingBoxData object
+     * 
+     * @param BoundingBoxData
+     *            object
      */
     public void setBoundingBoxData( BoundingBoxData boundingBoxData ) {
         this.boundingBoxData = boundingBoxData;

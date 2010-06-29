@@ -6,7 +6,7 @@ import org.deegree.protocol.wps.describeprocess.OutputDescription;
 import org.deegree.protocol.wps.describeprocess.ProcessOutput;
 
 /**
- *  Encapsulates the structure of a DataOutputParameter
+ * Encapsulates the structure of a DataOutputParameter
  * 
  * 
  * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
@@ -34,11 +34,10 @@ public class DataOutputParameter {
 
     private String schema;
 
-
     public DataOutputParameter( OutputDescription outputDescription ) {
-        this._abstract=outputDescription.getAbstraCt();
-        this.identifier=outputDescription.getIdentifier();
-        this.title= outputDescription.getTitle();
+        this._abstract = outputDescription.getAbstraCt();
+        this.identifier = outputDescription.getIdentifier();
+        this.title = outputDescription.getTitle();
         if ( outputDescription.getOutputFormChoice().getLiteralOutput() != null ) {
             LiteralOutputData literalOutput = outputDescription.getOutputFormChoice().getLiteralOutput();
             this.dataType = literalOutput.getDataType();
@@ -56,7 +55,7 @@ public class DataOutputParameter {
     }
 
     /**
-     *  
+     * 
      * @return title
      */
     public String getTitle() {
@@ -64,7 +63,7 @@ public class DataOutputParameter {
     }
 
     /**
-     *  
+     * 
      * @return identifier
      */
     public String getAbstraCt() {
@@ -72,7 +71,7 @@ public class DataOutputParameter {
     }
 
     /**
-     *  
+     * 
      * @return identifier
      */
     public String getIdentifier() {
@@ -80,7 +79,7 @@ public class DataOutputParameter {
     }
 
     /**
-     *  
+     * 
      * @return dataType
      */
     public String getDataType() {
@@ -88,7 +87,7 @@ public class DataOutputParameter {
     }
 
     /**
-     *  
+     * 
      * @return encoding
      */
     public String getEncoding() {
@@ -96,7 +95,7 @@ public class DataOutputParameter {
     }
 
     /**
-     *  
+     * 
      * @return mimeType
      */
     public String getMimeType() {
@@ -104,7 +103,7 @@ public class DataOutputParameter {
     }
 
     /**
-     *  
+     * 
      * @return uom
      */
     public String getUom() {
@@ -112,7 +111,7 @@ public class DataOutputParameter {
     }
 
     /**
-     *  
+     * 
      * @return maximumMegaBytes
      */
     public String getMaximumMegaBytes() {
@@ -120,7 +119,7 @@ public class DataOutputParameter {
     }
 
     /**
-     *  
+     * 
      * @return schema
      */
     public String getSchema() {

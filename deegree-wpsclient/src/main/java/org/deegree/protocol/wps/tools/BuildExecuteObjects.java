@@ -103,7 +103,6 @@ public class BuildExecuteObjects {
 
     public BuildExecuteObjects( List<InputObject> dataInputList, List<OutputConfiguration> outputConfigurationList,
                                 ProcessDescription processDesription ) {
-        
 
         this.processDescription = processDesription;
         this.identifier = processDesription.getIdentifier();
@@ -116,11 +115,8 @@ public class BuildExecuteObjects {
             this.outputConfigurationList = createOutputConfigurationList();
         }
 
+        this.setOutputs( outputConfigurationList );
 
-        this.setOutputs(outputConfigurationList );
-
-
-        
     }
 
     public BuildExecuteObjects( List<InputObject> dataInputList, ProcessDescription processDesription ) {
@@ -305,11 +301,10 @@ public class BuildExecuteObjects {
         ResponseForm responseForm = new ResponseForm();
         List<OutputDefinition> outputDefinitionList = new ArrayList();
 
-        
         for ( int i = 0; i < processDescription.getProcessOutputs().size(); i++ )
 
         {
-            
+
             if ( outputConfiguration.isRawOrResp() == false ) {
                 ResponseDocument responseDocument = new ResponseDocument();
 
@@ -372,9 +367,8 @@ public class BuildExecuteObjects {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-               
+
         return out;
     }
-
 
 }

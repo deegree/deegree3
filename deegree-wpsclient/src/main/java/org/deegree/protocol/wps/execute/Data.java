@@ -49,7 +49,7 @@ public class Data {
     private DataType dataType;
 
     /**
-     *  
+     * 
      * @return dataType
      */
     public DataType getDataType() {
@@ -57,7 +57,7 @@ public class Data {
     }
 
     /**
-     *  
+     * 
      * @param dataType
      */
     public void setDataType( DataType dataType ) {

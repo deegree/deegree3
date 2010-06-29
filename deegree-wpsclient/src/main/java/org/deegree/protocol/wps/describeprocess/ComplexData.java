@@ -56,23 +56,24 @@ public class ComplexData {
     private String maximumMegaBytes;
 
     /**
-     *  
+     * 
      * @return Format of ComplexData
      */
     public Format getDefaulT() {
         return defaulT;
     }
-    
+
     /**
-     *  
-     * @param Format of ComplexData
+     * 
+     * @param Format
+     *            of ComplexData
      */
     public void setDefaulT( Format defaulT ) {
         this.defaulT = defaulT;
     }
 
     /**
-     *  
+     * 
      * @return List of supported formats of ComplexData
      */
     public List<Format> getSupported() {
@@ -80,15 +81,16 @@ public class ComplexData {
     }
 
     /**
-     *  
-     * @param supported Format of ComplexData
+     * 
+     * @param supported
+     *            Format of ComplexData
      */
     public void addSupported( Format supported ) {
         supportedList.add( supported );
     }
 
     /**
-     *  
+     * 
      * @return maximum size of ComplexData
      */
     public String getMaximumMegaBytes() {
@@ -96,8 +98,9 @@ public class ComplexData {
     }
 
     /**
-     *  
-     * @param maximumMegaBytes of ComplexData
+     * 
+     * @param maximumMegaBytes
+     *            of ComplexData
      */
     public void setMaximumMegaBytes( String maximumMegaBytes ) {
         this.maximumMegaBytes = maximumMegaBytes;

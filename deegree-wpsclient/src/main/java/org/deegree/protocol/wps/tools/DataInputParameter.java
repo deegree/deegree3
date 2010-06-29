@@ -42,7 +42,7 @@ import org.deegree.protocol.wps.describeprocess.LiteralInputData;
 import org.deegree.protocol.wps.describeprocess.ProcessDescription;
 
 /**
- *  Encapsulates the structure of a DataInputParameter
+ * Encapsulates the structure of a DataInputParameter
  * 
  * 
  * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
@@ -74,10 +74,9 @@ public class DataInputParameter {
 
     private String[] allowedValues;
 
-    
     /**
      * Constructor that builds object in reference to the given DescribeProcess object
-     *   
+     * 
      * @param dataInputDescribeProcess
      * 
      */
@@ -120,7 +119,7 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return identifier
      */
     public String getIdentifier() {
@@ -128,7 +127,7 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return _abstract
      */
     public String getAbstraCt() {
@@ -136,7 +135,7 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return maxOccurs
      */
     public String getMaxOccurs() {
@@ -144,16 +143,15 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return minOccurs
      */
     public String getMinOccurs() {
         return minOccurs;
     }
 
-
     /**
-     *  
+     * 
      * @return valueList[]
      */
     public String[] getValueList() {
@@ -161,7 +159,7 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return title
      */
     public String getTitle() {
@@ -169,7 +167,7 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return metaData
      */
     public String getMetaData() {
@@ -177,7 +175,7 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return dataFormat
      */
     public String getDataFormat() {
@@ -185,7 +183,7 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return encoding
      */
     public String getEncoding() {
@@ -193,7 +191,7 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return mimeType
      */
     public String getMimeType() {
@@ -201,7 +199,7 @@ public class DataInputParameter {
     }
 
     /**
-     *  
+     * 
      * @return allowedValues[]
      */
     public String[] getAllowedValues() {

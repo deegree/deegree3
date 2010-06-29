@@ -51,7 +51,7 @@ public class InputFormChoiceExecute {
     private Data data;
 
     /**
-     *  
+     * 
      * @return reference
      */
     public Reference getReference() {
@@ -59,15 +59,15 @@ public class InputFormChoiceExecute {
     }
 
     /**
-     *  
+     * 
      * @param reference
      */
     public void setReference( Reference reference ) {
         this.reference = reference;
     }
-    
+
     /**
-     *  
+     * 
      * @return data
      */
     public Data getData() {
@@ -75,7 +75,7 @@ public class InputFormChoiceExecute {
     }
 
     /**
-     *  
+     * 
      * @param data
      */
     public void setData( Data data ) {

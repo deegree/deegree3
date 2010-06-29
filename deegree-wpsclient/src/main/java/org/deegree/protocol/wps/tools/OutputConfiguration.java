@@ -59,7 +59,7 @@ public class OutputConfiguration {
     private boolean asReference;
 
     /**
-     *  
+     * 
      * @param identifier
      */
     public OutputConfiguration( String identifier ) {
@@ -67,7 +67,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @return identifier
      */
     public String getIdentifier() {
@@ -75,7 +75,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @param identifier
      */
     public void setIdentifier( String identifier ) {
@@ -83,7 +83,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @return rawOrResp
      */
     public boolean isRawOrResp() {
@@ -91,7 +91,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @param rawOrResp
      */
     public void setRawOrResp( boolean rawOrResp ) {
@@ -99,7 +99,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @return lineage
      */
     public boolean isLineage() {
@@ -107,7 +107,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @param lineage
      */
     public void setLineage( boolean lineage ) {
@@ -115,7 +115,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @return status
      */
     public boolean isStatus() {
@@ -123,7 +123,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @param status
      */
     public void setStatus( boolean status ) {
@@ -131,7 +131,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @return store
      */
     public boolean isStore() {
@@ -139,16 +139,15 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @param store
      */
     public void setStore( boolean store ) {
         this.store = store;
     }
 
-    
     /**
-     *  
+     * 
      * @return asReference
      */
     public boolean isAsReference() {
@@ -156,7 +155,7 @@ public class OutputConfiguration {
     }
 
     /**
-     *  
+     * 
      * @param asReference
      */
     public void setAsReference( boolean asReference ) {

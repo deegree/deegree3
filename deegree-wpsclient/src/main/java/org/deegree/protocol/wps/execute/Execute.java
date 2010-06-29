@@ -104,9 +104,8 @@ public class Execute {
     private static final NamespaceContext NS_CONTEXT;
 
     private OutputStream outputStream;
-    
-    private static Logger LOG = LoggerFactory.getLogger( Execute.class );
 
+    private static Logger LOG = LoggerFactory.getLogger( Execute.class );
 
     static {
         NS_CONTEXT = new NamespaceContext();
@@ -137,7 +136,6 @@ public class Execute {
 
         this.desribeProcess = describeProcess;
     }
-
 
     /**
      * 
@@ -320,7 +318,6 @@ public class Execute {
 
     }
 
-    
     public void createExecuteRequest()
                             throws XMLStreamException, IOException {
 
@@ -359,7 +356,7 @@ public class Execute {
         writer.close();
         out.close();
 
-        LOG.info("ExecuteRequest generated successfully");
+        LOG.info( "ExecuteRequest generated successfully" );
     }
 
     /**
@@ -398,12 +395,10 @@ public class Execute {
         writer.writeEndDocument();
         writer.flush();
         writer.close();
-        
 
-        
         out.close();
-        
-        LOG.info("ExecuteRequest generated successfully");
+
+        LOG.info( "ExecuteRequest generated successfully" );
 
         return out;
     }

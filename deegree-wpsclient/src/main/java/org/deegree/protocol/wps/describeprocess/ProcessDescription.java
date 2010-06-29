@@ -81,15 +81,15 @@ public class ProcessDescription {
     private boolean statusSupported;
 
     /**
-     *  
+     * 
      * @return service
      */
     public String getService() {
         return service;
     }
-    
+
     /**
-     *  
+     * 
      * @param service
      */
     public void setService( String service ) {
@@ -97,15 +97,15 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return request
      */
     public String getRequest() {
         return request;
     }
-    
+
     /**
-     *  
+     * 
      * @param request
      */
     public void setRequest( String request ) {
@@ -113,15 +113,15 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return version
      */
     public String getVersion() {
         return version;
     }
-    
+
     /**
-     *  
+     * 
      * @param version
      */
     public void setVersion( String version ) {
@@ -129,15 +129,15 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return language
      */
     public String getLanguage() {
         return language;
     }
-    
+
     /**
-     *  
+     * 
      * @param language
      */
     public void setLanguage( String language ) {
@@ -145,15 +145,15 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return identifier
      */
     public String getIdentifier() {
         return identifier;
     }
-    
+
     /**
-     *  
+     * 
      * @param identifier
      */
     public void setIdentifier( String identifier ) {
@@ -161,15 +161,15 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return title
      */
     public String getTitle() {
         return title;
     }
-    
+
     /**
-     *  
+     * 
      * @param title
      */
     public void setTitle( String title ) {
@@ -177,15 +177,15 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return abstraCt
      */
     public String getAbstraCt() {
         return abstraCt;
     }
-    
+
     /**
-     *  
+     * 
      * @param abstraCt
      */
     public void setAbstraCt( String abstraCt ) {
@@ -193,7 +193,7 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return metadata
      */
     public String getMetadata() {
@@ -201,7 +201,7 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @param metadata
      */
     public void setMetadata( String metadata ) {
@@ -209,7 +209,7 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return profile
      */
     public String getProfile() {
@@ -217,7 +217,7 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @param profile
      */
     public void setProfile( String profile ) {
@@ -225,7 +225,7 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return processVersion
      */
     public String getProcessVersion() {
@@ -233,21 +233,23 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @param processVersion
      */
     public void setProcessVersion( String processVersion ) {
         this.processVersion = processVersion;
     }
+
     /**
-     *  
+     * 
      * @return WSDL
      */
     public String getWSDL() {
         return WSDL;
     }
+
     /**
-     *  
+     * 
      * @param WSDL
      */
     public void setWSDL( String wSDL ) {
@@ -255,7 +257,7 @@ public class ProcessDescription {
     }
 
     /**
-     *  
+     * 
      * @return List<DataInputDescribeProcess>
      */
     public List<DataInputDescribeProcess> getDataInputs() {
@@ -264,31 +266,33 @@ public class ProcessDescription {
     }
 
     /**
-     *  
-     * @param List<DataInputDescribeProcess>
+     * 
+     * @param List
+     *            <DataInputDescribeProcess>
      */
     public void setDataInputs( List<DataInputDescribeProcess> dataInputs ) {
         this.dataInputs = dataInputs;
     }
 
     /**
-     *  
+     * 
      * @return List<ProcessOutput>
      */
     public List<ProcessOutput> getProcessOutputs() {
         return processOutputs;
     }
-    
+
     /**
-     *  
-     * @param List<ProcessOutput>
+     * 
+     * @param List
+     *            <ProcessOutput>
      */
     public void setProcessOutputs( List<ProcessOutput> processOutputs ) {
         this.processOutputs = processOutputs;
     }
 
     /**
-     *  
+     * 
      * @return is store supported?
      */
     public boolean isStoreSupported() {
@@ -296,15 +300,16 @@ public class ProcessDescription {
     }
 
     /**
-     *  
-     * @param is store supported?
+     * 
+     * @param is
+     *            store supported?
      */
     public void setStoreSupported( boolean storeSupported ) {
         this.storeSupported = storeSupported;
     }
 
     /**
-     *  
+     * 
      * @return is status supported?
      */
     public boolean isStatusSupported() {
@@ -312,15 +317,16 @@ public class ProcessDescription {
     }
 
     /**
-     *  
-     * @param is status supported?
+     * 
+     * @param is
+     *            status supported?
      */
     public void setStatusSupported( boolean statusSupported ) {
         this.statusSupported = statusSupported;
     }
 
     /**
-     *  
+     * 
      * @return schema location
      */
     public String getSchemaLocation() {
@@ -328,8 +334,9 @@ public class ProcessDescription {
     }
 
     /**
-     *  
-     * @param schema location
+     * 
+     * @param schema
+     *            location
      */
     public void setSchemaLocation( String schemaLocation ) {
         this.schemaLocation = schemaLocation;

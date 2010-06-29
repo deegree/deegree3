@@ -53,12 +53,12 @@ public class ResponseDocument {
 
     private boolean lineage;
 
-    private  boolean status;
+    private boolean status;
 
     private List<OutputDefinition> output = new ArrayList();
 
     /**
-     *  
+     * 
      * @return storeExecuteResponse
      */
     public boolean isStoreExecuteResponse() {
@@ -66,7 +66,7 @@ public class ResponseDocument {
     }
 
     /**
-     *  
+     * 
      * @param storeExecuteResponse
      */
     public void setStoreExecuteResponse( boolean storeExecuteResponse ) {
@@ -74,7 +74,7 @@ public class ResponseDocument {
     }
 
     /**
-     *  
+     * 
      * @return lineage
      */
     public boolean isLineage() {
@@ -82,7 +82,7 @@ public class ResponseDocument {
     }
 
     /**
-     *  
+     * 
      * @param lineage
      */
     public void setLineage( boolean lineage ) {
@@ -90,7 +90,7 @@ public class ResponseDocument {
     }
 
     /**
-     *  
+     * 
      * @return status
      */
     public boolean isStatus() {
@@ -98,7 +98,7 @@ public class ResponseDocument {
     }
 
     /**
-     *  
+     * 
      * @param status
      */
     public void setStatus( boolean status ) {
@@ -106,7 +106,7 @@ public class ResponseDocument {
     }
 
     /**
-     *  
+     * 
      * @return output
      */
     public List<OutputDefinition> getOutput() {
@@ -114,7 +114,7 @@ public class ResponseDocument {
     }
 
     /**
-     *  
+     * 
      * @param output
      */
     public void setOutput( List<OutputDefinition> output ) {

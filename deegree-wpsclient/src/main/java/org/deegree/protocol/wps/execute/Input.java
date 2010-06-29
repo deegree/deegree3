@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.execute;
 
-
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * 
  * Represents the Input section of the Execute chapter of the WPS specification 1.0
@@ -52,7 +52,7 @@ public class Input {
     private List<DataInputExecute> dataInputList = new ArrayList();
 
     /**
-     *  
+     * 
      * @return dataInputList
      */
     public List<DataInputExecute> getDataInput() {
@@ -60,7 +60,7 @@ public class Input {
     }
 
     /**
-     *  
+     * 
      * @param dataInputList
      */
     public void addDataInput( DataInputExecute dataInput ) {

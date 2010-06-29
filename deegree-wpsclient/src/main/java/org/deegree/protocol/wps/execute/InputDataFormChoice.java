@@ -50,9 +50,8 @@ public class InputDataFormChoice {
 
     private Data data;
 
-
     /**
-     *  
+     * 
      * @return reference
      */
     public Reference getReference() {
@@ -60,7 +59,7 @@ public class InputDataFormChoice {
     }
 
     /**
-     *  
+     * 
      * @param reference
      */
     public void setReference( Reference reference ) {
@@ -68,7 +67,7 @@ public class InputDataFormChoice {
     }
 
     /**
-     *  
+     * 
      * @return data
      */
     public Data getData() {
@@ -76,7 +75,7 @@ public class InputDataFormChoice {
     }
 
     /**
-     *  
+     * 
      * @param data
      */
     public void setData( Data data ) {

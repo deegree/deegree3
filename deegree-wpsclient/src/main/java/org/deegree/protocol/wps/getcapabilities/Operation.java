@@ -57,7 +57,7 @@ public class Operation {
     private String metadata;
 
     /**
-     *  
+     * 
      * @return name
      */
     public String getName() {
@@ -65,7 +65,7 @@ public class Operation {
     }
 
     /**
-     *  
+     * 
      * @param name
      */
     public void setName( String name ) {
@@ -73,7 +73,7 @@ public class Operation {
     }
 
     /**
-     *  
+     * 
      * @return dcp
      */
     public DCP getDcp() {
@@ -81,7 +81,7 @@ public class Operation {
     }
 
     /**
-     *  
+     * 
      * @param dcp
      */
     public void setDcp( DCP dcp ) {
@@ -89,7 +89,7 @@ public class Operation {
     }
 
     /**
-     *  
+     * 
      * @return parameter
      */
     public String getParameter() {
@@ -97,7 +97,7 @@ public class Operation {
     }
 
     /**
-     *  
+     * 
      * @param parameter
      */
     public void setParameter( String parameter ) {
@@ -105,7 +105,7 @@ public class Operation {
     }
 
     /**
-     *  
+     * 
      * @return constraint
      */
     public String getConstraint() {
@@ -113,7 +113,7 @@ public class Operation {
     }
 
     /**
-     *  
+     * 
      * @param constraint
      */
     public void setConstraint( String constraint ) {
@@ -121,7 +121,7 @@ public class Operation {
     }
 
     /**
-     *  
+     * 
      * @return metadata
      */
     public String getMetadata() {
@@ -129,7 +129,7 @@ public class Operation {
     }
 
     /**
-     *  
+     * 
      * @param metadata
      */
     public void setMetadata( String metadata ) {

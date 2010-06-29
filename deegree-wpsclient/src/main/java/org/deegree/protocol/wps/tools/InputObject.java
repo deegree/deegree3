@@ -37,8 +37,8 @@ package org.deegree.protocol.wps.tools;
 
 /**
  * 
- * InputObject is used to assign one input. Identifier and InputObject are mandatory. Input will be set on "as Reference"
- * as default
+ * InputObject is used to assign one input. Identifier and InputObject are mandatory. Input will be set on
+ * "as Reference" as default
  * 
  * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
  * @author last edited by: $Author: walenciak $
@@ -67,9 +67,8 @@ public class InputObject {
 
     private String bodyReferenceHref;
 
-    
     /**
-     *  
+     * 
      * @param identifier
      * 
      * @param input
@@ -84,7 +83,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @param identifier
      * 
      * @param input
@@ -98,7 +97,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @return identifier
      */
     public String getIdentifier() {
@@ -106,7 +105,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @param identifier
      */
     public void setIdentifier( String identifier ) {
@@ -114,7 +113,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @return input
      */
     public Object getInput() {
@@ -122,7 +121,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @param input
      */
     public void setInput( String input ) {
@@ -130,7 +129,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @return asReference
      */
 
@@ -139,24 +138,23 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @param asReference
-     */    
+     */
     public void setAsReference( boolean asReference ) {
         this.asReference = asReference;
     }
 
     /**
-     *  
+     * 
      * @return schema
-     */    
+     */
     public String getSchema() {
         return schema;
     }
 
-
     /**
-     *  
+     * 
      * @param schema
      */
     public void setSchema( String schema ) {
@@ -164,7 +162,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @return body
      */
     public String getBody() {
@@ -172,7 +170,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @param body
      */
     public void setBody( String body ) {
@@ -180,16 +178,15 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @return encoding
      */
     public String getEncoding() {
         return encoding;
     }
 
-
     /**
-     *  
+     * 
      * @param encoding
      */
     public void setEncoding( String encoding ) {
@@ -197,16 +194,15 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @return method
      */
     public String getMethod() {
         return method;
     }
 
-
     /**
-     *  
+     * 
      * @param method
      */
     public void setMethod( String method ) {
@@ -214,7 +210,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @return mimeType
      */
     public String getMimeType() {
@@ -222,7 +218,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @param mimeType
      */
     public void setMimeType( String mimeType ) {
@@ -230,7 +226,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @return reference
      */
     public String getReference() {
@@ -238,7 +234,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @param reference
      */
     public void setReference( String reference ) {
@@ -246,7 +242,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @return bodyReferenceHref
      */
     public String getBodyReferenceHref() {
@@ -254,7 +250,7 @@ public class InputObject {
     }
 
     /**
-     *  
+     * 
      * @param bodyReferenceHref
      */
     public void setBodyReferenceHref( String bodyReferenceHref ) {

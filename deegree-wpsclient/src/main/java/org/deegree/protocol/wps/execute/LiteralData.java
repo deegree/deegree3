@@ -53,7 +53,7 @@ public class LiteralData {
     private String literalData;
 
     /**
-     *  
+     * 
      * @return dataType
      */
     public String getDataType() {
@@ -61,7 +61,7 @@ public class LiteralData {
     }
 
     /**
-     *  
+     * 
      * @param dataType
      */
     public void setDataType( String dataType ) {
@@ -69,7 +69,7 @@ public class LiteralData {
     }
 
     /**
-     *  
+     * 
      * @return uom
      */
     public String getUom() {
@@ -77,7 +77,7 @@ public class LiteralData {
     }
 
     /**
-     *  
+     * 
      * @param uom
      */
     public void setUom( String uom ) {
@@ -85,7 +85,7 @@ public class LiteralData {
     }
 
     /**
-     *  
+     * 
      * @return literalData
      */
     public String getLiteralData() {
@@ -93,7 +93,7 @@ public class LiteralData {
     }
 
     /**
-     *  
+     * 
      * @param literalData
      */
     public void setLiteralData( String literalData ) {

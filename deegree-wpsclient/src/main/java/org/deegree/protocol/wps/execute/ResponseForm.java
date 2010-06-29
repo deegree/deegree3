@@ -51,7 +51,7 @@ public class ResponseForm {
     private RawOutputData rawOutputData;
 
     /**
-     *  
+     * 
      * @return responseDocument
      */
     public ResponseDocument getResponseDocument() {
@@ -59,7 +59,7 @@ public class ResponseForm {
     }
 
     /**
-     *  
+     * 
      * @param responseDocument
      */
     public void setResponseDocument( ResponseDocument responseDocument ) {
@@ -67,7 +67,7 @@ public class ResponseForm {
     }
 
     /**
-     *  
+     * 
      * @return rawOutputData
      */
     public RawOutputData getRawOutputData() {
@@ -75,7 +75,7 @@ public class ResponseForm {
     }
 
     /**
-     *  
+     * 
      * @param rawOutputData
      */
     public void setRawOutputData( RawOutputData rawOutputData ) {

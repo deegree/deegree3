@@ -263,7 +263,7 @@ public class WPSCapabilities {
      * @return List of ProcessingOfferings
      */
     public List<ProcessBrief> getProcessOfferings() {
-        
+
         LOG.info( "parsing process offerings..." );
 
         List<ProcessBrief> processOfferingsList = new ArrayList<ProcessBrief>();

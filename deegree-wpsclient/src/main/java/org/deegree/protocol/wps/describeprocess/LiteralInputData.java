@@ -51,7 +51,7 @@ public class LiteralInputData extends LiteralOutputData {
     private String defaulValue;
 
     /**
-     *  
+     * 
      * @return LiteralValuesChoice
      */
     public LiteralValuesChoice getLiteralValuesChoice() {
@@ -59,7 +59,7 @@ public class LiteralInputData extends LiteralOutputData {
     }
 
     /**
-     *  
+     * 
      * @param literalValuesChoice
      */
     public void setLiteralValuesChoice( LiteralValuesChoice literalValuesChoice ) {
@@ -67,7 +67,7 @@ public class LiteralInputData extends LiteralOutputData {
     }
 
     /**
-     *  
+     * 
      * @return default Value
      */
     public String getDefaulValue() {
@@ -75,7 +75,7 @@ public class LiteralInputData extends LiteralOutputData {
     }
 
     /**
-     *  
+     * 
      * @param defaultValue
      */
     public void setDefaulValue( String defaulValue ) {

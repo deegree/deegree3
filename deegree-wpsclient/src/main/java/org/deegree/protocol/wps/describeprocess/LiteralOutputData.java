@@ -51,7 +51,7 @@ public class LiteralOutputData {
     private Uom uom;
 
     /**
-     *  
+     * 
      * @return dataType of literal value
      */
     public String getDataType() {
@@ -59,24 +59,26 @@ public class LiteralOutputData {
     }
 
     /**
-     *  
-     * @param dataType of literal value
+     * 
+     * @param dataType
+     *            of literal value
      */
     public void setDataType( String dataType ) {
         this.dataType = dataType;
     }
 
     /**
-     *  
+     * 
      * @return units of measurement
      */
     public Uom getUom() {
         return uom;
     }
-    
+
     /**
-     *  
-     * @param units of measurement
+     * 
+     * @param units
+     *            of measurement
      */
     public void setUom( Uom uom ) {
         this.uom = uom;

@@ -59,8 +59,6 @@ public class WPSClientTest {
 
     private static final String FULL_SERVICE_URL = "http://ows7.lat-lon.de/d3WPS_JTS/services?service=WPS&version=1.0.0&request=GetCapabilities";
 
-   
-    
     @Test
     public void testGetProcessIdentifiers()
                             throws MalformedURLException {
@@ -79,20 +77,20 @@ public class WPSClientTest {
         ProcessInfo pi = wpsClient.getProcessInfo( "Buffer" );
         Assert.assertNotNull( pi );
         Assert.assertEquals( "Buffer", pi.getIdentifier() );
-        
+
         // TODO test abstract and input and output parameters.
     }
-    
-//    @Test
-//    public void testGetProcessInfoBroken()
-//                            throws MalformedURLException {
-//        URL processUrl = new URL( FULL_SERVICE_URL );
-//        WPSClient wpsClient = new WPSClient( processUrl );
-//        ProcessInfo pi = wpsClient.getProcessInfo( "Buffers" );
-//        Assert.assertNotNull( pi );
-//        Assert.assertEquals( "Buffer", pi.getIdentifier() );
-//        // TODO test abstract and input and output parameters.
-//    }
+
+    // @Test
+    // public void testGetProcessInfoBroken()
+    // throws MalformedURLException {
+    // URL processUrl = new URL( FULL_SERVICE_URL );
+    // WPSClient wpsClient = new WPSClient( processUrl );
+    // ProcessInfo pi = wpsClient.getProcessInfo( "Buffers" );
+    // Assert.assertNotNull( pi );
+    // Assert.assertEquals( "Buffer", pi.getIdentifier() );
+    // // TODO test abstract and input and output parameters.
+    // }
 
     @Test
     public void testExecuteCentroid()
@@ -109,7 +107,7 @@ public class WPSClientTest {
 
         InputObject inputObject1 = wpsClient.setInputasFile( "GMLInput", curveFile.getPath() );
         inputObject[0] = inputObject1;
-        Object ergebnis = wpsClient.executeProcessObejctResult( inputObject,null, "Centroid" );
+        Object ergebnis = wpsClient.executeProcessObejctResult( inputObject, null, "Centroid" );
 
     }
 
@@ -129,16 +127,15 @@ public class WPSClientTest {
         inputObjectBuffer[0] = inputObject1;
         InputObject inputObject2 = wpsClient.setInputasObject( "BufferDistance", "43" );
         inputObjectBuffer[1] = inputObject2;
-        
+
         OutputConfiguration[] outputConfiguration = new OutputConfiguration[1];
-        outputConfiguration[0] = new OutputConfiguration("BufferedGeometry");
+        outputConfiguration[0] = new OutputConfiguration( "BufferedGeometry" );
         outputConfiguration[0].setAsReference( true );
 
-        ExecuteResponse ergebnis = wpsClient.executeProcessExecuteResponseResult( inputObjectBuffer,outputConfiguration, "Buffer" );
+        ExecuteResponse ergebnis = wpsClient.executeProcessExecuteResponseResult( inputObjectBuffer,
+                                                                                  outputConfiguration, "Buffer" );
 
+        Assert.assertEquals( ergebnis.getProcessOutputs().getOutputs().get( 0 ).getIdentifier(), "BufferedGeometry" );
 
-        
-      Assert.assertEquals(ergebnis.getProcessOutputs().getOutputs().get( 0 ).getIdentifier(), "BufferedGeometry");
-        
     }
 }

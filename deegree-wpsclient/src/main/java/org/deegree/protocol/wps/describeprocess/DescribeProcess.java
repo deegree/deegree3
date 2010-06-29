@@ -94,14 +94,14 @@ public class DescribeProcess {
         } catch ( XMLProcessingException e ) {
             LOG.error( e.getMessage() );
         }
-        
-        LOG.info("DescribeProcess initalized");        
+
+        LOG.info( "DescribeProcess initalized" );
     }
 
     /**
-     *  
+     * 
      * @param describeProcessDoc
-         maximum number of pixels in y-direction, or -1 for unrestricted height
+     *            maximum number of pixels in y-direction, or -1 for unrestricted height
      */
     public DescribeProcess( XMLAdapter describeProcessDoc ) {
         this.describeProcessDoc = describeProcessDoc;
@@ -111,7 +111,7 @@ public class DescribeProcess {
         this.lang = rootElement.getAttributeValue( new QName( "lang" ) );
         this.schemaLocation = rootElement.getAttributeValue( new QName( "schemaLocation" ) );
 
-        LOG.info("DescribeProcess initalized");        
+        LOG.info( "DescribeProcess initalized" );
     }
 
     /**
@@ -434,9 +434,8 @@ public class DescribeProcess {
         }
 
         processDescriptionList.add( processDescription );
-        
-        LOG.info(" DescribeProcess parsed successfully");        
 
+        LOG.info( " DescribeProcess parsed successfully" );
 
         return processDescriptionList;
     }

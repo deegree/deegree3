@@ -49,10 +49,10 @@ import java.util.List;
  */
 public class ProcessOutput {
 
-   private OutputDescription outputDescription = new OutputDescription();
+    private OutputDescription outputDescription = new OutputDescription();
 
     /**
-     *  
+     * 
      * @return OutputDescription object
      */
     public OutputDescription getOutputDescripton() {
@@ -60,8 +60,9 @@ public class ProcessOutput {
     }
 
     /**
-     *  
-     * @param OutputDescription object
+     * 
+     * @param OutputDescription
+     *            object
      */
     public void setOutputDescription( OutputDescription outputDescription ) {
         this.outputDescription = outputDescription;

@@ -64,25 +64,26 @@ public class DataInputDescribeProcess {
     private InputFormChoiceDescribeProcess inputFormChoice;
 
     private List<Object> valueList = new ArrayList<Object>();
- 
+
     /**
-     *  
+     * 
      * @return identifier of Input
      */
     public String getIdentifier() {
         return identifier;
     }
-    
+
     /**
-     *  
-     * @param identifier of Input
+     * 
+     * @param identifier
+     *            of Input
      */
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
 
     /**
-     *  
+     * 
      * @return title of Input
      */
     public String getTitle() {
@@ -90,23 +91,24 @@ public class DataInputDescribeProcess {
     }
 
     /**
-     *  
-     * @param title of Input
+     * 
+     * @param title
+     *            of Input
      */
     public void setTitle( String title ) {
         this.title = title;
     }
 
     /**
-     *  
+     * 
      * @return abstract of Input
      */
     public String getAbstraCt() {
         return abstraCt;
     }
-    
+
     /**
-     *  
+     * 
      * @param abstract of Input
      */
     public void setAbstraCt( String abstraCt ) {
@@ -114,55 +116,58 @@ public class DataInputDescribeProcess {
     }
 
     /**
-     *  
+     * 
      * @return minOccurs of Input
      */
     public String getMinOccurs() {
         return minOccurs;
     }
-    
+
     /**
-     *  
-     * @param minOccurs of Input
+     * 
+     * @param minOccurs
+     *            of Input
      */
     public void setMinOccurs( String minOccurs ) {
         this.minOccurs = minOccurs;
     }
 
     /**
-     *  
+     * 
      * @return maxOccurs of Input
      */
     public String getMaxOccurs() {
         return maxOccurs;
     }
-    
+
     /**
-     *  
-     * @param maxOccurs of Input
+     * 
+     * @param maxOccurs
+     *            of Input
      */
     public void setMaxOccurs( String maxOccurs ) {
         this.maxOccurs = maxOccurs;
     }
-    
+
     /**
-     *  
+     * 
      * @return metadata of Input
      */
     public String getMetadata() {
         return metadata;
     }
-    
+
     /**
-     *  
-     * @param metadata of Input
+     * 
+     * @param metadata
+     *            of Input
      */
     public void setMetadata( String metadata ) {
         this.metadata = metadata;
     }
 
     /**
-     *  
+     * 
      * @return InputFormChoice of Input
      */
     public InputFormChoiceDescribeProcess getInputFormChoice() {
@@ -170,15 +175,16 @@ public class DataInputDescribeProcess {
     }
 
     /**
-     *  
-     * @param InputFormChoice of Input
+     * 
+     * @param InputFormChoice
+     *            of Input
      */
     public void setInputFormChoice( InputFormChoiceDescribeProcess inputFormChoice ) {
         this.inputFormChoice = inputFormChoice;
     }
 
     /**
-     *  
+     * 
      * @return allowedValue of Input
      */
     public List<Object> getValueList() {
@@ -186,8 +192,9 @@ public class DataInputDescribeProcess {
     }
 
     /**
-     *  
-     * @param allowedValue of Input
+     * 
+     * @param allowedValue
+     *            of Input
      */
     public void addValue( Object value ) {
         valueList.add( value );

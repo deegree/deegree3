@@ -58,7 +58,7 @@ public class LiteralValuesChoice {
     private String valuesReference;
 
     /**
-     *  
+     * 
      * @return allowed Values of literal data element
      */
     public List<String> getAllowedValues() {
@@ -66,15 +66,16 @@ public class LiteralValuesChoice {
     }
 
     /**
-     *  
-     * @param allowed Values of literal data element
+     * 
+     * @param allowed
+     *            Values of literal data element
      */
     public void addAllowedValues( String allowedValue ) {
         this.allowedValues.add( allowedValue );
     }
 
     /**
-     *  
+     * 
      * @return any value of literal data element
      */
     public String getAnyValue() {
@@ -82,15 +83,16 @@ public class LiteralValuesChoice {
     }
 
     /**
-     *  
-     * @param any value of literal data element
+     * 
+     * @param any
+     *            value of literal data element
      */
     public void setAnyValue( String anyValue ) {
         this.anyValue = anyValue;
     }
 
     /**
-     *  
+     * 
      * @return value reference of literal data element
      */
     public String getValuesReference() {
@@ -98,8 +100,9 @@ public class LiteralValuesChoice {
     }
 
     /**
-     *  
-     * @param value reference of literal data element
+     * 
+     * @param value
+     *            reference of literal data element
      */
     public void setValuesReference( String valuesReference ) {
         this.valuesReference = valuesReference;

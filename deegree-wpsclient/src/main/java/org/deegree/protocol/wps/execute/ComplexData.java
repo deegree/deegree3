@@ -55,7 +55,7 @@ public class ComplexData {
     private Object object;
 
     /**
-     *  
+     * 
      * @return mimeType
      */
     public String getMimeType() {
@@ -63,7 +63,7 @@ public class ComplexData {
     }
 
     /**
-     *  
+     * 
      * @param mimeType
      */
     public void setMimeType( String mimeType ) {
@@ -71,7 +71,7 @@ public class ComplexData {
     }
 
     /**
-     *  
+     * 
      * @return encoding
      */
     public String getEncoding() {
@@ -79,7 +79,7 @@ public class ComplexData {
     }
 
     /**
-     *  
+     * 
      * @param encoding
      */
     public void setEncoding( String encoding ) {
@@ -87,15 +87,15 @@ public class ComplexData {
     }
 
     /**
-     *  
+     * 
      * @return schema
-     */    
+     */
     public String getSchema() {
         return schema;
     }
 
     /**
-     *  
+     * 
      * @param schema
      */
     public void setSchema( String schema ) {
@@ -103,7 +103,7 @@ public class ComplexData {
     }
 
     /**
-     *  
+     * 
      * @return object
      */
     public Object getObject() {
@@ -111,7 +111,7 @@ public class ComplexData {
     }
 
     /**
-     *  
+     * 
      * @param object
      */
     public void setObject( Object object ) {

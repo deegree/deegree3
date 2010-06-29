@@ -53,7 +53,7 @@ public class Uom {
     private List<String> supported;
 
     /**
-     *  
+     * 
      * @return default unit of measurement
      */
     public String getDefauLt() {
@@ -61,7 +61,7 @@ public class Uom {
     }
 
     /**
-     *  
+     * 
      * @param default unit of measurement
      */
     public void setDefauLt( String defauLt ) {
@@ -69,16 +69,17 @@ public class Uom {
     }
 
     /**
-     *  
+     * 
      * @return supported units of measurement
      */
     public List<String> getSupported() {
         return supported;
     }
-    
+
     /**
-     *  
-     * @param supported units of measurement
+     * 
+     * @param supported
+     *            units of measurement
      */
     public void setSupported( List<String> supported ) {
         this.supported = supported;

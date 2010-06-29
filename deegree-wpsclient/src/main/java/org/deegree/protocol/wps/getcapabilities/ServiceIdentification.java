@@ -37,7 +37,7 @@ package org.deegree.protocol.wps.getcapabilities;
 
 /**
  * 
-/**
+ /**
  * 
  * Represents the ServiceIdentification section of the GetCapabilties Document of the WPS specification 1.0
  * 
@@ -65,7 +65,7 @@ public class ServiceIdentification {
     private String[] keywords;
 
     /**
-     *  
+     * 
      * @return serviceType
      */
     public String getServiceType() {
@@ -73,7 +73,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @param serviceType
      */
     public void setServiceType( String serviceType ) {
@@ -81,7 +81,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @return fees
      */
     public String getFees() {
@@ -89,7 +89,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @param fees
      */
     public void setFees( String fees ) {
@@ -97,7 +97,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @return accessConstraints
      */
     public String[] getAccessConstraints() {
@@ -105,7 +105,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @param accessConstraints
      */
     public void setAccessConstraints( String[] accessConstraints ) {
@@ -113,7 +113,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @return serviceTypeVersion
      */
     public String[] getServiceTypeVersion() {
@@ -121,7 +121,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @param serviceTypeVersion
      */
     public void setServiceTypeVersion( String[] serviceTypeVersion ) {
@@ -129,7 +129,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @return profile
      */
     public String[] getProfile() {
@@ -137,7 +137,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @param profile
      */
     public void setProfile( String[] profile ) {
@@ -145,7 +145,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @return title
      */
     public String[] getTitle() {
@@ -153,7 +153,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @param title
      */
     public void setTitle( String[] title ) {
@@ -161,7 +161,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @return abstraCt
      */
     public String[] getAbstraCt() {
@@ -169,7 +169,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @param _abstract
      */
     public void setAbstraCt( String[] _abstract ) {
@@ -177,7 +177,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @return keywords
      */
     public String[] getKeywords() {
@@ -185,7 +185,7 @@ public class ServiceIdentification {
     }
 
     /**
-     *  
+     * 
      * @param keywords
      */
     public void setKeywords( String[] keywords ) {

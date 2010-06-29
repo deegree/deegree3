@@ -52,9 +52,8 @@ public class Format {
 
     private String schema;
 
-    
     /**
-     *  
+     * 
      * @return mimeType
      */
     public String getMimeType() {
@@ -62,7 +61,7 @@ public class Format {
     }
 
     /**
-     *  
+     * 
      * @param mimeType
      */
     public void setMimeType( String mimeType ) {
@@ -70,7 +69,7 @@ public class Format {
     }
 
     /**
-     *  
+     * 
      * @return encoding
      */
     public String getEncoding() {
@@ -78,7 +77,7 @@ public class Format {
     }
 
     /**
-     *  
+     * 
      * @param encoding
      */
     public void setEncoding( String encoding ) {
@@ -86,7 +85,7 @@ public class Format {
     }
 
     /**
-     *  
+     * 
      * @return schema
      */
     public String getSchema() {
@@ -94,7 +93,7 @@ public class Format {
     }
 
     /**
-     *  
+     * 
      * @return schema
      */
     public void setSchema( String schema ) {

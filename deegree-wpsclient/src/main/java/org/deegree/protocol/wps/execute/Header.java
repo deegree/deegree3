@@ -50,9 +50,8 @@ public class Header {
 
     private String value;
 
-    
     /**
-     *  
+     * 
      * @return key
      */
     public String getKey() {
@@ -60,7 +59,7 @@ public class Header {
     }
 
     /**
-     *  
+     * 
      * @param value
      */
     public void setKey( String key ) {
@@ -68,7 +67,7 @@ public class Header {
     }
 
     /**
-     *  
+     * 
      * @return value
      */
     public String getValue() {
@@ -76,7 +75,7 @@ public class Header {
     }
 
     /**
-     *  
+     * 
      * @param value
      */
     public void setValue( String value ) {

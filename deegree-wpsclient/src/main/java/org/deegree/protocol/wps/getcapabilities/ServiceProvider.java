@@ -53,7 +53,7 @@ public class ServiceProvider {
     private ServiceContact serviceContact;
 
     /**
-     *  
+     * 
      * @return providerName
      */
     public String getProviderName() {
@@ -61,7 +61,7 @@ public class ServiceProvider {
     }
 
     /**
-     *  
+     * 
      * @param providerName
      */
     public void setProviderName( String providerName ) {
@@ -69,7 +69,7 @@ public class ServiceProvider {
     }
 
     /**
-     *  
+     * 
      * @return providerSite
      */
     public String getProviderSite() {
@@ -77,7 +77,7 @@ public class ServiceProvider {
     }
 
     /**
-     *  
+     * 
      * @param providerSite
      */
     public void setProviderSite( String providerSite ) {
@@ -85,7 +85,7 @@ public class ServiceProvider {
     }
 
     /**
-     *  
+     * 
      * @return serviceContact
      */
     public ServiceContact getServiceContact() {
@@ -93,7 +93,7 @@ public class ServiceProvider {
     }
 
     /**
-     *  
+     * 
      * @param serviceContact
      */
     public void setServiceContact( ServiceContact serviceContact ) {

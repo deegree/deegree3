@@ -91,9 +91,8 @@ public class ProcessExecution {
     private String executeRequestString;
 
     private String baseURL;
-    
-    private static Logger LOG = LoggerFactory.getLogger( ProcessExecution.class );
 
+    private static Logger LOG = LoggerFactory.getLogger( ProcessExecution.class );
 
     public ProcessExecution( ProcessDescription processDescription, String baseURL ) {
         this.processDescription = processDescription;
@@ -141,7 +140,6 @@ public class ProcessExecution {
     }
 
     public XMLAdapter sendExecuteRequestXMLAdapterReturn() {
-        
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
@@ -179,11 +177,11 @@ public class ProcessExecution {
     }
 
     public String sendExecuteRequestStringReturn() {
-        
-        LOG.info("Sending execute request to: " +this.baseURL);
+
+        LOG.info( "Sending execute request to: " + this.baseURL );
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
-                                                                          processDescription );
+                                                                           processDescription );
 
         ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
 
@@ -218,24 +216,20 @@ public class ProcessExecution {
         } catch ( Exception e ) {
         }
 
-        LOG.info("Execute response received");
+        LOG.info( "Execute response received" );
 
         return inResponse;
 
     }
 
     public ExecuteResponse sendExecuteRequestExecuteResponseReturn() {
-     
-        LOG.info("Sending execute request to: " +this.baseURL);
-        
+
+        LOG.info( "Sending execute request to: " + this.baseURL );
+
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
-        
-        
-        
-        ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
-        
 
+        ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
 
         XMLAdapter xmlAdapter = null;
         try {
@@ -265,19 +259,16 @@ public class ProcessExecution {
         }
 
         ExecuteResponse executeResponse = new ExecuteResponse( xmlAdapter );
-        
-        LOG.info("Execute response received");
+
+        LOG.info( "Execute response received" );
 
         return executeResponse;
 
     }
-    
-    
-    
 
     public Object sendExecuteRequestExecuteObjectReturn() {
-        
-        LOG.info("Sending execute request to: " +this.baseURL);
+
+        LOG.info( "Sending execute request to: " + this.baseURL );
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
@@ -326,16 +317,15 @@ public class ProcessExecution {
                         object = executeResponse.getProcessOutputs().getOutputs().get( 0 ).getDataType().getLiteralData().getLiteralData();
             }
         }
-        
-        LOG.info("Execute response received");
+
+        LOG.info( "Execute response received" );
 
         return object;
     }
 
     public List<Output> sendExecuteRequestOutputList() {
-        
-        LOG.info("Sending execute request to: " +this.baseURL);
 
+        LOG.info( "Sending execute request to: " + this.baseURL );
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
@@ -373,7 +363,7 @@ public class ProcessExecution {
 
         List<Output> outputs = executeResponse.getProcessOutputs().getOutputs();
 
-        LOG.info("Execute response received");
+        LOG.info( "Execute response received" );
 
         return outputs;
     }

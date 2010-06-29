@@ -51,7 +51,7 @@ public class Http {
     private RequestMethod post;
 
     /**
-     *  
+     * 
      * @return get
      */
     public RequestMethod getRequestMethodGet() {
@@ -59,7 +59,7 @@ public class Http {
     }
 
     /**
-     *  
+     * 
      * @param get
      */
     public void setRequestMethodGet( RequestMethod get ) {
@@ -67,7 +67,7 @@ public class Http {
     }
 
     /**
-     *  
+     * 
      * @return post
      */
     public RequestMethod getRequestMethodPost() {
@@ -75,7 +75,7 @@ public class Http {
     }
 
     /**
-     *  
+     * 
      * @param post
      */
     public void setRequestMethodPost( RequestMethod post ) {

@@ -55,7 +55,7 @@ public class OutputDescription {
     private OutputFormChoice outputFormChoice;
 
     /**
-     *  
+     * 
      * @return identifier of output element
      */
     public String getIdentifier() {
@@ -63,15 +63,16 @@ public class OutputDescription {
     }
 
     /**
-     *  
-     * @param identifier of output element
+     * 
+     * @param identifier
+     *            of output element
      */
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
 
     /**
-     *  
+     * 
      * @return title of output element
      */
     public String getTitle() {
@@ -79,15 +80,16 @@ public class OutputDescription {
     }
 
     /**
-     *  
-     * @param title of output element
+     * 
+     * @param title
+     *            of output element
      */
     public void setTitle( String title ) {
         this.title = title;
     }
 
     /**
-     *  
+     * 
      * @return abstract of output element
      */
     public String getAbstraCt() {
@@ -95,7 +97,7 @@ public class OutputDescription {
     }
 
     /**
-     *  
+     * 
      * @param abstract of output element
      */
     public void setAbstraCt( String abstraCt ) {
@@ -103,7 +105,7 @@ public class OutputDescription {
     }
 
     /**
-     *  
+     * 
      * @return outputformchoice of output element
      */
     public OutputFormChoice getOutputFormChoice() {
@@ -111,8 +113,9 @@ public class OutputDescription {
     }
 
     /**
-     *  
-     * @param outputformchoice of output element
+     * 
+     * @param outputformchoice
+     *            of output element
      */
     public void setOutputFormChoice( OutputFormChoice outputFormChoice ) {
         this.outputFormChoice = outputFormChoice;

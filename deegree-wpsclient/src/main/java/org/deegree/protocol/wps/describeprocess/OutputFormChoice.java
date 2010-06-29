@@ -53,24 +53,24 @@ public class OutputFormChoice {
     private BoundingBoxData boundingBoxData;
 
     /**
-     *  
+     * 
      * @return ComplexData object
      */
     public ComplexData getComplexOutput() {
         return complexOutput;
     }
-    
+
     /**
-     *  
-     * @param ComplexData object
+     * 
+     * @param ComplexData
+     *            object
      */
     public void setComplexOutput( ComplexData complexOutput ) {
         this.complexOutput = complexOutput;
     }
 
-
     /**
-     *  
+     * 
      * @return LiteralOutputData object
      */
     public LiteralOutputData getLiteralOutput() {
@@ -78,15 +78,16 @@ public class OutputFormChoice {
     }
 
     /**
-     *  
-     * @param LiteralOutputData object
+     * 
+     * @param LiteralOutputData
+     *            object
      */
     public void setLiteralOutput( LiteralOutputData literalOutput ) {
         this.literalOutput = literalOutput;
     }
 
     /**
-     *  
+     * 
      * @return BoundingBoxData object
      */
     public BoundingBoxData getBoundingBoxData() {
@@ -94,8 +95,9 @@ public class OutputFormChoice {
     }
 
     /**
-     *  
-     * @param BoundingBoxData object
+     * 
+     * @param BoundingBoxData
+     *            object
      */
     public void setBoundingBoxData( BoundingBoxData boundingBoxData ) {
         this.boundingBoxData = boundingBoxData;

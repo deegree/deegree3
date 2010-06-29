@@ -60,7 +60,7 @@ public class OperationsMetadata {
     private String metaData;
 
     /**
-     *  
+     * 
      * @return operations
      */
     public Map<String, Operation> getOperations() {
@@ -69,7 +69,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @param operations
      */
     public void setOperation( Map<String, Operation> operations ) {
@@ -77,7 +77,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @return parameter
      */
     public String getParameter() {
@@ -85,7 +85,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @param parameter
      */
     public void setParameter( String parameter ) {
@@ -93,7 +93,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @return constraint
      */
     public String getConstraint() {
@@ -101,7 +101,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @param constraint
      */
     public void setConstraint( String constraint ) {
@@ -109,7 +109,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @return extendedCapabilities
      */
     public String getExtendedCapabilities() {
@@ -117,7 +117,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @param extendedCapabilities
      */
     public void setExtendedCapabilities( String extendedCapabilities ) {
@@ -125,7 +125,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @return metaData
      */
     public String getMetaData() {
@@ -133,7 +133,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @param metaData
      */
     public void setMetaData( String metaData ) {
@@ -141,7 +141,7 @@ public class OperationsMetadata {
     }
 
     /**
-     *  
+     * 
      * @return name
      */
     public Operation getOperationByName( String name ) {

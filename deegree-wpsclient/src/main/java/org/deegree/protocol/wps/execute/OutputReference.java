@@ -53,7 +53,7 @@ public class OutputReference {
     private String href;
 
     /**
-     *  
+     * 
      * @return format
      */
     public Format getFormat() {
@@ -61,7 +61,7 @@ public class OutputReference {
     }
 
     /**
-     *  
+     * 
      * @param format
      */
     public void setFormat( Format format ) {
@@ -69,7 +69,7 @@ public class OutputReference {
     }
 
     /**
-     *  
+     * 
      * @return href
      */
     public String getHref() {
@@ -77,7 +77,7 @@ public class OutputReference {
     }
 
     /**
-     *  
+     * 
      * @param href
      */
     public void setHref( String href ) {
