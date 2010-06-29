@@ -158,13 +158,28 @@ public class TransformationAccuracyTest implements CRSDefines {
         boolean yFail = Math.abs( result.getY() - targetPoint.y ) > epsilons.y;
         String yString = createEpsilonString( yFail, result.getY(), targetPoint.y, epsilons.y, targetCRS.getAxis()[1] );
 
-        // Z-Axis if available.
+        // Z-Axis if available
         boolean zFail = false;
-        String zString = "";
+        String zString = null;
         if ( targetCRS.getDimension() == 3 ) {
             zFail = Math.abs( result.getZ() - targetPoint.z ) > epsilons.z;
             zString = createEpsilonString( zFail, result.getZ(), targetPoint.z, epsilons.z, targetCRS.getAxis()[2] );
+        } else if ( targetCRS.getDimension() == 2 && sourceCRS.getDimension() == 2
+                    && !Double.isNaN( sourcePoint.getZ() ) ) {
+            // 3rd coordinate should be passed
+            double epsilon = result.getZ() - targetPoint.z;
+            zFail = Math.abs( epsilon ) > 0;
+            StringBuilder sb = new StringBuilder( 400 );
+            sb.append( "passed z (result - orig = error [allowedError]): " );
+            sb.append( result.getZ() ).append( " - " ).append( targetPoint.z );
+            sb.append( " = " ).append( epsilon );
+            sb.append( " [" ).append( 0 ).append( "]" );
+            if ( zFail ) {
+                sb.append( " [FAILURE]" );
+            }
+            zString = sb.toString();
         }
+
         StringBuilder sb = new StringBuilder();
         if ( xFail || yFail || zFail ) {
             sb.append( "[FAILED] " );
@@ -175,7 +190,7 @@ public class TransformationAccuracyTest implements CRSDefines {
         sb.append( " -> " ).append( targetCRS.getCode().toString() ).append( ")\n" );
         sb.append( xString );
         sb.append( "\n" ).append( yString );
-        if ( targetCRS.getDimension() == 3 ) {
+        if ( zString != null ) {
             sb.append( "\n" ).append( zString );
         }
         if ( xFail || yFail || zFail ) {
@@ -698,5 +713,22 @@ public class TransformationAccuracyTest implements CRSDefines {
 
         // do the testing
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_M, EPSILON_D );
+    }
+
+    @Test
+    public void test2DTo2Dwith3rdCoordinate()
+                            throws TransformationException {
+        // source crs is epsg:31467
+        ProjectedCRS sourceCRS = projected_31467;
+
+        // target crs is epsg:4326
+        GeographicCRS targetCRS = GeographicCRS.WGS84;
+
+        // created with deegree not a fine reference
+        Point3d sourcePoint = new Point3d( 3532465.57, 5301523.49, 42 );
+        Point3d targetPoint = new Point3d( 9.432778, 47.851111, 42 );
+
+        // do the testing
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_M );
     }
 }
