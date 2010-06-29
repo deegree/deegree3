@@ -239,6 +239,10 @@ public class SymbologyParser {
             common.title = in.getElementText();
             in.nextTag();
         }
+        if ( in.getLocalName().equals( "Abstract" ) ) {
+            common.abstract_ = in.getElementText();
+            in.nextTag();
+        }
     }
 
     private Pair<Fill, Continuation<Fill>> parseFill( XMLStreamReader in )
