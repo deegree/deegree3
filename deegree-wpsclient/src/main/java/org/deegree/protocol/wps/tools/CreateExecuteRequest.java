@@ -118,7 +118,6 @@ public class CreateExecuteRequest {
         if ( outputConfigurationList == null ) {
             this.outputConfigurationList = createOutputConfigurationList();
         }
-        System.out.println( "outputConfigurationList " + outputConfigurationList );
         this.setOutputs( outputConfigurationList );
 
     }
@@ -159,7 +158,6 @@ public class CreateExecuteRequest {
     private List<OutputConfiguration> createOutputConfigurationList() {
         List<OutputConfiguration> outputConfigurationList = new ArrayList();
         for ( int i = 0; i < processDescription.getProcessOutputs().size(); i++ ) {
-            System.out.println( "process...." );
             outputConfigurationList.add( createOutputConfiguration( processDescription.getProcessOutputs().get( i ).getOutputDescripton().getIdentifier() ) );
         }
         return outputConfigurationList;
@@ -277,7 +275,6 @@ public class CreateExecuteRequest {
         if ( inputList != null ) {
             dataInputExecuteList = new ArrayList();
             for ( int i = 0; i < inputList.size(); i++ ) {
-                System.out.println( inputList.get( i ).getIdentifier() );
                 this.setInput( inputList.get( i ) );
             }
         }

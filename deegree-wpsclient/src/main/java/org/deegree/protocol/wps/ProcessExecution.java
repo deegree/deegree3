@@ -141,7 +141,7 @@ public class ProcessExecution {
     }
 
     public XMLAdapter sendExecuteRequestXMLAdapterReturn() {
-
+        
 
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
@@ -231,12 +231,17 @@ public class ProcessExecution {
         BuildExecuteObjects buildExecuteObjects = new BuildExecuteObjects( inputObjectList, outputConfigurationList,
                                                                            processDescription );
         
+        
+        
         ByteArrayOutputStream byteArrayOutputStream = buildExecuteObjects.createExecuteRequest();
+        
+
 
         XMLAdapter xmlAdapter = null;
         try {
             // Construct data
             String data = byteArrayOutputStream.toString();
+
             // Send data
             URL url = new URL( this.baseURL );
             URLConnection conn = url.openConnection();

@@ -41,6 +41,7 @@ import java.net.URL;
 
 import org.deegree.protocol.wps.execute.ExecuteResponse;
 import org.deegree.protocol.wps.tools.InputObject;
+import org.deegree.protocol.wps.tools.OutputConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -108,10 +109,8 @@ public class WPSClientTest {
 
         InputObject inputObject1 = wpsClient.setInputasFile( "GMLInput", curveFile.getPath() );
         inputObject[0] = inputObject1;
-        Object ergebnis = wpsClient.executeProcessObejctResult( inputObject, "Centroid" );
+        Object ergebnis = wpsClient.executeProcessObejctResult( inputObject,null, "Centroid" );
 
-        System.out.println( "ergebnis Centroid" );
-        System.out.println( String.valueOf( ergebnis ) );
     }
 
     @Test
@@ -130,8 +129,13 @@ public class WPSClientTest {
         inputObjectBuffer[0] = inputObject1;
         InputObject inputObject2 = wpsClient.setInputasObject( "BufferDistance", "43" );
         inputObjectBuffer[1] = inputObject2;
+        
+        OutputConfiguration[] outputConfiguration = new OutputConfiguration[1];
+        outputConfiguration[0] = new OutputConfiguration("BufferedGeometry");
+        outputConfiguration[0].setAsReference( true );
 
-        ExecuteResponse ergebnis = wpsClient.executeProcessExecuteResponseResult( inputObjectBuffer, "Buffer" );
+        ExecuteResponse ergebnis = wpsClient.executeProcessExecuteResponseResult( inputObjectBuffer,outputConfiguration, "Buffer" );
+
 
         
       Assert.assertEquals(ergebnis.getProcessOutputs().getOutputs().get( 0 ).getIdentifier(), "BufferedGeometry");

@@ -253,7 +253,6 @@ public class WPSClient100 {
         WPSClient100 wpsClient100 = new WPSClient100( processUrl );
 
         ProcessInfo bufferInfo = wpsClient100.getProcessInfo( "Buffer" );
-        System.out.println( bufferInfo.getAbstraCt() );
 
     }
 

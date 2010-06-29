@@ -59,7 +59,8 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  */
 public class ExecuteResponse {
-
+    
+   
     private static NamespaceContext NS_CONTEXT;
 
     private XMLAdapter xmlAdapter;
@@ -101,6 +102,7 @@ public class ExecuteResponse {
     public ExecuteResponse( XMLAdapter xmlAdapter ) {
         
         LOG.info("parsing response...");
+        
 
         try{
         this.xmlAdapter = xmlAdapter;

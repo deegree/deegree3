@@ -398,7 +398,9 @@ public class Execute {
         writer.writeEndDocument();
         writer.flush();
         writer.close();
+        
 
+        
         out.close();
         
         LOG.info("ExecuteRequest generated successfully");
