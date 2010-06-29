@@ -39,13 +39,20 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
-import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
+import org.deegree.tools.crs.georeferencing.model.points.Point3Values;
 
 /**
  * 
@@ -65,16 +72,15 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     public final static String BUILDINGFOOTPRINT_PANEL_NAME = "BuildingFootprintPanel";
 
-    // private List<Pair<FootprintPoint, GeoReferencedPoint>> points;
-
-    /**
-     * Temporal point
-     */
-    // private AbstractGRPoint tempPoint;
-
     private List<Polygon> polygonList;
 
-    // private boolean focus;
+    private List<Polygon> worldPolygonList;
+
+    private FootprintPoint[] pixelCoordinates;
+
+    private int offset;
+
+    private List<Polygon> pixelCoordinatePolygonList;
 
     private Point2d cumTranslationPoint;
 
@@ -82,11 +88,22 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private boolean isTranslated;
 
+    private float resolution;
+
+    private float resizing;
+
+    private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
+
+    private float initialResolution;
+
     /**
      * 
      */
-    public BuildingFootprintPanel() {
+    public BuildingFootprintPanel( float initialResolution ) {
         this.setName( BUILDINGFOOTPRINT_PANEL_NAME );
+        pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
+        this.initialResolution = initialResolution;
+        this.selectedPoints = new ArrayList<Point3Values>();
     }
 
     @Override
@@ -107,14 +124,16 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             }
         }
         if ( points != null ) {
-            for ( Pair<FootprintPoint, GeoReferencedPoint> point : points ) {
-                g2.fillOval( (int) point.first.getX() - 5, (int) point.first.getY() - 5, 10, 10 );
+            for ( Pair<Point3Values, Point3Values> point : points ) {
+                g2.fillOval( (int) point.first.getNewValue().getX() - 5, (int) point.first.getNewValue().getY() - 5,
+                             10, 10 );
             }
         }
-        if ( tempPoint != null ) {
+        if ( lastAbstractPoint != null ) {
             if ( isTranslated == false ) {
 
-                Point2d p = new Point2d( tempPoint.x - 5, tempPoint.y - 5 );
+                Point2d p = new Point2d( lastAbstractPoint.getNewValue().getX() - 5,
+                                         lastAbstractPoint.getNewValue().getY() - 5 );
 
                 g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
 
@@ -125,9 +144,10 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
         System.out.println( "TranslationPoint: " + cumTranslationPoint );
 
-        if ( tempPoint != null ) {
+        if ( lastAbstractPoint != null ) {
             if ( isTranslated == true ) {
-                g2.fillOval( (int) ( tempPoint.x - 5 ), (int) ( tempPoint.y - 5 ), 10, 10 );
+                g2.fillOval( (int) ( lastAbstractPoint.getNewValue().getX() - 5 ),
+                             (int) ( lastAbstractPoint.getNewValue().getY() - 5 ), 10, 10 );
 
             }
         }
@@ -143,39 +163,68 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
     }
 
     public void setPolygonList( List<Polygon> polygonList ) {
-        this.polygonList = polygonList;
+        this.worldPolygonList = polygonList;
+        if ( this.resolution == 0.0f ) {
+            this.resolution = 4.0f;
+        }
+        System.out.println( "[Footprint] Resize: " + resolution );
+        pixelCoordinatePolygonList = new ArrayList<Polygon>();
+        List<Rectangle> rect = new ArrayList<Rectangle>();
+
+        int sizeOfPoints = 0;
+        for ( Polygon p : polygonList ) {
+            sizeOfPoints += p.npoints;
+            rect.add( p.getBounds() );
+        }
+
+        if ( pixelCoordinates == null ) {
+            pixelCoordinates = new FootprintPoint[sizeOfPoints];
+        }
+        Rectangle temp = null;
+        // get minimum X
+        for ( Rectangle rec : rect ) {
+            if ( temp == null ) {
+                temp = rec;
+            } else {
+                if ( rec.x < temp.x ) {
+                    temp = rec;
+                }
+            }
+        }
+        int x = temp.x - offset;
+
+        Rectangle tempY = null;
+        // get minimum Y
+        for ( Rectangle rec : rect ) {
+            if ( tempY == null ) {
+                tempY = rec;
+            } else {
+                if ( rec.y < temp.y ) {
+                    tempY = rec;
+                }
+            }
+        }
+        int y = temp.y - offset;
+        int counter = 0;
+        for ( Polygon po : polygonList ) {
+            int[] x2 = new int[po.npoints];
+            int[] y2 = new int[po.npoints];
+            for ( int i = 0; i < po.npoints; i++ ) {
+                x2[i] = (int) ( ( po.xpoints[i] - x ) * resolution );
+                y2[i] = (int) ( ( po.ypoints[i] - y ) * resolution );
+                pixelCoordinates[counter++] = new FootprintPoint( ( po.xpoints[i] - x ) * resolution,
+                                                                  ( po.ypoints[i] - y ) * resolution );
+                pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ), new FootprintPoint( po.xpoints[i],
+                                                                                                po.ypoints[i] ) );
+                // System.out.println( "[Footprint] Polygon: " + x2[i] );
+            }
+            Polygon p = new Polygon( x2, y2, po.npoints );
+            pixelCoordinatePolygonList.add( p );
+
+        }
+
+        this.polygonList = pixelCoordinatePolygonList;
     }
-
-    // public void addScene2DMouseListener( MouseListener m ) {
-    //
-    // this.addMouseListener( m );
-    //
-    // }
-    //
-    // public void addScene2DMouseMotionListener( MouseMotionListener m ) {
-    // this.addMouseMotionListener( m );
-    // }
-    //
-    // public void addScene2DMouseWheelListener( MouseWheelListener m ) {
-    // this.addMouseWheelListener( m );
-    // }
-
-    // public void addPoint( List<Pair<FootprintPoint, GeoReferencedPoint>> points, AbstractGRPoint tempPoint ) {
-    // this.points = points;
-    // this.tempPoint = tempPoint;
-    // }
-
-    // public void setPoints( Map<FootprintPoint, FootprintPoint> points ) {
-    // this.points = points;
-    // }
-
-    // public void setFocus( boolean focus ) {
-    // this.focus = focus;
-    // }
-    //
-    // public boolean getFocus() {
-    // return focus;
-    // }
 
     public Point2d getCumTranslationPoint() {
         return cumTranslationPoint;
@@ -187,6 +236,124 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     public void setTranslated( boolean isTranslated ) {
         this.isTranslated = isTranslated;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    /**
+     * This value specifies how many pixels the lowest position should be.
+     * 
+     * @param offset
+     */
+    public void setOffset( int offset ) {
+        this.offset = offset;
+    }
+
+    /**
+     * Determines the closest point of the point2d in worldCoordinate.
+     * 
+     * @param point2d
+     *            the specified point
+     * @return an <Code>AbstractPoint</Code> that is the closest point to point2d
+     */
+    public Pair<AbstractGRPoint, FootprintPoint> getClosestPoint( AbstractGRPoint point2d ) {
+        Pair<AbstractGRPoint, FootprintPoint> closestPoint = new Pair<AbstractGRPoint, FootprintPoint>();
+
+        if ( pointsPixelToWorld.size() != 0 ) {
+            double distance = 0.0;
+
+            for ( Point2d point : pointsPixelToWorld.keySet() ) {
+                System.out.println( "[Footprint] Mapping: " + point + " - " + pointsPixelToWorld.get( point ) );
+                if ( distance == 0.0 ) {
+                    distance = point.distance( point2d );
+                    if ( point2d instanceof FootprintPoint ) {
+                        closestPoint.first = new FootprintPoint( point.x, point.y );
+                        closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).getX(),
+                                                                  pointsPixelToWorld.get( point ).getY() );
+                    }
+
+                } else {
+                    double distanceTemp = point.distance( point2d );
+                    if ( distanceTemp < distance ) {
+                        distance = distanceTemp;
+                        if ( point2d instanceof FootprintPoint ) {
+                            closestPoint.first = new FootprintPoint( point.x, point.y );
+                            closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).getX(),
+                                                                      pointsPixelToWorld.get( point ).getY() );
+                        }
+                    }
+                }
+            }
+        }
+
+        return closestPoint;
+    }
+
+    public FootprintPoint[] getPixelCoordinates() {
+        return pixelCoordinates;
+    }
+
+    public void updatePoints( Point2d changePoint ) {
+        for ( FootprintPoint p : pixelCoordinates ) {
+            p.setX( p.getX() - changePoint.x );
+            p.setY( p.getY() - changePoint.y );
+        }
+
+    }
+
+    public void updatePoints( float newSize ) {
+        this.resizing = newSize - this.resolution;
+        BigDecimal b = new BigDecimal( newSize );
+        b = b.round( new MathContext( 2 ) );
+        this.resolution = b.floatValue();
+
+        setPolygonList( worldPolygonList );
+
+        updateSelectedPoints();
+
+    }
+
+    protected float roundFloat( float value ) {
+        BigDecimal b = new BigDecimal( value );
+        b = b.round( new MathContext( 2 ) );
+        return b.floatValue();
+    }
+
+    protected float roundDouble( double value ) {
+        BigDecimal b = new BigDecimal( value );
+        b = b.round( new MathContext( 2 ) );
+        return b.floatValue();
+    }
+
+    public float getResolution() {
+        return resolution;
+    }
+
+    @Override
+    protected void updateSelectedPoints() {
+        FootprintPoint point = null;
+        List<Point3Values> selectedPointsTemp = new ArrayList<Point3Values>();
+        for ( Point3Values p : selectedPoints ) {
+            point = new FootprintPoint( ( p.getInitialValue().getX() / initialResolution ) * resolution,
+                                        ( p.getInitialValue().getY() / initialResolution ) * resolution );
+            selectedPointsTemp.add( new Point3Values( p.getNewValue(), p.getInitialValue(), point, p.getWorldCoords() ) );
+        }
+        selectedPoints = selectedPointsTemp;
+        if ( lastAbstractPoint != null ) {
+            double x = lastAbstractPoint.getInitialValue().getX() / initialResolution;
+            double y = lastAbstractPoint.getInitialValue().getY() / initialResolution;
+            double x1 = roundDouble( x * resizing );
+            double y1 = roundDouble( y * resizing );
+            FootprintPoint pi = (FootprintPoint) getClosestPoint( new FootprintPoint(
+                                                                                      lastAbstractPoint.getNewValue().getX()
+                                                                                                              + x1,
+                                                                                      lastAbstractPoint.getNewValue().getY()
+                                                                                                              + y1 ) ).first;
+
+            lastAbstractPoint.setNewValue( new FootprintPoint( pi.getX(), pi.getY() ) );
+        }
     }
 
 }

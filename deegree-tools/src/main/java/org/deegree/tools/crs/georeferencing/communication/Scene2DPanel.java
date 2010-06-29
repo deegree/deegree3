@@ -39,12 +39,12 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
-import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
+import org.deegree.tools.crs.georeferencing.model.points.Point3Values;
 
 /**
  * The JPanel that should display a BufferedImage.
@@ -71,16 +71,9 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private Rectangle imageDimension;
 
-    // private List<Pair<FootprintPoint, GeoReferencedPoint>> points;
-
-    // private boolean focus;
-
-    // private AbstractGRPoint tempPoint;
-
-    // private boolean isTranslated;
-
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
+        this.selectedPoints = new ArrayList<Point3Values>();
     }
 
     @Override
@@ -99,15 +92,17 @@ public class Scene2DPanel extends AbstractPanel2D {
 
         }
         g2.translate( -translationPoint.x, -translationPoint.y );
-        if ( tempPoint != null ) {
+        if ( lastAbstractPoint != null ) {
             // if ( isTranslated == false ) {
-            g2.fillOval( (int) tempPoint.x - 5, (int) tempPoint.y - 5, 10, 10 );
+            g2.fillOval( (int) lastAbstractPoint.getNewValue().getX() - 5,
+                         (int) lastAbstractPoint.getNewValue().getY() - 5, 10, 10 );
             // }
         }
 
         if ( points != null ) {
-            for ( Pair<FootprintPoint, GeoReferencedPoint> point : points ) {
-                g2.fillOval( (int) point.second.getX() - 5, (int) point.second.getY() - 5, 10, 10 );
+            for ( Pair<Point3Values, Point3Values> point : points ) {
+                g2.fillOval( (int) point.second.getNewValue().getX() - 5, (int) point.second.getNewValue().getY() - 5,
+                             10, 10 );
             }
         }
 
@@ -151,8 +146,10 @@ public class Scene2DPanel extends AbstractPanel2D {
         this.translationPoint = translationPoint;
     }
 
-    // public void setTranslated( boolean isTranslated ) {
-    // this.isTranslated = isTranslated;
-    // }
+    @Override
+    protected void updateSelectedPoints() {
+        // TODO Auto-generated method stub
+
+    }
 
 }
