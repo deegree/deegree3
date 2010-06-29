@@ -119,18 +119,24 @@ public class CoordinateTransformer extends Transformer {
      */
     public List<Point3d> transform( CoordinateSystem sourceCRS, List<Point3d> points )
                             throws TransformationException, IllegalArgumentException {
-        if ( points == null || points.size() == 0 ) {
+
+        List<Point3d> copy = new ArrayList<Point3d>( points.size() );
+        for ( Point3d point : points ) {
+            copy.add( (Point3d) point.clone() );
+        }
+
+        if ( copy == null || copy.size() == 0 ) {
             return new ArrayList<Point3d>();
         }
         Transformation trans = createCRSTransformation( sourceCRS );
         if ( TransformationFactory.isIdentity( trans ) ) {
-            return points;
+            return copy;
         }
 
-        List<Point3d> result = new ArrayList<Point3d>( points.size() );
+        List<Point3d> result = new ArrayList<Point3d>( copy.size() );
         TransformationException exception = null;
         try {
-            result = trans.doTransform( points );
+            result = trans.doTransform( copy );
         } catch ( TransformationException te ) {
             List<Point3d> tResult = te.getTransformedPoints();
             if ( tResult != null && tResult.size() > 0 ) {
@@ -144,9 +150,9 @@ public class CoordinateTransformer extends Transformer {
             if ( exception != null ) {
                 errorMessages = exception.getTransformErrors();
             }
-            for ( int i = 0; i < points.size(); ++i ) {
+            for ( int i = 0; i < copy.size(); ++i ) {
                 StringBuilder sb = new StringBuilder( 1000 );
-                Point3d coord = points.get( i );
+                Point3d coord = copy.get( i );
                 Point3d resultCoord = result.get( i );
                 if ( resultCoord == null ) {
                     resultCoord = new Point3d( coord );
@@ -185,6 +191,11 @@ public class CoordinateTransformer extends Transformer {
         }
         if ( result == null ) {
             result = new ArrayList<Point3d>();
+        } else if ( sourceCRS.getDimension() == 2 && getTargetCRS().getDimension() == 2 ) {
+            // pass the 3rd coordinate if dimension of source and target CRS is 2
+            for ( int j = 0; j < result.size(); j++ ) {
+                result.get( j ).z = points.get( j ).z;
+            }
         }
         return result;
     }

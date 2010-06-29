@@ -556,8 +556,20 @@ public class GeometryTransformer extends Transformer {
             axis0Max = Math.max( p.x, axis0Max );
             axis1Max = Math.max( p.y, axis1Max );
         }
-        return geomFactory.createEnvelope( new double[] { axis0Min, axis1Min }, new double[] { axis0Max, axis1Max },
-                                           new CRS( this.getTargetCRS() ) );
+
+        // pass the 3rd coordinate if exist and dimension of source and target CRS is 2
+        double[] min;
+        double[] max;
+        if ( trans.getSourceCRS().getDimension() == 2 && trans.getTargetCRS().getDimension() == 2
+             && !Double.isNaN( envelope.getMin().get2() ) && !Double.isNaN( envelope.getMax().get2() ) ) {
+            min = new double[] { axis0Min, axis1Min, envelope.getMin().get2() };
+            max = new double[] { axis0Max, axis1Max, envelope.getMax().get2() };
+        } else {
+            min = new double[] { axis0Min, axis1Min };
+            max = new double[] { axis0Max, axis1Max };
+        }
+
+        return geomFactory.createEnvelope( min, max, new CRS( this.getTargetCRS() ) );
     }
 
     private LineString transform( LineString geo, Transformation trans )
@@ -809,6 +821,10 @@ public class GeometryTransformer extends Transformer {
                 result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y },
                                                      getWrappedTargetCRS() ) );
             } else {
+                // pass the 3rd coordinate if exist and dimension of source and target CRS is 2
+                if ( trans.getSourceCRS().getDimension() == 2 && trans.getTargetCRS().getDimension() == 2 ) {
+                    tmp.z = point.get2();
+                }
                 result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z },
                                                      getWrappedTargetCRS() ) );
             }
@@ -828,9 +844,11 @@ public class GeometryTransformer extends Transformer {
         Point3d result = new Point3d( coord );
 
         result = trans.doTransform( coord );
-
         if ( Double.isNaN( geo.get2() ) ) {
             return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y }, getWrappedTargetCRS() );
+        } else if ( trans.getSourceCRS().getDimension() == 2 && trans.getTargetCRS().getDimension() == 2 ) {
+            // pass the 3rd coordinate if exist and dimension of source and target CRS is 2
+            result.z = geo.get2();
         }
         return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y, result.z },
                                         getWrappedTargetCRS() );
