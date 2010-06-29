@@ -373,7 +373,12 @@ public class SymbologyParser {
                     contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                         @Override
                         public void update( Stroke obj, String val ) {
-                            obj.dasharray = splitAsDoubles( val, " " );
+                            // , is not strictly allowed, but we don't lose anything by being flexible
+                            if ( val.contains( "," ) ) {
+                                obj.dasharray = splitAsDoubles( val, "," );
+                            } else {
+                                obj.dasharray = splitAsDoubles( val, " " );
+                            }
                         }
                     }, contn ).second;
                 } else if ( name.equals( "stroke-dashoffset" ) ) {
