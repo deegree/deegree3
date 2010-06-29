@@ -249,6 +249,7 @@ public class StyleRegistry extends TimerTask {
             try {
                 File file = new File( adapter.resolve( sty.getFile() ).toURI() );
                 String namedLayer = sty.getNamedLayer();
+                LOG.debug( "Will read styles from SLD '{}', for named layer '{}'.", file, namedLayer );
                 Map<String, String> map = new HashMap<String, String>();
                 String name = null;
                 for ( JAXBElement<String> elem : sty.getNameAndUserStyleAndLegendConfigurationFile() ) {
@@ -256,7 +257,12 @@ public class StyleRegistry extends TimerTask {
                     if ( elem.getName().getLocalPart().equals( "Name" ) ) {
                         name = elem.getValue();
                     } else {
-                        map.put( name, elem.getValue() );
+                        if ( name == null ) {
+                            name = elem.getValue();
+                        }
+                        LOG.debug( "Will load user style with name '{}', it will be known as '{}'.", elem.getValue(),
+                                   name );
+                        map.put( elem.getValue(), name );
                         name = null;
                     }
                 }
