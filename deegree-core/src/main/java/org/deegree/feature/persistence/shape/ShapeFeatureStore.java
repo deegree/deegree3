@@ -83,7 +83,6 @@ import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.persistence.query.ThreadedResultSet;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
@@ -537,7 +536,9 @@ public class ShapeFeatureStore implements FeatureStore {
     public void destroy() {
         cache.clear();
         try {
-            shp.close();
+            if ( shp != null ) {
+                shp.close();
+            }
         } catch ( IOException e ) {
             LOG.debug( "SHP could not be closed:", e );
         }
