@@ -44,7 +44,7 @@ import javax.swing.JPanel;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
-import org.deegree.tools.crs.georeferencing.model.points.Point3Values;
+import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
  * Abstract base class for the panels to show and draw and for mouse-communication.
@@ -56,15 +56,15 @@ import org.deegree.tools.crs.georeferencing.model.points.Point3Values;
  */
 public abstract class AbstractPanel2D extends JPanel {
 
-    protected List<Pair<Point3Values, Point3Values>> points;
+    protected List<Pair<Point4Values, Point4Values>> points;
 
     protected boolean focus;
 
     // protected AbstractGRPoint tempPoint;
 
-    protected List<Point3Values> selectedPoints;
+    protected List<Point4Values> selectedPoints;
 
-    protected Point3Values lastAbstractPoint;
+    protected Point4Values lastAbstractPoint;
 
     public void addScene2DMouseListener( MouseListener m ) {
 
@@ -81,7 +81,7 @@ public abstract class AbstractPanel2D extends JPanel {
         this.addMouseWheelListener( m );
     }
 
-    public void addPoint( List<Pair<Point3Values, Point3Values>> points, Point3Values lastAbstractPoint ) {
+    public void addPoint( List<Pair<Point4Values, Point4Values>> points, Point4Values lastAbstractPoint ) {
         this.points = points;
         this.lastAbstractPoint = lastAbstractPoint;
     }
@@ -94,23 +94,23 @@ public abstract class AbstractPanel2D extends JPanel {
         return focus;
     }
 
-    public List<Point3Values> getSelectedPoints() {
+    public List<Point4Values> getSelectedPoints() {
         return selectedPoints;
     }
 
-    public Point3Values getLastAbstractPoint() {
+    public Point4Values getLastAbstractPoint() {
         return lastAbstractPoint;
     }
 
     public void setLastAbstractPoint( AbstractGRPoint lastAbstractPoint, AbstractGRPoint worldCoords ) {
         if ( lastAbstractPoint != null && worldCoords != null ) {
-            this.lastAbstractPoint = new Point3Values( lastAbstractPoint, worldCoords );
+            this.lastAbstractPoint = new Point4Values( lastAbstractPoint, worldCoords );
         } else {
             this.lastAbstractPoint = null;
         }
     }
 
-    public void addToSelectedPoints( Point3Values point ) {
+    public void addToSelectedPoints( Point4Values point ) {
 
         selectedPoints.add( point );
 

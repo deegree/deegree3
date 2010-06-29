@@ -74,7 +74,7 @@ public class Scene2DValues {
 
     private Point2d convertedPixelToRasterPoint;
 
-    private double size;
+    private float size;
 
     private Point2d minPointRaster;
 
@@ -195,7 +195,7 @@ public class Scene2DValues {
         this.convertedPixelToRasterPoint = convertedPixelToRasterPoint;
     }
 
-    public double getSize() {
+    public float getSize() {
         return size;
     }
 
@@ -203,8 +203,8 @@ public class Scene2DValues {
         return options;
     }
 
-    public void setSize( double resolution ) {
-        this.size = Double.parseDouble( options.get( "RESOLUTION" ) ) * resolution;
+    public void setSize( float resolution ) {
+        this.size = Float.parseFloat( ( options.get( "RESOLUTION" ) ) ) * resolution;
     }
 
     /**
@@ -224,8 +224,8 @@ public class Scene2DValues {
         double h = imageDimension.height;
 
         double ratio = w / h;
-        if ( size == 0.0 ) {
-            size = 1.0;
+        if ( size == 0.0f ) {
+            size = 1.0f;
         }
 
         if ( ratio < 1 ) {

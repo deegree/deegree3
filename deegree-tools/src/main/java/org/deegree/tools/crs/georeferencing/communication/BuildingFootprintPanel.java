@@ -52,7 +52,7 @@ import javax.vecmath.Point2d;
 import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
-import org.deegree.tools.crs.georeferencing.model.points.Point3Values;
+import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
  * 
@@ -103,7 +103,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         this.setName( BUILDINGFOOTPRINT_PANEL_NAME );
         pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
         this.initialResolution = initialResolution;
-        this.selectedPoints = new ArrayList<Point3Values>();
+        this.selectedPoints = new ArrayList<Point4Values>();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             }
         }
         if ( points != null ) {
-            for ( Pair<Point3Values, Point3Values> point : points ) {
+            for ( Pair<Point4Values, Point4Values> point : points ) {
                 g2.fillOval( (int) point.first.getNewValue().getX() - 5, (int) point.first.getNewValue().getY() - 5,
                              10, 10 );
             }
@@ -334,11 +334,11 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
     @Override
     protected void updateSelectedPoints() {
         FootprintPoint point = null;
-        List<Point3Values> selectedPointsTemp = new ArrayList<Point3Values>();
-        for ( Point3Values p : selectedPoints ) {
+        List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
+        for ( Point4Values p : selectedPoints ) {
             point = new FootprintPoint( ( p.getInitialValue().getX() / initialResolution ) * resolution,
                                         ( p.getInitialValue().getY() / initialResolution ) * resolution );
-            selectedPointsTemp.add( new Point3Values( p.getNewValue(), p.getInitialValue(), point, p.getWorldCoords() ) );
+            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), point, p.getWorldCoords() ) );
         }
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {

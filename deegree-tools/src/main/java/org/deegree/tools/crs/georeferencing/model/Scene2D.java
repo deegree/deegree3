@@ -85,4 +85,12 @@ public interface Scene2D {
 
     public BufferedImage getPredictedImage();
 
+    // public Point3Values getLastAbstractPoint();
+    //
+    // public void setLastAbstractPoint( AbstractGRPoint lastAbstractPoint );
+    //
+    // public void addToSelectedPoints( Point3Values point );
+    //
+    // public List<Point3Values> getSelectedPoints();
+
 }

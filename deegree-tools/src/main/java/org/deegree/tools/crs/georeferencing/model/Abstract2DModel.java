@@ -33,57 +33,65 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.model.points;
+package org.deegree.tools.crs.georeferencing.model;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.List;
+
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
- * Datastructure for every information needed to manipulate a point.
+ * Abstract base class for all 2D scenes.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Point3Values {
+public abstract class Abstract2DModel {
 
-    private AbstractGRPoint initialValue;
+    protected List<Point4Values> selectedPoints;
 
-    private AbstractGRPoint oldValue;
+    protected Point4Values lastAbstractPoint;
 
-    private AbstractGRPoint newValue;
-
-    public Point3Values( AbstractGRPoint oldValue, AbstractGRPoint initialValue, AbstractGRPoint newValue ) {
-        this.oldValue = oldValue;
-        this.initialValue = initialValue;
-        this.newValue = newValue;
+    protected float roundFloat( float value ) {
+        BigDecimal b = new BigDecimal( value );
+        b = b.round( new MathContext( 2 ) );
+        return b.floatValue();
     }
 
-    public Point3Values( AbstractGRPoint initialValue ) {
-        this.oldValue = initialValue;
-        this.initialValue = initialValue;
-        this.newValue = initialValue;
+    protected float roundDouble( double value ) {
+        BigDecimal b = new BigDecimal( value );
+        b = b.round( new MathContext( 2 ) );
+        return b.floatValue();
     }
 
-    public AbstractGRPoint getInitialValue() {
-        return initialValue;
+    public List<Point4Values> getSelectedPoints() {
+        return selectedPoints;
     }
 
-    public AbstractGRPoint getOldValue() {
-        return oldValue;
+    public Point4Values getLastAbstractPoint() {
+        return lastAbstractPoint;
     }
 
-    public AbstractGRPoint getNewValue() {
-        return newValue;
+    public void setLastAbstractPoint( AbstractGRPoint lastAbstractPoint ) {
+        // if ( lastAbstractPoint != null ) {
+        // this.lastAbstractPoint = new Point3Values( lastAbstractPoint );
+        // } else {
+        // this.lastAbstractPoint = null;
+        // }
     }
 
-    public void setNewValue( AbstractGRPoint newValue ) {
-        this.oldValue = this.newValue;
-        this.newValue = newValue;
+    public void addToSelectedPoints( Point4Values point ) {
+
+        selectedPoints.add( point );
+
     }
 
-    @Override
-    public String toString() {
-        String s = "<" + oldValue + ", " + initialValue + ", " + newValue + ">";
-        return s;
-    }
+    protected abstract void updateSelectedPoints();
+
+    // public abstract FootprintPoint getClosestPoint( AbstractGRPoint point2d );
 
 }

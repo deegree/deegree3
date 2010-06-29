@@ -58,6 +58,7 @@ import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
  * 
@@ -105,6 +106,13 @@ public class Scene2DImplWMS implements Scene2D {
     // private double size;
 
     private int imageWidth, imageHeight;
+
+    /**
+     * Map<initialValue,newValue>
+     */
+    private List<Point4Values> selectedPoints;
+
+    private Point4Values lastAbstractPoint;
 
     @Override
     public void init( RasterIOOptions options, Scene2DValues values ) {

@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.tools.crs.georeferencing.model.points.Point3Values;
+import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
  * The JPanel that should display a BufferedImage.
@@ -73,7 +73,7 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
-        this.selectedPoints = new ArrayList<Point3Values>();
+        this.selectedPoints = new ArrayList<Point4Values>();
     }
 
     @Override
@@ -100,7 +100,7 @@ public class Scene2DPanel extends AbstractPanel2D {
         }
 
         if ( points != null ) {
-            for ( Pair<Point3Values, Point3Values> point : points ) {
+            for ( Pair<Point4Values, Point4Values> point : points ) {
                 g2.fillOval( (int) point.second.getNewValue().getX() - 5, (int) point.second.getNewValue().getY() - 5,
                              10, 10 );
             }
