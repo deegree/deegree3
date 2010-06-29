@@ -39,10 +39,10 @@ import java.net.URL;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the RequestMethod section of the GetCapabilties Document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -52,18 +52,34 @@ public class RequestMethod {
 
     private String constraint; // ows:DomainType
 
+    /**
+     *  
+     * @return url
+     */
     public URL getUrl() {
         return url;
     }
 
+    /**
+     *  
+     * @param url
+     */
     public void setUrl( URL url ) {
         this.url = url;
     }
 
+    /**
+     *  
+     * @return constraint
+     */
     public String getConstraint() {
         return constraint;
     }
 
+    /**
+     *  
+     * @param constraint
+     */
     public void setConstraint( String constraint ) {
         this.constraint = constraint;
     }

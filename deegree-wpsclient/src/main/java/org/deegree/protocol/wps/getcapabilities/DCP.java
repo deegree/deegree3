@@ -37,10 +37,10 @@ package org.deegree.protocol.wps.getcapabilities;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the DCP section of the GetCapabilties Document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -48,10 +48,18 @@ public class DCP {
 
     private Http http;
 
+    /**
+     *  
+     * @return http
+     */
     public Http getHttp() {
         return http;
     }
 
+    /**
+     *  
+     * @param http
+     */
     public void setHttp( Http http ) {
         this.http = http;
     }

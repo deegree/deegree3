@@ -37,10 +37,10 @@ package org.deegree.protocol.wps.getcapabilities;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the Operation section of the GetCapabilties Document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -56,42 +56,82 @@ public class Operation {
 
     private String metadata;
 
+    /**
+     *  
+     * @return name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *  
+     * @param name
+     */
     public void setName( String name ) {
         this.name = name;
     }
 
+    /**
+     *  
+     * @return dcp
+     */
     public DCP getDcp() {
         return dcp;
     }
 
+    /**
+     *  
+     * @param dcp
+     */
     public void setDcp( DCP dcp ) {
         this.dcp = dcp;
     }
 
+    /**
+     *  
+     * @return parameter
+     */
     public String getParameter() {
         return parameter;
     }
 
+    /**
+     *  
+     * @param parameter
+     */
     public void setParameter( String parameter ) {
         this.parameter = parameter;
     }
 
+    /**
+     *  
+     * @return constraint
+     */
     public String getConstraint() {
         return constraint;
     }
 
+    /**
+     *  
+     * @param constraint
+     */
     public void setConstraint( String constraint ) {
         this.constraint = constraint;
     }
 
+    /**
+     *  
+     * @return metadata
+     */
     public String getMetadata() {
         return metadata;
     }
 
+    /**
+     *  
+     * @param metadata
+     */
     public void setMetadata( String metadata ) {
         this.metadata = metadata;
     }

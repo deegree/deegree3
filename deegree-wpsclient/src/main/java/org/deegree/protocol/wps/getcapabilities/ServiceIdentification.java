@@ -37,11 +37,11 @@ package org.deegree.protocol.wps.getcapabilities;
 
 /**
  * 
- * The class holds the elements which are needed to identify a Service according to OGC Web Services Common
- * Specification (Subclause 7.4.4) - ServiceIdentification
+/**
  * 
+ * Represents the ServiceIdentification section of the GetCapabilties Document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -60,70 +60,134 @@ public class ServiceIdentification {
 
     private String[] title;
 
-    private String[] abstraCt;
+    private String[] _abstract;
 
     private String[] keywords;
 
+    /**
+     *  
+     * @return serviceType
+     */
     public String getServiceType() {
         return serviceType;
     }
 
+    /**
+     *  
+     * @param serviceType
+     */
     public void setServiceType( String serviceType ) {
         this.serviceType = serviceType;
     }
 
+    /**
+     *  
+     * @return fees
+     */
     public String getFees() {
         return fees;
     }
 
+    /**
+     *  
+     * @param fees
+     */
     public void setFees( String fees ) {
         this.fees = fees;
     }
 
+    /**
+     *  
+     * @return accessConstraints
+     */
     public String[] getAccessConstraints() {
         return accessConstraints;
     }
 
+    /**
+     *  
+     * @param accessConstraints
+     */
     public void setAccessConstraints( String[] accessConstraints ) {
         this.accessConstraints = accessConstraints;
     }
 
+    /**
+     *  
+     * @return serviceTypeVersion
+     */
     public String[] getServiceTypeVersion() {
         return serviceTypeVersion;
     }
 
+    /**
+     *  
+     * @param serviceTypeVersion
+     */
     public void setServiceTypeVersion( String[] serviceTypeVersion ) {
         this.serviceTypeVersion = serviceTypeVersion;
     }
 
+    /**
+     *  
+     * @return profile
+     */
     public String[] getProfile() {
         return profile;
     }
 
+    /**
+     *  
+     * @param profile
+     */
     public void setProfile( String[] profile ) {
         this.profile = profile;
     }
 
+    /**
+     *  
+     * @return title
+     */
     public String[] getTitle() {
         return title;
     }
 
+    /**
+     *  
+     * @param title
+     */
     public void setTitle( String[] title ) {
         this.title = title;
     }
 
+    /**
+     *  
+     * @return abstraCt
+     */
     public String[] getAbstraCt() {
-        return abstraCt;
+        return _abstract;
     }
 
-    public void setAbstraCt( String[] abstraCt ) {
-        this.abstraCt = abstraCt;
+    /**
+     *  
+     * @param _abstract
+     */
+    public void setAbstraCt( String[] _abstract ) {
+        this._abstract = _abstract;
     }
 
+    /**
+     *  
+     * @return keywords
+     */
     public String[] getKeywords() {
         return keywords;
     }
 
+    /**
+     *  
+     * @param keywords
+     */
     public void setKeywords( String[] keywords ) {
         this.keywords = keywords;
     }

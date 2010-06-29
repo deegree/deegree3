@@ -42,10 +42,10 @@ import org.deegree.commons.tom.ows.Version;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the ProcessBrief section of the GetCapabilties Document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -67,66 +67,130 @@ public class ProcessBrief {
 
     private String wsdl;
 
+    /**
+     *  
+     * @param identifier
+     */
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
 
+    /**
+     *  
+     * @return identifier
+     */
     public String getIdentifier() {
         return this.identifier;
     }
 
+    /**
+     *  
+     * @param _abstract
+     */
     public void setAbstract( String _abstract ) {
         this._abstract = _abstract;
     }
 
+    /**
+     *  
+     * @return _abstract
+     */
     public String getAbstract() {
         return this._abstract;
     }
 
+    /**
+     *  
+     * @param title
+     */
     public void setTitle( String title ) {
         this.title = title;
     }
 
+    /**
+     *  
+     * @return title
+     */
     public String getTitle() {
         return this.title;
     }
 
+    /**
+     *  
+     * @return processVersion
+     */
     public String getProcessVersion() {
         return processVersion;
     }
 
+    /**
+     *  
+     * @param processVersion
+     */
     public void setProcessVersion( String processVersion ) {
         this.processVersion = processVersion;
     }
 
+    /**
+     *  
+     * @return metadata
+     */
     public String[] getMetadata() {
         return metadata;
     }
 
+    /**
+     *  
+     * @param metadata
+     */
     public void setMetadata( String[] metadata ) {
         this.metadata = metadata;
     }
 
+    /**
+     *  
+     * @return profiles
+     */
     public String[] getProfiles() {
         return profiles;
     }
 
+    /**
+     *  
+     * @param profiles
+     */
     public void setProfiles( String[] profiles ) {
         this.profiles = profiles;
     }
 
+    /**
+     *  
+     * @return versionType
+     */
     public String getVersionType() {
         return versionType;
     }
 
+    /**
+     *  
+     * @param versionType
+     */
     public void setVersionType( String versionType ) {
         this.versionType = versionType;
     }
 
+    /**
+     *  
+     * @return wsdl
+     */
     public String getWsdl() {
         return wsdl;
     }
 
+    /**
+     *  
+     * @param wsdl
+     */
     public void setWsdl( String wsdl ) {
         this.wsdl = wsdl;
     }

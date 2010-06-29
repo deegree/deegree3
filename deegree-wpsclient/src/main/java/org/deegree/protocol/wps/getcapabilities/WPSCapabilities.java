@@ -57,8 +57,8 @@ import org.slf4j.LoggerFactory;
  * 
  * WPSCapabilities encapsulates information contained within an WPS Capabilities response
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */

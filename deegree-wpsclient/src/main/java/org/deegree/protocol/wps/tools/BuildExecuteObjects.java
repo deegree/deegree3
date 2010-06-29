@@ -111,8 +111,6 @@ public class BuildExecuteObjects {
         this.store = processDesription.isStoreSupported();
         this.schemaLocation = processDesription.getSchemaLocation();
         setInputs( dataInputList );
-        System.out.println( "outputConfigurationList: " + outputConfigurationList.size() );
-
         if ( outputConfigurationList.size() == 0 ) {
             this.outputConfigurationList = createOutputConfigurationList();
         }

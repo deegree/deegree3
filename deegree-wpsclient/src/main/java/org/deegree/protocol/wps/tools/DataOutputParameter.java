@@ -5,11 +5,20 @@ import org.deegree.protocol.wps.describeprocess.LiteralOutputData;
 import org.deegree.protocol.wps.describeprocess.OutputDescription;
 import org.deegree.protocol.wps.describeprocess.ProcessOutput;
 
+/**
+ *  Encapsulates the structure of a DataOutputParameter
+ * 
+ * 
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class DataOutputParameter {
 
     private String title;
 
-    private String abstraCt;
+    private String _abstract;
 
     private String identifier;
 
@@ -25,8 +34,9 @@ public class DataOutputParameter {
 
     private String schema;
 
+
     public DataOutputParameter( OutputDescription outputDescription ) {
-        this.abstraCt=outputDescription.getAbstraCt();
+        this._abstract=outputDescription.getAbstraCt();
         this.identifier=outputDescription.getIdentifier();
         this.title= outputDescription.getTitle();
         if ( outputDescription.getOutputFormChoice().getLiteralOutput() != null ) {
@@ -45,38 +55,74 @@ public class DataOutputParameter {
 
     }
 
+    /**
+     *  
+     * @return title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     *  
+     * @return identifier
+     */
     public String getAbstraCt() {
-        return abstraCt;
+        return _abstract;
     }
 
+    /**
+     *  
+     * @return identifier
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     *  
+     * @return dataType
+     */
     public String getDataType() {
         return dataType;
     }
 
+    /**
+     *  
+     * @return encoding
+     */
     public String getEncoding() {
         return encoding;
     }
 
+    /**
+     *  
+     * @return mimeType
+     */
     public String getMimeType() {
         return mimeType;
     }
 
+    /**
+     *  
+     * @return uom
+     */
     public String getUom() {
         return uom;
     }
 
+    /**
+     *  
+     * @return maximumMegaBytes
+     */
     public String getMaximumMegaBytes() {
         return maximumMegaBytes;
     }
 
+    /**
+     *  
+     * @return schema
+     */
     public String getSchema() {
         return schema;
     }

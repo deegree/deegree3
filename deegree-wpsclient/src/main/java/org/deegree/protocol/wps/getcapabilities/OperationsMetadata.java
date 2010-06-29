@@ -40,10 +40,10 @@ import java.util.Map;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the OperationsMetadata section of the GetCapabilties Document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -59,47 +59,91 @@ public class OperationsMetadata {
 
     private String metaData;
 
+    /**
+     *  
+     * @return operations
+     */
     public Map<String, Operation> getOperations() {
         // TODO parse operations from ows:OperationsMetadata element
         return operations;
     }
 
+    /**
+     *  
+     * @param operations
+     */
     public void setOperation( Map<String, Operation> operations ) {
         this.operations = operations;
     }
 
+    /**
+     *  
+     * @return parameter
+     */
     public String getParameter() {
         return parameter;
     }
 
+    /**
+     *  
+     * @param parameter
+     */
     public void setParameter( String parameter ) {
         this.parameter = parameter;
     }
 
+    /**
+     *  
+     * @return constraint
+     */
     public String getConstraint() {
         return constraint;
     }
 
+    /**
+     *  
+     * @param constraint
+     */
     public void setConstraint( String constraint ) {
         this.constraint = constraint;
     }
 
+    /**
+     *  
+     * @return extendedCapabilities
+     */
     public String getExtendedCapabilities() {
         return extendedCapabilities;
     }
 
+    /**
+     *  
+     * @param extendedCapabilities
+     */
     public void setExtendedCapabilities( String extendedCapabilities ) {
         this.extendedCapabilities = extendedCapabilities;
     }
 
+    /**
+     *  
+     * @return metaData
+     */
     public String getMetaData() {
         return metaData;
     }
 
+    /**
+     *  
+     * @param metaData
+     */
     public void setMetaData( String metaData ) {
         this.metaData = metaData;
     }
 
+    /**
+     *  
+     * @return name
+     */
     public Operation getOperationByName( String name ) {
         Operation op = null;
         if ( operations.containsKey( name ) ) {

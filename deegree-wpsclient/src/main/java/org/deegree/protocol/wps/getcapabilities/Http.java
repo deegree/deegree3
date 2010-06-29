@@ -37,10 +37,10 @@ package org.deegree.protocol.wps.getcapabilities;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the Http section of the GetCapabilties Document of the WPS specification 1.0
  * 
  * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
- * @author last edited by: $Author: gwalenciak $
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -50,19 +50,35 @@ public class Http {
 
     private RequestMethod post;
 
-    public RequestMethod getGet() {
+    /**
+     *  
+     * @return get
+     */
+    public RequestMethod getRequestMethodGet() {
         return get;
     }
 
-    public void setGet( RequestMethod get ) {
+    /**
+     *  
+     * @param get
+     */
+    public void setRequestMethodGet( RequestMethod get ) {
         this.get = get;
     }
 
-    public RequestMethod getPost() {
+    /**
+     *  
+     * @return post
+     */
+    public RequestMethod getRequestMethodPost() {
         return post;
     }
 
-    public void setPost( RequestMethod post ) {
+    /**
+     *  
+     * @param post
+     */
+    public void setRequestMethodPost( RequestMethod post ) {
         this.post = post;
     }
 

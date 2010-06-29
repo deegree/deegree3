@@ -39,7 +39,7 @@ package org.deegree.protocol.wps.tools;
  * 
  * OutputConfiguration is used to configure the setting of one output
  * 
- * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
  * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
@@ -58,54 +58,107 @@ public class OutputConfiguration {
 
     private boolean asReference;
 
+    /**
+     *  
+     * @param identifier
+     */
     public OutputConfiguration( String identifier ) {
         this.identifier = identifier;
     }
 
+    /**
+     *  
+     * @return identifier
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     *  
+     * @param identifier
+     */
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
 
+    /**
+     *  
+     * @return rawOrResp
+     */
     public boolean isRawOrResp() {
         return rawOrResp;
     }
 
+    /**
+     *  
+     * @param rawOrResp
+     */
     public void setRawOrResp( boolean rawOrResp ) {
         this.rawOrResp = rawOrResp;
     }
 
+    /**
+     *  
+     * @return lineage
+     */
     public boolean isLineage() {
         return lineage;
     }
 
+    /**
+     *  
+     * @param lineage
+     */
     public void setLineage( boolean lineage ) {
         this.lineage = lineage;
     }
 
+    /**
+     *  
+     * @return status
+     */
     public boolean isStatus() {
         return status;
     }
 
+    /**
+     *  
+     * @param status
+     */
     public void setStatus( boolean status ) {
         this.status = status;
     }
 
+    /**
+     *  
+     * @return store
+     */
     public boolean isStore() {
         return store;
     }
 
+    /**
+     *  
+     * @param store
+     */
     public void setStore( boolean store ) {
         this.store = store;
     }
 
+    
+    /**
+     *  
+     * @return asReference
+     */
     public boolean isAsReference() {
         return asReference;
     }
 
+    /**
+     *  
+     * @param asReference
+     */
     public void setAsReference( boolean asReference ) {
         this.asReference = asReference;
     }

@@ -37,10 +37,10 @@ package org.deegree.protocol.wps.getcapabilities;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the Languages section of the GetCapabilties Document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
@@ -50,18 +50,34 @@ public class Languages {
 
     private String[] supportedArray;
 
+    /**
+     *  
+     * @return defauLt
+     */
     public String getDefauLt() {
         return defauLt;
     }
 
+    /**
+     *  
+     * @param defauLt
+     */
     public void setDefauLt( String defauLt ) {
         this.defauLt = defauLt;
     }
 
+    /**
+     *  
+     * @return supported[]
+     */
     public String[] getSupported() {
         return supportedArray;
     }
 
+    /**
+     *  
+     * @param supported[]
+     */
     public void setSupported( String[] supportedArray ) {
         this.supportedArray = supportedArray;
     }

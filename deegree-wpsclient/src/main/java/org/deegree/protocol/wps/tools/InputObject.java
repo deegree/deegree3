@@ -37,10 +37,10 @@ package org.deegree.protocol.wps.tools;
 
 /**
  * 
- * InputObject is used to assign one input Identifier and InputObject are mandatory, input will be set on "as Reference"
+ * InputObject is used to assign one input. Identifier and InputObject are mandatory. Input will be set on "as Reference"
  * as default
  * 
- * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
  * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
@@ -67,12 +67,29 @@ public class InputObject {
 
     private String bodyReferenceHref;
 
+    
+    /**
+     *  
+     * @param identifier
+     * 
+     * @param input
+     * 
+     * @param asReference
+     * 
+     */
     public InputObject( String identifier, Object input, boolean asReference ) {
         this.identifier = identifier;
         this.inputObject = input;
         this.asReference = asReference;
     }
 
+    /**
+     *  
+     * @param identifier
+     * 
+     * @param input
+     * 
+     */
     public InputObject( String identifier, Object input ) {
         this.identifier = identifier;
         this.inputObject = input;
@@ -80,88 +97,166 @@ public class InputObject {
 
     }
 
+    /**
+     *  
+     * @return identifier
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     *  
+     * @param identifier
+     */
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
     }
 
+    /**
+     *  
+     * @return input
+     */
     public Object getInput() {
         return inputObject;
     }
 
+    /**
+     *  
+     * @param input
+     */
     public void setInput( String input ) {
         this.inputObject = input;
     }
+
+    /**
+     *  
+     * @return asReference
+     */
 
     public boolean isAsReference() {
         return asReference;
     }
 
+    /**
+     *  
+     * @param asReference
+     */    
     public void setAsReference( boolean asReference ) {
         this.asReference = asReference;
     }
 
+    /**
+     *  
+     * @return schema
+     */    
     public String getSchema() {
         return schema;
     }
 
+
+    /**
+     *  
+     * @param schema
+     */
     public void setSchema( String schema ) {
         this.schema = schema;
     }
 
+    /**
+     *  
+     * @return body
+     */
     public String getBody() {
         return body;
     }
 
+    /**
+     *  
+     * @param body
+     */
     public void setBody( String body ) {
         this.body = body;
     }
 
-    // public String getHref() {
-    // return hRef;
-    // }
-    // public void setHref(String href) {
-    // this.hRef = href;
-    // }
+    /**
+     *  
+     * @return encoding
+     */
     public String getEncoding() {
         return encoding;
     }
 
+
+    /**
+     *  
+     * @param encoding
+     */
     public void setEncoding( String encoding ) {
         this.encoding = encoding;
     }
 
+    /**
+     *  
+     * @return method
+     */
     public String getMethod() {
         return method;
     }
 
+
+    /**
+     *  
+     * @param method
+     */
     public void setMethod( String method ) {
         this.method = method;
     }
 
+    /**
+     *  
+     * @return mimeType
+     */
     public String getMimeType() {
         return mimeType;
     }
 
+    /**
+     *  
+     * @param mimeType
+     */
     public void setMimeType( String mimeType ) {
         this.mimeType = mimeType;
     }
 
+    /**
+     *  
+     * @return reference
+     */
     public String getReference() {
         return reference;
     }
 
+    /**
+     *  
+     * @param reference
+     */
     public void setReference( String reference ) {
         this.reference = reference;
     }
 
+    /**
+     *  
+     * @return bodyReferenceHref
+     */
     public String getBodyReferenceHref() {
         return bodyReferenceHref;
     }
 
+    /**
+     *  
+     * @param bodyReferenceHref
+     */
     public void setBodyReferenceHref( String bodyReferenceHref ) {
         this.bodyReferenceHref = bodyReferenceHref;
     }

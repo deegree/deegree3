@@ -67,7 +67,7 @@ import org.deegree.protocol.wps.execute.ResponseForm;
  * further configuration are stated
  * 
  * 
- * @author <a href="mailto:walenciak@uni-heidelberg.de">Christian Kiehle</a>
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
  * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
@@ -96,6 +96,14 @@ public class CreateExecuteRequest {
 
     private List<ResponseForm> responseFormList = new ArrayList();
 
+    /**
+     *  
+     * @param dataInputList
+     * 
+     * @param outputConfigurationList
+     * 
+     * @param processDesription
+     */
     public CreateExecuteRequest( List<InputObject> dataInputList, List<OutputConfiguration> outputConfigurationList,
                                  ProcessDescription processDesription ) {
 

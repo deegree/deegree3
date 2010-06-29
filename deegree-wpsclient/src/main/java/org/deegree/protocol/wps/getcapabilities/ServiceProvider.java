@@ -37,41 +37,65 @@ package org.deegree.protocol.wps.getcapabilities;
 
 /**
  * 
- * TODO add class documentation here
+ * Represents the ServiceProvider section of the GetCapabilties Document of the WPS specification 1.0
  * 
- * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author: kiehle $
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
 public class ServiceProvider {
 
-    String providerName;
+    private String providerName;
 
-    String providerSite;
+    private String providerSite;
 
-    ServiceContact serviceContact;
+    private ServiceContact serviceContact;
 
+    /**
+     *  
+     * @return providerName
+     */
     public String getProviderName() {
         return providerName;
     }
 
+    /**
+     *  
+     * @param providerName
+     */
     public void setProviderName( String providerName ) {
         this.providerName = providerName;
     }
 
+    /**
+     *  
+     * @return providerSite
+     */
     public String getProviderSite() {
         return providerSite;
     }
 
+    /**
+     *  
+     * @param providerSite
+     */
     public void setProviderSite( String providerSite ) {
         this.providerSite = providerSite;
     }
 
+    /**
+     *  
+     * @return serviceContact
+     */
     public ServiceContact getServiceContact() {
         return serviceContact;
     }
 
+    /**
+     *  
+     * @param serviceContact
+     */
     public void setServiceContact( ServiceContact serviceContact ) {
         this.serviceContact = serviceContact;
     }

@@ -46,22 +46,32 @@ import java.util.Scanner;
 import org.deegree.commons.xml.XMLAdapter;
 
 /**
- * TODO add class documentation here
  * 
- * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author: Admin $
+ * Loads File from given path
+ * 
+ * @author <a href="mailto:walenciak@uni-heidelberg.de">Georg Walenciak</a>
+ * @author last edited by: $Author: walenciak $
  * 
  * @version $Revision: $, $Date: $
  */
 public class LoadFile {
 
-    String path;
+    private String path;
 
+    /**
+     *  
+     * @param path
+     */
     public LoadFile( String path ) {
         this.path = path;
 
     }
 
+    
+    /**
+     *  
+     * @return String
+     */
     public String load()
                             throws Exception {
         BufferedReader br = new BufferedReader( new FileReader( path ) );
@@ -75,20 +85,6 @@ public class LoadFile {
         }
 
         return ( fileString );
-
-    }
-
-    public void loadXML() {
-        File file = new File( "curve.xml" );
-        FileReader fileReader = null;
-        try {
-            fileReader = new FileReader( file );
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        XMLAdapter xmlInput = new XMLAdapter( file );
 
     }
 
