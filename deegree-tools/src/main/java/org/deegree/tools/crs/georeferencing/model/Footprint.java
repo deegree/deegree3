@@ -41,6 +41,8 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
+
 /**
  * 
  * Model of the footprint of a 3D building. Basis for georeferencing.
@@ -55,6 +57,10 @@ public class Footprint {
     private Polygon polygon;
 
     private List<Polygon> worldCoordinatePolygonList;
+
+    private double[] worldCoordinates;
+
+    private FootprintPoint[] worldCoordinatePoints;
 
     /**
      * Creates a new <Code>Footprint</Code> instance.
@@ -108,19 +114,34 @@ public class Footprint {
      */
     public void generateFootprints( List<float[]> footprintPointsList ) {
         worldCoordinatePolygonList = new ArrayList<Polygon>();
+        int size = 0;
         for ( float[] f : footprintPointsList ) {
-            int size = f.length / 3;
-            int[] x = new int[size];
-            int[] y = new int[size];
+            size += f.length / 3;
+        }
+
+        worldCoordinates = new double[size * 2];
+        worldCoordinatePoints = new FootprintPoint[size];
+        int countWorldCoords = 0;
+        int countWorldCoordsPoint = 0;
+        for ( float[] f : footprintPointsList ) {
+            int polygonSize = f.length / 3;
+
+            int[] x = new int[polygonSize];
+            int[] y = new int[polygonSize];
             int count = 0;
 
             // get all points in 2D, so z-axis is omitted
             for ( int i = 0; i < f.length; i += 3 ) {
                 x[count] = (int) f[i];
                 y[count] = (int) f[i + 1];
+                worldCoordinates[countWorldCoords] = f[i];
+                worldCoordinates[++countWorldCoords] = f[i + 1];
+                worldCoordinatePoints[countWorldCoordsPoint] = new FootprintPoint( f[i], f[i + 1] );
+                countWorldCoords++;
                 count++;
+                countWorldCoordsPoint++;
             }
-            Polygon p = new Polygon( x, y, size );
+            Polygon p = new Polygon( x, y, polygonSize );
             worldCoordinatePolygonList.add( p );
         }
 
@@ -132,6 +153,14 @@ public class Footprint {
      */
     public List<Polygon> getWorldCoordinatePolygonList() {
         return worldCoordinatePolygonList;
+    }
+
+    public double[] getWorldCoordinates() {
+        return worldCoordinates;
+    }
+
+    public FootprintPoint[] getWorldCoordinatePoints() {
+        return worldCoordinatePoints;
     }
 
 }

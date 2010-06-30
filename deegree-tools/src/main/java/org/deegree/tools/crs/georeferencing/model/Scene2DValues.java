@@ -43,7 +43,7 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.CRS;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -82,7 +82,9 @@ public class Scene2DValues {
 
     private RasterIOOptions options;
 
-    private CoordinateSystem crs;
+    private CRS crs;
+
+    private Point2d convertedRasterToPixelPoint;
 
     public Scene2DValues( RasterIOOptions options ) {
         this.options = options;
@@ -133,6 +135,33 @@ public class Scene2DValues {
         }
 
         return null;
+    }
+
+    /**
+     * In this method firstly there is a computation from the span of the raster-envelope, after that the point is
+     * calculated relative to the min-point of the raster-envelope, after that the percent is computed and finally
+     * multiplicated with the imagedimension.
+     * 
+     * @param abstractGRPoint
+     *            the worldCoordinatePoint which should be translated back to pixelCoordinates, not be <Code>null</Code>
+     * @return an integer array with x, y - coordinates, z is not implemented yet.
+     */
+    public int[] getPixelCoordinate( AbstractGRPoint abstractGRPoint ) {
+
+        double spanX = subRaster.getEnvelope().getSpan0();
+        double spanY = subRaster.getEnvelope().getSpan1();
+        double mathX = Math.abs( subRaster.getEnvelope().getMin().get0() );
+        double mathY = Math.abs( subRaster.getEnvelope().getMin().get1() );
+        double pointWorldX = mathX + abstractGRPoint.getX();
+        double pointWorldY = mathY + abstractGRPoint.getY();
+        double percentX = pointWorldX / spanX;
+        double percentY = pointWorldY / spanY;
+        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() + imageMargin.getX() * 2 ) );
+        int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height )
+                                                + imageStartPosition.getY() - imageMargin.getY() ) );
+
+        return new int[] { pixelPointX, pixelPointY };
+
     }
 
     public void setImageMargin( Point2d imageMargin ) {
@@ -232,17 +261,20 @@ public class Scene2DValues {
             // if < 1 then do orientation on h
             double newWidth = ( w / h ) * size * rect.width;
             convertedPixelToRasterPoint = new Point2d( newWidth / w, rect.height * size / h );
+            convertedRasterToPixelPoint = new Point2d( w / newWidth, h / ( rect.height * size ) );
             transformedBounds = new Point2d( newWidth, rect.height * size );
             return transformedBounds;
         } else if ( ratio > 1 ) {
             // if > 1 then do orientation on w
             double newHeight = ( h / w ) * size * rect.height;
             convertedPixelToRasterPoint = new Point2d( rect.width * size / w, newHeight / h );
+            convertedRasterToPixelPoint = new Point2d( w / ( rect.width * size ), h / newHeight );
             transformedBounds = new Point2d( rect.width * size, newHeight );
             return transformedBounds;
         }
         // if w = h then return 0
         transformedBounds = new Point2d( rect.width * size, rect.height * size );
+
         return transformedBounds;
     }
 
@@ -294,11 +326,11 @@ public class Scene2DValues {
         this.minPointPixel = minPointPixel;
     }
 
-    public CoordinateSystem getCrs() {
+    public CRS getCrs() {
         return crs;
     }
 
-    public void setCrs( CoordinateSystem crs ) {
+    public void setCrs( CRS crs ) {
         this.crs = crs;
     }
 

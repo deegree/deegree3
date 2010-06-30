@@ -37,13 +37,18 @@ package org.deegree.tools.crs.georeferencing.communication;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
@@ -65,15 +70,24 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private BufferedImage imageToDraw;
 
+    private List<Polygon> polygonList;
+
     private Point2d beginDrawImageAtPosition;
 
     private Point2d translationPoint;
 
     private Rectangle imageDimension;
 
+    private float resolution;
+
+    private float resizing;
+
+    private float initialResolution;
+
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
         this.selectedPoints = new ArrayList<Point4Values>();
+
     }
 
     @Override
@@ -97,6 +111,16 @@ public class Scene2DPanel extends AbstractPanel2D {
             g2.fillOval( (int) lastAbstractPoint.getNewValue().getX() - 5,
                          (int) lastAbstractPoint.getNewValue().getY() - 5, 10, 10 );
             // }
+        }
+
+        if ( polygonList != null ) {
+            // g2.translate( 29, 0 );
+            // g2.rotate( 0.2 );
+            for ( Polygon polygon : polygonList ) {
+                g2.drawPolygon( polygon );
+            }
+            // g2.rotate( -0.2 );
+            // g2.translate( -29, 0 );
         }
 
         if ( points != null ) {
@@ -138,6 +162,10 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     }
 
+    public void setinitialResolution( float initialResolution ) {
+        this.initialResolution = initialResolution;
+    }
+
     public Point2d getTranslationPoint() {
         return translationPoint;
     }
@@ -148,7 +176,96 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     @Override
     protected void updateSelectedPoints() {
-        // TODO Auto-generated method stub
+        GeoReferencedPoint point = null;
+        List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
+        for ( Point4Values p : selectedPoints ) {
+            point = new GeoReferencedPoint( ( p.getInitialValue().getX() / initialResolution ) * resolution,
+                                            ( p.getInitialValue().getY() / initialResolution ) * resolution );
+            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), point, p.getWorldCoords() ) );
+        }
+        selectedPoints = selectedPointsTemp;
+        if ( lastAbstractPoint != null ) {
+            double x = lastAbstractPoint.getInitialValue().getX() / initialResolution;
+            double y = lastAbstractPoint.getInitialValue().getY() / initialResolution;
+            double x1 = x - roundDouble( x * resizing );
+            double y1 = y - roundDouble( y * resizing );
+
+            GeoReferencedPoint pi = new GeoReferencedPoint( lastAbstractPoint.getNewValue().getX() + x1,
+                                                            lastAbstractPoint.getNewValue().getY() + y1 );
+            lastAbstractPoint.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
+        }
+
+    }
+
+    @Override
+    public void updatePoints( float newSize ) {
+        this.resizing = Math.abs( newSize - this.resolution );
+        BigDecimal b = new BigDecimal( newSize );
+        b = b.round( new MathContext( 2 ) );
+        this.resolution = b.floatValue();
+
+        updateSelectedPoints();
+    }
+
+    public void setPolygonList( List<Polygon> polygonList, List<Pair<Point4Values, Point4Values>> mappedPoints ) {
+
+        // int counterSrc = 0;
+        // int counterDst = 0;
+        // AbstractGRPoint[] pointsSrc = new AbstractGRPoint[2];
+        // AbstractGRPoint[] pointsDst = new AbstractGRPoint[2];
+        // int count = 0;
+        // for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+        // // double x = p.first.getWorldCoords().getX();
+        // // double y = p.first.getWorldCoords().getY();
+        // // ordinatesSrc[counterSrc] = x;
+        // // ordinatesSrc[++counterSrc] = y;
+        // // counterSrc++;
+        // pointsSrc[counterSrc] = p.first.getWorldCoords();
+        // counterSrc++;
+        //
+        // // Point4Values pValue = p.second;
+        // // x = pValue.getNewValue().getX();
+        // // y = pValue.getNewValue().getY();
+        // // ordinatesDst[counterDst] = x;
+        // // ordinatesDst[++counterDst] = y;
+        // // counterDst++;
+        // pointsDst[counterDst] = p.second.getWorldCoords();
+        // counterDst++;
+        //
+        // }
+        //
+        // double distanceSrc = 0.0;
+        // distanceSrc = pointsSrc[0].distance( pointsSrc[1] );
+        // System.out.println( distanceSrc );
+        //
+        // double distanceDst = 0.0;
+        // distanceDst = pointsDst[0].distance( pointsDst[1] );
+        // System.out.println( distanceDst );
+        //
+        // double scale = distanceDst / distanceSrc;
+        // // for ( FootprintPoint p : footPanel.getPixelCoordinates() ) {
+        // // double x = p.getX() * scale;
+        // // double y = p.getY() * scale;
+        // // System.out.println( x + " " + y );
+        // // }
+
+        this.polygonList = polygonList;
+
+        // int counter = 0;
+        // for ( Polygon po : polygonList ) {
+        // int[] x = new int[po.npoints];
+        // int[] y = new int[po.npoints];
+        // for ( int i = 0; i < po.npoints; i++ ) {
+        // x[i] = (int) ( po.xpoints[i] );
+        // y[i] = (int) ( po.ypoints[i] );
+        // pixelCoordinates[counter++] = new FootprintPoint( ( po.xpoints[i] - x ) * resolution,
+        // ( po.ypoints[i] - y ) * resolution );
+        // pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ), new FootprintPoint( po.xpoints[i],
+        // po.ypoints[i] ) );
+        // // System.out.println( "[Footprint] Polygon: " + x2[i] );
+        // }
+        // Polygon p = new Polygon( x2, y2, po.npoints );
+        // pixelCoordinatePolygonList.add( p );
 
     }
 

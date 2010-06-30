@@ -38,6 +38,8 @@ package org.deegree.tools.crs.georeferencing.communication;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -59,8 +61,6 @@ public abstract class AbstractPanel2D extends JPanel {
     protected List<Pair<Point4Values, Point4Values>> points;
 
     protected boolean focus;
-
-    // protected AbstractGRPoint tempPoint;
 
     protected List<Point4Values> selectedPoints;
 
@@ -116,6 +116,20 @@ public abstract class AbstractPanel2D extends JPanel {
 
     }
 
+    protected float roundFloat( float value ) {
+        BigDecimal b = new BigDecimal( value );
+        b = b.round( new MathContext( 2 ) );
+        return b.floatValue();
+    }
+
+    protected float roundDouble( double value ) {
+        BigDecimal b = new BigDecimal( value );
+        b = b.round( new MathContext( 2 ) );
+        return b.floatValue();
+    }
+
     protected abstract void updateSelectedPoints();
+
+    public abstract void updatePoints( float newSize );
 
 }

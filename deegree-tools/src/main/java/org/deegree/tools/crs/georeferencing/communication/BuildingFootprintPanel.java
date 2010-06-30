@@ -92,9 +92,9 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private float resizing;
 
-    private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
-
     private float initialResolution;
+
+    private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
 
     /**
      * 
@@ -265,7 +265,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             double distance = 0.0;
 
             for ( Point2d point : pointsPixelToWorld.keySet() ) {
-                System.out.println( "[Footprint] Mapping: " + point + " - " + pointsPixelToWorld.get( point ) );
+                // System.out.println( "[BuildingFootprint] Mapping: " + point + " - " + pointsPixelToWorld.get( point )
+                // );
                 if ( distance == 0.0 ) {
                     distance = point.distance( point2d );
                     if ( point2d instanceof FootprintPoint ) {
@@ -303,6 +304,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     }
 
+    @Override
     public void updatePoints( float newSize ) {
         this.resizing = newSize - this.resolution;
         BigDecimal b = new BigDecimal( newSize );
@@ -313,18 +315,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
         updateSelectedPoints();
 
-    }
-
-    protected float roundFloat( float value ) {
-        BigDecimal b = new BigDecimal( value );
-        b = b.round( new MathContext( 2 ) );
-        return b.floatValue();
-    }
-
-    protected float roundDouble( double value ) {
-        BigDecimal b = new BigDecimal( value );
-        b = b.round( new MathContext( 2 ) );
-        return b.floatValue();
     }
 
     public float getResolution() {

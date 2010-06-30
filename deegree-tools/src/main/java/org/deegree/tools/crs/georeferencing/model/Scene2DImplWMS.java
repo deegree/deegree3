@@ -55,10 +55,8 @@ import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient111;
-import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
  * 
@@ -107,13 +105,6 @@ public class Scene2DImplWMS implements Scene2D {
 
     private int imageWidth, imageHeight;
 
-    /**
-     * Map<initialValue,newValue>
-     */
-    private List<Point4Values> selectedPoints;
-
-    private Point4Values lastAbstractPoint;
-
     @Override
     public void init( RasterIOOptions options, Scene2DValues values ) {
 
@@ -132,11 +123,9 @@ public class Scene2DImplWMS implements Scene2D {
             ref = raster.getRasterReference();
             rasterRect = ref.convertEnvelopeToRasterCRS( raster.getEnvelope() );
             this.sceneValues.setRasterRect( rasterRect );
-            this.sceneValues.setCrs( raster.getCoordinateSystem().getWrappedCRS() );
+            this.sceneValues.setCrs( raster.getCoordinateSystem() );
 
         } catch ( IOException e ) {
-            e.printStackTrace();
-        } catch ( UnknownCRSException e ) {
             e.printStackTrace();
         }
 
