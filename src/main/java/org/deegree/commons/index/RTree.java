@@ -50,9 +50,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.deegree.commons.utils.Pair;
@@ -67,7 +70,14 @@ import org.slf4j.Logger;
  * Scott T. Leutenegger, Jeffrey M. Edgington, Mario A. Lopez: STR: A SIMPLE AND EFFICIENT ALGORITHM FOR R-TREE PACKING
  * (1997)
  * 
+ * <p>
+ * The <code>insert<code> method (more precisely <code>chooseSubtree</code> and <code>split</code>) have been
+ * implemented after the paper:
+ * 
+ * Norbert Beckmann, Bernhard Seeger: A Revised R*-tree in Comparison with Related Index Structures (2009)
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -79,11 +89,19 @@ public class RTree<T> extends SpatialIndex<T> {
 
     private static final Logger LOG = getLogger( RTree.class );
 
-    private Entry<T>[] root;
+    private static final double EPS5 = 1E-5;
+
+    protected Entry<T>[] root;
 
     private float[] bbox;
 
-    private int maxNumberOfObjects = 128;
+    private int bigM = 128;
+
+    private int smallm;
+
+    private final double asym = 1.0;
+
+    private final double s = 0.5;
 
     // rb: output the warning
     boolean outputWarning = true;
@@ -102,7 +120,8 @@ public class RTree<T> extends SpatialIndex<T> {
         }
         this.bbox = Arrays.copyOf( rootEnvelope, rootEnvelope.length );
         if ( numberOfObjects > 0 ) {
-            this.maxNumberOfObjects = numberOfObjects;
+            this.bigM = numberOfObjects;
+            this.smallm = ( bigM / 5 ) == 0 ? 1 : ( bigM / 5 );
         }
         this.root = null;
     }
@@ -117,7 +136,8 @@ public class RTree<T> extends SpatialIndex<T> {
     @SuppressWarnings("unchecked")
     public RTree( InputStream is ) throws IOException, ClassNotFoundException {
         ObjectInputStream in = new ObjectInputStream( new BufferedInputStream( is ) );
-        maxNumberOfObjects = in.readInt();
+        bigM = in.readInt();
+        smallm = ( bigM / 5 ) == 0 ? 1 : ( bigM / 5 );
         bbox = (float[]) in.readObject();
         root = (Entry[]) in.readObject();
         extraFlag = in.readBoolean();
@@ -133,20 +153,20 @@ public class RTree<T> extends SpatialIndex<T> {
                 if ( e.next == null ) {
                     list.add( e.entryValue );
                     // rb: uncommented
-                    if ( ( list.size() >= maxNumberOfObjects * 10 && outputWarning ) ) {
+                    if ( ( list.size() >= bigM * 10 && outputWarning ) ) {
                         outputWarning = false;
-                        LOG.warn(
-                                  "Collecting features should stop because {} features were loaded, which was 10 times larger then the maxNumberOfObjects {} (which is currently hardcoded). Continue filling the list though.",
-                                  list.size(), this.maxNumberOfObjects );
+                        // LOG.warn(
+                        // "Collecting features should stop because {} features were loaded, which was 10 times larger then the maxNumberOfObjects {} (which is currently hardcoded). Continue filling the list though.",
+                        // list.size(), this.maxNumberOfObjects );
                         // return list;
                     }
                 } else {
                     list.addAll( query( bbox, e.next ) );
-                    if ( ( list.size() >= maxNumberOfObjects * 10 ) && outputWarning ) {
+                    if ( ( list.size() >= bigM * 10 ) && outputWarning ) {
                         outputWarning = false;
-                        LOG.warn(
-                                  "Collecting features should stop because {} features were loaded, which was 10 times larger then the maxNumberOfObjects {} (which is currently hardcoded). Continue filling the list though.",
-                                  list.size(), this.maxNumberOfObjects );
+                        // LOG.warn(
+                        // "Collecting features should stop because {} features were loaded, which was 10 times larger then the maxNumberOfObjects {} (which is currently hardcoded). Continue filling the list though.",
+                        // list.size(), this.maxNumberOfObjects );
                         // return list;
                     }
                 }
@@ -163,8 +183,8 @@ public class RTree<T> extends SpatialIndex<T> {
     @Override
     public LinkedList<T> query( float[] env ) {
         if ( root != null ) {
-            // final float[] bbox = new float[] { (float) env.getMin().get0(), (float) env.getMin().get1(),
-            // (float) env.getMax().get0(), (float) env.getMax().get1() };
+            // final float[] bbox = new float[] { env.getMin().get0(), env.getMin().get1(),
+            // env.getMax().get0(), env.getMax().get1() };
 
             if ( intersects( env, this.bbox, 2 ) ) {
                 return query( env, root );
@@ -237,7 +257,7 @@ public class RTree<T> extends SpatialIndex<T> {
 
     @SuppressWarnings("unchecked")
     private Entry<T>[] buildTree( List<Pair<float[], ?>> rects ) {
-        if ( rects.size() <= maxNumberOfObjects ) {
+        if ( rects.size() <= bigM ) {
             Entry<T>[] node = new Entry[rects.size()];
             for ( int i = 0; i < rects.size(); ++i ) {
                 node[i] = new Entry<T>();
@@ -251,8 +271,7 @@ public class RTree<T> extends SpatialIndex<T> {
             return node;
         }
 
-        LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sortEnvelopes( rects, 0 ), maxNumberOfObjects
-                                                                                            * maxNumberOfObjects );
+        LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sortEnvelopes( rects, 0 ), bigM * bigM );
         ArrayList<Pair<float[], ?>> newRects = new ArrayList<Pair<float[], ?>>();
 
         for ( LinkedList<Pair<float[], ?>> slice : slices ) {
@@ -262,9 +281,9 @@ public class RTree<T> extends SpatialIndex<T> {
             LinkedList<Pair<float[], ?>> list = iter.next();
             int idx = 0;
             while ( idx < slice.size() ) {
-                Entry<T>[] node = new Entry[min( maxNumberOfObjects, slice.size() - idx )];
+                Entry<T>[] node = new Entry[min( bigM, slice.size() - idx )];
                 float[] bbox = null;
-                for ( int i = 0; i < maxNumberOfObjects; ++i, ++idx ) {
+                for ( int i = 0; i < bigM; ++i, ++idx ) {
                     if ( idx < slice.size() ) {
                         if ( list.isEmpty() ) {
                             list = iter.next();
@@ -308,7 +327,7 @@ public class RTree<T> extends SpatialIndex<T> {
      */
     @SuppressWarnings("unchecked")
     private Entry<T>[] buildFromFloat( List<Pair<float[], ?>> rects ) {
-        if ( rects.size() <= maxNumberOfObjects ) {
+        if ( rects.size() <= bigM ) {
             Entry<T>[] node = new Entry[rects.size()];
             for ( int i = 0; i < rects.size(); ++i ) {
                 node[i] = new Entry<T>();
@@ -322,8 +341,7 @@ public class RTree<T> extends SpatialIndex<T> {
             return node;
         }
 
-        LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sort( rects, 0 ), maxNumberOfObjects
-                                                                                   * maxNumberOfObjects );
+        LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sort( rects, 0 ), bigM * bigM );
         ArrayList<Pair<float[], ?>> newRects = new ArrayList<Pair<float[], ?>>();
 
         for ( LinkedList<Pair<float[], ?>> slice : slices ) {
@@ -333,9 +351,9 @@ public class RTree<T> extends SpatialIndex<T> {
             LinkedList<Pair<float[], ?>> list = iter.next();
             int idx = 0;
             while ( idx < slice.size() ) {
-                Entry<T>[] node = new Entry[min( maxNumberOfObjects, slice.size() - idx )];
+                Entry<T>[] node = new Entry[min( bigM, slice.size() - idx )];
                 float[] bbox = null;
-                for ( int i = 0; i < maxNumberOfObjects; ++i, ++idx ) {
+                for ( int i = 0; i < bigM; ++i, ++idx ) {
                     if ( idx < slice.size() ) {
                         if ( list.isEmpty() ) {
                             list = iter.next();
@@ -380,13 +398,64 @@ public class RTree<T> extends SpatialIndex<T> {
                             throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream( bos );
-        out.writeInt( maxNumberOfObjects );
+        out.writeInt( bigM );
         out.writeObject( bbox );
         out.writeObject( root );
         out.writeBoolean( extraFlag );
         out.close();
         output.write( bos.toByteArray() );
         // output.close();
+    }
+
+    @Override
+    public void clear() {
+        this.root = null;
+    }
+
+    @Override
+    public boolean remove( T object ) {
+        throw new UnsupportedOperationException( "Deletion of a single object should be implemented" );
+    }
+
+    /**
+     * @param bbox2
+     * @return
+     */
+    private double calculateArea( float[] bbox2 ) {
+        return ( bbox2[2] - bbox2[0] ) * ( bbox2[3] - bbox2[1] );
+    }
+
+    /**
+     * Verifies whether bbox1 intersects bbox2 (strictly; if the two share a lap, the answers will be false).
+     * 
+     * @param bbox1
+     * @param bbox2
+     * @return
+     */
+    private boolean intersects( float[] bbox1, float[] bbox2 ) {
+        return pointInside( bbox1[0], bbox1[1], bbox2 ) || pointInside( bbox1[0], bbox1[3], bbox2 )
+               || pointInside( bbox1[2], bbox1[1], bbox2 ) || pointInside( bbox1[2], bbox1[3], bbox2 )
+               || pointInside( bbox2[0], bbox2[1], bbox1 ) || pointInside( bbox2[0], bbox2[3], bbox1 )
+               || pointInside( bbox2[2], bbox2[1], bbox1 ) || pointInside( bbox2[2], bbox2[3], bbox1 );
+    }
+
+    /**
+     * Verifies whether a point is inside a bbox (strictly; if the point is on the border the answer will be false)
+     * 
+     * @param x
+     * @param y
+     * @param bbox
+     * @return true if it is, false if it's not
+     */
+    private boolean pointInside( float x, float y, float[] bbox ) {
+        return x > bbox[0] && x < bbox[2] && y > bbox[1] && y < bbox[3];
+    }
+
+    /**
+     * @return extra flag read from a file (used for hacking around buggy shp files)
+     */
+    public boolean getExtraFlag() {
+        return extraFlag;
     }
 
     static class Entry<T> implements Serializable {
@@ -400,25 +469,685 @@ public class RTree<T> extends SpatialIndex<T> {
     }
 
     @Override
-    public void clear() {
-        this.root = null;
-    }
+    public boolean insert( float[] insertBox, T object ) {
 
-    @Override
-    public boolean remove( T object ) {
-        throw new UnsupportedOperationException( "Deletion of a single object should be implemented" );
-    }
+        if ( root == null ) {
+            Entry<T> newEntry = new Entry<T>();
+            newEntry.bbox = insertBox;
+            newEntry.entryValue = object;
+            newEntry.next = null;
 
-    @Override
-    public boolean insert( float[] envelope, T object ) {
-        throw new UnsupportedOperationException( "Inserting of a single object should be implemented" );
+            root = new Entry[bigM + 1];
+            root[0] = newEntry;
+            return true;
+        }
+
+        insertNode( insertBox, object, root );
+        return true;
     }
 
     /**
-     * @return extra flag read from a file (used for hacking around buggy shp files)
+     * Insert the an object of value type T and bbox insertBox among the entries of the current node.
+     * 
+     * @param insertBox
+     * @param object
+     * @param entries
+     * @param parent
      */
-    public boolean getExtraFlag() {
-        return extraFlag;
+    private void insertNode( float[] insertBox, T object, Entry<T>[] entries ) {
+
+        List<TraceCell> trace = new ArrayList<TraceCell>();
+        Entry<T>[] leafNode = chooseLeaf( insertBox, entries, trace );
+
+        Entry<T> newEntry = new Entry();
+        newEntry.bbox = insertBox;
+        newEntry.entryValue = object;
+        newEntry.next = null;
+
+        // TODO improve insertion of new entry
+        for ( int i = bigM - 1; i >= 0; i-- ) {
+            if ( leafNode[i] != null ) {
+                leafNode[i + 1] = newEntry;
+                break;
+            }
+        }
+
+        if ( leafNode[bigM] != null ) {
+            int splitIndex = split( leafNode, insertBox, object );
+
+            Entry<T>[] addedNode = new Entry[bigM + 1];
+            Arrays.fill( addedNode, null );
+            System.arraycopy( leafNode, splitIndex + 1, addedNode, 0, bigM - splitIndex );
+            Arrays.fill( leafNode, splitIndex + 1, bigM + 1, null );
+
+            adjustTree( leafNode, addedNode, trace, trace.size() - 1 );
+
+        } else {
+            adjustTree( leafNode, null, trace, trace.size() - 1 );
+        }
+    }
+
+    class TraceCell {
+        Entry<T>[] node;
+
+        int index;
+
+        TraceCell( Entry<T>[] node, int index ) {
+            this.node = node;
+            this.index = index;
+        }
+    }
+
+    /**
+     * Adjust the tree bottom-up after insertion, enlarging the bboxes of parent nodes and splitting the nodes when
+     * needed.
+     * 
+     * @param leftEntries
+     * @param rightEntries
+     *            may be null, in case no split was performed a level lower
+     * @param trace
+     * @param traceIndex
+     */
+    private void adjustTree( Entry<T>[] leftEntries, Entry<T>[] rightEntries, List<TraceCell> trace, int traceIndex ) {
+        if ( rightEntries != null ) { // children have been split
+
+            // get the parent of the original child
+            Entry<T>[] parent;
+            int parentIndex;
+            if ( traceIndex < 0 ) {
+                parent = new Entry[bigM + 1];
+                parent[0] = new Entry();
+                root = parent;
+                parentIndex = 0;
+            } else {
+                parent = trace.get( traceIndex ).node;
+                parentIndex = trace.get( traceIndex ).index;
+            }
+
+            // update the bbox of the parent after the child entries changed due to insert/split
+            // TODO
+            int nLeftEntries = 0;
+            for ( int i = bigM - 1; i >= 0; i-- ) {
+                if ( leftEntries[i] != null ) {
+                    nLeftEntries = i;
+                    break;
+                }
+            }
+            parent[parentIndex].bbox = mbb( copyBoxesFromRange( leftEntries, 0, nLeftEntries + 1 ) );
+            parent[parentIndex].next = leftEntries;
+
+            Entry<T> newEntry = new Entry();
+            // TODO
+            int nRightEntries = 0;
+            for ( int i = bigM - 1; i >= 0; i-- ) {
+                if ( rightEntries[i] != null ) {
+                    nRightEntries = i;
+                    break;
+                }
+            }
+            newEntry.bbox = mbb( copyBoxesFromRange( rightEntries, 0, nRightEntries + 1 ) );
+            newEntry.next = rightEntries;
+
+            // TODO improve addition of new entry immediately after the last non-null entry of parent
+            for ( int i = parentIndex + 1; i < bigM + 1; i++ ) {
+                if ( parent[i] == null ) {
+                    parent[i] = newEntry;
+                    break;
+                }
+            }
+
+            if ( parent[bigM] != null ) {
+                int splitIndex = split( parent, newEntry.bbox, null );
+
+                Entry<T>[] addedNode = new Entry[bigM + 1];
+                Arrays.fill( addedNode, null );
+                System.arraycopy( parent, splitIndex + 1, addedNode, 0, bigM - splitIndex );
+                Arrays.fill( parent, splitIndex + 1, bigM + 1, null );
+
+                adjustTree( parent, addedNode, trace, traceIndex - 1 );
+            } else {
+
+                adjustTree( parent, null, trace, traceIndex - 1 );
+            }
+        } else {
+
+            if ( traceIndex < 0 ) {
+                return;
+            }
+
+            Entry<T>[] parent = trace.get( traceIndex ).node;
+            int parentIndex = trace.get( traceIndex ).index;
+
+            // TODO determine the length of non-null entries
+            int nLeftEntries = -1;
+            for ( int i = 0; i < bigM + 1; i++ ) {
+                if ( leftEntries[i] == null ) {
+                    nLeftEntries = i;
+                    break;
+                }
+            }
+
+            // update the bbox of the parent after the child entries changed due to insert/split
+            parent[parentIndex].bbox = mbb( copyBoxesFromRange( leftEntries, 0, nLeftEntries ) );
+
+            adjustTree( parent, null, trace, traceIndex - 1 );
+        }
+    }
+
+    /**
+     * Find the right leaf node in which to insert
+     * 
+     * @param insertBox
+     * @param object
+     * @param entries
+     * @param parent
+     */
+    private Entry<T>[] chooseLeaf( float[] insertBox, Entry<T>[] entries, List<TraceCell> trace ) {
+        if ( entries[0].next == null ) {
+            return entries;
+        }
+        int index = chooseSubtree( entries, insertBox );
+        trace.add( new TraceCell( entries, index ) );
+
+        return chooseLeaf( insertBox, entries[index].next, trace );
+    }
+
+    /**
+     * Choose the index at which the entries shall be split when inserting insertBox.
+     * 
+     * @param entries
+     * @param insertBox
+     * @param object
+     */
+    private int split( Entry<T>[] entries, float[] insertBox, T object ) {
+        if ( entries[0].next == null ) {
+            // leaf node
+            splitAxis( entries );
+        }
+
+        double minValue = Double.MAX_VALUE;
+        int splitIndex = -1;
+        for ( int i = smallm - 1; i < bigM + 1 - smallm; i++ ) {
+            float[][] leftSide = copyBoxesFromRange( entries, 0, i + 1 );
+            float[][] rightSide = copyBoxesFromRange( entries, i + 1, bigM + 1 );
+
+            double currentVal;
+            if ( !intersects( mbb( leftSide ), mbb( rightSide ) ) ) {
+                currentVal = wgFunction( leftSide, rightSide ) * wfFunction( i );
+            } else {
+                currentVal = wgFunction( leftSide, rightSide ) / wfFunction( i );
+            }
+            if ( currentVal < minValue ) {
+                minValue = currentVal;
+                splitIndex = i;
+            }
+        }
+        return splitIndex;
+    }
+
+    /**
+     * @param i
+     * @return
+     */
+    private double wfFunction( int i ) {
+        double result;
+        double miu = ( 1 - 2 * smallm / ( bigM + 1 ) ) * asym;
+        double xi = 2 * i / ( bigM + 1 ) - 1;
+        double sigma = s * ( 1 + Math.abs( miu ) );
+        double y1 = Math.exp( -1 / ( s * s ) );
+        double ys = 1 / ( 1 - y1 );
+        double expr = Math.exp( -( ( xi - miu ) / sigma ) * ( ( xi - miu ) / sigma ) );
+        result = ( ys * expr - y1 );
+        return result;
+    }
+
+    /**
+     * Calculate the value of the goal function when the splitting at position i.
+     * 
+     * @param leftSide
+     * @param rightSide
+     * @param i
+     * @return
+     */
+    private double wgFunction( float[][] leftSide, float[][] rightSide ) {
+        double result;
+        try {
+            result = calculatePerimeter( calculateIntersection( mbb( leftSide ), mbb( rightSide ) ) );
+        } catch ( NoOverlapException e ) {
+            float[][] all = new float[leftSide.length + rightSide.length][];
+
+            // Arrays.copyOf does not work
+            for ( int i = 0; i < leftSide.length; i++ ) {
+                all[i] = leftSide[i];
+            }
+            System.arraycopy( rightSide, 0, all, leftSide.length, rightSide.length );
+            result = calculatePerimeter( mbb( leftSide ) ) + calculatePerimeter( mbb( rightSide ) )
+                     - calculatePerimMax( all );
+        }
+        return result;
+    }
+
+    /**
+     * Determines the axis on which the sorting should be done before splitting. This also returns the entries sorted
+     * accordingly.
+     * 
+     * This is determined by summing up the perimeters for each split and then choosing the axis that has the smallest
+     * perimeter sum.
+     * 
+     * @param entries
+     * @return -1 when the X axis wins, 1 when Y axis wins
+     */
+    private int splitAxis( Entry<T>[] entries ) {
+        Entry<T>[] entriesOrderX = Arrays.copyOf( entries, bigM + 1 );
+        sortEntriesByX( entriesOrderX );
+        double perimX = 0.0;
+        for ( int i = smallm - 1; i <= bigM + 1 - smallm; i++ ) {
+            float[][] boxes = copyBoxesFromRange( entries, 0, i + 1 );
+            perimX += calculatePerimeter( mbb( boxes ) );
+
+            boxes = copyBoxesFromRange( entries, i, bigM + 1 );
+            perimX += calculatePerimeter( mbb( boxes ) );
+        }
+
+        Entry<T>[] entriesOrderY = Arrays.copyOf( entries, bigM + 1 );
+        sortEntriesByY( entriesOrderY );
+        double perimY = 0.0;
+        for ( int i = smallm; i <= bigM + 1 - smallm; i++ ) {
+            float[][] boxes = copyBoxesFromRange( entries, 0, i + 1 );
+            perimY += calculatePerimeter( mbb( boxes ) );
+
+            boxes = copyBoxesFromRange( entries, i, bigM + 1 );
+            perimY += calculatePerimeter( mbb( boxes ) );
+        }
+        if ( perimX < perimY ) {
+            for ( int i = 0; i < bigM + 1; i++ ) {
+                entries[i] = entriesOrderX[i];
+            }
+            return -1;
+        }
+
+        // otherwise y wins
+        for ( int i = 0; i < bigM + 1; i++ ) {
+            entries[i] = entriesOrderY[i];
+        }
+        return 1;
+    }
+
+    /**
+     * Calculate "maximum perimeter" constant for a node to be split: 2 times the perimeter of the minimum bounding box
+     * of all bigM + 1 bboxes minus the shortest axis length
+     * 
+     * @param boxes
+     * @return
+     */
+    private double calculatePerimMax( float[][] boxes ) {
+        float[] overfilledBox = mbb( boxes );
+        double result = 2 * calculatePerimeter( overfilledBox );
+
+        double xLength = 2 * ( overfilledBox[2] - overfilledBox[0] );
+        double yLength = 2 * ( overfilledBox[3] - overfilledBox[1] );
+
+        if ( xLength < yLength ) {
+            return result - xLength;
+        }
+        return result - yLength;
+    }
+
+    /**
+     * Copies the bboxes of entries with the indexes i1..i2-1
+     * 
+     * @param entries
+     * @param i1
+     * @param i2
+     * @return an array of bboxes (each containing a float array)
+     */
+    private float[][] copyBoxesFromRange( Entry<T>[] entries, int i1, int i2 ) {
+        float[][] boxes = new float[i2 - i1][];
+        for ( int j = i1; j < i2; j++ ) {
+            boxes[j - i1] = entries[j].bbox;
+        }
+        return boxes;
+    }
+
+    /**
+     * Sort the rectangles by their minimum Y then by their maximum Y
+     * 
+     * @param entriesOrderY
+     */
+    private void sortEntriesByY( Entry<T>[] entriesOrderY ) {
+        Arrays.sort( entriesOrderY, new Comparator<Entry<?>>() {
+            public int compare( Entry<?> a, Entry<?> b ) {
+                if ( a.bbox[1] < b.bbox[1] ) {
+                    return -1;
+                } else if ( a.bbox[1] > b.bbox[1] ) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        } );
+        Arrays.sort( entriesOrderY, new Comparator<Entry<?>>() {
+            public int compare( Entry<?> a, Entry<?> b ) {
+                if ( a.bbox[3] < b.bbox[3] ) {
+                    return -1;
+                } else if ( a.bbox[3] > b.bbox[3] ) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        } );
+    }
+
+    /**
+     * Sort the entries' bboxes by their minimum X then by their maximum X
+     * 
+     * @param entriesOrderX
+     */
+    private void sortEntriesByX( Entry<T>[] entriesOrderX ) {
+        Arrays.sort( entriesOrderX, new Comparator<Entry<?>>() {
+            public int compare( Entry<?> a, Entry<?> b ) {
+                if ( a.bbox[0] < b.bbox[0] ) {
+                    return -1;
+                } else if ( a.bbox[0] > b.bbox[0] ) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        } );
+        Arrays.sort( entriesOrderX, new Comparator<Entry<?>>() {
+            public int compare( Entry<?> a, Entry<?> b ) {
+                if ( a.bbox[2] < b.bbox[2] ) {
+                    return -1;
+                } else if ( a.bbox[2] > b.bbox[2] ) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        } );
+    }
+
+    /**
+     * Decide which subtree is better to insert in
+     * 
+     * @param entries
+     * @param insertBox
+     * @param object
+     * @return the index of the <code>entries</code> in which it is best to insert the new node
+     */
+    private int chooseSubtree( Entry<T>[] entries, float[] insertBox ) {
+        // TODO
+        int n = bigM;
+        for ( int i = bigM; i >= 0; i-- ) {
+            if ( entries[i] != null ) {
+                n = i + 1;
+                break;
+            }
+        }
+
+        // if there are entries that do not need enlargement to accommodate the new object then select the one with the
+        // minimum area
+        int selectEntry = -1;
+        double minimumArea = Double.MAX_VALUE;
+        for ( int i = 1; i < n; i++ ) {
+            if ( calculateEnlargement( entries[i].bbox, insertBox ) < EPS5 ) {
+                if ( calculateArea( entries[i].bbox ) < minimumArea ) {
+                    selectEntry = i;
+                    minimumArea = calculateArea( entries[i].bbox );
+                }
+            }
+        }
+        if ( selectEntry != -1 ) {
+            return selectEntry;
+        }
+
+        // calculate the change in perimeter that the new rectangle wound bring to every entry and then sort the values
+        double[] deltaPerim = new double[n];
+        for ( int i = 0; i < n; i++ ) {
+            deltaPerim[i] = calculatePerimeter( mbbIncludeInsertBox( entries[i].bbox, insertBox ) )
+                            - calculatePerimeter( entries[i].bbox );
+        }
+
+        ArrayEncaps<T>[] array = new ArrayEncaps[n];
+        for ( int i = 0; i < n; i++ ) {
+            array[i] = new ArrayEncaps();
+            array[i].entry = entries[i];
+            array[i].value = deltaPerim[i];
+            array[i].origIndex = i;
+        }
+        Arrays.sort( array, new Comparator<ArrayEncaps>() {
+            public int compare( ArrayEncaps a, ArrayEncaps b ) {
+                return a.value < b.value ? -1 : ( a.value == b.value ? 0 : 1 );
+            }
+        } );
+
+        double perimOverlap = 0.0;
+        for ( int i = 1; i < n; i++ ) {
+            perimOverlap += calculatePerimOverlap( array[0].entry.bbox, array[i].entry.bbox, insertBox );
+        }
+        if ( perimOverlap < EPS5 ) {
+            return array[0].origIndex;
+        }
+
+        double maxOverlap = Double.MIN_VALUE;
+        int selectIndex = -1;
+        for ( int i = 1; i < n; i++ ) {
+            if ( calculatePerimOverlap( array[0].entry.bbox, array[i].entry.bbox, insertBox ) > maxOverlap ) {
+                maxOverlap = calculatePerimOverlap( array[0].entry.bbox, array[i].entry.bbox, insertBox );
+                selectIndex = i;
+            }
+        }
+
+        // consider the first selectIndex+1 entries in the remaining steps
+        boolean success = false;
+        Set<Integer> cand = new HashSet<Integer>();
+        int c = -1;
+        double[] overlap = new double[selectIndex + 1];
+        checkComp( 0, selectIndex + 1, array, insertBox, success, cand, c, overlap );
+        if ( success ) {
+            return array[c].origIndex;
+        }
+        double minOverlap = Double.MAX_VALUE;
+        selectIndex = -1;
+        for ( int i : cand ) {
+            if ( overlap[i] < minOverlap ) {
+                minOverlap = overlap[i];
+                selectIndex = i;
+            }
+        }
+        return array[selectIndex].origIndex;
+    }
+
+    /**
+     * @param i
+     */
+    private void checkComp( int i, int p, ArrayEncaps[] array, float[] insertBox, boolean success, Set<Integer> cand,
+                            int c, double[] overlap ) {
+        cand.add( i );
+        for ( int j = 0; j < p; j++ ) {
+            if ( j != i ) {
+                double currentOverlap = calculateAreaOverlap( array[i].entry.bbox, array[j].entry.bbox, insertBox );
+                overlap[j] += currentOverlap;
+                if ( currentOverlap > 0 && !cand.contains( j ) ) {
+                    checkComp( j, p, array, insertBox, success, cand, c, overlap );
+                    if ( success ) {
+                        break;
+                    }
+                }
+            }
+        }
+        if ( overlap[i] < EPS5 ) {
+            c = i;
+            success = true;
+        }
+    }
+
+    /**
+     * @param bbox2
+     * @param bbox3
+     * @param insertBox
+     * @return
+     */
+    private double calculateAreaOverlap( float[] box1, float[] box2, float[] insertBox ) {
+        double area1;
+        try {
+            area1 = calculateArea( calculateIntersection( mbbIncludeInsertBox( box1, insertBox ), box2 ) )
+                    - calculateArea( calculateIntersection( box1, box2 ) );
+        } catch ( NoOverlapException e ) {
+            area1 = 0.0;
+        }
+        double area2;
+        try {
+            area2 = calculateArea( calculateIntersection( box1, box2 ) );
+        } catch ( NoOverlapException e ) {
+            area2 = 0.0;
+        }
+        return area1 - area2;
+    }
+
+    class ArrayEncaps<T> {
+        Entry<T> entry;
+
+        double value;
+
+        int origIndex;
+    }
+
+    /**
+     * @param bbox2
+     * @param bbox3
+     * @param insertBox
+     * @return
+     */
+    private double calculatePerimOverlap( float[] box1, float[] box2, float[] insertBox ) {
+        double perim1;
+        try {
+            perim1 = calculatePerimeter( calculateIntersection( mbbIncludeInsertBox( box1, insertBox ), box2 ) );
+        } catch ( NoOverlapException e ) {
+            perim1 = 0.0;
+        }
+        double perim2;
+        try {
+            perim2 = calculatePerimeter( calculateIntersection( box1, box2 ) );
+        } catch ( NoOverlapException e ) {
+            perim2 = 0.0;
+        }
+        return perim1 - perim2;
+    }
+
+    /**
+     * @param mbb
+     * @param box2
+     * @return
+     * @throws NoOverlapException
+     */
+    private float[] calculateIntersection( float[] box1, float[] box2 )
+                            throws NoOverlapException {
+        float interXmin = box1[0];
+        if ( box2[0] > interXmin ) {
+            interXmin = box2[0];
+        }
+        float interXmax = box1[2];
+        if ( box2[2] < interXmax ) {
+            interXmax = box2[2];
+        }
+        float interYmin = box1[1];
+        if ( box2[1] > interYmin ) {
+            interYmin = box2[1];
+        }
+        float interYmax = box1[3];
+        if ( box2[3] < interYmax ) {
+            interYmax = box2[3];
+        }
+
+        if ( interXmin > interXmax || interYmin > interYmax ) {
+            throw new NoOverlapException( "Areas " + Arrays.toString( box1 ) + " and " + Arrays.toString( box2 )
+                                          + " do not intersect!" );
+        }
+        return new float[] { interXmin, interYmin, interXmax, interYmax };
+    }
+
+    /**
+     * @param mbb
+     * @return
+     */
+    private double calculatePerimeter( float[] box ) {
+        return box[2] - box[0] + box[3] - box[1];
+    }
+
+    /**
+     * Determines the bounding box that fits both the to-be-inserted bbox and the array of entry boxes
+     * 
+     * @param insertBox
+     * @param entryBoxes
+     * @return
+     */
+    private float[] mbbIncludeInsertBox( float[] insertBox, float[]... entryBoxes ) {
+        float minx = insertBox[0];
+        float miny = insertBox[1];
+        float maxx = insertBox[2];
+        float maxy = insertBox[3];
+
+        for ( int i = 0; i < entryBoxes.length; i++ ) {
+            if ( entryBoxes[i][0] < minx ) {
+                minx = entryBoxes[i][0];
+            }
+            if ( entryBoxes[i][1] < miny ) {
+                miny = entryBoxes[i][1];
+            }
+            if ( maxx < entryBoxes[i][2] ) {
+                maxx = entryBoxes[i][2];
+            }
+            if ( maxy < entryBoxes[i][3] ) {
+                maxy = entryBoxes[i][3];
+            }
+        }
+        return new float[] { minx, miny, maxx, maxy };
+    }
+
+    /**
+     * Determines the bounding box that fits the array of entry boxes
+     * 
+     * @param entryBoxes
+     * @return
+     */
+    private float[] mbb( float[]... entryBoxes ) {
+        float minx = entryBoxes[0][0];
+        float miny = entryBoxes[0][1];
+        float maxx = entryBoxes[0][2];
+        float maxy = entryBoxes[0][3];
+
+        for ( int i = 1; i < entryBoxes.length; i++ ) {
+            if ( entryBoxes[i][0] < minx ) {
+                minx = entryBoxes[i][0];
+            }
+            if ( entryBoxes[i][1] < miny ) {
+                miny = entryBoxes[i][1];
+            }
+            if ( maxx < entryBoxes[i][2] ) {
+                maxx = entryBoxes[i][2];
+            }
+            if ( maxy < entryBoxes[i][3] ) {
+                maxy = entryBoxes[i][3];
+            }
+        }
+        return new float[] { minx, miny, maxx, maxy };
+    }
+
+    /**
+     * Calculate how much does the bbox of an entry needs to be enlarged so that it contains the bbox of the objext to
+     * be inserted
+     * 
+     * @param entryBbox
+     *            the bbox of the entry already in the tree
+     * @param insertBbox
+     *            the bbox of object to be inserted
+     * @return the area of enlargement
+     */
+    private double calculateEnlargement( float[] entryBbox, float[] insertBbox ) {
+        return calculateArea( mbbIncludeInsertBox( entryBbox, insertBbox ) ) - calculateArea( entryBbox );
     }
 
 }
