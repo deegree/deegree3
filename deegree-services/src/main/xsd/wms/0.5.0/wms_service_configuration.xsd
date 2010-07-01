@@ -233,6 +233,7 @@
           <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
           <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
         </sequence>
+        <attribute name="queryable" type="boolean" use="optional" />
       </extension>
     </complexContent>
   </complexType>
@@ -263,6 +264,7 @@
             <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
             <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
           </sequence>
+          <attribute name="queryable" type="boolean" use="optional" />
         </restriction>
       </complexContent>
     </complexType>
@@ -292,6 +294,7 @@
             <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
             <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
           </sequence>
+          <attribute name="queryable" type="boolean" use="optional" />
         </restriction>
       </complexContent>
     </complexType>
@@ -317,6 +320,7 @@
             <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
             <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
           </sequence>
+          <attribute name="queryable" type="boolean" use="optional" />
         </restriction>
       </complexContent>
     </complexType>
