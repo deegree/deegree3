@@ -235,9 +235,7 @@ public class Controller {
 
                     // swap the tempPoints into the map now
                     if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
-                        addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint() );
-                        footPanel.setLastAbstractPoint( null, null );
-                        panel.setLastAbstractPoint( null, null );
+                        setValues();
                     }
                     TransformationMethod transform = null;
                     if ( transformationType == null ) {
@@ -520,18 +518,19 @@ public class Controller {
             }
         }
 
-        /**
-         * Sets values to the JTableModel and adds a new row to it.
-         */
-        private void setValues() {
+    }
 
-            footPanel.addToSelectedPoints( footPanel.getLastAbstractPoint() );
-            panel.addToSelectedPoints( panel.getLastAbstractPoint() );
-            addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint() );
-            footPanel.setLastAbstractPoint( null, null );
-            panel.setLastAbstractPoint( null, null );
+    /**
+     * Sets values to the JTableModel and adds a new row to it.
+     */
+    private void setValues() {
 
-        }
+        footPanel.addToSelectedPoints( footPanel.getLastAbstractPoint() );
+        panel.addToSelectedPoints( panel.getLastAbstractPoint() );
+        addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint() );
+        footPanel.setLastAbstractPoint( null, null );
+        panel.setLastAbstractPoint( null, null );
+
     }
 
     /**

@@ -47,7 +47,6 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -141,10 +140,9 @@ public class Scene2DPanel extends AbstractPanel2D {
             // g2.translate( -29, -51 );
         }
 
-        if ( points != null ) {
-            for ( Pair<Point4Values, Point4Values> point : points ) {
-                g2.fillOval( (int) point.second.getNewValue().getX() - 5, (int) point.second.getNewValue().getY() - 5,
-                             10, 10 );
+        if ( selectedPoints != null ) {
+            for ( Point4Values point : selectedPoints ) {
+                g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
             }
         }
 
@@ -193,12 +191,16 @@ public class Scene2DPanel extends AbstractPanel2D {
     }
 
     private void updateSelectedPoints( Scene2DValues sceneValues ) {
-        GeoReferencedPoint point = null;
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {
-            point = new GeoReferencedPoint( ( p.getInitialValue().getX() / initialResolution ) * inverseSize,
-                                            ( p.getInitialValue().getY() / initialResolution ) * inverseSize );
-            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), point, p.getWorldCoords() ) );
+            int[] pValues = sceneValues.getPixelCoord( p.getWorldCoords() );
+            double x = pValues[0];
+            double y = pValues[1];
+            double x1 = x + roundDouble( x * resizing );
+            double y1 = y + roundDouble( y * resizing );
+            GeoReferencedPoint pi = new GeoReferencedPoint( x1, y1 );
+            // p.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
+            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords() ) );
         }
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {

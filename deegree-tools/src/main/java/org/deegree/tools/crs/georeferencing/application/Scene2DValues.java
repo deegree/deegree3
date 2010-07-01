@@ -162,7 +162,7 @@ public class Scene2DValues {
         double percentY = pointWorldY / spanY;
         int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() + imageMargin.getX() * 2 ) );
         int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height )
-                                                + imageStartPosition.getY() - imageMargin.getY() * 2 ) );
+                                                + imageStartPosition.getY() - imageMargin.getY() ) );
 
         return new int[] { pixelPointX, pixelPointY };
 
@@ -180,7 +180,7 @@ public class Scene2DValues {
         double percentY = deltaY / spanY;
         int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() ) );
         int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) + imageStartPosition.getY() ) );
-        System.out.println( "[Scene2DValues] percent: " + percentX + " " + percentY + " = " + deltaY + " " + spanY );
+        // System.out.println( "[Scene2DValues] percent: " + percentX + " " + percentY + " = " + deltaY + " " + spanY );
         return new int[] { pixelPointX, pixelPointY };
     }
 
