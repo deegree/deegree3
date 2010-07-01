@@ -513,8 +513,9 @@ public class WMSController extends AbstractOGCServiceController {
                     bindings.put( ns, loc );
                 }
                 bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
+                
                 new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, fi.getCoordinateSystem(), null, null, null, 0, -1,
-                                      null, false ).export( col, ns == null ? loc : null, bindings );
+                                      null, false, fi.returnGeometries() ).export( col, ns == null ? loc : null, bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
