@@ -185,7 +185,7 @@ public class XMLCoordinateTransform {
             xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( System.out, "UTF-8" );
         }
 
-        xmlWriter = new FormattingXMLStreamWriter( xmlWriter, "    ", true );
+        xmlWriter = new FormattingXMLStreamWriter( xmlWriter, "    ", false );
         xmlWriter.writeStartDocument( "UTF-8", "1.0" );
         XMLTransformer transformer = new XMLTransformer( targetCRS );
         transformer.transform( xmlReader, xmlWriter, sourceCRS, gmlVersion, false, trans );
