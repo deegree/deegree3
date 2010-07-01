@@ -90,7 +90,7 @@
           </DirectStyle>
         </RequestableLayer>
       </RequestableLayer>
-      
+
       <RequestableLayer>
         <Name>Elevation</Name>
         <Title>Elevation Data of Utah</Title>
@@ -105,18 +105,14 @@
         <RequestableLayer>
           <Name>ElevationContours</Name>
           <Title>Elevationcontours in Utah</Title>
-          <LogicalLayer>
-            <FeatureStoreId>utah_contours500ft</FeatureStoreId>
-          </LogicalLayer>
-          <LogicalLayer>
-            <FeatureStoreId>utah_contours1000ft</FeatureStoreId>
-          </LogicalLayer>
-          <LogicalLayer>
-            <FeatureStoreId>utah_contours2500ft</FeatureStoreId>
-          </LogicalLayer>
-          <DirectStyle>
+          <FeatureStoreId>utah_contours500ft</FeatureStoreId>
+          <SLDStyle>
             <File>../styles/utah_contours.sld</File>
-          </DirectStyle>
+            <NamedLayer>ElevationContours</NamedLayer>
+            <Name>ElevationContours</Name>
+            <UserStyle>default:ElevationContours</UserStyle>
+            <UserStyle>ElevationContoursSimple</UserStyle>
+          </SLDStyle>
         </RequestableLayer>
       </RequestableLayer>
 
@@ -194,7 +190,7 @@
         <ShapefileDirectory>../../data/utah/vector/busroutes</ShapefileDirectory>
       </DynamicLayer>
 
-      <StatisticsLayer/>
+      <StatisticsLayer />
 
     </UnrequestableLayer>
 

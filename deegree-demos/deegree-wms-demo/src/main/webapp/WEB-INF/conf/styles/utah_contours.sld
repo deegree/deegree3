@@ -13,16 +13,13 @@
                     <sld:Abstract>default</sld:Abstract>
                     <ogc:Filter>
                         <ogc:PropertyIsLessThan>
-                            <ogc:PropertyName>app:elev</ogc:PropertyName>
+                            <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                             <ogc:Literal>5200.0</ogc:Literal>
                         </ogc:PropertyIsLessThan>
                     </ogc:Filter>
                     <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
                     <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#666600</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -40,11 +37,11 @@
                     <ogc:Filter>
                         <ogc:And>
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>5200.0</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>5900.0</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                         </ogc:And>
@@ -52,9 +49,6 @@
                     <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
                     <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#887d00</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -72,11 +66,11 @@
                     <ogc:Filter>
                         <ogc:And>
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>5900.0</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>6600.0</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                         </ogc:And>
@@ -84,9 +78,6 @@
                     <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
                     <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#aa9300</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -104,21 +95,18 @@
                     <ogc:Filter>
                         <ogc:And>
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>6600.0</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>7300.0</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                         </ogc:And>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#ccaa00</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -136,21 +124,18 @@
                     <ogc:Filter>
                         <ogc:And>
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>7300.0</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>8000.0</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                         </ogc:And>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#eec100</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -168,21 +153,18 @@
                     <ogc:Filter>
                         <ogc:And>
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>8000.0</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>8700.0</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                         </ogc:And>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#eeb500</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -200,21 +182,18 @@
                     <ogc:Filter>
                         <ogc:And>
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>8700.0</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>9400.0</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                         </ogc:And>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#cc8800</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -232,21 +211,18 @@
                     <ogc:Filter>
                         <ogc:And>
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>9400.0</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>10100.0</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                         </ogc:And>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#aa5b00</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -264,21 +240,18 @@
                     <ogc:Filter>
                         <ogc:And>
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>10100.0</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>app:elev</ogc:PropertyName>
+                                <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                                 <ogc:Literal>10800.0</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                         </ogc:And>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#882d00</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -295,16 +268,13 @@
                     <sld:Abstract>default</sld:Abstract>
                     <ogc:Filter>
                         <ogc:PropertyIsGreaterThanOrEqualTo>
-                            <ogc:PropertyName>app:elev</ogc:PropertyName>
+                            <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                             <ogc:Literal>10800.0</ogc:Literal>
                         </ogc:PropertyIsGreaterThanOrEqualTo>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0.0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>1.0E9</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name='stroke'>#660000</sld:CssParameter>
                             <sld:CssParameter name='stroke-linecap'>butt</sld:CssParameter>
@@ -327,16 +297,13 @@
                     <sld:Name>ELEV_4999</sld:Name>
                     <ogc:Filter>
                         <ogc:PropertyIsLessThanOrEqualTo>
-                            <ogc:PropertyName>app:elev</ogc:PropertyName>
+                            <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                             <ogc:Literal>4999</ogc:Literal>
                         </ogc:PropertyIsLessThanOrEqualTo>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>3.779527559017323E14</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>3.779527559017323E14</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name="stroke">#588c58</sld:CssParameter>
                             <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
@@ -349,7 +316,7 @@
                     <sld:Name>ELEV_5000</sld:Name>
                     <ogc:Filter>
                         <ogc:PropertyIsBetween>
-                            <ogc:PropertyName>app:elev</ogc:PropertyName>
+                            <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                             <ogc:LowerBoundary>
                                 <ogc:Literal>5000</ogc:Literal>
                             </ogc:LowerBoundary>
@@ -358,12 +325,9 @@
                             </ogc:UpperBoundary>
                         </ogc:PropertyIsBetween>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>3.779527559017323E14</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>3.779527559017323E14</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name="stroke">#b26b00</sld:CssParameter>
                             <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
@@ -376,7 +340,7 @@
                     <sld:Name>ELEV_7500</sld:Name>
                     <ogc:Filter>
                         <ogc:PropertyIsBetween>
-                            <ogc:PropertyName>app:elev</ogc:PropertyName>
+                            <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                             <ogc:LowerBoundary>
                                 <ogc:Literal>7500</ogc:Literal>
                             </ogc:LowerBoundary>
@@ -385,12 +349,9 @@
                             </ogc:UpperBoundary>
                         </ogc:PropertyIsBetween>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>3.779527559017323E14</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>3.779527559017323E14</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name="stroke">#8e8e00</sld:CssParameter>
                             <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
@@ -403,16 +364,13 @@
                     <sld:Name>ELEV_10000</sld:Name>
                     <ogc:Filter>
                         <ogc:PropertyIsGreaterThanOrEqualTo>
-                            <ogc:PropertyName>app:elev</ogc:PropertyName>
+                            <ogc:PropertyName>app:ELEV</ogc:PropertyName>
                             <ogc:Literal>10000</ogc:Literal>
                         </ogc:PropertyIsGreaterThanOrEqualTo>
                     </ogc:Filter>
-                    <sld:MinScaleDenominator>0</sld:MinScaleDenominator>
-                    <sld:MaxScaleDenominator>3.779527559017323E14</sld:MaxScaleDenominator>
+                    <!-- <sld:MinScaleDenominator>0</sld:MinScaleDenominator> -->
+                    <!-- <sld:MaxScaleDenominator>3.779527559017323E14</sld:MaxScaleDenominator> -->
                     <sld:LineSymbolizer>
-                        <sld:Geometry>
-                            <ogc:PropertyName>app:contourLine</ogc:PropertyName>
-                        </sld:Geometry>
                         <sld:Stroke>
                             <sld:CssParameter name="stroke">#853f10</sld:CssParameter>
                             <sld:CssParameter name="stroke-opacity">1.0</sld:CssParameter>
