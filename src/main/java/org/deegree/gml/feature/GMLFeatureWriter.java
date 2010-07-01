@@ -141,6 +141,8 @@ public class GMLFeatureWriter {
 
     private boolean exportSf;
 
+    private boolean outputGeometries = true;
+
     /**
      * @param writer
      * @param outputCRS
@@ -149,6 +151,39 @@ public class GMLFeatureWriter {
      */
     public GMLFeatureWriter( XMLStreamWriter writer, CRS outputCRS ) {
         this( GMLVersion.GML_31, writer, outputCRS, null, null, null, 0, -1, null, false );
+    }
+
+    /**
+     * @param version
+     *            GML version of the output, must not be <code>null</code>
+     * @param writer
+     * @param outputCRS
+     *            crs used for exported geometries, may be <code>null</code> (in this case, the original crs of the
+     *            geometries is used)
+     * @param formatter
+     *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
+     *            <code>null</code> (use 5 decimal places)
+     * @param referenceTemplate
+     *            URI template used to create references to local objects, e.g.
+     * 
+     *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
+     *            , the substring <code>{}</code> is replaced by the object id
+     * @param requestedProps
+     *            properties to be exported, may be <code>null</code> (export all properties)
+     * @param traverseXlinkDepth
+     * @param traverseXlinkExpiry
+     * @param xlinkProps
+     * @param exportSfGeometries
+     * @param outputGeometries
+     *            whether to output optional geometry properties
+     */
+    public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCRS, CoordinateFormatter formatter,
+                             String referenceTemplate, PropertyName[] requestedProps, int traverseXlinkDepth,
+                             int traverseXlinkExpiry, XLinkPropertyName[] xlinkProps, boolean exportSfGeometries,
+                             boolean outputGeometries ) {
+        this( version, writer, outputCRS, formatter, referenceTemplate, requestedProps, traverseXlinkDepth,
+              traverseXlinkExpiry, xlinkProps, exportSfGeometries );
+        this.outputGeometries = outputGeometries;
     }
 
     /**
@@ -425,6 +460,11 @@ public class GMLFeatureWriter {
             LOG.debug( "Optional property '" + propName + "', checking if it is requested." );
             if ( !isPropertyRequested( propName ) ) {
                 LOG.debug( "Skipping it." );
+                return;
+            }
+            // required for WMS:
+            if ( !outputGeometries && propertyType instanceof GeometryPropertyType ) {
+                LOG.debug( "Skipping it since geometries should not be output." );
                 return;
             }
         }
