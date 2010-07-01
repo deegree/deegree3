@@ -125,6 +125,8 @@ public abstract class Layer {
 
     private String internalName;
 
+    private boolean queryable = true;
+
     protected Layer( String name, String title, Layer parent ) {
         this.name = name;
         this.title = title;
@@ -147,6 +149,10 @@ public abstract class Layer {
         }
         this.parent = parent;
         children = new LinkedList<Layer>();
+
+        if ( layer.isQueryable() != null ) {
+            queryable = layer.isQueryable();
+        }
 
         for ( DimensionType type : layer.getDimension() ) {
             parser parser = new parser( new DimensionLexer( new StringReader( type.getExtent() ) ) );
@@ -587,6 +593,13 @@ public abstract class Layer {
         dims.putAll( dimensions );
 
         return dims;
+    }
+
+    /**
+     * @return false, if queryable has been turned off
+     */
+    public boolean isQueryable() {
+        return queryable;
     }
 
 }
