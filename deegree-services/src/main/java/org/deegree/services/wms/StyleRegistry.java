@@ -228,11 +228,9 @@ public class StyleRegistry extends TimerTask {
                     put( layerName, style, false );
                 }
             } catch ( MalformedURLException e ) {
-                e.printStackTrace();
                 LOG.trace( "Stack trace", e );
                 LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
             } catch ( URISyntaxException e ) {
-                e.printStackTrace();
                 LOG.trace( "Stack trace", e );
                 LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
             }

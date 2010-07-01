@@ -242,7 +242,8 @@ public class SLDParser {
         LinkedList<Style> styles = new LinkedList<Style>();
         LinkedList<Filter> filters = new LinkedList<Filter>();
 
-        while ( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) {
+        while ( in.hasNext() && ( in.getLocalName().equals( "NamedLayer" ) && !in.isEndElement() )
+                || in.getLocalName().equals( "UserLayer" ) ) {
             if ( in.getLocalName().equals( "UserLayer" ) ) {
                 skipElement( in );
             }
@@ -301,9 +302,10 @@ public class SLDParser {
 
                 String styleName = null;
 
-                if ( in.getLocalName().equals( "UserStyle" ) ) {
+                while ( in.hasNext() && in.getLocalName().equals( "UserStyle" ) ) {
 
-                    while ( !( in.isEndElement() && in.getLocalName().equals( "UserStyle" ) ) ) {
+                    while ( in.hasNext() && !( in.isEndElement() && in.getLocalName().equals( "UserStyle" ) ) ) {
+
                         in.nextTag();
 
                         if ( in.getLocalName().equals( "Name" ) ) {
@@ -342,9 +344,12 @@ public class SLDParser {
                             }
                             styles.add( style );
                         }
+
                     }
+                    in.nextTag();
 
                 }
+
             }
         }
 
