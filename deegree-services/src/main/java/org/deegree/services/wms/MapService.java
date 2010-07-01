@@ -359,7 +359,6 @@ public class MapService {
                               Interpolation interpol, Quality quality )
                             throws MalformedURLException {
         Layer res = null;
-
         if ( layer instanceof AbstractLayerType ) {
             AbstractLayerType aLayer = (AbstractLayerType) layer;
 
@@ -821,12 +820,14 @@ public class MapService {
                             throws MissingDimensionValue, InvalidDimensionValue {
         LinkedList<String> warnings = new LinkedList<String>();
 
-        Pair<FeatureCollection, LinkedList<String>> pair = l.getFeatures( fi, s );
-        if ( pair != null ) {
-            if ( pair.first != null ) {
-                feats.addAll( pair.first );
+        if ( l.isQueryable() ) {
+            Pair<FeatureCollection, LinkedList<String>> pair = l.getFeatures( fi, s );
+            if ( pair != null ) {
+                if ( pair.first != null ) {
+                    feats.addAll( pair.first );
+                }
+                warnings.addAll( pair.second );
             }
-            warnings.addAll( pair.second );
         }
         for ( Layer c : l.getChildren() ) {
             warnings.addAll( getFeatures( feats, c, fi, s ) );

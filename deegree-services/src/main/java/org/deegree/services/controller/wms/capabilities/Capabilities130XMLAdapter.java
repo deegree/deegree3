@@ -174,7 +174,9 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         }
 
         writer.writeStartElement( WMSNS, "Layer" );
-        writer.writeAttribute( "queryable", "1" );
+        if ( layer.isQueryable() ) {
+            writer.writeAttribute( "queryable", "1" );
+        }
 
         maybeWriteElementNS( writer, WMSNS, "Name", layer.getName() );
         writeElement( writer, WMSNS, "Title", layer.getTitle() );
