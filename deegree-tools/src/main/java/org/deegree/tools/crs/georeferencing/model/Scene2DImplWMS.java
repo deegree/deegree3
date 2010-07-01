@@ -118,8 +118,12 @@ public class Scene2DImplWMS implements Scene2D {
             InputStream in = url.openStream();
             raster = RasterFactory.loadRasterFromStream( in, options );
             in.close();
-            // SimpleRaster ra = raster.getAsSimpleRaster().getSubRaster( -2.0, -1.0, -0.01, 6.0 );
-            // this.sceneValues.setRaster( ra );
+            SimpleRaster ra = raster.getAsSimpleRaster().getSubRaster(
+                                                                       Double.parseDouble( options.get( "LEFT_LOWER_X" ) ),
+                                                                       Double.parseDouble( options.get( "LEFT_LOWER_Y" ) ),
+                                                                       Double.parseDouble( options.get( "RIGHT_UPPER_X" ) ),
+                                                                       Double.parseDouble( options.get( "RIGHT_UPPER_Y" ) ) );
+            this.sceneValues.setRaster( ra );
             ref = raster.getRasterReference();
             rasterRect = ref.convertEnvelopeToRasterCRS( raster.getEnvelope() );
             this.sceneValues.setRasterRect( rasterRect );

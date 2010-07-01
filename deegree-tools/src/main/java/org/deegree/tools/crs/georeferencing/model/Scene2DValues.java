@@ -66,8 +66,10 @@ public class Scene2DValues {
 
     private Point2d imageMargin;
 
+    //
     private Rectangle imageDimension;
 
+    //
     private Point2d imageStartPosition;
 
     private Point2d transformedBounds;
@@ -105,6 +107,8 @@ public class Scene2DValues {
             }
             double pixelPosX = imageStartPosition.x - minPointPixel.x - pixelPoint.x;
             double pixelPosY = imageStartPosition.y - minPointPixel.y - pixelPoint.y;
+            // double pixelPosX = minPointPixel.x - pixelPoint.x;
+            // double pixelPosY = minPointPixel.y - pixelPoint.y;
             double rasterPosX = -( pixelPosX * convertedPixelToRasterPoint.x );
             double rasterPosY = -( pixelPosY * convertedPixelToRasterPoint.y );
             // System.out.println( "pos: " + minPointPixel );
@@ -159,6 +163,9 @@ public class Scene2DValues {
         int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() + imageMargin.getX() * 2 ) );
         int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height )
                                                 + imageStartPosition.getY() - imageMargin.getY() ) );
+        //        
+        // int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) ) );
+        // int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) ) );
 
         return new int[] { pixelPointX, pixelPointY };
 

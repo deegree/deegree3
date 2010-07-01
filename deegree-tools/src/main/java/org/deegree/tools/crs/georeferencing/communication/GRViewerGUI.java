@@ -71,6 +71,10 @@ public class GRViewerGUI extends JFrame {
 
     public final static String MENUITEM_GET_3DOBJECT = "Import 3D Object";
 
+    public final static String MENUITEM_TRANS_POLYNOM = "Polynomial";
+
+    public final static String MENUITEM_TRANS_HELMERT = "Helmert";
+
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
     private final static Dimension FRAME_DIMENSION = new Dimension( 900, 600 );
@@ -81,13 +85,17 @@ public class GRViewerGUI extends JFrame {
 
     private OpenGLEventHandler openGLEventListener;
 
-    private PointTablePanel pointTablePanel;
+    private PointTableFrame pointTablePanel;
 
     private BuildingFootprintPanel footprintPanel;
 
     private JMenuItem import2DMapMenuItem;
 
     private JMenuItem import3DObjectMenuItem;
+
+    private JMenuItem polynomial;
+
+    private JMenuItem helmert;
 
     private String ows7url;
 
@@ -120,18 +128,29 @@ public class GRViewerGUI extends JFrame {
 
         JMenuBar menuBar;
         JMenu menuFile;
+        JMenu menuTransformation;
 
         menuBar = new JMenuBar();
         menuFile = new JMenu( "File" );
+        menuTransformation = new JMenu( "Transformation" );
+
         menuBar.add( menuFile );
+        menuBar.add( menuTransformation );
+
         import2DMapMenuItem = new JMenuItem( MENUITEM_GETMAP );
         import3DObjectMenuItem = new JMenuItem( MENUITEM_GET_3DOBJECT );
+        polynomial = new JMenuItem( MENUITEM_TRANS_POLYNOM );
+        helmert = new JMenuItem( MENUITEM_TRANS_HELMERT );
 
         // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
         ows7url = "http://localhost:8080/deegree-wms-cite111/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
         fileName = "/home/thomas/test_building.gml";
+
         menuFile.add( import2DMapMenuItem );
         menuFile.add( import3DObjectMenuItem );
+        menuTransformation.add( polynomial );
+        menuTransformation.add( helmert );
+
         this.getRootPane().setJMenuBar( menuBar );
     }
 
@@ -140,7 +159,7 @@ public class GRViewerGUI extends JFrame {
         navigationPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         navigationPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, navigationPanel, 0, 0, 3, 1, .15, .15 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, navigationPanel, 0, 0, 2, 1, .15, .15 );
     }
 
     private void setup2DScene( GridBagLayout gbl ) {
@@ -179,17 +198,17 @@ public class GRViewerGUI extends JFrame {
         canvas.addMouseMotionListener( openGLEventListener.getTrackBall() );
         canvas.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 2, 1, 1, 1, new Insets( 10, 10, 0, 0 ),
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 1, 2, 1, 1, new Insets( 0, 10, 0, 0 ),
                                           GridBagConstraints.LINE_END, 1, 1 );
     }
 
     private void setupPointTable( GridBagLayout gbl ) {
-        pointTablePanel = new PointTablePanel();
+        pointTablePanel = new PointTableFrame();
 
-        pointTablePanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
-        pointTablePanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
+        // pointTablePanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+        // pointTablePanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, pointTablePanel, 1, 2, 2, 1, .5, .5 );
+        // GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, pointTablePanel, 1, 2, 2, 1, .5, .5 );
     }
 
     /**
@@ -207,6 +226,8 @@ public class GRViewerGUI extends JFrame {
     public void addMenuItemListener( ActionListener e ) {
         import2DMapMenuItem.addActionListener( e );
         import3DObjectMenuItem.addActionListener( e );
+        polynomial.addActionListener( e );
+        helmert.addActionListener( e );
 
     }
 
@@ -245,7 +266,7 @@ public class GRViewerGUI extends JFrame {
         return navigationPanel;
     }
 
-    public PointTablePanel getPointTablePanel() {
+    public PointTableFrame getPointTablePanel() {
         return pointTablePanel;
     }
 

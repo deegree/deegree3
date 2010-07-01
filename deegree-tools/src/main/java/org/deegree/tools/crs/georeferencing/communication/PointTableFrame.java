@@ -42,6 +42,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -59,7 +60,7 @@ import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
  * 
  * @version $Revision$, $Date$
  */
-public class PointTablePanel extends JPanel {
+public class PointTableFrame extends JFrame {
 
     public final static String BUTTON_DELETE_SELECTED = "Delete selected";
 
@@ -81,7 +82,7 @@ public class PointTablePanel extends JPanel {
 
     private JScrollPane tableScrollPane = new JScrollPane();
 
-    public PointTablePanel() {
+    public PointTableFrame() {
         for ( String s : columnNames ) {
             model.addColumn( s );
         }
@@ -91,14 +92,17 @@ public class PointTablePanel extends JPanel {
         buttonPanel.setBorder( BorderFactory.createLineBorder( Color.black ) );
         buttonPanel.add( deleteSingleButton, BorderLayout.LINE_START );
         buttonPanel.add( deleteAllButton, BorderLayout.LINE_END );
-        this.add( buttonPanel, BorderLayout.NORTH );
+        this.getContentPane().add( buttonPanel, BorderLayout.NORTH );
 
         tablePanel.setLayout( new BorderLayout() );
         tablePanel.add( table.getTableHeader(), BorderLayout.NORTH );
         tablePanel.add( table, BorderLayout.CENTER );
-        this.add( tableScrollPane );
+        this.getContentPane().add( tableScrollPane );
         tableScrollPane.setViewportView( tablePanel );
-
+        setSize( 600, 300 );
+        setVisible( true );
+        toFront();
+        setAlwaysOnTop( true );
     }
 
     public void addHorizontalRefListener( ActionListener c ) {

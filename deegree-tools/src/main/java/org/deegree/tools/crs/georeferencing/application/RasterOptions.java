@@ -72,6 +72,14 @@ public class RasterOptions {
 
     private static final String RIO_WMS_TIMEOUT = "RIO_WMS_TIMEOUT";
 
+    private static final String LEFT_LOWER_X = "LEFT_LOWER_X";
+
+    private static final String LEFT_LOWER_Y = "LEFT_LOWER_Y";
+
+    private static final String RIGHT_UPPER_X = "RIGHT_UPPER_X";
+
+    private static final String RIGHT_UPPER_Y = "RIGHT_UPPER_Y";
+
     /**
      * Specifies the size of the full drawn side.
      */
@@ -83,6 +91,10 @@ public class RasterOptions {
         options.add( RasterIOOptions.CRS, "EPSG:4326" );
         options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
         options.add( RIO_WMS_LAYERS, "root" );
+        options.add( LEFT_LOWER_X, "-2.0" );
+        options.add( LEFT_LOWER_Y, "-1.0" );
+        options.add( RIGHT_UPPER_X, "2.0" );
+        options.add( RIGHT_UPPER_Y, "6.0" );
 
         // options.add( RasterIOOptions.CRS, "EPSG:32618" );
         // options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );

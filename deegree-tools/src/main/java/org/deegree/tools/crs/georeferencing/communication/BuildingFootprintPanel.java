@@ -84,7 +84,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private Point2d cumTranslationPoint;
 
-    private final Insets insets = new Insets( 10, 10, 0, 0 );
+    private final Insets insets = new Insets( 0, 10, 0, 0 );
 
     private boolean isTranslated;
 
