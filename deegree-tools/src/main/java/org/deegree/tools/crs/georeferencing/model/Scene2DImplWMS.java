@@ -124,8 +124,8 @@ public class Scene2DImplWMS implements Scene2D {
                                                                        Double.parseDouble( options.get( "RIGHT_UPPER_X" ) ),
                                                                        Double.parseDouble( options.get( "RIGHT_UPPER_Y" ) ) );
             this.sceneValues.setRaster( ra );
-            ref = raster.getRasterReference();
-            rasterRect = ref.convertEnvelopeToRasterCRS( raster.getEnvelope() );
+            ref = ra.getRasterReference();
+            rasterRect = ref.convertEnvelopeToRasterCRS( ra.getEnvelope() );
             this.sceneValues.setRasterRect( rasterRect );
             this.sceneValues.setCrs( raster.getCoordinateSystem() );
 
