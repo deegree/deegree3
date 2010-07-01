@@ -64,8 +64,10 @@ import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+import org.deegree.tools.crs.georeferencing.application.transformation.HelmertTransform;
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
-import org.deegree.tools.crs.georeferencing.application.transformation.Transformation;
+import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
+import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
@@ -74,7 +76,6 @@ import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
-import org.deegree.tools.crs.georeferencing.model.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -124,6 +125,8 @@ public class Controller {
     private CRS targetCRS;
 
     private List<Pair<Point4Values, Point4Values>> mappedPoints;
+
+    private TransformationType transformationType;
 
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
@@ -236,11 +239,21 @@ public class Controller {
                         footPanel.setLastAbstractPoint( null, null );
                         panel.setLastAbstractPoint( null, null );
                     }
-                    Transformation transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS,
-                                                               targetCRS );
+                    TransformationMethod transform = null;
+                    if ( transformationType == null ) {
+                        transformationType = TransformationType.Polynomial;
+                    }
+                    switch ( transformationType ) {
+
+                    case Polynomial:
+                        transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS );
+                        break;
+                    case Helmert:
+                        transform = new HelmertTransform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS );
+                        break;
+                    }
                     List<Polygon> polygon = transform.comuptePolygonList();
-                    // }
-                    panel.setPolygonList( polygon, mappedPoints );
+                    panel.setPolygonList( polygon );
 
                     panel.repaint();
                 }
@@ -303,6 +316,13 @@ public class Controller {
 
                     footPanel.repaint();
 
+                }
+
+                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_POLYNOM ) ) {
+                    transformationType = TransformationMethod.TransformationType.Polynomial;
+                }
+                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_HELMERT ) ) {
+                    transformationType = TransformationMethod.TransformationType.Helmert;
                 }
 
             }
@@ -384,13 +404,15 @@ public class Controller {
                         int x = m.getX();
                         int y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
+                        System.out.println( "[Controller] clickedPoint: " + geoReferencedPoint );
                         GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
-                        panel.setLastAbstractPoint( geoReferencedPoint,
-                                                    (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint ) );
+                        int[] pixelPoint = sceneValues.getPixelCoord( g );
+                        GeoReferencedPoint newP = new GeoReferencedPoint( pixelPoint[0], pixelPoint[1] );
+                        panel.setLastAbstractPoint( newP, g );
                         System.out.println( geoReferencedPoint + " -> "
                                             + (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint )
-                                            + " -> " + sceneValues.getPixelCoordinate( g )[0] + ", "
-                                            + sceneValues.getPixelCoordinate( g )[1] );
+                                            + " -> " + sceneValues.getPixelCoord( g )[0] + ", "
+                                            + sceneValues.getPixelCoord( g )[1] );
                         panel.addPoint( mappedPoints, panel.getLastAbstractPoint() );
                         // panel.setTranslated( isHorizontalRef );
 
@@ -608,9 +630,10 @@ public class Controller {
                     }
                     // TODO sceneValues options size ändern
                     sceneValues.setSize( newSize );
+                    System.out.println( "[Controller] newSize: " + newSize );
                     init();
-                    panel.updatePoints( newSize );
-                    panel.repaint();
+                    panel.updatePoints( newSize, sceneValues );
+                    // panel.repaint();
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
@@ -674,6 +697,7 @@ public class Controller {
     private void init() {
         // model.reset();
         sceneValues.setImageMargin( new Point2d( panel.getBounds().width * 0.1, panel.getBounds().height * 0.1 ) );
+        // System.out.println( "[Controller] margin: " + sceneValues.getImageMargin() );
         sceneValues.setImageDimension( new Rectangle(
                                                       (int) ( panel.getBounds().width + 2 * sceneValues.getImageMargin().x ),
                                                       (int) ( panel.getBounds().height + 2 * sceneValues.getImageMargin().y ) ) );

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.model;
+package org.deegree.tools.crs.georeferencing.application;
 
 import java.awt.Rectangle;
 
@@ -150,25 +150,38 @@ public class Scene2DValues {
      *            the worldCoordinatePoint which should be translated back to pixelCoordinates, not be <Code>null</Code>
      * @return an integer array with x, y - coordinates, z is not implemented yet.
      */
-    public int[] getPixelCoordinate( AbstractGRPoint abstractGRPoint ) {
+    public int[] getPixelCoordinatePolygon( AbstractGRPoint abstractGRPoint ) {
 
         double spanX = subRaster.getEnvelope().getSpan0();
         double spanY = subRaster.getEnvelope().getSpan1();
-        double mathX = Math.abs( subRaster.getEnvelope().getMin().get0() );
-        double mathY = Math.abs( subRaster.getEnvelope().getMin().get1() );
+        double mathX = -subRaster.getEnvelope().getMin().get0();
+        double mathY = -subRaster.getEnvelope().getMin().get1();
         double pointWorldX = mathX + abstractGRPoint.getX();
         double pointWorldY = mathY + abstractGRPoint.getY();
         double percentX = pointWorldX / spanX;
         double percentY = pointWorldY / spanY;
         int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() + imageMargin.getX() * 2 ) );
         int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height )
-                                                + imageStartPosition.getY() - imageMargin.getY() ) );
-        //        
-        // int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) ) );
-        // int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) ) );
+                                                + imageStartPosition.getY() - imageMargin.getY() * 2 ) );
 
         return new int[] { pixelPointX, pixelPointY };
 
+    }
+
+    public int[] getPixelCoord( AbstractGRPoint abstractGRPoint ) {
+
+        double spanX = subRaster.getEnvelope().getSpan0();
+        double spanY = subRaster.getEnvelope().getSpan1();
+        double mathX = -subRaster.getEnvelope().getMin().get0();
+        double mathY = -subRaster.getEnvelope().getMin().get1();
+        double deltaX = mathX + abstractGRPoint.getX();
+        double deltaY = mathY + abstractGRPoint.getY();
+        double percentX = deltaX / spanX;
+        double percentY = deltaY / spanY;
+        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() ) );
+        int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) + imageStartPosition.getY() ) );
+        System.out.println( "[Scene2DValues] percent: " + percentX + " " + percentY + " = " + deltaY + " " + spanY );
+        return new int[] { pixelPointX, pixelPointY };
     }
 
     public void setImageMargin( Point2d imageMargin ) {

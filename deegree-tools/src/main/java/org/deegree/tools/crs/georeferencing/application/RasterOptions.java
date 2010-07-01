@@ -96,6 +96,14 @@ public class RasterOptions {
         options.add( RIGHT_UPPER_X, "2.0" );
         options.add( RIGHT_UPPER_Y, "6.0" );
 
+        // options.add( RasterIOOptions.CRS, "EPSG:31466" );
+        // options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
+        // options.add( RIO_WMS_LAYERS, "DTK" );
+        // options.add( LEFT_LOWER_X, "2568347" );
+        // options.add( LEFT_LOWER_Y, "5610821" );
+        // options.add( RIGHT_UPPER_X, "2589019" );
+        // options.add( RIGHT_UPPER_Y, "5627689" );
+
         // options.add( RasterIOOptions.CRS, "EPSG:32618" );
         // options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
         // options.add( RIO_WMS_LAYERS, "populationgrid" );
@@ -118,3 +126,5 @@ public class RasterOptions {
     }
 
 }
+// http://gdi.bonn.de/mapbender/dhtml/imagepack.php?basis=gdi.bonn.de/Deegree2wms/services&SERVICE=WMS&REQUEST=GetMap&SRS=EPSG:31466&FORMAT=image/png&STYLES=&VERSION=1.1.1&TRANSPARENT=FALSE&BGCOLOR=0x000000&LAYERS=DD_Stadtplan&interface_id=3&quality=middle&BBOX=
+// 2568347,5610821,2589019,5627689

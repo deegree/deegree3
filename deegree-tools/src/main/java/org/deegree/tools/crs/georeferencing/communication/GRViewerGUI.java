@@ -77,7 +77,7 @@ public class GRViewerGUI extends JFrame {
 
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
-    private final static Dimension FRAME_DIMENSION = new Dimension( 900, 600 );
+    private final static Dimension FRAME_DIMENSION = new Dimension( 600, 600 );
 
     private Scene2DPanel scenePanel2D;
 
@@ -144,6 +144,7 @@ public class GRViewerGUI extends JFrame {
 
         // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
         ows7url = "http://localhost:8080/deegree-wms-cite111/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
+        // ows7url = "http://www.wms.nrw.de/geobasis/adv_dtk?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1";
         fileName = "/home/thomas/test_building.gml";
 
         menuFile.add( import2DMapMenuItem );
@@ -159,7 +160,7 @@ public class GRViewerGUI extends JFrame {
         navigationPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         navigationPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, navigationPanel, 0, 0, 2, 1, .15, .15 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, navigationPanel, 0, 0, 3, 1, .15, .15 );
     }
 
     private void setup2DScene( GridBagLayout gbl ) {
@@ -167,7 +168,7 @@ public class GRViewerGUI extends JFrame {
         scenePanel2D.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         scenePanel2D.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, scenePanel2D, 0, 1, 1, 2, 1.0, 1.0 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, scenePanel2D, 0, 1, 2, 2, 1.0, 1.0 );
 
     }
 
@@ -178,8 +179,8 @@ public class GRViewerGUI extends JFrame {
         footprintPanel.setBackground( Color.white );
         footprintPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, footprintPanel, 1, 1, 1, 1,
-                                          footprintPanel.getInsets(), GridBagConstraints.LINE_END, 1, 1 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, footprintPanel, 2, 1, 1, 1,
+                                          footprintPanel.getInsets(), GridBagConstraints.LINE_END, .5, 1 );
 
     }
 
@@ -198,8 +199,8 @@ public class GRViewerGUI extends JFrame {
         canvas.addMouseMotionListener( openGLEventListener.getTrackBall() );
         canvas.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 1, 2, 1, 1, new Insets( 0, 10, 0, 0 ),
-                                          GridBagConstraints.LINE_END, 1, 1 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 2, 2, 1, 1, new Insets( 0, 10, 0, 0 ),
+                                          GridBagConstraints.LINE_END, .5, 1 );
     }
 
     private void setupPointTable( GridBagLayout gbl ) {
@@ -243,6 +244,10 @@ public class GRViewerGUI extends JFrame {
     public String fileName() {
         return fileName;
     }
+
+    // public String getTransformationMethod(){
+    //        
+    // }
 
     /**
      * The {@link Scene2DPanel} is a child of this Container

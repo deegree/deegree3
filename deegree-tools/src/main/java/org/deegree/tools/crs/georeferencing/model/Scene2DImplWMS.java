@@ -57,6 +57,7 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 
 /**
  * 

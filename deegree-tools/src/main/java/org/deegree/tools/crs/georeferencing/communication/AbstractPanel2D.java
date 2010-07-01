@@ -128,8 +128,6 @@ public abstract class AbstractPanel2D extends JPanel {
         return b.floatValue();
     }
 
-    protected abstract void updateSelectedPoints();
-
     public abstract void updatePoints( float newSize );
 
 }

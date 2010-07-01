@@ -42,6 +42,7 @@ import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
+import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 
 /**
  * Base interface for the model layer

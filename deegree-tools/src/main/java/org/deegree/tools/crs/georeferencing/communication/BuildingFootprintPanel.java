@@ -321,8 +321,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         return resolution;
     }
 
-    @Override
-    protected void updateSelectedPoints() {
+    private void updateSelectedPoints() {
         FootprintPoint point = null;
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {

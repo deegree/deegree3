@@ -48,6 +48,7 @@ import java.util.List;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
@@ -78,11 +79,28 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private Rectangle imageDimension;
 
-    private float resolution;
+    /**
+     * opposite value of the size
+     */
+    private float inverseSize;
 
+    /**
+     * deltavalue between the newSize and the oldSize
+     */
     private float resizing;
 
+    /**
+     * the size before resizing the scene
+     */
+    private float oldSize;
+
     private float initialResolution;
+
+    private List<Polygon> worldPolygonList;
+
+    private ArrayList<Polygon> pixelCoordinatePolygonList;
+
+    private Object pixelCoordinates;
 
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
@@ -174,42 +192,86 @@ public class Scene2DPanel extends AbstractPanel2D {
         this.translationPoint = translationPoint;
     }
 
-    @Override
-    protected void updateSelectedPoints() {
+    private void updateSelectedPoints( Scene2DValues sceneValues ) {
         GeoReferencedPoint point = null;
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {
-            point = new GeoReferencedPoint( ( p.getInitialValue().getX() / initialResolution ) * resolution,
-                                            ( p.getInitialValue().getY() / initialResolution ) * resolution );
+            point = new GeoReferencedPoint( ( p.getInitialValue().getX() / initialResolution ) * inverseSize,
+                                            ( p.getInitialValue().getY() / initialResolution ) * inverseSize );
             selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), point, p.getWorldCoords() ) );
         }
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {
-            double x = lastAbstractPoint.getInitialValue().getX() / initialResolution;
-            double y = lastAbstractPoint.getInitialValue().getY() / initialResolution;
-            double x1 = x - roundDouble( x * resizing );
-            double y1 = y - roundDouble( y * resizing );
 
-            GeoReferencedPoint pi = new GeoReferencedPoint( lastAbstractPoint.getNewValue().getX() + x1,
-                                                            lastAbstractPoint.getNewValue().getY() + y1 );
+            int[] p = sceneValues.getPixelCoord( lastAbstractPoint.getWorldCoords() );
+            double x = p[0];
+            double y = p[1];
+            double x1 = x + roundDouble( x * resizing );
+            double y1 = y + roundDouble( y * resizing );
+
+            GeoReferencedPoint pi = new GeoReferencedPoint( x1, y1 );
             lastAbstractPoint.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
         }
 
     }
 
-    @Override
-    public void updatePoints( float newSize ) {
-        this.resizing = Math.abs( newSize - this.resolution );
+    public void updatePoints( float newSize, Scene2DValues sceneValues ) {
+        if ( this.oldSize == 0.0 ) {
+            this.oldSize = 1.0f;
+            this.inverseSize = 1.0f;
+        }
+        this.resizing = Math.abs( newSize - this.oldSize );
         BigDecimal b = new BigDecimal( newSize );
         b = b.round( new MathContext( 2 ) );
-        this.resolution = b.floatValue();
+        this.oldSize = b.floatValue();
+        this.inverseSize = inverseSize + this.resizing;
+        // if ( worldPolygonList != null ) {
+        // setPolygonList( worldPolygonList );
+        // }
+        updateSelectedPoints( sceneValues );
 
-        updateSelectedPoints();
     }
 
-    public void setPolygonList( List<Polygon> polygonList, List<Pair<Point4Values, Point4Values>> mappedPoints ) {
-
+    public void setPolygonList( List<Polygon> polygonList ) {
+        // this.worldPolygonList = polygonList;
+        //
+        // if ( this.resizing == 0.0f ) {
+        // this.resizing = 1.0f;
+        // }
+        // System.out.println( "[SCENE2DPANEL] Resize: " + resolution );
+        // pixelCoordinatePolygonList = new ArrayList<Polygon>();
+        //
+        // int sizeOfPoints = 0;
+        // for ( Polygon p : polygonList ) {
+        // sizeOfPoints += p.npoints;
+        //
+        // }
+        //
+        // if ( pixelCoordinates == null ) {
+        // pixelCoordinates = new FootprintPoint[sizeOfPoints];
+        // }
+        //
+        // int counter = 0;
+        // for ( Polygon po : polygonList ) {
+        // int[] x2 = new int[po.npoints];
+        // int[] y2 = new int[po.npoints];
+        // for ( int i = 0; i < po.npoints; i++ ) {
+        // x2[i] = (int) ( ( po.xpoints[i] ) * resizing );
+        // y2[i] = (int) ( ( po.ypoints[i] ) * resizing );
+        // System.out.println( "[SCENE2DPANEL] resizing: " + resizing );
+        // }
+        // Polygon p = new Polygon( x2, y2, po.npoints );
+        // pixelCoordinatePolygonList.add( p );
+        //
+        // }
         this.polygonList = polygonList;
+        // this.polygonList = pixelCoordinatePolygonList;
+
+    }
+
+    @Override
+    public void updatePoints( float newSize ) {
+        // TODO Auto-generated method stub
 
     }
 
