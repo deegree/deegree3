@@ -46,7 +46,7 @@ import java.util.List;
  * 
  * @version $Revision$, $Date$
  */
-public interface Transformation {
+public interface TransformationMethod {
 
     public enum TransformationType {
         Polynomial,

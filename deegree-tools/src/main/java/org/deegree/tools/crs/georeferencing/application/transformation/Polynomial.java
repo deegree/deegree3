@@ -46,14 +46,9 @@ import javax.vecmath.Point3d;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
-import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CoordinateTransformer;
-import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.cs.transformations.helmert.Helmert;
+import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
-import org.deegree.tools.crs.georeferencing.model.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -66,7 +61,7 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  * 
  * @version $Revision$, $Date$
  */
-public class Polynomial implements Transformation {
+public class Polynomial implements TransformationMethod {
 
     private List<Pair<Point4Values, Point4Values>> mappedPoints;
 
@@ -92,108 +87,29 @@ public class Polynomial implements Transformation {
         int arraySize = mappedPoints.size() * 2;
         if ( arraySize > 0 ) {
 
-            CRSCodeType[] s = null;
-            CRSCodeType[] t = null;
-            try {
-                s = sourceCRS.getWrappedCRS().getCodes();
-                t = targetCRS.getWrappedCRS().getCodes();
-            } catch ( UnknownCRSException e1 ) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-
-            int size = s.length + t.length;
-            int countT = 0;
-            CRSCodeType[] codeTypes = new CRSCodeType[size];
-            for ( int i = 0; i < s.length; i++ ) {
-                codeTypes[i] = s[i];
-            }
-            for ( int i = s.length; i < size; i++ ) {
-                codeTypes[i] = t[countT];
-                countT++;
-            }
-            CRSIdentifiable identifiable = new CRSIdentifiable( codeTypes );
-
-            // final Helmert wgs_info = new Helmert( sourceCRS, targetCRS, codeTypes );
-
-            int arrSize = footPrint.getWorldCoordinates().length;
-            // double[] ordinatesSrc = new double[arraySize];
-            // double[] ordinatesDst = new double[arraySize];
             float[] ordinatesSrc = new float[arraySize];
             float[] ordinatesDst = new float[arraySize];
             int counterSrc = 0;
             int counterDst = 0;
             List<double[]> coordinateList = new LinkedList<double[]>();
             CoordinateTransformer ct;
-            try {
-                ct = new CoordinateTransformer( targetCRS.getWrappedCRS() );
 
-                for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+            for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+                double x = p.first.getWorldCoords().getX();
+                double y = p.first.getWorldCoords().getY();
 
-                    // double[] from = new double[3];
-                    double x = p.first.getWorldCoords().getX();
-                    double y = p.first.getWorldCoords().getY();
+                ordinatesDst[counterSrc] = (float) x;
+                ordinatesDst[++counterSrc] = (float) y;
+                counterSrc++;
+                Point4Values pValue = p.second;
+                x = pValue.getWorldCoords().getX();
+                y = pValue.getWorldCoords().getY();
+                ordinatesSrc[counterDst] = (float) x;
+                ordinatesSrc[++counterDst] = (float) y;
+                counterDst++;
 
-                    // from[0] = x;
-                    // from[1] = y;
-                    // from[2] = 0;
-                    // coordinateList.add( from );
-                    // System.out.println( "Before transform: " + x + " " + y );
-
-                    ordinatesDst[counterSrc] = (float) x;
-                    ordinatesDst[++counterSrc] = (float) y;
-                    // ordinatesSrc[counterSrc] = x;
-                    // ordinatesSrc[++counterSrc] = y;
-                    counterSrc++;
-                    Point4Values pValue = p.second;
-                    x = pValue.getWorldCoords().getX();
-                    y = pValue.getWorldCoords().getY();
-                    ordinatesSrc[counterDst] = (float) x;
-                    ordinatesSrc[++counterDst] = (float) y;
-                    // ordinatesDst[counterDst] = x;
-                    // ordinatesDst[++counterDst] = y;
-                    counterDst++;
-
-                }
-                double x;
-                double y;
-                for ( double[] c : coordinateList ) {
-                    try {
-                        double[] out = ct.transform( sourceCRS.getWrappedCRS(), c, new double[3] );
-
-                        // for ( FootprintPoint d : footPrint.getWorldCoordinatePoints() ) {
-                        // System.out.println( "newX: " + d.getX() * out[0] / c[0] );
-                        // System.out.println( "newY: " + d.getY() * out[1] / c[1] );
-                        // }
-                        // double newX = 25.0 * out[0] / c[0];
-                        // System.out.println( "After transform: " + out[0] + " " + out[1] );
-
-                    } catch ( IllegalArgumentException e1 ) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    } catch ( TransformationException e1 ) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    } catch ( UnknownCRSException e1 ) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
-                }
-            } catch ( IllegalArgumentException e2 ) {
-                // TODO Auto-generated catch block
-                e2.printStackTrace();
-            } catch ( UnknownCRSException e2 ) {
-                // TODO Auto-generated catch block
-                e2.printStackTrace();
             }
 
-            Helmert wgs_info = null;
-            try {
-                wgs_info = new Helmert( sourceCRS.getWrappedCRS(), targetCRS.getWrappedCRS(), codeTypes );
-            } catch ( UnknownCRSException e1 ) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
             System.out.println( "\n\n coordinates" );
             for ( int i = 0; i < ordinatesDst.length; i += 2 ) {
                 System.out.println( ordinatesSrc[i] + "/" + ordinatesSrc[i + 1] + " -- " + ordinatesDst[i] + "/"
@@ -201,9 +117,7 @@ public class Polynomial implements Transformation {
             }
             WarpPolynomial warp = WarpPolynomial.createWarp( ordinatesSrc, 0, ordinatesDst, 0, ordinatesSrc.length, 1f,
                                                              1f, 1f, 1f, 1 );
-            // for ( float p : warp.getXCoeffs() ) {
-            // System.out.println( "warp: " + p );
-            // }
+
             System.out.println( "coeff:" );
             float[] x = warp.getXCoeffs();
             float[] y = warp.getYCoeffs();
@@ -212,8 +126,7 @@ public class Polynomial implements Transformation {
             }
 
             List<Point3d> result = new ArrayList<Point3d>();
-            System.out.println();
-            System.out.println( "resid" );
+
             double rx = 0;
             double ry = 0;
             // int[] tz = sceneValues.getPixelCoordinate( new Point2D.Float( 0.03f, 6.0f ) );
@@ -227,7 +140,7 @@ public class Polynomial implements Transformation {
 
                     Point2D p = warp.mapDestPoint( new Point2D.Float( po.xpoints[i], po.ypoints[i] ) );
                     AbstractGRPoint convertPoint = new GeoReferencedPoint( p.getX(), p.getY() );
-                    int[] value = sceneValues.getPixelCoordinate( convertPoint );
+                    int[] value = sceneValues.getPixelCoordinatePolygon( convertPoint );
                     x2[i] = value[0];
                     y2[i] = value[1];
 
@@ -236,18 +149,19 @@ public class Polynomial implements Transformation {
                 Polygon p = new Polygon( x2, y2, po.npoints );
                 transformedPolygonList.add( p );
             }
-            // for ( int i = 0; i < ordinatesDst.length; i += 2 ) {
-            // Point2D p = warp.mapDestPoint( new Point2D.Float( ordinatesDst[i], ordinatesDst[i + 1] ) );
-            // // System.out.println( "p: " + p + " : " + p.getX() + " - " + ordinatesSrc[i] );
-            // rx += ( p.getX() - ordinatesSrc[i] );
-            // ry += ( p.getY() - ordinatesSrc[i + 1] );
-            // System.out.println( ( i / 2 ) + " -> " + ( p.getX() - ordinatesSrc[i] ) + "/"
-            // + ( p.getY() - ordinatesSrc[i + 1] ) );
-            // result.add( new Point3d( p.getX(), p.getY(), 0 ) );
-            //
-            // }
-            System.out.println();
-            System.out.println( "mean resid" );
+
+            System.out.println( "\n resid" );
+            for ( int i = 0; i < ordinatesDst.length; i += 2 ) {
+                Point2D p = warp.mapDestPoint( new Point2D.Float( ordinatesDst[i], ordinatesDst[i + 1] ) );
+                // System.out.println( "p: " + p + " : " + p.getX() + " - " + ordinatesSrc[i] );
+                rx += ( p.getX() - ordinatesSrc[i] );
+                ry += ( p.getY() - ordinatesSrc[i + 1] );
+                System.out.println( ( i / 2 ) + " -> " + ( p.getX() - ordinatesSrc[i] ) + "/"
+                                    + ( p.getY() - ordinatesSrc[i + 1] ) );
+                result.add( new Point3d( p.getX(), p.getY(), 0 ) );
+
+            }
+            System.out.println( "\n mean resid" );
             rx /= ( ordinatesSrc.length / 2 );
             ry /= ( ordinatesSrc.length / 2 );
             System.out.println( rx + " " + ry );
@@ -255,26 +169,10 @@ public class Polynomial implements Transformation {
             for ( Point3d p : result ) {
                 System.out.println( p.getX() + " " + p.getY() );
             }
-            // Matrix4d m = wgs_info.getAsAffineTransform();
-            // try {
-            // wgs_info.doTransform( ordinatesSrc, 0, ordinatesDst, 0, ordinatesSrc.length );
-            // m = wgs_info.getAsAffineTransform();
-            // } catch ( TransformationException e1 ) {
-            // e1.printStackTrace();
-            // }
-
-            // for ( double d : ordinatesDst ) {
-            // System.out.println( "WGS_INFO: " + m );
-            // }
 
             return transformedPolygonList;
-        } else {
-            try {
-                throw new Exception( "You must specify coordinates to transform" );
-            } catch ( Exception e1 ) {
-                e1.printStackTrace();
-            }
         }
+
         return null;
     }
 
