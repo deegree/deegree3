@@ -64,8 +64,8 @@ import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
-import org.deegree.tools.crs.georeferencing.application.transformation.HelmertTransform;
-import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
+import org.deegree.tools.crs.georeferencing.application.transformation.Helmert3Transform;
+import org.deegree.tools.crs.georeferencing.application.transformation.LeastSquarePolynomial;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
@@ -127,6 +127,8 @@ public class Controller {
     private List<Pair<Point4Values, Point4Values>> mappedPoints;
 
     private TransformationType transformationType;
+
+    public int order;
 
     public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
@@ -237,20 +239,31 @@ public class Controller {
                     if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
                         setValues();
                     }
+                    System.out.println( sourceCRS + " " + targetCRS );
                     TransformationMethod transform = null;
                     if ( transformationType == null ) {
-                        transformationType = TransformationType.Polynomial;
+                        transformationType = TransformationType.PolynomialFirstOrder;
+                        order = 1;
                     }
                     switch ( transformationType ) {
 
-                    case Polynomial:
-                        transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS );
+                    case PolynomialFirstOrder:
+                        // transform = new PolynomialFirstOrder( mappedPoints, footPrint, sceneValues, sourceCRS,
+                        // targetCRS, 1 );
+                        transform = new LeastSquarePolynomial( mappedPoints, footPrint, sceneValues, sourceCRS,
+                                                               targetCRS, order );
+
+                        // transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order
+                        // );
                         break;
-                    case Helmert:
-                        transform = new HelmertTransform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS );
+                    case Helmert_3:
+                        transform = new Helmert3Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
+                                                           order );
+                        // transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order
+                        // );
                         break;
                     }
-                    List<Polygon> polygon = transform.comuptePolygonList();
+                    List<Polygon> polygon = transform.computePolygonList();
                     panel.setPolygonList( polygon );
 
                     panel.repaint();
@@ -316,11 +329,24 @@ public class Controller {
 
                 }
 
-                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_POLYNOM ) ) {
-                    transformationType = TransformationMethod.TransformationType.Polynomial;
+                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
+                    transformationType = TransformationMethod.TransformationType.PolynomialFirstOrder;
+                    order = 1;
+
+                }
+                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_POLYNOM_SECOND ) ) {
+                    transformationType = TransformationMethod.TransformationType.PolynomialFirstOrder;
+                    order = 2;
+
+                }
+                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_POLYNOM_THIRD ) ) {
+                    transformationType = TransformationMethod.TransformationType.PolynomialFirstOrder;
+                    order = 3;
+
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_HELMERT ) ) {
-                    transformationType = TransformationMethod.TransformationType.Helmert;
+                    transformationType = TransformationMethod.TransformationType.Helmert_3;
+                    order = 1;
                 }
 
             }
