@@ -115,17 +115,6 @@ public class Scene2DValues {
             // System.out.println( "rasta: " + rasterPosX + " " + rasterPosY );
 
             worldPos = subRaster.getRasterReference().getWorldCoordinate( rasterPosX, rasterPosY );
-            // CoordinateSystem d;
-            // Helmert h;
-            //
-            // try {
-            // d = subRaster.getCoordinateSystem().getWrappedCRS();
-            // h = new Helmert( d, d, d.getCode() );
-            // System.out.println( "" );
-            // } catch ( UnknownCRSException e ) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
 
             switch ( pixelPoint.getPointType() ) {
 
@@ -160,7 +149,7 @@ public class Scene2DValues {
         double pointWorldY = mathY + abstractGRPoint.getY();
         double percentX = pointWorldX / spanX;
         double percentY = pointWorldY / spanY;
-        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() + imageMargin.getX() * 2 ) );
+        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() + imageMargin.getX() ) );
         int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height )
                                                 + imageStartPosition.getY() - imageMargin.getY() ) );
 

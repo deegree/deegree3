@@ -235,39 +235,8 @@ public class Scene2DPanel extends AbstractPanel2D {
     }
 
     public void setPolygonList( List<Polygon> polygonList ) {
-        // this.worldPolygonList = polygonList;
-        //
-        // if ( this.resizing == 0.0f ) {
-        // this.resizing = 1.0f;
-        // }
-        // System.out.println( "[SCENE2DPANEL] Resize: " + resolution );
-        // pixelCoordinatePolygonList = new ArrayList<Polygon>();
-        //
-        // int sizeOfPoints = 0;
-        // for ( Polygon p : polygonList ) {
-        // sizeOfPoints += p.npoints;
-        //
-        // }
-        //
-        // if ( pixelCoordinates == null ) {
-        // pixelCoordinates = new FootprintPoint[sizeOfPoints];
-        // }
-        //
-        // int counter = 0;
-        // for ( Polygon po : polygonList ) {
-        // int[] x2 = new int[po.npoints];
-        // int[] y2 = new int[po.npoints];
-        // for ( int i = 0; i < po.npoints; i++ ) {
-        // x2[i] = (int) ( ( po.xpoints[i] ) * resizing );
-        // y2[i] = (int) ( ( po.ypoints[i] ) * resizing );
-        // System.out.println( "[SCENE2DPANEL] resizing: " + resizing );
-        // }
-        // Polygon p = new Polygon( x2, y2, po.npoints );
-        // pixelCoordinatePolygonList.add( p );
-        //
-        // }
+
         this.polygonList = polygonList;
-        // this.polygonList = pixelCoordinatePolygonList;
 
     }
 

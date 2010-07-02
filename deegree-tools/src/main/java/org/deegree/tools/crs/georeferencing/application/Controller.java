@@ -65,7 +65,7 @@ import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.tools.crs.georeferencing.application.transformation.Helmert3Transform;
-import org.deegree.tools.crs.georeferencing.application.transformation.LeastSquarePolynomial;
+import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
@@ -210,6 +210,8 @@ public class Controller {
                             if ( pointFromTable.getX() == x && pointFromTable.getY() == y ) {
                                 removeFromMappedPoints( p );
                                 contained = true;
+                                panel.removeFromSelectedPoints( p.second );
+                                footPanel.removeFromSelectedPoints( p.first );
                                 break;
                             }
                         }
@@ -222,8 +224,6 @@ public class Controller {
 
                     }
 
-                    panel.addPoint( mappedPoints, panel.getLastAbstractPoint() );
-                    footPanel.addPoint( mappedPoints, footPanel.getLastAbstractPoint() );
                     panel.repaint();
                     footPanel.repaint();
                 }
@@ -250,11 +250,10 @@ public class Controller {
                     case PolynomialFirstOrder:
                         // transform = new PolynomialFirstOrder( mappedPoints, footPrint, sceneValues, sourceCRS,
                         // targetCRS, 1 );
-                        transform = new LeastSquarePolynomial( mappedPoints, footPrint, sceneValues, sourceCRS,
-                                                               targetCRS, order );
+                        // transform = new LeastSquarePolynomial( mappedPoints, footPrint, sceneValues, sourceCRS,
+                        // targetCRS, order );
 
-                        // transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order
-                        // );
+                        transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
                         break;
                     case Helmert_3:
                         transform = new Helmert3Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
@@ -315,7 +314,7 @@ public class Controller {
                                         geometryThatIsTaken.add( a );
                                     }
                                 }
-                                System.out.println( a );
+                                // System.out.println( a );
                             }
                         }
 
@@ -428,16 +427,16 @@ public class Controller {
                         int x = m.getX();
                         int y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                        System.out.println( "[Controller] clickedPoint: " + geoReferencedPoint );
+                        // System.out.println( "[Controller] clickedPoint: " + geoReferencedPoint );
                         GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                         int[] pixelPoint = sceneValues.getPixelCoord( g );
                         GeoReferencedPoint newP = new GeoReferencedPoint( pixelPoint[0], pixelPoint[1] );
                         panel.setLastAbstractPoint( newP, g );
-                        System.out.println( geoReferencedPoint + " -> "
-                                            + (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint )
-                                            + " -> " + sceneValues.getPixelCoord( g )[0] + ", "
-                                            + sceneValues.getPixelCoord( g )[1] );
-                        panel.addPoint( mappedPoints, panel.getLastAbstractPoint() );
+                        // System.out.println( geoReferencedPoint + " -> "
+                        // + (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint )
+                        // + " -> " + sceneValues.getPixelCoord( g )[0] + ", "
+                        // + sceneValues.getPixelCoord( g )[1] );
+                        // panel.addPoint( mappedPoints, panel.getLastAbstractPoint() );
                         // panel.setTranslated( isHorizontalRef );
 
                         tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
@@ -447,7 +446,7 @@ public class Controller {
                         mouseGeoRef.setMouseChanging( new Point2d(
                                                                    ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
                                                                    ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
-                        System.out.println( "MouseChanging: " + mouseGeoRef.getMouseChanging() );
+                        // System.out.println( "MouseChanging: " + mouseGeoRef.getMouseChanging() );
 
                         // Prediction pred = new Prediction( mouse.getMouseChanging() );
                         // pred.start();
@@ -463,7 +462,7 @@ public class Controller {
                                                                                       mouseGeoRef.getPersistentCumulatedMouseChanging().getY()
                                                                                                               + mouseGeoRef.getMouseChanging().getY() ) );
                         panel.setTranslationPoint( mouseGeoRef.getPersistentCumulatedMouseChanging() );
-                        System.out.println( "persCum: " + mouseGeoRef.getPersistentCumulatedMouseChanging() );
+                        // System.out.println( "persCum: " + mouseGeoRef.getPersistentCumulatedMouseChanging() );
                         panel.setBeginDrawImageAtPosition( new Point2d(
                                                                         panel.getBeginDrawImageAtPosition().getX()
                                                                                                 - mouseGeoRef.getMouseChanging().getX(),
@@ -480,7 +479,7 @@ public class Controller {
                             Point2d updateDrawImageAtPosition = new Point2d(
                                                                              mouseGeoRef.getCumulatedMouseChanging().getX(),
                                                                              mouseGeoRef.getCumulatedMouseChanging().getY() );
-                            System.out.println( "updatePos: " + updateDrawImageAtPosition );
+                            // System.out.println( "updatePos: " + updateDrawImageAtPosition );
 
                             // panel.setImageToDraw( model.getGeneratedImage() );
                             // sceneValues.setStartRasterEnvelopePosition( updateDrawImageAtPosition );
@@ -514,13 +513,13 @@ public class Controller {
                         }
                         int x = m.getX();
                         int y = m.getY();
-                        System.out.println( "[CONTROLLER] " + x + ", " + y );
+                        // System.out.println( "[CONTROLLER] " + x + ", " + y );
                         footPanel.setTranslated( isHorizontalRef );
                         Pair<AbstractGRPoint, FootprintPoint> point = footPanel.getClosestPoint( new FootprintPoint( x,
                                                                                                                      y ) );
                         footPanel.setLastAbstractPoint( point.first, point.second );
                         tablePanel.setCoords( footPanel.getLastAbstractPoint().getWorldCoords() );
-                        footPanel.addPoint( mappedPoints, footPanel.getLastAbstractPoint() );
+                        // footPanel.addPoint( mappedPoints, footPanel.getLastAbstractPoint() );
 
                     } else {
                         mouseFootprint.setMouseChanging( new Point2d(
@@ -536,7 +535,7 @@ public class Controller {
                         footPanel.setCumTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
                         // footPrint.updatePoints( mouseFootprint.getMouseChanging() );
                         footPanel.setTranslated( isHorizontalRef );
-                        System.out.println( isHorizontalRef );
+                        // System.out.println( isHorizontalRef );
 
                     }
                     footPanel.repaint();
@@ -773,8 +772,8 @@ public class Controller {
     private void removeAllFromMappedPoints() {
         mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
         tablePanel.removeAllRows();
-        panel.addPoint( null, null );
-        footPanel.addPoint( null, null );
+        panel.removeAllFromSelectedPoints();
+        footPanel.removeAllFromSelectedPoints();
         footPanel.setLastAbstractPoint( null, null );
         panel.setLastAbstractPoint( null, null );
         panel.repaint();

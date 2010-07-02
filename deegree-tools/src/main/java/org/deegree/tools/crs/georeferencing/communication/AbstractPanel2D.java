@@ -40,11 +40,11 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
@@ -58,7 +58,7 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  */
 public abstract class AbstractPanel2D extends JPanel {
 
-    protected List<Pair<Point4Values, Point4Values>> points;
+    // protected List<Pair<Point4Values, Point4Values>> points;
 
     protected boolean focus;
 
@@ -81,10 +81,10 @@ public abstract class AbstractPanel2D extends JPanel {
         this.addMouseWheelListener( m );
     }
 
-    public void addPoint( List<Pair<Point4Values, Point4Values>> points, Point4Values lastAbstractPoint ) {
-        this.points = points;
-        this.lastAbstractPoint = lastAbstractPoint;
-    }
+    // public void addPoint( List<Pair<Point4Values, Point4Values>> points, Point4Values lastAbstractPoint ) {
+    // this.points = points;
+    // this.lastAbstractPoint = lastAbstractPoint;
+    // }
 
     public void setFocus( boolean focus ) {
         this.focus = focus;
@@ -114,6 +114,14 @@ public abstract class AbstractPanel2D extends JPanel {
 
         selectedPoints.add( point );
 
+    }
+
+    public void removeFromSelectedPoints( Point4Values point ) {
+        selectedPoints.remove( point );
+    }
+
+    public void removeAllFromSelectedPoints() {
+        selectedPoints = new ArrayList<Point4Values>();
     }
 
     protected float roundFloat( float value ) {
