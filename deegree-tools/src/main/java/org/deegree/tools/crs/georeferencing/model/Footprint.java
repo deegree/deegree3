@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point2d;
+import javax.vecmath.Point3d;
 
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 
@@ -61,6 +62,8 @@ public class Footprint {
     private double[] worldCoordinates;
 
     private FootprintPoint[] worldCoordinatePoints;
+
+    private List<Point3d> worldCoordinatePointsList;
 
     /**
      * Creates a new <Code>Footprint</Code> instance.
@@ -121,6 +124,7 @@ public class Footprint {
 
         worldCoordinates = new double[size * 2];
         worldCoordinatePoints = new FootprintPoint[size];
+        worldCoordinatePointsList = new ArrayList<Point3d>();
         int countWorldCoords = 0;
         int countWorldCoordsPoint = 0;
         for ( float[] f : footprintPointsList ) {
@@ -137,6 +141,7 @@ public class Footprint {
                 worldCoordinates[countWorldCoords] = f[i];
                 worldCoordinates[++countWorldCoords] = f[i + 1];
                 worldCoordinatePoints[countWorldCoordsPoint] = new FootprintPoint( f[i], f[i + 1] );
+                worldCoordinatePointsList.add( new Point3d( f[i], f[i + 1], 0 ) );
                 countWorldCoords++;
                 count++;
                 countWorldCoordsPoint++;
@@ -161,6 +166,10 @@ public class Footprint {
 
     public FootprintPoint[] getWorldCoordinatePoints() {
         return worldCoordinatePoints;
+    }
+
+    public List<Point3d> getWorldCoordinatePointsList() {
+        return worldCoordinatePointsList;
     }
 
 }
