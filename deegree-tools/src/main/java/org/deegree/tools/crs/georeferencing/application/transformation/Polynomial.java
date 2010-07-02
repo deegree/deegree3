@@ -61,34 +61,21 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  * 
  * @version $Revision$, $Date$
  */
-public class Polynomial implements TransformationMethod {
-
-    private List<Pair<Point4Values, Point4Values>> mappedPoints;
-
-    private Footprint footPrint;
-
-    private Scene2DValues sceneValues;
-
-    private CRS sourceCRS;
-
-    private CRS targetCRS;
+public class Polynomial extends AbstractTransformation implements TransformationMethod {
 
     public Polynomial( List<Pair<Point4Values, Point4Values>> mappedPoints, Footprint footPrint,
-                       Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS ) {
-        this.mappedPoints = mappedPoints;
-        this.footPrint = footPrint;
-        this.sceneValues = sceneValues;
-        this.sourceCRS = sourceCRS;
-        this.targetCRS = targetCRS;
+                       Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS, int order ) {
+        super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
+
     }
 
     @Override
-    public List<Polygon> comuptePolygonList() {
+    public List<Polygon> computePolygonList() {
         int arraySize = mappedPoints.size() * 2;
         if ( arraySize > 0 ) {
 
-            float[] ordinatesSrc = new float[arraySize];
-            float[] ordinatesDst = new float[arraySize];
+            float[] passPointsSrc = new float[arraySize];
+            float[] passPointsDst = new float[arraySize];
             int counterSrc = 0;
             int counterDst = 0;
             List<double[]> coordinateList = new LinkedList<double[]>();
@@ -98,26 +85,27 @@ public class Polynomial implements TransformationMethod {
                 double x = p.first.getWorldCoords().getX();
                 double y = p.first.getWorldCoords().getY();
 
-                ordinatesDst[counterSrc] = (float) x;
-                ordinatesDst[++counterSrc] = (float) y;
+                passPointsDst[counterSrc] = (float) x;
+                passPointsDst[++counterSrc] = (float) y;
                 counterSrc++;
                 Point4Values pValue = p.second;
                 x = pValue.getWorldCoords().getX();
                 y = pValue.getWorldCoords().getY();
-                ordinatesSrc[counterDst] = (float) x;
-                ordinatesSrc[++counterDst] = (float) y;
+                passPointsSrc[counterDst] = (float) x;
+                passPointsSrc[++counterDst] = (float) y;
                 counterDst++;
 
             }
 
             System.out.println( "\n\n coordinates" );
-            for ( int i = 0; i < ordinatesDst.length; i += 2 ) {
-                System.out.println( ordinatesSrc[i] + "/" + ordinatesSrc[i + 1] + " -- " + ordinatesDst[i] + "/"
-                                    + ordinatesDst[i + 1] );
-            }
-            WarpPolynomial warp = WarpPolynomial.createWarp( ordinatesSrc, 0, ordinatesDst, 0, ordinatesSrc.length, 1f,
-                                                             1f, 1f, 1f, 1 );
+            for ( int i = 0; i < passPointsDst.length; i += 2 ) {
+                System.out.println( passPointsSrc[i] + "/" + passPointsSrc[i + 1] + " -- " + passPointsDst[i] + "/"
+                                    + passPointsDst[i + 1] );
 
+            }
+
+            WarpPolynomial warp = WarpPolynomial.createWarp( passPointsSrc, 0, passPointsDst, 0, passPointsSrc.length,
+                                                             1f, 1f, 1f, 1f, order );
             System.out.println( "coeff:" );
             float[] x = warp.getXCoeffs();
             float[] y = warp.getYCoeffs();
@@ -151,23 +139,29 @@ public class Polynomial implements TransformationMethod {
             }
 
             System.out.println( "\n resid" );
-            for ( int i = 0; i < ordinatesDst.length; i += 2 ) {
-                Point2D p = warp.mapDestPoint( new Point2D.Float( ordinatesDst[i], ordinatesDst[i + 1] ) );
+            for ( int i = 0; i < passPointsDst.length; i += 2 ) {
+                Point2D p = warp.mapDestPoint( new Point2D.Float( passPointsDst[i], passPointsDst[i + 1] ) );
                 // System.out.println( "p: " + p + " : " + p.getX() + " - " + ordinatesSrc[i] );
-                rx += ( p.getX() - ordinatesSrc[i] );
-                ry += ( p.getY() - ordinatesSrc[i + 1] );
-                System.out.println( ( i / 2 ) + " -> " + ( p.getX() - ordinatesSrc[i] ) + "/"
-                                    + ( p.getY() - ordinatesSrc[i + 1] ) );
+                rx += ( p.getX() - passPointsSrc[i] );
+                ry += ( p.getY() - passPointsSrc[i + 1] );
+                System.out.println( ( i / 2 ) + " -> " + ( p.getX() - passPointsSrc[i] ) + "/"
+                                    + ( p.getY() - passPointsSrc[i + 1] ) );
                 result.add( new Point3d( p.getX(), p.getY(), 0 ) );
 
             }
             System.out.println( "\n mean resid" );
-            rx /= ( ordinatesSrc.length / 2 );
-            ry /= ( ordinatesSrc.length / 2 );
+            rx /= ( passPointsSrc.length / 2 );
+            ry /= ( passPointsSrc.length / 2 );
             System.out.println( rx + " " + ry );
 
             for ( Point3d p : result ) {
                 System.out.println( p.getX() + " " + p.getY() );
+            }
+
+            for ( Polygon p : transformedPolygonList ) {
+                for ( int i = 0; i < p.npoints; i++ ) {
+                    System.out.println( "[Polynomial] TransformedPolygons: " + p.xpoints[i] + " " + p.ypoints[i] );
+                }
             }
 
             return transformedPolygonList;
@@ -179,7 +173,7 @@ public class Polynomial implements TransformationMethod {
     @Override
     public TransformationType getType() {
 
-        return TransformationType.Polynomial;
+        return TransformationType.PolynomialFirstOrder;
     }
 
 }

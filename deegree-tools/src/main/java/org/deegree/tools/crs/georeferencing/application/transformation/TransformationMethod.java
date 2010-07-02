@@ -49,14 +49,18 @@ import java.util.List;
 public interface TransformationMethod {
 
     public enum TransformationType {
-        Polynomial,
+        PolynomialFirstOrder,
 
-        Helmert
+        Helmert_3,
+
+        LeastSquarePolynomial
     }
 
     public TransformationType getType();
 
-    public List<Polygon> comuptePolygonList();
+    public List<Polygon> computePolygonList();
+
+    // public int getOrder();
 
     // public void setSourceCRS( CRS sourceCRS );
     //
