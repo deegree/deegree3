@@ -71,13 +71,17 @@ public class GRViewerGUI extends JFrame {
 
     public final static String MENUITEM_GET_3DOBJECT = "Import 3D Object";
 
-    public final static String MENUITEM_TRANS_POLYNOM = "Polynomial";
+    public final static String MENUITEM_TRANS_POLYNOM_FIRST = "Polynomial 1";
+
+    public final static String MENUITEM_TRANS_POLYNOM_SECOND = "Polynomial 2";
+
+    public final static String MENUITEM_TRANS_POLYNOM_THIRD = "Polynomial 3";
 
     public final static String MENUITEM_TRANS_HELMERT = "Helmert";
 
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
-    private final static Dimension FRAME_DIMENSION = new Dimension( 600, 600 );
+    private final static Dimension FRAME_DIMENSION = new Dimension( 900, 600 );
 
     private Scene2DPanel scenePanel2D;
 
@@ -93,7 +97,11 @@ public class GRViewerGUI extends JFrame {
 
     private JMenuItem import3DObjectMenuItem;
 
-    private JMenuItem polynomial;
+    private JMenuItem polynomial_1;
+
+    private JMenuItem polynomial_2;
+
+    private JMenuItem polynomial_3;
 
     private JMenuItem helmert;
 
@@ -139,7 +147,9 @@ public class GRViewerGUI extends JFrame {
 
         import2DMapMenuItem = new JMenuItem( MENUITEM_GETMAP );
         import3DObjectMenuItem = new JMenuItem( MENUITEM_GET_3DOBJECT );
-        polynomial = new JMenuItem( MENUITEM_TRANS_POLYNOM );
+        polynomial_1 = new JMenuItem( MENUITEM_TRANS_POLYNOM_FIRST );
+        polynomial_2 = new JMenuItem( MENUITEM_TRANS_POLYNOM_SECOND );
+        polynomial_3 = new JMenuItem( MENUITEM_TRANS_POLYNOM_THIRD );
         helmert = new JMenuItem( MENUITEM_TRANS_HELMERT );
 
         // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
@@ -149,8 +159,10 @@ public class GRViewerGUI extends JFrame {
 
         menuFile.add( import2DMapMenuItem );
         menuFile.add( import3DObjectMenuItem );
-        menuTransformation.add( polynomial );
-        menuTransformation.add( helmert );
+        menuTransformation.add( polynomial_1 );
+        // menuTransformation.add( polynomial_2 );
+        // menuTransformation.add( polynomial_3 );
+        // menuTransformation.add( helmert );
 
         this.getRootPane().setJMenuBar( menuBar );
     }
@@ -227,7 +239,9 @@ public class GRViewerGUI extends JFrame {
     public void addMenuItemListener( ActionListener e ) {
         import2DMapMenuItem.addActionListener( e );
         import3DObjectMenuItem.addActionListener( e );
-        polynomial.addActionListener( e );
+        polynomial_1.addActionListener( e );
+        polynomial_2.addActionListener( e );
+        polynomial_3.addActionListener( e );
         helmert.addActionListener( e );
 
     }
@@ -244,10 +258,6 @@ public class GRViewerGUI extends JFrame {
     public String fileName() {
         return fileName;
     }
-
-    // public String getTransformationMethod(){
-    //        
-    // }
 
     /**
      * The {@link Scene2DPanel} is a child of this Container
