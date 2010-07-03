@@ -74,8 +74,6 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private Point2d beginDrawImageAtPosition;
 
-    private Point2d translationPoint;
-
     private Rectangle imageDimension;
 
     /**
@@ -101,10 +99,14 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private Object pixelCoordinates;
 
+    private boolean isTranslated;
+
+    private Point2d cumTranslationPoint;
+
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
         this.selectedPoints = new ArrayList<Point4Values>();
-
+        this.beginDrawImageAtPosition = new Point2d( 0, 0 );
     }
 
     @Override
@@ -112,32 +114,30 @@ public class Scene2DPanel extends AbstractPanel2D {
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
 
-        if ( translationPoint == null ) {
-            translationPoint = new Point2d( 0.0, 0.0 );
+        if ( cumTranslationPoint == null ) {
+            cumTranslationPoint = new Point2d( 0.0, 0.0 );
         }
-
+        g2.translate( -cumTranslationPoint.x, -cumTranslationPoint.y );
         if ( imageToDraw != null ) {
 
-            g2.drawImage( imageToDraw, (int) beginDrawImageAtPosition.getX(), (int) beginDrawImageAtPosition.getY(),
+            g2.drawImage( imageToDraw, (int) cumTranslationPoint.x, (int) cumTranslationPoint.y,
                           (int) imageDimension.width, (int) imageDimension.height, this );
 
         }
-        g2.translate( -translationPoint.x, -translationPoint.y );
+
         if ( lastAbstractPoint != null ) {
-            // if ( isTranslated == false ) {
-            g2.fillOval( (int) lastAbstractPoint.getNewValue().getX() - 5,
-                         (int) lastAbstractPoint.getNewValue().getY() - 5, 10, 10 );
-            // }
+            if ( isTranslated == false ) {
+                g2.fillOval( (int) lastAbstractPoint.getNewValue().getX() - 5,
+                             (int) lastAbstractPoint.getNewValue().getY() - 5, 10, 10 );
+            }
         }
 
         if ( polygonList != null ) {
-            // g2.translate( 29, 51 );
-            // g2.rotate( 0.2 );
+
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
             }
-            // g2.rotate( -0.2 );
-            // g2.translate( -29, -51 );
+
         }
 
         if ( selectedPoints != null ) {
@@ -146,14 +146,14 @@ public class Scene2DPanel extends AbstractPanel2D {
             }
         }
 
-        g2.translate( translationPoint.x, translationPoint.y );
+        g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
+        if ( lastAbstractPoint != null ) {
+            if ( isTranslated == true ) {
+                g2.fillOval( (int) ( lastAbstractPoint.getNewValue().getX() - 5 ),
+                             (int) ( lastAbstractPoint.getNewValue().getY() - 5 ), 10, 10 );
 
-        // if ( tempPoint != null ) {
-        // // if ( isTranslated == true ) {
-        // g2.fillOval( (int) ( tempPoint.x - 5 ), (int) ( tempPoint.y - 5 ), 10, 10 );
-        //
-        // // }
-        // }
+            }
+        }
 
     }
 
@@ -180,14 +180,6 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     public void setinitialResolution( float initialResolution ) {
         this.initialResolution = initialResolution;
-    }
-
-    public Point2d getTranslationPoint() {
-        return translationPoint;
-    }
-
-    public void setTranslationPoint( Point2d translationPoint ) {
-        this.translationPoint = translationPoint;
     }
 
     private void updateSelectedPoints( Scene2DValues sceneValues ) {
@@ -246,4 +238,12 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     }
 
+    public void setTranslated( boolean isTranslated ) {
+        this.isTranslated = isTranslated;
+    }
+
+    public void setCumTranslationPoint( Point2d translationPoint ) {
+        this.cumTranslationPoint = translationPoint;
+
+    }
 }

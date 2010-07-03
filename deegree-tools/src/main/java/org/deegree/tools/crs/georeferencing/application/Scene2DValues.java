@@ -64,13 +64,13 @@ public class Scene2DValues {
 
     private RasterRect rasterRect;
 
-    private Point2d imageMargin;
+    // private Point2d imageMargin;
 
     //
     private Rectangle imageDimension;
 
     //
-    private Point2d imageStartPosition;
+    // private Point2d imageStartPosition;
 
     private Point2d transformedBounds;
 
@@ -105,10 +105,10 @@ public class Scene2DValues {
             if ( minPointPixel == null ) {
                 minPointPixel = new Point2d( 0.0, 0.0 );
             }
-            double pixelPosX = imageStartPosition.x - minPointPixel.x - pixelPoint.x;
-            double pixelPosY = imageStartPosition.y - minPointPixel.y - pixelPoint.y;
-            // double pixelPosX = minPointPixel.x - pixelPoint.x;
-            // double pixelPosY = minPointPixel.y - pixelPoint.y;
+            // double pixelPosX = imageStartPosition.x - minPointPixel.x - pixelPoint.x;
+            // double pixelPosY = imageStartPosition.y - minPointPixel.y - pixelPoint.y;
+            double pixelPosX = minPointPixel.x - pixelPoint.x;
+            double pixelPosY = minPointPixel.y - pixelPoint.y;
             double rasterPosX = -( pixelPosX * convertedPixelToRasterPoint.x );
             double rasterPosY = -( pixelPosY * convertedPixelToRasterPoint.y );
             // System.out.println( "pos: " + minPointPixel );
@@ -149,9 +149,12 @@ public class Scene2DValues {
         double pointWorldY = mathY + abstractGRPoint.getY();
         double percentX = pointWorldX / spanX;
         double percentY = pointWorldY / spanY;
-        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() + imageMargin.getX() ) );
-        int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height )
-                                                + imageStartPosition.getY() - imageMargin.getY() ) );
+        // int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() + (
+        // imageMargin.getX() * 2 ) ) );
+        // int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height )
+        // + imageStartPosition.getY() - imageMargin.getY() ) );
+        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) ) );
+        int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) ) );
 
         return new int[] { pixelPointX, pixelPointY };
 
@@ -167,16 +170,21 @@ public class Scene2DValues {
         double deltaY = mathY + abstractGRPoint.getY();
         double percentX = deltaX / spanX;
         double percentY = deltaY / spanY;
-        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() ) );
-        int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) + imageStartPosition.getY() ) );
+        // int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() ) );
+        // int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) +
+        // imageStartPosition.getY() ) );
+
+        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) ) );
+        int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) ) );
+
         // System.out.println( "[Scene2DValues] percent: " + percentX + " " + percentY + " = " + deltaY + " " + spanY );
         return new int[] { pixelPointX, pixelPointY };
     }
 
-    public void setImageMargin( Point2d imageMargin ) {
-        this.imageMargin = imageMargin;
-
-    }
+    // public void setImageMargin( Point2d imageMargin ) {
+    // this.imageMargin = imageMargin;
+    //
+    // }
 
     public Rectangle getImageDimension() {
         return imageDimension;
@@ -186,17 +194,17 @@ public class Scene2DValues {
         this.imageDimension = imageDimension;
     }
 
-    public Point2d getImageStartPosition() {
-        return imageStartPosition;
-    }
-
-    public void setImageStartPosition( Point2d imageStartPosition ) {
-        this.imageStartPosition = imageStartPosition;
-    }
-
-    public Point2d getImageMargin() {
-        return imageMargin;
-    }
+    // public Point2d getImageStartPosition() {
+    // return imageStartPosition;
+    // }
+    //
+    // public void setImageStartPosition( Point2d imageStartPosition ) {
+    // this.imageStartPosition = imageStartPosition;
+    // }
+    //
+    // public Point2d getImageMargin() {
+    // return imageMargin;
+    // }
 
     public AbstractRaster getRaster() {
         return raster;

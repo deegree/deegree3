@@ -58,8 +58,6 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  */
 public abstract class AbstractPanel2D extends JPanel {
 
-    // protected List<Pair<Point4Values, Point4Values>> points;
-
     protected boolean focus;
 
     protected List<Point4Values> selectedPoints;
@@ -80,11 +78,6 @@ public abstract class AbstractPanel2D extends JPanel {
     public void addScene2DMouseWheelListener( MouseWheelListener m ) {
         this.addMouseWheelListener( m );
     }
-
-    // public void addPoint( List<Pair<Point4Values, Point4Values>> points, Point4Values lastAbstractPoint ) {
-    // this.points = points;
-    // this.lastAbstractPoint = lastAbstractPoint;
-    // }
 
     public void setFocus( boolean focus ) {
         this.focus = focus;

@@ -38,6 +38,7 @@ package org.deegree.tools.crs.georeferencing.communication;
 
 import java.io.IOException;
 
+import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.crs.georeferencing.application.Controller;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
@@ -51,6 +52,7 @@ import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
  * 
  * @version $Revision$, $Date$
  */
+@Tool("Initializes the georeferencing tool. ")
 public class GRViewer {
 
     /**

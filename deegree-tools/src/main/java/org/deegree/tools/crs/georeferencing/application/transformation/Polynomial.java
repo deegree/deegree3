@@ -42,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.media.jai.WarpPolynomial;
-import javax.vecmath.Point3d;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
@@ -85,15 +84,15 @@ public class Polynomial extends AbstractTransformation implements Transformation
                 double x = p.first.getWorldCoords().getX();
                 double y = p.first.getWorldCoords().getY();
 
-                passPointsDst[counterSrc] = (float) x;
-                passPointsDst[++counterSrc] = (float) y;
-                counterSrc++;
+                passPointsDst[counterDst] = (float) x;
+                passPointsDst[++counterDst] = (float) y;
+                counterDst++;
                 Point4Values pValue = p.second;
                 x = pValue.getWorldCoords().getX();
                 y = pValue.getWorldCoords().getY();
-                passPointsSrc[counterDst] = (float) x;
-                passPointsSrc[++counterDst] = (float) y;
-                counterDst++;
+                passPointsSrc[counterSrc] = (float) x;
+                passPointsSrc[++counterSrc] = (float) y;
+                counterSrc++;
 
             }
 
@@ -107,60 +106,77 @@ public class Polynomial extends AbstractTransformation implements Transformation
             WarpPolynomial warp = WarpPolynomial.createWarp( passPointsSrc, 0, passPointsDst, 0, passPointsSrc.length,
                                                              1f, 1f, 1f, 1f, order );
             System.out.println( "coeff:" );
-            float[] x = warp.getXCoeffs();
-            float[] y = warp.getYCoeffs();
-            for ( int i = 0; i < y.length; i++ ) {
-                System.out.println( i + " " + x[i] + " " + y[i] );
+            float[] xC = warp.getXCoeffs();
+            float[] yC = warp.getYCoeffs();
+            for ( int i = 0; i < yC.length; i++ ) {
+                System.out.println( i + " " + xC[i] + " " + yC[i] );
             }
 
-            List<Point3d> result = new ArrayList<Point3d>();
+            System.out.println( "resid" );
+            double rxLocal = 0;
+            double ryLocal = 0;
+            for ( int i = 0; i < passPointsDst.length; i += 2 ) {
+                Point2D p = warp.mapDestPoint( new Point2D.Float( passPointsDst[i], passPointsDst[i + 1] ) );
+                rxLocal += ( p.getX() - passPointsSrc[i] );
+                ryLocal += ( p.getY() - passPointsSrc[i + 1] );
+                System.out.println( ( i / 2 ) + " -> " + ( p.getX() - passPointsSrc[i] ) + "/"
+                                    + ( p.getY() - passPointsSrc[i + 1] ) );
 
-            double rx = 0;
-            double ry = 0;
+            }
+
+            System.out.println( "\n mean resid" );
+            rxLocal /= ( passPointsSrc.length / 2 );
+            ryLocal /= ( passPointsSrc.length / 2 );
+            System.out.println( rxLocal + " " + ryLocal );
+
+            // for ( Point3d p : result ) {
+            // System.out.println( p.getX() + " " + p.getY() );
+            // }
+
             // int[] tz = sceneValues.getPixelCoordinate( new Point2D.Float( 0.03f, 6.0f ) );
-
+            // int[] x = new int[passPointsDst.length / 2];
+            // int[] y = new int[passPointsDst.length / 2];
+            // int count = 0;
             List<Polygon> transformedPolygonList = new ArrayList<Polygon>();
+            // for ( int i = 0; i < passPointsDst.length; i += 2 ) {
+            //
+            // Point2D p = warp.mapDestPoint( new Point2D.Float( passPointsDst[i], passPointsDst[i + 1] ) );
+            // double rx = -( p.getX() - passPointsSrc[i] );
+            // double ry = -( p.getY() - passPointsSrc[i + 1] );
+            // AbstractGRPoint convertPoint = new GeoReferencedPoint( p.getX() + rx, p.getY() + ry );
+            // int[] value = sceneValues.getPixelCoordinatePolygon( convertPoint );
+            // x[count] = value[0];
+            // y[count] = value[1];
+            // count++;
+            //
+            // }
+            // Polygon p = new Polygon( x, y, (int) ( passPointsDst.length * 0.5 ) );
+            // transformedPolygonList.add( p );
             for ( Polygon po : footPrint.getWorldCoordinatePolygonList() ) {
 
-                int[] x2 = new int[po.npoints];
-                int[] y2 = new int[po.npoints];
+                int[] x = new int[po.npoints];
+                int[] y = new int[po.npoints];
                 for ( int i = 0; i < po.npoints; i++ ) {
+                    int x2 = po.xpoints[i];
+                    int y2 = po.ypoints[i];
 
-                    Point2D p = warp.mapDestPoint( new Point2D.Float( po.xpoints[i], po.ypoints[i] ) );
-                    AbstractGRPoint convertPoint = new GeoReferencedPoint( p.getX(), p.getY() );
+                    Point2D p = warp.mapDestPoint( new Point2D.Float( x2, y2 ) );
+                    double rx = ( p.getX() - rxLocal );
+                    double ry = ( p.getY() - ryLocal );
+                    AbstractGRPoint convertPoint = new GeoReferencedPoint( rx, ry );
                     int[] value = sceneValues.getPixelCoordinatePolygon( convertPoint );
-                    x2[i] = value[0];
-                    y2[i] = value[1];
+                    x[i] = value[0];
+                    y[i] = value[1];
 
                 }
 
-                Polygon p = new Polygon( x2, y2, po.npoints );
+                Polygon p = new Polygon( x, y, po.npoints );
                 transformedPolygonList.add( p );
             }
 
-            System.out.println( "\n resid" );
-            for ( int i = 0; i < passPointsDst.length; i += 2 ) {
-                Point2D p = warp.mapDestPoint( new Point2D.Float( passPointsDst[i], passPointsDst[i + 1] ) );
-                // System.out.println( "p: " + p + " : " + p.getX() + " - " + ordinatesSrc[i] );
-                rx += ( p.getX() - passPointsSrc[i] );
-                ry += ( p.getY() - passPointsSrc[i + 1] );
-                System.out.println( ( i / 2 ) + " -> " + ( p.getX() - passPointsSrc[i] ) + "/"
-                                    + ( p.getY() - passPointsSrc[i + 1] ) );
-                result.add( new Point3d( p.getX(), p.getY(), 0 ) );
-
-            }
-            System.out.println( "\n mean resid" );
-            rx /= ( passPointsSrc.length / 2 );
-            ry /= ( passPointsSrc.length / 2 );
-            System.out.println( rx + " " + ry );
-
-            for ( Point3d p : result ) {
-                System.out.println( p.getX() + " " + p.getY() );
-            }
-
-            for ( Polygon p : transformedPolygonList ) {
-                for ( int i = 0; i < p.npoints; i++ ) {
-                    System.out.println( "[Polynomial] TransformedPolygons: " + p.xpoints[i] + " " + p.ypoints[i] );
+            for ( Polygon po : transformedPolygonList ) {
+                for ( int i = 0; i < po.npoints; i++ ) {
+                    System.out.println( "[Polynomial] TransformedPolygons: " + po.xpoints[i] + " " + po.ypoints[i] );
                 }
             }
 

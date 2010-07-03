@@ -432,12 +432,12 @@ public class Controller {
                         int[] pixelPoint = sceneValues.getPixelCoord( g );
                         GeoReferencedPoint newP = new GeoReferencedPoint( pixelPoint[0], pixelPoint[1] );
                         panel.setLastAbstractPoint( newP, g );
-                        // System.out.println( geoReferencedPoint + " -> "
-                        // + (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint )
-                        // + " -> " + sceneValues.getPixelCoord( g )[0] + ", "
-                        // + sceneValues.getPixelCoord( g )[1] );
-                        // panel.addPoint( mappedPoints, panel.getLastAbstractPoint() );
-                        // panel.setTranslated( isHorizontalRef );
+                        System.out.println( geoReferencedPoint + " -> "
+                                            + (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint )
+                                            + " -> " + sceneValues.getPixelCoord( g )[0] + ", "
+                                            + sceneValues.getPixelCoord( g )[1] );
+
+                        panel.setTranslated( isHorizontalRef );
 
                         tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
 
@@ -446,50 +446,17 @@ public class Controller {
                         mouseGeoRef.setMouseChanging( new Point2d(
                                                                    ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
                                                                    ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
-                        // System.out.println( "MouseChanging: " + mouseGeoRef.getMouseChanging() );
-
-                        // Prediction pred = new Prediction( mouse.getMouseChanging() );
-                        // pred.start();
 
                         mouseGeoRef.setCumulatedMouseChanging( new Point2d(
                                                                             mouseGeoRef.getCumulatedMouseChanging().getX()
                                                                                                     + mouseGeoRef.getMouseChanging().getX(),
                                                                             mouseGeoRef.getCumulatedMouseChanging().getY()
                                                                                                     + mouseGeoRef.getMouseChanging().getY() ) );
-                        mouseGeoRef.setPersistentCumulatedMouseChanging( new Point2d(
-                                                                                      mouseGeoRef.getPersistentCumulatedMouseChanging().getX()
-                                                                                                              + mouseGeoRef.getMouseChanging().getX(),
-                                                                                      mouseGeoRef.getPersistentCumulatedMouseChanging().getY()
-                                                                                                              + mouseGeoRef.getMouseChanging().getY() ) );
-                        panel.setTranslationPoint( mouseGeoRef.getPersistentCumulatedMouseChanging() );
-                        // System.out.println( "persCum: " + mouseGeoRef.getPersistentCumulatedMouseChanging() );
-                        panel.setBeginDrawImageAtPosition( new Point2d(
-                                                                        panel.getBeginDrawImageAtPosition().getX()
-                                                                                                - mouseGeoRef.getMouseChanging().getX(),
-                                                                        panel.getBeginDrawImageAtPosition().getY()
-                                                                                                - mouseGeoRef.getMouseChanging().getY() ) );
+
+                        panel.setCumTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
+                        panel.setTranslated( isHorizontalRef );
                         sceneValues.setStartRasterEnvelopePosition( mouseGeoRef.getMouseChanging() );
-                        // 
-                        // if the user went into any critical region
-                        if ( mouseGeoRef.getCumulatedMouseChanging().getX() >= sceneValues.getImageMargin().getX()
-                             || mouseGeoRef.getCumulatedMouseChanging().getX() <= -sceneValues.getImageMargin().getX()
-                             || mouseGeoRef.getCumulatedMouseChanging().getY() >= sceneValues.getImageMargin().getY()
-                             || mouseGeoRef.getCumulatedMouseChanging().getY() <= -sceneValues.getImageMargin().getY() ) {
-
-                            Point2d updateDrawImageAtPosition = new Point2d(
-                                                                             mouseGeoRef.getCumulatedMouseChanging().getX(),
-                                                                             mouseGeoRef.getCumulatedMouseChanging().getY() );
-                            // System.out.println( "updatePos: " + updateDrawImageAtPosition );
-
-                            // panel.setImageToDraw( model.getGeneratedImage() );
-                            // sceneValues.setStartRasterEnvelopePosition( updateDrawImageAtPosition );
-                            sceneValues.setMinPointPixel( null );
-                            // panel.setTranslated( isHorizontalRef );
-                            panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
-                            mouseGeoRef.reset();
-                            panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
-
-                        }
+                        panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
 
                     }
                     panel.repaint();
@@ -720,15 +687,16 @@ public class Controller {
 
     private void init() {
         // model.reset();
-        sceneValues.setImageMargin( new Point2d( panel.getBounds().width * 0.1, panel.getBounds().height * 0.1 ) );
+        // sceneValues.setImageMargin( new Point2d( panel.getBounds().width * 0.1, panel.getBounds().height * 0.1 ) );
         // System.out.println( "[Controller] margin: " + sceneValues.getImageMargin() );
-        sceneValues.setImageDimension( new Rectangle(
-                                                      (int) ( panel.getBounds().width + 2 * sceneValues.getImageMargin().x ),
-                                                      (int) ( panel.getBounds().height + 2 * sceneValues.getImageMargin().y ) ) );
-        sceneValues.setImageStartPosition( new Point2d( -sceneValues.getImageMargin().x,
-                                                        -sceneValues.getImageMargin().y ) );
+        // sceneValues.setImageDimension( new Rectangle(
+        // (int) ( panel.getBounds().width + 2 * sceneValues.getImageMargin().x ),
+        // (int) ( panel.getBounds().height + 2 * sceneValues.getImageMargin().y ) ) );
+        // sceneValues.setImageStartPosition( new Point2d( -sceneValues.getImageMargin().x,
+        // -sceneValues.getImageMargin().y ) );
 
-        panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
+        // panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
+        sceneValues.setImageDimension( new Rectangle( panel.getBounds().width, panel.getBounds().height ) );
         panel.setImageDimension( sceneValues.getImageDimension() );
 
         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
