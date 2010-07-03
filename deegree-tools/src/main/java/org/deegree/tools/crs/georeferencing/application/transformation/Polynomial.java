@@ -164,7 +164,7 @@ public class Polynomial extends AbstractTransformation implements Transformation
                     double rx = ( p.getX() - rxLocal );
                     double ry = ( p.getY() - ryLocal );
                     AbstractGRPoint convertPoint = new GeoReferencedPoint( rx, ry );
-                    int[] value = sceneValues.getPixelCoordinatePolygon( convertPoint );
+                    int[] value = sceneValues.getPixelCoord( convertPoint );
                     x[i] = value[0];
                     y[i] = value[1];
 

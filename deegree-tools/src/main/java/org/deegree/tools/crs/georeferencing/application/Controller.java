@@ -409,6 +409,15 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
+                    mouseGeoRef.setMouseChanging( new Point2d(
+                                                               ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
+                                                               ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
+
+                    mouseGeoRef.setCumulatedMouseChanging( new Point2d(
+                                                                        mouseGeoRef.getCumulatedMouseChanging().getX()
+                                                                                                + mouseGeoRef.getMouseChanging().getX(),
+                                                                        mouseGeoRef.getCumulatedMouseChanging().getY()
+                                                                                                + mouseGeoRef.getMouseChanging().getY() ) );
 
                     if ( isHorizontalRef == true ) {
                         if ( start == false ) {
@@ -431,6 +440,8 @@ public class Controller {
                         GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                         int[] pixelPoint = sceneValues.getPixelCoord( g );
                         GeoReferencedPoint newP = new GeoReferencedPoint( pixelPoint[0], pixelPoint[1] );
+                        System.out.println( "[Controller] newP: " + newP + " "
+                                            + mouseGeoRef.getCumulatedMouseChanging() );
                         panel.setLastAbstractPoint( newP, g );
                         System.out.println( geoReferencedPoint + " -> "
                                             + (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint )
@@ -443,22 +454,14 @@ public class Controller {
 
                     } else {
 
-                        mouseGeoRef.setMouseChanging( new Point2d(
-                                                                   ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
-                                                                   ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
-
-                        mouseGeoRef.setCumulatedMouseChanging( new Point2d(
-                                                                            mouseGeoRef.getCumulatedMouseChanging().getX()
-                                                                                                    + mouseGeoRef.getMouseChanging().getX(),
-                                                                            mouseGeoRef.getCumulatedMouseChanging().getY()
-                                                                                                    + mouseGeoRef.getMouseChanging().getY() ) );
-
-                        panel.setCumTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
                         panel.setTranslated( isHorizontalRef );
+                        // Point2d inverMouseChange = new Point2d( -mouseGeoRef.getMouseChanging().getX(),
+                        // -mouseGeoRef.getMouseChanging().getY() );
                         sceneValues.setStartRasterEnvelopePosition( mouseGeoRef.getMouseChanging() );
                         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
 
                     }
+                    panel.setCumTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
                     panel.repaint();
                 }
                 // footprintPanel

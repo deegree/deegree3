@@ -122,7 +122,7 @@ public class LeastSquarePolynomial extends AbstractTransformation implements Tra
                         e.printStackTrace();
                     }
                     AbstractGRPoint convertPoint = new GeoReferencedPoint( point3d.getX(), point3d.getY() );
-                    int[] value = sceneValues.getPixelCoordinatePolygon( convertPoint );
+                    int[] value = sceneValues.getPixelCoord( convertPoint );
                     x2[i] = value[0];
                     y2[i] = value[1];
                 }

@@ -102,19 +102,29 @@ public class Scene2DValues {
         if ( subRaster != null ) {
 
             double[] worldPos;
-            if ( minPointPixel == null ) {
-                minPointPixel = new Point2d( 0.0, 0.0 );
-            }
-            // double pixelPosX = imageStartPosition.x - minPointPixel.x - pixelPoint.x;
-            // double pixelPosY = imageStartPosition.y - minPointPixel.y - pixelPoint.y;
-            double pixelPosX = minPointPixel.x - pixelPoint.x;
-            double pixelPosY = minPointPixel.y - pixelPoint.y;
-            double rasterPosX = -( pixelPosX * convertedPixelToRasterPoint.x );
-            double rasterPosY = -( pixelPosY * convertedPixelToRasterPoint.y );
-            // System.out.println( "pos: " + minPointPixel );
-            // System.out.println( "rasta: " + rasterPosX + " " + rasterPosY );
 
+            // determine the minX and the maxY position of the subRaster-envelope
+            double getMinX = subRaster.getEnvelope().getMin().get0();
+            double getMaxY = subRaster.getEnvelope().getMax().get1();
+
+            // convert the requested point to rasterCoordinates
+            double rasterPosX = pixelPoint.x * convertedPixelToRasterPoint.x;
+            double rasterPosY = pixelPoint.y * convertedPixelToRasterPoint.y;
+
+            // determine the minX and maxY values of the rasterEnvelope because they are absolute points
+            double minWorldInRasterX = subRaster.getRasterReference().getOriginEasting();
+            double maxWorldInRasterY = subRaster.getRasterReference().getOriginNorthing();
+
+            // determine the delta between the absolute rasterPoint and the minX and maxY point of the
+            // subRaster-envelope
+            double deltaX = Math.abs( minWorldInRasterX - getMinX );
+            double deltaY = Math.abs( maxWorldInRasterY - getMaxY );
+
+            // get the worldCoordinates of the rasterPoints
             worldPos = subRaster.getRasterReference().getWorldCoordinate( rasterPosX, rasterPosY );
+            // add/substract the delta of the worldRasterPoint
+            worldPos[0] = worldPos[0] + deltaX;
+            worldPos[1] = worldPos[1] - deltaY;
 
             switch ( pixelPoint.getPointType() ) {
 
@@ -139,27 +149,6 @@ public class Scene2DValues {
      *            the worldCoordinatePoint which should be translated back to pixelCoordinates, not be <Code>null</Code>
      * @return an integer array with x, y - coordinates, z is not implemented yet.
      */
-    public int[] getPixelCoordinatePolygon( AbstractGRPoint abstractGRPoint ) {
-
-        double spanX = subRaster.getEnvelope().getSpan0();
-        double spanY = subRaster.getEnvelope().getSpan1();
-        double mathX = -subRaster.getEnvelope().getMin().get0();
-        double mathY = -subRaster.getEnvelope().getMin().get1();
-        double pointWorldX = mathX + abstractGRPoint.getX();
-        double pointWorldY = mathY + abstractGRPoint.getY();
-        double percentX = pointWorldX / spanX;
-        double percentY = pointWorldY / spanY;
-        // int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() + (
-        // imageMargin.getX() * 2 ) ) );
-        // int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height )
-        // + imageStartPosition.getY() - imageMargin.getY() ) );
-        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) ) );
-        int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) ) );
-
-        return new int[] { pixelPointX, pixelPointY };
-
-    }
-
     public int[] getPixelCoord( AbstractGRPoint abstractGRPoint ) {
 
         double spanX = subRaster.getEnvelope().getSpan0();
@@ -312,13 +301,15 @@ public class Scene2DValues {
 
         double minRX = this.minPointRaster.x + ( minPoint.x * convertedPixelToRasterPoint.x );
         double minRY = this.minPointRaster.y + ( minPoint.y * convertedPixelToRasterPoint.y );
+        // double minRX = 0 + ( minPoint.x * convertedPixelToRasterPoint.x );
+        // double minRY = 0 + ( minPoint.y * convertedPixelToRasterPoint.y );
 
         double minPX = this.minPointPixel.x + minPoint.x;
         double minPY = this.minPointPixel.y + minPoint.y;
 
         this.minPointRaster = new Point2d( minRX, minRY );
         this.minPointPixel = new Point2d( minPX, minPY );
-        // System.out.println( "minPixel: " + minPointPixel + " minRaster: " + minPointRaster );
+        System.out.println( "[Scene2DValues] minPixel: " + minPointPixel + " minRaster: " + minPointRaster );
     }
 
     public Point2d getMinPointRaster() {
