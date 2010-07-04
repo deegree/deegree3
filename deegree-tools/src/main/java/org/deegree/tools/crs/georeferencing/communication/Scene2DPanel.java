@@ -95,7 +95,7 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private List<Polygon> worldPolygonList;
 
-    private ArrayList<Polygon> pixelCoordinatePolygonList;
+    private ArrayList<Polygon> polygonListTranslated;
 
     private Object pixelCoordinates;
 
@@ -126,34 +126,54 @@ public class Scene2DPanel extends AbstractPanel2D {
         }
 
         if ( lastAbstractPoint != null ) {
-            if ( isTranslated == false ) {
-                g2.fillOval( (int) lastAbstractPoint.getNewValue().getX() - 5,
-                             (int) lastAbstractPoint.getNewValue().getY() - 5, 10, 10 );
-            }
+            // if ( isTranslated == false ) {
+            g2.fillOval( (int) lastAbstractPoint.getNewValue().getX() - 5,
+                         (int) lastAbstractPoint.getNewValue().getY() - 5, 10, 10 );
+            // }
         }
 
         if ( polygonList != null ) {
-
+            // if ( isTranslated == false ) {
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
             }
-
+            // }
         }
 
         if ( selectedPoints != null ) {
+            // if ( isTranslated == false ) {
             for ( Point4Values point : selectedPoints ) {
                 g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
+                // System.out.println( "[Scene2DPanel] selectedPoint: " + point );
             }
+            // }
         }
 
         g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
-        if ( lastAbstractPoint != null ) {
-            if ( isTranslated == true ) {
-                g2.fillOval( (int) ( lastAbstractPoint.getNewValue().getX() - 5 ),
-                             (int) ( lastAbstractPoint.getNewValue().getY() - 5 ), 10, 10 );
 
-            }
-        }
+        // if ( polygonList != null ) {
+        // if ( isTranslated == true ) {
+        // for ( Polygon polygon : polygonList ) {
+        // g2.drawPolygon( polygon );
+        // }
+        // }
+        // }
+        //
+        // if ( selectedPoints != null ) {
+        // if ( isTranslated == true ) {
+        // for ( Point4Values point : selectedPoints ) {
+        // g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
+        // System.out.println( "[Scene2DPanel] selectedPoint: " + point );
+        // }
+        // }
+        // }
+        // if ( lastAbstractPoint != null ) {
+        // if ( isTranslated == true ) {
+        // g2.fillOval( (int) ( lastAbstractPoint.getNewValue().getX() - 5 ),
+        // (int) ( lastAbstractPoint.getNewValue().getY() - 5 ), 10, 10 );
+        // System.out.println( "[Scene2DPanel] lastAbstractPoint: " + lastAbstractPoint );
+        // }
+        // }
 
     }
 
@@ -214,21 +234,50 @@ public class Scene2DPanel extends AbstractPanel2D {
             this.oldSize = 1.0f;
             this.inverseSize = 1.0f;
         }
-        this.resizing = Math.abs( newSize - this.oldSize );
+
+        this.resizing = this.oldSize - newSize;
         BigDecimal b = new BigDecimal( newSize );
         b = b.round( new MathContext( 2 ) );
         this.oldSize = b.floatValue();
+        this.oldSize = newSize;
+        this.resizing = roundFloat( resizing );
         this.inverseSize = inverseSize + this.resizing;
-        // if ( worldPolygonList != null ) {
-        // setPolygonList( worldPolygonList );
-        // }
+        if ( worldPolygonList != null ) {
+            setPolygonList( worldPolygonList );
+        }
         updateSelectedPoints( sceneValues );
 
     }
 
     public void setPolygonList( List<Polygon> polygonList ) {
 
-        this.polygonList = polygonList;
+        this.worldPolygonList = polygonList;
+        polygonListTranslated = new ArrayList<Polygon>();
+
+        if ( inverseSize == 0.0 ) {
+            inverseSize = initialResolution;
+        }
+
+        int sizeOfPoints = 0;
+        for ( Polygon p : polygonList ) {
+            sizeOfPoints += p.npoints;
+
+        }
+        for ( Polygon po : polygonList ) {
+            int[] x2 = new int[po.npoints];
+            int[] y2 = new int[po.npoints];
+            for ( int i = 0; i < po.npoints; i++ ) {
+                x2[i] = (int) ( ( po.xpoints[i] + cumTranslationPoint.getX() ) * inverseSize );
+                y2[i] = (int) ( ( po.ypoints[i] + cumTranslationPoint.getY() ) * inverseSize );
+
+                System.out.println( "[Scene2DPanel] inverseSize: " + inverseSize );
+            }
+            Polygon p = new Polygon( x2, y2, po.npoints );
+            polygonListTranslated.add( p );
+
+        }
+
+        this.polygonList = polygonListTranslated;
 
     }
 

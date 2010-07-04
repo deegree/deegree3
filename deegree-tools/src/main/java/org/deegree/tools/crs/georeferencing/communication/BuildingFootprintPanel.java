@@ -119,37 +119,54 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         g2.translate( -cumTranslationPoint.x, -cumTranslationPoint.y );
 
         if ( polygonList != null ) {
+            // if ( isTranslated == false ) {
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
             }
+            // }
         }
         if ( selectedPoints != null ) {
+            // if ( isTranslated == false ) {
             for ( Point4Values point : selectedPoints ) {
                 g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
             }
+            // }
         }
         if ( lastAbstractPoint != null ) {
-            if ( isTranslated == false ) {
+            // if ( isTranslated == false ) {
 
-                Point2d p = new Point2d( lastAbstractPoint.getNewValue().getX() - 5,
-                                         lastAbstractPoint.getNewValue().getY() - 5 );
+            Point2d p = new Point2d( lastAbstractPoint.getNewValue().getX() - 5,
+                                     lastAbstractPoint.getNewValue().getY() - 5 );
 
-                g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
+            g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
 
-            }
+            // }
         }
 
         g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
 
         System.out.println( "TranslationPoint: " + cumTranslationPoint );
-
-        if ( lastAbstractPoint != null ) {
-            if ( isTranslated == true ) {
-                g2.fillOval( (int) ( lastAbstractPoint.getNewValue().getX() - 5 ),
-                             (int) ( lastAbstractPoint.getNewValue().getY() - 5 ), 10, 10 );
-
-            }
-        }
+        // if ( polygonList != null ) {
+        // if ( isTranslated == true ) {
+        // for ( Polygon polygon : polygonList ) {
+        // g2.drawPolygon( polygon );
+        // }
+        // }
+        // }
+        // if ( selectedPoints != null ) {
+        // if ( isTranslated == true ) {
+        // for ( Point4Values point : selectedPoints ) {
+        // g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
+        // }
+        // }
+        // }
+        // if ( lastAbstractPoint != null ) {
+        // if ( isTranslated == true ) {
+        // g2.fillOval( (int) ( lastAbstractPoint.getNewValue().getX() - 5 ),
+        // (int) ( lastAbstractPoint.getNewValue().getY() - 5 ), 10, 10 );
+        //
+        // }
+        // }
     }
 
     @Override

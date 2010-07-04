@@ -409,15 +409,6 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    mouseGeoRef.setMouseChanging( new Point2d(
-                                                               ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
-                                                               ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
-
-                    mouseGeoRef.setCumulatedMouseChanging( new Point2d(
-                                                                        mouseGeoRef.getCumulatedMouseChanging().getX()
-                                                                                                + mouseGeoRef.getMouseChanging().getX(),
-                                                                        mouseGeoRef.getCumulatedMouseChanging().getY()
-                                                                                                + mouseGeoRef.getMouseChanging().getY() ) );
 
                     if ( isHorizontalRef == true ) {
                         if ( start == false ) {
@@ -433,30 +424,33 @@ public class Controller {
                              && panel.getFocus() == true ) {
                             tablePanel.addRow();
                         }
-                        int x = m.getX();
-                        int y = m.getY();
+                        double x = m.getX();
+                        double y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                        // System.out.println( "[Controller] clickedPoint: " + geoReferencedPoint );
+                        System.out.println( "[Controller] clickedPoint: " + geoReferencedPoint );
                         GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                         int[] pixelPoint = sceneValues.getPixelCoord( g );
-                        GeoReferencedPoint newP = new GeoReferencedPoint( pixelPoint[0], pixelPoint[1] );
-                        System.out.println( "[Controller] newP: " + newP + " "
-                                            + mouseGeoRef.getCumulatedMouseChanging() );
+                        GeoReferencedPoint newP = new GeoReferencedPoint(
+                                                                          pixelPoint[0]
+                                                                                                  + mouseGeoRef.getCumulatedMouseChanging().getX(),
+                                                                          pixelPoint[1]
+                                                                                                  + mouseGeoRef.getCumulatedMouseChanging().getY() );
                         panel.setLastAbstractPoint( newP, g );
-                        System.out.println( geoReferencedPoint + " -> "
-                                            + (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint )
-                                            + " -> " + sceneValues.getPixelCoord( g )[0] + ", "
-                                            + sceneValues.getPixelCoord( g )[1] );
-
-                        panel.setTranslated( isHorizontalRef );
-
+                        // panel.setTranslated( isHorizontalRef );
                         tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
 
                     } else {
+                        mouseGeoRef.setMouseChanging( new Point2d(
+                                                                   ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
+                                                                   ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
 
-                        panel.setTranslated( isHorizontalRef );
-                        // Point2d inverMouseChange = new Point2d( -mouseGeoRef.getMouseChanging().getX(),
-                        // -mouseGeoRef.getMouseChanging().getY() );
+                        mouseGeoRef.setCumulatedMouseChanging( new Point2d(
+                                                                            mouseGeoRef.getCumulatedMouseChanging().getX()
+                                                                                                    + mouseGeoRef.getMouseChanging().getX(),
+                                                                            mouseGeoRef.getCumulatedMouseChanging().getY()
+                                                                                                    + mouseGeoRef.getMouseChanging().getY() ) );
+
+                        // panel.setTranslated( isHorizontalRef );
                         sceneValues.setStartRasterEnvelopePosition( mouseGeoRef.getMouseChanging() );
                         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
 
@@ -481,9 +475,9 @@ public class Controller {
                              && footPanel.getFocus() == true ) {
                             tablePanel.addRow();
                         }
-                        int x = m.getX();
-                        int y = m.getY();
-                        // System.out.println( "[CONTROLLER] " + x + ", " + y );
+                        double x = m.getX() + mouseFootprint.getCumulatedMouseChanging().getX();
+                        double y = m.getY() + mouseFootprint.getCumulatedMouseChanging().getY();
+                        System.out.println( "[CONTROLLER] " + x + ", " + y );
                         footPanel.setTranslated( isHorizontalRef );
                         Pair<AbstractGRPoint, FootprintPoint> point = footPanel.getClosestPoint( new FootprintPoint( x,
                                                                                                                      y ) );
