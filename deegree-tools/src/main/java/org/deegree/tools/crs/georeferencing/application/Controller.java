@@ -618,9 +618,9 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                     float newSize = 1.0f;
                     if ( m.getWheelRotation() < 0 ) {
-                        newSize = sceneValues.getSize() - .05f;
+                        newSize = sceneValues.getSize() * .95f;
                     } else {
-                        newSize = sceneValues.getSize() + .05f;
+                        newSize = sceneValues.getSize() * 1.05f;
                     }
 
                     sceneValues.setSize( newSize );
@@ -633,9 +633,9 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     float newSize = 1.0f;
                     if ( m.getWheelRotation() < 0 ) {
-                        newSize = footPanel.getResolution() + .1f;
+                        newSize = footPanel.getResolution() * 1.1f;
                     } else {
-                        newSize = footPanel.getResolution() - .1f;
+                        newSize = footPanel.getResolution() * .9f;
                     }
                     footPanel.updatePoints( newSize );
                     updateMappedPoints();
