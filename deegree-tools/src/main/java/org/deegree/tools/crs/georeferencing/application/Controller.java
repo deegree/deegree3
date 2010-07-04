@@ -740,6 +740,7 @@ public class Controller {
         panel.removeAllFromSelectedPoints();
         footPanel.removeAllFromSelectedPoints();
         footPanel.setLastAbstractPoint( null, null );
+        panel.setPolygonList( null );
         panel.setLastAbstractPoint( null, null );
         panel.repaint();
         footPanel.repaint();

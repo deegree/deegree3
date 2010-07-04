@@ -250,34 +250,37 @@ public class Scene2DPanel extends AbstractPanel2D {
     }
 
     public void setPolygonList( List<Polygon> polygonList ) {
+        if ( polygonList != null ) {
+            this.worldPolygonList = polygonList;
+            polygonListTranslated = new ArrayList<Polygon>();
 
-        this.worldPolygonList = polygonList;
-        polygonListTranslated = new ArrayList<Polygon>();
-
-        if ( inverseSize == 0.0 ) {
-            inverseSize = initialResolution;
-        }
-
-        int sizeOfPoints = 0;
-        for ( Polygon p : polygonList ) {
-            sizeOfPoints += p.npoints;
-
-        }
-        for ( Polygon po : polygonList ) {
-            int[] x2 = new int[po.npoints];
-            int[] y2 = new int[po.npoints];
-            for ( int i = 0; i < po.npoints; i++ ) {
-                x2[i] = (int) ( ( po.xpoints[i] + cumTranslationPoint.getX() ) * inverseSize );
-                y2[i] = (int) ( ( po.ypoints[i] + cumTranslationPoint.getY() ) * inverseSize );
-
-                System.out.println( "[Scene2DPanel] inverseSize: " + inverseSize );
+            if ( inverseSize == 0.0 ) {
+                inverseSize = initialResolution;
             }
-            Polygon p = new Polygon( x2, y2, po.npoints );
-            polygonListTranslated.add( p );
 
+            int sizeOfPoints = 0;
+            for ( Polygon p : polygonList ) {
+                sizeOfPoints += p.npoints;
+
+            }
+            for ( Polygon po : polygonList ) {
+                int[] x2 = new int[po.npoints];
+                int[] y2 = new int[po.npoints];
+                for ( int i = 0; i < po.npoints; i++ ) {
+                    x2[i] = (int) ( ( po.xpoints[i] + cumTranslationPoint.getX() ) * inverseSize );
+                    y2[i] = (int) ( ( po.ypoints[i] + cumTranslationPoint.getY() ) * inverseSize );
+
+                    System.out.println( "[Scene2DPanel] inverseSize: " + inverseSize );
+                }
+                Polygon p = new Polygon( x2, y2, po.npoints );
+                polygonListTranslated.add( p );
+
+            }
+
+            this.polygonList = polygonListTranslated;
+        } else {
+            this.polygonList = null;
         }
-
-        this.polygonList = polygonListTranslated;
 
     }
 
