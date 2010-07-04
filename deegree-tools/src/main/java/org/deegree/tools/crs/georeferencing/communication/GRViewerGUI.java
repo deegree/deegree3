@@ -155,7 +155,9 @@ public class GRViewerGUI extends JFrame {
         // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
         ows7url = "http://localhost:8080/deegree-wms-cite111/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
         // ows7url = "http://www.wms.nrw.de/geobasis/adv_dtk?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1";
-        fileName = "/home/thomas/test_building.gml";
+        fileName = "src/main/resources/org/deegree/tools/crs/georeferencing/test_building.gml";
+
+        // fileName = GRViewerGUI.class.getResource( "georeferencing/test_building.gml" ).toString();
 
         menuFile.add( import2DMapMenuItem );
         menuFile.add( import3DObjectMenuItem );

@@ -96,13 +96,14 @@ public class RasterOptions {
         options.add( RIGHT_UPPER_X, "2.0" );
         options.add( RIGHT_UPPER_Y, "6.0" );
 
+        // (minX, minY, maxX, maxY) -> 2568720.0,5629890.0,2568800.0,5629970.0
         // options.add( RasterIOOptions.CRS, "EPSG:31466" );
         // options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
         // options.add( RIO_WMS_LAYERS, "DTK" );
-        // options.add( LEFT_LOWER_X, "2568347" );
-        // options.add( LEFT_LOWER_Y, "5610821" );
-        // options.add( RIGHT_UPPER_X, "2589019" );
-        // options.add( RIGHT_UPPER_Y, "5627689" );
+        // options.add( LEFT_LOWER_X, "2568720.0" );
+        // options.add( LEFT_LOWER_Y, "5629890.0" );
+        // options.add( RIGHT_UPPER_X, "2568800.0" );
+        // options.add( RIGHT_UPPER_Y, "5629970.0" );
 
         // options.add( RasterIOOptions.CRS, "EPSG:32618" );
         // options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );

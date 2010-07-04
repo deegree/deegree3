@@ -622,7 +622,7 @@ public class Controller {
                     } else {
                         newSize = sceneValues.getSize() + .05f;
                     }
-                    // TODO sceneValues options size ändern
+
                     sceneValues.setSize( newSize );
                     System.out.println( "[Controller] newSize: " + newSize );
                     init();
