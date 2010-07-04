@@ -93,8 +93,13 @@ public class Point4Values {
 
     @Override
     public String toString() {
-        String s = "<" + oldValue + ", " + initialValue + ", " + newValue + ", " + worldCoords + ">";
-        return s;
+        StringBuilder sb = new StringBuilder();
+        sb.append( "<OldValue, InitialValue, NewValue, WorldCoordinates>\n" );
+        sb.append( "<" ).append( oldValue ).append( ", " ).append( initialValue ).append( ", " ).append( newValue ).append(
+                                                                                                                            ", " ).append(
+                                                                                                                                           worldCoords ).append(
+                                                                                                                                                                 ">" );
+        return sb.toString();
     }
 
 }
