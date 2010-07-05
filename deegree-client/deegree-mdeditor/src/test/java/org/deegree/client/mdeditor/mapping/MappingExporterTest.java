@@ -36,6 +36,7 @@
 package org.deegree.client.mdeditor.mapping;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -49,9 +50,8 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.math.RandomUtils;
-import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.configuration.mapping.MappingParser;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.io.DataIOException;
@@ -93,15 +93,13 @@ public class MappingExporterTest extends TestCase {
     }
 
     private Dataset prepareDataset()
-                            throws DataIOException {
-        Configuration.setFilesDirURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping" );
+                            throws DataIOException, ConfigurationException {
         return DataHandler.getInstance().getDataset( "exampleDataset.xml" );
     }
 
     private Map<String, FormField> prepareFormFields()
                             throws ConfigurationException {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
         Map<String, FormField> formFields = configuration.getFormFields();
         for ( String path : formFields.keySet() ) {
             FormField ff = formFields.get( path );

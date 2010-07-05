@@ -33,15 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
+package org.deegree.client.mdeditor.configuration;
 
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.deegree.client.mdeditor.configuration.Configuration;
-import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.codelist.CodeListConfigurationFactory;
 import org.deegree.client.mdeditor.model.CodeList;
 import org.junit.Test;
 
@@ -58,8 +55,7 @@ public class CodeListConfigurationParserTest extends TestCase {
     @Test
     public void testParseCodeLists()
                             throws ConfigurationException {
-        Configuration.setCodeListURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/codeListTestConfiguration.xml" );
-        List<CodeList> codeLists = CodeListConfigurationFactory.getCodeLists();
+        List<CodeList> codeLists = ConfigurationManager.getConfiguration().getCodeLists();
 
         assertNotNull( codeLists );
         assertTrue( codeLists.size() == 3 );
@@ -79,8 +75,7 @@ public class CodeListConfigurationParserTest extends TestCase {
     @Test
     public void testParseCode()
                             throws ConfigurationException {
-        Configuration.setCodeListURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/codeListTestConfiguration.xml" );
-        CodeList codeList = CodeListConfigurationFactory.getCodeList( "hierarchylevel" );
+        CodeList codeList = ConfigurationManager.getConfiguration().getCodeList( "hierarchylevel" );
 
         assertNotNull( codeList );
 

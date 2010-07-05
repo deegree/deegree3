@@ -36,6 +36,7 @@
 package org.deegree.client.mdeditor.controller;
 
 import java.io.FileNotFoundException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,9 +46,8 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.TestCase;
 
-import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.io.DataIOException;
 import org.deegree.client.mdeditor.model.DataGroup;
@@ -71,9 +71,7 @@ public class FormIOTest extends TestCase {
     @Test
     public void testDatasetWriter()
                             throws FileNotFoundException, XMLStreamException, ConfigurationException {
-        Configuration.setFilesDirURL( "/home/lyn/workspace/deegree-mdeditor/tmp/test/" );
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         String v1 = "testWert";
@@ -129,30 +127,23 @@ public class FormIOTest extends TestCase {
             Dataset dataset = DataHandler.getInstance().getDataset( "testWriting" );
 
             Map<String, Object> values = dataset.getValues();
-            assertEquals( 4, values.size() );
-
-            String v4 = String.valueOf( ( (InputFormField) fg.getFormElements().get( 2 ) ).getValue() );
-            String p4 = ( (InputFormField) fg.getFormElements().get( 2 ) ).getPath().toString();
+            assertEquals( formGroups.size(), values.size() );
 
             assertTrue( values.containsKey( p1 ) );
             assertTrue( values.containsKey( p2 ) );
             assertTrue( values.containsKey( p3 ) );
-            assertTrue( values.containsKey( p4 ) );
 
             assertNotNull( values.get( p1 ) );
             assertNotNull( values.get( p2 ) );
             assertNotNull( values.get( p3 ) );
-            assertNotNull( values.get( p4 ) );
 
             assertTrue( values.get( p1 ) instanceof String );
             assertTrue( values.get( p2 ) instanceof String );
             assertTrue( values.get( p3 ) instanceof List<?> );
-            assertTrue( values.get( p4 ) instanceof String );
 
             assertEquals( v1, values.get( p1 ) );
             assertEquals( v2, values.get( p2 ) );
             assertEquals( v3, values.get( p3 ) );
-            assertEquals( v4, values.get( p4 ) );
 
             Map<String, List<DataGroup>> resultDG = dataset.getDataGroups();
 

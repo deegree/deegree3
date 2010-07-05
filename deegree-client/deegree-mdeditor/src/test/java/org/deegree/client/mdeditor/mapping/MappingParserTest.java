@@ -83,13 +83,13 @@ public class MappingParserTest extends TestCase {
         MappingGroup mg = (MappingGroup) me.get( 5 );
         assertEquals( "SimpleUnboundedFormGroup", mg.getFormFieldPath() );
         assertEquals(
-                      "gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format",
+                      "gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor",
                       mg.getSchemaPath() );
         List<MappingElement> elements = mg.getMappingElements();
         assertNotNull( elements );
         assertEquals( 2, elements.size() );
 
         assertEquals( "SimpleUnboundedFormGroup/in1", elements.get( 0 ).getFormFieldPath() );
-        assertEquals( "gmd:name/gco:CharacterString", elements.get( 0 ).getSchemaPath() );
+        assertEquals( "gmd:distributorFormat/gmd:MD_Format/gmd:name/gco:CharacterString", elements.get( 0 ).getSchemaPath() );
     }
 }

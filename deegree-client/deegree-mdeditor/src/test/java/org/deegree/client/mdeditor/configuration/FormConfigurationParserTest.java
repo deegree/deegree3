@@ -33,16 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
+package org.deegree.client.mdeditor.configuration;
 
 import java.net.URL;
+
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormFieldPath;
@@ -66,8 +65,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseFormConfiguration()
                             throws ConfigurationException {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
 
         assertEquals( LAYOUT_TYPE.TAB, configuration.getLayoutType() );
 
@@ -84,8 +82,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseFormGroups()
                             throws ConfigurationException {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
@@ -105,8 +102,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseReferencedFormElementAndIdentifier()
                             throws ConfigurationException {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
@@ -127,8 +123,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseFormElements()
                             throws ConfigurationException {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
@@ -165,9 +160,8 @@ public class FormConfigurationParserTest extends TestCase {
 
     @Test(expected = org.deegree.client.mdeditor.configuration.ConfigurationException.class)
     public void testdoubleIDException() {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/doubleIDTestConfig.xml" );
         try {
-            FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+            ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
         } catch ( ConfigurationException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -177,22 +171,18 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseMapping()
                             throws ConfigurationException {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
         List<URL> mappings = configuration.getMappingURLs();
 
         assertNotNull( mappings );
         assertEquals( 1, mappings.size() );
-        assertEquals(
-                      "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping/mappingTest.xml",
-                      mappings.get( 0 ).getFile() );
+        assertTrue( mappings.get( 0 ).getPath().endsWith( "mappingTest.xml" ) );
     }
 
     @Test
     public void testParseOccurence()
                             throws ConfigurationException {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
