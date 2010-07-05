@@ -223,7 +223,7 @@ public class EncodingGuesser {
                 continue;
             }
 
-            if ( map.containsKey( b ) ) {
+            if ( map.containsKey( (int) b ) ) {
                 map.put( (int) b, map.get( b ) + 1 );
             } else {
                 map.put( (int) b, 1 );

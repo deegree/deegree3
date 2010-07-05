@@ -202,12 +202,14 @@ class DefaultLock implements Lock {
         synchronized ( manager ) {
             manager.releaseExpiredLocks();
             Connection conn = null;
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
-                stmt = conn.createStatement();
-                rs = stmt.executeQuery( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID='" + fid + "' AND LOCK_ID=" + id );
+                stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID=?" );
+                stmt.setString( 1, fid );
+                stmt.setString( 2, id );
+                rs = stmt.executeQuery();
                 rs.next();
                 int count = rs.getInt( 1 );
                 isLocked = count > 0;
@@ -311,7 +313,9 @@ class DefaultLock implements Lock {
                 conn.commit();
             } catch ( SQLException e ) {
                 try {
-                    conn.rollback();
+                    if ( conn != null ) {
+                        conn.rollback();
+                    }
                 } catch ( SQLException e1 ) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -322,7 +326,9 @@ class DefaultLock implements Lock {
                 throw new FeatureStoreException( e );
             } finally {
                 try {
-                    conn.setAutoCommit( true );
+                    if ( conn != null ) {
+                        conn.setAutoCommit( true );
+                    }
                 } catch ( SQLException e ) {
                     e.printStackTrace();
                 }

@@ -150,11 +150,11 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
 
         // TODO make this failproof
         Object thatValue = o;
-        if ( o instanceof PrimitiveValue  ) {
-            thatValue = ((PrimitiveValue) o).value;
+        if ( o instanceof PrimitiveValue ) {
+            thatValue = ( (PrimitiveValue) o ).value;
         }
-        
-        Pair<Object,Object> comparablePair = makeComparable( value, thatValue );
+
+        Pair<Object, Object> comparablePair = makeComparable( value, thatValue );
 
         // NOTE: don't use #equals() for BigDecimal, because new BigDecimal("155.00") is not equal to
         // new BigDecimal("155")
@@ -165,10 +165,22 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
     }
 
     @Override
+    public int hashCode() {
+        // TODO: see ticket #113
+        return value.hashCode();
+    }
+
+    @Override
     public String toString() {
         return textValue;
     }
 
+    /**
+     * @param value1
+     * @param value2
+     * @return should be a ComparablePair now that we have it...
+     * @throws IllegalArgumentException
+     */
     public static Pair<Object, Object> makeComparable( Object value1, Object value2 )
                             throws IllegalArgumentException {
         Pair<Object, Object> result = new Pair<Object, Object>( value1, value2 );

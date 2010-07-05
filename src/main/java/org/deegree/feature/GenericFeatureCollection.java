@@ -84,7 +84,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     /** * */
     public static QName FEATURE_MEMBER = new QName( "http://www.opengis.net/gml", "featureMember" );
 
-    private static QName FEATURE_MEMBERS = new QName( "http://www.opengis.net/gml", "featureMembers" );
+    // private static QName FEATURE_MEMBERS = new QName( "http://www.opengis.net/gml", "featureMembers" );
 
     /**
      * Creates a new {@link GenericFeatureCollection} instance with type information and content specified using
@@ -93,6 +93,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * @param ft
      * @param fid
      * @param props
+     * @param version
      */
     public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property> props, GMLVersion version ) {
         this.ft = ft;
@@ -102,10 +103,6 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
             Object propValue = prop.getValue();
             if ( propValue instanceof Feature ) {
                 memberFeatures.add( (Feature) prop.getValue() );
-            } else if ( propValue instanceof Feature[] ) {
-                for ( Feature feature : (Feature[]) propValue ) {
-                    memberFeatures.add( feature );
-                }
             } else {
                 nonMemberProps.add( prop );
             }
@@ -285,8 +282,8 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         return namedProps.toArray( new Property[namedProps.size()] );
     }
 
-    // TODO also allow the retrieval of featureMember properties in the methods below    
-    
+    // TODO also allow the retrieval of featureMember properties in the methods below
+
     @Override
     public Property getProperty( QName propName ) {
         Property prop = null;
@@ -302,13 +299,12 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         return prop;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Property[] getGeometryProperties() {
         List<Property> geoProps = new ArrayList<Property>( nonMemberProps.size() );
         for ( Property property : nonMemberProps ) {
             if ( property.getValue() instanceof Geometry ) {
-                geoProps.add( (Property) property );
+                geoProps.add( property );
             }
         }
         return geoProps.toArray( new Property[geoProps.size()] );

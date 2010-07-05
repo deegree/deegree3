@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.version;
 
 import java.net.URL;
@@ -42,11 +42,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public final class ModuleVersion {
@@ -63,7 +63,10 @@ public final class ModuleVersion {
 
     private String svnPath;
 
-    public ModuleVersion(URL buildInfoPropertiesURL) {
+    /**
+     * @param buildInfoPropertiesURL
+     */
+    public ModuleVersion( URL buildInfoPropertiesURL ) {
         try {
             // fetch build properties
             Properties buildProps = new Properties();
@@ -71,8 +74,8 @@ public final class ModuleVersion {
             buildVersion = buildProps.getProperty( "build.version" );
             buildDate = buildProps.getProperty( "build.date" );
             buildBy = buildProps.getProperty( "build.by" );
-//            svnRevision = buildProps.getProperty( "svn.revision" ).trim();
-//            svnPath = buildProps.getProperty( "svn.path" ).trim();
+            // svnRevision = buildProps.getProperty( "svn.revision" ).trim();
+            // svnPath = buildProps.getProperty( "svn.path" ).trim();
         } catch ( Exception ex ) {
             LOG.error( "Error fetching version / build properties: " + ex.getMessage(), ex );
         }
@@ -80,7 +83,7 @@ public final class ModuleVersion {
 
     /**
      * Returns the version number.
-     *
+     * 
      * @return the version number
      */
     public String getVersionNumber() {
@@ -89,7 +92,7 @@ public final class ModuleVersion {
 
     /**
      * Returns the date string when the current build was created.
-     *
+     * 
      * @return the date as String
      */
     public String getBuildDate() {
@@ -98,7 +101,7 @@ public final class ModuleVersion {
 
     /**
      * Returns the name of the builder.
-     *
+     * 
      * @return the name of the builder
      */
     public String getBuildBy() {
@@ -126,7 +129,8 @@ public final class ModuleVersion {
         return svnPath;
     }
 
-    public String toString () {
-        return buildVersion + " (build@"+ buildDate + " by " + buildBy + ")";
+    @Override
+    public String toString() {
+        return buildVersion + " (build@" + buildDate + " by " + buildBy + ")";
     }
 }
