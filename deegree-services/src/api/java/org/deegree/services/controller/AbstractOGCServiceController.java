@@ -427,7 +427,7 @@ public abstract class AbstractOGCServiceController {
                 Version lowestOfferedVersion = offeredVersions.first();
                 if ( requestedVersion.compareTo( lowestOfferedVersion ) < 0 ) {
                     // requested version is lower than lowest offered versions
-                    agreedVersion = offeredVersions.last();
+                    agreedVersion = lowestOfferedVersion;
                 } else {
                     // requested version is higher than lower offered versions
                     agreedVersion = lowestOfferedVersion;
@@ -435,7 +435,7 @@ public abstract class AbstractOGCServiceController {
                         // if the first version is found that is higher than the requested,
                         // break loop -> agreed version is the highest offered version that is lower
                         // than the requested one
-                        if ( requestedVersion.compareTo( offeredVersion ) > 0 ) {
+                        if ( offeredVersion.compareTo( requestedVersion ) > 0 ) {
                             break;
                         }
                         agreedVersion = offeredVersion;
