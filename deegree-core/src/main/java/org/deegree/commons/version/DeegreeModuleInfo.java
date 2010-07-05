@@ -89,6 +89,7 @@ public abstract class DeegreeModuleInfo {
             URL buildInfoURL = this.getClass().getResource( propertiesName );
             if ( buildInfoURL == null ) {
                 LOG.error( "Version/build info properties file '" + propertiesName + "' not found on classpath." );
+                return null;
             }
             version = new ModuleVersion( buildInfoURL );
         }

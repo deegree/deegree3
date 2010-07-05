@@ -142,6 +142,9 @@ public class DefaultLockManager implements LockManager {
             rs = dbMetaData.getTables( null, null, "LOCKED_FIDS", new String[] { "TABLE" } );
             if ( !rs.next() ) {
                 LOG.debug( "Creating table 'LOCKED_FIDS'." );
+                if ( stmt == null ) {
+                    stmt = conn.createStatement();
+                }
                 String sql = "CREATE TABLE LOCKED_FIDS (";
                 sql += "LOCK_ID INT REFERENCES LOCKS,";
                 sql += "FID VARCHAR(255) NOT NULL UNIQUE";
@@ -155,6 +158,9 @@ public class DefaultLockManager implements LockManager {
             rs = dbMetaData.getTables( null, null, "LOCK_FAILED_FIDS", new String[] { "TABLE" } );
             if ( !rs.next() ) {
                 LOG.debug( "Creating table 'LOCK_FAILED_FIDS'." );
+                if ( stmt == null ) {
+                    stmt = conn.createStatement();
+                }
                 String sql = "CREATE TABLE LOCK_FAILED_FIDS (";
                 sql += "LOCK_ID INT REFERENCES LOCKS,";
                 sql += "FID VARCHAR(255) NOT NULL UNIQUE";
@@ -283,7 +289,9 @@ public class DefaultLockManager implements LockManager {
                 lock = new DefaultLock( this, jdbcConnId, "" + lockId, acquired, expires, numLocked, numFailed );
             } catch ( SQLException e ) {
                 try {
-                    conn.rollback();
+                    if ( conn != null ) {
+                        conn.rollback();
+                    }
                 } catch ( SQLException e1 ) {
                     LOG.warn( "Error performing rollback on lock db: " + e.getMessage(), e );
                 }
@@ -293,7 +301,9 @@ public class DefaultLockManager implements LockManager {
                 throw new FeatureStoreException( e );
             } finally {
                 try {
-                    conn.setAutoCommit( true );
+                    if ( conn != null ) {
+                        conn.setAutoCommit( true );
+                    }
                 } catch ( SQLException e ) {
                     LOG.warn( "Error resetting auto commit on lock db connection: " + e.getMessage(), e );
                 }
@@ -424,12 +434,13 @@ public class DefaultLockManager implements LockManager {
         synchronized ( this ) {
             releaseExpiredLocks();
             Connection conn = null;
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
-                stmt = conn.createStatement();
-                rs = stmt.executeQuery( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID='" + fid + "'" );
+                stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=?" );
+                stmt.setString( 1, fid );
+                rs = stmt.executeQuery();
                 rs.next();
                 int count = rs.getInt( 1 );
                 isLocked = count > 0;

@@ -53,29 +53,52 @@ public class Measure implements TypedObjectNode {
 
     private String uomURI;
 
-    // angular degree --> urn:ogc:def:uom:EPSG:6.3:9102
-    // radian --> urn:ogc:def:uom:EPSG::9101
-    // meter --> urn:ogc:def:uom:EPSG:6.3:9001
-    // unity --> urn:ogc:def:uom:EPSG:6.3:8805
-    // from URN definitions
+    /**
+     * angular degree --> urn:ogc:def:uom:EPSG:6.3:9102
+     * 
+     * radian --> urn:ogc:def:uom:EPSG::9101
+     * 
+     * meter --> urn:ogc:def:uom:EPSG:6.3:9001
+     * 
+     * unity --> urn:ogc:def:uom:EPSG:6.3:8805
+     * 
+     * from URN definitions
+     * 
+     * @param value
+     * @param uomURI
+     */
     public Measure( BigDecimal value, String uomURI ) {
         this.value = value;
         this.uomURI = uomURI;
     }
 
+    /**
+     * @param value
+     * @param uomURI
+     * @throws NumberFormatException
+     */
     public Measure( String value, String uomURI ) throws NumberFormatException {
         this.value = new BigDecimal( value );
         this.uomURI = uomURI;
     }
 
+    /**
+     * @return the value
+     */
     public BigDecimal getValue() {
         return value;
     }
 
+    /**
+     * @return the value
+     */
     public double getValueAsDouble() {
         return value.doubleValue();
     }
 
+    /**
+     * @return the uom uri
+     */
     public String getUomUri() {
         return uomURI;
     }
@@ -95,6 +118,37 @@ public class Measure implements TypedObjectNode {
             return m.uomURI == null;
         }
         return false;
+    }
+
+    /**
+     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+     * <ul>
+     * <li>boolean -- code = (f ? 0 : 1)</li>
+     * <li>byte, char, short, int -- code = (int)f</li>
+     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+     * <li>float -- code = Float.floatToIntBits(f);</li>
+     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+     * <li>Array -- Apply above rules to each element</li>
+     * </ul>
+     * <p>
+     * Combining the hash code(s) computed above: result = 37 * result + code;
+     * </p>
+     * 
+     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        // the 2nd millionth prime, :-)
+        long result = 32452843;
+        result = result * 37 + value.hashCode();
+        if ( uomURI != null ) {
+            result = result * 37 + uomURI.hashCode();
+        }
+        return (int) ( result >>> 32 ) ^ (int) result;
     }
 
     @Override

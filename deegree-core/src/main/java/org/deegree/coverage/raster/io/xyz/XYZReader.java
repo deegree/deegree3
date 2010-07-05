@@ -197,19 +197,15 @@ public class XYZReader implements RasterReader {
     /**
      * Creates a SimpleRaster from a text file.
      * 
-     * @param filename
-     *            filename of the text raster
-     * @param width
-     *            width of the raster in pixel/points
-     * @param height
-     *            height of the raster in pixel/points
-     * @param res
-     *            resolution of the raster
      * @return new SimpleRaster with data from file
      * @throws IOException
      */
     private ByteBufferRasterData readASCIIGrid( BufferedReader reader, RasterIOOptions options )
                             throws IOException {
+
+        if ( options == null ) {
+            return null;
+        }
 
         geoReference = options.getRasterGeoReference();
 
@@ -282,7 +278,6 @@ public class XYZReader implements RasterReader {
     /**
      * @param st
      * @param xyzValues
-     * @return
      * @throws IOException
      */
     private int readValues( StreamTokenizer st, float[] xyzValues )
@@ -368,7 +363,6 @@ public class XYZReader implements RasterReader {
     /**
      * @param reader
      * @param nOpts
-     * @return
      * @throws IOException
      */
     private SimpleRaster createSimpleRaster( BufferedReader reader, RasterIOOptions nOpts )
