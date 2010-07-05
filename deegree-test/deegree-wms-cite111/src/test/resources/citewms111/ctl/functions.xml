@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ctl:package
+ 		xmlns:functions="http://www.occamlab.com/wms-1.1.1/src/ctl/functions.xml"
+ 		xmlns:ctl="http://www.occamlab.com/ctl"
+ 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+ 		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ 		xmlns:xlink="http://www.w3.org/1999/xlink" >
+
+   <ctl:function name="functions:append-kvp">
+      <ctl:param name="url-prefix"/>
+      <ctl:var-params max="4" min="1"/>
+      <ctl:java class="com.occamlab.ctlfns.JaxenFunction" initialized="true" method="call">
+         <ctl:with-param select="'org.opengis.cite.functions.AppendKVPFunction'"/>
+      </ctl:java>
+   </ctl:function>
+   <ctl:function name="functions:iif">
+      <ctl:param name="condition"/>
+      <ctl:param name="trueObject"/>
+      <ctl:param name="falseObject"/>
+      <ctl:java class="com.occamlab.ctlfns.JaxenFunction" initialized="true" method="call">
+         <ctl:with-param select="'org.opengis.cite.functions.IIfFunction'"/>
+      </ctl:java>
+   </ctl:function>
+   <ctl:function name="functions:inc">
+      <ctl:param name="sequence"/>
+      <ctl:param name="sign"/>
+      <ctl:java class="com.occamlab.ctlfns.JaxenFunction" initialized="true" method="call">
+         <ctl:with-param select="'org.opengis.cite.functions.UpdateSequenceIncrementFunction'"/>
+      </ctl:java>
+   </ctl:function>
+   <ctl:function name="functions:validate-gml-schema">
+      <ctl:param name="base-url"/>
+      <ctl:param name="schema"/>
+      <ctl:var-params max="5" min="0"/>
+      <ctl:java class="com.occamlab.ctlfns.GmlSchemaValidator" initialized="true"
+            method="validate">
+         <ctl:with-param>
+            <namespaces xmlns="">
+               <namespace prefix="cdf" uri="http://www.opengis.net/cite/data"/>
+               <namespace prefix="cgf" uri="http://www.opengis.net/cite/geometry"/>
+            </namespaces>
+         </ctl:with-param>
+      </ctl:java>
+   </ctl:function>
+
+   <ctl:function name="functions:version">
+      <ctl:return>The string '1.1.1'</ctl:return>
+      <ctl:description>Gets the version number tested by these scripts test</ctl:description>
+      <ctl:code>
+         <xsl:text>1.1.1</xsl:text>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:version-as-integer">
+      <ctl:param name="version-string">Version String</ctl:param>
+      <ctl:description>Gets the integer value of a version number</ctl:description>
+      <ctl:code>
+         <xsl:variable name="major" select="substring-before($version-string, '.')"/>
+         <xsl:variable name="minor" select="substring-before(substring-after($version-string, '.'), '.')"/>
+         <xsl:variable name="rev" select="substring-after(substring-after($version-string, '.'), '.')"/>
+         <xsl-value-of select="$major * 10000 + $minor * 100 + $rev"/>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:layer-info">
+      <ctl:param name="root-layer">Root layer from Capabilities XML</ctl:param>
+      <ctl:param name="preferred-name">Preferred Layer Name</ctl:param>
+      <ctl:param name="preferred-srs">Preferred SRS</ctl:param>
+      <ctl:param name="preferred-bbox">Preferred Bounding Box</ctl:param>
+      <ctl:param name="preferred-width">Preferred width</ctl:param>
+      <ctl:param name="preferred-height">Preferred height</ctl:param>
+      <ctl:return>A LayerInfo element containing name, SRS, minx, miny, maxx, and maxy attributes.</ctl:return>
+      <ctl:description>Determines the srs, bbox, width, and height of a layer advertised in the Capabilities XML.</ctl:description>
+      <ctl:code>
+         <xsl:variable name="layer-name">
+            <xsl:choose>
+               <xsl:when test="$root-layer/descendant-or-self::Layer[Name = $preferred-name]">
+                  <xsl:value-of select="$preferred-name"/>
+               </xsl:when>
+               <xsl:when          test="$root-layer/descendant-or-self::Layer[Name and ancestor-or-self::Layer/BoundingBox and not(number(@fixedWidth) &gt; 0) and not(number(@fixedHeight) &gt; 0)]">
+                  <xsl:value-of select="$root-layer/descendant-or-self::Layer[Name and ancestor-or-self::Layer/BoundingBox and not(number(@fixedWidth) &gt; 0) and not(number(@fixedHeight) &gt; 0)][1]/Name"/>
+               </xsl:when>
+               <xsl:when          test="$root-layer/descendant-or-self::Layer[Name and not(number(@fixedWidth) &gt; 0) and not(number(@fixedHeight) &gt; 0)]">
+                  <xsl:value-of select="$root-layer/descendant-or-self::Layer[Name and not(number(@fixedWidth) &gt; 0) and not(number(@fixedHeight) &gt; 0)][1]/Name"/>
+               </xsl:when>
+               <xsl:when          test="$root-layer/descendant-or-self::Layer[Name]">
+                  <xsl:value-of select="$root-layer/descendant-or-self::Layer[Name][1]/Name"/>
+               </xsl:when>
+               <xsl:otherwise>NoNamedLayers</xsl:otherwise>
+            </xsl:choose>
+         </xsl:variable>
+
+         <xsl:variable name="srs">
+            <xsl:choose>
+               <xsl:when test="$root-layer/descendant-or-self::Layer[Name = $layer-name]/ancestor-or-self::Layer[SRS = $preferred-srs]">
+                  <xsl:value-of select="$preferred-srs"/>
+               </xsl:when>
+               <xsl:when          test="$root-layer/descendant-or-self::Layer[Name = $layer-name]/ancestor-or-self::Layer/BoundingBox">
+                  <xsl:value-of select="$root-layer/descendant-or-self::Layer[Name = $layer-name]/ancestor-or-self::Layer/BoundingBox[1]/@SRS"/>
+               </xsl:when>
+               <xsl:when          test="$root-layer/descendant-or-self::Layer[Name = $layer-name]/ancestor-or-self::Layer/SRS">
+                  <xsl:value-of select="$root-layer/descendant-or-self::Layer[Name = $layer-name]/ancestor-or-self::Layer/SRS[1]"/>
+               </xsl:when>
+               <xsl:otherwise>NoSRSForLayer</xsl:otherwise>
+            </xsl:choose>
+         </xsl:variable>
+
+         <xsl:variable name="bbox">
+            <xsl:choose>
+               <xsl:when test="$srs = $preferred-srs and $preferred-bbox != '' and functions:boolean-as-integer($root-layer/descendant-or-self::Layer[Name = $layer-name]/@noSubsets) = 0">
+                  <xsl:value-of select="$preferred-bbox"/>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:variable name="bboxes">
+                     <xsl:copy-of select="$root-layer/descendant-or-self::Layer[Name = $layer-name]/ancestor-or-self::Layer/BoundingBox[@SRS = $srs]"/>
+                  </xsl:variable>
+                  <xsl:for-each select="$bboxes/BoundingBox[1]">
+                     <xsl:value-of select="concat(@minx, ',', @miny, ',', @maxx, ',', @maxy)"/>
+                  </xsl:for-each>
+                  <xsl:if test="not($bboxes/BoundingBox)">0,0,1,1</xsl:if>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:variable>
+
+         <LayerInfo>
+            <xsl:attribute name="name">
+               <xsl:value-of select="$layer-name"/>
+            </xsl:attribute>
+            <xsl:attribute name="srs">
+               <xsl:value-of select="$srs"/>
+            </xsl:attribute>
+            <xsl:attribute name="bbox">
+               <xsl:value-of select="$bbox"/>
+            </xsl:attribute>
+            <xsl:attribute name="height">
+               <xsl:for-each select="$root-layer/descendant-or-self::Layer[Name = $layer-name]">
+                  <xsl:choose>
+                     <xsl:when test="@fixedHeight &gt; 0"><xsl:value-of select="@fixedHeight"/></xsl:when>
+                     <xsl:otherwise><xsl:value-of select="$preferred-height"/></xsl:otherwise>
+                  </xsl:choose>
+               </xsl:for-each>
+            </xsl:attribute>
+            <xsl:attribute name="width">
+               <xsl:for-each select="$root-layer/descendant-or-self::Layer[Name = $layer-name]">
+                  <xsl:choose>
+                     <xsl:when test="@fixedWidth &gt; 0"><xsl:value-of select="@fixedWidth"/></xsl:when>
+                     <xsl:otherwise><xsl:value-of select="$preferred-width"/></xsl:otherwise>
+                  </xsl:choose>
+               </xsl:for-each>
+            </xsl:attribute>
+         </LayerInfo>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:queryable-layer-info">
+      <ctl:param name="root-layer">Root layer from Capabilities XML</ctl:param>
+      <ctl:param name="preferred-name">Preferred Layer Name</ctl:param>
+      <ctl:param name="preferred-srs">Preferred SRS</ctl:param>
+      <ctl:param name="preferred-bbox">Preferred Bounding Box</ctl:param>
+      <ctl:param name="preferred-width">Preferred width</ctl:param>
+      <ctl:param name="preferred-height">Preferred height</ctl:param>
+      <ctl:return>A LayerInfo element containing name, SRS, minx, miny, maxx, and maxy attributes.</ctl:return>
+      <ctl:description>Determines the SRS, layer name, and bounds of a layer advertised in the Capabilities XML.</ctl:description>
+      <ctl:code>
+         <xsl:variable name="layer-name">
+            <xsl:choose>
+               <xsl:when test="$root-layer/descendant-or-self::Layer[Name = $preferred-name and functions:boolean-as-integer(@queryable) = 1]">
+                  <xsl:value-of select="$preferred-name"/>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:value-of select="$root-layer/descendant-or-self::Layer[Name and functions:boolean-as-integer(@queryable) = 1]/Name"/>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:variable>
+         <xsl:copy-of select="functions:layer-info($root-layer, $preferred-name, $preferred-srs, $preferred-bbox, $preferred-width, $preferred-height)"/>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:split">
+      <ctl:param name="s">String to split</ctl:param>
+      <ctl:param name="match">String that divides tokens</ctl:param>
+      <ctl:description>Splits a string into tokens.</ctl:description>
+      <ctl:code>
+         <xsl:if test="$s != ''">
+            <token><xsl:value-of select="substring-before(concat($s, $match), $match)"/></token>
+            <xsl:if test="contains($s, $match)">
+               <xsl:copy-of select="functions:split(substring-after($s, $match), $match)"/>
+            </xsl:if>
+         </xsl:if>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:remove-mime-comment">
+      <ctl:param name="mime">MIME from which to remove comments</ctl:param>
+      <ctl:description>Removes comments (enclosed in parenthesis) from a MIME string</ctl:description>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="contains($mime, '(')">
+               <xsl:variable name="before" select="substring-before($mime, '(')"/>
+               <xsl:variable name="after" select="substring-after(substring-after($mime, '('), ')')"/>
+               <xsl:value-of select="concat($before, functions:remove-mime-comment($after))"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:value-of select="$mime"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:mime-match">
+      <ctl:param name="test-mime">MIME type to test.</ctl:param>
+      <ctl:param name="match-mime">MIME type to match.</ctl:param>
+      <ctl:return></ctl:return>
+      <ctl:description>Determines whether a MIME type matches a normalized MIME type.</ctl:description>
+      <ctl:code>
+         <xsl:variable name="failures">
+            <xsl:variable name="test-string" select="concat(functions:remove-mime-comment($test-mime), ';')"/>
+            <xsl:variable name="match-string" select="concat(functions:remove-mime-comment($match-mime), ';')"/>
+            <xsl:variable name="base-test-mime" select="normalize-space(substring-before($test-string, ';'))"/>
+            <xsl:variable name="base-match-mime" select="normalize-space(substring-before($match-string, ';'))"/>
+            <xsl:choose>
+               <xsl:when test="functions:to-lowercase($base-test-mime) = functions:to-lowercase($base-match-mime)">
+<!--
+MIME parameters don't have to match anymore - see issue 24, MIME type test too strict
+                  <xsl:variable name="test-params">
+                     <xsl:copy-of select="functions:split(substring-after($test-string, ';'), ';')"/>
+                  </xsl:variable>
+                  <xsl:variable name="match-params">
+                     <xsl:copy-of select="functions:split(substring-after($match-string, ';'), ';')"/>
+                  </xsl:variable>
+                  <xsl:for-each select="$match-params/token[normalize-space(.) != '']">
+                     <xsl:variable name="param" select="functions:to-lowercase(normalize-space(.))"/>
+                     <xsl:if test="not($test-params/token[functions:to-lowercase(normalize-space(.)) = $param])">
+                        <fail/>
+                     </xsl:if>
+                  </xsl:for-each>
+-->
+               </xsl:when>
+               <xsl:otherwise>
+                  <fail/>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:variable>
+         <xsl:value-of select="not($failures/fail)"/>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:boolean-as-integer">
+      <ctl:param name="boolean-or-int">'true', 'false', or integer value</ctl:param>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="$boolean-or-int = 1">1</xsl:when>
+            <xsl:when test="$boolean-or-int = 'true'">1</xsl:when>
+            <xsl:otherwise>0</xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:to-lowercase">
+      <ctl:param name="string">string value</ctl:param>
+      <ctl:code>
+         <xsl:value-of select="translate($string, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:correct-url-prefix">
+      <ctl:param name="url-prefix">URL Prefix Value</ctl:param>
+      <ctl:code>
+         <xsl:value-of select="$url-prefix"/>
+         <xsl:choose>
+            <xsl:when test="not(contains($url-prefix, '?'))">?</xsl:when>
+            <xsl:when test="not(substring($url-prefix, string-length($url-prefix)) = '&amp;')">&amp;</xsl:when>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:increment-updatesequence">
+      <ctl:param name="updatesequence">An updatesequence value</ctl:param>
+      <ctl:param name="increment">Increment value (1 for up, -1 for down)</ctl:param>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="string(number($updatesequence)) = 'NaN'">
+               <xsl:variable name="down">ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy012345678</xsl:variable>
+               <xsl:variable name="up"  >BCDEFGHIJKLMNOPQRSTUVWXYZbcdefghijklmnopqrstuvwxyz123456789</xsl:variable>
+               <xsl:choose>
+                  <xsl:when test="$increment = 1">
+                     <xsl:value-of select="translate($updatesequence, $down, $up)"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <xsl:value-of select="translate($updatesequence, $up, $down)"/>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:value-of select="number($updatesequence) + $increment"/>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:image-format">
+      <ctl:param name="format">A format</ctl:param>
+      <ctl:code>
+         <xsl:value-of select="boolean(functions:mime-match($format, 'image/png') = 'true' or functions:mime-match($format, 'image/gif') = 'true' or functions:mime-match($format, 'image/jpeg') = 'true')"/>
+      </ctl:code>
+   </ctl:function>
+
+   <ctl:function name="functions:encode">
+      <ctl:param name="s">String to encode</ctl:param>
+      <ctl:java class="java.net.URLEncoder" method="encode"/>
+   </ctl:function>
+
+</ctl:package>

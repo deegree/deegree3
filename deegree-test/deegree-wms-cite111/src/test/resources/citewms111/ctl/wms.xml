@@ -3,69 +3,23 @@
          xmlns:ccf="http://www.opengis.net/cite/complex"
          xmlns:cdf="http://www.opengis.net/cite/data"
          xmlns:cgf="http://www.opengis.net/cite/geometry"
-         xmlns:citef="http://www.opengis.net/cite/functions"
          xmlns:ctl="http://www.occamlab.com/ctl"
          xmlns:example="http://www.somehost.com/example"
          xmlns:gml="http://www.occamlab.com/gml"
          xmlns:ogc="http://www.opengis.net/ogc"
+         xmlns:functions="http://www.occamlab.com/wms-1.1.1/src/ctl/functions.xml"
          xmlns:parsers="http://www.occamlab.com/te/parsers"
          xmlns:saxon="http://saxon.sf.net/"
          xmlns:wms="http://www.opengis.net/wms"
          xmlns:xlink="http://www.w3.org/1999/xlink"
          xmlns:xs="http://www.w3.org/2001/XMLSchema"
-         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-         xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-   <function name="citef:append-kvp">
-      <param name="url-prefix"/>
-      <var-params max="4" min="1"/>
-      <java class="com.occamlab.ctlfns.JaxenFunction" initialized="true" method="call">
-         <with-param select="'org.opengis.cite.functions.AppendKVPFunction'"/>
-      </java>
-   </function>
-   <function name="citef:iif">
-      <param name="condition"/>
-      <param name="trueObject"/>
-      <param name="falseObject"/>
-      <java class="com.occamlab.ctlfns.JaxenFunction" initialized="true" method="call">
-         <with-param select="'org.opengis.cite.functions.IIfFunction'"/>
-      </java>
-   </function>
-   <function name="citef:inc">
-      <param name="sequence"/>
-      <param name="sign"/>
-      <java class="com.occamlab.ctlfns.JaxenFunction" initialized="true" method="call">
-         <with-param select="'org.opengis.cite.functions.UpdateSequenceIncrementFunction'"/>
-      </java>
-   </function>
-   <function name="citef:version">
-      <param name="version-string"/>
-      <java class="com.occamlab.ctlfns.JaxenFunction" initialized="true" method="call">
-         <with-param select="'org.opengis.cite.functions.Version'"/>
-      </java>
-   </function>
-   <function name="citef:validate-gml-schema">
-      <param name="base-url"/>
-      <param name="schema"/>
-      <var-params max="5" min="0"/>
-      <java class="com.occamlab.ctlfns.GmlSchemaValidator" initialized="true"
-            method="validate">
-         <with-param>
-            <namespaces xmlns="">
-               <namespace prefix="cdf" uri="http://www.opengis.net/cite/data"/>
-               <namespace prefix="cgf" uri="http://www.opengis.net/cite/geometry"/>
-            </namespaces>
-         </with-param>
-      </java>
-   </function>
+         xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
+
    <parser name="wms:CustomTransformer">
       <java class="com.occamlab.te.parsers.CustomTransformer" method="parse"/>
    </parser>
    <parser name="parsers:HeadersParser">
       <java class="com.occamlab.te.parsers.HeadersParser" method="parse"/>
-   </parser>
-   <parser name="parsers:XMLValidatingParser">
-      <java class="com.occamlab.te.parsers.XMLValidatingParser" initialized="true"
-            method="parse"/>
    </parser>
    <parser name="example:ImageStats">
       <java class="org.opengroup.ts.handlers.extensions.ogc.ResponseTransformer"
@@ -81,13 +35,6 @@
          <with-param name="class">org.opengis.cite.transformers.StringLength</with-param>
       </java>
    </parser>
-   <parser name="example:TransformXML">
-      <java class="org.opengroup.ts.handlers.extensions.ogc.ResponseTransformer"
-            initialized="true"
-            method="translate">
-         <with-param name="class">org.opengis.cite.transformers.TransformXML</with-param>
-      </java>
-   </parser>
    <parser name="wms:GMLValidatingParser">
       <java class="com.occamlab.te.parsers.GMLValidatingParser" initialized="true"
             method="parse">
@@ -97,292 +44,85 @@
                   <name>http://www.galdosinc.com/xml/properties/dtdLocation/WMT_MS_Capabilities</name>
                   <value>http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd</value>
                </parm>
-               <parm>
-                  <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://schemas.opengis.net/gml/2.1.2/feature.xsd</value>
-               </parm>
-               <parm>
-                  <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/OGC-1.0.0/OGC_Wrapper.xsd</value>
-               </parm>
-               <parm>
-                  <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/WFS-1.0.0/WFS_Wrapper.xsd</value>
-               </parm>
-               <parm>
-                  <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/complexFeatures.xsd</value>
-               </parm>
-               <parm>
-                  <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/dataFeatures.xsd</value>
-               </parm>
-               <parm>
-                  <name>http://www.galdosinc.com/xml/properties/schemaLocation</name>
-                  <value>http://cite.opengeospatial.org/OGCTestData/wfs/1.0.0/schemas/geometryFeatures.xsd</value>
-               </parm>
             </documentlocations>
          </with-param>
       </java>
    </parser>
-   <test name="wms:main">
+
+   <ctl:suite name="wms:main_wms">
+      <title>Web Map Service (WMS) 1.1.1 Test Suite</title>
+      <description>Validates that a WMS 1.1.1 is compliant with the spec.</description>
+      <ctl:link>data/data-wms-1.1.1.zip</ctl:link>
+      <starting-test>wms:wms_main</starting-test>
+  </ctl:suite>
+
+   <test name="wms:wms_main">
       <assertion>This WMS is valid</assertion>
       <code>
-<!--         <xsl:variable name="form-values">
-            <ctl:form xmlns="">
-               <body>
-                  <h3>Web Map Service</h3>
-                  <p>The following options are only concerned with the Web Map
-Service tests</p>
-                  <p>NOTE: This site only allows access to WMS servers on the ports
-in the table below.<br/>
-                  </p>
-                  <table border="1">
-                     <tr>
-                        <td>80</td>
-                        <td>443</td>
-                        <td>8080</td>
-                        <td>8081</td>
-                     </tr>
-                  </table>
-                  <p>The Web Map Service tests scripts are designed to test WMS
-implementations based on the WMS 1.1.1 specification.</p>
-                  <p>A complete list of tests in the test suite is available in the
-<a href="/tsOGC/ViewTestSpec?SPEC=Web_Map_Server.html&amp;TYPE=AVAILABLE&amp;sesstype=OGC"
-                        target="otherwindow">
-Test Requirements and Assertions</a> document, but note that not
-all of the tests are applicable to all servers. The number of tests
-actually executed will depend on the capabilities advertised in the
-capabilities URL supplied below as well as the other options
-selected below.</p>
-                  <p>Many of the tests require implementation of a standard dataset.
-The dataset is described in <a href="/tsOGC/ViewTestSpec?SPEC=Web_Map_Server.html&amp;TYPE=AVAILABLE&amp;sesstype=OGC#B.-Test%20Data%20Definition"
-                        target="otherwindow">
-Section 1. B.</a> of the document. It is available in GML, MapInfo
-Interchange Format, and ESRI Shapefile format and can be downloaded
-<a href="/OGCTestData/wms/1.1.1/data/WmsTestData.zip">here</a>.
-Implementation of the dataset is required for certification.</p>
-                  <h4>Capabilities Setup</h4>
-                  <p>Enter a capabilities document URL below. This may be the URL to
-a static capabilities document, or a GetCapabilities request from a
-WMS. A typical GetCapabilities request will take this form:</p>
-                  <pre>
-    http://hostname/path?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.1.1
-</pre>
-                  <blockquote>
-                     <table border="3" padding="3">
-                        <tr>
-                           <td align="center">
-                              <input name="VAR_WMS_CAPABILITIES_URL" size="100" type="text" value=""/>
-                           </td>
-                           <td align="left">Capabilities URL</td>
-                        </tr>
-                     </table>
-                  </blockquote>
-                  <h4>UpdateSequence Values</h4>
-                  <p>The WMS spec allows servers to use an UpdateSequence value for
-maintaining cache consistency as described <a href="/OGCTestData/wms/1.1.1/spec/wms1.1.1.html#wmsops.getcapabilities.params.updatesequence"
-                        target="otherwindow">
-here</a>. If the server advertises an UpdateSequence value and the
-Automatic option is selected below, the test suite will attempt to
-test the UpdateSequence behavior automatically. However, the
-lexical ordering of UpdateSequence values is determined by the
-server, so the tests may not always be correct. If you suspect a
-problem, select the Manual option and enter the updateSequence
-values requested below.</p>
-                  <blockquote>
-                     <table border="3" padding="3">
-                        <tr>
-                           <td align="center">
-                              <input checked="checked" name="group2" type="radio" value="auto_updatesequence"/>
-                           </td>
-                           <td align="left">Automatic - The updateSequence tests will use
-automatically generated updateSequence values</td>
-                        </tr>
-                        <tr>
-                           <td align="center">
-                              <input name="group2" type="radio" value="manual_updatesequence"/>
-                           </td>
-                           <td align="left">Manual - The updateSequence tests will use the
-values supplied below</td>
-                        </tr>
-                     </table>
-                  </blockquote>
-                  <p>(Fill in these boxes only if the Manual option is selected
-above)</p>
-                  <blockquote>
-                     <table border="3" padding="3">
-                        <tr>
-                           <td align="center">
-                              <input name="VAR_HIGH_UPDATESEQUENCE" size="25" type="text" value=""/>
-                           </td>
-                           <td align="left">A value that is lexically higher than the current
-updateSequence value</td>
-                        </tr>
-                        <tr>
-                           <td align="center">
-                              <input name="VAR_LOW_UPDATESEQUENCE" size="25" type="text" value=""/>
-                           </td>
-                           <td align="left">A value that is lexically lower than the current
-updateSequence value</td>
-                        </tr>
-                     </table>
-                  </blockquote>
-                  <h4>Certification Profile</h4>
-                  <p>Certification is available for servers that implement either the
-BASIC profile or the QUERYABLE profile. In order to be certified,
-the server must implement the requirements for the profile as
-described <a href="/tsOGC/ViewTestSpec?SPEC=Web_Map_Server.html&amp;TYPE=AVAILABLE&amp;sesstype=OGC#A.-Certification%20Requirements"
-                        target="otherwindow">
-here</a>. Select which profile you want to test below.</p>
-                  <blockquote>
-                     <table border="3" padding="3">
-                        <tr>
-                           <td align="center">
-                              <input name="group4" type="radio" value="no_profile"/>
-                           </td>
-                           <td align="left">NONE - Do not certify that the server meets
-requirements for any test profile</td>
-                        </tr>
-                        <tr>
-                           <td align="center">
-                              <input name="group4" type="radio" value="basic_profile"/>
-                           </td>
-                           <td align="left">BASIC - Certify that the server meets all
-requirements for the BASIC profile</td>
-                        </tr>
-                        <tr>
-                           <td align="center">
-                              <input checked="checked" name="group4" type="radio" value="queryable_profile"/>
-                           </td>
-                           <td align="left">QUERYABLE - Certify that the server meets all
-requirements for the QUERYABLE profile</td>
-                        </tr>
-                     </table>
-                  </blockquote>
-                  <h4>Optional Tests</h4>
-                  <p>The remaining tests are not required for certification, but may
-prove informative or be useful as a debugging aid.</p>
-                  <p>Recommendation Support</p>
-                  <blockquote>
-                     <table border="3" padding="3">
-                        <tr>
-                           <td align="center">
-                              <input name="recommended" type="checkbox" value="recommended"/>
-                           </td>
-                           <td align="left">Verify that the server supports fuctionality which
-is recommended in the spec, but not required</td>
-                        </tr>
-                     </table>
-                  </blockquote>
-                  <p>GML FeatureInfo</p>
-                  <blockquote>
-                     <table border="3" padding="3">
-                        <tr>
-                           <td align="center">
-                              <input name="testgml" type="checkbox" value="testgml"/>
-                           </td>
-                           <td align="left">Verify that the server supports the
-application/vnd.ogc.gml GetFeatureInfo format. This test will pass
-only if the GML instance document returned contains a
-schemaLocation attribute to reference its schema, and validates
-correctly.</td>
-                        </tr>
-                     </table>
-                  </blockquote>
-                  <p>Fees and Access Constraints</p>
-                  <blockquote>
-                     <table border="3" padding="3">
-                        <tr>
-                           <td align="center">
-                              <input name="free" type="checkbox" value="free"/>
-                           </td>
-                           <td align="left">Verify that the server advertises that it does not
-require any fees or access constraints</td>
-                        </tr>
-                     </table>
-                  </blockquote>
-                  <p>BoundingBox Constraints</p>
-                  <blockquote>
-                     <table border="3" padding="3">
-                        <tr>
-                           <td align="center">
-                              <input name="group9" type="radio" value="loosebboxconstraints"/>
-                           </td>
-                           <td align="left">LOOSE - Verify that the server returns map data
-from the western hemisphere for area beyond 180 degrees east
-longitude</td>
-                        </tr>
-                        <tr>
-                           <td align="center">
-                              <input name="group9" type="radio" value="strictbboxconstraints"/>
-                           </td>
-                           <td align="left">STRICT - Verify that the server does not return
-map data from the western hemisphere for area beyond 180 degrees
-east longitude</td>
-                        </tr>
-                        <tr>
-                           <td align="center">
-                              <input checked="checked" name="group9" type="radio" value="eitherbboxconstraint"/>
-                           </td>
-                           <td align="left">EITHER - Do not test area beyond 180 degrees east
-longitude</td>
-                        </tr>
-                     </table>
-                  </blockquote>
-                  <input type="submit" value="OK"/>
-               </body>
-            </ctl:form>
-         </xsl:variable>-->
-         <xsl:variable name="VAR_WMS_CAPABILITIES_URL">
+        <xsl:variable name="VAR_WMS_CAPABILITIES_URL" select="'http://localhost:18081/deegree-wms-cite111/services?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1'" />
+        <xsl:variable name="updatesequence" select="'auto_updatesequence'"/>
+        <xsl:variable name="CERT_PROFILE" select="'queryable_profile'"/>
+        <xsl:variable name="recommended" select="'recommended'"/>
+        <xsl:variable name="testgml" select="'testgml'"/>
+        <xsl:variable name="free" select="'free'"/>
+        <xsl:variable name="B_BOX_CONSTRAINT" select="'strictbboxconstraints'"/>
+        <xsl:variable name="VAR_HIGH_UPDATESEQUENCE" />
+        <xsl:variable name="VAR_LOW_UPDATESEQUENCE" />
+  <xsl:variable name="VAR_WMS_CAPABILITIES">
             <request>
-               <url>http://localhost:18081/deegree-wms-cite111/services?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1</url>
+               <url>
+                  <xsl:value-of select="$VAR_WMS_CAPABILITIES_URL"/>
+               </url>
                <method>get</method>
             </request>
          </xsl:variable>
          <xsl:variable name="auto_updatesequence"
-                       select="true()"/>
+                       select="$updatesequence='auto_updatesequence'"/>
          <xsl:variable name="manual_updatesequence"
-                       select="false()"/>
-         <xsl:variable name="VAR_HIGH_UPDATESEQUENCE"></xsl:variable>
-         <xsl:variable name="VAR_LOW_UPDATESEQUENCE"></xsl:variable>
+                       select="$updatesequence='manual_updatesequence'"/>
+         <xsl:variable name="VAR_HIGH_UPDATESEQUENCE">
+            <xsl:value-of select="$VAR_HIGH_UPDATESEQUENCE"/>
+         </xsl:variable>
+         <xsl:variable name="VAR_LOW_UPDATESEQUENCE">
+            <xsl:value-of select="$VAR_LOW_UPDATESEQUENCE"/>
+         </xsl:variable>
          <xsl:variable name="no_profile"
-                       select="false()"/>
+                       select="$CERT_PROFILE='no_profile'"/>
          <xsl:variable name="basic_profile"
-                       select="false()"/>
+                       select="$CERT_PROFILE='basic_profile'"/>
          <xsl:variable name="queryable_profile"
-                       select="true()"/>
+                       select="$CERT_PROFILE='queryable_profile'"/>
          <xsl:variable name="recommended"
-                       select="true()"/>
-         <xsl:variable name="testgml" select="true()"/>
-         <xsl:variable name="free" select="true()"/>
+                       select="$recommended='recommended'"/>
+         <xsl:variable name="testgml" select="$testgml='testgml'"/>
+         <xsl:variable name="free" select="$free='free'"/>
          <xsl:variable name="loosebboxconstraints"
-                       select="false()"/>
+                       select="$B_BOX_CONSTRAINT='loosebboxconstraints'"/>
          <xsl:variable name="strictbboxconstraints"
-                       select="true()"/>
+                       select="$B_BOX_CONSTRAINT='strictbboxconstraints'"/>
          <xsl:variable name="eitherbboxconstraint"
-                       select="false()"/>
-         <xsl:for-each select="$VAR_WMS_CAPABILITIES_URL">
+                       select="$B_BOX_CONSTRAINT='eitherbboxconstraint'"/>
+         <xsl:for-each select="$VAR_WMS_CAPABILITIES">
             <xsl:variable name="VAR_WMS_VERSION">
                <xsl:value-of select="string('1.1.1')"/>
             </xsl:variable>
             <xsl:variable name="VAR_WMS_GET_CAPABILITIES_HTTP_GET_URL">
-               <xsl:value-of select="citef:append-kvp(/WMT_MS_Capabilities/Capability/Request/GetCapabilities/DCPType/HTTP/Get/OnlineResource/@*[local-name() = 'href'], '')"/>
+               <xsl:value-of select="functions:append-kvp(/WMT_MS_Capabilities/Capability/Request/GetCapabilities/DCPType/HTTP/Get/OnlineResource/@*[local-name() = 'href'], '')"/>
             </xsl:variable>
             <xsl:variable name="VAR_WMS_GET_MAP_HTTP_GET_URL">
-               <xsl:value-of select="citef:append-kvp(/WMT_MS_Capabilities/Capability/Request/GetMap/DCPType/HTTP/Get/OnlineResource/@*[local-name() = 'href'], '')"/>
+               <xsl:value-of select="functions:append-kvp(/WMT_MS_Capabilities/Capability/Request/GetMap/DCPType/HTTP/Get/OnlineResource/@*[local-name() = 'href'], '')"/>
             </xsl:variable>
             <xsl:variable name="VAR_WMS_GET_FEATURE_INFO_HTTP_GET_URL">
-               <xsl:value-of select="citef:append-kvp(/WMT_MS_Capabilities/Capability/Request/GetFeatureInfo/DCPType/HTTP/Get/OnlineResource/@*[local-name() = 'href'], '')"/>
+               <xsl:value-of select="functions:append-kvp(/WMT_MS_Capabilities/Capability/Request/GetFeatureInfo/DCPType/HTTP/Get/OnlineResource/@*[local-name() = 'href'], '')"/>
             </xsl:variable>
             <xsl:variable name="VAR_CURRENT_UPDATESEQUENCE">
                <xsl:value-of select="string(/WMT_MS_Capabilities/@updateSequence)"/>
             </xsl:variable>
             <xsl:variable name="VAR_AUTO_HIGH_UPDATESEQUENCE">
-               <xsl:value-of select="xsd:integer(/WMT_MS_Capabilities/@updateSequence) + 1"/>
+               <xsl:value-of select="/WMT_MS_Capabilities/@updateSequence + 1"/>
             </xsl:variable>
             <xsl:variable name="VAR_AUTO_LOW_UPDATESEQUENCE">
-               <xsl:value-of select="xsd:integer(/WMT_MS_Capabilities/@updateSequence) - 1"/>
+               <xsl:value-of select="/WMT_MS_Capabilities/@updateSequence - 1"/>
             </xsl:variable>
             <xsl:variable name="VAR_IMAGE_FORMAT">
                <xsl:value-of select="string(/WMT_MS_Capabilities/Capability/Request/GetMap/Format[1])"/>
@@ -486,7 +226,7 @@ longitude</td>
             <xsl:variable name="transparency"
                           select="count(/WMT_MS_Capabilities/Capability/Request/GetMap[Format = 'image/gif' or Format = 'image/png']) &gt;0"/>
             <xsl:variable name="readable"
-                          select="count(/WMT_MS_Capabilities/Capability/Request/GetMap[Format = 'image/gif' or Format = 'image/png' or Format = 'image/jpeg']) &gt;0"/>
+                          select="false()"/>
             <xsl:variable name="lossless"
                           select="count(/WMT_MS_Capabilities/Capability/Request/GetMap[Format = 'image/gif' or Format = 'image/png']) &gt;0"/>
             <xsl:variable name="se_inimage"
@@ -704,7 +444,7 @@ longitude</td>
                <xsl:value-of select="concat('hosturl: ', $hosturl)"/>
             </message>
 -->
-<!--            <xsl:if test="$stddata and $readable">
+            <xsl:if test="$stddata and $readable">
                <call-test name="wms:wmsops-getmap-params-bbox-1">
                   <with-param name="VAR_WMS_GET_MAP_HTTP_GET_URL" select="$VAR_WMS_GET_MAP_HTTP_GET_URL"/>
                   <with-param name="VAR_WMS_VERSION" select="$VAR_WMS_VERSION"/>
@@ -760,7 +500,7 @@ longitude</td>
                   <with-param name="VAR_MAP_NEATLINE" select="$VAR_MAP_NEATLINE"/>
                   <with-param name="VAR_READABLE_IMAGE_FORMAT" select="$VAR_READABLE_IMAGE_FORMAT"/>
                </call-test>
-            </xsl:if>-->
+            </xsl:if>
             <call-test name="wms:basic_elements-param_rules-order_and_case-3">
                <with-param name="VAR_WMS_VERSION" select="$VAR_WMS_VERSION"/>
                <with-param name="VAR_WMS_GET_CAPABILITIES_HTTP_GET_URL"
@@ -780,7 +520,7 @@ longitude</td>
                   <with-param name="VAR_LAKES" select="$VAR_LAKES"/>
                   <with-param name="VAR_IMAGE_FORMAT" select="$VAR_IMAGE_FORMAT"/>
                   <with-param name="VAR_GET_FEATURE_INFO_FORMAT" select="$VAR_GET_FEATURE_INFO_FORMAT"/>
-                  <with-param name="VAR_WMS_GET_MAP_HTTP_GET_URL" select="$VAR_WMS_GET_MAP_HTTP_GET_URL"/>
+                  <with-param name="VAR_WMS_GET_FEATURE_INFO_HTTP_GET_URL" select="$VAR_WMS_GET_FEATURE_INFO_HTTP_GET_URL"/>
                </call-test>
             </xsl:if>
             <call-test name="wms:basic_elements-version-negotiation-2">
@@ -892,6 +632,7 @@ longitude</td>
                </call-test>
             </xsl:if>
             <xsl:if test="$updatesequence and $auto_updatesequence">
+              <message><xsl:value-of select="$VAR_AUTO_HIGH_UPDATESEQUENCE" /></message>
                <call-test name="wms:wmsops-getcapabilities-params-updatesequence-6">
                   <with-param name="VAR_WMS_VERSION" select="$VAR_WMS_VERSION"/>
                   <with-param name="VAR_AUTO_HIGH_UPDATESEQUENCE" select="$VAR_AUTO_HIGH_UPDATESEQUENCE"/>
@@ -1537,15 +1278,63 @@ longitude</td>
                   <with-param name="VAR_WMS_GET_MAP_HTTP_GET_URL" select="$VAR_WMS_GET_MAP_HTTP_GET_URL"/>
                </call-test>
             </xsl:if>
+
+                        <!-- Extended tests -->
+                 <ctl:for-each select="$VAR_WMS_CAPABILITIES//Capability/Request/GetFeatureInfo/Format">
+                    <ctl:call-test name="wms:wmsops-getfeatureinfo-each-info_format">
+                       <ctl:with-param name="WMS_CAPABILITIES" select="$VAR_WMS_CAPABILITIES/*"/>
+                       <ctl:with-param name="FORMAT" select="." label="each GetFeatureInfo format" label-expr="concat('format &quot;', ., '&quot;')"/>
+                    </ctl:call-test>
+                 </ctl:for-each>
+
+                 <ctl:for-each select="$VAR_WMS_CAPABILITIES//Capability//Layer/Style[not(Name=../preceding::Layer/Style/Name) and not(Name=../ancestor::Layer/Style/Name)]/Name">
+                    <ctl:call-test name="wms:wmsops-getmap-each-style">
+                       <ctl:with-param name="capabilities" select="$VAR_WMS_CAPABILITIES/*"/>
+                       <ctl:with-param name="style" select="string(.)" label="each style" label-expr="concat('style &quot;', ., '&quot;')"/>
+                    </ctl:call-test>
+                 </ctl:for-each>
+
+                 <ctl:for-each select="$VAR_WMS_CAPABILITIES//Layer/Name">
+                    <ctl:call-test name="wms:wmsops-getmap-each-layer">
+                       <ctl:with-param name="WMS_CAPABILITIES" select="$VAR_WMS_CAPABILITIES/*"/>
+                       <ctl:with-param name="layer" select="string(.)" label="each named layer" label-expr="concat('layer &quot;', ., '&quot;')"/>
+                    </ctl:call-test>
+                 </ctl:for-each>
+
+                 <ctl:for-each select="$VAR_WMS_CAPABILITIES//Layer//SRS[not(. = ../preceding::Layer/SRS) and not(. = ../ancestor::Layer/SRS)]">
+                    <ctl:call-test name="wms:wmsops-getmap-each-srs">
+                       <ctl:with-param name="WMS_CAPABILITIES" select="$VAR_WMS_CAPABILITIES/*"/>
+                       <ctl:with-param name="srs" select="." label="each SRS" label-expr="concat('SRS &quot;', ., '&quot;')"/>
+                    </ctl:call-test>
+                 </ctl:for-each>
+
+                 <ctl:for-each select="$VAR_WMS_CAPABILITIES/Request/GetMap/Format">
+                    <ctl:call-test name="wms:wmsops-getmap-each-format">
+                       <ctl:with-param name="WMS_CAPABILITIES" select="$VAR_WMS_CAPABILITIES/*"/>
+                       <ctl:with-param name="format" select="." label="each GetMap format" label-expr="concat('format &quot;', ., '&quot;')"/>
+                    </ctl:call-test>
+                 </ctl:for-each>
+
+                 <ctl:for-each select="$VAR_WMS_CAPABILITIES/Request/GetMap/Format">
+                    <ctl:call-test name="wms:wmsops-getmap-each-format-transparent">
+                       <ctl:with-param name="WMS_CAPABILITIES" select="$VAR_WMS_CAPABILITIES/*"/>
+                       <ctl:with-param name="format" select="." label="each GetMap format" label-expr="concat('format &quot;', ., '&quot;')"/>
+                    </ctl:call-test>
+                 </ctl:for-each>
+
+            <call-test name="wms:wmsops-getmap-layer-encoded-name">
+               <with-param name="WMS_CAPABILITIES" select="$VAR_WMS_CAPABILITIES/*" />
+            </call-test>
+
+            <call-test name="wms:basic_elements-validate-exception">
+               <with-param name="WMS_CAPABILITIES" select="$VAR_WMS_CAPABILITIES/*" />
+            </call-test>
+
          </xsl:for-each>
       </code>
    </test>
-   <suite name="wms:main_wms">
-      <title>Web Map Service (WMS) 1.1.1</title>
-      <description>Validates that a WMS 1.1.1 is compliant.</description>
-      <ctl:link>data/data-wms-1.1.1.zip</ctl:link>
-      <starting-test>wms:main</starting-test>
-   </suite>
+
+
    <test name="wms:basic_elements-param_rules-order_and_case-3">
       <param name="VAR_WMS_VERSION"/>
       <param name="VAR_WMS_GET_CAPABILITIES_HTTP_GET_URL"/>
@@ -1579,7 +1368,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities exists.</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.basic_elements.param_rules.order_and_case.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#basic_elements.param_rules.order_and_case</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -1656,7 +1445,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.basic_elements.param_rules.order_and_case.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#basic_elements.param_rules.order_and_case</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -1695,7 +1484,7 @@ longitude</td>
       <param name="VAR_LAKES"/>
       <param name="VAR_IMAGE_FORMAT"/>
       <param name="VAR_GET_FEATURE_INFO_FORMAT"/>
-      <param name="VAR_WMS_GET_MAP_HTTP_GET_URL"/>
+      <param name="VAR_WMS_GET_FEATURE_INFO_HTTP_GET_URL"/>
       <assertion>When a GetFeatureInfo request contains a parameter which is not defined by the spec, the result is valid.</assertion>
       <comment><![CDATA[<table  summary="Details">
    <tr align="left" valign="top">
@@ -1756,12 +1545,12 @@ longitude</td>
       <td>Content-type header = [[VAR_GET_FEATURE_INFO_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.basic_elements.param_rules.order_and_case.5</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#basic_elements.param_rules.order_and_case</link>
       <code>
          <xsl:variable name="request1">
             <request>
                <url>
-                  <xsl:value-of select="$VAR_WMS_GET_MAP_HTTP_GET_URL"/>
+                  <xsl:value-of select="$VAR_WMS_GET_FEATURE_INFO_HTTP_GET_URL"/>
                </url>
                <method>get</method>
                <param name="SrS">EPSG:4326</param>
@@ -1828,7 +1617,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities/@version = [[VAR_WMS_VERSION]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.basic_elements.version.negotiation.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#basic_elements.version.negotiation</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -1880,7 +1669,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities/@version &lt;= [[VAR_WMS_VERSION]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.basic_elements.version.negotiation.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#basic_elements.version.negotiation</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -1894,7 +1683,7 @@ longitude</td>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
-            <xsl:variable name="expression">not(citef:version(string(/WMT_MS_Capabilities/@version)) &lt;= citef:version('<xsl:value-of select="$VAR_WMS_VERSION"/>'))</xsl:variable>
+            <xsl:variable name="expression">not(functions:version-as-integer(string(/WMT_MS_Capabilities/@version)) &lt;= functions:version-as-integer('<xsl:value-of select="$VAR_WMS_VERSION"/>'))</xsl:variable>
             <xsl:if test="saxon:evaluate($expression)">
                <fail/>
             </xsl:if>
@@ -1931,7 +1720,7 @@ longitude</td>
       <td>XML where no //Layer/Dimension/@name contains whitespace</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.dims.declaring.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#dims.declaring</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -1992,7 +1781,7 @@ longitude</td>
       <td>XML where count(//Layer/Dimension[@name = 'time' and @units != 'ISO8601']) = 0</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.dims.declaring.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#dims.declaring</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2053,7 +1842,7 @@ longitude</td>
       <td>XML where count(//Layer/Dimension[@name = 'elevation' and not(starts-with(@units,'EPSG:'))]) = 0</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.dims.declaring.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#dims.declaring</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2093,11 +1882,11 @@ longitude</td>
       <td>boolean([[VAR_STDDATA_EXISTS]]())</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.profiles.basic.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#profiles.basic</link>
       <code>
          <xsl:variable name="request1">
             <request>
-               <url>http://svn.codehaus.org/constellation/trunk/modules/testing/cite/tests/wms-1.1.1/web/OGCTestData/wms/1.1.1/null.xml</url>
+               <url>http://<xsl:value-of select="$hosturl"/>/OGCTestData/wms/1.1.1/null.xml</url>
                <method>get</method>
             </request>
          </xsl:variable>
@@ -2118,11 +1907,11 @@ longitude</td>
       <td>string-length("[[VAR_LOSSLESS_FORMAT]]") &gt; 0</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.profiles.basic.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#profiles.basic</link>
       <code>
          <xsl:variable name="request1">
             <request>
-               <url>http://svn.codehaus.org/constellation/trunk/modules/testing/cite/tests/wms-1.1.1/web/OGCTestData/wms/1.1.1/null.xml</url>
+               <url>http://<xsl:value-of select="$hosturl"/>/OGCTestData/wms/1.1.1/null.xml</url>
                <method>get</method>
             </request>
          </xsl:variable>
@@ -2143,11 +1932,11 @@ longitude</td>
       <td>boolean([[VAR_STDDATA_EXISTS]]())</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.profiles.queryable.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#profiles.queryable</link>
       <code>
          <xsl:variable name="request1">
             <request>
-               <url>http://svn.codehaus.org/constellation/trunk/modules/testing/cite/tests/wms-1.1.1/web/OGCTestData/wms/1.1.1/null.xml</url>
+               <url>http://<xsl:value-of select="$hosturl"/>/OGCTestData/wms/1.1.1/null.xml</url>
                <method>get</method>
             </request>
          </xsl:variable>
@@ -2168,11 +1957,11 @@ longitude</td>
       <td>string-length("[[VAR_LOSSLESS_FORMAT]]") &gt; 0</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.profiles.queryable.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#profiles.queryable</link>
       <code>
          <xsl:variable name="request1">
             <request>
-               <url>http://svn.codehaus.org/constellation/trunk/modules/testing/cite/tests/wms-1.1.1/web/OGCTestData/wms/1.1.1/null.xml</url>
+               <url>http://<xsl:value-of select="$hosturl"/>/OGCTestData/wms/1.1.1/null.xml</url>
                <method>get</method>
             </request>
          </xsl:variable>
@@ -2194,11 +1983,11 @@ longitude</td>
       <td>boolean([[VAR_QUERYABLE_LAYERS_EXIST]]() and string-length("[[VAR_WMS_GET_FEATURE_INFO_HTTP_GET_URL]]") &gt; 0)</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.profiles.queryable.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#.profiles.queryable</link>
       <code>
          <xsl:variable name="request1">
             <request>
-               <url>http://svn.codehaus.org/constellation/trunk/modules/testing/cite/tests/wms-1.1.1/web/OGCTestData/wms/1.1.1/null.xml</url>
+               <url>http://<xsl:value-of select="$hosturl"/>/OGCTestData/wms/1.1.1/null.xml</url>
                <method>get</method>
             </request>
          </xsl:variable>
@@ -2240,7 +2029,7 @@ longitude</td>
       <td>XML where a /WMT_MS_Capabilities/Capability/Exception/Format = "application/vnd.ogc.se_xml"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.output_formats.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.output_formats</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2280,6 +2069,9 @@ longitude</td>
             <tr align="left">
                <td>REQUEST = capabilities</td>
             </tr>
+            <tr align="left">
+               <td>WMTVER = 1.1.1</td>
+            </tr>
          </table>
       </td>
    </tr>
@@ -2290,7 +2082,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.request.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.request</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2300,6 +2092,7 @@ longitude</td>
                <method>get</method>
                <param name="SeRvIcE">WMS</param>
                <param name="ReQuEsT">capabilities</param>
+               <param name="WmTvEr">1.1.1</param>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -2342,7 +2135,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.updatesequence.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.updatesequence</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2400,7 +2193,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="CurrentUpdateSequence"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.updatesequence.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.updatesequence</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2460,7 +2253,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.updatesequence.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.updatesequence</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2520,7 +2313,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="InvalidUpdateSequence"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.updatesequence.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.updatesequence</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2580,7 +2373,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.updatesequence.5</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.updatesequence</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2640,7 +2433,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="InvalidUpdateSequence"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.updatesequence.6</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.updatesequence</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2696,7 +2489,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities/@version = [[VAR_WMS_VERSION]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.version.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.version</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2781,10 +2574,10 @@ longitude</td>
       <td>
          <b>Results:</b>
       </td>
-      <td>VAR_OTHER_VERSION will be set to the version returned from request 1 if it is not ther version in test.  Otherwise, it will be set to the version returned from request 2.  The result from request 3 must be XML where /WMT_MS_Capabilities/@version = [[VAR_OTHER_VERSION]]</td>
+      <td>VAR_OTHER_VERSION will be set to the version returned from request 1 if it is not the version in test.  Otherwise, it will be set to the version returned from request 2.  The result from request 3 must be XML where the version attribute on the root element is [[VAR_OTHER_VERSION]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.version.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.version</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2797,7 +2590,7 @@ longitude</td>
                <param name="VeRsIoN">0.0.0</param>
             </request>
          </xsl:variable>
-         <xsl:variable name="expression">string(/WMT_MS_Capabilities/@version)</xsl:variable>
+         <xsl:variable name="expression">string(/*/@version)</xsl:variable>
          <xsl:variable name="VAR_VERSION_1">
             <xsl:for-each select="$request1">
                <xsl:value-of select="saxon:evaluate($expression)"/>
@@ -2816,7 +2609,7 @@ longitude</td>
                <param name="ReQuEsT">GetCapabilities</param>
             </request>
          </xsl:variable>
-         <xsl:variable name="expression">citef:iif("<xsl:value-of select="$VAR_VERSION_1"/>" != "<xsl:value-of select="$VAR_WMS_VERSION"/>", "<xsl:value-of select="$VAR_VERSION_1"/>", string(/WMT_MS_Capabilities/@version))</xsl:variable>
+         <xsl:variable name="expression">functions:iif("<xsl:value-of select="$VAR_VERSION_1"/>" != "<xsl:value-of select="$VAR_WMS_VERSION"/>", "<xsl:value-of select="$VAR_VERSION_1"/>", string(/*/@version))</xsl:variable>
          <xsl:variable name="VAR_OTHER_VERSION">
             <xsl:for-each select="$request2">
                <xsl:value-of select="saxon:evaluate($expression)"/>
@@ -2824,7 +2617,7 @@ longitude</td>
          </xsl:variable>
          <message>VAR_OTHER_VERSION: <xsl:value-of select="$VAR_OTHER_VERSION"/>
          </message>
-         <xsl:variable name="expression">citef:iif(citef:version("<xsl:value-of select="$VAR_VERSION_1"/>") &lt; citef:version("1.1.0"), "capabilities", "GetCapabilities")</xsl:variable>
+         <xsl:variable name="expression">functions:iif(functions:version-as-integer("<xsl:value-of select="$VAR_VERSION_1"/>") &lt; functions:version-as-integer("1.1.0"), "capabilities", "GetCapabilities")</xsl:variable>
          <xsl:variable name="VAR_REQUEST_NAME">
             <xsl:for-each select="$request2">
                <xsl:value-of select="saxon:evaluate($expression)"/>
@@ -2848,7 +2641,7 @@ longitude</td>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request3">
-            <xsl:if test="not(string(/WMT_MS_Capabilities/@version)=$VAR_OTHER_VERSION)">
+            <xsl:if test="not(string(/*/@version)=$VAR_OTHER_VERSION)">
                <fail/>
             </xsl:if>
          </xsl:for-each>
@@ -2887,7 +2680,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities/@version = [[VAR_WMS_VERSION]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.version.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.version</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2939,7 +2732,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities/@version = [[VAR_WMS_VERSION]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.version.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.version</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -2991,7 +2784,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities/@version = [[VAR_WMS_VERSION]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.version.5</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.version</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3045,7 +2838,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities/@version = [[VAR_WMS_VERSION]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.params.version.6</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.params.version</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3096,7 +2889,7 @@ longitude</td>
       <td>Content-type header = application/vnd.ogc.wms_xml</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3149,7 +2942,7 @@ longitude</td>
       <td>XML that validates with the properly configured Galdos validator</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3202,7 +2995,7 @@ longitude</td>
       <td>XML where each /WMT_MS_Capabilities/Capability/Request//OnlineResource@xlink:href ends in a ? or both contains a ? and ends in an &amp;.</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.capability_metadata.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.capability_metadata</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3255,7 +3048,7 @@ longitude</td>
       <td>XML where count(/WMT_MS_Capabilities/Capability/Request/GetFeatureInfo/Format[. = 'application/vnd.ogc.gml']) &gt; 0</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.capability_metadata.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.capability_metadata</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3308,7 +3101,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities/Service/Name = "OGC:WMS"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.general_metadata.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.general_metadata</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3360,7 +3153,7 @@ longitude</td>
       <td>XML where LowerCase(/WMT_MS_Capabilities/Service/Fees) = "none" and LowerCase(/WMT_MS_Capabilities/Service/AccessConstraints) = "none"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.general_metadata.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.general_metadata</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3413,7 +3206,7 @@ longitude</td>
       <td>XML where count(//Layer/BoundingBox[@SRS = following-sibling::*/@SRS]) = 0</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.layer_properties.bbox.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.layer_properties.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3482,7 +3275,7 @@ longitude</td>
       <td>XML where no //Layer/Dimension/@name is redefined</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.layer_properties.dim_and_extent.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.layer_properties.dim_and_extent</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3551,7 +3344,7 @@ longitude</td>
       <td>XML where every //Layer/Extent/@name has a corresponding Layer/Dimension/@name</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.layer_properties.dim_and_extent.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.layer_properties.dim_and_extent</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3620,7 +3413,7 @@ longitude</td>
       <td>XML where no //Layer/AuthorityURL/@name is redefined</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.layer_properties.identifier_and_authorityurl.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.layer_properties.identifier_and_authorityurl</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3689,7 +3482,7 @@ longitude</td>
       <td>XML where each //Layer/Identifier/@authority has a corresponding //Layer/AuthorityURL/@name</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.layer_properties.identifier_and_authorityurl.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.layer_properties.identifier_and_authorityurl</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3758,7 +3551,7 @@ longitude</td>
       <td>XML where /WMT_MS_Capabilities/Capability/Layer/LatLonBoundingBox exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.layer_properties.latlonbbox.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.layer_properties.latlonbbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3811,7 +3604,7 @@ longitude</td>
       <td>XML where the attributes on each //LatLonBoundingBox are numeric (scientific notation is OK).</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.layer_properties.latlonbbox.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.layer_properties.latlonbbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3872,7 +3665,7 @@ longitude</td>
       <td>XML where at least one /WMT_MS_Capabilities/Capability/Layer/SRS exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.layer_properties.srs.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.layer_properties.srs</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -3925,7 +3718,7 @@ longitude</td>
       <td>XML where no //Layer/Style/Name is redefined</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getcapabilities.response.layer_properties.style.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getcapabilities.response.layer_properties.style</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -4027,7 +3820,7 @@ longitude</td>
       <td>Content-type header = "application/vnd.ogc.se_xml"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.exceptions.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.exceptions</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -4133,7 +3926,7 @@ longitude</td>
       <td>Content-type header = "application/vnd.ogc.se_xml"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.exceptions.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.exceptions</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -4288,7 +4081,7 @@ longitude</td>
       <td>Request 2 returns more bytes than request 1</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.feature_count.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.feature_count</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -4488,7 +4281,7 @@ longitude</td>
       <td>Request 2 returns more bytes than request 1</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.feature_count.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.feature_count</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -4650,7 +4443,7 @@ longitude</td>
       <td>The response from request #2 is XML where one of the /WMT_MS_Capabilities//Capability/Request/GetFeatureInfo/Format values = the content-type header for request #1</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.info_format.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.info_format</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -4777,7 +4570,7 @@ longitude</td>
       <td>Content-type header = "application/vnd.ogc.gml"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.info_format.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.info_format</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -4878,7 +4671,7 @@ longitude</td>
       <td>Valid GML</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.info_format.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.info_format</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -4980,7 +4773,7 @@ longitude</td>
       <td>Content-type header = [[VAR_GET_FEATURE_INFO_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.query_layers.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.query_layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -5085,7 +4878,7 @@ longitude</td>
       <td>Content-type header = [[VAR_GET_FEATURE_INFO_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.query_layers.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.query_layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -5191,7 +4984,7 @@ longitude</td>
       <td>Content-type header = [[VAR_GET_FEATURE_INFO_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.query_layers.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.query_layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -5297,7 +5090,7 @@ longitude</td>
       <td>Content-type header = [[VAR_GET_FEATURE_INFO_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.query_layers.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.query_layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -5401,7 +5194,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.query_layers.5</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.query_layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -5503,7 +5296,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[code='LayerNotQueryable'] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getfeatureinfo.params.query_layers.6</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.query_layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -5608,18 +5401,18 @@ longitude</td>
                   </tr>
                </table>
                <p>
-					The picture on the left should show a map of the Blue Lake vicinity with a surrounding neatline.
-					The picture on the right should show a slightly closer view of the same area where the surrounding neatline is not visible.
-					Are the pictures correct?
+                                        The picture on the left should show a map of the Blue Lake vicinity with a surrounding neatline.
+                                        The picture on the right should show a slightly closer view of the same area where the surrounding neatline is not visible.
+                                        Are the pictures correct?
                </p>
                <p>
-			<input xmlns="" type="submit" name="submit" value="yes"/>
+                        <input xmlns="" type="submit" name="submit" value="yes"/>
                   <input xmlns="" type="submit" name="submit" value="no"/>
                </p>
                <p>
-					Refer to the <a href="{$hosturl}/OGCTestData/wms/1.1.1/data/WmsTestData_files/bluelake_features.gif"
-                     target="_blank">Overview of Blue Lake vicinity features</a> 
-					for a diagram of the Blue Lake vicinity features.
+                                        Refer to the <a href="{$hosturl}/OGCTestData/wms/1.1.1/data/WmsTestData_files/bluelake_features.gif"
+                     target="_blank">Overview of Blue Lake vicinity features</a>
+                                        for a diagram of the Blue Lake vicinity features.
                </p>
             </ctl:form>
          </xsl:variable>
@@ -5678,7 +5471,7 @@ longitude</td>
       <td>Image where all pixels are white</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.10</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -5702,14 +5495,14 @@ longitude</td>
                </param>
                <param name="ReQuEsT">GetMap</param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="RGB"&gt;
-								&lt;count bands="RGB" sample="all"&gt;&lt;/count&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="RGB"&gt;
+                                                                &lt;count bands="RGB" sample="all"&gt;&lt;/count&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -5770,7 +5563,7 @@ longitude</td>
       <td>Image where all pixels are white</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.11</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -5794,14 +5587,14 @@ longitude</td>
                <param name="ReQuEsT">GetMap</param>
                <param name="BbOx">359.9978,0.0014,359.9988,0.0022</param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="RGB"&gt;
-								&lt;count bands="RGB" sample="all"&gt;&lt;/count&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="RGB"&gt;
+                                                                &lt;count bands="RGB" sample="all"&gt;&lt;/count&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -5898,7 +5691,7 @@ longitude</td>
       <td>Two identical images</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.12</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -5922,14 +5715,14 @@ longitude</td>
                   <xsl:value-of select="$VAR_PONDS"/>
                </param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="ARGB"&gt;
-								&lt;checksum&gt;&lt;/checksum&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="ARGB"&gt;
+                                                                &lt;checksum&gt;&lt;/checksum&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:variable name="expression">string(/image_stats/model/checksum)</xsl:variable>
@@ -5962,14 +5755,14 @@ longitude</td>
                   <xsl:value-of select="$VAR_LOSSLESS_FORMAT"/>
                </param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="ARGB"&gt;
-								&lt;checksum&gt;&lt;/checksum&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="ARGB"&gt;
+                                                                &lt;checksum&gt;&lt;/checksum&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request2">
@@ -6073,7 +5866,7 @@ longitude</td>
       <td>Images where checksum(image#1) = checksum(image#2)</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -6097,14 +5890,14 @@ longitude</td>
                   <xsl:value-of select="$VAR_WMS_VERSION"/>
                </param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="ARGB"&gt;
-								&lt;checksum&gt;&lt;/checksum&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="ARGB"&gt;
+                                                                &lt;checksum&gt;&lt;/checksum&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:variable name="expression">string(/image_stats/model/checksum)</xsl:variable>
@@ -6137,14 +5930,14 @@ longitude</td>
                </param>
                <param name="ReQuEsT">GetMap</param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="ARGB"&gt;
-								&lt;checksum&gt;&lt;/checksum&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="ARGB"&gt;
+                                                                &lt;checksum&gt;&lt;/checksum&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request2">
@@ -6205,7 +5998,7 @@ longitude</td>
       <td>The test verifies that none of the border pixels in the image returned are white</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -6229,25 +6022,25 @@ longitude</td>
                   <xsl:value-of select="$VAR_WMS_VERSION"/>
                </param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="RGB"&gt;
-								&lt;subimage x="0" y="0" width="10" height="1"&gt;
-									&lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
-								&lt;/subimage&gt;
-								&lt;subimage x="0" y="6" width="10" height="1"&gt;
-									&lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
-								&lt;/subimage&gt;
-								&lt;subimage x="0" y="1" width="1" height="5"&gt;
-									&lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
-								&lt;/subimage&gt;
-								&lt;subimage x="9" y="1" width="1" height="5"&gt;
-									&lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
-								&lt;/subimage&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="RGB"&gt;
+                                                                &lt;subimage x="0" y="0" width="10" height="1"&gt;
+                                                                        &lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
+                                                                &lt;/subimage&gt;
+                                                                &lt;subimage x="0" y="6" width="10" height="1"&gt;
+                                                                        &lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
+                                                                &lt;/subimage&gt;
+                                                                &lt;subimage x="0" y="1" width="1" height="5"&gt;
+                                                                        &lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
+                                                                &lt;/subimage&gt;
+                                                                &lt;subimage x="9" y="1" width="1" height="5"&gt;
+                                                                        &lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
+                                                                &lt;/subimage&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -6308,7 +6101,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.5</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -6391,7 +6184,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.6</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -6474,7 +6267,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.7</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -6557,7 +6350,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.8</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -6640,7 +6433,7 @@ longitude</td>
       <td>Image where all pixels are white</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bbox.9</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bbox</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -6664,14 +6457,14 @@ longitude</td>
                   <xsl:value-of select="$VAR_WMS_VERSION"/>
                </param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="RGB"&gt;
-								&lt;count bands="RGB" sample="all"&gt;&lt;/count&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="RGB"&gt;
+                                                                &lt;count bands="RGB" sample="all"&gt;&lt;/count&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -6732,7 +6525,7 @@ longitude</td>
       <td>An image with white pixels in the background of the image</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bgcolor.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bgcolor</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -6756,19 +6549,19 @@ longitude</td>
                </param>
                <param name="StYlEs"/>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="RGB"&gt;
-								&lt;subimage x="0" y="0" width="25" height="100"&gt;
-									&lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
-								&lt;/subimage&gt;
-								&lt;subimage x="150" y="0" width="50" height="50"&gt;
-									&lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
-								&lt;/subimage&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="RGB"&gt;
+                                                                &lt;subimage x="0" y="0" width="25" height="100"&gt;
+                                                                        &lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
+                                                                &lt;/subimage&gt;
+                                                                &lt;subimage x="150" y="0" width="50" height="50"&gt;
+                                                                        &lt;count bands="RGB" sample="0xffffff"&gt;&lt;/count&gt;
+                                                                &lt;/subimage&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -6832,7 +6625,7 @@ longitude</td>
       <td>An image with white pixels in the background of the image</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.bgcolor.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.bgcolor</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -6857,19 +6650,19 @@ longitude</td>
                   <xsl:value-of select="$VAR_WMS_VERSION"/>
                </param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="RGB"&gt;
-								&lt;subimage x="0" y="0" width="25" height="100"&gt;
-									&lt;count bands="RGB" sample="0x0000ff"&gt;&lt;/count&gt;
-								&lt;/subimage&gt;
-								&lt;subimage x="150" y="0" width="50" height="50"&gt;
-									&lt;count bands="RGB" sample="0x0000ff"&gt;&lt;/count&gt;
-								&lt;/subimage&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="RGB"&gt;
+                                                                &lt;subimage x="0" y="0" width="25" height="100"&gt;
+                                                                        &lt;count bands="RGB" sample="0x0000ff"&gt;&lt;/count&gt;
+                                                                &lt;/subimage&gt;
+                                                                &lt;subimage x="150" y="0" width="50" height="50"&gt;
+                                                                        &lt;count bands="RGB" sample="0x0000ff"&gt;&lt;/count&gt;
+                                                                &lt;/subimage&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -6929,7 +6722,7 @@ longitude</td>
       <td>Content-type header = "application/vnd.ogc.se_xml"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.exceptions.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.exceptions</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7013,7 +6806,7 @@ longitude</td>
       <td>Content-type header = "application/vnd.ogc.se_xml"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.exceptions.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.exceptions</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7056,16 +6849,16 @@ longitude</td>
       <td>The user will be asked to verify that an image containing an error message indicating that the layer requested was not defined is returned.</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.exceptions.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.exceptions</link>
       <code>
          <xsl:variable name="form-values">
             <ctl:form width="900" height="700">
                <img border="1" src="{$VAR_WMS_GET_MAP_HTTP_GET_URL}VERSION={$VAR_WMS_VERSION}&amp;REQUEST=GetMap&amp;LAYERS=NonExistant&amp;STYLES=&amp;SRS=EPSG:4326&amp;BBOX=-1,-1,1,1&amp;WIDTH=400&amp;HEIGHT=400&amp;FORMAT={$VAR_READABLE_IMAGE_FORMAT}&amp;EXCEPTIONS=application/vnd.ogc.se_inimage"/>
                <p>
-					Does the image above contain an error message indicating that the layer requested was not defined?
+                                        Does the image above contain an error message indicating that the layer requested was not defined?
                </p>
                <p>
-			<input xmlns="" type="submit" name="submit" value="yes"/>
+                        <input xmlns="" type="submit" name="submit" value="yes"/>
                   <input xmlns="" type="submit" name="submit" value="no"/>
                </p>
             </ctl:form>
@@ -7127,7 +6920,7 @@ longitude</td>
       <td>Content-type header = "[[VAR_IMAGE_FORMAT]]"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.exceptions.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.exceptions</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7215,7 +7008,7 @@ longitude</td>
       <td>Image where all the pixels are red</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.exceptions.5</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.exceptions</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7239,14 +7032,14 @@ longitude</td>
                <param name="HeIgHt">100</param>
                <param name="BbOx">-1,-1,1,1</param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="RGB"&gt;
-								&lt;count bands="RGB" sample="0xff0000"&gt;&lt;/count&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="RGB"&gt;
+                                                                &lt;count bands="RGB" sample="0xff0000"&gt;&lt;/count&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -7312,7 +7105,7 @@ longitude</td>
       <td>Image where all the pixels are transparent</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.exceptions.6</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.exceptions</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7336,14 +7129,14 @@ longitude</td>
                <param name="WiDtH">100</param>
                <param name="HeIgHt">100</param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="ARGB"&gt;
-								&lt;count bands="A" sample="0x00"&gt;&lt;/count&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="ARGB"&gt;
+                                                                &lt;count bands="A" sample="0x00"&gt;&lt;/count&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -7406,7 +7199,7 @@ longitude</td>
       <td>Content-type header = "[[VAR_IMAGE_FORMAT]]"</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.exceptions.7</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.exceptions</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7488,7 +7281,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="InvalidFormat"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.format.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.format</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7568,7 +7361,7 @@ longitude</td>
       <td>Content-type header = "image/gif" and response is a genuine image</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.format.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.format</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7663,7 +7456,7 @@ longitude</td>
       <td>Content-type header = "image/jpeg" and response is a genuine image</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.format.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.format</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7758,7 +7551,7 @@ longitude</td>
       <td>Content-type header = "image/png" and response is a genuine image</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.format.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.format</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7854,7 +7647,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.layers.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -7938,7 +7731,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.layers.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8023,7 +7816,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.layers.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8070,7 +7863,7 @@ longitude</td>
       <td>The user will be asked to manually verify that for request #1, Goose Island, Blue Lake, and Ashton are above State Forest.  For request #2, State Forest is above Ashton, and Blue Lake and Goose Island are not visible.  If it is not be possible to tell which feature is on top of another, the test will pass.</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.layers.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.layers</link>
       <code>
          <xsl:variable name="form-values">
             <ctl:form width="900" height="700">
@@ -8085,18 +7878,18 @@ longitude</td>
                   </tr>
                </table>
                <p>
-					In the picture on the left, Goose Island, Blue Lake, and Ashton should be above State Forest.
-					In the picture on the right, State Forest should be above Ashton, Blue Lake, and Goose Island.
-					Are the pictures correct?
+                                        In the picture on the left, Goose Island, Blue Lake, and Ashton should be above State Forest.
+                                        In the picture on the right, State Forest should be above Ashton, Blue Lake, and Goose Island.
+                                        Are the pictures correct?
                </p>
                <p>
-			<input xmlns="" type="submit" name="submit" value="yes"/>
+                        <input xmlns="" type="submit" name="submit" value="yes"/>
                   <input xmlns="" type="submit" name="submit" value="no"/>
                </p>
                <p>
-					Refer to the <a href="{$hosturl}/OGCTestData/wms/1.1.1/data/WmsTestData_files/bluelake_features.gif"
-                     target="_blank">Overview of Blue Lake vicinity features</a> 
-					for a diagram of the relevant features.
+                                        Refer to the <a href="{$hosturl}/OGCTestData/wms/1.1.1/data/WmsTestData_files/bluelake_features.gif"
+                     target="_blank">Overview of Blue Lake vicinity features</a>
+                                        for a diagram of the relevant features.
                </p>
             </ctl:form>
          </xsl:variable>
@@ -8154,7 +7947,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="LayerNotDefined"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.layers.5</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8235,7 +8028,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="LayerNotDefined"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.layers.6</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8317,7 +8110,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="LayerNotDefined"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.layers.7</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.layers</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8399,7 +8192,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.request.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.request</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8482,7 +8275,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.srs.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.srs</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8565,7 +8358,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.srs.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.srs</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8648,7 +8441,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="InvalidSRS"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.srs.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.srs</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8732,7 +8525,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8819,7 +8612,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="StyleNotDefined"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.10</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8904,7 +8697,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -8990,7 +8783,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9076,7 +8869,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.4</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9161,7 +8954,7 @@ longitude</td>
       <td>Valid XML where /ServiceExceptionReport/ServiceException[@code="StyleNotDefined"] exists</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.5</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9244,7 +9037,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.6</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9331,7 +9124,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.7</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9417,7 +9210,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.8</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9503,7 +9296,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.styles.9</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9586,7 +9379,7 @@ longitude</td>
       <td>An image with no transparent pixels</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.transparent.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.transparent</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9610,14 +9403,14 @@ longitude</td>
                </param>
                <param name="HeIgHt">100</param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="ARGB"&gt;
-								&lt;count bands="A" sample="0xff"&gt;&lt;/count&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="ARGB"&gt;
+                                                                &lt;count bands="A" sample="0xff"&gt;&lt;/count&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -9669,7 +9462,7 @@ longitude</td>
                <td>FORMAT = [[VAR_TRANSPARENT_FORMAT]]</td>
             </tr>
             <tr align="left">
-               <td>TRANSPARENT = fAlSe</td>
+               <td>TRANSPARENT = FALSE</td>
             </tr>
          </table>
       </td>
@@ -9681,7 +9474,7 @@ longitude</td>
       <td>An image with no transparent pixels</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.transparent.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.transparent</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9696,7 +9489,7 @@ longitude</td>
                </param>
                <param name="BbOx">0,-0.0020,0.0040,0</param>
                <param name="StYlEs"/>
-               <param name="TrAnSpArEnT">fAlSe</param>
+               <param name="TrAnSpArEnT">FALSE</param>
                <param name="WiDtH">200</param>
                <param name="VeRsIoN">
                   <xsl:value-of select="$VAR_WMS_VERSION"/>
@@ -9706,14 +9499,14 @@ longitude</td>
                   <xsl:value-of select="$VAR_LAKES"/>
                </param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="ARGB"&gt;
-								&lt;count bands="A" sample="0xff"&gt;&lt;/count&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="ARGB"&gt;
+                                                                &lt;count bands="A" sample="0xff"&gt;&lt;/count&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -9777,7 +9570,7 @@ longitude</td>
       <td>An image that contains transparent pixels</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.transparent.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.transparent</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9802,14 +9595,14 @@ longitude</td>
                <param name="ReQuEsT">GetMap</param>
                <param name="SrS">EPSG:4326</param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;model value="ARGB"&gt;
-								&lt;count bands="A" sample="0x00"&gt;&lt;/count&gt;
-							&lt;/model&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;model value="ARGB"&gt;
+                                                                &lt;count bands="A" sample="0x00"&gt;&lt;/count&gt;
+                                                        &lt;/model&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -9870,7 +9663,7 @@ longitude</td>
       <td>Content-type header = [[VAR_IMAGE_FORMAT]]</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.version.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.version</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9955,7 +9748,7 @@ longitude</td>
       <td>Image where width=1024 and height=768</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.width_height.1</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.width_height</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -9979,13 +9772,13 @@ longitude</td>
                <param name="SrS">EPSG:4326</param>
                <param name="WiDtH">1024</param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;height&gt;&lt;/height&gt;
-							&lt;width&gt;&lt;/width&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;height&gt;&lt;/height&gt;
+                                                        &lt;width&gt;&lt;/width&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -10046,7 +9839,7 @@ longitude</td>
       <td>Image where width=16 and height=16</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.width_height.2</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.width_height</link>
       <code>
          <xsl:variable name="request1">
             <request>
@@ -10070,13 +9863,13 @@ longitude</td>
                </param>
                <param name="SrS">EPSG:4326</param>
                <example:ImageStats>
-					
-						&lt;image_stats&gt;
-							&lt;height&gt;&lt;/height&gt;
-							&lt;width&gt;&lt;/width&gt;
-						&lt;/image_stats&gt;
-					
-				</example:ImageStats>
+
+                                                &lt;image_stats&gt;
+                                                        &lt;height&gt;&lt;/height&gt;
+                                                        &lt;width&gt;&lt;/width&gt;
+                                                &lt;/image_stats&gt;
+
+                                </example:ImageStats>
             </request>
          </xsl:variable>
          <xsl:for-each select="$request1">
@@ -10105,7 +9898,7 @@ longitude</td>
       <td>The user will be asked to manually verify that the two images look the same, except that the image #2 is stretched so it is twice as tall as image #1.</td>
    </tr>
 </table>]]></comment>
-      <link>wms1.1.1#.wmsops.getmap.params.width_height.3</link>
+      <link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.width_height</link>
       <code>
          <xsl:variable name="form-values">
             <ctl:form width="900" height="700">
@@ -10120,11 +9913,11 @@ longitude</td>
                   </tr>
                </table>
                <p>
-			The two pictures above should depict the same scene, but the picture on the right should be stretched so it is twice as tall as the picture on the left.
-			Are the pictures correct?
+                        The two pictures above should depict the same scene, but the picture on the right should be stretched so it is twice as tall as the picture on the left.
+                        Are the pictures correct?
                </p>
                <p>
-			<input xmlns="" type="submit" name="submit" value="yes"/>
+                        <input xmlns="" type="submit" name="submit" value="yes"/>
                   <input xmlns="" type="submit" name="submit" value="no"/>
                </p>
             </ctl:form>
@@ -10134,4 +9927,495 @@ longitude</td>
          </xsl:if>
       </code>
    </test>
+
+   <ctl:test name="wms:wmsops-getfeatureinfo-each-info_format">
+      <ctl:param name="WMS_CAPABILITIES"/>
+      <ctl:param name="FORMAT"/>
+      <ctl:assertion>For each advertised GetFeatureInfo format, when a GetFeatureInfo request is made with the INFO_FORMAT parameter set to the format, then the Content-type header returned is the same.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getfeatureinfo.params.info_format</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="$WMS_CAPABILITIES//Capability/Request/GetMap/Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="$WMS_CAPABILITIES//Capability/Layer"/>
+               <ctl:with-param name="preferred-name" select="$WMS_CAPABILITIES//Capability//Layer[Title = 'cite:Lakes']/Name"/>
+               <ctl:with-param name="preferred-srs">EPSG:4326</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="$WMS_CAPABILITIES//Capability/Request/GetFeatureInfo/DCPType/HTTP/Get/OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="SrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@srs)"/>
+               </ctl:param>
+               <ctl:param name="QuErY_LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="X">60</ctl:param>
+               <ctl:param name="Y">60</ctl:param>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="InFo_fOrMaT">
+                  <xsl:value-of select="functions:encode($FORMAT)"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $FORMAT) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="wms:wmsops-getmap-each-style">
+      <ctl:param name="capabilities"/>
+      <ctl:param name="style"/>
+      <ctl:assertion>For each of the Styles in the capabilities document, when a GetMap request is made with the STYLES parameter set to the element of the style, then the response is valid.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.styles</ctl:link>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="$style = ''">
+               <ctl:message>No named layers with a style contained directly in the layer.</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="image-format" select="$capabilities/Capability/Request/GetMap/Format[1]"/>
+               <xsl:variable name="layer-info">
+                  <ctl:call-function name="functions:layer-info">
+                     <ctl:with-param name="root-layer" select="$capabilities/Capability/Layer"/>
+                     <ctl:with-param name="preferred-name" select="string($capabilities/Capability//Layer[Name and Style/Name = $style]/Name)"/>
+                     <ctl:with-param name="preferred-srs"></ctl:with-param>
+                     <ctl:with-param name="preferred-bbox"></ctl:with-param>
+                     <ctl:with-param name="preferred-width">100</ctl:with-param>
+                     <ctl:with-param name="preferred-height">100</ctl:with-param>
+                  </ctl:call-function>
+               </xsl:variable>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="$capabilities/Capability/Request/GetMap/DCPType/HTTP/Get/OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="StYlEs">
+                        <xsl:value-of select="functions:encode($style)"/>
+                     </ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="SrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@srs)"/>
+                     </ctl:param>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="ReQuEsT">GetMap</ctl:param>
+                     <parsers:HTTPParser>
+                        <parsers:parse>
+                           <parsers:NullParser/>
+                        </parsers:parse>
+                     </parsers:HTTPParser>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="wms:wmsops-getmap-each-layer">
+      <ctl:param name="WMS_CAPABILITIES"/>
+      <ctl:param name="layer"/>
+      <ctl:assertion>For each of the Layers in the capabilities document, when a GetMap request is made with the LAYERS parameter set to the element of the layer, then the response is valid.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.layers</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="$WMS_CAPABILITIES/Capability/Request/GetMap/Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="$WMS_CAPABILITIES/Capability/Layer"/>
+               <ctl:with-param name="preferred-name" select="$layer"/>
+               <ctl:with-param name="preferred-srs"></ctl:with-param>
+               <ctl:with-param name="preferred-bbox"></ctl:with-param>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="$WMS_CAPABILITIES/Capability/Request/GetMap/DCPType/HTTP/Get/OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="SrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@srs)"/>
+               </ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">100</ctl:param>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="wms:wmsops-getmap-each-srs">
+      <ctl:param name="WMS_CAPABILITIES"/>
+      <ctl:param name="srs"/>
+      <ctl:assertion>For each SRS in the capabilities document, when a GetMap request uses the SRS, then the response is valid.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.crs</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="$WMS_CAPABILITIES/Capability/Request/GetMap/Format[1]"/>
+         <xsl:variable name="layer" select="string($WMS_CAPABILITIES/Capability//Layer[Name and ancestor-or-self::Layer/SRS=$srs][1]/Name)"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="$WMS_CAPABILITIES/Capability/Layer"/>
+               <ctl:with-param name="preferred-name" select="$layer"/>
+               <ctl:with-param name="preferred-srs" select="$srs"/>
+               <ctl:with-param name="preferred-bbox"/>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:choose>
+            <xsl:when test="$layer = ''">
+               <ctl:message>No Named layers for SRS <xsl:value-of select="$srs"/>.</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="$WMS_CAPABILITIES/Capability/Request/GetMap/DCPType/HTTP/Get/OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="SrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@srs)"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="StYlEs"/>
+                     <ctl:param name="ReQuEsT">GetMap</ctl:param>
+                     <parsers:HTTPParser>
+                        <parsers:parse>
+                           <parsers:NullParser/>
+                        </parsers:parse>
+                     </parsers:HTTPParser>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="wms:wmsops-getmap-each-format">
+      <ctl:param name="WMS_CAPABILITIES"/>
+      <ctl:param name="format"/>
+      <ctl:assertion>For each image format advertised in capabilities, When a GetMap request is made using the image format, then the Content-type entity header returned is the format requested.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.format</ctl:link>
+      <ctl:code>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="$WMS_CAPABILITIES/Capability/Layer"/>
+               <ctl:with-param name="preferred-name" select="string($WMS_CAPABILITIES/Capability//Layer[Title='cite:Lakes']/Name)"/>
+               <ctl:with-param name="preferred-srs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">-0.0025,-0.0025,0.0025,0.0025</ctl:with-param>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="$WMS_CAPABILITIES/Capability/Request/GetMap/DCPType/HTTP/Get/OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($format)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="SrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@srs)"/>
+               </ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="wms:wmsops-getmap-each-format-transparent">
+      <ctl:param name="WMS_CAPABILITIES"/>
+      <ctl:param name="format"/>
+      <ctl:assertion>For each format a request with TRANSPARENT=TRUE does not return an exception.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.format</ctl:link>
+      <ctl:code>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="$WMS_CAPABILITIES/Capability/Layer"/>
+               <ctl:with-param name="preferred-name" select="string($WMS_CAPABILITIES/Capability//Layer[Title='cite:Lakes']/Name)"/>
+               <ctl:with-param name="preferred-srs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">-0.0025,-0.0025,0.0025,0.0025</ctl:with-param>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="$WMS_CAPABILITIES/Capability/Request/GetMap/DCPType/HTTP/Get/OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="HeIgHt">
+                  <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($format)"/>
+               </ctl:param>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="SrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@srs)"/>
+               </ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">
+                  <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+               </ctl:param>
+               <ctl:param name="TrAnSpaReNt">
+                  <xsl:value-of select="TRUE"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="wms:wmsops-getmap-layer-encoded-name">
+      <ctl:param name="WMS_CAPABILITIES"/>
+      <ctl:assertion>When a layer is requested using encoded characters in its name, the response is a map.</ctl:assertion>
+      <ctl:comment/>
+      <ctl:link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#wmsops.getmap.params.layers</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="$WMS_CAPABILITIES/Capability/Request/GetMap/Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="$WMS_CAPABILITIES/Capability/Layer"/>
+               <ctl:with-param name="preferred-name" select="string($WMS_CAPABILITIES/Capability//Layer[Name!=functions:encode(string(Name))][1]/Name)"/>
+               <ctl:with-param name="preferred-srs"></ctl:with-param>
+               <ctl:with-param name="preferred-bbox"></ctl:with-param>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="$WMS_CAPABILITIES/Capability/Request/GetMap/DCPType/HTTP/Get/OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="SrS">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@srs)"/>
+               </ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">100</ctl:param>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+  <ctl:test name="wms:basic_elements-validate-exception">
+  <param name="WMS_CAPABILITIES" />
+     <ctl:assertion>When an exception is generated, it validates.</ctl:assertion>
+     <ctl:comment/>
+     <ctl:link>http://cite.geoenterpriselab.com/OGCTestData/wms/1.1.1/spec/wms1_1_1.html#basic_elements.exceptions</ctl:link>
+     <ctl:code>
+         <xsl:variable name="image-format" select="$WMS_CAPABILITIES//Capability/Request/GetMap/Format[1]"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:queryable-layer-info">
+               <ctl:with-param name="root-layer" select="$WMS_CAPABILITIES//Capability/Layer"/>
+               <ctl:with-param name="preferred-name" select="$WMS_CAPABILITIES//Capability//Layer[Title = 'cite:Lakes']/Name"/>
+               <ctl:with-param name="preferred-srs">EPSG:4326</ctl:with-param>
+               <ctl:with-param name="preferred-bbox">0,-0.0020,0.0040,0</ctl:with-param>
+               <ctl:with-param name="preferred-width">200</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="$WMS_CAPABILITIES/Capability/Request/GetMap/DCPType/HTTP/Get/OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+               </ctl:param>
+               <ctl:param name="SrS">NONE</ctl:param>
+               <ctl:param name="BbOx">
+                  <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">100</ctl:param>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <parsers:XMLValidatingParser>
+                  <parsers:dtd type="url">http://schemas.opengis.net/wms/1.1.1/WMS_exception_1_1_1.dtd</parsers:dtd>
+               </parsers:XMLValidatingParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response">
+            <xsl:if test="not(*)">
+               <fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
 </package>

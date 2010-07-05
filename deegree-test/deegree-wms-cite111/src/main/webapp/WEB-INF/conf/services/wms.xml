@@ -147,6 +147,7 @@
   <wms:PublishedInformation>
     <wms:SupportedVersions>
       <wms:Version>1.1.1</wms:Version>
+      <wms:Version>1.3.0</wms:Version>
     </wms:SupportedVersions>
   </wms:PublishedInformation>
 

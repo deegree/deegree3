@@ -41,7 +41,7 @@ public class WMSCite111IT {
     public static Collection getResultSnippets()
                             throws Exception {
 
-        URL url = WMSCite111IT.class.getResource( "/citewms111/ctl/wms.xml" );
+        URL url = WMSCite111IT.class.getResource( "/citewms111/ctl/" );
         String file = new File( url.toURI() ).getAbsolutePath();
 
         CiteWrapper wrapper = new CiteWrapper( file );
