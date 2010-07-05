@@ -51,6 +51,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.gui.FormFieldBean;
 import org.deegree.client.mdeditor.gui.DataGroupBean;
 import org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
@@ -106,7 +107,12 @@ public class DataGroupListener implements AjaxBehaviorListener {
         }
 
         if ( isReferencedGrp ) {
-            handleReferencedGrp( grpId, action, id, fc, formFieldBean, dataGroupBean );
+            try {
+                handleReferencedGrp( grpId, action, id, fc, formFieldBean, dataGroupBean );
+            } catch ( ConfigurationException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         } else {
             handleInlineGrp( grpId, action, id, fc, formFieldBean, dataGroupBean );
         }
@@ -143,9 +149,11 @@ public class DataGroupListener implements AjaxBehaviorListener {
      * @param fc
      * @param formFieldBean
      * @param dataGroupBean
+     * @throws ConfigurationException
      */
     private void handleReferencedGrp( String grpId, ACTION_ATT_VALUES action, String id, FacesContext fc,
-                                      FormFieldBean formFieldBean, DataGroupBean dataGroupBean ) {
+                                      FormFieldBean formFieldBean, DataGroupBean dataGroupBean )
+                            throws ConfigurationException {
         DataHandler handler = DataHandler.getInstance();
         switch ( action ) {
         case DELETE:

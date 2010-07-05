@@ -37,9 +37,16 @@ package org.deegree.client.mdeditor.gui;
 
 import java.io.Serializable;
 
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
+
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
+import org.deegree.client.mdeditor.model.FormConfigurationDescription;
 
 /**
  * TODO add class documentation here
@@ -56,6 +63,8 @@ public class SessionBean implements Serializable {
     private static final long serialVersionUID = 7210003542122508664L;
 
     private boolean visible = false;
+
+    private String selectedFormConfiguration;
 
     public void setVisible( boolean visible ) {
         this.visible = visible;
@@ -78,6 +87,52 @@ public class SessionBean implements Serializable {
             }
         }
         return formId;
+    }
+
+    public List<FormConfigurationDescription> getFormConfigurationDescriptions()
+                            throws ConfigurationException {
+        return ConfigurationManager.getConfiguration().getFormConfigurations();
+    }
+
+    public String getDescription()
+                            throws ConfigurationException {
+        if ( selectedFormConfiguration != null ) {
+            for ( FormConfigurationDescription desc : ConfigurationManager.getConfiguration().getFormConfigurations() ) {
+                if ( selectedFormConfiguration.equals( desc.getId() ) ) {
+                    return desc.getDescription();
+                }
+            }
+        }
+        return null;
+    }
+
+    public void setSelectedFormConfiguration( String selectedFormConfiguration ) {
+        this.selectedFormConfiguration = selectedFormConfiguration;
+    }
+
+    public String getSelectedFormConfiguration()
+                            throws ConfigurationException {
+        if ( selectedFormConfiguration == null && getFormConfigurationDescriptions().size() > 0 ) {
+            selectedFormConfiguration = getFormConfigurationDescriptions().get( 0 ).getId();
+        }
+        return selectedFormConfiguration;
+    }
+
+    public boolean isList()
+                            throws ConfigurationException {
+        return getFormConfigurationDescriptions().size() > 1;
+    }
+
+    public Object loadConfiguration()
+                            throws ConfigurationException {
+        if ( selectedFormConfiguration == null ) {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.LOAD_CONF_NOID" );
+            fc.addMessage( "LOAD_FAILED", msg );
+            return "/page/form/errorPage.xhtml";
+        }
+        ConfigurationManager.getConfiguration().setSelectedConfiguration( selectedFormConfiguration );
+        return "forms";
     }
 
 }

@@ -40,13 +40,11 @@ import static org.deegree.commons.xml.stax.StAXParsingHelper.moveReaderToFirstMa
 import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -72,45 +70,36 @@ public class CodeListParser extends Parser {
 
     private static QName CODELIST_ELEMENT = new QName( NS, "CodeList" );
 
-    private List<CodeList> codeLists = new ArrayList<CodeList>();
-
-    CodeListConfiguration parseConfiguration( String configurationURL )
+    public static List<CodeList> parseConfiguration( URL url )
                             throws ConfigurationException {
         try {
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                             new FileReader(
-                                                                                                             configurationURL ) );
+            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.openStream() );
             if ( !moveReaderToFirstMatch( xmlStream, ROOT ) ) {
-                throw new ConfigurationException( "could not parse code list configuration" + configurationURL
+                throw new ConfigurationException( "could not parse code list configuration" + url
                                                   + ": root element does not exist" );
             }
 
+            List<CodeList> codeLists = new ArrayList<CodeList>();
+            List<String> ids = new ArrayList<String>();
             while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( ROOT ) ) ) {
                 QName elementName = xmlStream.getName();
                 if ( CODELIST_ELEMENT.equals( elementName ) ) {
-                    parseCodeList( xmlStream );
+                    parseCodeList( xmlStream, codeLists, ids );
                 } else {
                     nextElement( xmlStream );
                 }
             }
 
-            return new CodeListConfiguration( codeLists );
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( FactoryConfigurationError e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            return codeLists;
+        } catch ( Exception e ) {
+            LOG.debug( "could not parse code list configuration" + url, e );
+            throw new ConfigurationException( "could not parse code list configuration" + url );
         }
-        return null;
     }
 
-    private void parseCodeList( XMLStreamReader xmlStream )
+    private static void parseCodeList( XMLStreamReader xmlStream, List<CodeList> codeLists, List<String> ids )
                             throws XMLStreamException, ConfigurationException {
-        String clId = getId( xmlStream );
+        String clId = getId( xmlStream, ids );
         nextElement( xmlStream );
         CodeList cl = new CodeList( clId );
         LOG.debug( "Found CodeList with id " + clId );

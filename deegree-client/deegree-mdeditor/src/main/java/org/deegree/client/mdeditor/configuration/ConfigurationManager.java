@@ -33,14 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.configuration.form;
+package org.deegree.client.mdeditor.configuration;
 
+import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.deegree.client.mdeditor.configuration.Configuration;
-import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.model.FormConfiguration;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 /**
  * TODO add class documentation here
@@ -50,37 +52,41 @@ import org.deegree.client.mdeditor.model.FormConfiguration;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormConfigurationFactory {
+public class ConfigurationManager {
 
-    private static Map<String, FormConfiguration> formConfigurations = new HashMap<String, FormConfiguration>();
+    private static String DEFAULT_CONFIG = "/WEB-INF/conf/mdeditor/MDEDITOR_configuration.xml";
+
+    private static Map<String, Configuration> config = new HashMap<String, Configuration>();
 
     /**
-     * @param id
-     *            identifier of the configuration
-     * @return the configuration assigned by the key, if no configuration exist a new one will be created
+     * @return the configuration
      * @throws ConfigurationException
      */
-    public static FormConfiguration getOrCreateFormConfiguration( String id )
+    public static Configuration getConfiguration()
                             throws ConfigurationException {
-        if ( !formConfigurations.containsKey( id ) ) {
-            FormConfigurationParser parser = new FormConfigurationParser();
-            FormConfiguration configuration = parser.parseConfiguration( Configuration.getFormConfURL() );
-            formConfigurations.put( id, configuration );
+        if ( FacesContext.getCurrentInstance() == null ) {
+            URL resource = ConfigurationManager.class.getResource( "MDEDITOR_configuration.xml" );
+            if ( resource == null ) {
+                throw new ConfigurationException( "Could not create configuration" );
+            }
+            return ConfigurationParser.parseConfiguration( new File( resource.getPath() ) );
         }
-        return formConfigurations.get( id );
-    }
 
-    /**
-     * @param id
-     *            identifier of the configuration to reload
-     * @return reloads the configuration with the given key
-     * @throws ConfigurationException
-     */
-    public static void reloadFormConfiguration( String key )
-                            throws ConfigurationException {
-        FormConfigurationParser parser = new FormConfigurationParser();
-        FormConfiguration configuration = parser.parseConfiguration( Configuration.getFormConfURL() );
-        formConfigurations.put( key, configuration );
-    }
+        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
 
+        HttpSession session = (HttpSession) ctx.getSession( true );
+        String sessionId = session.getId();
+
+        if ( !config.containsKey( sessionId ) ) {
+            // TODO: load user specific configurations
+            String path = ctx.getRealPath( DEFAULT_CONFIG );
+            File f = new File( path );
+            if ( f.exists() && f.isFile() ) {
+                config.put( sessionId, ConfigurationParser.parseConfiguration( f ) );
+            } else {
+                throw new ConfigurationException( "Could not create configuration" );
+            }
+        }
+        return config.get( sessionId );
+    }
 }

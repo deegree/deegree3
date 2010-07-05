@@ -49,7 +49,8 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.client.mdeditor.configuration.Configuration;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.io.DataIOException;
 import org.deegree.client.mdeditor.io.Utils;
 import org.deegree.client.mdeditor.model.DataGroup;
@@ -80,9 +81,10 @@ public class DataWriter {
      * @param dataGroups
      * @return the id of the written dataset
      * @throws DataIOException
+     * @throws ConfigurationException
      */
     static String writeDataset( String id, List<FormGroup> formGroups, Map<String, List<DataGroup>> dataGroups )
-                            throws DataIOException {
+                            throws DataIOException, ConfigurationException {
         if ( id == null ) {
             id = Utils.createId();
         }
@@ -90,7 +92,7 @@ public class DataWriter {
         if ( !fileName.endsWith( FILE_SUFFIX ) ) {
             fileName = fileName + FILE_SUFFIX;
         }
-        File file = new File( Configuration.getFilesDirURL(), fileName );
+        File file = new File( ConfigurationManager.getConfiguration().getDataDir(), fileName );
         if ( !file.exists() ) {
             try {
                 file.createNewFile();
@@ -137,9 +139,10 @@ public class DataWriter {
      *            the form group to write
      * @return the id of the written form group
      * @throws DataIOException
+     * @throws ConfigurationException
      */
     static String writeDataGroup( String id, FormGroup formGroup )
-                            throws DataIOException {
+                            throws DataIOException, ConfigurationException {
         if ( id == null ) {
             id = Utils.createId();
         }
@@ -147,7 +150,8 @@ public class DataWriter {
         if ( !id.endsWith( FILE_SUFFIX ) ) {
             fileName = id + FILE_SUFFIX;
         }
-        File dir = new File( Configuration.getFilesDirURL(), formGroup.getId() );
+
+        File dir = new File( ConfigurationManager.getConfiguration().getDataDir(), formGroup.getId() );
         if ( !dir.exists() ) {
             dir.mkdir();
         }

@@ -45,12 +45,12 @@ import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.model.DataGroup;
+import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.slf4j.Logger;
 
 /**
@@ -81,7 +81,8 @@ public class DataGroupBean implements Serializable {
         this.dataGroups = dataGroups;
     }
 
-    public Map<String, List<DataGroup>> getDataGroups() {
+    public Map<String, List<DataGroup>> getDataGroups()
+                            throws ConfigurationException {
         if ( !fgiLoaded ) {
             loadDataGroups();
             fgiLoaded = true;
@@ -104,7 +105,12 @@ public class DataGroupBean implements Serializable {
     public void reloadFormGroup( String grpId, boolean isReferencedGrp ) {
         LOG.debug( "Form Group with id " + grpId + " has changed. Force reload." );
         if ( isReferencedGrp ) {
-            dataGroups.put( grpId, DataHandler.getInstance().getDataGroups( grpId ) );
+            try {
+                dataGroups.put( grpId, DataHandler.getInstance().getDataGroups( grpId ) );
+            } catch ( ConfigurationException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         } else {
             FacesContext fc = FacesContext.getCurrentInstance();
             FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue(
@@ -115,17 +121,12 @@ public class DataGroupBean implements Serializable {
         }
     }
 
-    // TODO
-    private void loadDataGroups() {
-        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession( false );
-        try {
-            Map<String, Boolean> formGroupIds = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() ).getReferencedFormGroupIds();
-            for ( String id : formGroupIds.keySet() ) {
-                reloadFormGroup( id, formGroupIds.get( id ) );
-            }
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    private void loadDataGroups()
+                            throws ConfigurationException {
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+        Map<String, Boolean> formGroupIds = configuration.getReferencedFormGroupIds();
+        for ( String id : formGroupIds.keySet() ) {
+            reloadFormGroup( id, formGroupIds.get( id ) );
         }
     }
 

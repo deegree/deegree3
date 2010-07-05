@@ -73,12 +73,14 @@ public class HtmlInputTextItemsRenderer extends Renderer {
 
     @Override
     public void decode( FacesContext context, UIComponent component ) {
+        System.out.println( "decode" );
         ExternalContext external = context.getExternalContext();
         Map<String, String> params = external.getRequestParameterMap();
         String behaviorEvent = params.get( "javax.faces.behavior.event" );
 
         if ( params.containsKey( INDEX_PARAM ) ) {
             int itemIndex = Integer.parseInt( params.get( INDEX_PARAM ) );
+            System.out.println( itemIndex + " " + behaviorEvent );
             if ( TREE_CHANGED_EVENT.equals( behaviorEvent ) ) {
                 updateItems( ( (UIInput) component ), itemIndex );
             } else {
@@ -91,6 +93,7 @@ public class HtmlInputTextItemsRenderer extends Renderer {
     @SuppressWarnings("unchecked")
     private void valueChange( UIInput item, String value, int index ) {
         try {
+            System.out.println( "vc " + index );
             Object v = item.getValue();
             if ( v instanceof List<?> ) {
                 if ( index < ( (List) v ).size() ) {
@@ -107,7 +110,9 @@ public class HtmlInputTextItemsRenderer extends Renderer {
     }
 
     private void updateItems( UIInput item, int index ) {
+        System.out.println( "update " + index );
         List<?> values = (List<?>) item.getValue();
+        System.out.println( "a " + values );
         if ( index < 0 ) {
             // add new item
             values.add( null );
@@ -115,6 +120,7 @@ public class HtmlInputTextItemsRenderer extends Renderer {
             // remove item
             values.remove( index );
         }
+        System.out.println( "b " + values );
         item.setSubmittedValue( values );
     }
 
@@ -122,9 +128,16 @@ public class HtmlInputTextItemsRenderer extends Renderer {
     public void encodeBegin( FacesContext context, UIComponent component )
                             throws IOException {
         ResponseWriter writer = context.getResponseWriter();
-        // hidden div for ajax handling
-        writer.startElement( "div", component );
+        // hidden input field for ajax handling
+        writer.startElement( "tr", component );
+        writer.startElement( "td", component );
+        writer.writeAttribute( "colspan", 2, null );
+        writer.startElement( "input", component );
+        writer.writeAttribute( "type", "hidden", null );
         writer.writeAttribute( "id", component.getClientId(), null );
+        writer.endElement( "input" );
+        writer.endElement( "td" );
+        writer.endElement( "tr" );
     }
 
     @Override
@@ -153,8 +166,6 @@ public class HtmlInputTextItemsRenderer extends Renderer {
             writeTD( context, writer, comp, value, clientId + 0, contextName, true, 0 );
         }
 
-        // close hidden div for ajax handling
-        writer.endElement( "div" );
     }
 
     private void writeTD( FacesContext context, ResponseWriter writer, HtmlInputTextItems component, Object value,

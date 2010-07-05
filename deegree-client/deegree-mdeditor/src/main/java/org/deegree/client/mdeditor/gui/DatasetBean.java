@@ -46,11 +46,11 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.io.DataHandler;
+import org.deegree.client.mdeditor.io.DataIOException;
 import org.deegree.client.mdeditor.model.Dataset;
 import org.deegree.client.mdeditor.model.DatasetInformation;
 import org.deegree.client.mdeditor.model.FormConfiguration;
@@ -99,26 +99,31 @@ public class DatasetBean implements Serializable {
     public List<DatasetInformation> getDatasetInformation()
                             throws ConfigurationException {
         List<DatasetInformation> datasetInformations = new ArrayList<DatasetInformation>();
-        List<Dataset> datasets = DataHandler.getInstance().getDatasets();
+        try {
+            List<Dataset> datasets = DataHandler.getInstance().getDatasets();
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
 
-        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession( false );
-        FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-
-        for ( Dataset dataset : datasets ) {
-            Map<String, Object> values = dataset.getValues();
-            String id = dataset.getId();
-            String title = null;
-            String desc = null;
-            if ( manager.getPathToIdentifier() != null ) {
-                if ( manager.getPathToTitle() != null && values.get( manager.getPathToTitle().toString() ) != null ) {
-                    title = values.get( manager.getPathToTitle().toString() ).toString();
+            for ( Dataset dataset : datasets ) {
+                Map<String, Object> values = dataset.getValues();
+                String id = dataset.getId();
+                String title = null;
+                String desc = null;
+                if ( configuration.getPathToIdentifier() != null ) {
+                    if ( configuration.getPathToTitle() != null
+                         && values.get( configuration.getPathToTitle().toString() ) != null ) {
+                        title = values.get( configuration.getPathToTitle().toString() ).toString();
+                    }
+                    if ( configuration.getPathToDescription() != null
+                         && values.get( configuration.getPathToDescription().toString() ) != null ) {
+                        desc = values.get( configuration.getPathToDescription().toString() ).toString();
+                    }
                 }
-                if ( manager.getPathToDescription() != null
-                     && values.get( manager.getPathToDescription().toString() ) != null ) {
-                    desc = values.get( manager.getPathToDescription().toString() ).toString();
-                }
+                datasetInformations.add( new DatasetInformation( id, title, desc ) );
             }
-            datasetInformations.add( new DatasetInformation( id, title, desc ) );
+
+        } catch ( DataIOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return datasetInformations;
     }
@@ -169,12 +174,8 @@ public class DatasetBean implements Serializable {
         // set selected dataset to null => dataset is a NEW one
         if ( asTemplate ) {
             setSelectedDataset( null );
-
-            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(
-                                                                                                                   false );
-            FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
             formfieldBean.clearFormField( configuration.getPathToIdentifier() );
-
         }
 
         FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.LOAD", id );
@@ -203,7 +204,12 @@ public class DatasetBean implements Serializable {
             return "/page/form/errorPage.xhtml";
         }
 
-        DataHandler.getInstance().deleteDataset( id );
+        try {
+            DataHandler.getInstance().deleteDataset( id );
+        } catch ( ConfigurationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.DELETE_DATASET", id );
         fc.addMessage( "DELETE_DATASET_SUCCESS", msg );
@@ -217,10 +223,8 @@ public class DatasetBean implements Serializable {
         FormFieldBean formfieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "formFieldBean" );
-
-        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
         try {
-            FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
 
             FormFieldPath pathToIdentifier = configuration.getPathToIdentifier();
             Object datasetId = formfieldBean.getFormFields().get( pathToIdentifier.toString() ).getValue();

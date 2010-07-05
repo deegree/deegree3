@@ -7,7 +7,32 @@
 				<ui:composition template="/page/templates/layout.xhtml">
 								<ui:param name="title" value="START SITE" />
 								<ui:define name="content">
-												<h:link id="formLink" value="#{mdLabels['formLink']}" outcome="form/welcomeForm" style="padding:10px;"/>
+												<f:subview id="mdChooseConf">
+
+																<h:link id="formLink" value="#{mdLabels['welcome_start']}" outcome="form/welcomeForm"
+																				style="padding:10px;" rendered="#{!sessionBean.list}" />
+
+																<h:form id="loadConfForm" rendered="#{sessionBean.list}">
+																				<h:outputText value="#{mdLabels['welcome_chooseConf']}" />
+
+																				<h:panelGrid columns="2">
+																								<h:outputLabel value="#{mdLabels['welcome_title']}" />
+																								<h:outputLabel value="#{mdLabels['welcome_description']}" />
+
+																								<h:selectOneListbox id="chooseConfLb" value="#{sessionBean.selectedFormConfiguration}"
+																												required="true" styleClass="chooseConfListBox">
+																												<f:selectItems value="#{sessionBean.formConfigurationDescriptions}" var="desc"
+																																itemLabel="#{desc.title}" itemValue="#{desc.id}" />
+																												<f:ajax render="chooseConfIT" execute="@this" />
+																								</h:selectOneListbox>
+																								<h:inputTextarea id="chooseConfIT" value="#{sessionBean.description}"
+																												styleClass="chooseConfDescribtionTA" disabled="true" />
+																				</h:panelGrid>
+																				<h:message for="chooseConfLb" />
+																				<h:commandButton id="chooseConfBt" value="#{mdLabels['welcome_start_bt']}" action="#{sessionBean.loadConfiguration}" />
+																</h:form>
+												</f:subview>
+
 								</ui:define>
 				</ui:composition>
 </h:body>

@@ -261,3 +261,16 @@
 	height: 250px;
 	margin: 0px 5px;
 }
+
+/***** styles for the list of configurations *****/
+#mdEditor .chooseConfDescribtionTA {
+	width: 200px;
+	height: 250px;
+	margin: 0px 5px;
+}
+
+#mdEditor .chooseConfListBox {
+	width: 200px;
+	height: 250px;
+	margin: 0px 5px;
+}

@@ -45,18 +45,16 @@ import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.io.Utils;
+import org.deegree.client.mdeditor.model.DataGroup;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
-import org.deegree.client.mdeditor.model.DataGroup;
 import org.slf4j.Logger;
 
 /**
@@ -136,9 +134,7 @@ public class FormFieldBean implements Serializable {
      */
     public void forceReloaded()
                             throws ConfigurationException {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
-        FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+        FormConfiguration manager = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
         formGroups = manager.getFormGroups();
         formFields = manager.getFormFields();
     }

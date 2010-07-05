@@ -49,10 +49,9 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
-import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.io.DataIOException;
 import org.deegree.client.mdeditor.mapping.SchemaManager;
 import org.deegree.client.mdeditor.model.FormConfiguration;
@@ -89,11 +88,9 @@ public class ExportBean {
                                                                                                     null,
                                                                                                     "formFieldBean" );
         Map<String, FormField> formFields = formfieldBean.getFormFields();
-        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
 
-        FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-
-        FormFieldPath pathToIdentifier = manager.getPathToIdentifier();
+        FormFieldPath pathToIdentifier = configuration.getPathToIdentifier();
         Object value = formFields.get( pathToIdentifier.toString() ).getValue();
         String id = null;
         if ( value != null ) {
@@ -123,10 +120,9 @@ public class ExportBean {
     }
 
     public List<MappingInformation> getMappings() {
-        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession( false );
         try {
-            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-            return SchemaManager.getMappings( manager.getMappingURLs() );
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+            return SchemaManager.getMappings( configuration.getMappingURLs() );
         } catch ( ConfigurationException e ) {
             LOG.debug( "Could not read mappings", e );
             LOG.error( "Could not read mappings", e.getMessage() );

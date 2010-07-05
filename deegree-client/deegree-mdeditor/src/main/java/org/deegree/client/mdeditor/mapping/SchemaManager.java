@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.client.mdeditor.configuration.Configuration;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.mapping.MappingParser;
 import org.deegree.client.mdeditor.io.DataIOException;
@@ -102,10 +102,11 @@ public class SchemaManager {
      * @param map
      * @return the name of the created file
      * @throws DataIOException
+     * @throws ConfigurationException
      */
     public static String export( String id, String mappingId, Map<String, FormField> formFields,
                                  Map<String, List<DataGroup>> dataGroups )
-                            throws DataIOException {
+                            throws DataIOException, ConfigurationException {
         String fileName = id;
         if ( fileName == null ) {
             fileName = Utils.createId();
@@ -124,7 +125,7 @@ public class SchemaManager {
 
         if ( mapping != null ) {
             try {
-                File f = new File( Configuration.getDownloadDirURL(), fileName );
+                File f = new File( ConfigurationManager.getConfiguration().getExportDir(), fileName );
                 if ( !f.exists() ) {
 
                     f.createNewFile();

@@ -45,7 +45,8 @@ import java.util.Map;
 
 import javax.faces.component.UISelectItem;
 
-import org.deegree.client.mdeditor.configuration.Configuration;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.io.DataIOException;
@@ -86,10 +87,10 @@ public class XMLDataHandler extends DataHandler {
     // private static Map<String, List<DataGroup>> dataGroupCache = new HashMap<String, List<DataGroup>>();
 
     @Override
-    public List<UISelectItem> getSelectItems( String grpId, String referenceLabel ) {
+    public List<UISelectItem> getSelectItems( String grpId, String referenceLabel )
+                            throws ConfigurationException {
         List<UISelectItem> items = new ArrayList<UISelectItem>();
-        String dir = Configuration.getFilesDirURL() + grpId;
-        File f = new File( dir );
+        File f = new File( ConfigurationManager.getConfiguration().getDataDir(), grpId );
         if ( f.exists() && f.isDirectory() ) {
             File[] listFiles = f.listFiles();
             for ( int i = 0; i < listFiles.length; i++ ) {
@@ -128,21 +129,16 @@ public class XMLDataHandler extends DataHandler {
     }
 
     @Override
-    public List<Dataset> getDatasets() {
+    public List<Dataset> getDatasets()
+                            throws ConfigurationException, DataIOException {
         List<Dataset> datasets = new ArrayList<Dataset>();
-        String dir = Configuration.getFilesDirURL();
-        File d = new File( dir );
+        File d = ConfigurationManager.getConfiguration().getDataDir();
         if ( d.exists() && d.isDirectory() ) {
             File[] listFiles = d.listFiles();
             for ( int i = 0; i < listFiles.length; i++ ) {
                 String fileName = listFiles[i].getName();
                 if ( listFiles[i].isFile() && fileName.endsWith( FILE_SUFFIX ) ) {
-                    try {
-                        datasets.add( getDataset( fileName.substring( 0, fileName.indexOf( FILE_SUFFIX ) ) ) );
-                    } catch ( DataIOException e ) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    datasets.add( getDataset( fileName.substring( 0, fileName.indexOf( FILE_SUFFIX ) ) ) );
                 }
             }
         }
@@ -151,7 +147,7 @@ public class XMLDataHandler extends DataHandler {
 
     @Override
     public Dataset getDataset( String id )
-                            throws DataIOException {
+                            throws DataIOException, ConfigurationException {
         if ( datasetCache.containsKey( id ) ) {
             return datasetCache.get( id );
         }
@@ -159,14 +155,15 @@ public class XMLDataHandler extends DataHandler {
         if ( !fileName.endsWith( FILE_SUFFIX ) ) {
             fileName = fileName + FILE_SUFFIX;
         }
-        Dataset dataset = DataReader.readDataset( id, new File( Configuration.getFilesDirURL(), fileName ) );
+        File f = new File( ConfigurationManager.getConfiguration().getDataDir(), fileName );
+        Dataset dataset = DataReader.readDataset( id, f );
         datasetCache.put( id, dataset );
         return dataset;
     }
 
     @Override
     public String writeDataset( String id, List<FormGroup> formGroups, Map<String, List<DataGroup>> dataGroups )
-                            throws DataIOException {
+                            throws DataIOException, ConfigurationException {
         if ( datasetCache.containsKey( id ) ) {
             datasetCache.remove( id );
         }
@@ -174,12 +171,13 @@ public class XMLDataHandler extends DataHandler {
     }
 
     @Override
-    public void deleteDataGroup( String grpId, String id ) {
+    public void deleteDataGroup( String grpId, String id )
+                            throws ConfigurationException {
         String fileName = id;
         if ( !id.endsWith( FILE_SUFFIX ) ) {
             fileName = fileName + FILE_SUFFIX;
         }
-        File f = new File( Configuration.getFilesDirURL() + grpId, fileName );
+        File f = new File( ConfigurationManager.getConfiguration().getDataDir(), grpId + File.separatorChar + fileName );
         if ( f.exists() && f.isFile() ) {
             LOG.debug( "Delete file " + id + " from group " + grpId );
             f.delete();
@@ -190,10 +188,10 @@ public class XMLDataHandler extends DataHandler {
     }
 
     @Override
-    public List<DataGroup> getDataGroups( String grpId ) {
+    public List<DataGroup> getDataGroups( String grpId )
+                            throws ConfigurationException {
         List<DataGroup> dataGroups = new ArrayList<DataGroup>();
-        String dir = Configuration.getFilesDirURL() + grpId;
-        File f = new File( dir );
+        File f = new File( ConfigurationManager.getConfiguration().getDataDir(), grpId );
         if ( f.exists() && f.isDirectory() ) {
             File[] listFiles = f.listFiles();
             for ( int i = 0; i < listFiles.length; i++ ) {
@@ -210,16 +208,16 @@ public class XMLDataHandler extends DataHandler {
             }
         }
         return dataGroups;
-
     }
 
     @Override
-    public DataGroup getDataGroup( String grpId, String id ) {
+    public DataGroup getDataGroup( String grpId, String id )
+                            throws ConfigurationException {
         String fileName = id;
         if ( !id.endsWith( FILE_SUFFIX ) ) {
             fileName = fileName + FILE_SUFFIX;
         }
-        File f = new File( Configuration.getFilesDirURL() + grpId, fileName );
+        File f = new File( ConfigurationManager.getConfiguration().getDataDir(), grpId + File.separatorChar + fileName );
         if ( f.exists() && f.isFile() ) {
             LOG.debug( "Read file " + id + " from group " + grpId );
             try {
@@ -234,17 +232,18 @@ public class XMLDataHandler extends DataHandler {
 
     @Override
     public String writeDataGroup( String id, FormGroup formGroup )
-                            throws DataIOException {
+                            throws DataIOException, ConfigurationException {
         return DataWriter.writeDataGroup( id, formGroup );
     }
 
     @Override
-    public void deleteDataset( String id ) {
+    public void deleteDataset( String id )
+                            throws ConfigurationException {
         String fileName = id;
         if ( !id.endsWith( FILE_SUFFIX ) ) {
             fileName = fileName + FILE_SUFFIX;
         }
-        File f = new File( Configuration.getFilesDirURL(), fileName );
+        File f = new File( ConfigurationManager.getConfiguration().getDataDir(), fileName );
         if ( f.exists() && f.isFile() ) {
             LOG.debug( "Delete dataset with " + id );
             f.delete();

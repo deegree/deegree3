@@ -33,12 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.configuration.codelist;
+package org.deegree.client.mdeditor.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
-import org.deegree.client.mdeditor.model.CodeList;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * TODO add class documentation here
@@ -48,35 +50,13 @@ import org.deegree.client.mdeditor.model.CodeList;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CodeListConfiguration {
+public class ConfigurationServlet extends HttpServlet {
 
-    private List<CodeList> codeLists = new ArrayList<CodeList>();
+    private static final long serialVersionUID = 7976698703269018174L;
 
-    CodeListConfiguration( List<CodeList> codeLists ) {
-        this.codeLists = codeLists;
-    }
+    protected void doGet( HttpServletRequest req, HttpServletResponse resp )
+                            throws ServletException, IOException {
+        req.getRequestURL();
+    };
 
-    /**
-     * @return a list of all codelists
-     */
-    List<CodeList> getCodeLists() {
-        return codeLists;
-    }
-
-    /**
-     * @param id
-     *            the id of the codelist
-     * @return the codelist with the given id
-     */
-    CodeList getCodeList( String id ) {
-        if ( id == null ) {
-            throw new NullPointerException();
-        }
-        for ( CodeList cl : codeLists ) {
-            if ( id.equals( cl.getId() ) ) {
-                return cl;
-            }
-        }
-        return null;
-    }
 }

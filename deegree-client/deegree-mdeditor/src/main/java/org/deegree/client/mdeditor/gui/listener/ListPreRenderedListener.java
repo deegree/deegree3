@@ -37,16 +37,14 @@ package org.deegree.client.mdeditor.gui.listener;
 
 import java.util.List;
 
-
 import javax.faces.component.UISelectItem;
 import javax.faces.component.html.HtmlSelectOneMenu;
-import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.ComponentSystemEventListener;
-import javax.servlet.http.HttpSession;
 
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.model.FormConfiguration;
@@ -72,17 +70,14 @@ public class ListPreRenderedListener implements ComponentSystemEventListener {
         String grpReference = (String) select.getAttributes().get( GuiUtils.GROUPREF_ATT_KEY );
         FormFieldPath path = (FormFieldPath) select.getAttributes().get( GuiUtils.FIELDPATH_ATT_KEY );
 
-        FacesContext fc = FacesContext.getCurrentInstance();
-        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
         try {
             String referenceLabel = null;
-            FormConfiguration formConfiguration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-            FormField formField = formConfiguration.getFormField( path );
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+            FormField formField = configuration.getFormField( path );
             if ( formField instanceof SelectFormField ) {
                 referenceLabel = ( (SelectFormField) formField ).getReferenceText();
             }
-            List<UISelectItem> selectItems = DataHandler.getInstance().getSelectItems( grpReference,
-                                                                                            referenceLabel );
+            List<UISelectItem> selectItems = DataHandler.getInstance().getSelectItems( grpReference, referenceLabel );
 
             select.getChildren().clear();
 
@@ -94,7 +89,7 @@ public class ListPreRenderedListener implements ComponentSystemEventListener {
             select.getChildren().add( noSelection );
             select.getChildren().addAll( selectItems );
 
-        } catch ( Exception e ) {
+        } catch ( ConfigurationException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

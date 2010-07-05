@@ -40,7 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamReader;
@@ -63,9 +62,7 @@ public abstract class Parser {
 
     protected static final String NS = "http://www.deegree.org/igeoportal";
 
-    private List<String> idList = new ArrayList<String>();
-
-    protected String getId( XMLStreamReader xmlStream )
+    protected static String getId( XMLStreamReader xmlStream, List<String> idList )
                             throws ConfigurationException {
         try {
             String id = StAXParsingHelper.getRequiredAttributeValue( xmlStream, "id" );
@@ -81,7 +78,7 @@ public abstract class Parser {
         }
     }
 
-    public static URL resolve( String url, XMLStreamReader in )
+    protected static URL resolve( String url, XMLStreamReader in )
                             throws MalformedURLException {
         String systemId = in.getLocation().getSystemId();
         if ( systemId == null ) {

@@ -47,7 +47,6 @@ import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -109,14 +108,12 @@ public class FormConfigurationParser extends Parser {
 
     private Stack<String> path = new Stack<String>();
 
-    FormConfiguration parseConfiguration( String formConfiguration )
+    public FormConfiguration parseConfiguration( URL url )
                             throws ConfigurationException {
         try {
 
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                             formConfiguration,
-                                                                                             new FileReader(
-                                                                                                             formConfiguration ) );
+            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toExternalForm(),
+                                                                                             url.openStream() );
             if ( !moveReaderToFirstMatch( xmlStream, ROOT ) ) {
                 throw new ConfigurationException( "could not parse form configuration" + xmlStream.getLocation()
                                                   + ": root element does not exist" );
@@ -125,13 +122,13 @@ public class FormConfigurationParser extends Parser {
             LOG.debug( "Found layout type: " + layoutType );
 
             FormConfiguration conf = new FormConfiguration( layoutType );
-
+            List<String> ids = new ArrayList<String>();
             while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( ROOT ) ) ) {
                 QName elementName = xmlStream.getName();
                 if ( DATASET_CONF.equals( elementName ) ) {
                     parseDatasetConfiguration( xmlStream, conf );
                 } else if ( FORM_GROUP.equals( elementName ) ) {
-                    formGroups.add( parseFormGroup( xmlStream ) );
+                    formGroups.add( parseFormGroup( xmlStream, ids ) );
                 } else {
                     nextElement( xmlStream );
                 }
@@ -141,12 +138,12 @@ public class FormConfigurationParser extends Parser {
             return conf;
 
         } catch ( FileNotFoundException e ) {
-            LOG.debug( "could not find form configuration: " + formConfiguration, e );
-            throw new ConfigurationException( "could not find form configuration: " + formConfiguration );
+            LOG.debug( "could not find form configuration: " + url, e );
+            throw new ConfigurationException( "could not find form configuration: " + url );
 
         } catch ( Exception e ) {
-            LOG.debug( "could not parse form configuration: " + formConfiguration, e );
-            throw new ConfigurationException( "could not parse form configuration: " + formConfiguration );
+            LOG.debug( "could not parse form configuration: " + url, e );
+            throw new ConfigurationException( "could not parse form configuration: " + url );
         }
     }
 
@@ -198,9 +195,9 @@ public class FormConfigurationParser extends Parser {
         return mappings;
     }
 
-    private FormGroup parseFormGroup( XMLStreamReader xmlStream )
+    private FormGroup parseFormGroup( XMLStreamReader xmlStream, List<String> ids )
                             throws XMLStreamException, ConfigurationException {
-        String formGroupId = getId( xmlStream );
+        String formGroupId = getId( xmlStream, ids );
         int occurence = getOccurence( xmlStream, formGroupId );
         nextElement( xmlStream );
 
@@ -214,13 +211,13 @@ public class FormConfigurationParser extends Parser {
         while ( !( xmlStream.isEndElement() && FORM_GROUP.equals( xmlStream.getName() ) ) ) {
             QName elementName = xmlStream.getName();
             if ( xmlStream.isStartElement() && FORM_GROUP.equals( elementName ) ) {
-                fg.addFormElement( parseFormGroup( xmlStream ) );
+                fg.addFormElement( parseFormGroup( xmlStream, ids ) );
             } else if ( xmlStream.isStartElement() && INPUT_FORM.equals( elementName ) ) {
-                fg.addFormElement( parseInputFormElement( xmlStream ) );
+                fg.addFormElement( parseInputFormElement( xmlStream, ids ) );
             } else if ( xmlStream.isStartElement() && SELECT_FORM.equals( elementName ) ) {
-                fg.addFormElement( parseSelectFormElement( xmlStream ) );
+                fg.addFormElement( parseSelectFormElement( xmlStream, ids ) );
             } else if ( xmlStream.isStartElement() && REF_FORM.equals( elementName ) ) {
-                fg.addFormElement( parseRefFormElement( xmlStream ) );
+                fg.addFormElement( parseRefFormElement( xmlStream, ids ) );
             } else {
                 nextElement( xmlStream );
             }
@@ -231,9 +228,9 @@ public class FormConfigurationParser extends Parser {
 
     }
 
-    private FormElement parseRefFormElement( XMLStreamReader xmlStream )
+    private FormElement parseRefFormElement( XMLStreamReader xmlStream, List<String> ids )
                             throws ConfigurationException, XMLStreamException {
-        String id = getId( xmlStream );
+        String id = getId( xmlStream, ids );
         boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
         boolean required = getAttributeValueAsBoolean( xmlStream, null, "required", false );
         nextElement( xmlStream );
@@ -248,9 +245,9 @@ public class FormConfigurationParser extends Parser {
         return re;
     }
 
-    private SelectFormField parseSelectFormElement( XMLStreamReader xmlStream )
+    private SelectFormField parseSelectFormElement( XMLStreamReader xmlStream, List<String> ids )
                             throws XMLStreamException, ConfigurationException {
-        String id = getId( xmlStream );
+        String id = getId( xmlStream, ids );
         boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
         boolean required = getAttributeValueAsBoolean( xmlStream, null, "required", false );
         nextElement( xmlStream );
@@ -306,9 +303,9 @@ public class FormConfigurationParser extends Parser {
         return ffPath;
     }
 
-    private InputFormField parseInputFormElement( XMLStreamReader xmlStream )
+    private InputFormField parseInputFormElement( XMLStreamReader xmlStream, List<String> ids )
                             throws XMLStreamException, ConfigurationException {
-        String id = getId( xmlStream );
+        String id = getId( xmlStream, ids );
         boolean visible = getAttributeValueAsBoolean( xmlStream, null, "visible", true );
         boolean required = getAttributeValueAsBoolean( xmlStream, null, "required", false );
         int occurence = getOccurence( xmlStream, id );
@@ -330,10 +327,8 @@ public class FormConfigurationParser extends Parser {
             validation.setLength( getElementTextAsInteger( xmlStream, new QName( NS, "length" ), Integer.MIN_VALUE,
                                                            true ) );
             validation.setTimestampPattern( getText( xmlStream, new QName( NS, "timestampPattern" ), null, true ) );
-            validation.setMinValue( getElementTextAsDouble( xmlStream, new QName( NS, "minValue" ), Double.NaN,
-                                                            true ) );
-            validation.setMaxValue( getElementTextAsDouble( xmlStream, new QName( NS, "maxValue" ), Double.NaN,
-                                                            true ) );
+            validation.setMinValue( getElementTextAsDouble( xmlStream, new QName( NS, "minValue" ), Double.NaN, true ) );
+            validation.setMaxValue( getElementTextAsDouble( xmlStream, new QName( NS, "maxValue" ), Double.NaN, true ) );
         }
         InputFormField ff = new InputFormField( getPath( id ), id, label, visible, required, help, inputType,
                                                 occurence, defaultValue, validation );

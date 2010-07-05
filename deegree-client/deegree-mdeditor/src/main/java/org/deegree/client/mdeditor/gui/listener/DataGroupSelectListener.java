@@ -46,6 +46,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.gui.FormFieldBean;
 import org.deegree.client.mdeditor.gui.DataGroupBean;
 import org.deegree.client.mdeditor.gui.GuiUtils;
@@ -89,7 +90,12 @@ public class DataGroupSelectListener implements AjaxBehaviorListener {
                                                                                                     "formFieldBean" );
         DataGroup dataGroup = null;
         if ( isReferencedGrp ) {
-            dataGroup = DataHandler.getInstance().getDataGroup( grpId, id );
+            try {
+                dataGroup = DataHandler.getInstance().getDataGroup( grpId, id );
+            } catch ( ConfigurationException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         } else {
             dataGroup = formFieldBean.getDataGroup( grpId, id );
         }

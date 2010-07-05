@@ -35,7 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui;
 
-import static org.deegree.client.mdeditor.gui.GuiUtils.*;
+import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
+import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.FIELDPATH_ATT_KEY;
+import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
+import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPREF_ATT_KEY;
+import static org.deegree.client.mdeditor.gui.GuiUtils.IS_REFERENCED_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.getResourceText;
+import static org.deegree.client.mdeditor.gui.GuiUtils.getUniqueId;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
@@ -72,11 +79,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.PreRenderComponentEvent;
-import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.codelist.CodeListConfigurationFactory;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
 import org.deegree.client.mdeditor.gui.components.HtmlInputManyText;
 import org.deegree.client.mdeditor.gui.components.HtmlInputTextItems;
@@ -137,9 +142,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
             if ( forms.containsKey( grpId ) ) {
                 form.getChildren().add( forms.get( grpId ) );
             } else {
-                FacesContext fc = FacesContext.getCurrentInstance();
-                HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
-                configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+                configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
                 FormGroup fg = configuration.getFormGroup( grpId );
                 grpId = fg.getId();
                 if ( fg != null ) {
@@ -472,15 +475,16 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
     }
 
     private void addCodeListItems( UIInput select, String codeListRef ) {
-        CodeList codeList = null;
         try {
-            codeList = CodeListConfigurationFactory.getCodeList( codeListRef );
-            for ( String value : codeList.getCodes().keySet() ) {
-                UISelectItem si = new UISelectItem();
-                si.setId( getUniqueId() );
-                si.setItemValue( value );
-                si.setItemLabel( codeList.getCodes().get( value ) );
-                select.getChildren().add( si );
+            CodeList codeList = ConfigurationManager.getConfiguration().getCodeList( codeListRef );
+            if ( codeList != null ) {
+                for ( String value : codeList.getCodes().keySet() ) {
+                    UISelectItem si = new UISelectItem();
+                    si.setId( getUniqueId() );
+                    si.setItemValue( value );
+                    si.setItemLabel( codeList.getCodes().get( value ) );
+                    select.getChildren().add( si );
+                }
             }
         } catch ( ConfigurationException e ) {
             LOG.error( e.getMessage() );

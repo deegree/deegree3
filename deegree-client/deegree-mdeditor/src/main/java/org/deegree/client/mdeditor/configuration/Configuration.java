@@ -36,6 +36,17 @@
 package org.deegree.client.mdeditor.configuration;
 
 import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.deegree.client.mdeditor.configuration.codelist.CodeListParser;
+import org.deegree.client.mdeditor.configuration.form.FormConfigurationParser;
+import org.deegree.client.mdeditor.model.CodeList;
+import org.deegree.client.mdeditor.model.FormConfiguration;
+import org.deegree.client.mdeditor.model.FormConfigurationDescription;
 
 /**
  * TODO add class documentation here
@@ -47,47 +58,157 @@ import java.io.File;
  */
 public class Configuration {
 
-    // TODO!!!
-    private static String formConfURL = "/home/lyn/workspace/deegree-mdeditor/resources/exampleConfiguration.xml";
+    private URL dataDirUrl;
 
-    private static String codeListConfURL = "/home/lyn/workspace/deegree-mdeditor/resources/exampleCodeListConfiguration.xml";
+    private URL exportDirUrl;
 
-    private static String filesDirURL = "/home/lyn/workspace/deegree-mdeditor/tmp/";
+    private List<FormConfigurationDescription> formConfigurationDescriptions;
 
-    private static String downloadDirURL = "/home/lyn/workspace/deegree-mdeditor/src/main/webapp/download/";
+    private Map<String, FormConfiguration> globalConfigurations = new HashMap<String, FormConfiguration>();
 
-    public static void setFormConfURL( String formConfURL ) {
-        Configuration.formConfURL = formConfURL;
+    private List<FormConfigurationDescription> globalConfigurationDescriptions;
+
+    private Map<String, FormConfiguration> formConfigurations = new HashMap<String, FormConfiguration>();
+
+    private List<URL> codeListUrls;
+
+    private List<CodeList> codeLists = new ArrayList<CodeList>();
+
+    private boolean codeListParsed = false;
+
+    private String selectedConfiguration;
+
+    /**
+     * @param dataDirUrl
+     * @param exportDirUrl
+     * @param formConfigurations
+     * @param globalConfigurations
+     * @param codeLists
+     */
+    public Configuration( URL dataDirUrl, URL exportDirUrl,
+                          List<FormConfigurationDescription> formConfigurationDescriptions,
+                          List<FormConfigurationDescription> globalConfigurationDescriptions, List<URL> codeListUrls ) {
+        this.dataDirUrl = dataDirUrl;
+        this.exportDirUrl = exportDirUrl;
+        this.formConfigurationDescriptions = formConfigurationDescriptions;
+        this.globalConfigurationDescriptions = globalConfigurationDescriptions;
+        this.codeListUrls = codeListUrls;
     }
 
-    public static String getFormConfURL() {
-        return formConfURL;
+    public URL getDataDirURL() {
+        return dataDirUrl;
     }
 
-    public static void setFilesDirURL( String filesDirURL ) {
-        Configuration.filesDirURL = filesDirURL;
+    public URL getExportDirURL() {
+        return exportDirUrl;
     }
 
-    public static String getFilesDirURL() {
-        if ( !filesDirURL.endsWith( File.separator ) ) {
-            return filesDirURL + File.separator;
+    public File getDataDir() {
+        return new File( dataDirUrl.getPath() );
+    }
+
+    public File getExportDir() {
+        return new File( exportDirUrl.getPath() );
+    }
+
+    public List<FormConfigurationDescription> getFormConfigurations() {
+        return formConfigurationDescriptions;
+    }
+
+    public List<FormConfigurationDescription> getGlobalConfigurations() {
+        return globalConfigurationDescriptions;
+    }
+
+    public CodeList getCodeList( String id )
+                            throws ConfigurationException {
+        parseCodeLists();
+        System.out.println( id );
+        for ( CodeList cl : codeLists ) {
+            System.out.println( cl.getId() );
+            if ( cl.getId().equals( id ) ) {
+                return cl;
+            }
         }
-        return filesDirURL;
+        return null;
     }
 
-    public static String getDownloadDirURL() {
-        if ( !downloadDirURL.endsWith( File.separator ) ) {
-            return downloadDirURL + File.separator;
+    public List<CodeList> getCodeLists()
+                            throws ConfigurationException {
+        parseCodeLists();
+        return codeLists;
+    }
+
+    private void parseCodeLists()
+                            throws ConfigurationException {
+        if ( !codeListParsed ) {
+            for ( URL url : codeListUrls ) {
+                codeLists.addAll( CodeListParser.parseConfiguration( url ) );
+            }
+            codeListParsed = true;
         }
-        return downloadDirURL;
     }
 
-    public static String getCodeListURL() {
-        return codeListConfURL;
+    /**
+     * @return the form configuration wich is currently selected
+     * @throws ConfigurationException
+     */
+    public FormConfiguration getSelectedFormConfiguration()
+                            throws ConfigurationException {
+        return getFormConfiguration( selectedConfiguration );
     }
 
-    public static void setCodeListURL( String codeListConfURL ) {
-        Configuration.codeListConfURL = codeListConfURL;
+    /**
+     * @param id
+     *            identifier of the configuration
+     * @return the form configuration with the given key or null, if the configuration does nor contain a form
+     *         configuration with the given id
+     * @throws ConfigurationException
+     */
+    public FormConfiguration getFormConfiguration( String id )
+                            throws ConfigurationException {
+        if ( !formConfigurations.containsKey( id ) ) {
+            for ( FormConfigurationDescription conf : formConfigurationDescriptions ) {
+                if ( conf.getId().equals( id ) ) {
+                    FormConfigurationParser parser = new FormConfigurationParser();
+                    formConfigurations.put( id, parser.parseConfiguration( conf.getConfUrl() ) );
+                }
+            }
+        }
+        return formConfigurations.get( id );
+    }
+
+    /**
+     * @param id
+     *            identifier of the configuration
+     * @return the global configuration with the given key or null, if the configuration does nor contain a global
+     *         configuration with the given id
+     * @throws ConfigurationException
+     */
+    public FormConfiguration getGlobalConfiguration( String id )
+                            throws ConfigurationException {
+        if ( !globalConfigurations.containsKey( id ) ) {
+            FormConfigurationParser parser = new FormConfigurationParser();
+            for ( FormConfigurationDescription conf : globalConfigurationDescriptions ) {
+                FormConfiguration configuration = parser.parseConfiguration( conf.getConfUrl() );
+                globalConfigurations.put( id, configuration );
+            }
+        }
+        return globalConfigurations.get( id );
+    }
+
+    /**
+     * @param id
+     *            identifier of the configuration to reload
+     * @return reloads the form configuration with the given key
+     * @throws ConfigurationException
+     */
+    public void reloadFormConfigurations()
+                            throws ConfigurationException {
+        formConfigurations.clear();
+    }
+
+    public void setSelectedConfiguration( String id ) {
+        this.selectedConfiguration = id;
     }
 
 }

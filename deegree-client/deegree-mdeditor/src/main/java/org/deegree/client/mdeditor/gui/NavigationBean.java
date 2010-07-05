@@ -41,10 +41,9 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 
 /**
  * Handles navigation not directly connected with the data.
@@ -62,11 +61,10 @@ public class NavigationBean implements Serializable {
 
     public Object reloadForm() {
         FacesContext fc = FacesContext.getCurrentInstance();
-        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
-        try {
-            FormConfigurationFactory.reloadFormConfiguration( session.getId() );
 
-            fc.getELContext();
+        try {
+            ConfigurationManager.getConfiguration().reloadFormConfigurations();
+
             FormCreatorBean formCreator = (FormCreatorBean) fc.getApplication().getELResolver().getValue(
                                                                                                           fc.getELContext(),
                                                                                                           null,

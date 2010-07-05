@@ -33,14 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.configuration.codelist;
+package org.deegree.client.mdeditor.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.deegree.client.mdeditor.configuration.Configuration;
-import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.model.CodeList;
+import java.net.URL;
 
 /**
  * TODO add class documentation here
@@ -50,38 +45,42 @@ import org.deegree.client.mdeditor.model.CodeList;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CodeListConfigurationFactory {
+public class FormConfigurationDescription {
 
-    private static List<CodeListConfiguration> codeListConfiguration = new ArrayList<CodeListConfiguration>();
+    private String description;
 
-    static {
-        CodeListParser parser = new CodeListParser();
-        try {
-            // TODO
-            CodeListConfiguration parseConfiguration = parser.parseConfiguration( Configuration.getCodeListURL() );
-            codeListConfiguration.add( parseConfiguration );
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    private URL confUrl;
+
+    private String title;
+
+    private String id;
+
+    /**
+     * @param id
+     * @param confUrl
+     * @param title
+     * @param description
+     */
+    public FormConfigurationDescription( String id, URL confUrl, String title, String description ) {
+        this.id = id;
+        this.confUrl = confUrl;
+        this.title = title;
+        this.description = description;
     }
 
-    public static CodeList getCodeList( String id )
-                            throws ConfigurationException {
-        for ( CodeListConfiguration clc : codeListConfiguration ) {
-            if ( clc.getCodeList( id ) != null ) {
-                return clc.getCodeList( id );
-            }
-        }
-        throw new ConfigurationException( "Could not found Codelist with id " + id );
+    public String getDescription() {
+        return description;
     }
 
-    public static List<CodeList> getCodeLists() {
-        List<CodeList> codeLists = new ArrayList<CodeList>();
-        for ( CodeListConfiguration clc : codeListConfiguration ) {
-            codeLists.addAll( clc.getCodeLists() );
-        }
-        return codeLists;
+    public URL getConfUrl() {
+        return confUrl;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

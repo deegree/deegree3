@@ -47,10 +47,9 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIParameter;
 import javax.faces.component.html.HtmlOutcomeTargetLink;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.form.FormConfigurationFactory;
+import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.gui.components.ListGroup;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormGroup;
@@ -89,12 +88,9 @@ public class MenuCreatorBean implements Serializable {
         this.listGroup = menuForm;
         if ( listGroup != null && !isRendered ) {
 
-            FacesContext fc = FacesContext.getCurrentInstance();
-            HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
 
-            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-
-            LAYOUT_TYPE layoutType = manager.getLayoutType();
+            LAYOUT_TYPE layoutType = configuration.getLayoutType();
             LOG.debug( "create menu for layout type: " + layoutType );
 
             String menuId = null;
@@ -112,7 +108,7 @@ public class MenuCreatorBean implements Serializable {
                 listGroup.setId( GuiUtils.getUniqueId() );
                 listGroup.getAttributes().put( "listId", listId );
                 listGroup.getAttributes().put( "menuId", menuId );
-                for ( FormGroup formGroup : manager.getFormGroups() ) {
+                for ( FormGroup formGroup : configuration.getFormGroups() ) {
                     HtmlOutcomeTargetLink link = new HtmlOutcomeTargetLink();
                     link.setId( GuiUtils.getUniqueId() );
                     link.setValue( formGroup.getLabel() );
@@ -122,13 +118,14 @@ public class MenuCreatorBean implements Serializable {
                     param.setName( "grpId" );
                     param.setValue( formGroup.getId() );
                     link.getChildren().add( param );
-                    
+
                     UIParameter paramV = new UIParameter();
                     paramV.setId( GuiUtils.getUniqueId() );
                     paramV.setName( "visibility" );
                     paramV.setValue( true );
                     link.getChildren().add( paramV );
 
+                    FacesContext fc = FacesContext.getCurrentInstance();
                     String el = "#{formCreatorBean.grpId == '" + formGroup.getId()
                                 + "' ? 'menuItemActive' : 'menuItemInactive'}";
                     ValueExpression ve = fc.getApplication().getExpressionFactory().createValueExpression(

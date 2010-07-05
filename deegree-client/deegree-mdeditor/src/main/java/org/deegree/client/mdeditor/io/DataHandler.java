@@ -40,6 +40,7 @@ import java.util.Map;
 
 import javax.faces.component.UISelectItem;
 
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.io.xml.XMLDataHandler;
 import org.deegree.client.mdeditor.model.Dataset;
 import org.deegree.client.mdeditor.model.FormGroup;
@@ -73,20 +74,22 @@ public abstract class DataHandler {
      *            the pattern describing the label
      * @return a list of all available data groups with the given id
      */
-    public abstract List<UISelectItem> getSelectItems( String grpId, String referenceLabel );
+    public abstract List<UISelectItem> getSelectItems( String grpId, String referenceLabel )
+                            throws ConfigurationException;
 
     /**
      * @return a list of all datasets
      */
-    public abstract List<Dataset> getDatasets();
+    public abstract List<Dataset> getDatasets()
+                            throws ConfigurationException, DataIOException;
 
-    
     /**
      * @param grpId
      *            the id of the group
      * @return a list of all data groups of the form group with the given id
      */
-    public abstract List<DataGroup> getDataGroups( String grpId );
+    public abstract List<DataGroup> getDataGroups( String grpId )
+                            throws ConfigurationException;
 
     /**
      * deletes the data group with the given id assigned to the form group with the given id
@@ -96,7 +99,8 @@ public abstract class DataHandler {
      * @param id
      *            the id of the data group
      */
-    public abstract void deleteDataGroup( String grpId, String id );
+    public abstract void deleteDataGroup( String grpId, String id )
+                            throws ConfigurationException;
 
     /**
      * @param grpId
@@ -106,7 +110,8 @@ public abstract class DataHandler {
      * @return the data group with the given id assigned to the form group with the given id; null, if the data group
      *         does not exist or could not be read
      */
-    public abstract DataGroup getDataGroup( String grpId, String id );
+    public abstract DataGroup getDataGroup( String grpId, String id )
+                            throws ConfigurationException;
 
     /**
      * 
@@ -121,7 +126,7 @@ public abstract class DataHandler {
      *             if the data group could not be written
      */
     public abstract String writeDataGroup( String id, FormGroup formGroup )
-                            throws DataIOException;
+                            throws DataIOException, ConfigurationException;
 
     /**
      * Writes a dataset. If a dataset with the given id exist, the existing dataset will be overwritten.
@@ -137,7 +142,7 @@ public abstract class DataHandler {
      *             if the dataset could not be written
      */
     public abstract String writeDataset( String id, List<FormGroup> formGroups, Map<String, List<DataGroup>> dataGroups )
-                            throws DataIOException;
+                            throws DataIOException, ConfigurationException;
 
     /**
      * 
@@ -149,7 +154,7 @@ public abstract class DataHandler {
      * @throws DataIOException
      */
     public abstract Dataset getDataset( String id )
-                            throws DataIOException;
+                            throws DataIOException, ConfigurationException;
 
     /**
      * deletes the id with the given dataset
@@ -157,7 +162,8 @@ public abstract class DataHandler {
      * @param id
      *            the id of the dataset to delete
      */
-    public abstract void deleteDataset( String id );
+    public abstract void deleteDataset( String id )
+                            throws ConfigurationException;
 
     /**
      * @return an instance of the used FormGroupHandler
