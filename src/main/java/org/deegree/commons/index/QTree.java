@@ -212,9 +212,6 @@ public class QTree<T> extends SpatialIndex<T> {
 
     }
 
-    /**
-     * @return
-     */
     private String getEnvString() {
         StringBuilder sb = new StringBuilder();
         for ( int i = 0; i < envelope.length; ++i ) {
@@ -437,9 +434,6 @@ public class QTree<T> extends SpatialIndex<T> {
 
     }
 
-    /**
-     * @return
-     */
     private final int size() {
         return ( leafObjects == null ) ? 0 : objectsInLeaf;// ( leafObjects.size() - duplicateEnvelopes( leafObjects )
         // );
@@ -447,7 +441,6 @@ public class QTree<T> extends SpatialIndex<T> {
 
     /**
      * @param object
-     * @param position
      */
     private void addObject( Entry<T> object ) {
         if ( objectCoversEnvelope( object.entryEnv ) ) {
@@ -474,10 +467,6 @@ public class QTree<T> extends SpatialIndex<T> {
 
     }
 
-    /**
-     * @param object
-     * @return
-     */
     private final boolean hasDuplicateLocation( final float[] objectEnvelope ) {
         for ( Entry<T> obj : leafObjects ) {
             float[] second = obj.entryEnv;
@@ -506,7 +495,6 @@ public class QTree<T> extends SpatialIndex<T> {
      * 
      * @param first
      * @param second
-     * @return
      */
     private final static double calcDist( float[] first, float[] second, int index, int dim ) {
         double d = 0;
@@ -517,7 +505,6 @@ public class QTree<T> extends SpatialIndex<T> {
     }
 
     /**
-     * @param object
      * @return true if the object covers this entire quad node
      */
     private final boolean objectCoversEnvelope( float[] entryEnv ) {
@@ -525,10 +512,6 @@ public class QTree<T> extends SpatialIndex<T> {
                && ( entryEnv[maxOffset] >= this.envelope[maxOffset] && entryEnv[maxOffset + 1] >= this.envelope[maxOffset + 1] );
     }
 
-    /**
-     * @param object
-     * @param position
-     */
     @SuppressWarnings("unchecked")
     private final void split() {
         children = new QTree[4];
@@ -655,9 +638,6 @@ public class QTree<T> extends SpatialIndex<T> {
         return new int[] { min, max };
     }
 
-    /**
-     * @return
-     */
     private final int getIndex( float[] position, int start ) {
         return ( ( ( position[start] < getHalfWidth() ) ? 0 : 1 ) + ( ( position[start + 1] < getHalfHeight() ) ? 0 : 2 ) );
     }
@@ -787,6 +767,35 @@ public class QTree<T> extends SpatialIndex<T> {
                 return testEnv( that.entryEnv ) && this.entryValue.equals( that.entryValue );
             }
             return false;
+        }
+
+        /**
+         * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+         * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+         * <ul>
+         * <li>boolean -- code = (f ? 0 : 1)</li>
+         * <li>byte, char, short, int -- code = (int)f</li>
+         * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+         * <li>float -- code = Float.floatToIntBits(f);</li>
+         * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+         * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+         * <li>Array -- Apply above rules to each element</li>
+         * </ul>
+         * <p>
+         * Combining the hash code(s) computed above: result = 37 * result + code;
+         * </p>
+         * 
+         * @return (int) ( result >>> 32 ) ^ (int) result;
+         * 
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            // the 2nd millionth prime, :-)
+            long result = 32452843;
+            result = result * 37 + Arrays.hashCode( entryEnv );
+            result = result * 37 + entryValue.hashCode();
+            return (int) ( result >>> 32 ) ^ (int) result;
         }
 
         private boolean testEnv( float[] otherEnv ) {
