@@ -15,8 +15,7 @@
   <modules>
     <module>deegree-wfs-cite110</module>
     <module>deegree-wfs-cite100</module>
-    <module>deegree-wms-cite111</module>
-    <module>deegree-wms-cite130</module>
+    <module>deegree-wms-cite</module>
     <module>deegree-wms-similarity-tests</module>
     <module>deegree-wcs-cite100</module>
     <!-- <module>deegree-csw-bkg</module> -->

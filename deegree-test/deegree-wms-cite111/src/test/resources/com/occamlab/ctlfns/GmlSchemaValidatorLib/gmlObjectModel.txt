@@ -1,5 +1,0 @@
-/**
- * Galdos Systems Inc.
- * Copyright (c) 2003
- * 
- */

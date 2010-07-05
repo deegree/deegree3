@@ -66,6 +66,48 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <repositoryLayout>flat</repositoryLayout>
+          <programs>
+            <program>
+              <mainClass>org.deegree.test.services.wms.SimilarityUpdater</mainClass>
+              <name>similarity-updater</name>
+            </program>
+          </programs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <chmod perm="+x">
+                  <fileset dir="target/appassembler/bin">
+                    <include name="similarity-updater" />
+                  </fileset>
+                </chmod>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.5</version>
