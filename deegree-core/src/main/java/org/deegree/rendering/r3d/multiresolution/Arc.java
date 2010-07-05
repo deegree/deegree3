@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution;
 
 import java.nio.ByteBuffer;
@@ -42,10 +42,10 @@ import org.deegree.rendering.r3d.ViewFrustum;
 
 /**
  * A directed arc of a {@link MultiresolutionMesh}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public class Arc {
@@ -54,19 +54,19 @@ public class Arc {
     private MultiresolutionMesh mt;
 
     /** Size of binary representation (in bytes) */
-    public static int SIZE = 24;
+    public final static int SIZE = 24;
 
-    private static int SOURCE_NODE_OFFSET = 0;
+    private final static int SOURCE_NODE_OFFSET = 0;
 
-    private static int DESTINATION_NODE_OFFSET = 4;
+    private final static int DESTINATION_NODE_OFFSET = 4;
 
-    private static int LOWEST_PATCH_OFFSET = 8;
+    private final static int LOWEST_PATCH_OFFSET = 8;
 
-    private static int HIGHEST_PATCH_OFFSET = 12;
+    private final static int HIGHEST_PATCH_OFFSET = 12;
 
-    private static int NEXT_ARC_SAME_DESTINATION_OFFSET = 16;
+    private final static int NEXT_ARC_SAME_DESTINATION_OFFSET = 16;
 
-    private static int GEOMETRIC_ERROR_OFFSET = 20;
+    private final static int GEOMETRIC_ERROR_OFFSET = 20;
 
     /** Id of the arc. */
     public final int id;
@@ -93,7 +93,7 @@ public class Arc {
 
     /**
      * Creates a new {@link Arc} instance.
-     *
+     * 
      * @param mt
      *            {@link MultiresolutionMesh} instance that the arc is part of
      * @param id
@@ -116,7 +116,7 @@ public class Arc {
 
     /**
      * Stores the information of an {@link Arc} in the given <code>ByteBuffer</code>.
-     *
+     * 
      * @param target
      *            buffer where the binary representation is written to
      * @param sourceNode
@@ -144,7 +144,7 @@ public class Arc {
 
     /**
      * Returns the fragments associated with this arc.
-     *
+     * 
      * @return the fragments associated
      */
     public MeshFragment[] getFragments() {
@@ -159,7 +159,7 @@ public class Arc {
 
     /**
      * Determines if this arc interferes with the given {@link Geometry}.
-     *
+     * 
      * @param roi
      *            geometry that is tested for interference
      * @param zScale
@@ -175,7 +175,7 @@ public class Arc {
 
     /**
      * Returns the bounding box of the region that this arc represents.
-     *
+     * 
      * @return the bounding box
      */
     public float[][] getBBox() {
@@ -194,7 +194,7 @@ public class Arc {
 
     /**
      * Enlarges the given bounding box so that it includes the other bounding box.
-     *
+     * 
      * @param bbox
      * @param bboxToInclude
      */

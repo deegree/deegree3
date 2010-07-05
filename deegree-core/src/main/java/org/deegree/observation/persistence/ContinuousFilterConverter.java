@@ -126,7 +126,7 @@ public class ContinuousFilterConverter extends GenericFilterConverter {
 
     private String rowIDForDate( Date date ) {
         long delta = date.getTime() - begin.getTime();
-        return Integer.toString( (int) Math.ceil( delta / interval ) + firstID );
+        return Integer.toString( (int) Math.ceil( (double) delta / (double) interval ) + firstID );
     }
 
     /**

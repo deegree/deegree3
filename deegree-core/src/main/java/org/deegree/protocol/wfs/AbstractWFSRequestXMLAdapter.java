@@ -39,16 +39,16 @@ import org.deegree.commons.xml.XMLAdapter;
 
 /**
  * Provides basic functionality for parsing WFS XML requests.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public abstract class AbstractWFSRequestXMLAdapter extends XMLAdapter {
 
     /** Namespace context with predefined bindings "wfs" and "wfs200" */
-    protected static NamespaceContext nsContext;
+    protected static final NamespaceContext nsContext;
 
     /** Namespace binding for WFS 1.0.0 and WFS 1.1.0 constructs */
     protected final static String WFS_PREFIX = "wfs";

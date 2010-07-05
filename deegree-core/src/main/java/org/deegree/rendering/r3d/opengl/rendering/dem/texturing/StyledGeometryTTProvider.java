@@ -183,9 +183,10 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
         }
         this.rootFT = posFT;
 
-        if ( offsetVector == null || offsetVector.length < 2 ) {
-            offsetVector = new double[] { 0, 0, 0 };
-        }
+        // TODO: offset vector is never used. bug?
+        // if ( offsetVector == null || offsetVector.length < 2 ) {
+        // offsetVector = new double[] { 0, 0, 0 };
+        // }
         this.wpvsCRS = wpvsCRS;
         this.envelope = this.featureStore.getEnvelope( this.rootFT );
         this.rasterCache = RasterCache.getInstance( cacheDir, true );
@@ -275,29 +276,30 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
         if ( imageBuffer == null ) {
             LOG.debug( "No cache file found, creating new texture." );
 
+            // TODO: as: the values calculated here were never used...
             // rb: create an image which is even (needed for opengl).
-            if ( imageWidth % 2 != 0 ) {
-                double dW = ( resolution + ( resolution * ( imageWidth - iWidth ) ) ) * 0.5;
+            // if ( imageWidth % 2 != 0 ) {
+            // double dW = ( resolution + ( resolution * ( imageWidth - iWidth ) ) ) * 0.5;
 
-                // System.out.println( "GEOM: Texturewidth " + imageWidth + " is not even with resolution: " +
-                // resolution
-                // + ", updating world width : " + worldWidth + " to " + ( worldWidth + ( 2 * dW ) )
-                // + " new width: " + Math.round( ( worldWidth + ( 2 * dW ) ) / resolution ) );
+            // System.out.println( "GEOM: Texturewidth " + imageWidth + " is not even with resolution: " +
+            // resolution
+            // + ", updating world width : " + worldWidth + " to " + ( worldWidth + ( 2 * dW ) )
+            // + " new width: " + Math.round( ( worldWidth + ( 2 * dW ) ) / resolution ) );
 
-                // imageWidth++;
-                // minX -= dW;
-                // maxX += dW;
-            }
-            if ( imageHeight % 2 != 0 ) {
-                double dH = ( resolution + ( resolution * ( imageHeight - iHeight ) ) ) * 0.5;
-                // System.out.println( "GEOM: TextureHeight " + imageHeight + " is not even with resolution: " +
-                // resolution
-                // + ", updating world height: " + worldHeight + " to " + ( worldHeight + ( 2 * dH ) )
-                // + " new height: " + Math.round( ( worldHeight + ( 2 * dH ) ) / resolution ) );
-                // imageHeight++;
-                // minY -= dH;
-                // maxY += dH;
-            }
+            // imageWidth++;
+            // minX -= dW;
+            // maxX += dW;
+            // }
+            // if ( imageHeight % 2 != 0 ) {
+            // double dH = ( resolution + ( resolution * ( imageHeight - iHeight ) ) ) * 0.5;
+            // System.out.println( "GEOM: TextureHeight " + imageHeight + " is not even with resolution: " +
+            // resolution
+            // + ", updating world height: " + worldHeight + " to " + ( worldHeight + ( 2 * dH ) )
+            // + " new height: " + Math.round( ( worldHeight + ( 2 * dH ) ) / resolution ) );
+            // imageHeight++;
+            // minY -= dH;
+            // maxY += dH;
+            // }
 
             Query q = new Query( this.rootFT, tileEnv, null, -1, -1, -1 );
             FeatureResultSet frs = null;

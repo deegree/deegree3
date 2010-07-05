@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,31 +32,31 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution;
 
 import java.nio.ByteBuffer;
 
 /**
  * A node of a {@link MultiresolutionMesh}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public class Node {
 
     /** Size of binary representation (in bytes) */
-    public static int SIZE = 36;
+    public final static int SIZE = 36;
 
-    private static int LOWEST_OUTGOING_OFFSET = 0;
+    private final static int LOWEST_OUTGOING_OFFSET = 0;
 
-    private static int HIGHEST_OUTGOING_OFFSET = 4;
+    private final static int HIGHEST_OUTGOING_OFFSET = 4;
 
-    private static int LOWEST_INCOMING_OFFSET = 8;
+    private final static int LOWEST_INCOMING_OFFSET = 8;
 
-    private static int BBOX_OFFSET = 12;
+    private final static int BBOX_OFFSET = 12;
 
     /** Id of the node. */
     public final int id;
@@ -75,53 +75,53 @@ public class Node {
 
     /**
      * Creates a new {@link Node} instance.
-     *
+     * 
      * @param mt
-     *                {@link MultiresolutionMesh} instance that the node is part of
+     *            {@link MultiresolutionMesh} instance that the node is part of
      * @param id
-     *                id of the node
+     *            id of the node
      * @param buffer
-     *                buffer that contains the binary representation of the node
+     *            buffer that contains the binary representation of the node
      * @param baseOffset
-     *                offset in the buffer
+     *            offset in the buffer
      */
-    Node(MultiresolutionMesh mt, int id, ByteBuffer buffer, int baseOffset) {
+    Node( MultiresolutionMesh mt, int id, ByteBuffer buffer, int baseOffset ) {
         this.id = id;
-        lowestOutgoingArc = buffer.getInt(baseOffset + LOWEST_OUTGOING_OFFSET);
-        highestOutgoingArc = buffer.getInt(baseOffset + HIGHEST_OUTGOING_OFFSET);
-        lowestIncomingArc = buffer.getInt(baseOffset + LOWEST_INCOMING_OFFSET);
-        bbox[0][0] = buffer.getFloat(baseOffset + BBOX_OFFSET + 0);
-        bbox[0][1] = buffer.getFloat(baseOffset + BBOX_OFFSET + 4);
-        bbox[0][2] = buffer.getFloat(baseOffset + BBOX_OFFSET + 8);
-        bbox[1][0] = buffer.getFloat(baseOffset + BBOX_OFFSET + 12);
-        bbox[1][1] = buffer.getFloat(baseOffset + BBOX_OFFSET + 16);
-        bbox[1][2] = buffer.getFloat(baseOffset + BBOX_OFFSET + 20);
+        lowestOutgoingArc = buffer.getInt( baseOffset + LOWEST_OUTGOING_OFFSET );
+        highestOutgoingArc = buffer.getInt( baseOffset + HIGHEST_OUTGOING_OFFSET );
+        lowestIncomingArc = buffer.getInt( baseOffset + LOWEST_INCOMING_OFFSET );
+        bbox[0][0] = buffer.getFloat( baseOffset + BBOX_OFFSET + 0 );
+        bbox[0][1] = buffer.getFloat( baseOffset + BBOX_OFFSET + 4 );
+        bbox[0][2] = buffer.getFloat( baseOffset + BBOX_OFFSET + 8 );
+        bbox[1][0] = buffer.getFloat( baseOffset + BBOX_OFFSET + 12 );
+        bbox[1][1] = buffer.getFloat( baseOffset + BBOX_OFFSET + 16 );
+        bbox[1][2] = buffer.getFloat( baseOffset + BBOX_OFFSET + 20 );
     }
 
     /**
      * Stores the information of a <code>Node</code> in the given <code>ByteBuffer</code>.
-     *
+     * 
      * @param target
-     *                buffer where the binary representation is written to
+     *            buffer where the binary representation is written to
      * @param lowestOutgoingArc
-     *                lowest id of all arcs leaving from this node
+     *            lowest id of all arcs leaving from this node
      * @param highestOutgoingArc
-     *                highest id of all arcs leaving from this node
+     *            highest id of all arcs leaving from this node
      * @param lowestIncomingArc
-     *                lowest id of all arcs entering this node
+     *            lowest id of all arcs entering this node
      * @param bbox
-     *                bounding box of this node
+     *            bounding box of this node
      */
-    public static void store(ByteBuffer target, int lowestOutgoingArc, int highestOutgoingArc,
-            int lowestIncomingArc, float[][] bbox) {
-        target.putInt(lowestOutgoingArc);
-        target.putInt(highestOutgoingArc);
-        target.putInt(lowestIncomingArc);
-        target.putFloat(bbox[0][0]);
-        target.putFloat(bbox[0][1]);
-        target.putFloat(bbox[0][2]);
-        target.putFloat(bbox[1][0]);
-        target.putFloat(bbox[1][1]);
-        target.putFloat(bbox[1][2]);
+    public static void store( ByteBuffer target, int lowestOutgoingArc, int highestOutgoingArc, int lowestIncomingArc,
+                              float[][] bbox ) {
+        target.putInt( lowestOutgoingArc );
+        target.putInt( highestOutgoingArc );
+        target.putInt( lowestIncomingArc );
+        target.putFloat( bbox[0][0] );
+        target.putFloat( bbox[0][1] );
+        target.putFloat( bbox[0][2] );
+        target.putFloat( bbox[1][0] );
+        target.putFloat( bbox[1][1] );
+        target.putFloat( bbox[1][2] );
     }
 }

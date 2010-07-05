@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -47,17 +47,27 @@ import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.ValueRepresentation;
 
+/**
+ * <code>DefaultGMLTypes</code>
+ * 
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class DefaultGMLTypes {
 
-    public static FeatureCollectionType GML311_FEATURECOLLECTION;
+    /**
+     * 
+     */
+    public static final FeatureCollectionType GML311_FEATURECOLLECTION;
 
     static {
-        QName name = new QName (GMLNS, "FeatureCollection");
+        QName name = new QName( GMLNS, "FeatureCollection" );
         List<PropertyType> props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType (new QName (GMLNS, "featureMember"), 0, -1, null, false, null, BOTH) );
-        GML311_FEATURECOLLECTION = new GenericFeatureCollectionType (name, props, false);
+        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember" ), 0, -1, null, false, null, BOTH ) );
+        GML311_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
     }
 
 }
