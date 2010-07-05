@@ -166,7 +166,7 @@ public class ThreadedResultSet implements FeatureResultSet {
             } finally {
                 finished = true;
                 rs.close();
-                LOG.info( "Producer thread exiting" );
+                LOG.debug( "Producer thread exiting" );
             }
         }
 
