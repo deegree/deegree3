@@ -59,7 +59,7 @@
    <test name="wms:wms_main">
       <assertion>This WMS is valid</assertion>
       <code>
-        <xsl:variable name="VAR_WMS_CAPABILITIES_URL" select="'http://localhost:18082/deegree-wms-cite130/services?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1'" />
+        <xsl:variable name="VAR_WMS_CAPABILITIES_URL" select="'http://localhost:18082/deegree-wms-cite/services?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1'" />
         <xsl:variable name="updatesequence" select="'auto_updatesequence'"/>
         <xsl:variable name="CERT_PROFILE" select="'queryable_profile'"/>
         <xsl:variable name="recommended" select="'recommended'"/>

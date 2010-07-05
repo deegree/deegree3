@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-wms-cite130</artifactId>
+  <artifactId>deegree-wms-cite</artifactId>
   <packaging>war</packaging>
   <version>3.0-SNAPSHOT</version>
-  <name>deegree-wms-cite130 Webapp</name>
+  <name>deegree-wms-cite Webapp</name>
   <url>http://www.deegree.org</url>
   <parent>
     <groupId>org.deegree</groupId>
@@ -39,7 +39,7 @@
             </connector>
           </connectors>
           <webAppConfig>
-            <contextPath>/deegree-wms-cite130</contextPath>
+            <contextPath>/deegree-wms-cite</contextPath>
           </webAppConfig>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <stopKey>foo</stopKey>
