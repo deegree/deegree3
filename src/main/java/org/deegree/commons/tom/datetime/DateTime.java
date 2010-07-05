@@ -69,7 +69,7 @@ public class DateTime implements Comparable<DateTime> {
 
     @Override
     public boolean equals( Object o ) {
-        if ( !( o instanceof Date ) ) {
+        if ( !( o instanceof DateTime ) ) {
             return false;
         }
         return this.date.equals( ( (DateTime) o ).date );
