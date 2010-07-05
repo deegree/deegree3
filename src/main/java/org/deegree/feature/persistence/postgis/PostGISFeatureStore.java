@@ -102,7 +102,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PostGISFeatureStore implements FeatureStore {
 
-    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
+    static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
 
     private final ApplicationSchema schema;
 
@@ -168,6 +168,11 @@ public class PostGISFeatureStore implements FeatureStore {
         return relMapping == null ? null : relMapping.get( ftName );
     }
 
+    /**
+     * @param conn
+     * @return a new transaction
+     * @throws FeatureStoreException
+     */
     public PostGISFeatureStoreTransaction acquireTransaction( Connection conn )
                             throws FeatureStoreException {
 
@@ -277,14 +282,15 @@ public class PostGISFeatureStore implements FeatureStore {
 
         if ( geomOrFeature == null ) {
             Connection conn = null;
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
                 conn.setAutoCommit( false );
-                stmt = conn.createStatement();
-                rs = stmt.executeQuery( "SELECT binary_object FROM " + qualifyTableName( "gml_objects" )
-                                        + " WHERE gml_id='" + id + "'" );
+                stmt = conn.prepareStatement( "SELECT binary_object FROM " + qualifyTableName( "gml_objects" )
+                                              + " WHERE gml_id=?" );
+                stmt.setString( 1, id );
+                rs = stmt.executeQuery();
                 if ( rs.next() ) {
                     LOG.debug( "Recreating object '" + id + "' from bytea." );
                     geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, storageSRS,
@@ -694,71 +700,71 @@ public class PostGISFeatureStore implements FeatureStore {
         return result;
     }
 
-    private FeatureResultSet queryMultipleFts2( Query[] queries, Envelope looseBBox )
-                            throws FeatureStoreException {
-
-        FeatureResultSet result = null;
-
-        short[] ftId = new short[queries.length];
-        for ( int i = 0; i < ftId.length; i++ ) {
-            Query query = queries[i];
-            if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-                String msg = "Join queries between multiple feature types are currently not supported.";
-                throw new UnsupportedOperationException( msg );
-            }
-            ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
-        }
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
-            StringBuffer sql = new StringBuffer();
-
-            if ( queries.length == 1 ) {
-                sql.append( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE " );
-                if ( looseBBox != null ) {
-                    sql.append( "gml_bounded_by && ? AND " );
-                }
-                sql.append( "ft_type=?" );
-            } else {
-                sql.append( "(SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE " );
-                if ( looseBBox != null ) {
-                    sql.append( "gml_bounded_by && ? AND " );
-                }
-                sql.append( "ft_type=?)" );
-                for ( int i = 1; i < queries.length; i++ ) {
-                    sql.append( "UNION (SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                                + " WHERE " );
-                    if ( looseBBox != null ) {
-                        sql.append( "gml_bounded_by && ? AND " );
-                    }
-                    sql.append( "ft_type=?)" );
-                }
-            }
-            stmt = conn.prepareStatement( sql.toString() );
-            int i = 1;
-            for ( Query query : queries ) {
-                if ( looseBBox != null ) {
-                    stmt.setObject( i++, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
-                }
-                stmt.setShort( i++, getFtId( query.getTypeNames()[0].getFeatureTypeName() ) );
-                StringBuffer orderString = new StringBuffer();
-                stmt.setString( ftId.length + 2, orderString.toString() );
-            }
-            LOG.info( "Query {}", stmt );
-            rs = stmt.executeQuery();
-            result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
-                                                                          new FeatureStoreGMLIdResolver( this ) ) );
-        } catch ( Exception e ) {
-            closeSafely( conn, stmt, rs );
-            String msg = "Error performing query: " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new FeatureStoreException( msg, e );
-        }
-        return result;
-    }
+    // private FeatureResultSet queryMultipleFts2( Query[] queries, Envelope looseBBox )
+    // throws FeatureStoreException {
+    //
+    // FeatureResultSet result = null;
+    //
+    // short[] ftId = new short[queries.length];
+    // for ( int i = 0; i < ftId.length; i++ ) {
+    // Query query = queries[i];
+    // if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
+    // String msg = "Join queries between multiple feature types are currently not supported.";
+    // throw new UnsupportedOperationException( msg );
+    // }
+    // ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
+    // }
+    //
+    // Connection conn = null;
+    // PreparedStatement stmt = null;
+    // ResultSet rs = null;
+    // try {
+    // conn = ConnectionManager.getConnection( jdbcConnId );
+    // StringBuffer sql = new StringBuffer();
+    //
+    // if ( queries.length == 1 ) {
+    // sql.append( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE " );
+    // if ( looseBBox != null ) {
+    // sql.append( "gml_bounded_by && ? AND " );
+    // }
+    // sql.append( "ft_type=?" );
+    // } else {
+    // sql.append( "(SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE " );
+    // if ( looseBBox != null ) {
+    // sql.append( "gml_bounded_by && ? AND " );
+    // }
+    // sql.append( "ft_type=?)" );
+    // for ( int i = 1; i < queries.length; i++ ) {
+    // sql.append( "UNION (SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
+    // + " WHERE " );
+    // if ( looseBBox != null ) {
+    // sql.append( "gml_bounded_by && ? AND " );
+    // }
+    // sql.append( "ft_type=?)" );
+    // }
+    // }
+    // stmt = conn.prepareStatement( sql.toString() );
+    // int i = 1;
+    // for ( Query query : queries ) {
+    // if ( looseBBox != null ) {
+    // stmt.setObject( i++, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+    // }
+    // stmt.setShort( i++, getFtId( query.getTypeNames()[0].getFeatureTypeName() ) );
+    // StringBuffer orderString = new StringBuffer();
+    // stmt.setString( ftId.length + 2, orderString.toString() );
+    // }
+    // LOG.info( "Query {}", stmt );
+    // rs = stmt.executeQuery();
+    // result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
+    // new FeatureStoreGMLIdResolver( this ) ) );
+    // } catch ( Exception e ) {
+    // closeSafely( conn, stmt, rs );
+    // String msg = "Error performing query: " + e.getMessage();
+    // LOG.debug( msg, e );
+    // throw new FeatureStoreException( msg, e );
+    // }
+    // return result;
+    // }
 
     @Override
     public FeatureResultSet query( final Query[] queries )

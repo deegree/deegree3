@@ -274,6 +274,39 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
     }
 
     /**
+     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+     * <ul>
+     * <li>boolean -- code = (f ? 0 : 1)</li>
+     * <li>byte, char, short, int -- code = (int)f</li>
+     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+     * <li>float -- code = Float.floatToIntBits(f);</li>
+     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+     * <li>Array -- Apply above rules to each element</li>
+     * </ul>
+     * <p>
+     * Combining the hash code(s) computed above: result = 37 * result + code;
+     * </p>
+     * 
+     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        // the 2nd millionth prime, :-)
+        long result = 32452843;
+        result = result * 37 + super.hashCode();
+        result = result * 37 + textureID.hashCode();
+        // see ticket #114:
+        result = result * 37 + location.hashCode();
+        result = result * Float.floatToIntBits( width );
+        result = result * Float.floatToIntBits( height );
+        return (int) ( result >>> 32 ) ^ (int) result;
+    }
+
+    /**
      * @return the id of it's texture
      */
     public final String getTextureID() {

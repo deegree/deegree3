@@ -56,24 +56,41 @@ public class Property {
 
     private Map<String, String> options = new HashMap<String, String>();
 
+    /**
+     * @param href
+     * @param columnName
+     */
     public Property( String href, String columnName ) {
         this.href = href;
         this.columnName = columnName;
-        this.options = options;
     }
 
+    /**
+     * @param name
+     * @param value
+     */
     public void addToOption( String name, String value ) {
         options.put( name.toLowerCase(), value );
     }
 
+    /**
+     * @return the link
+     */
     public String getHref() {
         return href;
     }
 
+    /**
+     * @return the col name
+     */
     public String getColumnName() {
         return columnName;
     }
 
+    /**
+     * @param optionName
+     * @return the value
+     */
     public String getOptionValue( String optionName ) {
         return options.get( optionName.toLowerCase() );
     }

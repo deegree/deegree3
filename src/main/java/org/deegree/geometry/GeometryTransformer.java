@@ -949,7 +949,7 @@ public class GeometryTransformer extends Transformer {
         List<Triangle> patches = tin.getPatches();
         List<Triangle> tPatches = null;
         if ( patches != null ) {
-            tPatches = (List) transform( tPatches, trans );
+            tPatches = (List) transform( patches, trans );
         }
         return geomFactory.createTin( tin.getId(), getWrappedTargetCRS(), tStopLines, tBreakLines,
                                       (Length) tin.getMaxLength( null ), tcPoints, tPatches );

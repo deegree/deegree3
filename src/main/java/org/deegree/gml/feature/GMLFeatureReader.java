@@ -106,7 +106,6 @@ import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
@@ -216,6 +215,9 @@ public class GMLFeatureReader extends XMLAdapter {
         }
     }
 
+    /**
+     * @param geomReader
+     */
     public void setGeometryReader( GMLGeometryReader geomReader ) {
         this.geomReader = geomReader;
     }
@@ -458,8 +460,7 @@ public class GMLFeatureReader extends XMLAdapter {
             // TODO need to check that element is indeed empty?
             StAXParsingHelper.nextElement( xmlStream );
         } else {
-            property = createSimpleProperty( xmlStream, (SimplePropertyType) propDecl,
-                                             xmlStream.getElementText().trim() );
+            property = createSimpleProperty( xmlStream, propDecl, xmlStream.getElementText().trim() );
         }
         return property;
     }
@@ -487,8 +488,8 @@ public class GMLFeatureReader extends XMLAdapter {
             if ( xmlStream.nextTag() == START_ELEMENT ) {
                 // TODO make this check (no constraints on contained feature
                 // type) better
-                if ( ( (FeaturePropertyType) propDecl ).getFTName() != null ) {
-                    FeatureType expectedFt = ( (FeaturePropertyType) propDecl ).getValueFt();
+                if ( propDecl.getFTName() != null ) {
+                    FeatureType expectedFt = propDecl.getValueFt();
                     FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
                     if ( !schema.isSubType( expectedFt, presentFt ) ) {
                         String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE", expectedFt.getName(),
@@ -540,7 +541,7 @@ public class GMLFeatureReader extends XMLAdapter {
                 if ( !compatible ) {
                     String msg = "Value for geometry property is invalid. Specified geometry value "
                                  + geometry.getClass() + " is not allowed here. Allowed geometries are: "
-                                 + ( (GeometryPropertyType) propDecl ).getAllowedGeometryTypes();
+                                 + propDecl.getAllowedGeometryTypes();
                     throw new XMLParsingException( xmlStream, msg );
                 }
                 property = new GenericProperty( propDecl, propName, geometry, isNilled );
@@ -555,7 +556,7 @@ public class GMLFeatureReader extends XMLAdapter {
 
     private Property parseEnvelopeProperty( XMLStreamReaderWrapper xmlStream, EnvelopePropertyType propDecl, CRS crs,
                                             boolean isNilled )
-                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
 
         QName propName = xmlStream.getName();
         Property property = null;
@@ -749,8 +750,8 @@ public class GMLFeatureReader extends XMLAdapter {
         if ( particle != null ) {
             XSTerm term = particle.getTerm();
             if ( term instanceof XSElementDeclaration ) {
-                XSElementDeclaration childElDecl = (XSElementDeclaration) term;
-                QName name = new QName( childElDecl.getNamespace(), childElDecl.getName() );
+                // XSElementDeclaration childElDecl = (XSElementDeclaration) term;
+                // QName name = new QName( childElDecl.getNamespace(), childElDecl.getName() );
                 propDecls.add( (XSElementDeclaration) term );
             } else if ( term instanceof XSModelGroup ) {
                 XSObjectList particles = ( (XSModelGroup) term ).getParticles();
@@ -780,7 +781,7 @@ public class GMLFeatureReader extends XMLAdapter {
                 String msg = "Attribute '" + name + "' is not allowed at this position.";
                 throw new XMLParsingException( xmlStream, msg );
             }
-            if ( !XSINS.equals( name.getNamespaceURI() ) ) {
+            if ( attrDecl != null && !XSINS.equals( name.getNamespaceURI() ) ) {
                 String value = xmlStream.getAttributeValue( i );
                 // TODO evaluate and check primitive type information
                 PrimitiveValue xmlValue = new PrimitiveValue( value, attrDecl.getTypeDefinition() );

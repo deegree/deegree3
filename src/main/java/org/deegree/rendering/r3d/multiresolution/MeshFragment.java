@@ -56,7 +56,7 @@ public class MeshFragment implements Comparable<MeshFragment> {
      * 
      * NOTE: This is just the meta information of the patch, not the geometry data.
      */
-    public static int SIZE = 40;
+    public final static int SIZE = 40;
 
     /**
      * the id of the mesh fragment
@@ -73,13 +73,11 @@ public class MeshFragment implements Comparable<MeshFragment> {
      */
     public final float error;
 
-    private long blobPosition;
+    private final long blobPosition;
 
-    private int length;
+    private final int length;
 
-    private MeshFragmentDataReader patchReader;
-
-    private int vertices;
+    private final MeshFragmentDataReader patchReader;
 
     MeshFragment( int id, ByteBuffer buffer, MeshFragmentDataReader patchReader ) {
         this.id = id;

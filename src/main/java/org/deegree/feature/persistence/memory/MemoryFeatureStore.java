@@ -36,8 +36,6 @@
 
 package org.deegree.feature.persistence.memory;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
@@ -65,9 +63,9 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
+import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -82,7 +80,6 @@ import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.ReferenceResolvingException;
-import org.slf4j.Logger;
 
 /**
  * {@link FeatureStore} implementation that keeps the feature instances in memory.
@@ -95,8 +92,6 @@ import org.slf4j.Logger;
  * @version $Revision: $, $Date: $
  */
 public class MemoryFeatureStore implements FeatureStore {
-
-    private static final Logger LOG = getLogger( MemoryFeatureStore.class );
 
     private final ApplicationSchema schema;
 
@@ -119,7 +114,6 @@ public class MemoryFeatureStore implements FeatureStore {
      */
     MemoryFeatureStore( ApplicationSchema schema ) throws FeatureStoreException {
         this.schema = schema;
-        CRS nativeCRS = new CRS( "EPSG:4326" );
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             ftToFeatures.put( ft, new GenericFeatureCollection() );
         }
@@ -386,8 +380,7 @@ public class MemoryFeatureStore implements FeatureStore {
         ftToFeatures.put( ft, fc );
     }
 
-    void removeObject( String id )
-                            throws FeatureStoreException {
+    void removeObject( String id ) {
         Object o = idToObject.remove( id );
         if ( o == null ) {
             return;
@@ -418,6 +411,6 @@ public class MemoryFeatureStore implements FeatureStore {
     @Override
     public CRS getStorageSRS() {
         // TODO make this configurable
-        return new CRS ("urn:x-ogc:def:crs:EPSG:6.11.2:4326");
+        return new CRS( "urn:x-ogc:def:crs:EPSG:6.11.2:4326" );
     }
 }
