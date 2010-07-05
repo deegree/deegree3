@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
 import java.text.ParseException;
@@ -40,7 +40,7 @@ import java.text.ParseException;
 import org.deegree.commons.utils.time.DateUtils;
 
 /**
- * Represents an <code>xs:dateTime</code> instance. 
+ * Represents an <code>xs:dateTime</code> instance.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -53,6 +53,10 @@ public class DateTime implements Comparable<DateTime> {
 
     private final java.util.Date date;
 
+    /**
+     * @param isoDate
+     * @throws ParseException
+     */
     public DateTime( String isoDate ) throws ParseException {
         this.isoDate = isoDate;
         date = DateUtils.parseISO8601Date( isoDate );
@@ -72,7 +76,12 @@ public class DateTime implements Comparable<DateTime> {
     }
 
     @Override
+    public int hashCode() {
+        return date.hashCode();
+    }
+
+    @Override
     public String toString() {
         return isoDate;
-    }    
+    }
 }

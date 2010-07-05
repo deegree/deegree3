@@ -59,12 +59,19 @@ public class Date implements Comparable<Date> {
 
     private final java.util.Date date;
 
+    /**
+     * @param isoDate
+     * @throws ParseException
+     */
     public Date( String isoDate ) throws ParseException {
         this.isoDate = isoDate;
         date = DateUtils.parseISO8601Date( isoDate );
     }
 
     // TODO name this properly
+    /**
+     * @return the wrapped date
+     */
     public java.util.Date getDate() {
         return date;
     }
@@ -80,6 +87,11 @@ public class Date implements Comparable<Date> {
             return false;
         }
         return this.date.equals( ( (Date) o ).date );
+    }
+
+    @Override
+    public int hashCode() {
+        return date.hashCode();
     }
 
     @Override
