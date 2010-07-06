@@ -80,7 +80,9 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private Point2d cumTranslationPoint;
 
-    private double size;
+    private double initialResolution;
+
+    private double resolution;
 
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
@@ -150,11 +152,11 @@ public class Scene2DPanel extends AbstractPanel2D {
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {
             int[] pValues = sceneValues.getPixelCoord( p.getWorldCoords() );
-            double x = pValues[0];
-            double y = pValues[1];
-            double x1 = x + roundDouble( x * this.size );
-            double y1 = y + roundDouble( y * this.size );
-            GeoReferencedPoint pi = new GeoReferencedPoint( x1, y1 );
+            double x = pValues[0];// / this.initialResolution;
+            double y = pValues[1];// / this.initialResolution;
+            double x1 = x + roundDouble( x * this.resolution );
+            double y1 = y + roundDouble( y * this.resolution );
+            GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
             // p.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
             selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords() ) );
         }
@@ -162,12 +164,12 @@ public class Scene2DPanel extends AbstractPanel2D {
         if ( lastAbstractPoint != null ) {
 
             int[] p = sceneValues.getPixelCoord( lastAbstractPoint.getWorldCoords() );
-            double x = p[0];
-            double y = p[1];
-            double x1 = x + roundDouble( x * this.size );
-            double y1 = y + roundDouble( y * this.size );
+            double x = p[0]; // / this.initialResolution;
+            double y = p[1];// / this.initialResolution;
+            double x1 = x + roundDouble( x );// * this.resolution );
+            double y1 = y + roundDouble( y );// * this.resolution );
 
-            GeoReferencedPoint pi = new GeoReferencedPoint( x1, y1 );
+            GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
             lastAbstractPoint.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
         }
 
@@ -176,7 +178,7 @@ public class Scene2DPanel extends AbstractPanel2D {
     @Override
     public void updatePoints( Scene2DValues sceneValues ) {
 
-        this.size = sceneValues.getSizeGeoRef();
+        this.resolution = sceneValues.getSizeGeoRef();
 
         if ( worldPolygonList != null ) {
             setPolygonList( worldPolygonList );
@@ -189,6 +191,9 @@ public class Scene2DPanel extends AbstractPanel2D {
         if ( polygonList != null ) {
             this.worldPolygonList = polygonList;
             polygonListTranslated = new ArrayList<Polygon>();
+            if ( this.resolution == 0.0 ) {
+                this.resolution = this.initialResolution;
+            }
 
             int sizeOfPoints = 0;
             for ( Polygon p : polygonList ) {
@@ -199,10 +204,13 @@ public class Scene2DPanel extends AbstractPanel2D {
                 int[] x2 = new int[po.npoints];
                 int[] y2 = new int[po.npoints];
                 for ( int i = 0; i < po.npoints; i++ ) {
-                    x2[i] = (int) ( ( po.xpoints[i] + cumTranslationPoint.getX() ) * this.size );
-                    y2[i] = (int) ( ( po.ypoints[i] + cumTranslationPoint.getY() ) * this.size );
+                    int x = po.xpoints[i];
+                    int y = po.ypoints[i];
+                    x2[i] = (int) ( x * ( 1 / this.resolution ) );
+                    y2[i] = (int) ( y * ( 1 / this.resolution ) );
 
-                    // System.out.println( "[Scene2DPanel] inverseSize: " + inverseSize );
+                    System.out.println( "[Scene2DPanel] Points " + x2[i] + " " + y2[i] + " with resolution "
+                                        + resolution );
                 }
                 Polygon p = new Polygon( x2, y2, po.npoints );
                 polygonListTranslated.add( p );
@@ -219,5 +227,13 @@ public class Scene2DPanel extends AbstractPanel2D {
     public void setCumTranslationPoint( Point2d translationPoint ) {
         this.cumTranslationPoint = translationPoint;
 
+    }
+
+    public double getInitialResolution() {
+        return initialResolution;
+    }
+
+    public void setInitialResolution( double resolution ) {
+        this.initialResolution = resolution;
     }
 }

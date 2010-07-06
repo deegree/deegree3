@@ -246,10 +246,10 @@ public class Scene2DValues {
     }
 
     public void setSizeGeoRef( boolean isZoomedIn, double resizing ) {
-        float initialResolution = Float.parseFloat( ( options.get( "RESOLUTION" ) ) );
-        double newSize = this.sizeGeoRef * ( initialResolution - resizing );
+
+        double newSize = this.sizeGeoRef * ( 1 - resizing );
         if ( isZoomedIn == false ) {
-            newSize = this.sizeGeoRef * ( 1 / ( initialResolution - resizing ) );
+            newSize = this.sizeGeoRef * ( 1 / ( 1 - resizing ) );
         }
         // BigDecimal b = new BigDecimal( newSize );
         // b = b.round( new MathContext( 16 ) );

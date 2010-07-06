@@ -271,6 +271,7 @@ public class Controller {
             if ( source instanceof JMenuItem ) {
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GETMAP ) ) {
                     mouseGeoRef = new MouseModel();
+                    panel.setInitialResolution( Float.parseFloat( ( options.get( "RESOLUTION" ) ) ) );
                     init();
                     // panel.setinitialResolution( sceneValues.getSize() );
                     targetCRS = sceneValues.getCrs();
