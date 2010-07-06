@@ -235,7 +235,7 @@ public class Scene2DPanel extends AbstractPanel2D {
                     x2[i] = (int) ( ( po.xpoints[i] + cumTranslationPoint.getX() ) * inverseSize );
                     y2[i] = (int) ( ( po.ypoints[i] + cumTranslationPoint.getY() ) * inverseSize );
 
-                    System.out.println( "[Scene2DPanel] inverseSize: " + inverseSize );
+                    // System.out.println( "[Scene2DPanel] inverseSize: " + inverseSize );
                 }
                 Polygon p = new Polygon( x2, y2, po.npoints );
                 polygonListTranslated.add( p );

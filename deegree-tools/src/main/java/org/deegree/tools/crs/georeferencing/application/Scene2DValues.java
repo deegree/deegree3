@@ -36,6 +36,8 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import java.awt.Rectangle;
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 import javax.vecmath.Point2d;
 
@@ -238,8 +240,17 @@ public class Scene2DValues {
         return options;
     }
 
-    public void setSize( float resolution ) {
-        this.size = Float.parseFloat( ( options.get( "RESOLUTION" ) ) ) * resolution;
+    public void setSize( boolean isZoomedIn, float resizing ) {
+        float initialResolution = Float.parseFloat( ( options.get( "RESOLUTION" ) ) );
+        float newSize = this.size * ( initialResolution - resizing );
+        if ( isZoomedIn == false ) {
+            newSize = this.size * ( 1 / ( initialResolution - resizing ) );
+        }
+        BigDecimal b = new BigDecimal( newSize );
+        b = b.round( new MathContext( 2 ) );
+        this.size = b.floatValue();
+
+        System.out.println( "[Scene2DValues] newSize: " + this.size );
     }
 
     /**

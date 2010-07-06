@@ -603,17 +603,17 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    float newSize = 1.0f;
+                    boolean zoomIn = false;
                     if ( m.getWheelRotation() < 0 ) {
-                        newSize = sceneValues.getSize() * .95f;
+                        zoomIn = true;
                     } else {
-                        newSize = sceneValues.getSize() * 1.05f;
+                        zoomIn = false;
                     }
 
-                    sceneValues.setSize( newSize );
-                    System.out.println( "[Controller] newSize: " + newSize );
+                    sceneValues.setSize( zoomIn, .05f );
+
                     init();
-                    panel.updatePoints( newSize, sceneValues );
+                    panel.updatePoints( sceneValues.getSize(), sceneValues );
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
