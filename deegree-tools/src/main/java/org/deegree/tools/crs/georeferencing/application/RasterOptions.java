@@ -88,22 +88,30 @@ public class RasterOptions {
     public RasterOptions( GRViewerGUI view ) {
         options = new RasterIOOptions();
 
+        options.add( RasterIOOptions.CRS, "EPSG:4326" );
+        options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
+        options.add( RIO_WMS_LAYERS, "cite:BasicPolygons" );
+        options.add( LEFT_LOWER_X, "-2.0" );
+        options.add( LEFT_LOWER_Y, "-1.0" );
+        options.add( RIGHT_UPPER_X, "2.0" );
+        options.add( RIGHT_UPPER_Y, "6.0" );
+
         // options.add( RasterIOOptions.CRS, "EPSG:4326" );
         // options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
-        // options.add( RIO_WMS_LAYERS, "root" );
-        // options.add( LEFT_LOWER_X, "-2.0" );
-        // options.add( LEFT_LOWER_Y, "-1.0" );
-        // options.add( RIGHT_UPPER_X, "2.0" );
-        // options.add( RIGHT_UPPER_Y, "6.0" );
+        // options.add( RIO_WMS_LAYERS, "cite:Lakes" );
+        // options.add( LEFT_LOWER_X, "6.0E-4" );
+        // options.add( LEFT_LOWER_Y, "-0.0018" );
+        // options.add( RIGHT_UPPER_X, "0.0031" );
+        // options.add( RIGHT_UPPER_Y, "-1.0E-4" );
 
         // (minX, minY, maxX, maxY) -> 2568720.0,5629890.0,2568800.0,5629970.0
-        options.add( RasterIOOptions.CRS, "EPSG:31466" );
-        options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
-        options.add( RIO_WMS_LAYERS, "DTK" );
-        options.add( LEFT_LOWER_X, "2568720.0" );
-        options.add( LEFT_LOWER_Y, "5629890.0" );
-        options.add( RIGHT_UPPER_X, "2568800.0" );
-        options.add( RIGHT_UPPER_Y, "5629970.0" );
+        // options.add( RasterIOOptions.CRS, "EPSG:31466" );
+        // options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
+        // options.add( RIO_WMS_LAYERS, "DTK" );
+        // options.add( LEFT_LOWER_X, "2568720.0" );
+        // options.add( LEFT_LOWER_Y, "5629890.0" );
+        // options.add( RIGHT_UPPER_X, "2568800.0" );
+        // options.add( RIGHT_UPPER_Y, "5629970.0" );
 
         // options.add( RasterIOOptions.CRS, "EPSG:32618" );
         // options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );

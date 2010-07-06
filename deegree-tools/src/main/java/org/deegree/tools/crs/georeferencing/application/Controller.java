@@ -436,7 +436,6 @@ public class Controller {
                                                                           pixelPoint[1]
                                                                                                   + mouseGeoRef.getCumulatedMouseChanging().getY() );
                         panel.setLastAbstractPoint( newP, g );
-                        // panel.setTranslated( isHorizontalRef );
                         tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
 
                     } else {
@@ -450,7 +449,6 @@ public class Controller {
                                                                             mouseGeoRef.getCumulatedMouseChanging().getY()
                                                                                                     + mouseGeoRef.getMouseChanging().getY() ) );
 
-                        // panel.setTranslated( isHorizontalRef );
                         sceneValues.setStartRasterEnvelopePosition( mouseGeoRef.getMouseChanging() );
                         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
 
@@ -478,12 +476,10 @@ public class Controller {
                         double x = m.getX() + mouseFootprint.getCumulatedMouseChanging().getX();
                         double y = m.getY() + mouseFootprint.getCumulatedMouseChanging().getY();
                         System.out.println( "[CONTROLLER] " + x + ", " + y );
-                        footPanel.setTranslated( isHorizontalRef );
                         Pair<AbstractGRPoint, FootprintPoint> point = footPanel.getClosestPoint( new FootprintPoint( x,
                                                                                                                      y ) );
                         footPanel.setLastAbstractPoint( point.first, point.second );
                         tablePanel.setCoords( footPanel.getLastAbstractPoint().getWorldCoords() );
-                        // footPanel.addPoint( mappedPoints, footPanel.getLastAbstractPoint() );
 
                     } else {
                         mouseFootprint.setMouseChanging( new Point2d(
@@ -497,9 +493,6 @@ public class Controller {
                                                                                                        + mouseFootprint.getMouseChanging().getY() ) );
 
                         footPanel.setCumTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
-                        // footPrint.updatePoints( mouseFootprint.getMouseChanging() );
-                        footPanel.setTranslated( isHorizontalRef );
-                        // System.out.println( isHorizontalRef );
 
                     }
                     footPanel.repaint();
@@ -621,7 +614,6 @@ public class Controller {
                     System.out.println( "[Controller] newSize: " + newSize );
                     init();
                     panel.updatePoints( newSize, sceneValues );
-                    // panel.repaint();
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
@@ -633,7 +625,6 @@ public class Controller {
                     }
                     footPanel.updatePoints( newSize );
                     updateMappedPoints();
-                    // footPanel.setTranslated( false );
                     footPanel.repaint();
                 }
             }

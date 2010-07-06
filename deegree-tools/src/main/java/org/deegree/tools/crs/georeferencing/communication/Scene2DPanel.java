@@ -97,10 +97,6 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private ArrayList<Polygon> polygonListTranslated;
 
-    private Object pixelCoordinates;
-
-    private boolean isTranslated;
-
     private Point2d cumTranslationPoint;
 
     public Scene2DPanel() {
@@ -126,54 +122,23 @@ public class Scene2DPanel extends AbstractPanel2D {
         }
 
         if ( lastAbstractPoint != null ) {
-            // if ( isTranslated == false ) {
             g2.fillOval( (int) lastAbstractPoint.getNewValue().getX() - 5,
                          (int) lastAbstractPoint.getNewValue().getY() - 5, 10, 10 );
-            // }
         }
 
         if ( polygonList != null ) {
-            // if ( isTranslated == false ) {
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
             }
-            // }
         }
 
         if ( selectedPoints != null ) {
-            // if ( isTranslated == false ) {
             for ( Point4Values point : selectedPoints ) {
                 g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
-                // System.out.println( "[Scene2DPanel] selectedPoint: " + point );
             }
-            // }
         }
 
         g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
-
-        // if ( polygonList != null ) {
-        // if ( isTranslated == true ) {
-        // for ( Polygon polygon : polygonList ) {
-        // g2.drawPolygon( polygon );
-        // }
-        // }
-        // }
-        //
-        // if ( selectedPoints != null ) {
-        // if ( isTranslated == true ) {
-        // for ( Point4Values point : selectedPoints ) {
-        // g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
-        // System.out.println( "[Scene2DPanel] selectedPoint: " + point );
-        // }
-        // }
-        // }
-        // if ( lastAbstractPoint != null ) {
-        // if ( isTranslated == true ) {
-        // g2.fillOval( (int) ( lastAbstractPoint.getNewValue().getX() - 5 ),
-        // (int) ( lastAbstractPoint.getNewValue().getY() - 5 ), 10, 10 );
-        // System.out.println( "[Scene2DPanel] lastAbstractPoint: " + lastAbstractPoint );
-        // }
-        // }
 
     }
 
@@ -288,10 +253,6 @@ public class Scene2DPanel extends AbstractPanel2D {
     public void updatePoints( float newSize ) {
         // TODO Auto-generated method stub
 
-    }
-
-    public void setTranslated( boolean isTranslated ) {
-        this.isTranslated = isTranslated;
     }
 
     public void setCumTranslationPoint( Point2d translationPoint ) {

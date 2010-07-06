@@ -86,8 +86,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private final Insets insets = new Insets( 0, 10, 0, 0 );
 
-    private boolean isTranslated;
-
     private float resolution;
 
     private float resizing;
@@ -119,54 +117,24 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         g2.translate( -cumTranslationPoint.x, -cumTranslationPoint.y );
 
         if ( polygonList != null ) {
-            // if ( isTranslated == false ) {
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
             }
-            // }
         }
         if ( selectedPoints != null ) {
-            // if ( isTranslated == false ) {
             for ( Point4Values point : selectedPoints ) {
                 g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
             }
-            // }
         }
         if ( lastAbstractPoint != null ) {
-            // if ( isTranslated == false ) {
 
             Point2d p = new Point2d( lastAbstractPoint.getNewValue().getX() - 5,
                                      lastAbstractPoint.getNewValue().getY() - 5 );
 
             g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
-
-            // }
         }
 
         g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
-
-        System.out.println( "TranslationPoint: " + cumTranslationPoint );
-        // if ( polygonList != null ) {
-        // if ( isTranslated == true ) {
-        // for ( Polygon polygon : polygonList ) {
-        // g2.drawPolygon( polygon );
-        // }
-        // }
-        // }
-        // if ( selectedPoints != null ) {
-        // if ( isTranslated == true ) {
-        // for ( Point4Values point : selectedPoints ) {
-        // g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
-        // }
-        // }
-        // }
-        // if ( lastAbstractPoint != null ) {
-        // if ( isTranslated == true ) {
-        // g2.fillOval( (int) ( lastAbstractPoint.getNewValue().getX() - 5 ),
-        // (int) ( lastAbstractPoint.getNewValue().getY() - 5 ), 10, 10 );
-        //
-        // }
-        // }
     }
 
     @Override
@@ -232,7 +200,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
                                                                   ( po.ypoints[i] - y ) * resolution );
                 pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ), new FootprintPoint( po.xpoints[i],
                                                                                                 po.ypoints[i] ) );
-                // System.out.println( "[Footprint] Polygon: " + x2[i] );
             }
             Polygon p = new Polygon( x2, y2, po.npoints );
             pixelCoordinatePolygonList.add( p );
@@ -248,10 +215,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     public void setCumTranslationPoint( Point2d translationPoint ) {
         this.cumTranslationPoint = translationPoint;
-    }
-
-    public void setTranslated( boolean isTranslated ) {
-        this.isTranslated = isTranslated;
     }
 
     public int getOffset() {

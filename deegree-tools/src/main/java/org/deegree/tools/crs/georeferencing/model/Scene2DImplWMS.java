@@ -239,15 +239,18 @@ public class Scene2DImplWMS implements Scene2D {
         if ( StringUtils.isSet( layers ) ) {
             String[] layer = layers.split( "," );
             for ( String l : layer ) {
+
                 configuredLayers.add( l );
             }
         }
         if ( configuredLayers.isEmpty() ) {
             List<String> namedLayers = this.wmsClient.getNamedLayers();
             if ( namedLayers != null ) {
+
                 configuredLayers.addAll( namedLayers );
             }
         }
+
         return configuredLayers;
     }
 
