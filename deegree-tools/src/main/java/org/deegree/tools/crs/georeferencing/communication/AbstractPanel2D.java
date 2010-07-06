@@ -45,6 +45,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
@@ -129,6 +130,6 @@ public abstract class AbstractPanel2D extends JPanel {
         return b.floatValue();
     }
 
-    public abstract void updatePoints( float newSize );
+    public abstract void updatePoints( Scene2DValues sceneValues );
 
 }

@@ -40,8 +40,6 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,28 +74,13 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private Rectangle imageDimension;
 
-    /**
-     * opposite value of the size
-     */
-    private float inverseSize;
-
-    /**
-     * deltavalue between the newSize and the oldSize
-     */
-    private float resizing;
-
-    /**
-     * the size before resizing the scene
-     */
-    private float oldSize;
-
-    private float initialResolution;
-
     private List<Polygon> worldPolygonList;
 
     private ArrayList<Polygon> polygonListTranslated;
 
     private Point2d cumTranslationPoint;
+
+    private double size;
 
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
@@ -163,18 +146,14 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     }
 
-    public void setinitialResolution( float initialResolution ) {
-        this.initialResolution = initialResolution;
-    }
-
     private void updateSelectedPoints( Scene2DValues sceneValues ) {
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {
             int[] pValues = sceneValues.getPixelCoord( p.getWorldCoords() );
             double x = pValues[0];
             double y = pValues[1];
-            double x1 = x + roundDouble( x * resizing );
-            double y1 = y + roundDouble( y * resizing );
+            double x1 = x + roundDouble( x * this.size );
+            double y1 = y + roundDouble( y * this.size );
             GeoReferencedPoint pi = new GeoReferencedPoint( x1, y1 );
             // p.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
             selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords() ) );
@@ -185,8 +164,8 @@ public class Scene2DPanel extends AbstractPanel2D {
             int[] p = sceneValues.getPixelCoord( lastAbstractPoint.getWorldCoords() );
             double x = p[0];
             double y = p[1];
-            double x1 = x + roundDouble( x * resizing );
-            double y1 = y + roundDouble( y * resizing );
+            double x1 = x + roundDouble( x * this.size );
+            double y1 = y + roundDouble( y * this.size );
 
             GeoReferencedPoint pi = new GeoReferencedPoint( x1, y1 );
             lastAbstractPoint.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
@@ -194,19 +173,11 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     }
 
-    public void updatePoints( float newSize, Scene2DValues sceneValues ) {
-        if ( this.oldSize == 0.0 ) {
-            this.oldSize = 1.0f;
-            this.inverseSize = 1.0f;
-        }
+    @Override
+    public void updatePoints( Scene2DValues sceneValues ) {
 
-        this.resizing = this.oldSize - newSize;
-        BigDecimal b = new BigDecimal( newSize );
-        b = b.round( new MathContext( 2 ) );
-        this.oldSize = b.floatValue();
-        this.oldSize = newSize;
-        this.resizing = roundFloat( resizing );
-        this.inverseSize = inverseSize + this.resizing;
+        this.size = sceneValues.getSizeGeoRef();
+
         if ( worldPolygonList != null ) {
             setPolygonList( worldPolygonList );
         }
@@ -219,10 +190,6 @@ public class Scene2DPanel extends AbstractPanel2D {
             this.worldPolygonList = polygonList;
             polygonListTranslated = new ArrayList<Polygon>();
 
-            if ( inverseSize == 0.0 ) {
-                inverseSize = initialResolution;
-            }
-
             int sizeOfPoints = 0;
             for ( Polygon p : polygonList ) {
                 sizeOfPoints += p.npoints;
@@ -232,8 +199,8 @@ public class Scene2DPanel extends AbstractPanel2D {
                 int[] x2 = new int[po.npoints];
                 int[] y2 = new int[po.npoints];
                 for ( int i = 0; i < po.npoints; i++ ) {
-                    x2[i] = (int) ( ( po.xpoints[i] + cumTranslationPoint.getX() ) * inverseSize );
-                    y2[i] = (int) ( ( po.ypoints[i] + cumTranslationPoint.getY() ) * inverseSize );
+                    x2[i] = (int) ( ( po.xpoints[i] + cumTranslationPoint.getX() ) * this.size );
+                    y2[i] = (int) ( ( po.ypoints[i] + cumTranslationPoint.getY() ) * this.size );
 
                     // System.out.println( "[Scene2DPanel] inverseSize: " + inverseSize );
                 }
@@ -246,12 +213,6 @@ public class Scene2DPanel extends AbstractPanel2D {
         } else {
             this.polygonList = null;
         }
-
-    }
-
-    @Override
-    public void updatePoints( float newSize ) {
-        // TODO Auto-generated method stub
 
     }
 

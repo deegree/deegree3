@@ -188,7 +188,7 @@ public class GRViewerGUI extends JFrame {
 
     private void setupPanelFootprint( GridBagLayout gbl ) {
 
-        footprintPanel = new BuildingFootprintPanel( 4.0f );
+        footprintPanel = new BuildingFootprintPanel();
         footprintPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         footprintPanel.setBackground( Color.white );
         footprintPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );

@@ -36,8 +36,6 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import java.awt.Rectangle;
-import java.math.BigDecimal;
-import java.math.MathContext;
 
 import javax.vecmath.Point2d;
 
@@ -78,7 +76,9 @@ public class Scene2DValues {
 
     private Point2d convertedPixelToRasterPoint;
 
-    private float size;
+    private double sizeGeoRef;
+
+    private double sizeFootprint;
 
     private Point2d minPointRaster;
 
@@ -92,6 +92,7 @@ public class Scene2DValues {
 
     public Scene2DValues( RasterIOOptions options ) {
         this.options = options;
+
     }
 
     /**
@@ -232,25 +233,45 @@ public class Scene2DValues {
         this.convertedPixelToRasterPoint = convertedPixelToRasterPoint;
     }
 
-    public float getSize() {
-        return size;
+    public double getSizeGeoRef() {
+        return sizeGeoRef;
+    }
+
+    public double getSizeFootprint() {
+        return sizeFootprint;
     }
 
     public RasterIOOptions getOptions() {
         return options;
     }
 
-    public void setSize( boolean isZoomedIn, float resizing ) {
+    public void setSizeGeoRef( boolean isZoomedIn, double resizing ) {
         float initialResolution = Float.parseFloat( ( options.get( "RESOLUTION" ) ) );
-        float newSize = this.size * ( initialResolution - resizing );
+        double newSize = this.sizeGeoRef * ( initialResolution - resizing );
         if ( isZoomedIn == false ) {
-            newSize = this.size * ( 1 / ( initialResolution - resizing ) );
+            newSize = this.sizeGeoRef * ( 1 / ( initialResolution - resizing ) );
         }
-        BigDecimal b = new BigDecimal( newSize );
-        b = b.round( new MathContext( 2 ) );
-        this.size = b.floatValue();
+        // BigDecimal b = new BigDecimal( newSize );
+        // b = b.round( new MathContext( 16 ) );
+        // this.size = b.floatValue();
+        this.sizeGeoRef = newSize;
 
-        System.out.println( "[Scene2DValues] newSize: " + this.size );
+        System.out.println( "[Scene2DValues] newSizeGeoRef: " + this.sizeGeoRef );
+    }
+
+    public void setSizeFootprint( double sizeFootprint ) {
+        this.sizeFootprint = sizeFootprint;
+    }
+
+    public void computeResolutionFootprint( boolean isZoomedIn, double resizing ) {
+
+        double newSize = this.sizeFootprint * ( 1 - resizing );
+        if ( isZoomedIn == false ) {
+            newSize = this.sizeFootprint * ( 1 / ( 1 - resizing ) );
+        }
+        this.sizeFootprint = newSize;
+
+        System.out.println( "[Scene2DValues] newSizeFootprint: " + this.sizeFootprint );
     }
 
     /**
@@ -270,27 +291,27 @@ public class Scene2DValues {
         double h = imageDimension.height;
 
         double ratio = w / h;
-        if ( size == 0.0f ) {
-            size = 1.0f;
+        if ( sizeGeoRef == 0.0f ) {
+            sizeGeoRef = 1.0f;
         }
 
         if ( ratio < 1 ) {
             // if < 1 then do orientation on h
-            double newWidth = ( w / h ) * size * rect.width;
-            convertedPixelToRasterPoint = new Point2d( newWidth / w, rect.height * size / h );
-            convertedRasterToPixelPoint = new Point2d( w / newWidth, h / ( rect.height * size ) );
-            transformedBounds = new Point2d( newWidth, rect.height * size );
+            double newWidth = ( w / h ) * sizeGeoRef * rect.width;
+            convertedPixelToRasterPoint = new Point2d( newWidth / w, rect.height * sizeGeoRef / h );
+            convertedRasterToPixelPoint = new Point2d( w / newWidth, h / ( rect.height * sizeGeoRef ) );
+            transformedBounds = new Point2d( newWidth, rect.height * sizeGeoRef );
             return transformedBounds;
         } else if ( ratio > 1 ) {
             // if > 1 then do orientation on w
-            double newHeight = ( h / w ) * size * rect.height;
-            convertedPixelToRasterPoint = new Point2d( rect.width * size / w, newHeight / h );
-            convertedRasterToPixelPoint = new Point2d( w / ( rect.width * size ), h / newHeight );
-            transformedBounds = new Point2d( rect.width * size, newHeight );
+            double newHeight = ( h / w ) * sizeGeoRef * rect.height;
+            convertedPixelToRasterPoint = new Point2d( rect.width * sizeGeoRef / w, newHeight / h );
+            convertedRasterToPixelPoint = new Point2d( w / ( rect.width * sizeGeoRef ), h / newHeight );
+            transformedBounds = new Point2d( rect.width * sizeGeoRef, newHeight );
             return transformedBounds;
         }
         // if w = h then return 0
-        transformedBounds = new Point2d( rect.width * size, rect.height * size );
+        transformedBounds = new Point2d( rect.width * sizeGeoRef, rect.height * sizeGeoRef );
 
         return transformedBounds;
     }

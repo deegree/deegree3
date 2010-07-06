@@ -40,8 +40,6 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +48,7 @@ import java.util.Map;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -86,21 +85,16 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private final Insets insets = new Insets( 0, 10, 0, 0 );
 
-    private float resolution;
-
-    private float resizing;
-
-    private float initialResolution;
-
     private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
+
+    private double resolution;
 
     /**
      * 
      */
-    public BuildingFootprintPanel( float initialResolution ) {
+    public BuildingFootprintPanel() {
         this.setName( BUILDINGFOOTPRINT_PANEL_NAME );
-        pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
-        this.initialResolution = initialResolution;
+
         this.selectedPoints = new ArrayList<Point4Values>();
     }
 
@@ -148,11 +142,12 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     public void setPolygonList( List<Polygon> polygonList ) {
         this.worldPolygonList = polygonList;
-        if ( this.resolution == 0.0f ) {
-            this.resolution = 4.0f;
+        if ( this.resolution == 0.0 ) {
+            this.resolution = 4.0;
         }
-        System.out.println( "[Footprint] Resize: " + resolution );
+        // System.out.println( "[Footprint] Resize: " + resolution );
         pixelCoordinatePolygonList = new ArrayList<Polygon>();
+        pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
         List<Rectangle> rect = new ArrayList<Rectangle>();
 
         int sizeOfPoints = 0;
@@ -194,10 +189,10 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             int[] x2 = new int[po.npoints];
             int[] y2 = new int[po.npoints];
             for ( int i = 0; i < po.npoints; i++ ) {
-                x2[i] = (int) ( ( po.xpoints[i] - x ) * resolution );
-                y2[i] = (int) ( ( po.ypoints[i] - y ) * resolution );
-                pixelCoordinates[counter++] = new FootprintPoint( ( po.xpoints[i] - x ) * resolution,
-                                                                  ( po.ypoints[i] - y ) * resolution );
+                x2[i] = (int) ( ( po.xpoints[i] - x ) * this.resolution );
+                y2[i] = (int) ( ( po.ypoints[i] - y ) * this.resolution );
+                pixelCoordinates[counter++] = new FootprintPoint( ( po.xpoints[i] - x ) * this.resolution,
+                                                                  ( po.ypoints[i] - y ) * this.resolution );
                 pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ), new FootprintPoint( po.xpoints[i],
                                                                                                 po.ypoints[i] ) );
             }
@@ -284,11 +279,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
     }
 
     @Override
-    public void updatePoints( float newSize ) {
-        this.resizing = newSize - this.resolution;
-        BigDecimal b = new BigDecimal( newSize );
-        b = b.round( new MathContext( 2 ) );
-        this.resolution = b.floatValue();
+    public void updatePoints( Scene2DValues sceneValues ) {
+        this.resolution = sceneValues.getSizeFootprint();
 
         setPolygonList( worldPolygonList );
 
@@ -296,24 +288,20 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     }
 
-    public float getResolution() {
-        return resolution;
-    }
-
     private void updateSelectedPoints() {
         FootprintPoint point = null;
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {
-            point = new FootprintPoint( ( p.getInitialValue().getX() / initialResolution ) * resolution,
-                                        ( p.getInitialValue().getY() / initialResolution ) * resolution );
+            point = new FootprintPoint( p.getInitialValue().getX() * this.resolution, p.getInitialValue().getY()
+                                                                                      * this.resolution );
             selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), point, p.getWorldCoords() ) );
         }
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {
-            double x = lastAbstractPoint.getInitialValue().getX() / initialResolution;
-            double y = lastAbstractPoint.getInitialValue().getY() / initialResolution;
-            double x1 = roundDouble( x * resizing );
-            double y1 = roundDouble( y * resizing );
+            double x = lastAbstractPoint.getInitialValue().getX();
+            double y = lastAbstractPoint.getInitialValue().getY();
+            double x1 = roundDouble( x * this.resolution );
+            double y1 = roundDouble( y * this.resolution );
             FootprintPoint pi = (FootprintPoint) getClosestPoint( new FootprintPoint(
                                                                                       lastAbstractPoint.getNewValue().getX()
                                                                                                               + x1,
@@ -322,6 +310,14 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
             lastAbstractPoint.setNewValue( new FootprintPoint( pi.getX(), pi.getY() ) );
         }
+    }
+
+    public double getResolution() {
+        return resolution;
+    }
+
+    public void setResolution( double resolution ) {
+        this.resolution = resolution;
     }
 
 }

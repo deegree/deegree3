@@ -272,7 +272,7 @@ public class Controller {
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GETMAP ) ) {
                     mouseGeoRef = new MouseModel();
                     init();
-                    panel.setinitialResolution( sceneValues.getSize() );
+                    // panel.setinitialResolution( sceneValues.getSize() );
                     targetCRS = sceneValues.getCrs();
                     panel.addScene2DMouseListener( new Scene2DMouseListener() );
                     // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
@@ -280,6 +280,9 @@ public class Controller {
 
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GET_3DOBJECT ) ) {
+
+                    footPanel.setResolution( 4.0 );
+                    sceneValues.setSizeFootprint( footPanel.getResolution() );
                     mouseFootprint = new MouseModel();
                     // TODO at the moment the file which is used is static in the GRViewerGUI!!!
                     List<WorldRenderableObject> rese = File3dImporter.open( view, view.fileName() );
@@ -610,20 +613,20 @@ public class Controller {
                         zoomIn = false;
                     }
 
-                    sceneValues.setSize( zoomIn, .05f );
-
+                    sceneValues.setSizeGeoRef( zoomIn, .05 );
                     init();
-                    panel.updatePoints( sceneValues.getSize(), sceneValues );
+                    panel.updatePoints( sceneValues );
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-                    float newSize = 1.0f;
+                    boolean zoomIn = false;
                     if ( m.getWheelRotation() < 0 ) {
-                        newSize = footPanel.getResolution() * 1.1f;
+                        zoomIn = false;
                     } else {
-                        newSize = footPanel.getResolution() * .9f;
+                        zoomIn = true;
                     }
-                    footPanel.updatePoints( newSize );
+                    sceneValues.computeResolutionFootprint( zoomIn, .1 );
+                    footPanel.updatePoints( sceneValues );
                     updateMappedPoints();
                     footPanel.repaint();
                 }
