@@ -35,20 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application.transformation;
 
-import java.awt.Polygon;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-
-import javax.vecmath.Point3d;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.cs.transformations.helmert.Helmert;
-import org.deegree.cs.transformations.polynomial.LeastSquareApproximation;
-import org.deegree.cs.transformations.polynomial.PolynomialTransformation;
+import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -69,80 +60,80 @@ public class Helmert3Transform extends AbstractTransformation implements Transfo
     }
 
     @Override
-    public List<Polygon> computePolygonList() {
-        int arraySize = mappedPoints.size() * 2;
-        if ( arraySize > 0 ) {
-
-            double[] ordinatesSrc = new double[arraySize];
-            double[] ordinatesDst = new double[arraySize];
-            List<Point3d> from = new ArrayList<Point3d>();
-            List<Point3d> to = new ArrayList<Point3d>();
-
-            // List<Double> ordinateSRCList = new ArrayList<Double>();
-            // List<Double> ordinateDSTList = new ArrayList<Double>();
-            int counterSrc = 0;
-            int counterDst = 0;
-
-            for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
-
-                // double[] from = new double[3];
-                double x = p.first.getWorldCoords().getX();
-                double y = p.first.getWorldCoords().getY();
-
-                // from[0] = x;
-                // from[1] = y;
-                // from[2] = 0;
-                // coordinateList.add( from );
-                // System.out.println( "Before transform: " + x + " " + y );
-                from.add( new Point3d( x, y, 0 ) );
-                ordinatesDst[counterDst] = x;
-                ordinatesDst[++counterDst] = y;
-                // ordinateSRCList.add( x );
-                // ordinateSRCList.add( y );
-                counterDst++;
-                Point4Values pValue = p.second;
-                x = pValue.getWorldCoords().getX();
-                y = pValue.getWorldCoords().getY();
-                to.add( new Point3d( x, y, 0 ) );
-                ordinatesSrc[counterSrc] = x;
-                ordinatesSrc[++counterSrc] = y;
-                // ordinateDSTList.add( x );
-                // ordinateDSTList.add( y );
-                counterSrc++;
-
-            }
-            // List<Double> ordinateSRCList = Arrays.asList( ordinatesSrc );
-            // List<Double> ordinateDSTList = Arrays.asList( ordinatesDst );
-            PolynomialTransformation transform = null;
-            List<Double> params = new LinkedList<Double>();
-            params.add( new Double( 1 ) );
-            try {
-                transform = new LeastSquareApproximation( params, params, sourceCRS.getWrappedCRS(),
-                                                          targetCRS.getWrappedCRS(), 0, 0, getIdentifiable() );
-            } catch ( UnknownCRSException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            // transform.doTransform( srcPts );
-
-            Helmert helmert = null;
-            try {
-                float[][] calculatedParams = transform.createVariables( from, to, order );
-                helmert = new Helmert( calculatedParams[0][0], calculatedParams[1][0], 0, calculatedParams[0][1],
-                                       calculatedParams[1][1], 0, calculatedParams[0][2], sourceCRS.getWrappedCRS(),
-                                       targetCRS.getWrappedCRS(), getCRSCodeType() );
-                helmert.doTransform( ordinatesSrc, 0, ordinatesDst, 0, ordinatesSrc.length );
-                for ( int i = 0; i < ordinatesSrc.length; i++ ) {
-                    System.out.println( ordinatesDst[i] );
-
-                }
-            } catch ( UnknownCRSException e1 ) {
-                e1.printStackTrace();
-            } catch ( TransformationException e ) {
-                e.printStackTrace();
-            }
-        }
+    public List<Ring> computeRingList() {
+        // int arraySize = mappedPoints.size() * 2;
+        // if ( arraySize > 0 ) {
+        //
+        // double[] ordinatesSrc = new double[arraySize];
+        // double[] ordinatesDst = new double[arraySize];
+        // List<Point3d> from = new ArrayList<Point3d>();
+        // List<Point3d> to = new ArrayList<Point3d>();
+        //
+        // // List<Double> ordinateSRCList = new ArrayList<Double>();
+        // // List<Double> ordinateDSTList = new ArrayList<Double>();
+        // int counterSrc = 0;
+        // int counterDst = 0;
+        //
+        // for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+        //
+        // // double[] from = new double[3];
+        // double x = p.first.getWorldCoords().getX();
+        // double y = p.first.getWorldCoords().getY();
+        //
+        // // from[0] = x;
+        // // from[1] = y;
+        // // from[2] = 0;
+        // // coordinateList.add( from );
+        // // System.out.println( "Before transform: " + x + " " + y );
+        // from.add( new Point3d( x, y, 0 ) );
+        // ordinatesDst[counterDst] = x;
+        // ordinatesDst[++counterDst] = y;
+        // // ordinateSRCList.add( x );
+        // // ordinateSRCList.add( y );
+        // counterDst++;
+        // Point4Values pValue = p.second;
+        // x = pValue.getWorldCoords().getX();
+        // y = pValue.getWorldCoords().getY();
+        // to.add( new Point3d( x, y, 0 ) );
+        // ordinatesSrc[counterSrc] = x;
+        // ordinatesSrc[++counterSrc] = y;
+        // // ordinateDSTList.add( x );
+        // // ordinateDSTList.add( y );
+        // counterSrc++;
+        //
+        // }
+        // // List<Double> ordinateSRCList = Arrays.asList( ordinatesSrc );
+        // // List<Double> ordinateDSTList = Arrays.asList( ordinatesDst );
+        // PolynomialTransformation transform = null;
+        // List<Double> params = new LinkedList<Double>();
+        // params.add( new Double( 1 ) );
+        // try {
+        // transform = new LeastSquareApproximation( params, params, sourceCRS.getWrappedCRS(),
+        // targetCRS.getWrappedCRS(), 0, 0, getIdentifiable() );
+        // } catch ( UnknownCRSException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        //
+        // // transform.doTransform( srcPts );
+        //
+        // Helmert helmert = null;
+        // try {
+        // float[][] calculatedParams = transform.createVariables( from, to, order );
+        // helmert = new Helmert( calculatedParams[0][0], calculatedParams[1][0], 0, calculatedParams[0][1],
+        // calculatedParams[1][1], 0, calculatedParams[0][2], sourceCRS.getWrappedCRS(),
+        // targetCRS.getWrappedCRS(), getCRSCodeType() );
+        // helmert.doTransform( ordinatesSrc, 0, ordinatesDst, 0, ordinatesSrc.length );
+        // for ( int i = 0; i < ordinatesSrc.length; i++ ) {
+        // System.out.println( ordinatesDst[i] );
+        //
+        // }
+        // } catch ( UnknownCRSException e1 ) {
+        // e1.printStackTrace();
+        // } catch ( TransformationException e ) {
+        // e.printStackTrace();
+        // }
+        // }
         // throw new NotImplementedException( "not implemented yet" );
 
         return null;

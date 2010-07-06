@@ -265,7 +265,11 @@ public class Scene2DValues {
         System.out.println( "[Scene2DValues] newSizeGeoRef: " + this.sizeGeoRef );
     }
 
-    public void setSizeGeoRefPolygon( boolean isZoomedIn, double resizing ) {
+    public void setSizeGeoRefPolygon( double sizeGeoRefPolygon ) {
+        this.sizeGeoRefPolygon = sizeGeoRefPolygon;
+    }
+
+    public void computeSizeGeoRefPolygon( boolean isZoomedIn, double resizing ) {
         if ( this.sizeGeoRefPolygon == 0.0 ) {
             this.sizeGeoRefPolygon = 1.0;
         }

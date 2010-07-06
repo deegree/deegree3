@@ -46,6 +46,11 @@ import javax.media.jai.WarpPolynomial;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
 import org.deegree.cs.CoordinateTransformer;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
@@ -68,8 +73,7 @@ public class Polynomial extends AbstractTransformation implements Transformation
 
     }
 
-    @Override
-    public List<Polygon> computePolygonList() {
+    public List<Ring> computeRingList() {
         int arraySize = mappedPoints.size() * 2;
         if ( arraySize > 0 ) {
 
@@ -138,6 +142,10 @@ public class Polynomial extends AbstractTransformation implements Transformation
             // int[] y = new int[passPointsDst.length / 2];
             // int count = 0;
             List<Polygon> transformedPolygonList = new ArrayList<Polygon>();
+            List<Ring> transformedRingList = new ArrayList<Ring>();
+            List<Point> pointList;
+            GeometryFactory geom = new GeometryFactory();
+
             // for ( int i = 0; i < passPointsDst.length; i += 2 ) {
             //
             // Point2D p = warp.mapDestPoint( new Point2D.Float( passPointsDst[i], passPointsDst[i + 1] ) );
@@ -153,7 +161,7 @@ public class Polynomial extends AbstractTransformation implements Transformation
             // Polygon p = new Polygon( x, y, (int) ( passPointsDst.length * 0.5 ) );
             // transformedPolygonList.add( p );
             for ( Polygon po : footPrint.getWorldCoordinatePolygonList() ) {
-
+                pointList = new ArrayList<Point>();
                 int[] x = new int[po.npoints];
                 int[] y = new int[po.npoints];
                 for ( int i = 0; i < po.npoints; i++ ) {
@@ -163,12 +171,17 @@ public class Polynomial extends AbstractTransformation implements Transformation
                     Point2D p = warp.mapDestPoint( new Point2D.Float( x2, y2 ) );
                     double rx = ( p.getX() - rxLocal );
                     double ry = ( p.getY() - ryLocal );
+
+                    pointList.add( geom.createPoint( "point", rx, ry, null ) );
+
                     AbstractGRPoint convertPoint = new GeoReferencedPoint( rx, ry );
                     int[] value = sceneValues.getPixelCoord( convertPoint );
                     x[i] = value[0];
                     y[i] = value[1];
 
                 }
+                Points points = new PointsList( pointList );
+                transformedRingList.add( geom.createLinearRing( "ring", null, points ) );
 
                 Polygon p = new Polygon( x, y, po.npoints );
                 transformedPolygonList.add( p );
@@ -180,7 +193,7 @@ public class Polynomial extends AbstractTransformation implements Transformation
                 }
             }
 
-            return transformedPolygonList;
+            return transformedRingList;
         }
 
         return null;

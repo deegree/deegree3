@@ -45,6 +45,7 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -74,7 +75,7 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private Rectangle imageDimension;
 
-    private List<Polygon> worldPolygonList;
+    private List<Ring> worldPolygonList;
 
     private ArrayList<Polygon> polygonListTranslated;
 
@@ -112,9 +113,11 @@ public class Scene2DPanel extends AbstractPanel2D {
         }
 
         if ( polygonList != null ) {
+
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
             }
+
         }
 
         if ( selectedPoints != null ) {
@@ -122,7 +125,6 @@ public class Scene2DPanel extends AbstractPanel2D {
                 g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
             }
         }
-
         g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
 
     }
@@ -155,7 +157,6 @@ public class Scene2DPanel extends AbstractPanel2D {
             double x = pValues[0] + cumTranslationPoint.getX();
             double y = pValues[1] + cumTranslationPoint.getY();
             GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
-            // p.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
             selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords() ) );
         }
         selectedPoints = selectedPointsTemp;
@@ -173,44 +174,36 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     @Override
     public void updatePoints( Scene2DValues sceneValues ) {
-
         if ( worldPolygonList != null ) {
-            System.out.println( "[Scene2DPanel] before resolution is updated: " + this.resolution + " "
-                                + sceneValues.getSizeGeoRef() + " " + 1 / sceneValues.getSizeGeoRef() );
-            this.resolution = 1 / sceneValues.getSizeGeoRefPolygon();
 
-            setPolygonList( worldPolygonList );
+            setPolygonList( worldPolygonList, sceneValues );
         }
         updateSelectedPoints( sceneValues );
 
     }
 
-    public void setPolygonList( List<Polygon> polygonList ) {
-        if ( polygonList != null ) {
-            this.worldPolygonList = polygonList;
+    public void setPolygonList( List<Ring> polygonRing, Scene2DValues sceneValues ) {
+        if ( polygonRing != null ) {
+            this.worldPolygonList = polygonRing;
             polygonListTranslated = new ArrayList<Polygon>();
-            if ( this.resolution == 0.0 ) {
-                this.resolution = this.initialResolution;
-            }
 
             int sizeOfPoints = 0;
-            for ( Polygon p : polygonList ) {
-                sizeOfPoints += p.npoints;
+            for ( Ring p : polygonRing ) {
+                sizeOfPoints += p.getControlPoints().size();
 
             }
-            for ( Polygon po : polygonList ) {
-                int[] x2 = new int[po.npoints];
-                int[] y2 = new int[po.npoints];
-                for ( int i = 0; i < po.npoints; i++ ) {
-                    int x = po.xpoints[i];
-                    int y = po.ypoints[i];
-                    x2[i] = (int) ( x * this.resolution );
-                    y2[i] = (int) ( y * this.resolution );
+            for ( Ring po : polygonRing ) {
+                int[] x2 = new int[po.getControlPoints().size()];
+                int[] y2 = new int[po.getControlPoints().size()];
+                for ( int i = 0; i < po.getControlPoints().size(); i++ ) {
+                    double x = po.getControlPoints().getX( i );
+                    double y = po.getControlPoints().getY( i );
+                    int[] p = sceneValues.getPixelCoord( new GeoReferencedPoint( x, y ) );
+                    x2[i] = new Double( p[0] + cumTranslationPoint.getX() ).intValue();
+                    y2[i] = new Double( p[1] + cumTranslationPoint.getY() ).intValue();
 
-                    // System.out.println( "[Scene2DPanel] Points " + x2[i] + " " + y2[i] + " with resolution "
-                    // + resolution );
                 }
-                Polygon p = new Polygon( x2, y2, po.npoints );
+                Polygon p = new Polygon( x2, y2, po.getControlPoints().size() );
                 polygonListTranslated.add( p );
 
             }
@@ -235,7 +228,7 @@ public class Scene2DPanel extends AbstractPanel2D {
         this.initialResolution = resolution;
     }
 
-    public List<Polygon> getWorldPolygonList() {
+    public List<Ring> getWorldPolygonList() {
         return worldPolygonList;
     }
 

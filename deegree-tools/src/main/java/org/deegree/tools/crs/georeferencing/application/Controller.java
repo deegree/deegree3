@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,6 +59,7 @@ import javax.vecmath.Point2d;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
+import org.deegree.geometry.primitive.Ring;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -262,8 +262,9 @@ public class Controller {
                         // );
                         break;
                     }
-                    List<Polygon> polygon = transform.computePolygonList();
-                    panel.setPolygonList( polygon );
+                    List<Ring> polygonRing = transform.computeRingList();
+
+                    panel.setPolygonList( polygonRing, sceneValues );
 
                     panel.repaint();
                 }
@@ -614,9 +615,10 @@ public class Controller {
                     } else {
                         zoomIn = false;
                     }
-                    if ( panel.getWorldPolygonList() != null ) {
-                        sceneValues.setSizeGeoRefPolygon( zoomIn, resizing );
-                    }
+                    // if ( panel.getWorldPolygonList() != null ) {
+                    // System.out.println( "[Controller] mouseCum: " + mouseGeoRef.getCumulatedMouseChanging() );
+                    // sceneValues.computeSizeGeoRefPolygon( zoomIn, resizing );
+                    // }
                     sceneValues.setSizeGeoRef( zoomIn, resizing );
                     init();
                     panel.updatePoints( sceneValues );
@@ -738,7 +740,7 @@ public class Controller {
         panel.removeAllFromSelectedPoints();
         footPanel.removeAllFromSelectedPoints();
         footPanel.setLastAbstractPoint( null, null );
-        panel.setPolygonList( null );
+        panel.setPolygonList( null, null );
         panel.setLastAbstractPoint( null, null );
         panel.repaint();
         footPanel.repaint();

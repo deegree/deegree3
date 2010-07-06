@@ -35,8 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application.transformation;
 
-import java.awt.Polygon;
 import java.util.List;
+
+import org.deegree.geometry.primitive.Ring;
 
 /**
  * TODO add class documentation here
@@ -58,7 +59,7 @@ public interface TransformationMethod {
 
     public TransformationType getType();
 
-    public List<Polygon> computePolygonList();
+    public List<Ring> computeRingList();
 
     // public int getOrder();
 
