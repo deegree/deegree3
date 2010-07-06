@@ -90,6 +90,8 @@ public class Scene2DValues {
 
     private Point2d convertedRasterToPixelPoint;
 
+    private double sizeGeoRefPolygon;
+
     public Scene2DValues( RasterIOOptions options ) {
         this.options = options;
 
@@ -237,6 +239,10 @@ public class Scene2DValues {
         return sizeGeoRef;
     }
 
+    public double getSizeGeoRefPolygon() {
+        return sizeGeoRefPolygon;
+    }
+
     public double getSizeFootprint() {
         return sizeFootprint;
     }
@@ -257,6 +263,23 @@ public class Scene2DValues {
         this.sizeGeoRef = newSize;
 
         System.out.println( "[Scene2DValues] newSizeGeoRef: " + this.sizeGeoRef );
+    }
+
+    public void setSizeGeoRefPolygon( boolean isZoomedIn, double resizing ) {
+        if ( this.sizeGeoRefPolygon == 0.0 ) {
+            this.sizeGeoRefPolygon = 1.0;
+        }
+
+        double newSize = this.sizeGeoRefPolygon * ( 1 - resizing );
+        if ( isZoomedIn == false ) {
+            newSize = this.sizeGeoRefPolygon * ( 1 / ( 1 - resizing ) );
+        }
+        // BigDecimal b = new BigDecimal( newSize );
+        // b = b.round( new MathContext( 16 ) );
+        // this.size = b.floatValue();
+        this.sizeGeoRefPolygon = newSize;
+
+        System.out.println( "[Scene2DValues] newsizeGeoRefPolygon: " + this.sizeGeoRefPolygon );
     }
 
     public void setSizeFootprint( double sizeFootprint ) {

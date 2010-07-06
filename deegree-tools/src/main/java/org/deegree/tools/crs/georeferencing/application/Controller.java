@@ -608,13 +608,16 @@ public class Controller {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                     boolean zoomIn = false;
+                    float resizing = .05f;
                     if ( m.getWheelRotation() < 0 ) {
                         zoomIn = true;
                     } else {
                         zoomIn = false;
                     }
-
-                    sceneValues.setSizeGeoRef( zoomIn, .05 );
+                    if ( panel.getWorldPolygonList() != null ) {
+                        sceneValues.setSizeGeoRefPolygon( zoomIn, resizing );
+                    }
+                    sceneValues.setSizeGeoRef( zoomIn, resizing );
                     init();
                     panel.updatePoints( sceneValues );
                 }

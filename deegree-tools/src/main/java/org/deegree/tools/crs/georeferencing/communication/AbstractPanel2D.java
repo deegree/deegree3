@@ -130,6 +130,12 @@ public abstract class AbstractPanel2D extends JPanel {
         return b.floatValue();
     }
 
+    protected int roundInt( double value ) {
+        BigDecimal b = new BigDecimal( value );
+        b = b.round( new MathContext( 2 ) );
+        return b.intValue();
+    }
+
     public abstract void updatePoints( Scene2DValues sceneValues );
 
 }
