@@ -281,8 +281,8 @@ public class Controller {
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GET_3DOBJECT ) ) {
 
-                    footPanel.setResolution( 4.0 );
-                    sceneValues.setSizeFootprint( footPanel.getResolution() );
+                    footPanel.setInitialResolution( 4.0 );
+                    sceneValues.setSizeFootprint( footPanel.getInitialResolution() );
                     mouseFootprint = new MouseModel();
                     // TODO at the moment the file which is used is static in the GRViewerGUI!!!
                     List<WorldRenderableObject> rese = File3dImporter.open( view, view.fileName() );

@@ -87,6 +87,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
 
+    private double initialResolution;
+
     private double resolution;
 
     /**
@@ -143,7 +145,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
     public void setPolygonList( List<Polygon> polygonList ) {
         this.worldPolygonList = polygonList;
         if ( this.resolution == 0.0 ) {
-            this.resolution = 4.0;
+            this.resolution = this.initialResolution;
         }
         // System.out.println( "[Footprint] Resize: " + resolution );
         pixelCoordinatePolygonList = new ArrayList<Polygon>();
@@ -195,6 +197,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
                                                                   ( po.ypoints[i] - y ) * this.resolution );
                 pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ), new FootprintPoint( po.xpoints[i],
                                                                                                 po.ypoints[i] ) );
+                System.out.println( "[BuildingFootprintPanel] " + x2[i] + " " + y2[i] );
             }
             Polygon p = new Polygon( x2, y2, po.npoints );
             pixelCoordinatePolygonList.add( p );
@@ -236,12 +239,10 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         Pair<AbstractGRPoint, FootprintPoint> closestPoint = new Pair<AbstractGRPoint, FootprintPoint>();
 
         if ( pointsPixelToWorld.size() != 0 ) {
-            double distance = 0.0;
+            double distance = -1.0;
 
             for ( Point2d point : pointsPixelToWorld.keySet() ) {
-                // System.out.println( "[BuildingFootprint] Mapping: " + point + " - " + pointsPixelToWorld.get( point )
-                // );
-                if ( distance == 0.0 ) {
+                if ( distance == -1.0 ) {
                     distance = point.distance( point2d );
                     if ( point2d instanceof FootprintPoint ) {
                         closestPoint.first = new FootprintPoint( point.x, point.y );
@@ -292,32 +293,28 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         FootprintPoint point = null;
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {
-            point = new FootprintPoint( p.getInitialValue().getX() * this.resolution, p.getInitialValue().getY()
-                                                                                      * this.resolution );
+            point = new FootprintPoint( p.getInitialValue().getX() / this.initialResolution * this.resolution,
+                                        p.getInitialValue().getY() / this.initialResolution * this.resolution );
             selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), point, p.getWorldCoords() ) );
         }
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {
-            double x = lastAbstractPoint.getInitialValue().getX();
-            double y = lastAbstractPoint.getInitialValue().getY();
+            double x = lastAbstractPoint.getInitialValue().getX() / this.initialResolution;
+            double y = lastAbstractPoint.getInitialValue().getY() / this.initialResolution;
             double x1 = roundDouble( x * this.resolution );
             double y1 = roundDouble( y * this.resolution );
-            FootprintPoint pi = (FootprintPoint) getClosestPoint( new FootprintPoint(
-                                                                                      lastAbstractPoint.getNewValue().getX()
-                                                                                                              + x1,
-                                                                                      lastAbstractPoint.getNewValue().getY()
-                                                                                                              + y1 ) ).first;
+            FootprintPoint pi = (FootprintPoint) getClosestPoint( new FootprintPoint( x1, y1 ) ).first;
 
             lastAbstractPoint.setNewValue( new FootprintPoint( pi.getX(), pi.getY() ) );
         }
     }
 
-    public double getResolution() {
-        return resolution;
+    public double getInitialResolution() {
+        return initialResolution;
     }
 
-    public void setResolution( double resolution ) {
-        this.resolution = resolution;
+    public void setInitialResolution( double resolution ) {
+        this.initialResolution = resolution;
     }
 
 }
