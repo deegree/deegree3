@@ -79,12 +79,11 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private ArrayList<Polygon> polygonListTranslated;
 
-    private Point2d cumTranslationPoint;
-
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
         this.selectedPoints = new ArrayList<Point4Values>();
         this.beginDrawImageAtPosition = new Point2d( 0, 0 );
+        this.translationPoint = new Point2d( 0.0, 0.0 );
     }
 
     @Override
@@ -92,14 +91,14 @@ public class Scene2DPanel extends AbstractPanel2D {
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
 
-        if ( cumTranslationPoint == null ) {
-            cumTranslationPoint = new Point2d( 0.0, 0.0 );
+        if ( translationPoint == null ) {
+            translationPoint = new Point2d( 0.0, 0.0 );
         }
-        g2.translate( -cumTranslationPoint.x, -cumTranslationPoint.y );
+        g2.translate( -translationPoint.x, -translationPoint.y );
         if ( imageToDraw != null ) {
 
-            g2.drawImage( imageToDraw, (int) cumTranslationPoint.x, (int) cumTranslationPoint.y,
-                          (int) imageDimension.width, (int) imageDimension.height, this );
+            g2.drawImage( imageToDraw, (int) translationPoint.x, (int) translationPoint.y, (int) imageDimension.width,
+                          (int) imageDimension.height, this );
 
         }
 
@@ -121,7 +120,7 @@ public class Scene2DPanel extends AbstractPanel2D {
                 g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
             }
         }
-        g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
+        g2.translate( translationPoint.x, translationPoint.y );
 
     }
 
@@ -150,8 +149,8 @@ public class Scene2DPanel extends AbstractPanel2D {
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {
             int[] pValues = sceneValues.getPixelCoord( p.getWorldCoords() );
-            double x = pValues[0] + cumTranslationPoint.getX();
-            double y = pValues[1] + cumTranslationPoint.getY();
+            double x = pValues[0] + translationPoint.getX();
+            double y = pValues[1] + translationPoint.getY();
             GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
             selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords() ) );
         }
@@ -159,8 +158,8 @@ public class Scene2DPanel extends AbstractPanel2D {
         if ( lastAbstractPoint != null ) {
 
             int[] p = sceneValues.getPixelCoord( lastAbstractPoint.getWorldCoords() );
-            double x = p[0] + cumTranslationPoint.getX();
-            double y = p[1] + cumTranslationPoint.getY();
+            double x = p[0] + translationPoint.getX();
+            double y = p[1] + translationPoint.getY();
 
             GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
             lastAbstractPoint.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
@@ -195,8 +194,8 @@ public class Scene2DPanel extends AbstractPanel2D {
                     double x = ring.getControlPoints().getX( i );
                     double y = ring.getControlPoints().getY( i );
                     int[] p = sceneValues.getPixelCoord( new GeoReferencedPoint( x, y ) );
-                    x2[i] = new Double( p[0] + cumTranslationPoint.getX() ).intValue();
-                    y2[i] = new Double( p[1] + cumTranslationPoint.getY() ).intValue();
+                    x2[i] = new Double( p[0] + translationPoint.getX() ).intValue();
+                    y2[i] = new Double( p[1] + translationPoint.getY() ).intValue();
 
                 }
                 Polygon p = new Polygon( x2, y2, ring.getControlPoints().size() );
@@ -208,11 +207,6 @@ public class Scene2DPanel extends AbstractPanel2D {
         } else {
             this.polygonList = null;
         }
-
-    }
-
-    public void setCumTranslationPoint( Point2d translationPoint ) {
-        this.cumTranslationPoint = translationPoint;
 
     }
 

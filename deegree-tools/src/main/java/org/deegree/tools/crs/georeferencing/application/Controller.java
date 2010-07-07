@@ -200,9 +200,18 @@ public class Controller {
 
                     textFieldModel = new TextFieldModel( tF.getText() );
                     if ( sceneValues.getTransformedBounds() != null ) {
-                        sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                       textFieldModel.getyCoordiante() );
+                        AbstractGRPoint translatedPoint = sceneValues.setCentroidRasterEnvelopePosition(
+                                                                                                         textFieldModel.getxCoordinate(),
+                                                                                                         textFieldModel.getyCoordiante() );
                         init();
+
+                        mouseGeoRef.setCumulatedMouseChanging( new Point2d(
+                                                                            mouseGeoRef.getCumulatedMouseChanging().getX()
+                                                                                                    + translatedPoint.getX(),
+                                                                            mouseGeoRef.getCumulatedMouseChanging().getY()
+                                                                                                    + translatedPoint.getY() ) );
+
+                        panel.setTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
                         panel.repaint();
                     }
                 }
@@ -457,14 +466,14 @@ public class Controller {
                                                                                                   + mouseGeoRef.getCumulatedMouseChanging().getX(),
                                                                           pixelPoint[1]
                                                                                                   + mouseGeoRef.getCumulatedMouseChanging().getY() );
+                        System.out.println( "[Controller] " + panel.getTranslationPoint().getX() );
                         panel.setLastAbstractPoint( newP, g );
                         tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
 
                     } else {
-                        mouseGeoRef.setMouseChanging( new Point2d(
-                                                                   ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
-                                                                   ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
-
+                        mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
+                                                                              ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
+                                                                              ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
                         mouseGeoRef.setCumulatedMouseChanging( new Point2d(
                                                                             mouseGeoRef.getCumulatedMouseChanging().getX()
                                                                                                     + mouseGeoRef.getMouseChanging().getX(),
@@ -475,7 +484,7 @@ public class Controller {
                         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
 
                     }
-                    panel.setCumTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
+                    panel.setTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
                     panel.repaint();
                 }
                 // footprintPanel
@@ -504,17 +513,16 @@ public class Controller {
                         tablePanel.setCoords( footPanel.getLastAbstractPoint().getWorldCoords() );
 
                     } else {
-                        mouseFootprint.setMouseChanging( new Point2d(
-                                                                      ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
-                                                                      ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
-
+                        mouseFootprint.setMouseChanging( new FootprintPoint(
+                                                                             ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
+                                                                             ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
                         mouseFootprint.setCumulatedMouseChanging( new Point2d(
                                                                                mouseFootprint.getCumulatedMouseChanging().getX()
                                                                                                        + mouseFootprint.getMouseChanging().getX(),
                                                                                mouseFootprint.getCumulatedMouseChanging().getY()
                                                                                                        + mouseFootprint.getMouseChanging().getY() ) );
 
-                        footPanel.setCumTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
+                        footPanel.setTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
 
                     }
                     footPanel.repaint();
@@ -523,6 +531,10 @@ public class Controller {
         }
 
     }
+
+    // private void paintInteraction( JPanel panel, MouseModel mouse ) {
+    //
+    // }
 
     /**
      * Sets values to the JTableModel and adds a new row to it.

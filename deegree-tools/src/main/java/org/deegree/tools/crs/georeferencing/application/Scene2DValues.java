@@ -75,7 +75,7 @@ public class Scene2DValues {
     /**
      * new width and new height
      */
-    private Point2d transformedBounds;
+    private Point2d transformedRasterSpan;
 
     private Point2d convertedPixelToRasterPoint;
 
@@ -227,7 +227,7 @@ public class Scene2DValues {
     }
 
     public void setTransformedBounds( Point2d transformedBounds ) {
-        this.transformedBounds = transformedBounds;
+        this.transformedRasterSpan = transformedBounds;
     }
 
     public Point2d getConvertedPixelToRasterPoint() {
@@ -330,20 +330,20 @@ public class Scene2DValues {
             double newWidth = ( w / h ) * sizeGeoRef * rect.width;
             convertedPixelToRasterPoint = new Point2d( newWidth / w, rect.height * sizeGeoRef / h );
             convertedRasterToPixelPoint = new Point2d( w / newWidth, h / ( rect.height * sizeGeoRef ) );
-            transformedBounds = new Point2d( newWidth, rect.height * sizeGeoRef );
-            return transformedBounds;
+            transformedRasterSpan = new Point2d( newWidth, rect.height * sizeGeoRef );
+            return transformedRasterSpan;
         } else if ( ratio > 1 ) {
             // if > 1 then do orientation on w
             double newHeight = ( h / w ) * sizeGeoRef * rect.height;
             convertedPixelToRasterPoint = new Point2d( rect.width * sizeGeoRef / w, newHeight / h );
             convertedRasterToPixelPoint = new Point2d( w / ( rect.width * sizeGeoRef ), h / newHeight );
-            transformedBounds = new Point2d( rect.width * sizeGeoRef, newHeight );
-            return transformedBounds;
+            transformedRasterSpan = new Point2d( rect.width * sizeGeoRef, newHeight );
+            return transformedRasterSpan;
         }
         // if w = h then return 0
-        transformedBounds = new Point2d( rect.width * sizeGeoRef, rect.height * sizeGeoRef );
+        transformedRasterSpan = new Point2d( rect.width * sizeGeoRef, rect.height * sizeGeoRef );
 
-        return transformedBounds;
+        return transformedRasterSpan;
     }
 
     public double getResolution() {
@@ -352,6 +352,7 @@ public class Scene2DValues {
     }
 
     /**
+     * Sets the minimum points to generate a georeferenced map
      * 
      * @param minPoint
      *            the pixel representation of the point, can be <Code>null</Code>.
@@ -363,8 +364,6 @@ public class Scene2DValues {
 
         double minRX = this.minPointRaster.x + ( minPoint.x * convertedPixelToRasterPoint.x );
         double minRY = this.minPointRaster.y + ( minPoint.y * convertedPixelToRasterPoint.y );
-        // double minRX = 0 + ( minPoint.x * convertedPixelToRasterPoint.x );
-        // double minRY = 0 + ( minPoint.y * convertedPixelToRasterPoint.y );
 
         double minPX = this.minPointPixel.x + minPoint.x;
         double minPY = this.minPointPixel.y + minPoint.y;
@@ -383,7 +382,7 @@ public class Scene2DValues {
      * @param yCoord
      *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
      */
-    public void setCentroidRasterEnvelopePosition( double xCoord, double yCoord ) {
+    public AbstractGRPoint setCentroidRasterEnvelopePosition( double xCoord, double yCoord ) {
 
         double halfSpanX = subRaster.getEnvelope().getSpan0() / 2;
         double halfSpanY = subRaster.getEnvelope().getSpan1() / 2;
@@ -393,10 +392,11 @@ public class Scene2DValues {
 
         // get the worldPoint in pixelCoordinates
         int[] p = getPixelCoord( new GeoReferencedPoint( x, y ) );
-
+        System.out.println( "[Scene2DValues] point: " + p[0] + " " + p[1] );
         // set all the relevant parameters for generating the georefernced map
         setStartRasterEnvelopePosition( new Point2d( p[0], p[1] ) );
 
+        return new GeoReferencedPoint( p[0], p[1] );
     }
 
     public Point2d getMinPointRaster() {

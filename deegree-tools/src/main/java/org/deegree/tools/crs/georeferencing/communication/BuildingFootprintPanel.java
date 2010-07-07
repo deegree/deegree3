@@ -81,8 +81,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private List<Polygon> pixelCoordinatePolygonList;
 
-    private Point2d cumTranslationPoint;
-
     private final Insets insets = new Insets( 0, 10, 0, 0 );
 
     private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
@@ -106,11 +104,11 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
 
-        if ( cumTranslationPoint == null ) {
-            cumTranslationPoint = new Point2d( 0.0, 0.0 );
+        if ( translationPoint == null ) {
+            translationPoint = new Point2d( 0.0, 0.0 );
         }
 
-        g2.translate( -cumTranslationPoint.x, -cumTranslationPoint.y );
+        g2.translate( -translationPoint.x, -translationPoint.y );
 
         if ( polygonList != null ) {
             for ( Polygon polygon : polygonList ) {
@@ -130,7 +128,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
         }
 
-        g2.translate( cumTranslationPoint.x, cumTranslationPoint.y );
+        g2.translate( translationPoint.x, translationPoint.y );
     }
 
     @Override
@@ -205,14 +203,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         }
 
         this.polygonList = pixelCoordinatePolygonList;
-    }
-
-    public Point2d getCumTranslationPoint() {
-        return cumTranslationPoint;
-    }
-
-    public void setCumTranslationPoint( Point2d translationPoint ) {
-        this.cumTranslationPoint = translationPoint;
     }
 
     public int getOffset() {
