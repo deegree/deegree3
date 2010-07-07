@@ -81,10 +81,6 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private Point2d cumTranslationPoint;
 
-    private double initialResolution;
-
-    private double resolution;
-
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
         this.selectedPoints = new ArrayList<Point4Values>();
@@ -192,18 +188,18 @@ public class Scene2DPanel extends AbstractPanel2D {
                 sizeOfPoints += p.getControlPoints().size();
 
             }
-            for ( Ring po : polygonRing ) {
-                int[] x2 = new int[po.getControlPoints().size()];
-                int[] y2 = new int[po.getControlPoints().size()];
-                for ( int i = 0; i < po.getControlPoints().size(); i++ ) {
-                    double x = po.getControlPoints().getX( i );
-                    double y = po.getControlPoints().getY( i );
+            for ( Ring ring : polygonRing ) {
+                int[] x2 = new int[ring.getControlPoints().size()];
+                int[] y2 = new int[ring.getControlPoints().size()];
+                for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
+                    double x = ring.getControlPoints().getX( i );
+                    double y = ring.getControlPoints().getY( i );
                     int[] p = sceneValues.getPixelCoord( new GeoReferencedPoint( x, y ) );
                     x2[i] = new Double( p[0] + cumTranslationPoint.getX() ).intValue();
                     y2[i] = new Double( p[1] + cumTranslationPoint.getY() ).intValue();
 
                 }
-                Polygon p = new Polygon( x2, y2, po.getControlPoints().size() );
+                Polygon p = new Polygon( x2, y2, ring.getControlPoints().size() );
                 polygonListTranslated.add( p );
 
             }
@@ -218,14 +214,6 @@ public class Scene2DPanel extends AbstractPanel2D {
     public void setCumTranslationPoint( Point2d translationPoint ) {
         this.cumTranslationPoint = translationPoint;
 
-    }
-
-    public double getInitialResolution() {
-        return initialResolution;
-    }
-
-    public void setInitialResolution( double resolution ) {
-        this.initialResolution = resolution;
     }
 
     public List<Ring> getWorldPolygonList() {

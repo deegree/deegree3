@@ -51,6 +51,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -79,6 +80,8 @@ public class GRViewerGUI extends JFrame {
 
     public final static String MENUITEM_TRANS_HELMERT = "Helmert";
 
+    public final static String JTEXTFIELD_COORDINATE_JUMPER = "CoordinateJumper";
+
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
     private final static Dimension FRAME_DIMENSION = new Dimension( 900, 600 );
@@ -104,6 +107,8 @@ public class GRViewerGUI extends JFrame {
     private JMenuItem polynomial_3;
 
     private JMenuItem helmert;
+
+    private JTextField coordinateJumper;
 
     private String ows7url;
 
@@ -174,6 +179,10 @@ public class GRViewerGUI extends JFrame {
         navigationPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         navigationPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
+        coordinateJumper = new JTextField( 30 );
+        coordinateJumper.setName( JTEXTFIELD_COORDINATE_JUMPER );
+        navigationPanel.add( coordinateJumper );
+
         GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, navigationPanel, 0, 0, 3, 1, .15, .15 );
     }
 
@@ -234,7 +243,7 @@ public class GRViewerGUI extends JFrame {
     }
 
     /**
-     * Adds the actionListener to the menuItems.
+     * Adds the actionListener to the visible components to interact with the user.
      * 
      * @param e
      */
@@ -245,6 +254,7 @@ public class GRViewerGUI extends JFrame {
         polynomial_2.addActionListener( e );
         polynomial_3.addActionListener( e );
         helmert.addActionListener( e );
+        coordinateJumper.addActionListener( e );
 
     }
 

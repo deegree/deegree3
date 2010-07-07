@@ -52,6 +52,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.vecmath.Point2d;
@@ -76,6 +77,7 @@ import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
+import org.deegree.tools.crs.georeferencing.model.TextFieldModel;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -109,6 +111,8 @@ public class Controller {
     private RasterIOOptions options;
 
     private Footprint footPrint;
+
+    private TextFieldModel textFieldModel;
 
     private OpenGLEventHandler glHandler;
 
@@ -185,6 +189,21 @@ public class Controller {
                         isHorizontalRef = true;
                     } else {
                         isHorizontalRef = false;
+                    }
+                }
+
+            }
+            if ( source instanceof JTextField ) {
+                JTextField tF = (JTextField) source;
+                if ( tF.getName().startsWith( GRViewerGUI.JTEXTFIELD_COORDINATE_JUMPER ) ) {
+                    System.out.println( "put something in the textfield: " + tF.getText() );
+
+                    textFieldModel = new TextFieldModel( tF.getText() );
+                    if ( sceneValues.getTransformedBounds() != null ) {
+                        sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                       textFieldModel.getyCoordiante() );
+                        init();
+                        panel.repaint();
                     }
                 }
 
@@ -272,9 +291,7 @@ public class Controller {
             if ( source instanceof JMenuItem ) {
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GETMAP ) ) {
                     mouseGeoRef = new MouseModel();
-                    panel.setInitialResolution( Float.parseFloat( ( options.get( "RESOLUTION" ) ) ) );
                     init();
-                    // panel.setinitialResolution( sceneValues.getSize() );
                     targetCRS = sceneValues.getCrs();
                     panel.addScene2DMouseListener( new Scene2DMouseListener() );
                     // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );

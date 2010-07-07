@@ -72,6 +72,9 @@ public class Scene2DValues {
     //
     // private Point2d imageStartPosition;
 
+    /**
+     * new width and new height
+     */
     private Point2d transformedBounds;
 
     private Point2d convertedPixelToRasterPoint;
@@ -351,7 +354,7 @@ public class Scene2DValues {
     /**
      * 
      * @param minPoint
-     *            the pixel representation of the point
+     *            the pixel representation of the point, can be <Code>null</Code>.
      */
     public void setStartRasterEnvelopePosition( Point2d minPoint ) {
         if ( minPointPixel == null ) {
@@ -368,7 +371,32 @@ public class Scene2DValues {
 
         this.minPointRaster = new Point2d( minRX, minRY );
         this.minPointPixel = new Point2d( minPX, minPY );
-        System.out.println( "[Scene2DValues] minPixel: " + minPointPixel + " minRaster: " + minPointRaster );
+        // System.out.println( "[Scene2DValues] minPixel: " + minPointPixel + " minRaster: " + minPointRaster );
+    }
+
+    /**
+     * 
+     * Sets the point as the centroid of the envelope.
+     * 
+     * @param xCoord
+     *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * @param yCoord
+     *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     */
+    public void setCentroidRasterEnvelopePosition( double xCoord, double yCoord ) {
+
+        double halfSpanX = subRaster.getEnvelope().getSpan0() / 2;
+        double halfSpanY = subRaster.getEnvelope().getSpan1() / 2;
+
+        double x = xCoord - halfSpanX;
+        double y = yCoord + halfSpanY;
+
+        // get the worldPoint in pixelCoordinates
+        int[] p = getPixelCoord( new GeoReferencedPoint( x, y ) );
+
+        // set all the relevant parameters for generating the georefernced map
+        setStartRasterEnvelopePosition( new Point2d( p[0], p[1] ) );
+
     }
 
     public Point2d getMinPointRaster() {
