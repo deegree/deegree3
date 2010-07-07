@@ -405,24 +405,39 @@ class GetFeatureAnalyzer {
         // no check possible if feature type is unknown
         if ( typeNames.length > 0 ) {
             if ( propName.isSimple() ) {
-                if ( !repairSimpleUnqualified( propName, typeNames[0] ) ) {
-                    QName name = getPropertyNameAsQName( propName );
-                    if ( name != null ) {
-                        if ( typeNames.length == 1 ) {
-                            FeatureType ft = service.lookupFeatureType( typeNames[0].getFeatureTypeName() );
-                            if ( ft.getPropertyDeclaration( name, outputFormat ) == null ) {
-                                String msg = "Specified PropertyName '" + propName.getPropertyName() + "' (='" + name
-                                             + "') does not exist for feature type '" + ft.getName() + "'.";
-                                throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
-                            }
+                if ( !isPrefixedAndBound( propName ) ) {
+                    repairSimpleUnqualified( propName, typeNames[0] );
+                }
+
+                // check that the propName is indeed valid as belonging to serviced features
+                QName name = getPropertyNameAsQName( propName );
+                if ( name != null ) {
+                    if ( typeNames.length == 1 ) {
+                        FeatureType ft = service.lookupFeatureType( typeNames[0].getFeatureTypeName() );
+                        if ( ft.getPropertyDeclaration( name, outputFormat ) == null ) {
+                            String msg = "Specified PropertyName '" + propName.getPropertyName() + "' (='" + name
+                                         + "') does not exist for feature type '" + ft.getName() + "'.";
+                            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "PropertyName" );
                         }
-                        // TODO really skip this check for join queries?
                     }
+                    // TODO really skip this check for join queries?
                 }
             } else {
                 // TODO property name may be an XPath and use aliases...
             }
         }
+    }
+
+    /**
+     * Returns whether the propName has to be considered for re-qualification.
+     * 
+     * @param propName
+     * @return
+     */
+    private boolean isPrefixedAndBound( PropertyName propName ) {
+        QName name = propName.getAsQName();
+        return !name.getPrefix().equals( DEFAULT_NS_PREFIX )
+               && !name.getNamespaceURI().equals( XMLConstants.NULL_NS_URI );
     }
 
     /**
@@ -436,10 +451,8 @@ class GetFeatureAnalyzer {
      *            property name to be repaired, must be "simple", i.e. contain only of a QName
      * @param typeName
      *            feature type specification from the query, must not be <code>null</code>
-     * @return true, if the name could be matched against against a property of the feature type successfully, false
-     *         otherwise
      */
-    private boolean repairSimpleUnqualified( PropertyName propName, TypeName typeName ) {
+    private void repairSimpleUnqualified( PropertyName propName, TypeName typeName ) {
 
         FeatureType ft = service.lookupFeatureType( typeName.getFeatureTypeName() );
 
@@ -450,10 +463,6 @@ class GetFeatureAnalyzer {
         }
 
         QName match = QNameUtils.findBestMatch( propName.getAsQName(), propNames );
-        if ( match == null ) {
-            // no match
-            return false;
-        }
         if ( !match.equals( propName.getAsQName() ) ) {
             LOG.warn( "Repairing unqualified PropertyName: " + QNameUtils.toString( propName.getAsQName() ) + " -> "
                       + QNameUtils.toString( match ) );
@@ -466,7 +475,6 @@ class GetFeatureAnalyzer {
             nsContext.addNamespace( match.getPrefix(), match.getNamespaceURI() );
             propName.set( text, nsContext );
         }
-        return true;
     }
 
     // TODO do this properly
