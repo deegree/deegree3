@@ -177,6 +177,7 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     }
 
+    @Override
     public void setPolygonList( List<Ring> polygonRing, Scene2DValues sceneValues ) {
         if ( polygonRing != null ) {
             this.worldPolygonList = polygonRing;

@@ -39,15 +39,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
@@ -73,21 +72,21 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private List<Polygon> polygonList;
 
-    private List<Polygon> worldPolygonList;
+    private List<Ring> worldPolygonList;
 
-    private FootprintPoint[] pixelCoordinates;
+    // private FootprintPoint[] pixelCoordinates;
 
     private int offset;
 
-    private List<Polygon> pixelCoordinatePolygonList;
+    // private List<Polygon> pixelCoordinatePolygonList;
 
     private final Insets insets = new Insets( 0, 10, 0, 0 );
 
     private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
 
-    private double initialResolution;
+    // private double initialResolution;
 
-    private double resolution;
+    private ArrayList<Polygon> polygonListTranslated;
 
     /**
      * 
@@ -140,69 +139,108 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         return polygonList;
     }
 
-    public void setPolygonList( List<Polygon> polygonList ) {
-        this.worldPolygonList = polygonList;
-        if ( this.resolution == 0.0 ) {
-            this.resolution = this.initialResolution;
-        }
-        // System.out.println( "[Footprint] Resize: " + resolution );
-        pixelCoordinatePolygonList = new ArrayList<Polygon>();
-        pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
-        List<Rectangle> rect = new ArrayList<Rectangle>();
+    @Override
+    public void setPolygonList( List<Ring> polygonRing, Scene2DValues sceneValues ) {
 
-        int sizeOfPoints = 0;
-        for ( Polygon p : polygonList ) {
-            sizeOfPoints += p.npoints;
-            rect.add( p.getBounds() );
-        }
+        if ( polygonRing != null ) {
+            this.worldPolygonList = polygonRing;
+            polygonListTranslated = new ArrayList<Polygon>();
 
-        if ( pixelCoordinates == null ) {
-            pixelCoordinates = new FootprintPoint[sizeOfPoints];
-        }
-        Rectangle temp = null;
-        // get minimum X
-        for ( Rectangle rec : rect ) {
-            if ( temp == null ) {
-                temp = rec;
-            } else {
-                if ( rec.x < temp.x ) {
-                    temp = rec;
+            int sizeOfPoints = 0;
+            for ( Ring p : polygonRing ) {
+                sizeOfPoints += p.getControlPoints().size();
+
+            }
+            for ( Ring ring : polygonRing ) {
+                int[] x2 = new int[ring.getControlPoints().size()];
+                int[] y2 = new int[ring.getControlPoints().size()];
+                for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
+                    double x = ring.getControlPoints().getX( i );
+                    double y = ring.getControlPoints().getY( i );
+                    int[] p = sceneValues.getPixelCoord( new FootprintPoint( x, y ) );
+                    x2[i] = new Double( p[0] + translationPoint.getX() ).intValue();
+                    y2[i] = new Double( p[1] + translationPoint.getY() ).intValue();
+
                 }
-            }
-        }
-        int x = temp.x - offset;
+                Polygon p = new Polygon( x2, y2, ring.getControlPoints().size() );
+                polygonListTranslated.add( p );
 
-        Rectangle tempY = null;
-        // get minimum Y
-        for ( Rectangle rec : rect ) {
-            if ( tempY == null ) {
-                tempY = rec;
-            } else {
-                if ( rec.y < temp.y ) {
-                    tempY = rec;
-                }
             }
-        }
-        int y = temp.y - offset;
-        int counter = 0;
-        for ( Polygon po : polygonList ) {
-            int[] x2 = new int[po.npoints];
-            int[] y2 = new int[po.npoints];
-            for ( int i = 0; i < po.npoints; i++ ) {
-                x2[i] = (int) ( ( po.xpoints[i] - x ) * this.resolution );
-                y2[i] = (int) ( ( po.ypoints[i] - y ) * this.resolution );
-                pixelCoordinates[counter++] = new FootprintPoint( ( po.xpoints[i] - x ) * this.resolution,
-                                                                  ( po.ypoints[i] - y ) * this.resolution );
-                pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ), new FootprintPoint( po.xpoints[i],
-                                                                                                po.ypoints[i] ) );
-                System.out.println( "[BuildingFootprintPanel] " + x2[i] + " " + y2[i] );
-            }
-            Polygon p = new Polygon( x2, y2, po.npoints );
-            pixelCoordinatePolygonList.add( p );
 
+            this.polygonList = polygonListTranslated;
+        } else {
+            this.polygonList = null;
         }
 
-        this.polygonList = pixelCoordinatePolygonList;
+        // this.worldPolygonList = polygonRing;
+        // if ( this.resolution == 0.0 ) {
+        // this.resolution = this.initialResolution;
+        // }
+        // // System.out.println( "[Footprint] Resize: " + resolution );
+        // pixelCoordinatePolygonList = new ArrayList<Polygon>();
+        // pointsPixelToWorld = new HashMap<FootprintPoint, FootprintPoint>();
+        // List<Rectangle> rect = new ArrayList<Rectangle>();
+        //
+        // int sizeOfPoints = 0;
+        // for ( Ring p : polygonRing ) {
+        // sizeOfPoints += p.getControlPoints().size();
+        // rect.add( new Rectangle( new Double( p.getEnvelope().getMin().get0() ).intValue(),
+        // new Double( p.getEnvelope().getMin().get1() ).intValue(),
+        // new Double( p.getEnvelope().getSpan0() ).intValue(),
+        // new Double( p.getEnvelope().getSpan1() ).intValue() ) );
+        //
+        // }
+        //
+        // if ( pixelCoordinates == null ) {
+        // pixelCoordinates = new FootprintPoint[sizeOfPoints];
+        // }
+        // Rectangle temp = null;
+        // // get minimum X
+        // for ( Rectangle rec : rect ) {
+        // if ( temp == null ) {
+        // temp = rec;
+        // } else {
+        // if ( rec.x < temp.x ) {
+        // temp = rec;
+        // }
+        // }
+        // }
+        // int x = temp.x - offset;
+        //
+        // Rectangle tempY = null;
+        // // get minimum Y
+        // for ( Rectangle rec : rect ) {
+        // if ( tempY == null ) {
+        // tempY = rec;
+        // } else {
+        // if ( rec.y < temp.y ) {
+        // tempY = rec;
+        // }
+        // }
+        // }
+        // int y = temp.y - offset;
+        // int counter = 0;
+        // for ( Ring ring : polygonRing ) {
+        // int[] x2 = new int[ring.getControlPoints().size()];
+        // int[] y2 = new int[ring.getControlPoints().size()];
+        // for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
+        // x2[i] = new Double( ( ring.getControlPoints().getX( i ) - x ) * this.resolution ).intValue();
+        // y2[i] = new Double( ( ring.getControlPoints().getY( i ) - y ) * this.resolution ).intValue();
+        // pixelCoordinates[counter++] = new FootprintPoint( ( ring.getControlPoints().getX( i ) - x )
+        // * this.resolution,
+        // ( ring.getControlPoints().getY( i ) - y )
+        // * this.resolution );
+        // pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ),
+        // new FootprintPoint( ring.getControlPoints().getX( i ),
+        // ring.getControlPoints().getY( i ) ) );
+        // System.out.println( "[BuildingFootprintPanel] " + x2[i] + " " + y2[i] );
+        // }
+        // Polygon p = new Polygon( x2, y2, ring.getControlPoints().size() );
+        // pixelCoordinatePolygonList.add( p );
+        //
+        // }
+
+        // this.polygonList = pixelCoordinatePolygonList;
     }
 
     public int getOffset() {
@@ -257,54 +295,46 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         return closestPoint;
     }
 
-    public FootprintPoint[] getPixelCoordinates() {
-        return pixelCoordinates;
-    }
-
-    public void updatePoints( Point2d changePoint ) {
-        for ( FootprintPoint p : pixelCoordinates ) {
-            p.setX( p.getX() - changePoint.x );
-            p.setY( p.getY() - changePoint.y );
-        }
-
-    }
-
     @Override
     public void updatePoints( Scene2DValues sceneValues ) {
-        this.resolution = sceneValues.getSizeFootprint();
 
-        setPolygonList( worldPolygonList );
+        if ( worldPolygonList != null ) {
 
-        updateSelectedPoints();
+            setPolygonList( worldPolygonList, sceneValues );
+        }
+
+        updateSelectedPoints( sceneValues );
 
     }
 
-    private void updateSelectedPoints() {
-        FootprintPoint point = null;
+    private void updateSelectedPoints( Scene2DValues sceneValues ) {
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {
-            point = new FootprintPoint( p.getInitialValue().getX() / this.initialResolution * this.resolution,
-                                        p.getInitialValue().getY() / this.initialResolution * this.resolution );
-            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), point, p.getWorldCoords() ) );
+            int[] pValues = sceneValues.getPixelCoord( p.getWorldCoords() );
+            double x = pValues[0] + translationPoint.getX();
+            double y = pValues[1] + translationPoint.getY();
+            FootprintPoint pi = new FootprintPoint( x, y );
+            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords() ) );
         }
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {
-            double x = lastAbstractPoint.getInitialValue().getX() / this.initialResolution;
-            double y = lastAbstractPoint.getInitialValue().getY() / this.initialResolution;
-            double x1 = roundDouble( x * this.resolution );
-            double y1 = roundDouble( y * this.resolution );
-            FootprintPoint pi = (FootprintPoint) getClosestPoint( new FootprintPoint( x1, y1 ) ).first;
 
+            int[] pValues = sceneValues.getPixelCoord( lastAbstractPoint.getWorldCoords() );
+            double x = pValues[0] + translationPoint.getX();
+            double y = pValues[1] + translationPoint.getY();
+
+            FootprintPoint pi = new FootprintPoint( x, y );
             lastAbstractPoint.setNewValue( new FootprintPoint( pi.getX(), pi.getY() ) );
+
+            // double x = lastAbstractPoint.getInitialValue().getX() / this.oldResolution;
+            // double y = lastAbstractPoint.getInitialValue().getY() / this.oldResolution;
+            // double x1 = x * this.resolution;
+            // double y1 = y * this.resolution;
+            // FootprintPoint pi = (FootprintPoint) getClosestPoint( new FootprintPoint( x1, y1 ) ).first;
+            //
+            // lastAbstractPoint.setNewValue( new FootprintPoint( pi.getX(), pi.getY() ) );
+            System.out.println( "[BuildingFootprintPanel] " + lastAbstractPoint );
         }
-    }
-
-    public double getInitialResolution() {
-        return initialResolution;
-    }
-
-    public void setInitialResolution( double resolution ) {
-        this.initialResolution = resolution;
     }
 
 }

@@ -46,6 +46,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
+import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -150,5 +151,7 @@ public abstract class AbstractPanel2D extends JPanel {
     }
 
     public abstract void updatePoints( Scene2DValues sceneValues );
+
+    public abstract void setPolygonList( List<Ring> polygonRing, Scene2DValues sceneValues );
 
 }

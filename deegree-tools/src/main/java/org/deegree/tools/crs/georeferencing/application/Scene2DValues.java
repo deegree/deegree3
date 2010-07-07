@@ -44,6 +44,8 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -81,7 +83,7 @@ public class Scene2DValues {
 
     private double sizeGeoRef;
 
-    private double sizeFootprint;
+    private double sizeFootprint, oldSizeFootprint;
 
     private Point2d minPointRaster;
 
@@ -95,8 +97,15 @@ public class Scene2DValues {
 
     private double sizeGeoRefPolygon;
 
-    public Scene2DValues( RasterIOOptions options ) {
+    private Rectangle dimensionFootprint;
+
+    private Envelope envelopeFootprint;
+
+    private GeometryFactory geom;
+
+    public Scene2DValues( RasterIOOptions options, GeometryFactory geom ) {
         this.options = options;
+        this.geom = geom;
 
     }
 
@@ -107,41 +116,55 @@ public class Scene2DValues {
      * @return
      */
     public AbstractGRPoint getWorldPoint( AbstractGRPoint pixelPoint ) {
-        if ( subRaster != null ) {
+        switch ( pixelPoint.getPointType() ) {
 
-            double[] worldPos;
+        case GeoreferencedPoint:
 
-            // determine the minX and the maxY position of the subRaster-envelope
-            double getMinX = subRaster.getEnvelope().getMin().get0();
-            double getMaxY = subRaster.getEnvelope().getMax().get1();
+            if ( subRaster != null ) {
 
-            // convert the requested point to rasterCoordinates
-            double rasterPosX = pixelPoint.x * convertedPixelToRasterPoint.x;
-            double rasterPosY = pixelPoint.y * convertedPixelToRasterPoint.y;
+                double[] worldPos;
 
-            // determine the minX and maxY values of the rasterEnvelope because they are absolute points
-            double minWorldInRasterX = subRaster.getRasterReference().getOriginEasting();
-            double maxWorldInRasterY = subRaster.getRasterReference().getOriginNorthing();
+                // determine the minX and the maxY position of the subRaster-envelope
+                double getMinX = subRaster.getEnvelope().getMin().get0();
+                double getMaxY = subRaster.getEnvelope().getMax().get1();
 
-            // determine the delta between the absolute rasterPoint and the minX and maxY point of the
-            // subRaster-envelope
-            double deltaX = Math.abs( minWorldInRasterX - getMinX );
-            double deltaY = Math.abs( maxWorldInRasterY - getMaxY );
+                // convert the requested point to rasterCoordinates
+                double rasterPosX = pixelPoint.x * convertedPixelToRasterPoint.x;
+                double rasterPosY = pixelPoint.y * convertedPixelToRasterPoint.y;
 
-            // get the worldCoordinates of the rasterPoints
-            worldPos = subRaster.getRasterReference().getWorldCoordinate( rasterPosX, rasterPosY );
-            // add/substract the delta of the worldRasterPoint
-            worldPos[0] = worldPos[0] + deltaX;
-            worldPos[1] = worldPos[1] - deltaY;
+                // determine the minX and maxY values of the rasterEnvelope because they are absolute points
+                double minWorldInRasterX = subRaster.getRasterReference().getOriginEasting();
+                double maxWorldInRasterY = subRaster.getRasterReference().getOriginNorthing();
 
-            switch ( pixelPoint.getPointType() ) {
+                // determine the delta between the absolute rasterPoint and the minX and maxY point of the
+                // subRaster-envelope
+                double deltaX = Math.abs( minWorldInRasterX - getMinX );
+                double deltaY = Math.abs( maxWorldInRasterY - getMaxY );
 
-            case GeoreferencedPoint:
+                // get the worldCoordinates of the rasterPoints
+                worldPos = subRaster.getRasterReference().getWorldCoordinate( rasterPosX, rasterPosY );
+                // add/substract the delta of the worldRasterPoint
+                worldPos[0] = worldPos[0] + deltaX;
+                worldPos[1] = worldPos[1] - deltaY;
+
                 return new GeoReferencedPoint( worldPos[0], worldPos[1] );
-            case FootprintPoint:
-                return new FootprintPoint( worldPos[0], worldPos[1] );
 
             }
+        case FootprintPoint:
+
+            // determine the minX and the maxY position of the envelope
+            double getMinX = envelopeFootprint.getMin().get0();
+            double getMaxY = envelopeFootprint.getMax().get1();
+
+            double spanX = envelopeFootprint.getSpan0();
+            double spanY = envelopeFootprint.getSpan1();
+
+            double percentX = ( pixelPoint.getX() / dimensionFootprint.width ) * spanX;
+            double percentY = ( pixelPoint.getY() / dimensionFootprint.height ) * spanY;
+
+            return new FootprintPoint( getMinX + percentX, getMaxY - percentY );
+
+            // return new FootprintPoint( worldPos[0], worldPos[1] );
 
         }
 
@@ -159,29 +182,42 @@ public class Scene2DValues {
      */
     public int[] getPixelCoord( AbstractGRPoint abstractGRPoint ) {
 
-        double spanX = subRaster.getEnvelope().getSpan0();
-        double spanY = subRaster.getEnvelope().getSpan1();
-        double mathX = -subRaster.getEnvelope().getMin().get0();
-        double mathY = -subRaster.getEnvelope().getMin().get1();
-        double deltaX = mathX + abstractGRPoint.getX();
-        double deltaY = mathY + abstractGRPoint.getY();
-        double percentX = deltaX / spanX;
-        double percentY = deltaY / spanY;
-        // int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) + imageStartPosition.getX() ) );
-        // int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) +
-        // imageStartPosition.getY() ) );
+        Point2d percentPoint;
 
-        int pixelPointX = Math.round( (float) ( ( percentX * imageDimension.width ) ) );
-        int pixelPointY = Math.round( (float) ( ( ( 1 - percentY ) * imageDimension.height ) ) );
+        int pixelPointX;
+        int pixelPointY;
 
-        // System.out.println( "[Scene2DValues] percent: " + percentX + " " + percentY + " = " + deltaY + " " + spanY );
-        return new int[] { pixelPointX, pixelPointY };
+        switch ( abstractGRPoint.getPointType() ) {
+
+        case GeoreferencedPoint:
+
+            percentPoint = computePercent( subRaster.getEnvelope(), abstractGRPoint );
+
+            pixelPointX = Math.round( (float) ( ( percentPoint.x * imageDimension.width ) ) );
+            pixelPointY = Math.round( (float) ( ( ( 1 - percentPoint.y ) * imageDimension.height ) ) );
+            return new int[] { pixelPointX, pixelPointY };
+        case FootprintPoint:
+
+            percentPoint = computePercent( this.envelopeFootprint, abstractGRPoint );
+
+            pixelPointX = Math.round( (float) ( ( percentPoint.x * dimensionFootprint.width ) ) );
+            pixelPointY = Math.round( (float) ( ( ( 1 - percentPoint.y ) * dimensionFootprint.height ) ) );
+            return new int[] { pixelPointX, pixelPointY };
+        }
+
+        return null;
     }
 
-    // public void setImageMargin( Point2d imageMargin ) {
-    // this.imageMargin = imageMargin;
-    //
-    // }
+    private Point2d computePercent( Envelope env, AbstractGRPoint abstractGRPoint ) {
+        double spanX = env.getSpan0();
+        double spanY = env.getSpan1();
+        double mathX = -env.getMin().get0();
+        double mathY = -env.getMin().get1();
+        double deltaX = mathX + abstractGRPoint.getX();
+        double deltaY = mathY + abstractGRPoint.getY();
+        return new Point2d( deltaX / spanX, deltaY / spanY );
+
+    }
 
     public Rectangle getImageDimension() {
         return imageDimension;
@@ -191,17 +227,9 @@ public class Scene2DValues {
         this.imageDimension = imageDimension;
     }
 
-    // public Point2d getImageStartPosition() {
-    // return imageStartPosition;
-    // }
-    //
-    // public void setImageStartPosition( Point2d imageStartPosition ) {
-    // this.imageStartPosition = imageStartPosition;
-    // }
-    //
-    // public Point2d getImageMargin() {
-    // return imageMargin;
-    // }
+    public void setDimenstionFootpanel( Rectangle dimension ) {
+        this.dimensionFootprint = dimension;
+    }
 
     public AbstractRaster getRaster() {
         return raster;
@@ -242,10 +270,6 @@ public class Scene2DValues {
         return sizeGeoRef;
     }
 
-    public double getSizeGeoRefPolygon() {
-        return sizeGeoRefPolygon;
-    }
-
     public double getSizeFootprint() {
         return sizeFootprint;
     }
@@ -268,39 +292,41 @@ public class Scene2DValues {
         System.out.println( "[Scene2DValues] newSizeGeoRef: " + this.sizeGeoRef );
     }
 
-    public void setSizeGeoRefPolygon( double sizeGeoRefPolygon ) {
-        this.sizeGeoRefPolygon = sizeGeoRefPolygon;
-    }
-
-    public void computeSizeGeoRefPolygon( boolean isZoomedIn, double resizing ) {
-        if ( this.sizeGeoRefPolygon == 0.0 ) {
-            this.sizeGeoRefPolygon = 1.0;
-        }
-
-        double newSize = this.sizeGeoRefPolygon * ( 1 - resizing );
-        if ( isZoomedIn == false ) {
-            newSize = this.sizeGeoRefPolygon * ( 1 / ( 1 - resizing ) );
-        }
-        // BigDecimal b = new BigDecimal( newSize );
-        // b = b.round( new MathContext( 16 ) );
-        // this.size = b.floatValue();
-        this.sizeGeoRefPolygon = newSize;
-
-        System.out.println( "[Scene2DValues] newsizeGeoRefPolygon: " + this.sizeGeoRefPolygon );
-    }
-
     public void setSizeFootprint( double sizeFootprint ) {
         this.sizeFootprint = sizeFootprint;
     }
 
-    public void computeResolutionFootprint( boolean isZoomedIn, double resizing ) {
-
+    public void computeEnvelopeFootprint( boolean isZoomedIn, double resizing, AbstractGRPoint mousePosition ) {
         double newSize = this.sizeFootprint * ( 1 - resizing );
         if ( isZoomedIn == false ) {
             newSize = this.sizeFootprint * ( 1 / ( 1 - resizing ) );
-        }
-        this.sizeFootprint = newSize;
 
+        }
+        // this.sizeFootprint = newSize;
+
+        Envelope envTmp = geom.createEnvelope( envelopeFootprint.getMin().get0(), envelopeFootprint.getMin().get1(),
+                                               envelopeFootprint.getMax().get0(), envelopeFootprint.getMax().get1(),
+                                               envelopeFootprint.getCoordinateSystem() );
+
+        FootprintPoint pCenter = (FootprintPoint) getWorldPoint( mousePosition );
+
+        Point2d percentP = computePercent( envTmp, pCenter );
+
+        double spanX = envTmp.getSpan0() * ( 1 + newSize - this.sizeFootprint );
+        double spanY = envTmp.getSpan1() * ( 1 + newSize - this.sizeFootprint );
+
+        double percentSpanX = spanX * percentP.x;
+        double percentSpanY = spanY * percentP.y;
+        double percentSpanXPos = spanX - percentSpanX;
+        double percentSpanYPos = spanY - percentSpanY;
+
+        double minPointX = pCenter.getX() - percentSpanX;
+        double minPointY = pCenter.getY() - percentSpanY;
+        double maxPointX = pCenter.getX() + percentSpanXPos;
+        double maxPointY = pCenter.getY() + percentSpanYPos;
+        this.envelopeFootprint = geom.createEnvelope( minPointX, minPointY, maxPointX, maxPointY,
+                                                      envTmp.getCoordinateSystem() );
+        this.sizeFootprint = newSize;
         System.out.println( "[Scene2DValues] newSizeFootprint: " + this.sizeFootprint );
     }
 
@@ -381,6 +407,8 @@ public class Scene2DValues {
      *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
      * @param yCoord
      *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * @return AbstractGRPoint which is the translation needed to get the xCoord and yCoord as center of the scene.
+     * 
      */
     public AbstractGRPoint setCentroidRasterEnvelopePosition( double xCoord, double yCoord ) {
 
@@ -392,7 +420,7 @@ public class Scene2DValues {
 
         // get the worldPoint in pixelCoordinates
         int[] p = getPixelCoord( new GeoReferencedPoint( x, y ) );
-        System.out.println( "[Scene2DValues] point: " + p[0] + " " + p[1] );
+
         // set all the relevant parameters for generating the georefernced map
         setStartRasterEnvelopePosition( new Point2d( p[0], p[1] ) );
 
@@ -427,6 +455,11 @@ public class Scene2DValues {
 
     public void setCrs( CRS crs ) {
         this.crs = crs;
+    }
+
+    public void setEnvelopeFootprint( Envelope createEnvelope ) {
+        this.envelopeFootprint = createEnvelope;
+
     }
 
 }

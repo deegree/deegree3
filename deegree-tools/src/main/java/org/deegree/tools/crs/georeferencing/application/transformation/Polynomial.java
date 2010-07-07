@@ -53,8 +53,6 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
-import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
@@ -160,37 +158,24 @@ public class Polynomial extends AbstractTransformation implements Transformation
             // }
             // Polygon p = new Polygon( x, y, (int) ( passPointsDst.length * 0.5 ) );
             // transformedPolygonList.add( p );
-            for ( Polygon po : footPrint.getWorldCoordinatePolygonList() ) {
+            for ( Ring ring : footPrint.getWorldCoordinateRingList() ) {
                 pointList = new ArrayList<Point>();
-                int[] x = new int[po.npoints];
-                int[] y = new int[po.npoints];
-                for ( int i = 0; i < po.npoints; i++ ) {
-                    int x2 = po.xpoints[i];
-                    int y2 = po.ypoints[i];
+                int[] x = new int[ring.getControlPoints().size()];
+                int[] y = new int[ring.getControlPoints().size()];
+                for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
+                    double x2 = ring.getControlPoints().getX( i );
+                    double y2 = ring.getControlPoints().getY( i );
 
-                    Point2D p = warp.mapDestPoint( new Point2D.Float( x2, y2 ) );
+                    Point2D p = warp.mapDestPoint( new Point2D.Double( x2, y2 ) );
                     double rx = ( p.getX() - rxLocal );
                     double ry = ( p.getY() - ryLocal );
 
                     pointList.add( geom.createPoint( "point", rx, ry, null ) );
 
-                    AbstractGRPoint convertPoint = new GeoReferencedPoint( rx, ry );
-                    int[] value = sceneValues.getPixelCoord( convertPoint );
-                    x[i] = value[0];
-                    y[i] = value[1];
-
                 }
                 Points points = new PointsList( pointList );
                 transformedRingList.add( geom.createLinearRing( "ring", null, points ) );
 
-                Polygon p = new Polygon( x, y, po.npoints );
-                transformedPolygonList.add( p );
-            }
-
-            for ( Polygon po : transformedPolygonList ) {
-                for ( int i = 0; i < po.npoints; i++ ) {
-                    System.out.println( "[Polynomial] TransformedPolygons: " + po.xpoints[i] + " " + po.ypoints[i] );
-                }
             }
 
             return transformedRingList;

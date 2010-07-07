@@ -60,6 +60,7 @@ import javax.vecmath.Point2d;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
@@ -124,6 +125,8 @@ public class Controller {
 
     private boolean isHorizontalRef, start;
 
+    private GeometryFactory geom;
+
     private CRS sourceCRS;
 
     private CRS targetCRS;
@@ -135,12 +138,15 @@ public class Controller {
     public int order;
 
     public Controller( GRViewerGUI view, Scene2D model ) {
+        geom = new GeometryFactory();
+        options = new RasterOptions( view ).getOptions();
+        sceneValues = new Scene2DValues( options, geom );
         this.view = view;
         this.model = model;
         this.panel = view.getScenePanel2D();
         this.footPanel = view.getFootprintPanel();
         this.navPanel = view.getNavigationPanel();
-        this.footPrint = new Footprint();
+        this.footPrint = new Footprint( sceneValues, geom );
         this.tablePanel = view.getPointTablePanel();
         this.start = false;
         this.glHandler = view.getOpenGLEventListener();
@@ -148,8 +154,6 @@ public class Controller {
         this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
         this.footPanel.setOffset( 10 );
 
-        options = new RasterOptions( view ).getOptions();
-        sceneValues = new Scene2DValues( options );
         model.init( options, sceneValues );
         view.addMenuItemListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
@@ -309,8 +313,8 @@ public class Controller {
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GET_3DOBJECT ) ) {
 
-                    footPanel.setInitialResolution( 4.0 );
-                    sceneValues.setSizeFootprint( footPanel.getInitialResolution() );
+                    sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
+                    sceneValues.setSizeFootprint( 1.0 );
                     mouseFootprint = new MouseModel();
                     // TODO at the moment the file which is used is static in the GRViewerGUI!!!
                     List<WorldRenderableObject> rese = File3dImporter.open( view, view.fileName() );
@@ -353,7 +357,7 @@ public class Controller {
 
                     footPrint.generateFootprints( geometryThatIsTaken );
 
-                    footPanel.setPolygonList( footPrint.getWorldCoordinatePolygonList() );
+                    footPanel.setPolygonList( footPrint.getWorldCoordinateRingList(), sceneValues );
 
                     footPanel.repaint();
 
@@ -532,10 +536,6 @@ public class Controller {
 
     }
 
-    // private void paintInteraction( JPanel panel, MouseModel mouse ) {
-    //
-    // }
-
     /**
      * Sets values to the JTableModel and adds a new row to it.
      */
@@ -610,7 +610,7 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     // System.out.println( m.getPoint() );
                     if ( mouseFootprint != null ) {
-                        mouseFootprint.setMouseMoved( new Point2d( m.getX(), m.getY() ) );
+                        mouseFootprint.setMouseMoved( new FootprintPoint( m.getX(), m.getY() ) );
                     }
                 }
             }
@@ -656,13 +656,13 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     boolean zoomIn = false;
                     if ( m.getWheelRotation() < 0 ) {
-                        zoomIn = false;
-                    } else {
                         zoomIn = true;
+                    } else {
+                        zoomIn = false;
                     }
-                    sceneValues.computeResolutionFootprint( zoomIn, .1 );
+                    sceneValues.computeEnvelopeFootprint( zoomIn, .1, mouseFootprint.getMouseMoved() );
                     footPanel.updatePoints( sceneValues );
-                    updateMappedPoints();
+                    // updateMappedPoints();
                     footPanel.repaint();
                 }
             }
@@ -711,17 +711,11 @@ public class Controller {
 
     }
 
+    /**
+     * Initializes the computing and the painting of the georeferenced map.
+     */
     private void init() {
-        // model.reset();
-        // sceneValues.setImageMargin( new Point2d( panel.getBounds().width * 0.1, panel.getBounds().height * 0.1 ) );
-        // System.out.println( "[Controller] margin: " + sceneValues.getImageMargin() );
-        // sceneValues.setImageDimension( new Rectangle(
-        // (int) ( panel.getBounds().width + 2 * sceneValues.getImageMargin().x ),
-        // (int) ( panel.getBounds().height + 2 * sceneValues.getImageMargin().y ) ) );
-        // sceneValues.setImageStartPosition( new Point2d( -sceneValues.getImageMargin().x,
-        // -sceneValues.getImageMargin().y ) );
 
-        // panel.setBeginDrawImageAtPosition( sceneValues.getImageStartPosition() );
         sceneValues.setImageDimension( new Rectangle( panel.getBounds().width, panel.getBounds().height ) );
         panel.setImageDimension( sceneValues.getImageDimension() );
 

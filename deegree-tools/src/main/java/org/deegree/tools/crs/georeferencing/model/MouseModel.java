@@ -37,6 +37,8 @@ package org.deegree.tools.crs.georeferencing.model;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+
 /**
  * The mouse model holds all the relevant information needed for interaction with the mouse.
  * 
@@ -53,7 +55,7 @@ public class MouseModel {
 
     private Point2d persistentCumulatedMouseChanging;
 
-    private Point2d mouseMoved;
+    private AbstractGRPoint mouseMoved;
 
     private Point2d cumulatedMouseChanging;
 
@@ -126,11 +128,11 @@ public class MouseModel {
 
     }
 
-    public Point2d getMouseMoved() {
+    public AbstractGRPoint getMouseMoved() {
         return mouseMoved;
     }
 
-    public void setMouseMoved( Point2d mouseMoved ) {
+    public void setMouseMoved( AbstractGRPoint mouseMoved ) {
         this.mouseMoved = mouseMoved;
     }
 

@@ -42,6 +42,12 @@ import java.util.List;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.standard.points.PointsList;
+import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 
 /**
@@ -55,9 +61,13 @@ import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
  */
 public class Footprint {
 
+    public final static double EPS10 = 1e-10;
+
+    public final static double EP10 = 1e+10;
+
     private Polygon polygon;
 
-    private List<Polygon> worldCoordinatePolygonList;
+    private List<Ring> worldCoordinateRingList;
 
     private double[] worldCoordinates;
 
@@ -65,10 +75,16 @@ public class Footprint {
 
     private List<Point3d> worldCoordinatePointsList;
 
+    private GeometryFactory geom;
+
+    private Scene2DValues values;
+
     /**
      * Creates a new <Code>Footprint</Code> instance.
      */
-    public Footprint() {
+    public Footprint( Scene2DValues values, GeometryFactory geom ) {
+        this.values = values;
+        this.geom = geom;
     }
 
     /**
@@ -116,28 +132,48 @@ public class Footprint {
      *            the points from the <Code>WorldRenderableObject</Code>
      */
     public void generateFootprints( List<float[]> footprintPointsList ) {
-        worldCoordinatePolygonList = new ArrayList<Polygon>();
+        worldCoordinateRingList = new ArrayList<Ring>();
+        List<Point> pointList;
         int size = 0;
         for ( float[] f : footprintPointsList ) {
             size += f.length / 3;
         }
-
+        double minX = EP10;
+        double minY = EP10;
+        double maxX = EPS10;
+        double maxY = EPS10;
         worldCoordinates = new double[size * 2];
         worldCoordinatePoints = new FootprintPoint[size];
         worldCoordinatePointsList = new ArrayList<Point3d>();
         int countWorldCoords = 0;
         int countWorldCoordsPoint = 0;
         for ( float[] f : footprintPointsList ) {
+            pointList = new ArrayList<Point>();
             int polygonSize = f.length / 3;
 
-            int[] x = new int[polygonSize];
-            int[] y = new int[polygonSize];
+            double[] x = new double[polygonSize];
+            double[] y = new double[polygonSize];
             int count = 0;
 
             // get all points in 2D, so z-axis is omitted
             for ( int i = 0; i < f.length; i += 3 ) {
-                x[count] = (int) f[i];
-                y[count] = (int) f[i + 1];
+
+                if ( minX > f[i] ) {
+                    minX = f[i];
+                }
+                if ( minY > f[i + 1] ) {
+                    minY = f[i + 1];
+                }
+                if ( maxX < f[i] ) {
+                    maxX = f[i];
+                }
+                if ( maxY < f[i + 1] ) {
+                    maxY = f[i + 1];
+                }
+
+                x[count] = f[i];
+                y[count] = f[i + 1];
+                pointList.add( geom.createPoint( "point", f[i], f[i + 1], null ) );
                 worldCoordinates[countWorldCoords] = f[i];
                 worldCoordinates[++countWorldCoords] = f[i + 1];
                 worldCoordinatePoints[countWorldCoordsPoint] = new FootprintPoint( f[i], f[i + 1] );
@@ -146,9 +182,11 @@ public class Footprint {
                 count++;
                 countWorldCoordsPoint++;
             }
-            Polygon p = new Polygon( x, y, polygonSize );
-            worldCoordinatePolygonList.add( p );
+            Points points = new PointsList( pointList );
+            worldCoordinateRingList.add( geom.createLinearRing( "ring", null, points ) );
         }
+
+        this.values.setEnvelopeFootprint( geom.createEnvelope( minX, minY, maxX, maxY, null ) );
 
     }
 
@@ -156,8 +194,8 @@ public class Footprint {
      * 
      * @return the list of polygons in world-coordinates
      */
-    public List<Polygon> getWorldCoordinatePolygonList() {
-        return worldCoordinatePolygonList;
+    public List<Ring> getWorldCoordinateRingList() {
+        return worldCoordinateRingList;
     }
 
     public double[] getWorldCoordinates() {
