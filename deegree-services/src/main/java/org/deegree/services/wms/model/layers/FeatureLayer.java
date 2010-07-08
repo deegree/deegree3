@@ -292,6 +292,11 @@ public class FeatureLayer extends Layer {
 
     @Override
     public boolean isAvailable() {
+        if ( datastore == null ) {
+            LOG.debug( "Layer '{}' is not available, since its data store could not be loaded." );
+        } else if ( !datastore.isAvailable() ) {
+            LOG.debug( "Layer '{}' is not available, since its data store is unavailable." );
+        }
         return datastore != null && datastore.isAvailable();
     }
 
