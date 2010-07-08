@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<PostGISFeatureStore configVersion="0.5.1" xmlns="http://www.deegree.org/datasource/feature/postgis"
+<PostGISFeatureStore configVersion="0.6.0" xmlns="http://www.deegree.org/datasource/feature/postgis"
   xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.5.1/postgis.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.0/postgis.xsd">
   <NamespaceHint prefix="app" namespaceURI="http://www.deegree.org/app" />
   <StorageSRS>EPSG:4326</StorageSRS>
   <JDBCConnId>philosopher-db</JDBCConnId>
