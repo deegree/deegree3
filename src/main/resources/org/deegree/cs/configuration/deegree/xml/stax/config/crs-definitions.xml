@@ -8985,6 +8985,7 @@
       <crs:Id>urn:x-ogc:def:crs:epsg:4326</crs:Id>
       <crs:Id>urn:x-ogc:def:crs:epsg:6.11.2:4326</crs:Id>
       <crs:Id>urn:x-ogc:def:crs:epsg:6.11:4326</crs:Id>
+      <crs:Id>urn:ogc:def:crs:EPSG:6.11.2:4326</crs:Id>
       <crs:Name>WGS 84</crs:Name>
       <crs:Version>2008-1-16T9:49</crs:Version>
       <crs:Description>Handmade proj4 geographic crs definition (parsed from nad/epsg).</crs:Description>
