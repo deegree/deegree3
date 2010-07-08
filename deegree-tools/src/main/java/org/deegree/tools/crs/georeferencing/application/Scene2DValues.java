@@ -66,7 +66,7 @@ public class Scene2DValues {
 
     private RasterRect rasterRect;
 
-    private Rectangle imageDimension;
+    private Rectangle dimensionGeoreference;
 
     /**
      * new width and new height
@@ -123,26 +123,15 @@ public class Scene2DValues {
                 double getMinX = subRaster.getEnvelope().getMin().get0();
                 double getMaxY = subRaster.getEnvelope().getMax().get1();
 
-                // convert the requested point to rasterCoordinates
-                double rasterPosX = pixelPoint.x * convertedPixelToRasterPoint.x;
-                double rasterPosY = pixelPoint.y * convertedPixelToRasterPoint.y;
+                // determine the span of the envelope
+                double spanX = this.subRaster.getEnvelope().getSpan0();
+                double spanY = this.subRaster.getEnvelope().getSpan1();
 
-                // determine the minX and maxY values of the rasterEnvelope because they are absolute points
-                double minWorldInRasterX = subRaster.getRasterReference().getOriginEasting();
-                double maxWorldInRasterY = subRaster.getRasterReference().getOriginNorthing();
+                // determine the percentage of the requested point
+                double percentX = ( pixelPoint.getX() / dimensionGeoreference.width ) * spanX;
+                double percentY = ( pixelPoint.getY() / dimensionGeoreference.height ) * spanY;
 
-                // determine the delta between the absolute rasterPoint and the minX and maxY point of the
-                // subRaster-envelope
-                double deltaX = Math.abs( minWorldInRasterX - getMinX );
-                double deltaY = Math.abs( maxWorldInRasterY - getMaxY );
-
-                // get the worldCoordinates of the rasterPoints
-                worldPos = subRaster.getRasterReference().getWorldCoordinate( rasterPosX, rasterPosY );
-                // add/substract the delta of the worldRasterPoint
-                worldPos[0] = worldPos[0] + deltaX;
-                worldPos[1] = worldPos[1] - deltaY;
-
-                return new GeoReferencedPoint( worldPos[0], worldPos[1] );
+                return new GeoReferencedPoint( getMinX + percentX, getMaxY - percentY );
 
             }
         case FootprintPoint:
@@ -151,9 +140,11 @@ public class Scene2DValues {
             double getMinX = this.envelopeFootprint.getMin().get0();
             double getMaxY = this.envelopeFootprint.getMax().get1();
 
+            // determine the span of the envelope
             double spanX = this.envelopeFootprint.getSpan0();
             double spanY = this.envelopeFootprint.getSpan1();
 
+            // determine the percentage of the requested point
             double percentX = ( pixelPoint.getX() / dimensionFootprint.width ) * spanX;
             double percentY = ( pixelPoint.getY() / dimensionFootprint.height ) * spanY;
 
@@ -186,8 +177,8 @@ public class Scene2DValues {
 
             percentPoint = computePercentWorld( subRaster.getEnvelope(), abstractGRPoint );
 
-            pixelPointX = Math.round( (float) ( ( percentPoint.x * imageDimension.width ) ) );
-            pixelPointY = Math.round( (float) ( ( ( 1 - percentPoint.y ) * imageDimension.height ) ) );
+            pixelPointX = Math.round( (float) ( ( percentPoint.x * dimensionGeoreference.width ) ) );
+            pixelPointY = Math.round( (float) ( ( ( 1 - percentPoint.y ) * dimensionGeoreference.height ) ) );
             return new int[] { pixelPointX, pixelPointY };
         case FootprintPoint:
 
@@ -237,11 +228,11 @@ public class Scene2DValues {
     }
 
     public Rectangle getImageDimension() {
-        return imageDimension;
+        return dimensionGeoreference;
     }
 
     public void setImageDimension( Rectangle imageDimension ) {
-        this.imageDimension = imageDimension;
+        this.dimensionGeoreference = imageDimension;
     }
 
     public void setDimenstionFootpanel( Rectangle dimension ) {
@@ -281,7 +272,7 @@ public class Scene2DValues {
         Point2d percent;
         switch ( mouseChange.getPointType() ) {
         case GeoreferencedPoint:
-            percent = computePercentPixel( imageDimension, mouseChange );
+            percent = computePercentPixel( dimensionGeoreference, mouseChange );
 
             this.subRaster = raster.getAsSimpleRaster().getSubRaster(
                                                                       createTranslatedEnv( subRaster.getEnvelope(),
@@ -336,9 +327,9 @@ public class Scene2DValues {
         switch ( mousePosition.getPointType() ) {
         case GeoreferencedPoint:
             center = (GeoReferencedPoint) getWorldPoint( mousePosition );
-            this.subRaster = raster.getAsSimpleRaster().getSubRaster(
-                                                                      createZoomedEnv( this.subRaster.getEnvelope(),
-                                                                                       newSize, center ) );
+            Envelope enve = createZoomedEnv( this.subRaster.getEnvelope(), newSize, center );
+            this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
+            transformProportion( this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve ) );
             break;
         case FootprintPoint:
             center = (FootprintPoint) getWorldPoint( mousePosition );
@@ -372,6 +363,7 @@ public class Scene2DValues {
         double minPointY = center.getY() - percentSpanY;
         double maxPointX = center.getX() + percentSpanXPos;
         double maxPointY = center.getY() + percentSpanYPos;
+
         return geom.createEnvelope( minPointX, minPointY, maxPointX, maxPointY, env.getCoordinateSystem() );
     }
 
@@ -388,8 +380,8 @@ public class Scene2DValues {
      * @return an positive, negative or even integer
      */
     private Point2d transformProportion( RasterRect rect ) {
-        double w = imageDimension.width;
-        double h = imageDimension.height;
+        double w = dimensionGeoreference.width;
+        double h = dimensionGeoreference.height;
 
         double ratio = w / h;
         if ( sizeGeoRef == 0.0f ) {
