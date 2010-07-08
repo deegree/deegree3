@@ -52,7 +52,6 @@
       <enumeration value="GML_32" />
     </restriction>
   </simpleType>
-
   <!--
     === Feature type definition ===
   -->

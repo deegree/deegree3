@@ -53,6 +53,15 @@ import org.deegree.geometry.io.WKTWriter;
 
 /**
  * Converts between Oracle {@link JGeometry} and deegree {@link Geometry} objects.
+ * <p>
+ * <h4>Topological constraints</h4>
+ * Oracle expects a certain orientation for surface boundaries: The exterior ring must be oriented counter-clockwise
+ * and the interior rings must be oriented clockwise, see <a
+ * href="http://www.error-code.org.uk/view.asp?e=ORACLE-ORA-13367">here</a>.
+ * <h4>SRID for an unknown CRS</h4>
+ * Oracle uses a value of <code>null</code> as SRID for undefined CRS. No official documentation on the corresponding
+ * value for {@link JGeometry#setSRID(int)} could be found, but it seems to be <code>0</code>.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

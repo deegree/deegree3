@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class MappedApplicationSchemaBuilder {
+class OracleApplicationSchemaBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( MappedApplicationSchema.class );
 
@@ -92,14 +92,14 @@ class MappedApplicationSchemaBuilder {
     static MappedApplicationSchema build( List<FeatureTypeDecl> ftDecls, String jdbcConnId, String dbSchema,
                                           CRS storageSRS )
                             throws SQLException {
-        MappedApplicationSchemaBuilder builder = new MappedApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema );
+        OracleApplicationSchemaBuilder builder = new OracleApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema );
         FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
                                                                                     new FeatureTypeMapping[builder.ftNameToMapping.size()] );
         return new MappedApplicationSchema( fts, null, ftMappings, storageSRS );
     }
 
-    private MappedApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema )
+    private OracleApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema )
                             throws SQLException {
 
         Connection conn = ConnectionManager.getConnection( connId );
