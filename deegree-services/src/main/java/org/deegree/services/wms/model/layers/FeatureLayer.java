@@ -292,7 +292,7 @@ public class FeatureLayer extends Layer {
 
     @Override
     public boolean isAvailable() {
-        return datastore.isAvailable();
+        return datastore != null && datastore.isAvailable();
     }
 
     static OperatorFilter buildFilter( Operator operator, FeatureType u, Envelope clickBox ) {
