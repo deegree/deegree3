@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
-import javax.vecmath.Point2d;
 
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
@@ -67,7 +66,7 @@ public abstract class AbstractPanel2D extends JPanel {
 
     protected Point4Values lastAbstractPoint;
 
-    protected Point2d translationPoint;
+    // protected Point2d translationPoint;
 
     public void addScene2DMouseListener( MouseListener m ) {
 
@@ -114,13 +113,13 @@ public abstract class AbstractPanel2D extends JPanel {
 
     }
 
-    public Point2d getTranslationPoint() {
-        return translationPoint;
-    }
-
-    public void setTranslationPoint( Point2d translationPoint ) {
-        this.translationPoint = translationPoint;
-    }
+    // public Point2d getTranslationPoint() {
+    // return translationPoint;
+    // }
+    //
+    // public void setTranslationPoint( Point2d translationPoint ) {
+    // this.translationPoint = translationPoint;
+    // }
 
     public void removeFromSelectedPoints( Point4Values point ) {
         selectedPoints.remove( point );

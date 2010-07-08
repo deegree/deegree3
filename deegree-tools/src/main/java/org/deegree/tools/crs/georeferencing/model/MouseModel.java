@@ -55,7 +55,7 @@ public class MouseModel {
 
     private AbstractGRPoint mouseMoved;
 
-    private Point2d cumulatedMouseChanging;
+    // private Point2d cumulatedMouseChanging;
 
     private final static Point2d NULL_POINT = new Point2d( 0.0, 0.0 );
 
@@ -84,21 +84,21 @@ public class MouseModel {
         return mouseChanging;
     }
 
-    /**
-     * 
-     * @return
-     */
-    public Point2d getCumulatedMouseChanging() {
-        return cumulatedMouseChanging;
-    }
-
-    /**
-     * 
-     * @param cumulatedMouseChanging
-     */
-    public void setCumulatedMouseChanging( Point2d cumulatedMouseChanging ) {
-        this.cumulatedMouseChanging = cumulatedMouseChanging;
-    }
+    // /**
+    // *
+    // * @return
+    // */
+    // public Point2d getCumulatedMouseChanging() {
+    // return cumulatedMouseChanging;
+    // }
+    //
+    // /**
+    // *
+    // * @param cumulatedMouseChanging
+    // */
+    // public void setCumulatedMouseChanging( Point2d cumulatedMouseChanging ) {
+    // this.cumulatedMouseChanging = cumulatedMouseChanging;
+    // }
 
     /**
      * 
@@ -112,7 +112,7 @@ public class MouseModel {
      * Resets the mouse values to initial values.
      */
     public void reset() {
-        cumulatedMouseChanging = NULL_POINT;
+        // cumulatedMouseChanging = NULL_POINT;
         mouseChanging = null;
 
     }

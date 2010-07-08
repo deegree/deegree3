@@ -40,6 +40,7 @@ import java.awt.image.BufferedImage;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
@@ -85,5 +86,7 @@ public interface Scene2D {
     public void generatePredictedImage( Point2d changePoint );
 
     public BufferedImage getPredictedImage();
+
+    BufferedImage generateSubImageFromRaster( AbstractRaster raster );
 
 }

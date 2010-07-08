@@ -158,9 +158,7 @@ public class Controller {
         view.addMenuItemListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
         navPanel.addHorizontalRefListener( new ButtonListener() );
-        footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
-        footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-        footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+
         tablePanel.addHorizontalRefListener( new ButtonListener() );
         tablePanel.addTableModelListener( new TableListener() );
 
@@ -207,15 +205,10 @@ public class Controller {
                         AbstractGRPoint translatedPoint = sceneValues.setCentroidRasterEnvelopePosition(
                                                                                                          textFieldModel.getxCoordinate(),
                                                                                                          textFieldModel.getyCoordiante() );
-                        init();
 
-                        mouseGeoRef.setCumulatedMouseChanging( new Point2d(
-                                                                            mouseGeoRef.getCumulatedMouseChanging().getX()
-                                                                                                    + translatedPoint.getX(),
-                                                                            mouseGeoRef.getCumulatedMouseChanging().getY()
-                                                                                                    + translatedPoint.getY() ) );
-
-                        panel.setTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
+                        sceneValues.moveEnvlopeGeoreference( translatedPoint );
+                        panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                        panel.updatePoints( sceneValues );
                         panel.repaint();
                     }
                 }
@@ -307,11 +300,14 @@ public class Controller {
                     init();
                     targetCRS = sceneValues.getCrs();
                     panel.addScene2DMouseListener( new Scene2DMouseListener() );
-                    // panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+                    panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
                     panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GET_3DOBJECT ) ) {
+                    footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
+                    footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+                    footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
                     sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
                     mouseFootprint = new MouseModel();
@@ -461,33 +457,21 @@ public class Controller {
                         double x = m.getX();
                         double y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                        System.out.println( "[Controller] clickedPoint: " + geoReferencedPoint );
                         GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
-                        int[] pixelPoint = sceneValues.getPixelCoord( g );
-                        GeoReferencedPoint newP = new GeoReferencedPoint(
-                                                                          pixelPoint[0]
-                                                                                                  + mouseGeoRef.getCumulatedMouseChanging().getX(),
-                                                                          pixelPoint[1]
-                                                                                                  + mouseGeoRef.getCumulatedMouseChanging().getY() );
-                        System.out.println( "[Controller] " + panel.getTranslationPoint().getX() );
-                        panel.setLastAbstractPoint( newP, g );
+                        panel.setLastAbstractPoint( geoReferencedPoint, g );
                         tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
 
                     } else {
                         mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
                                                                               ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
                                                                               ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
-                        mouseGeoRef.setCumulatedMouseChanging( new Point2d(
-                                                                            mouseGeoRef.getCumulatedMouseChanging().getX()
-                                                                                                    + mouseGeoRef.getMouseChanging().getX(),
-                                                                            mouseGeoRef.getCumulatedMouseChanging().getY()
-                                                                                                    + mouseGeoRef.getMouseChanging().getY() ) );
 
                         sceneValues.setStartRasterEnvelopePosition( mouseGeoRef.getMouseChanging() );
+                        sceneValues.moveEnvlopeGeoreference( mouseGeoRef.getMouseChanging() );
                         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
-
+                        panel.updatePoints( sceneValues );
                     }
-                    panel.setTranslationPoint( mouseGeoRef.getCumulatedMouseChanging() );
+
                     panel.repaint();
                 }
                 // footprintPanel
@@ -509,7 +493,6 @@ public class Controller {
                         }
                         double x = m.getX();
                         double y = m.getY();
-                        System.out.println( "[CONTROLLER] " + x + ", " + y );
                         Pair<AbstractGRPoint, FootprintPoint> point = footPanel.getClosestPoint( new FootprintPoint( x,
                                                                                                                      y ) );
                         footPanel.setLastAbstractPoint( point.first, point.second );
@@ -598,7 +581,10 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-
+                    // System.out.println( m.getPoint() );
+                    if ( mouseGeoRef != null ) {
+                        mouseGeoRef.setMouseMoved( new GeoReferencedPoint( m.getX(), m.getY() ) );
+                    }
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
@@ -638,25 +624,22 @@ public class Controller {
                     } else {
                         zoomIn = false;
                     }
-                    // if ( panel.getWorldPolygonList() != null ) {
-                    // System.out.println( "[Controller] mouseCum: " + mouseGeoRef.getCumulatedMouseChanging() );
-                    // sceneValues.computeSizeGeoRefPolygon( zoomIn, resizing );
-                    // }
-                    sceneValues.setSizeGeoRef( zoomIn, resizing );
-                    init();
+                    sceneValues.computeEnvelopeGeoreference( zoomIn, resizing, mouseGeoRef.getMouseMoved() );
+                    panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                     panel.updatePoints( sceneValues );
+                    panel.repaint();
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     boolean zoomIn = false;
+                    float resizing = .1f;
                     if ( m.getWheelRotation() < 0 ) {
                         zoomIn = true;
                     } else {
                         zoomIn = false;
                     }
-                    sceneValues.computeEnvelopeFootprint( zoomIn, .1, mouseFootprint.getMouseMoved() );
+                    sceneValues.computeEnvelopeFootprint( zoomIn, resizing, mouseFootprint.getMouseMoved() );
                     footPanel.updatePoints( sceneValues );
-                    // updateMappedPoints();
                     footPanel.repaint();
                 }
             }

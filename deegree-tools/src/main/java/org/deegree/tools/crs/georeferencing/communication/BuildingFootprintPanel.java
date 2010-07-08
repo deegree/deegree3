@@ -104,11 +104,11 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
 
-        if ( translationPoint == null ) {
-            translationPoint = new Point2d( 0.0, 0.0 );
-        }
+        // if ( translationPoint == null ) {
+        // translationPoint = new Point2d( 0.0, 0.0 );
+        // }
 
-        g2.translate( -translationPoint.x, -translationPoint.y );
+        // g2.translate( -translationPoint.x, -translationPoint.y );
 
         if ( polygonList != null ) {
             for ( Polygon polygon : polygonList ) {
@@ -128,7 +128,7 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
         }
 
-        g2.translate( translationPoint.x, translationPoint.y );
+        // g2.translate( translationPoint.x, translationPoint.y );
     }
 
     @Override
@@ -249,8 +249,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         List<Point4Values> selectedPointsTemp = new ArrayList<Point4Values>();
         for ( Point4Values p : selectedPoints ) {
             int[] pValues = sceneValues.getPixelCoord( p.getWorldCoords() );
-            double x = pValues[0];// + translationPoint.getX();
-            double y = pValues[1];// + translationPoint.getY();
+            double x = pValues[0];
+            double y = pValues[1];
             FootprintPoint pi = new FootprintPoint( x, y );
             selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords() ) );
         }
@@ -258,8 +258,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         if ( lastAbstractPoint != null ) {
 
             int[] pValues = sceneValues.getPixelCoord( lastAbstractPoint.getWorldCoords() );
-            double x = pValues[0];// + translationPoint.getX();
-            double y = pValues[1];// + translationPoint.getY();
+            double x = pValues[0];
+            double y = pValues[1];
 
             FootprintPoint pi = new FootprintPoint( x, y );
             lastAbstractPoint.setNewValue( new FootprintPoint( pi.getX(), pi.getY() ) );

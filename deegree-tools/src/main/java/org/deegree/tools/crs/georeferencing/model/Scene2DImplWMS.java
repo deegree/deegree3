@@ -197,6 +197,34 @@ public class Scene2DImplWMS implements Scene2D {
     }
 
     @Override
+    public BufferedImage generateSubImageFromRaster( AbstractRaster raster ) {
+        // Point2d transformedBounds = sceneValues.getTransformedBounds();
+        // System.out.println( "transformedBounds: " + transformedBounds );
+        // if ( sceneValues.getMinPointRaster() == null ) {
+        // sceneValues.setMinPointRaster( new Point2d( rasterRect.x, rasterRect.y ) );
+        //
+        // }
+        //
+        // Point2d min = sceneValues.getMinPointRaster();
+        //
+        // double maxX = min.x + transformedBounds.x;
+        // double maxY = min.y + transformedBounds.y;
+        //
+        // // transform to get the boundingbox coordinates
+        // double[] worldCoordLeftLower = ref.getWorldCoordinate( min.x, maxY );
+        // double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, min.y );
+
+        // subRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0], worldCoordLeftLower[1],
+        // worldCoordRightUpper[0], worldCoordRightUpper[1] );
+        // subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
+        // sceneValues.setSubRaster( subRaster );
+        // rasterData = subRaster.getRasterData();
+        // System.out.println( "subRaster: " + subRaster );
+        return generatedImage = generateMap( raster.getEnvelope() );
+
+    }
+
+    @Override
     public void generatePredictedImage( Point2d changePoint ) {
 
         double minX = changePoint.x * 2 * ref.getResolutionX();
