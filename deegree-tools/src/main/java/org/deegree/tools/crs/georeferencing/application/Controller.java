@@ -206,8 +206,16 @@ public class Controller {
                                                                                                          textFieldModel.getxCoordinate(),
                                                                                                          textFieldModel.getyCoordiante() );
 
+                        // if ( textFieldModel.getSpan() != -1 ) {
+                        // int[] spanInPixel = sceneValues.getPixelCoord( new GeoReferencedPoint(
+                        // textFieldModel.getSpan(),
+                        // textFieldModel.getSpan() ) );
+                        // panel.setImageToDraw( model.generateSubImage( new Rectangle( spanInPixel[0], spanInPixel[1] )
+                        // ) );
+                        // } else {
                         sceneValues.moveEnvelope( translatedPoint );
                         panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                        // }
                         panel.updatePoints( sceneValues );
                         panel.repaint();
                     }
