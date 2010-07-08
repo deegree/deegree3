@@ -152,11 +152,6 @@ public class MemoryTileContainer implements TileContainer {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.TileContainer#getTiles(org.deegree.geometry.primitive.Envelope)
-     */
     public List<AbstractRaster> getTiles( Envelope env ) {
         List<AbstractRaster> result = new ArrayList<AbstractRaster>();
         for ( AbstractRaster r : tiles ) {
@@ -167,11 +162,6 @@ public class MemoryTileContainer implements TileContainer {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.TileContainer#getEnvelope()
-     */
     public Envelope getEnvelope() {
         return envelope;
     }
@@ -200,7 +190,6 @@ public class MemoryTileContainer implements TileContainer {
 
     @Override
     public ResolutionInfo getResolutionInfo() {
-        // TODO Auto-generated method stub
         return resolutionInfo;
     }
 
