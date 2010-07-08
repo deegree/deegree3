@@ -466,9 +466,8 @@ public class Controller {
                                                                               ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
                                                                               ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
 
-                        sceneValues.setStartRasterEnvelopePosition( mouseGeoRef.getMouseChanging() );
                         sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
-                        panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
+                        panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                         panel.updatePoints( sceneValues );
                     }
 
