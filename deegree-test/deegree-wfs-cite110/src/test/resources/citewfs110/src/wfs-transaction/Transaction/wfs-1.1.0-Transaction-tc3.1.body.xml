@@ -4,10 +4,10 @@
   xmlns:wfs="http://www.opengis.net/wfs"
   xmlns:gml="http://www.opengis.net/gml"
   xmlns:sf="http://cite.opengeospatial.org/gmlsf">
-	<wfs:Insert handle="insert-1">
+        <wfs:Insert handle="insert-1">
       <sf:PrimitiveGeoFeature gml:id="cite.gmlsf0-f05">
         <sf:pointProperty>
-          <gml:Point srsName="urn:x-ogc:def:crs:FOO:2006.10:9999">
+          <gml:Point srsName="urn:ogc:def:crs:FOO:2006.10:9999">
             <gml:pos>5311942 2227320</gml:pos>
           </gml:Point>
         </sf:pointProperty>
@@ -21,7 +21,7 @@
       <gml:description>Curabitur auctor ipsum condimentum tortor lacinia auctor.</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf0-f06</gml:name>
       <sf:attribut.Géométrie>
-        <gml:MultiCurve gml:id="cite.gmlsf0-g04" srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:MultiCurve gml:id="cite.gmlsf0-g04" srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:name>Sed magna</gml:name>
           <gml:curveMember>
             <gml:LineString>

@@ -1142,13 +1142,13 @@
 									<sf:PrimitiveGeoFeature >
 										<gml:name>cite.gmlsf0-f501</gml:name>
 										<gml:boundedBy>
-											<gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+											<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
 												<gml:lowerCorner>48.608284 15.7836</gml:lowerCorner>
 												<gml:upperCorner>50.849854 20.034142</gml:upperCorner>
 											</gml:Envelope>
 										</gml:boundedBy>
 										<sf:curveProperty>
-											<gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+											<gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
 												<gml:posList>48.608284 20.034142 50.286873 15.7836
 													50.849854 16.764992</gml:posList>
 											</gml:LineString>
@@ -1234,13 +1234,13 @@
 									<sf:PrimitiveGeoFeature gml:id="PrimitiveGeoFeature.111">
 										<gml:name>cite.gmlsf0-f501</gml:name>
 										<gml:boundedBy>
-											<gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+											<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
 												<gml:lowerCorner>48.608284 15.7836</gml:lowerCorner>
 												<gml:upperCorner>50.849854 20.034142</gml:upperCorner>
 											</gml:Envelope>
 										</gml:boundedBy>
 										<sf:curveProperty>
-											<gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+											<gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
 												<gml:posList>48.608284 20.034142 50.286873 15.7836
 													50.849854 16.764992</gml:posList>
 											</gml:LineString>
@@ -1350,13 +1350,13 @@
 									<sf:PrimitiveGeoFeature gml:id="PrimitiveGeoFeature.1">
 										<gml:name>cite.gmlsf0-f501</gml:name>
 										<gml:boundedBy>
-											<gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+											<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
 												<gml:lowerCorner>48.608284 15.7836</gml:lowerCorner>
 												<gml:upperCorner>50.849854 20.034142</gml:upperCorner>
 											</gml:Envelope>
 										</gml:boundedBy>
 										<sf:curveProperty>
-											<gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+											<gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
 												<gml:posList>48.608284 20.034142 50.286873 15.7836
 													50.849854 16.764992</gml:posList>
 											</gml:LineString>

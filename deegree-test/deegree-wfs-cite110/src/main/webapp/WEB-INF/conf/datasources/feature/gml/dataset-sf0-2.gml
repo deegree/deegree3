@@ -4,7 +4,7 @@
   xmlns:sf="http://cite.opengeospatial.org/gmlsf"
   xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://cite.opengeospatial.org/gmlsf cite-gmlsf2.xsd">
+  xsi:schemaLocation="http://cite.opengeospatial.org/gmlsf schemas/cite-gmlsf2.xsd">
 
   <gml:description>
   Test data for assessing compliance with the GMLSF profile at level SF-2.
@@ -98,7 +98,7 @@
       <gml:description>description-f005</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f005</gml:name>
       <sf:multiPointProperty>
-        <gml:MultiPoint srsName="urn:x-ogc:def:crs:EPSG:6.11.2:4326">
+        <gml:MultiPoint srsName="urn:ogc:def:crs:EPSG:6.11.2:4326">
           <gml:pointMember>
             <gml:Point><gml:pos>70.83 29.86</gml:pos></gml:Point>
           </gml:pointMember>
@@ -112,8 +112,8 @@
       </sf:multiPointProperty>
       <sf:doubleProperty>2012.78</sf:doubleProperty>
       <sf:strProperty>
-      Ma quande lingues coalesce, li grammatica del resultant lingue es plu 
-      simplic e regulari quam ti del coalescent lingues. Li nov lingua franca 
+      Ma quande lingues coalesce, li grammatica del resultant lingue es plu
+      simplic e regulari quam ti del coalescent lingues. Li nov lingua franca
       va esser plu simplic e regulari quam li existent Europan lingues.
       </sf:strProperty>
       <sf:featureCode>BK030</sf:featureCode>
@@ -132,11 +132,11 @@
             </gml:LineString>
           </gml:curveMember>
           <gml:curveMember>
-            <gml:LineString srsName="urn:x-ogc:def:crs:EPSG:6.11.2:4326">
+            <gml:LineString srsName="urn:ogc:def:crs:EPSG:6.11.2:4326">
               <gml:posList>53.265 -5.188 54.354 -4.775 52.702 -4.288 53.611 -4.107 55.823 -4.010</gml:posList>
             </gml:LineString>
-          </gml:curveMember>
-        </gml:MultiCurve>
+                  </gml:curveMember>
+                </gml:MultiCurve>
       </sf:multiCurveProperty>
       <sf:doubleProperty>20.01</sf:doubleProperty>
       <sf:strProperty>Ma quande lingues coalesce, li grammatica del resultant.</sf:strProperty>
@@ -151,7 +151,7 @@
       <sf:multiSurfaceProperty>
         <gml:MultiSurface>
           <gml:surfaceMember>
-            <gml:Polygon>
+                        <gml:Polygon>
                 <gml:exterior>
                   <gml:LinearRing>
                     <gml:posList>50 20 54 19 55 20 60 30 52 28 51 27 49 29 47 27 50 20</gml:posList>
@@ -161,11 +161,11 @@
                   <gml:LinearRing>
                     <gml:posList>55 25 56 25.2 56 25.1 55 25</gml:posList>
                   </gml:LinearRing>
-                </gml:interior>             
-            </gml:Polygon>                    
-          </gml:surfaceMember>
-          <gml:surfaceMember>
-              <gml:Polygon>           
+                </gml:interior>
+                        </gml:Polygon>
+                  </gml:surfaceMember>
+                  <gml:surfaceMember>
+                          <gml:Polygon>
                 <gml:exterior>
                   <gml:LinearRing>
                     <gml:posList>35.5 20.0 35.0 24.0 35.0 28.0 39.0 27.5 37.0 22.0 35.5 20.0</gml:posList>
@@ -176,14 +176,14 @@
                     <gml:posList>36.0 26.0 37.0 25.0 36.8 27.0 36.0 26.0</gml:posList>
                   </gml:LinearRing>
                 </gml:interior>
-              </gml:Polygon>                  
-          </gml:surfaceMember>
+                          </gml:Polygon>
+                  </gml:surfaceMember>
         </gml:MultiSurface>
       </sf:multiSurfaceProperty>
       <sf:doubleProperty>24510</sf:doubleProperty>
       <sf:strProperty>
-      Ma quande lingues coalesce, li grammatica del resultant lingue es plu 
-      simplic e regulari quam ti del coalescent lingues. Li nov lingua franca 
+      Ma quande lingues coalesce, li grammatica del resultant lingue es plu
+      simplic e regulari quam ti del coalescent lingues. Li nov lingua franca
       va esser plu simplic e regulari quam li existent Europan lingues.
       </sf:strProperty>
       <sf:featureCode>AK020</sf:featureCode>
@@ -259,7 +259,7 @@
       <sf:multiSurfaceProperty>
         <gml:MultiSurface>
           <gml:surfaceMember>
-            <gml:Polygon srsName="urn:x-ogc:def:crs:EPSG:6.11.2:4326">
+            <gml:Polygon srsName="urn:ogc:def:crs:EPSG:6.11.2:4326">
               <gml:description>Donec vulputate leo cursus magna.</gml:description>
               <gml:exterior>
                 <gml:LinearRing>
@@ -272,7 +272,7 @@
                 </gml:LinearRing>
               </gml:interior>
             </gml:Polygon>
-          </gml:surfaceMember>
+                  </gml:surfaceMember>
         </gml:MultiSurface>
       </sf:multiSurfaceProperty>
       <sf:doubleProperty>-182.9</sf:doubleProperty>
@@ -308,7 +308,7 @@
       <sf:measurand>-12.78e-2</sf:measurand>
       <sf:decimalProperty>80.02</sf:decimalProperty>
       <sf:relatedFeature xlink:type="simple" xlink:href="#f003"
-        xlink:title="A related PrimitiveGeoFeature instance" 
+        xlink:title="A related PrimitiveGeoFeature instance"
         xlink:actuate="onRequest" />
     </sf:PrimitiveGeoFeature>
   </gml:featureMember>
@@ -363,21 +363,21 @@
   <gml:featureMember>    
     <sf:ComplexGeoFeature gml:id="f101">
       <gml:description>
-      Aliquam sed lorem. Nam non risus ut felis pellentesque consequat. Curabitur 
-      pede. Suspendisse potenti. Mauris lacinia. Donec risus leo, luctus at, 
-      aliquet vel, congue in, mi. Mauris pulvinar mollis felis. Etiam posuere, 
-      ante et luctus blandit, purus metus sollicitudin nisl, eget gravida lorem 
-      elit sed pede. Nunc tristique elementum sem. Nullam feugiat mauris quis 
-      tellus. Nulla cursus augue at ipsum. Mauris volutpat posuere tellus. Quisque 
-      accumsan tellus sit amet elit. Nam tempor libero id urna. Donec ac sapien. 
-      Class aptent taciti sociosqu ad litora torquent per conubia nostra, per 
-      inceptos hymenaeos. Ut sollicitudin dapibus magna. Phasellus erat turpis, 
-      adipiscing eu, lobortis ut, convallis a, nisl. Vivamus rutrum magna eget 
+      Aliquam sed lorem. Nam non risus ut felis pellentesque consequat. Curabitur
+      pede. Suspendisse potenti. Mauris lacinia. Donec risus leo, luctus at,
+      aliquet vel, congue in, mi. Mauris pulvinar mollis felis. Etiam posuere,
+      ante et luctus blandit, purus metus sollicitudin nisl, eget gravida lorem
+      elit sed pede. Nunc tristique elementum sem. Nullam feugiat mauris quis
+      tellus. Nulla cursus augue at ipsum. Mauris volutpat posuere tellus. Quisque
+      accumsan tellus sit amet elit. Nam tempor libero id urna. Donec ac sapien.
+      Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
+      inceptos hymenaeos. Ut sollicitudin dapibus magna. Phasellus erat turpis,
+      adipiscing eu, lobortis ut, convallis a, nisl. Vivamus rutrum magna eget
       metus consectetuer ultrices. Sed ac nisi tincidunt risus euismod condimentum.
       </gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f101</gml:name>
       <sf:geometryProperty>
-        <gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4979">
+        <gml:LineString srsName="urn:ogc:def:crs:EPSG::4979">
           <gml:posList>46.074 9.799 600.2 46.652 10.466 781.4</gml:posList>
         </gml:LineString>
       </sf:geometryProperty>
@@ -416,19 +416,19 @@
   <gml:featureMember>
     <sf:ComplexGeoFeature gml:id="f102">
       <gml:description>
-      Integer euismod risus. Class aptent taciti sociosqu ad litora torquent per 
+      Integer euismod risus. Class aptent taciti sociosqu ad litora torquent per
       conubia nostra, per inceptos hymenaeos. Phasellus nec risus.
       </gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f102</gml:name>
       <gml:name>Vivamus blandit</gml:name>
       <sf:geometryProperty>
-        <gml:Curve srsName="urn:x-ogc:def:crs:EPSG:4979">
+        <gml:Curve srsName="urn:ogc:def:crs:EPSG::4979">
           <gml:segments>
             <gml:LineStringSegment interpolation="linear">
-              <gml:posList>45.174 2.899 45.652 2.466 45.891 2.899</gml:posList>
+              <gml:posList>45.174 2.899 601 45.652 2.466 504 45.891 2.899 876</gml:posList>
             </gml:LineStringSegment>
             <gml:LineStringSegment interpolation="linear">
-              <gml:posList>45.891 2.899 48.174 2.899 48.652 2.466 48.891 2.899 0</gml:posList>
+              <gml:posList>45.891 2.899 587 48.174 2.899 702 48.652 2.466 676 48.891 2.899 699</gml:posList>
             </gml:LineStringSegment>
           </gml:segments>
         </gml:Curve>
@@ -454,7 +454,7 @@
     <sf:ComplexGeoFeature gml:id="f103">
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f103</gml:name>
       <sf:geometryProperty>
-        <gml:Surface srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Surface srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:patches>
             <gml:PolygonPatch interpolation="planar">
               <gml:exterior>
@@ -497,7 +497,7 @@
   <gml:featureMember>
     <sf:LinkedFeature gml:id="f201">
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f201</gml:name>
-      <sf:reference xlink:type="simple" xlink:href="#f091" 
+      <sf:reference xlink:type="simple" xlink:href="#f091"
           xlink:role="http://cite.opengeospatial.org/gmlsf#PrimitiveGeoFeature" />
     </sf:LinkedFeature>
   </gml:featureMember>   
@@ -507,7 +507,7 @@
       <gml:description>description-f202</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f202</gml:name>
       <sf:reference xlink:type="simple" xlink:href="#f092"
-        xlink:title="A related feature" xlink:actuate="onRequest" 
+        xlink:title="A related feature" xlink:actuate="onRequest"
         xlink:role="http://cite.opengeospatial.org/gmlsf#PrimitiveGeoFeature" />
       <sf:extent>
         <gml:Point gml:id="g202">
@@ -521,7 +521,7 @@
     <sf:LinkedFeature gml:id="f203">
       <gml:description>description-f203</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f203</gml:name>
-      <sf:reference xlink:type="simple" xlink:href="#f204" 
+      <sf:reference xlink:type="simple" xlink:href="#f204"
         xlink:role="http://cite.opengeospatial.org/gmlsf#LinkedFeature" />
     </sf:LinkedFeature>
   </gml:featureMember>   
@@ -534,7 +534,7 @@
       <sf:extent>
         <gml:MultiPoint gml:id="g204">
           <gml:pointMember xlink:type="simple" xlink:href="#g003" />
-          <gml:pointMember xlink:type="simple" xlink:href="#g202" 
+          <gml:pointMember xlink:type="simple" xlink:href="#g202"
             xlink:role="http://www.opengis.net/gml#Point" />
         </gml:MultiPoint>
       </sf:extent>
@@ -545,7 +545,7 @@
     <sf:LinkedFeature gml:id="f205">
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f205</gml:name>
       <sf:reference xlink:type="simple" xlink:href="#f203" />
-      <sf:extent xlink:type="simple" xlink:href="#g002" 
+      <sf:extent xlink:type="simple" xlink:href="#g002"
         xlink:title="Geometry reference"
         xlink:role="http://www.opengis.net/gml#Polygon" />
     </sf:LinkedFeature>
@@ -576,20 +576,20 @@
     <sf:LinkedFeature gml:id="f208">
       <gml:description>description-f208</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f208</gml:name>
-      <sf:reference xlink:type="simple" 
+      <sf:reference xlink:type="simple"
         xlink:title="External feature reference"
         xlink:href="ftp://vancouver1.demo.galdosinc.com/wfs/http?request=GetFeature&amp;service=WFS&amp;version=1.1.0&amp;typename=sf:LinkedFeature#f205" />
     </sf:LinkedFeature>
   </gml:featureMember>   
   
-  <gml:featureMember>
+  <!-- OPTIONAL, there is a test expecting an error on not finding the reference -->
+  <!-- gml:featureMember>
     <sf:LinkedFeature gml:id="f209">
       <gml:description>description-f209</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f209</gml:name>
-      <!-- TODO what about this -->
-      <sf:reference xlink:type="simple" xlink:href="http://blabla#_6c566516-a435-11dc-8314-0800200c9a66"/>
+      <sf:reference xlink:type="simple" xlink:href="#_6c566516-a435-11dc-8314-0800200c9a66" />
     </sf:LinkedFeature>
-  </gml:featureMember>   
+  </gml:featureMember-->   
   
   <gml:featureMember>    
     <sf:LinkedFeature gml:id="f210">

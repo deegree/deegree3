@@ -5,7 +5,7 @@
 		<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
 			<ogc:Contains>
 				<ogc:PropertyName>sf:attribut.Géométrie</ogc:PropertyName>
-				<gml:Point srsName="urn:x-ogc:def:crs:EPSG:4326">
+				<gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
 					<gml:pos>63.123 5.321</gml:pos>
 				</gml:Point>
 			</ogc:Contains>

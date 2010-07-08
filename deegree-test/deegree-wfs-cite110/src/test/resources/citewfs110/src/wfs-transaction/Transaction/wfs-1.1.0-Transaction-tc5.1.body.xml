@@ -10,7 +10,7 @@
         <gml:description>Curabitur auctor ipsum condimentum tortor lacinia auctor.</gml:description>
         <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf0-f26</gml:name>
         <sf:multiSurfaceProperty>
-          <gml:MultiSurface gml:id="cite.gmlsf0-g05" srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:MultiSurface gml:id="cite.gmlsf0-g05" srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:surfaceMember>
               <gml:Polygon>
                 <gml:exterior>

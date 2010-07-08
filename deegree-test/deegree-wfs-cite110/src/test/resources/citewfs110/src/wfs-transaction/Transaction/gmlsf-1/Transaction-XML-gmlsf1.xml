@@ -21,6 +21,10 @@
           <ctl:with-param name="wfs.Transaction.post.url" select="$wfs.Transaction.post.url"/>
           <ctl:with-param name="wfs.GetFeature.get.url" select="$wfs.GetFeature.get.url"/>
         </ctl:call-test>
+        <ctl:call-test name="wfs:wfs-1.1.0-Transaction-tc21.1">
+          <ctl:with-param name="wfs.Transaction.post.url" select="$wfs.Transaction.post.url"/>
+          <ctl:with-param name="wfs.GetFeature.get.url" select="$wfs.GetFeature.get.url"/>
+        </ctl:call-test>
       </ctl:code>
     </ctl:test>
 

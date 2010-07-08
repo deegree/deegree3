@@ -6,7 +6,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Intersects>
         <ogc:PropertyName>sf:multiSurfaceProperty</ogc:PropertyName>
-        <gml:LinearRing srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:LinearRing srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:posList>57.0 7.5 57.0 8.5 58.0 8.5 58.0 7.5 57.0 7.5</gml:posList>
         </gml:LinearRing>
       </ogc:Intersects>

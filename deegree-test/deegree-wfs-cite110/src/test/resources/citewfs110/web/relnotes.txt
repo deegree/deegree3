@@ -1,15 +1,28 @@
 WFS 1.1.0 Test Suite Release Notes
 
 
+Changes included in this revision:
+
+2010-05-13 (kstegemoller):
+- Updated release notes.
+
+2009-12-10 (cmorris):
+- Make returning a numberOfFeatures attribute optional when resultType=results (Issue 445)
+- Correct sorting in test wfs-1.1.0-Basic-GetFeature-tc50.2 (Issue 427)
+- Remove empty PropertyName element from request in wfs-1.1.0-Basic-GetFeature-tc200.2 (Issue 353)
+- Added missing namespace prefix to property in wfs-1.1.0-Basic-GetFeature-tc100.2 (Issue 351)
+
 Changes included in R2:
 
 2009-10-12 (kstegemoller):
 - created tag wfs-1.1.0 r2
 
 2009-10-7 (cmorris):
-- Corrected time parameter on test getcoverage_operations-getcoverage_request-time-get-kvp-1 (Issue 307)
-- Added CRS parameter to test getcoverage_operations-getcoverage_request-time-get-kvp-2 (Issues 330, 309)
-- Added tests and bug fixes written for NSG that apply to the base WCS specification:
+- Fixed sorting problem (Issue 308)
+- Made KVP Post support optional (Issue 319)
+- Made returning gml:boundedBy properties on return features optional (Issue 322)
+- Fixed bug in testing the default service attribute (Issue 321)
+- Added tests written for NSG that apply to the base WFS specification
 1	The MIME returned for a DescribeFeatureType request where no specific output format is requested is "text/xml; subtype=gml/3.1.1"
 2	When output format XMLSCHEMA is supported, the MIME returned for a DescribeFeatureType request where the output format requested is XMLSCHEMA is "text/xml; subtype=gml/2.1.2"
 3	When output format "text/xml; subtype=gml/2.1.2" is supported, the MIME returned for a DescribeFeatureType request where the output format requested is "text/xml; subtype=gml/2.1.2" is "text/xml; subtype=gml/2.1.2"
@@ -36,6 +49,12 @@ Changes included in R2:
 25	Execute WFS transaction with XlinkPropertyName and test for exception.
 24	N/A
 26	Default resultType for GetFeature is results. Execute GetFeature with the resultType=results explicitly
+
+2009-09-30 (efreese):
+- Changes to wfs-1.1.0-Basic-GetFeature-tc102.1:
+	The sorting test was failing because the 2nd occurrence of sf:EntitéGénérique 
+	was not a valid XPath.  Modified the XPath to find the 2nd occurrence of 
+	gml:featureMember in order to have 2 values to compare. (Issue 347)
 
 
 Changes included in R1:

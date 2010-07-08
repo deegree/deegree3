@@ -5,8 +5,7 @@
     typeName="sf:EntitéGénérique">
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:BBOX>
-          <ogc:PropertyName />
-          <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:lowerCorner>34 14</gml:lowerCorner>
             <gml:upperCorner>41 23</gml:upperCorner>
           </gml:Envelope>

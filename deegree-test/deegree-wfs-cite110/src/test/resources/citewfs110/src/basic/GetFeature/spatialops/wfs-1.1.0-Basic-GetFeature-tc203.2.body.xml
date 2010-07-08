@@ -5,7 +5,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Within>
         <ogc:PropertyName>sf:pointProperty</ogc:PropertyName>
-        <gml:Polygon srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Polygon srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:exterior>
             <gml:LinearRing>
               <gml:posList>38.0 0.0 38.0 6.0 43.0 0.0 38.0 0.0</gml:posList>

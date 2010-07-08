@@ -6,7 +6,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Touches>
           <ogc:PropertyName>sf:multiSurfaceProperty</ogc:PropertyName>
-			<gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+			<gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
 			  <gml:posList>54 19 54 18 54 17</gml:posList>
 			</gml:LineString>
       </ogc:Touches>

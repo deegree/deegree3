@@ -13,7 +13,7 @@
     <ogc:Filter>
       <ogc:BBOX>
         <ogc:PropertyName xmlns:sf="http://cite.opengeospatial.org/gmlsf">sf:attribut.Géométrie</ogc:PropertyName>
-        <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:lowerCorner>34.5 -10.0</gml:lowerCorner>
           <gml:upperCorner>72.0 32.0</gml:upperCorner>
         </gml:Envelope>

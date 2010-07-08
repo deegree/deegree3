@@ -44,13 +44,6 @@
       <comment>Deletes a number of features, always passes.</comment>
 	  <ctl:code>
 
-  <!-- Added to fix test wfs:wfs-1.1.0-LockFeature-tc1.1 -->
-  <ctl:call-test name="wfs:delete-feature">
-    <ctl:with-param name="wfs.Transaction.post.url" select="$wfs.Transaction.post.url"/>
-    <ctl:with-param name="typename" select="'sf:PrimitiveGeoFeature'"/>
-    <ctl:with-param name="gml.name" select="'cite.gmlsf0-f501'"/>
-  </ctl:call-test>
-
   <ctl:call-test name="wfs:delete-feature">
     <ctl:with-param name="wfs.Transaction.post.url" select="$wfs.Transaction.post.url"/>
     <ctl:with-param name="typename" select="'sf:PrimitiveGeoFeature'"/>

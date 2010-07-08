@@ -6,7 +6,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Intersects>
         <ogc:PropertyName>sf:curveProperty</ogc:PropertyName>
-        <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:lowerCorner>56.0 -8.0</gml:lowerCorner>
             <gml:upperCorner>60.0 -2.0</gml:upperCorner>
         </gml:Envelope>

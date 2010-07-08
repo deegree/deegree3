@@ -16,7 +16,7 @@
         </gml:description>
         <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf0-f08</gml:name>
         <sf:attribut.Géométrie>
-          <gml:Polygon gml:id="cite.gmlsf0-g08" srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:Polygon gml:id="cite.gmlsf0-g08" srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:exterior>
               <gml:LinearRing>
                 <gml:posList>65.52752 20.989298 52.09453 19.720014 49.102436 14.609264 60.92411 11.851856 60.04618 16.19630 65.52752 20.989298</gml:posList>
@@ -33,7 +33,7 @@
       <wfs:Property>
         <wfs:Name>sf:attribut.Géométrie</wfs:Name>
         <wfs:Value>
-          <gml:MultiSurface gml:id="cite.gmlsf0-g09" srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:MultiSurface gml:id="cite.gmlsf0-g09" srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:surfaceMember>
               <gml:Polygon>
                 <gml:exterior>

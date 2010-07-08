@@ -1618,7 +1618,7 @@
                </xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="InsertResults" type="wfs:InsertResultsType" minOccurs="0">
+			<xsd:element name="InsertResults" type="wfs:InsertResultsType">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">
                   A transaction is a collection of Insert,Update and Delete

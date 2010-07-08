@@ -6,7 +6,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Within>
         <ogc:PropertyName>sf:curveProperty</ogc:PropertyName>
-        <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:lowerCorner>45.050 8.800</gml:lowerCorner>
           <gml:upperCorner>47.114 11.021</gml:upperCorner>
         </gml:Envelope>

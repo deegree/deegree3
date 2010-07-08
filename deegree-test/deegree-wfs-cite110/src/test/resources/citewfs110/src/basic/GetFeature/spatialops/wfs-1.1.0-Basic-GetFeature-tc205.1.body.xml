@@ -5,7 +5,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Equals>
         <ogc:PropertyName>sf:multiPointProperty</ogc:PropertyName>
-        <gml:MultiPoint srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:MultiPoint srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:pointMember>
             <gml:Point><gml:pos>70.83 29.86</gml:pos></gml:Point>
           </gml:pointMember>

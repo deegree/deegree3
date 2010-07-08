@@ -13,7 +13,7 @@
     <ogc:Filter>
       <ogc:BBOX>
         <ogc:PropertyName xmlns:sf="http://cite.opengeospatial.org/gmlsf">sf:multiPointProperty</ogc:PropertyName>
-        <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:lowerCorner>34.9 -10.6</gml:lowerCorner>
           <gml:upperCorner>72.0 32.2</gml:upperCorner>
         </gml:Envelope>

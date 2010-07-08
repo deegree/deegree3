@@ -4,7 +4,7 @@
   <wfs:Query xmlns:sf="http://cite.opengeospatial.org/gmlsf"
     xmlns:ogc="http://www.opengis.net/ogc"
     typeName="sf:PrimitiveGeoFeature"
-    srsName="urn:x-ogc:def:crs:EPSG:4326">
+    srsName="urn:ogc:def:crs:EPSG::4326">
     <ogc:SortBy>
       <ogc:SortProperty>
         <ogc:PropertyName>sf:intProperty</ogc:PropertyName>

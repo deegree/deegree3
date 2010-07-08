@@ -16,34 +16,34 @@
       <ctl:param name="wfs.GetCapabilities.document"/>
       <ctl:assertion>Run test group for GetFeature requests (POST) with logical operators: And, Or, Not.</ctl:assertion>
       <ctl:code>
-		<xsl:variable name="wfs.GetFeature.post.url">
-			<xsl:value-of select="$wfs.GetCapabilities.document//ows:OperationsMetadata/ows:Operation[@name='GetFeature']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
-		</xsl:variable>
+                <xsl:variable name="wfs.GetFeature.post.url">
+                        <xsl:value-of select="$wfs.GetCapabilities.document//ows:OperationsMetadata/ows:Operation[@name='GetFeature']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+                </xsl:variable>
 
         <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc100.1">
-			<ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
-		</ctl:call-test>
+                        <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
+                </ctl:call-test>
         <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc100.2">
-			<ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
-		</ctl:call-test>
+                        <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
+                </ctl:call-test>
         <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc100.3">
-			<ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
-		</ctl:call-test>
+                        <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
+                </ctl:call-test>
         <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc101.1">
-			<ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
-		</ctl:call-test>
+                        <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
+                </ctl:call-test>
         <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc101.2">
-			<ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
-		</ctl:call-test>
+                        <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
+                </ctl:call-test>
         <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc101.3">
-			<ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
-		</ctl:call-test>
+                        <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
+                </ctl:call-test>
         <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc102.1">
-			<ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
-		</ctl:call-test>
+                        <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
+                </ctl:call-test>
         <ctl:call-test name="wfs:wfs-1.1.0-Basic-GetFeature-tc102.2">
-			<ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
-		</ctl:call-test>
+                        <ctl:with-param name="wfs.GetFeature.post.url" select="$wfs.GetFeature.post.url"/>
+                </ctl:call-test>
       </ctl:code>
     </ctl:test>
 
@@ -59,24 +59,24 @@
       </ctl:comment>
       <ctl:link>wfs-1.1.0-Basic-GetFeature-atc100</ctl:link>
       <ctl:code>
-		<xsl:variable name="response">
-			<ctl:request>
-				<ctl:url>
-					<xsl:value-of select="$wfs.GetFeature.post.url"/>
-				</ctl:url>
-				<ctl:method>POST</ctl:method>
-			    <ctl:body>
-					<xi:include href="wfs-1.1.0-Basic-GetFeature-tc100.1.body.xml"/>
-				</ctl:body>
-				<p:XMLValidatingParser.GMLSF1/>
-			</ctl:request>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="not($response/*)">
-		        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
-				<ctl:fail/>
-		    </xsl:when>
-  		    <xsl:otherwise>
+                <xsl:variable name="response">
+                        <ctl:request>
+                                <ctl:url>
+                                        <xsl:value-of select="$wfs.GetFeature.post.url"/>
+                                </ctl:url>
+                                <ctl:method>POST</ctl:method>
+                            <ctl:body>
+                                        <xi:include href="wfs-1.1.0-Basic-GetFeature-tc100.1.body.xml"/>
+                                </ctl:body>
+                                <p:XMLValidatingParser.GMLSF1/>
+                        </ctl:request>
+                </xsl:variable>
+                <xsl:choose>
+                        <xsl:when test="not($response/*)">
+                        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
+                                <ctl:fail/>
+                    </xsl:when>
+                    <xsl:otherwise>
               <xsl:variable name="featureCount" select="count($response//sf:AggregateGeoFeature)" />
               <xsl:if test="$featureCount != 3">
                 <ctl:message>FAILURE: Expected 3 sf:AggregateGeoFeature instances in response (<xsl:value-of select="$featureCount"/> included)</ctl:message>
@@ -88,9 +88,9 @@
                   <ctl:fail/>
                 </xsl:if>
               </xsl:for-each>
-			</xsl:otherwise>
-		</xsl:choose>
-	  </ctl:code>
+                        </xsl:otherwise>
+                </xsl:choose>
+          </ctl:code>
     </ctl:test>
 
     <ctl:test name="wfs:wfs-1.1.0-Basic-GetFeature-tc100.2">
@@ -105,47 +105,47 @@
       </ctl:comment>
       <ctl:link>wfs-1.1.0-Basic-GetFeature-atc100</ctl:link>
       <ctl:code>
-		<xsl:variable name="response">
-			<ctl:request>
-				<ctl:url>
-					<xsl:value-of select="$wfs.GetFeature.post.url"/>
-				</ctl:url>
-				<ctl:method>POST</ctl:method>
-			    <ctl:body>
-					<xi:include href="wfs-1.1.0-Basic-GetFeature-tc100.2.body.xml"/>
-				</ctl:body>
-				<p:XMLValidatingParser.GMLSF1/>
-			</ctl:request>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="not($response/*)">
-		        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
-				<ctl:fail/>
-		    </xsl:when>
-  		    <xsl:otherwise>
+                <xsl:variable name="response">
+                        <ctl:request>
+                                <ctl:url>
+                                        <xsl:value-of select="$wfs.GetFeature.post.url"/>
+                                </ctl:url>
+                                <ctl:method>POST</ctl:method>
+                            <ctl:body>
+                                        <xi:include href="wfs-1.1.0-Basic-GetFeature-tc100.2.body.xml"/>
+                                </ctl:body>
+                                <p:XMLValidatingParser.GMLSF1/>
+                        </ctl:request>
+                </xsl:variable>
+                <xsl:choose>
+                        <xsl:when test="not($response/*)">
+                        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
+                                <ctl:fail/>
+                    </xsl:when>
+                    <xsl:otherwise>
               <xsl:variable name="featureCount" select="count($response//sf:EntitéGénérique)" />
               <xsl:if test="$featureCount != 2">
                 <ctl:message>FAILURE: Expected 2 sf:EntitéGénérique instance in response (<xsl:value-of select="$featureCount"/> included)</ctl:message>
                 <ctl:fail/>
               </xsl:if>
               <xsl:variable name="env">
-                <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+                <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
                   <gml:lowerCorner>34.0 16.0</gml:lowerCorner>
                   <gml:upperCorner>40.0 19.0</gml:upperCorner>
                 </gml:Envelope>
               </xsl:variable>
               <xsl:for-each select="$response//sf:EntitéGénérique">
                 <xsl:if test="./gml:boundedBy">
-	                <xsl:if test="wfs:disjoint-envelopes($env,gml:boundedBy) != 1">
-	                  <ctl:message>FAILURE: Envelopes intersect (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
-	                  <ctl:fail/>
-	                </xsl:if>
- 	            </xsl:if>
+                        <xsl:if test="wfs:disjoint-envelopes($env,gml:boundedBy) != 1">
+                          <ctl:message>FAILURE: Envelopes intersect (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
+                          <ctl:fail/>
+                        </xsl:if>
+                    </xsl:if>
               </xsl:for-each>
               <!-- TODO evaluate spatial relationship -->
-			</xsl:otherwise>
-		</xsl:choose>
-	  </ctl:code>
+                        </xsl:otherwise>
+                </xsl:choose>
+          </ctl:code>
     </ctl:test>
 
     <ctl:test name="wfs:wfs-1.1.0-Basic-GetFeature-tc100.3">
@@ -160,31 +160,31 @@
       </ctl:comment>
       <ctl:link>wfs-1.1.0-Basic-GetFeature-atc100</ctl:link>
       <ctl:code>
-		<xsl:variable name="response">
-			<ctl:request>
-				<ctl:url>
-					<xsl:value-of select="$wfs.GetFeature.post.url"/>
-				</ctl:url>
-				<ctl:method>POST</ctl:method>
-			    <ctl:body>
-					<xi:include href="wfs-1.1.0-Basic-GetFeature-tc100.3.body.xml"/>
-				</ctl:body>
-				<p:XMLValidatingParser.GMLSF1/>
-			</ctl:request>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="not($response/*)">
-		        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
-				<ctl:fail/>
-		    </xsl:when>
-  		    <xsl:otherwise>
+                <xsl:variable name="response">
+                        <ctl:request>
+                                <ctl:url>
+                                        <xsl:value-of select="$wfs.GetFeature.post.url"/>
+                                </ctl:url>
+                                <ctl:method>POST</ctl:method>
+                            <ctl:body>
+                                        <xi:include href="wfs-1.1.0-Basic-GetFeature-tc100.3.body.xml"/>
+                                </ctl:body>
+                                <p:XMLValidatingParser.GMLSF1/>
+                        </ctl:request>
+                </xsl:variable>
+                <xsl:choose>
+                        <xsl:when test="not($response/*)">
+                        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
+                                <ctl:fail/>
+                    </xsl:when>
+                    <xsl:otherwise>
               <xsl:variable name="featureCount" select="count($response//sf:EntitéGénérique)" />
               <xsl:if test="$featureCount lt 1">
                 <ctl:message>FAILURE: Empty feature collection.</ctl:message>
                 <ctl:fail/>
               </xsl:if>
               <xsl:variable name="env">
-                <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+                <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
                   <gml:lowerCorner>55.0 -2.5</gml:lowerCorner>
                   <gml:upperCorner>65.0 2.5</gml:upperCorner>
                 </gml:Envelope>
@@ -202,9 +202,9 @@
                         <ctl:fail/>
               </xsl:if>
               <!-- TODO evaluate spatial relationship -->
-			</xsl:otherwise>
-		</xsl:choose>
-	  </ctl:code>
+                        </xsl:otherwise>
+                </xsl:choose>
+          </ctl:code>
     </ctl:test>
 
     <ctl:test name="wfs:wfs-1.1.0-Basic-GetFeature-tc101.1">
@@ -219,31 +219,31 @@
       </ctl:comment>
       <ctl:link>wfs-1.1.0-Basic-GetFeature-atc101</ctl:link>
       <ctl:code>
-		<xsl:variable name="response">
-			<ctl:request>
-				<ctl:url>
-					<xsl:value-of select="$wfs.GetFeature.post.url"/>
-				</ctl:url>
-				<ctl:method>POST</ctl:method>
-			    <ctl:body>
-				   <xi:include href="wfs-1.1.0-Basic-GetFeature-tc101.1.body.xml"/>
-				</ctl:body>
-				<p:XMLValidatingParser.GMLSF1/>
-			</ctl:request>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="not($response/*)">
-		        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
-				<ctl:fail/>
-		    </xsl:when>
-  		    <xsl:otherwise>
+                <xsl:variable name="response">
+                        <ctl:request>
+                                <ctl:url>
+                                        <xsl:value-of select="$wfs.GetFeature.post.url"/>
+                                </ctl:url>
+                                <ctl:method>POST</ctl:method>
+                            <ctl:body>
+                                   <xi:include href="wfs-1.1.0-Basic-GetFeature-tc101.1.body.xml"/>
+                                </ctl:body>
+                                <p:XMLValidatingParser.GMLSF1/>
+                        </ctl:request>
+                </xsl:variable>
+                <xsl:choose>
+                        <xsl:when test="not($response/*)">
+                        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
+                                <ctl:fail/>
+                    </xsl:when>
+                    <xsl:otherwise>
               <xsl:variable name="featureCount" select="count($response//sf:PrimitiveGeoFeature)" />
               <xsl:if test="$featureCount lt 1">
                 <ctl:message>FAILURE: Empty feature collection.</ctl:message>
                 <ctl:fail/>
               </xsl:if>
               <xsl:variable name="env">
-                <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+                <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
                   <gml:lowerCorner>36.0 -1.0</gml:lowerCorner>
                   <gml:upperCorner>42.0 4.0</gml:upperCorner>
                 </gml:Envelope>
@@ -254,16 +254,16 @@
                   <ctl:fail/>
                 </xsl:if>
                <xsl:if test="./gml:boundedBy">
-	               <xsl:if test="wfs:disjoint-envelopes($env,gml:boundedBy) != 0">
-	                 <ctl:message>FAILURE: Envelopes do NOT intersect (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
-	                 <ctl:fail/>
-	               </xsl:if>
+                       <xsl:if test="wfs:disjoint-envelopes($env,gml:boundedBy) != 0">
+                         <ctl:message>FAILURE: Envelopes do NOT intersect (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
+                         <ctl:fail/>
+                       </xsl:if>
                </xsl:if>
               </xsl:for-each>
               <!-- TODO evaluate intersects relationship -->
-			</xsl:otherwise>
-		</xsl:choose>
-	  </ctl:code>
+                        </xsl:otherwise>
+                </xsl:choose>
+          </ctl:code>
     </ctl:test>
 
     <ctl:test name="wfs:wfs-1.1.0-Basic-GetFeature-tc101.2">
@@ -278,24 +278,24 @@
       </ctl:comment>
       <ctl:link>wfs-1.1.0-Basic-GetFeature-atc101</ctl:link>
       <ctl:code>
-		<xsl:variable name="response">
-			<ctl:request>
-				<ctl:url>
-					<xsl:value-of select="$wfs.GetFeature.post.url"/>
-				</ctl:url>
-				<ctl:method>POST</ctl:method>
-			    <ctl:body>
-					<xi:include href="wfs-1.1.0-Basic-GetFeature-tc101.2.body.xml"/>
-				</ctl:body>
-				<p:XMLValidatingParser.GMLSF1/>
-			</ctl:request>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="not($response/*)">
-		        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
-				<ctl:fail/>
-		    </xsl:when>
-  		    <xsl:otherwise>
+                <xsl:variable name="response">
+                        <ctl:request>
+                                <ctl:url>
+                                        <xsl:value-of select="$wfs.GetFeature.post.url"/>
+                                </ctl:url>
+                                <ctl:method>POST</ctl:method>
+                            <ctl:body>
+                                        <xi:include href="wfs-1.1.0-Basic-GetFeature-tc101.2.body.xml"/>
+                                </ctl:body>
+                                <p:XMLValidatingParser.GMLSF1/>
+                        </ctl:request>
+                </xsl:variable>
+                <xsl:choose>
+                        <xsl:when test="not($response/*)">
+                        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
+                                <ctl:fail/>
+                    </xsl:when>
+                    <xsl:otherwise>
               <xsl:variable name="featureCount" select="count($response//sf:AggregateGeoFeature)" />
               <xsl:if test="$featureCount lt 1">
                 <ctl:message>FAILURE: Empty feature collection.</ctl:message>
@@ -311,9 +311,9 @@
                   <ctl:fail/>
                 </xsl:if>
               </xsl:for-each>
-			</xsl:otherwise>
-		</xsl:choose>
-	  </ctl:code>
+                        </xsl:otherwise>
+                </xsl:choose>
+          </ctl:code>
     </ctl:test>
 
     <ctl:test name="wfs:wfs-1.1.0-Basic-GetFeature-tc101.3">
@@ -328,31 +328,31 @@
       </ctl:comment>
       <ctl:link>wfs-1.1.0-Basic-GetFeature-atc101</ctl:link>
       <ctl:code>
-		<xsl:variable name="response">
-			<ctl:request>
-				<ctl:url>
-					<xsl:value-of select="$wfs.GetFeature.post.url"/>
-				</ctl:url>
-				<ctl:method>POST</ctl:method>
-			    <ctl:body>
-					<xi:include href="wfs-1.1.0-Basic-GetFeature-tc101.3.body.xml"/>
-				</ctl:body>
-				<p:XMLValidatingParser.GMLSF1/>
-			</ctl:request>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="not($response/*)">
-		        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
-				<ctl:fail/>
-		    </xsl:when>
-  		    <xsl:otherwise>
+                <xsl:variable name="response">
+                        <ctl:request>
+                                <ctl:url>
+                                        <xsl:value-of select="$wfs.GetFeature.post.url"/>
+                                </ctl:url>
+                                <ctl:method>POST</ctl:method>
+                            <ctl:body>
+                                        <xi:include href="wfs-1.1.0-Basic-GetFeature-tc101.3.body.xml"/>
+                                </ctl:body>
+                                <p:XMLValidatingParser.GMLSF1/>
+                        </ctl:request>
+                </xsl:variable>
+                <xsl:choose>
+                        <xsl:when test="not($response/*)">
+                        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
+                                <ctl:fail/>
+                    </xsl:when>
+                    <xsl:otherwise>
               <xsl:variable name="featureCount" select="count($response//sf:AggregateGeoFeature)" />
               <xsl:if test="$featureCount lt 1">
                 <ctl:message>FAILURE: Empty feature collection.</ctl:message>
                 <ctl:fail/>
               </xsl:if>
               <xsl:variable name="env">
-                <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+                <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
                   <gml:lowerCorner>40.0 -5.0</gml:lowerCorner>
                   <gml:upperCorner>50.0 -1.0</gml:upperCorner>
                 </gml:Envelope>
@@ -361,17 +361,17 @@
                 <xsl:if test="xsd:double(sf:doubleProperty) le 20.0">
                   <ctl:message>FAILURE: sf:doubleProperty &lt;= 20.0 (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
                   <ctl:fail/>
-                </xsl:if>                
+                </xsl:if>
                 <xsl:if test="./gml:boundedBy">
-	                <xsl:if test="wfs:disjoint-envelopes($env,gml:boundedBy) != 1">
-	                  <ctl:message>FAILURE: Envelopes intersect (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
-	                  <ctl:fail/>
-	                </xsl:if>
+                        <xsl:if test="wfs:disjoint-envelopes($env,gml:boundedBy) != 1">
+                          <ctl:message>FAILURE: Envelopes intersect (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
+                          <ctl:fail/>
+                        </xsl:if>
                 </xsl:if>
               </xsl:for-each>
-			</xsl:otherwise>
-		</xsl:choose>
-	  </ctl:code>
+                        </xsl:otherwise>
+                </xsl:choose>
+          </ctl:code>
     </ctl:test>
 
     <ctl:test name="wfs:wfs-1.1.0-Basic-GetFeature-tc102.1">
@@ -386,31 +386,31 @@
       </ctl:comment>
       <ctl:link>wfs-1.1.0-Basic-GetFeature-atc102</ctl:link>
       <ctl:code>
-		<xsl:variable name="response">
-			<ctl:request>
-				<ctl:url>
-					<xsl:value-of select="$wfs.GetFeature.post.url"/>
-				</ctl:url>
-				<ctl:method>POST</ctl:method>
-			    <ctl:body>
-					<xi:include href="wfs-1.1.0-Basic-GetFeature-tc102.1.body.xml"/>
-				</ctl:body>
-				<p:XMLValidatingParser.GMLSF1/>
-			</ctl:request>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="not($response/*)">
-		        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
-				<ctl:fail/>
-		    </xsl:when>
-  		    <xsl:otherwise>
+                <xsl:variable name="response">
+                        <ctl:request>
+                                <ctl:url>
+                                        <xsl:value-of select="$wfs.GetFeature.post.url"/>
+                                </ctl:url>
+                                <ctl:method>POST</ctl:method>
+                            <ctl:body>
+                                        <xi:include href="wfs-1.1.0-Basic-GetFeature-tc102.1.body.xml"/>
+                                </ctl:body>
+                                <p:XMLValidatingParser.GMLSF1/>
+                        </ctl:request>
+                </xsl:variable>
+                <xsl:choose>
+                        <xsl:when test="not($response/*)">
+                        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
+                                <ctl:fail/>
+                    </xsl:when>
+                    <xsl:otherwise>
               <xsl:variable name="featureCount" select="count($response//sf:EntitéGénérique)" />
               <xsl:if test="$featureCount lt 1">
                 <ctl:message>FAILURE: Empty feature collection.</ctl:message>
                 <ctl:fail/>
               </xsl:if>
               <xsl:variable name="env">
-                <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+                <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
                   <gml:lowerCorner>34.0 15.0</gml:lowerCorner>
                   <gml:upperCorner>40.0 19.0</gml:upperCorner>
                 </gml:Envelope>
@@ -420,22 +420,6 @@
                     <ctl:message>FAILURE: sf:EntitéGénérique missing an expected property: sf:str4Property or sf:attribut.Géométrie (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
                     <ctl:fail/>
                   </xsl:if>
-                  <xsl:choose>
-                    <xsl:when test="sf:str4Property and sf:attribut.Géométrie and gml:boundedBy">
-                      <xsl:if test="(compare(sf:str4Property, 'abc3') != 0) and (wfs:disjoint-envelopes($env,gml:boundedBy) != 0)">
-                        <ctl:message>FAILURE: sf:str4Property != "abc3" AND envelopes do not intersect (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
-                        <ctl:fail/>
-                      </xsl:if>
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:if test="./gml:boundedBy">
-	                      <xsl:if test="wfs:disjoint-envelopes($env,gml:boundedBy) != 0">
-	                        <ctl:message>FAILURE: Envelopes do not intersect (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
-	                        <ctl:fail/>
-	                      </xsl:if>
-                      </xsl:if>
-                    </xsl:otherwise>
-                  </xsl:choose>
               </xsl:for-each>
               <!-- verify sorting -->
               <xsl:variable name="f1.str4" select="($response//sf:EntitéGénérique)[1]/sf:str4Property" />
@@ -444,9 +428,9 @@
                   <ctl:message>FAILURE: Features are not sorted by sf:str4Property in ascending order.</ctl:message>
                   <ctl:fail/>
               </xsl:if>
-			</xsl:otherwise>
-		</xsl:choose>
-	  </ctl:code>
+                        </xsl:otherwise>
+                </xsl:choose>
+          </ctl:code>
     </ctl:test>
 
     <ctl:test name="wfs:wfs-1.1.0-Basic-GetFeature-tc102.2">
@@ -461,24 +445,24 @@
       </ctl:comment>
       <ctl:link>wfs-1.1.0-Basic-GetFeature-atc102</ctl:link>
       <ctl:code>
-		<xsl:variable name="response">
-			<ctl:request>
-				<ctl:url>
-					<xsl:value-of select="$wfs.GetFeature.post.url"/>
-				</ctl:url>
-				<ctl:method>POST</ctl:method>
-			    <ctl:body>
-					<xi:include href="wfs-1.1.0-Basic-GetFeature-tc102.2.body.xml"/>
-				</ctl:body>
-				<p:XMLValidatingParser.GMLSF1/>
-			</ctl:request>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="not($response/*)">
-		        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
-				<ctl:fail/>
-		    </xsl:when>
-  		    <xsl:otherwise>
+                <xsl:variable name="response">
+                        <ctl:request>
+                                <ctl:url>
+                                        <xsl:value-of select="$wfs.GetFeature.post.url"/>
+                                </ctl:url>
+                                <ctl:method>POST</ctl:method>
+                            <ctl:body>
+                                        <xi:include href="wfs-1.1.0-Basic-GetFeature-tc102.2.body.xml"/>
+                                </ctl:body>
+                                <p:XMLValidatingParser.GMLSF1/>
+                        </ctl:request>
+                </xsl:variable>
+                <xsl:choose>
+                        <xsl:when test="not($response/*)">
+                        <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
+                                <ctl:fail/>
+                    </xsl:when>
+                    <xsl:otherwise>
               <xsl:for-each select="$response//sf:PrimitiveGeoFeature">
                   <xsl:if test="not(sf:intProperty or sf:decimalProperty)">
                     <ctl:message>FAILURE: sf:PrimitiveGeoFeature missing an expected property: sf:intProperty or sf:decimalProperty (gml:id = <xsl:value-of select="@gml:id"/>)</ctl:message>
@@ -505,8 +489,8 @@
                     </xsl:otherwise>
                   </xsl:choose>
               </xsl:for-each>
-			</xsl:otherwise>
-		</xsl:choose>
-	  </ctl:code>
+                        </xsl:otherwise>
+                </xsl:choose>
+          </ctl:code>
     </ctl:test>
 </ctl:package>

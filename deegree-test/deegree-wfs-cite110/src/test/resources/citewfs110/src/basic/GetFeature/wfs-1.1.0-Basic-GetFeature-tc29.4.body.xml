@@ -4,7 +4,7 @@
 		<ogc:Filter>
 			<ogc:BBOX>
 				<ogc:PropertyName>sf:pointProperty</ogc:PropertyName>
-				<gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+				<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
 					<gml:lowerCorner>50 -15</gml:lowerCorner>
 					<gml:upperCorner>72 5</gml:upperCorner>
 				</gml:Envelope>
@@ -15,7 +15,7 @@
 		<ogc:Filter>
 			<ogc:BBOX>
 				<ogc:PropertyName>sf:attribut.Géométrie</ogc:PropertyName>
-				<gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+				<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
 					<gml:lowerCorner>50 -15</gml:lowerCorner>
 					<gml:upperCorner>72 5</gml:upperCorner>
 				</gml:Envelope>
@@ -26,7 +26,7 @@
 		<ogc:Filter>
 			<ogc:BBOX>
 				<ogc:PropertyName>sf:multiCurveProperty</ogc:PropertyName>
-				<gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+				<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
 					<gml:lowerCorner>50 -15</gml:lowerCorner>
 					<gml:upperCorner>72 5</gml:upperCorner>
 				</gml:Envelope>

@@ -10,7 +10,7 @@
       <sf:PrimitiveGeoFeature gml:id="cite.gmlsf0-f13">
         <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf0-f13</gml:name>
         <sf:pointProperty>
-          <gml:Point srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:pos>62.12409 12.19653797</gml:pos>
           </gml:Point>
         </sf:pointProperty>

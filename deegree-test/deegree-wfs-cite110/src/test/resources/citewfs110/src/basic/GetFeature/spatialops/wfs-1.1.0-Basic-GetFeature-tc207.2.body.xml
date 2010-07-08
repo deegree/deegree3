@@ -5,7 +5,7 @@
 		<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
 			<ogc:Touches>
 				<ogc:PropertyName>sf:multiCurveProperty</ogc:PropertyName>
-				<gml:Point srsName="urn:x-ogc:def:crs:EPSG:4326">
+				<gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
 					<gml:pos>55.174 -5.899</gml:pos>
 				</gml:Point>
 			</ogc:Touches>

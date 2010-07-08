@@ -8,45 +8,45 @@
  xmlns:saxon="http://saxon.sf.net/"
  xmlns:wfs="http://www.opengis.net/wfs"
  xmlns:ows="http://www.opengis.net/ows"
- xmlns:gml="http://www.opengis.net/gml" 
+ xmlns:gml="http://www.opengis.net/gml"
  xmlns:ogc="http://www.opengis.net/ogc"
- xmlns:sf="http://cite.opengeospatial.org/gmlsf" 
+ xmlns:sf="http://cite.opengeospatial.org/gmlsf"
  xmlns:xi="http://www.w3.org/2001/XInclude">
 
-	<!-- Sample usage:
+        <!-- Sample usage:
     (1)
     <ctl:call-test name="ctl:assert-xpath">
-		<ctl:with-param name="expr">/wfs:WFS_Capabilities</ctl:with-param>
-		<ctl:with-param name="doc" select="$doc"/>
+                <ctl:with-param name="expr">/wfs:WFS_Capabilities</ctl:with-param>
+                <ctl:with-param name="doc" select="$doc"/>
     </ctl:call-test>
     (2)
     <xsl:variable name="expression">/wfs:WFS_Capabilities</xsl:variable>
-	<ctl:call-test name="ctl:assert-xpath">
-	    <ctl:with-param name="expr" select="$expression"/>
-	    <ctl:with-param name="doc" select="$doc"/>
-	</ctl:call-test>
+        <ctl:call-test name="ctl:assert-xpath">
+            <ctl:with-param name="expr" select="$expression"/>
+            <ctl:with-param name="doc" select="$doc"/>
+        </ctl:call-test>
     -->
-	<ctl:test name="ctl:assert-xpath">
-		<ctl:param name="expr">An XPath expression</ctl:param>
-		<ctl:param name="doc">An XML document</ctl:param>
-		<ctl:assertion>
-        Evaluates the given XPath expression against the input document and 
-        returns a boolean result according to the XPath specification (see 
+        <ctl:test name="ctl:assert-xpath">
+                <ctl:param name="expr">An XPath expression</ctl:param>
+                <ctl:param name="doc">An XML document</ctl:param>
+                <ctl:assertion>
+        Evaluates the given XPath expression against the input document and
+        returns a boolean result according to the XPath specification (see
         http://www.w3.org/TR/xpath#section-Boolean-Functions).
         </ctl:assertion>
-		<ctl:code>
-			<xsl:for-each select="$doc">
-				<xsl:choose>
-					<xsl:when test="saxon:evaluate($expr)"/>
-					<xsl:otherwise>
-						<ctl:message>The expression '<xsl:value-of select="$expr"/>' is false.</ctl:message>
-						<ctl:fail/>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:for-each>
-		</ctl:code>
-	</ctl:test>
-	
+                <ctl:code>
+                        <xsl:for-each select="$doc">
+                                <xsl:choose>
+                                        <xsl:when test="saxon:evaluate($expr)"/>
+                                        <xsl:otherwise>
+                                                <ctl:message>The expression '<xsl:value-of select="$expr"/>' is false.</ctl:message>
+                                                <ctl:fail/>
+                                        </xsl:otherwise>
+                                </xsl:choose>
+                        </xsl:for-each>
+                </ctl:code>
+        </ctl:test>
+
     <ctl:function name="wfs:extract-gml-id">
       <!-- TODO return a sequence of id values -->
       <ctl:param name="response">A wfs:FeatureCollection document</ctl:param>
@@ -63,12 +63,12 @@
         </xsl:choose>
       </ctl:code>
    </ctl:function>
-   
+
    <ctl:function name="wfs:disjoint-envelopes">
       <ctl:param name="env">The gml:Envelope specifying an area of interest</ctl:param>
       <ctl:param name="bbox">The gml:boundedBy property describing the extent of some feature.</ctl:param>
       <ctl:return>
-      Returns '1' if the envelopes are disjoint or '0' if they are not (i.e. they 
+      Returns '1' if the envelopes are disjoint or '0' if they are not (i.e. they
       intersect). Returns '-1' if the CRS references do not match.
       </ctl:return>
       <ctl:description>Determines if two envelopes are disjoint. If not, they intersect.</ctl:description>
@@ -90,15 +90,18 @@
          </xsl:choose>
       </ctl:code>
    </ctl:function>
-   
+
    <ctl:function name="wfs:encode">
       <ctl:param name="s">String to encode</ctl:param>
-      <ctl:java class="java.net.URLEncoder" method="encode"/>
+      <ctl:java class="java.net.URLEncoder" method="encode">
+        <ctl:with-param select="s" />
+        <ctl:with-param select="'UTF-8'" />
+      </ctl:java>
    </ctl:function>
 
    <ctl:function name="wfs:sleep">
       <ctl:param name="milliseconds"/>
       <ctl:java class="java.lang.Thread" method="sleep"/>
    </ctl:function>
-   
+
 </ctl:package>

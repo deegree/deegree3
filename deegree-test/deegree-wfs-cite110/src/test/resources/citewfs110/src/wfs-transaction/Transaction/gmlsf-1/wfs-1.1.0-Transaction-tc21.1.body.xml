@@ -14,7 +14,7 @@
       </gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf1-f201</gml:name>
       <sf:geometryProperty>
-        <gml:Surface srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Surface srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:patches>
               <gml:PolygonPatch interpolation="planar">
                 <gml:exterior>
@@ -53,7 +53,7 @@
       </gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf1-f202</gml:name>
       <sf:geometryProperty>
-       <gml:Point srsName="urn:x-ogc:def:crs:EPSG:4326">
+       <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:pos>47.46411 5.8375854</gml:pos>
         </gml:Point>
       </sf:geometryProperty>

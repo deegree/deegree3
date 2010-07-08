@@ -10,7 +10,7 @@
       <sf:PrimitiveGeoFeature gml:id="cite.gmlsf0-f16">
         <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf0-f16</gml:name>
         <sf:curveProperty>
-          <gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:posList>48.76926 27.590446 46.54372 24.856320 42.89878 20.067233 42.414574 15.148127</gml:posList>
           </gml:LineString>
         </sf:curveProperty>
@@ -22,7 +22,7 @@
       <sf:PrimitiveGeoFeature gml:id="cite.gmlsf0-f17">
         <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf0-f17</gml:name>
         <sf:curveProperty>
-          <gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:posList>46.76926 25.590446 45.54372 22.856320 41.89878 18.067233 41.414574 13.148127 39.414574 9.148127</gml:posList>
           </gml:LineString>
         </sf:curveProperty>
@@ -35,7 +35,7 @@
         <gml:description>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</gml:description>
         <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf0-f18</gml:name>
         <sf:attribut.Géométrie>
-          <gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:posList>52.68416 0.826830 50.19039 3.537679 53.00112 5.850914 54.53406 13.099472 54.400627 18.411608</gml:posList>
           </gml:LineString>
         </sf:attribut.Géométrie>

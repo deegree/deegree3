@@ -8,7 +8,7 @@
       <sf:PrimitiveGeoFeature gml:id="cite.gmlsf0-f503">
         <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf0-f503</gml:name>
         <sf:curveProperty>
-          <gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:posList>45.608284 17.034142 47.286873 12.7836 47.849854 13.764992</gml:posList>
           </gml:LineString>
         </sf:curveProperty>

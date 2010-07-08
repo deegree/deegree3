@@ -5,7 +5,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Overlaps>
         <ogc:PropertyName>sf:multiSurfaceProperty</ogc:PropertyName>
-        <gml:MultiSurface srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:MultiSurface srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:surfaceMember>
 			<gml:Polygon>
               <gml:exterior>

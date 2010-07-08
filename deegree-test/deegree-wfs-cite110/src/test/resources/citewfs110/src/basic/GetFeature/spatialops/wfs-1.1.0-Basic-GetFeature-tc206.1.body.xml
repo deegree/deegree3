@@ -6,7 +6,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Contains>
         <ogc:PropertyName>sf:curveProperty</ogc:PropertyName>
-        <gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:posList>46.074 9.799 46.652 10.466</gml:posList>
         </gml:LineString>
       </ogc:Contains>

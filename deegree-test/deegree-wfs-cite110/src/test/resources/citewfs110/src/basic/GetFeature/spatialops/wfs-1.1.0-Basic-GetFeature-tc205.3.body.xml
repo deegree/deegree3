@@ -5,7 +5,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Equals>
         <ogc:PropertyName>sf:attribut.Géométrie</ogc:PropertyName>
-        <gml:Polygon srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Polygon srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:exterior>
             <gml:LinearRing>
               <gml:posList>60.5 0 64 0 64 6.25 60.5 6.25 60.5 0</gml:posList>

@@ -5,7 +5,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Overlaps>
         <ogc:PropertyName>sf:surfaceProperty</ogc:PropertyName>
-        <gml:LineString srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:posList>44.80 30.75 46.50 30.75 48.00 31.25</gml:posList>
         </gml:LineString>
       </ogc:Overlaps>

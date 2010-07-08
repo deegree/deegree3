@@ -8,7 +8,7 @@
 	<wfs:Insert handle="ins-1">
       <sf:PrimitiveGeoFeature gml:id="cite.gmlsf0-f10">
         <sf:pointProperty>
-          <gml:Point srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:pos>70.823555 -7.735101</gml:pos>
           </gml:Point>
         </sf:pointProperty>

@@ -5,7 +5,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Contains>
         <ogc:PropertyName>sf:multiSurfaceProperty</ogc:PropertyName>
-        <gml:Polygon srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Polygon srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:exterior>
             <gml:LinearRing>
               <gml:posList>35.1 -8.0 35.1 -8.4 35.2 -8.4 35.2 -8.0 35.1 -8.0</gml:posList>

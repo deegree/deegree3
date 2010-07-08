@@ -13,7 +13,7 @@
         cubilia Curae; maecenas elu dictum.
         </gml:description>
         <sf:surfaceProperty>
-          <gml:Polygon srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:Polygon srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:description>Aenean convallis pede non quam</gml:description>
             <gml:exterior>
               <gml:LinearRing>

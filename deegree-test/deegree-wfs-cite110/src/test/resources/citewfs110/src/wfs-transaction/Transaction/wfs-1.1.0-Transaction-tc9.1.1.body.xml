@@ -14,13 +14,13 @@
         </gml:description>
         <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf0-f12</gml:name>
         <gml:boundedBy>
-          <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:lowerCorner>35.84 0.14</gml:lowerCorner>
             <gml:upperCorner>56.54 12.37</gml:upperCorner>
           </gml:Envelope>
         </gml:boundedBy>
         <sf:multiCurveProperty>
-          <gml:MultiCurve srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:MultiCurve srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:description>Aenean convallis pede non quam</gml:description>
             <gml:curveMember>
               <gml:LineString>

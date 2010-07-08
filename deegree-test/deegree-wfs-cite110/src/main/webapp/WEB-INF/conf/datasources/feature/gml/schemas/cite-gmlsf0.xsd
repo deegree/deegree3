@@ -23,7 +23,7 @@
     </xsd:documentation>
   </xsd:annotation>
   
-  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf2.xsd"/>
+  <xsd:import namespace="http://www.opengis.net/gml" />
     
   <xsd:element name="SimpleFeatureCollection" type="sf:SimpleFeatureCollectionType" 
     substitutionGroup="gml:_GML">

@@ -1,27 +1,41 @@
 <?xml version="1.0"?>
-<xsd:schema xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.opengis.net/wfs" elementFormDefault="qualified" version="1.1.0">
-	<!-- ==============================================================
+<xsd:schema 
+   targetNamespace="http://www.opengis.net/wfs"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:ows="http://www.opengis.net/ows"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified" version="1.1.2">
+
+   <!--
+      WFS is an OGC Standard.
+      Copyright (c) 2002,2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+      To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+   -->
+
+   <!-- ==============================================================
         Includes and Imports
         ============================================================== -->
-	<!--<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="../../gml/3.1.1/base/gml-3.1.1.xsd"/>
-	<xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="../../filter/1.1.0/filter-1.1.0.xsd"/>
-	<xsd:import namespace="http://www.opengis.net/ows" schemaLocation="../../ows/1.0.0/ows-1.0.0.xsd"/>-->
-	<xsd:import namespace="http://www.opengis.net/gml"/>
-	<xsd:import namespace="http://www.opengis.net/ogc"/>
-	<xsd:import namespace="http://www.opengis.net/ows"/>	
-	<!-- ================================================================== -->
-	<!-- =   BASE REQUEST TYPE                                            = -->
-	<!-- ================================================================== -->
-	<xsd:complexType name="BaseRequestType" abstract="true">
-		<xsd:annotation>
-			<xsd:documentation>
+   <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd"/>
+   <xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="http://schemas.opengis.net/filter/1.1.0/filter.xsd"/>
+   <xsd:import namespace="http://www.opengis.net/ows" schemaLocation="http://schemas.opengis.net/ows/1.0.0/owsAll.xsd"/>
+
+   <!-- ================================================================== -->
+   <!-- =   BASE REQUEST TYPE                                            = -->
+   <!-- ================================================================== -->
+   <xsd:complexType name="BaseRequestType" abstract="true">
+      <xsd:annotation>
+         <xsd:documentation>
             XML encoded WFS operation request base, for all operations
             except GetCapabilities.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:attribute name="service" type="ows:ServiceType" use="optional" default="WFS">
-			<xsd:annotation>
-				<xsd:documentation>
+      </xsd:annotation>
+      <xsd:attribute name="service" type="ows:ServiceType"
+                     use="optional" default="WFS">
+        <xsd:annotation>
+           <xsd:documentation>
               The service attribute is included to support service 
               endpoints that implement more than one OGC service.
               For example, a single CGI that implements WMS, WFS
@@ -36,11 +50,12 @@
               wfs:GetCapabilities and easily be distinguished from
               wcs:GetCapabilities using the namespaces.
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="version" type="xsd:string" use="optional" default="1.1.0">
-			<xsd:annotation>
-				<xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="version" type="xsd:string"
+                     use="optional" default="1.1.0">
+        <xsd:annotation>
+           <xsd:documentation>
                The version attribute is used to indicate the version of the
                WFS specification that a request conforms to.  All requests in
                this schema conform to V1.1 of the WFS specification.
@@ -49,11 +64,12 @@
                specified then the service should assume that the request
                conforms to greatest available specification version.
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="handle" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="handle"
+                     type="xsd:string" use="optional">
+         <xsd:annotation>
+            <xsd:documentation>
                The handle attribute allows a client application
                to assign a client-generated request identifier
                to a WFS request.  The handle is included to
@@ -63,15 +79,16 @@
                present, then the WFS may employ other means to
                localize the error (e.g. line numbers).
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	<!-- ============================================================== -->
-	<!-- = PROPERTY NAME ELEMENT                                      = -->
-	<!-- ============================================================== -->
-	<xsd:element name="PropertyName" type="xsd:string">
-		<xsd:annotation>
-			<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+
+   <!-- ============================================================== -->
+   <!-- = PROPERTY NAME ELEMENT                                      = -->
+   <!-- ============================================================== -->
+   <xsd:element name="PropertyName" type="xsd:string">
+      <xsd:annotation>
+         <xsd:documentation>
             The Property element is used to specify one or more
             properties of a feature whose values are to be retrieved
             by a Web Feature Service.
@@ -92,11 +109,11 @@
             application can determine which properties are mandatory
             and request them in the first place.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:element name="XlinkPropertyName">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="XlinkPropertyName">
+      <xsd:annotation>
+         <xsd:documentation>
             This element may be used in place of an wfs:PropertyName element
             in a wfs:Query element in a wfs:GetFeature element to selectively
             request the traversal of nested XLinks in the returned element for
@@ -104,13 +121,14 @@
             -- GetFeatureWithLock, LockFeature, Insert, Update, Delete -- in
             this version of the WFS specification.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:simpleContent>
-				<xsd:extension base="xsd:string">
-					<xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="required">
-						<xsd:annotation>
-							<xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+               <xsd:attribute name="traverseXlinkDepth"
+                              type="xsd:string" use="required">
+                  <xsd:annotation>
+                     <xsd:documentation>
                   This attribute indicates the depth to which nested property
                   XLink linking element locator attribute (href) XLinks are
                   traversed and resolved if possible.  A value of "1" indicates
@@ -124,29 +142,32 @@
                   The range of valid values for this attribute consists of
                   positive integers plus "*".
                      </xsd:documentation>
-						</xsd:annotation>
-					</xsd:attribute>
-					<xsd:attribute name="traverseXlinkExpiry" type="xsd:positiveInteger" use="optional">
-						<xsd:annotation>
-							<xsd:documentation>
+                  </xsd:annotation>
+               </xsd:attribute>
+               <xsd:attribute name="traverseXlinkExpiry"
+                              type="xsd:positiveInteger"
+                              use="optional">
+                  <xsd:annotation>
+                     <xsd:documentation>
                   The traverseXlinkExpiry attribute value is specified in
                   minutes It indicates how long a Web Feature Service should
                   wait to receive a response to a nested GetGmlObject request.	
                      </xsd:documentation>
-						</xsd:annotation>
-					</xsd:attribute>
-				</xsd:extension>
-			</xsd:simpleContent>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- ================================================================== -->
-	<!-- =   GETCAPABILITIES Request and Response                         = -->
-	<!-- ================================================================== -->
-	<!-- REQUEST -->
-	<xsd:element name="GetCapabilities" type="wfs:GetCapabilitiesType"/>
-	<xsd:complexType name="GetCapabilitiesType">
-		<xsd:annotation>
-			<xsd:documentation>
+                  </xsd:annotation>
+               </xsd:attribute>
+            </xsd:extension>
+         </xsd:simpleContent>
+      </xsd:complexType>
+   </xsd:element>
+
+   <!-- ================================================================== -->
+   <!-- =   GETCAPABILITIES Request and Response                         = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="GetCapabilities" type="wfs:GetCapabilitiesType"/>
+   <xsd:complexType name="GetCapabilitiesType">
+     <xsd:annotation>
+       <xsd:documentation>
           Request to a WFS to perform the GetCapabilities operation.
           This operation allows a client to retrieve a Capabilities
           XML document providing metadata for the specific WFS server.
@@ -158,18 +179,21 @@
           on and list of filtering capabilities that the service support.
           Such an XML document is called a capabilities document.
        </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="ows:GetCapabilitiesType">
-				<xsd:attribute name="service" type="ows:ServiceType" use="optional" default="WFS"/>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<!-- RESPONSE -->
-	<xsd:element name="WFS_Capabilities" type="wfs:WFS_CapabilitiesType"/>
-	<xsd:complexType name="WFS_CapabilitiesType">
-		<xsd:annotation>
-			<xsd:documentation>
+     </xsd:annotation>
+     <xsd:complexContent>
+       <xsd:extension base="ows:GetCapabilitiesType">
+         <xsd:attribute name="service" type="ows:ServiceType"
+                        use="optional" default="WFS"/>
+
+       </xsd:extension>
+     </xsd:complexContent>
+   </xsd:complexType>
+   <!-- RESPONSE -->
+   <xsd:element name="WFS_Capabilities"
+                type="wfs:WFS_CapabilitiesType"/>
+   <xsd:complexType name="WFS_CapabilitiesType">
+      <xsd:annotation>
+         <xsd:documentation>
             XML encoded WFS GetCapabilities operation response. This
             document provides clients with service metadata about a
             specific service instance, including metadata about the
@@ -184,68 +208,73 @@
             shall be included or not depending on the actual value of the
             Contents parameter in the GetCapabilities operation request.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="ows:CapabilitiesBaseType">
-				<xsd:sequence>
-					<xsd:element ref="wfs:FeatureTypeList" minOccurs="0"/>
-					<xsd:element ref="wfs:ServesGMLObjectTypeList" minOccurs="0"/>
-					<xsd:element ref="wfs:SupportsGMLObjectTypeList" minOccurs="0"/>
-					<xsd:element ref="ogc:Filter_Capabilities"/>
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<xsd:element name="FeatureTypeList" type="wfs:FeatureTypeListType"/>
-	<xsd:complexType name="FeatureTypeListType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="ows:CapabilitiesBaseType">
+            <xsd:sequence>
+               <xsd:element ref="wfs:FeatureTypeList" minOccurs="0"/>
+               <xsd:element ref="wfs:ServesGMLObjectTypeList" minOccurs="0"/>
+               <xsd:element ref="wfs:SupportsGMLObjectTypeList" minOccurs="0"/>
+               <xsd:element ref="ogc:Filter_Capabilities"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="FeatureTypeList" type="wfs:FeatureTypeListType"/>
+   <xsd:complexType name="FeatureTypeListType">
+      <xsd:annotation>
+         <xsd:documentation>
             A list of feature types available from  this server.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element name="Operations" type="wfs:OperationsType" minOccurs="0"/>
-			<xsd:element name="FeatureType" type="wfs:FeatureTypeType" maxOccurs="unbounded"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="FeatureTypeType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="Operations"
+                      type="wfs:OperationsType"
+                      minOccurs="0"/>
+         <xsd:element name="FeatureType"
+                      type="wfs:FeatureTypeType"
+                      maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="FeatureTypeType">
+      <xsd:annotation>
+         <xsd:documentation>
             An element of this type that describes a feature in an application
             namespace shall have an xml xmlns specifier, e.g.
             xmlns:bo="http://www.BlueOx.org/BlueOx"
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element name="Name" type="xsd:QName">
-				<xsd:annotation>
-					<xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="Name" type="xsd:QName">
+            <xsd:annotation>
+               <xsd:documentation>
                   Name of this feature type, including any namespace prefix
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="Title" type="xsd:string">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Title" type="xsd:string">
+            <xsd:annotation>
+               <xsd:documentation>
                   Title of this feature type, normally used for display
                   to a human.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="Abstract" type="xsd:string" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Abstract" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
                   Brief narrative description of this feature type, normally
                   used for display to a human.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:choice>
-				<xsd:sequence>
-					<xsd:element name="DefaultSRS" type="xsd:anyURI">
-						<xsd:annotation>
-							<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:choice>
+            <xsd:sequence>
+               <xsd:element name="DefaultSRS"
+                            type="xsd:anyURI">
+                  <xsd:annotation>
+                     <xsd:documentation>
                         The DefaultSRS element indicated which spatial
                         reference system shall be used by a WFS to
                         express the state of a spatial feature if not
@@ -255,11 +284,13 @@
                         the URL form defined in subclause 4.3.2 of
                         refernce[2].
                      </xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element name="OtherSRS" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded">
-						<xsd:annotation>
-							<xsd:documentation>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:element name="OtherSRS"
+                            type="xsd:anyURI"
+                            minOccurs="0" maxOccurs="unbounded">
+                  <xsd:annotation>
+                     <xsd:documentation>
                         The OtherSRS element is used to indicate other 
                         supported SRSs within query and transaction 
                         operations.  A supported SRS means that the 
@@ -269,42 +300,51 @@
                         must be considered when determining and declaring 
                         the guaranteed data accuracy.
                      </xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-				</xsd:sequence>
-				<xsd:element name="NoSRS">
-					<xsd:complexType/>
-				</xsd:element>
-			</xsd:choice>
-			<xsd:element name="Operations" type="wfs:OperationsType" minOccurs="0"/>
-			<xsd:element name="OutputFormats" type="wfs:OutputFormatListType" minOccurs="0"/>
-			<xsd:element ref="ows:WGS84BoundingBox" maxOccurs="unbounded"/>
-			<xsd:element name="MetadataURL" type="wfs:MetadataURLType" minOccurs="0" maxOccurs="unbounded"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="OperationsType">
-		<xsd:sequence>
-			<xsd:element name="Operation" type="wfs:OperationType" maxOccurs="unbounded"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:simpleType name="OperationType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Insert"/>
-			<xsd:enumeration value="Update"/>
-			<xsd:enumeration value="Delete"/>
-			<xsd:enumeration value="Query"/>
-			<xsd:enumeration value="Lock"/>
-			<xsd:enumeration value="GetGmlObject"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:complexType name="OutputFormatListType">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="Format" type="xsd:string"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="MetadataURLType">
-		<xsd:annotation>
-			<xsd:documentation>
+                  </xsd:annotation>
+               </xsd:element>
+            </xsd:sequence>
+            <xsd:element name="NoSRS">
+              <xsd:complexType/>
+            </xsd:element>
+         </xsd:choice>
+         <xsd:element name="Operations"
+                      type="wfs:OperationsType"
+                      minOccurs="0"/>
+         <xsd:element name="OutputFormats"
+                      type="wfs:OutputFormatListType"
+                      minOccurs="0"/>
+         <xsd:element ref="ows:WGS84BoundingBox" 
+                      minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="MetadataURL"
+                      type="wfs:MetadataURLType"
+                      minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="OperationsType">
+      <xsd:sequence>
+         <xsd:element name="Operation"
+                      type="wfs:OperationType"
+                      maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:simpleType name="OperationType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="Insert"/>
+         <xsd:enumeration value="Update"/>
+         <xsd:enumeration value="Delete"/>
+         <xsd:enumeration value="Query"/>
+         <xsd:enumeration value="Lock"/>
+         <xsd:enumeration value="GetGmlObject"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:complexType name="OutputFormatListType">
+      <xsd:sequence maxOccurs="unbounded">
+         <xsd:element name="Format" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="MetadataURLType">
+      <xsd:annotation>
+         <xsd:documentation>
             A Web Feature Server MAY use zero or more MetadataURL
             elements to offer detailed, standardized metadata about
             the data underneath a particular feature type.  The type
@@ -315,111 +355,117 @@
             'FGDC'                = FGDC CSDGM.
             'ISO19139'            = ISO 19139
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:simpleContent>
-			<xsd:extension base="xsd:string">
-				<xsd:attribute name="type" use="required">
-					<xsd:simpleType>
-						<xsd:restriction base="xsd:string">
-							<xsd:enumeration value="TC211"/>
-							<xsd:enumeration value="FGDC"/>
-							<xsd:enumeration value="19115"/>
-							<xsd:enumeration value="19139"/>
-						</xsd:restriction>
-					</xsd:simpleType>
-				</xsd:attribute>
-				<xsd:attribute name="format" use="required">
-					<xsd:simpleType>
-						<xsd:restriction base="xsd:string">
-							<xsd:enumeration value="text/xml"/>
-							<xsd:enumeration value="text/html"/>
-							<xsd:enumeration value="text/sgml"/>
-							<xsd:enumeration value="text/plain"/>
-						</xsd:restriction>
-					</xsd:simpleType>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:simpleContent>
-	</xsd:complexType>
-	<xsd:element name="ServesGMLObjectTypeList" type="wfs:GMLObjectTypeListType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleContent>
+         <xsd:extension base="xsd:string">
+            <xsd:attribute name="type" use="required">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:string">
+                     <xsd:enumeration value="TC211"/>
+                     <xsd:enumeration value="FGDC"/>
+                     <xsd:enumeration value="19115"/>
+                     <xsd:enumeration value="19139"/>
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:attribute>
+            <xsd:attribute name="format" use="required">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:string">
+                     <xsd:enumeration value="text/xml"/>
+                     <xsd:enumeration value="text/html"/>
+                     <xsd:enumeration value="text/sgml"/>
+                     <xsd:enumeration value="text/plain"/>
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:element name="ServesGMLObjectTypeList"
+                type="wfs:GMLObjectTypeListType">
+      <xsd:annotation>
+         <xsd:documentation>
             List of GML Object types available for GetGmlObject requests
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:element name="SupportsGMLObjectTypeList" type="wfs:GMLObjectTypeListType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="SupportsGMLObjectTypeList"
+                type="wfs:GMLObjectTypeListType">
+      <xsd:annotation>
+         <xsd:documentation>
             List of GML Object types that WFS is capable of serving, either
             directly, or as validly derived types defined in a GML application
             schema.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="GMLObjectTypeListType">
-		<xsd:sequence>
-			<xsd:element name="GMLObjectType" type="wfs:GMLObjectTypeType" maxOccurs="unbounded">
-				<xsd:annotation>
-					<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="GMLObjectTypeListType">
+      <xsd:sequence>
+         <xsd:element name="GMLObjectType" type="wfs:GMLObjectTypeType"
+            maxOccurs="unbounded">
+            <xsd:annotation>
+               <xsd:documentation>
                   Name of this GML object type, including any namespace prefix
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="GMLObjectTypeType">
-		<xsd:annotation>
-			<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="GMLObjectTypeType">
+      <xsd:annotation>
+         <xsd:documentation>
             An element of this type that describes a GML object in an
             application namespace shall have an xml xmlns specifier,
             e.g. xmlns:bo="http://www.BlueOx.org/BlueOx"
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element name="Name" type="xsd:QName">
-				<xsd:annotation>
-					<xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="Name" type="xsd:QName">
+            <xsd:annotation>
+               <xsd:documentation>
                   Name of this GML Object type, including any namespace prefix.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="Title" type="xsd:string" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Title" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
                   Title of this GML Object type, normally used for display
                   to a human.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="Abstract" type="xsd:string" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Abstract" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
                   Brief narrative description of this GML Object type, normally
                   used for display to a human.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:element name="OutputFormats" type="wfs:OutputFormatListType" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<!-- ================================================================== -->
-	<!-- =   DESCRIBEFEATURETYPE Request and Response                     = -->
-	<!-- ================================================================== -->
-	<!-- REQUEST -->
-	<xsd:element name="DescribeFeatureType" type="wfs:DescribeFeatureTypeType">
-		<xsd:annotation>
-			<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element ref="ows:Keywords"
+                      minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="OutputFormats"
+                      type="wfs:OutputFormatListType" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <!-- ================================================================== -->
+   <!-- =   DESCRIBEFEATURETYPE Request and Response                     = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="DescribeFeatureType" type="wfs:DescribeFeatureTypeType">
+      <xsd:annotation>
+         <xsd:documentation>
             The DescribeFeatureType element is used to request that a Web
             Feature Service generate a document describing one or more 
             feature types.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="DescribeFeatureTypeType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="DescribeFeatureTypeType">
+      <xsd:annotation>
+         <xsd:documentation>
             The DescribeFeatureType operation allows a client application
             to request that a Web Feature Service describe one or more
             feature types.   A Web Feature Service must be able to generate
@@ -433,13 +479,14 @@
             the WFS interface must validate against the feature schemas 
             generated by the DescribeFeatureType request.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="wfs:BaseRequestType">
-				<xsd:sequence>
-					<xsd:element name="TypeName" type="xsd:QName" minOccurs="0" maxOccurs="unbounded">
-						<xsd:annotation>
-							<xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element name="TypeName" type="xsd:QName"
+                            minOccurs="0" maxOccurs="unbounded">
+                  <xsd:annotation>
+                     <xsd:documentation>
                         The TypeName element is used to enumerate the
                         feature types to be described.  If no TypeName
                         elements are specified then all features should
@@ -447,12 +494,14 @@
                         that belongs to the feature content as defined
                         by the GML Application Schema.
                      </xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-				</xsd:sequence>
-				<xsd:attribute name="outputFormat" type="xsd:string" use="optional" default="text/xml; subtype=gml/3.1.1">
-					<xsd:annotation>
-						<xsd:documentation>
+                  </xsd:annotation>
+               </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="outputFormat"
+                           type="xsd:string" use="optional"
+                           default="text/xml; subtype=gml/3.1.1">
+               <xsd:annotation>
+                  <xsd:documentation>
                      The outputFormat attribute is used to specify what schema
                      description language should be used to describe features.
                      The default value of 'text/xml; subtype=3.1.1' means that
@@ -469,32 +518,33 @@
                      clients may safely ignore outputFormat values that do
                      not recognize.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<!-- RESPONSE -->
-	<!-- ================================================================== -->
-	<!-- For the outputFormat value of 'text/xml; subtype=3.1.1' a WFS      -->
-	<!-- must generate a valid XML-Schema/GML3 application schema that      -->
-	<!-- describes that requested feature type(s).                          -->
-	<!-- ================================================================== -->
-	<!-- ================================================================== -->
-	<!-- =   GETFEATURES Request and Response                             = -->
-	<!-- ================================================================== -->
-	<xsd:element name="GetFeature" type="wfs:GetFeatureType">
-		<xsd:annotation>
-			<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- RESPONSE -->
+   <!-- ================================================================== -->
+   <!-- For the outputFormat value of 'text/xml; subtype=3.1.1' a WFS      -->
+   <!-- must generate a valid XML-Schema/GML3 application schema that      -->
+   <!-- describes that requested feature type(s).                          -->
+   <!-- ================================================================== -->
+
+   <!-- ================================================================== -->
+   <!-- =   GETFEATURES Request and Response                             = -->
+   <!-- ================================================================== -->
+   <xsd:element name="GetFeature" type="wfs:GetFeatureType">
+      <xsd:annotation>
+         <xsd:documentation>
             The GetFeature element is used to request that a Web Feature
             Service return feature type instances of one or more feature
             types.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="GetFeatureType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="GetFeatureType">
+      <xsd:annotation>
+         <xsd:documentation>
             A GetFeature element contains one or more Query elements
             that describe a query operation on one feature type.  In
             response to a GetFeature request, a Web Feature Service
@@ -504,15 +554,17 @@
             (and even binary) output formats as long as those formats
             are advertised in the capabilities document.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="wfs:BaseRequestType">
-				<xsd:sequence>
-					<xsd:element ref="wfs:Query" maxOccurs="unbounded"/>
-				</xsd:sequence>
-				<xsd:attribute name="resultType" type="wfs:ResultTypeType" use="optional" default="results">
-					<xsd:annotation>
-						<xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element ref="wfs:Query" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="resultType"
+                           type="wfs:ResultTypeType" use="optional"
+                           default="results">
+               <xsd:annotation>
+                  <xsd:documentation>
                      The resultType attribute is used to indicate
                      what response a WFS should return to user once
                      a GetFeature request is processed.
@@ -527,11 +579,13 @@
                                   should be set to the number of feature
                                   instances that would be returned.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="outputFormat" type="xsd:string" use="optional" default="text/xml; subtype=gml/3.1.1">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="outputFormat"
+                           type="xsd:string" use="optional"
+                           default="text/xml; subtype=gml/3.1.1">
+               <xsd:annotation>
+                  <xsd:documentation>
                      The outputFormat attribute is used to specify the output
                      format that the Web Feature Service should generate in
                      response to a GetFeature or GetFeatureWithLock element.
@@ -547,20 +601,22 @@
                      For example, the value WKB may be used to indicate that a 
                      Well Known Binary format be used to encode the output.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="maxFeatures" type="xsd:positiveInteger" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="maxFeatures"
+                           type="xsd:positiveInteger" use="optional">
+               <xsd:annotation>
+                  <xsd:documentation>
                      The maxFeatures attribute is used to specify the maximum
                      number of features that a GetFeature operation should
                      generate (regardless of the actual number of query hits).
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="traverseXlinkDepth"
+                           type="xsd:string" use="optional">
+               <xsd:annotation>
+                  <xsd:documentation>
                      This attribute indicates the depth to which nested property
                      XLink linking element locator attribute (href) XLinks are
                      traversed and resolved if possible.  A value of "1"
@@ -577,11 +633,13 @@
                      resolved and the value of traverseXlinkExpiry attribute (if
                      it specified) may be ignored.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="traverseXlinkExpiry" type="xsd:positiveInteger" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="traverseXlinkExpiry"
+                           type="xsd:positiveInteger"
+                           use="optional">
+               <xsd:annotation>
+                  <xsd:documentation>
                      The traverseXlinkExpiry attribute value is specified in
                      minutes.  It indicates how long a Web Feature Service
                      should wait to receive a response to a nested GetGmlObject
@@ -589,25 +647,25 @@
                      This attribute is only relevant if a value is specified 
                      for the traverseXlinkDepth attribute.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<xsd:simpleType name="ResultTypeType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="results">
-				<xsd:annotation>
-					<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:simpleType name="ResultTypeType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="results">
+            <xsd:annotation>
+               <xsd:documentation>
                   Indicates that a complete response should be generated
                   by the WFS.  That is, all response feature instances
                   should be returned to the client.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="hits">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="hits">
+            <xsd:annotation>
+               <xsd:documentation>
                   Indicates that an empty response should be generated with
                   the "numberOfFeatures" attribute set (i.e. no feature
                   instances should be returned).  In this manner a client may
@@ -615,13 +673,13 @@
                   request will return without having to actually get the 
                   entire result set back.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:element name="Query" type="wfs:QueryType">
-		<xsd:annotation>
-			<xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:element name="Query" type="wfs:QueryType">
+      <xsd:annotation>
+         <xsd:documentation>
             The Query element is used to describe a single query.
             One or more Query elements can be specified inside a
             GetFeature element so that multiple queries can be 
@@ -629,19 +687,19 @@
             queries are combined in a wfs:FeatureCollection element
             to form the response document.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="QueryType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="QueryType">
+      <xsd:annotation>
+         <xsd:documentation>
             The Query element is of type QueryType.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:choice minOccurs="0" maxOccurs="unbounded">
-				<xsd:element ref="wfs:PropertyName">
-					<xsd:annotation>
-						<xsd:documentation>
+      </xsd:annotation>
+     <xsd:sequence>
+       <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="wfs:PropertyName">
+             <xsd:annotation>
+                <xsd:documentation>
                    The Property element is used to specify one or more
                    properties of a feature whose values are to be retrieved
                    by a Web Feature Service.  
@@ -662,44 +720,45 @@
                    application can determine which properties are mandatory
                    and request them in the first place.
                 </xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element ref="wfs:XlinkPropertyName"/>
-				<xsd:element ref="ogc:Function">
-					<xsd:annotation>
-						<xsd:documentation>
+             </xsd:annotation>
+          </xsd:element>
+          <xsd:element ref="wfs:XlinkPropertyName"/>
+          <xsd:element ref="ogc:Function">
+             <xsd:annotation>
+                <xsd:documentation>
                    A function may be used as a select item in a query.
                    However, if a function is used, care must be taken
                    to ensure that the result type matches the type in the 
  
                 </xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-			</xsd:choice>
-			<xsd:element ref="ogc:Filter" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+             </xsd:annotation>
+          </xsd:element>
+       </xsd:choice>
+       <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1">
+          <xsd:annotation>
+             <xsd:documentation>
                 The Filter element is used to define spatial and/or non-spatial
                 constraints on query.  Spatial constrains use GML3 to specify
                 the constraining geometry.  A full description of the Filter
                 element can be found in the Filter Encoding Implementation
                 Specification.
              </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element ref="ogc:SortBy" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+          </xsd:annotation>
+       </xsd:element>
+       <xsd:element ref="ogc:SortBy" minOccurs="0" maxOccurs="1">
+          <xsd:annotation>
+             <xsd:documentation>
                 The SortBy element is used specify property names whose
                 values should be used to order (upon presentation) the
                 set of feature instances that satisfy the query.
              </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="handle" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+          </xsd:annotation>
+       </xsd:element>
+     </xsd:sequence>
+     <xsd:attribute name="handle"
+                    type="xsd:string" use="optional">
+         <xsd:annotation>
+            <xsd:documentation>
                The handle attribute allows a client application
                to assign a client-generated identifier for the 
                Query.  The handle is included to facilitate error
@@ -709,11 +768,12 @@
                handle is not present, the WFS may use other means
                to localize the error (e.g. line numbers).
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="typeName" type="wfs:TypeNameListType" use="required">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+     </xsd:attribute>
+     <xsd:attribute name="typeName"
+                    type="wfs:TypeNameListType" use="required">
+        <xsd:annotation>
+           <xsd:documentation>
               The typeName attribute is a list of one or more
               feature type names that indicate which types 
               of feature instances should be included in the
@@ -723,11 +783,12 @@
               types that belong to this query's feature content
               as defined by the GML Application Schema.
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="featureVersion" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+        </xsd:annotation>
+     </xsd:attribute>
+     <xsd:attribute name="featureVersion"
+                    type="xsd:string" use="optional">
+        <xsd:annotation>
+           <xsd:documentation>
               For systems that implement versioning, the featureVersion
               attribute is used to specify which version of a particular
               feature instance is to be retrieved.  A value of ALL means
@@ -735,11 +796,11 @@
               'i', means that the ith version should be retrieve if it
               exists or the most recent version otherwise.
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="srsName" type="xsd:anyURI" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+        </xsd:annotation>
+     </xsd:attribute>
+     <xsd:attribute name="srsName" type="xsd:anyURI" use="optional">
+        <xsd:annotation>
+           <xsd:documentation>
               This attribute is used to specify a specific WFS-supported SRS
               that should be used for returned feature geometries.  The value
               may be the WFS StorageSRS value, DefaultRetrievalSRS value, or
@@ -749,17 +810,17 @@
               For feature types with no spatial properties, this attribute
               must not be specified or ignored if it is specified.
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	<xsd:simpleType name="Base_TypeNameListType">
-		<xsd:list itemType="xsd:QName"/>
-	</xsd:simpleType>
-	<xsd:simpleType name="TypeNameListType">
-		<xsd:restriction base="wfs:Base_TypeNameListType">
-			<xsd:pattern value="((\w:)?\w(=\w)?){1,}">
-				<xsd:annotation>
-					<xsd:documentation>
+        </xsd:annotation>
+     </xsd:attribute>
+   </xsd:complexType>
+   <xsd:simpleType name="Base_TypeNameListType">
+      <xsd:list itemType="xsd:QName"/>
+   </xsd:simpleType>
+   <xsd:simpleType name="TypeNameListType">
+      <xsd:restriction base="wfs:Base_TypeNameListType">
+         <xsd:pattern value="((\w:)?\w(=\w)?){1,}">
+            <xsd:annotation>
+               <xsd:documentation>
                   Example typeName attribute value might be:
 
                      typeName="ns1:Inwatera_1m=A, ns2:CoastL_1M=B"
@@ -767,34 +828,36 @@
                   In this example, A is an alias for ns1:Inwatera_1m
                   and B is an alias for ns2:CoastL_1M.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:pattern>
-		</xsd:restriction>
-	</xsd:simpleType>
-	<!-- RESPONSE -->
-	<xsd:element name="FeatureCollection" type="wfs:FeatureCollectionType" substitutionGroup="gml:_FeatureCollection">
-		<xsd:annotation>
-			<xsd:documentation>
+            </xsd:annotation>
+         </xsd:pattern>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <!-- RESPONSE -->
+   <xsd:element name="FeatureCollection"
+                type="wfs:FeatureCollectionType"
+                substitutionGroup="gml:_FeatureCollection">
+      <xsd:annotation>
+         <xsd:documentation>
             This element is a container for the response to a GetFeature
             or GetFeatureWithLock (WFS-transaction.xsd) request.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="FeatureCollectionType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="FeatureCollectionType">
+      <xsd:annotation>
+         <xsd:documentation>
             This type defines a container for the response to a 
             GetFeature or GetFeatureWithLock request.  If the
             request is GetFeatureWithLock, the lockId attribute
             must be populated.  The lockId attribute can otherwise
             be safely ignored.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="gml:AbstractFeatureCollectionType">
-				<xsd:attribute name="lockId" type="xsd:string" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+      </xsd:annotation>
+     <xsd:complexContent>
+       <xsd:extension base="gml:AbstractFeatureCollectionType">
+         <xsd:attribute name="lockId" type="xsd:string" use="optional">
+            <xsd:annotation>
+               <xsd:documentation>
                   The value of the lockId attribute is an identifier
                   that a Web Feature Service generates when responding
                   to a GetFeatureWithLock request.  A client application
@@ -802,59 +865,64 @@
                   Transaction request) to reference the set of locked
                   features.
                </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="timeStamp" type="xsd:dateTime" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+            </xsd:annotation>
+         </xsd:attribute>
+         <xsd:attribute name="timeStamp" type="xsd:dateTime" use="optional">
+            <xsd:annotation>
+               <xsd:documentation>
                   The timeStamp attribute should contain the date and time
                   that the response was generated.
                </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="numberOfFeatures" type="xsd:nonNegativeInteger" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+            </xsd:annotation>
+         </xsd:attribute>
+         <xsd:attribute name="numberOfFeatures"
+                        type="xsd:nonNegativeInteger"
+                        use="optional">
+            <xsd:annotation>
+               <xsd:documentation>
                   The numberOfFeatures attribute should contain a
                   count of the number of features in the response.
                   That is a count of all features elements dervied
                   from gml:AbstractFeatureType.
                </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<!-- ================================================================== -->
-	<!-- =   GETGMLOBJECT Request and Response                            = -->
-	<!-- ================================================================== -->
-	<xsd:element name="GetGmlObject" type="wfs:GetGmlObjectType">
-		<xsd:annotation>
-			<xsd:documentation>
+            </xsd:annotation>
+         </xsd:attribute>
+       </xsd:extension>
+     </xsd:complexContent>
+   </xsd:complexType>
+
+   <!-- ================================================================== -->
+   <!-- =   GETGMLOBJECT Request and Response                            = -->
+   <!-- ================================================================== -->
+   <xsd:element name="GetGmlObject" type="wfs:GetGmlObjectType"> 
+      <xsd:annotation>
+         <xsd:documentation>
             The GetGmlObject element is used to request that a Web Feature
             Service return an element with a gml:id attribute value specified
             by an ogc:GmlObjectId.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="GetGmlObjectType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="GetGmlObjectType">
+      <xsd:annotation>
+         <xsd:documentation>
             A GetGmlObjectType element contains exactly one GmlObjectId.  
             The value of the gml:id attribute on that GmlObjectId is used 
             as a unique key to retrieve the complex element with a 
             gml:id attribute with the same value.  
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="wfs:BaseRequestType">
-				<xsd:sequence>
-					<xsd:element ref="ogc:GmlObjectId"/>
-				</xsd:sequence>
-				<xsd:attribute name="outputFormat" type="xsd:string" use="optional" default="GML3"/>
-				<xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="required">
-					<xsd:annotation>
-						<xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element ref="ogc:GmlObjectId"/>
+            </xsd:sequence>
+            <xsd:attribute name="outputFormat"
+                           type="xsd:string" use="optional" default="GML3"/>
+            <xsd:attribute name="traverseXlinkDepth" 
+                           type="xsd:string" use="required">
+               <xsd:annotation>
+                  <xsd:documentation>
                      This attribute indicates the depth to which nested
                      property XLink linking element locator attribute
                      (href) XLinks are traversed and resolved if possible.
@@ -869,33 +937,36 @@
                      possible.  The range of valid values for this attribute
                      consists of positive integers plus "*".
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="traverseXlinkExpiry" type="xsd:positiveInteger" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="traverseXlinkExpiry"
+                           type="xsd:positiveInteger"
+                           use="optional">
+               <xsd:annotation>
+                  <xsd:documentation>
                      The traverseXlinkExpiry attribute value is specified
                      in minutes.  It indicates how long a Web Feature Service
                      should wait to receive a response to a nested GetGmlObject
                      request.	
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<!-- RESPONSE -->
-	<!-- ================================================================= -->
-	<!-- The response to a GetGMLObject request is a GML3 fragment(s) that -->
-	<!-- has (have) the gml:id('s) specified in the request.               -->
-	<!-- ================================================================= -->
-	<!-- ================================================================== -->
-	<!-- =   GETFEATUREWITHLOCK Request and Response                      = -->
-	<!-- ================================================================== -->
-	<!-- REQUEST -->
-	<xsd:element name="GetFeatureWithLock" type="wfs:GetFeatureWithLockType">
-		<xsd:annotation>
-			<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <!-- RESPONSE -->
+   <!-- ================================================================= -->
+   <!-- The response to a GetGMLObject request is a GML3 fragment(s) that -->
+   <!-- has (have) the gml:id('s) specified in the request.               -->
+   <!-- ================================================================= -->
+
+   <!-- ================================================================== -->
+   <!-- =   GETFEATUREWITHLOCK Request and Response                      = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="GetFeatureWithLock" type="wfs:GetFeatureWithLockType">
+      <xsd:annotation>
+         <xsd:documentation>
             This is the root element for the GetFeatureWithLock request.
             The GetFeatureWithLock operation performs identically to a
             GetFeature request except that the GetFeatureWithLock request
@@ -905,11 +976,11 @@
             using the lockId attribute define on the wfs:FeatureCollection
             element.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="GetFeatureWithLockType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="GetFeatureWithLockType">
+      <xsd:annotation>
+         <xsd:documentation>
             A GetFeatureWithLock request operates identically to a
             GetFeature request expect that it attempts to lock the
             feature instances in the result set and includes a lock
@@ -918,15 +989,17 @@
             a client application can use, in subsequent operations,
             to reference the locked set of feature instances.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="wfs:BaseRequestType">
-				<xsd:sequence>
-					<xsd:element ref="wfs:Query" maxOccurs="unbounded"/>
-				</xsd:sequence>
-				<xsd:attribute name="expiry" type="xsd:positiveInteger" use="optional" default="5">
-					<xsd:annotation>
-						<xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element ref="wfs:Query" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="expiry"
+                           type="xsd:positiveInteger"
+                           use="optional" default="5">  
+               <xsd:annotation>
+                  <xsd:documentation>
                      The expiry attribute is used to set the length
                      of time (expressed in minutes) that features will
                      remain locked as a result of a GetFeatureWithLock
@@ -935,62 +1008,70 @@
                      expiry attribute is not set, then the default
                      value of 5 minutes will be enforced.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="resultType" type="wfs:ResultTypeType" use="optional" default="results">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="resultType"
+                           type="wfs:ResultTypeType" use="optional"
+                           default="results">
+               <xsd:annotation>
+                  <xsd:documentation>
                      See definition of wfs:GetFeatureType.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="outputFormat" type="xsd:string" use="optional" default="text/xml; subtype=gml/3.1.1">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="outputFormat"
+                           type="xsd:string" use="optional"
+                           default="text/xml; subtype=gml/3.1.1">
+               <xsd:annotation>
+                  <xsd:documentation>
                      See definition of wfs:GetFeatureType.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="maxFeatures" type="xsd:positiveInteger" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="maxFeatures"
+                           type="xsd:positiveInteger" use="optional">
+               <xsd:annotation>
+                  <xsd:documentation>
                      See definition of wfs:GetFeatureType.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="traverseXlinkDepth"
+                           type="xsd:string" use="optional">
+               <xsd:annotation>
+                  <xsd:documentation>
                      See definition of wfs:GetFeatureType.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="traverseXlinkExpiry" type="xsd:positiveInteger" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="traverseXlinkExpiry"
+                           type="xsd:positiveInteger" use="optional">
+               <xsd:annotation>
+                  <xsd:documentation>
                      See definition of wfs:GetFeatureType.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<!-- ================================================================== -->
-	<!-- =   LOCKFEATURE Request and Response                             = -->
-	<!-- ================================================================== -->
-	<!-- REQUEST -->
-	<xsd:element name="LockFeature" type="wfs:LockFeatureType">
-		<xsd:annotation>
-			<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <!-- ================================================================== -->
+   <!-- =   LOCKFEATURE Request and Response                             = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="LockFeature" type="wfs:LockFeatureType">
+      <xsd:annotation>
+         <xsd:documentation>
             This is the root element for a LockFeature request.
             The LockFeature request can be used to lock one or
             more feature instances.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="LockFeatureType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="LockFeatureType">
+      <xsd:annotation>
+         <xsd:documentation>
             This type defines the LockFeature operation.  The LockFeature
             element contains one or more Lock elements that define which
             features of a particular type should be locked.  A lock
@@ -998,22 +1079,25 @@
             can be used by subsequent operations to reference the locked
             features.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="wfs:BaseRequestType">
-				<xsd:sequence>
-					<xsd:element name="Lock" type="wfs:LockType" maxOccurs="unbounded">
-						<xsd:annotation>
-							<xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element name="Lock" type="wfs:LockType"
+                            maxOccurs="unbounded">
+                  <xsd:annotation>
+                     <xsd:documentation>
                         The lock element is used to indicate which feature 
                         instances of particular type are to be locked.
                      </xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-				</xsd:sequence>
-				<xsd:attribute name="expiry" type="xsd:positiveInteger" use="optional" default="5">
-					<xsd:annotation>
-						<xsd:documentation>
+                  </xsd:annotation>
+               </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="expiry"
+                           type="xsd:positiveInteger"
+                           use="optional" default="5">
+               <xsd:annotation>
+                  <xsd:documentation>
                      The expiry attribute is used to set the length
                      of time (expressed in minutes) that features will
                      remain locked as a result of a LockFeature
@@ -1022,11 +1106,13 @@
                      expiry attribute is not set, then the default
                      value of 5 minutes will be enforced.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="lockAction" type="wfs:AllSomeType" use="optional" default="ALL">
-					<xsd:annotation>
-						<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="lockAction"
+                           type="wfs:AllSomeType"
+                           use="optional" default="ALL">
+               <xsd:annotation>
+                  <xsd:documentation>
                      The lockAction attribute is used to indicate what
                      a Web Feature Service should do when it encounters
                      a feature instance that has already been locked by
@@ -1043,20 +1129,20 @@
                      SOME means that the Web Feature Service should lock
                      as many of the requested features as it can.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<xsd:simpleType name="AllSomeType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="ALL"/>
-			<xsd:enumeration value="SOME"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:complexType name="LockType">
-		<xsd:annotation>
-			<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:simpleType name="AllSomeType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="ALL"/>
+         <xsd:enumeration value="SOME"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:complexType name="LockType">
+      <xsd:annotation>
+         <xsd:documentation>
             This type defines the Lock element.  The Lock element
             defines a locking operation on feature instances of 
             a single type. An OGC Filter is used to constrain the
@@ -1065,13 +1151,13 @@
             or they can be locked by satisfying the spatial and 
             non-spatial constraints defined in the filter.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element ref="ogc:Filter" minOccurs="0"/>
-		</xsd:sequence>
-		<xsd:attribute name="handle" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attribute name="handle" type="xsd:string" use="optional">
+         <xsd:annotation>
+            <xsd:documentation>
                The handle attribute allows a client application
                to assign a client-generated request identifier
                to a Lock action.  The handle is included to 
@@ -1082,51 +1168,53 @@
                present then a WFS may employ some other means of 
                localizing the error (e.g. line number).
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="typeName" type="xsd:QName" use="required">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="typeName" type="xsd:QName" use="required">
+        <xsd:annotation>
+           <xsd:documentation>
               The value of the typeName attribute is the name 
               of the feature type to be updated. The name
               specified must be a valid type that belongs to
               the feature content as defined by the GML
               Application Schema.
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	<!-- RESPONSE -->
-	<xsd:element name="LockFeatureResponse" type="wfs:LockFeatureResponseType">
-		<xsd:annotation>
-			<xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+   <!-- RESPONSE -->
+   <xsd:element name="LockFeatureResponse"
+                type="wfs:LockFeatureResponseType">
+      <xsd:annotation>
+         <xsd:documentation>
             The LockFeatureResponse element contains a report
             about the completion status of a LockFeature request.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="LockFeatureResponseType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="LockFeatureResponseType">
+      <xsd:annotation>
+         <xsd:documentation>
             The LockFeatureResponseType is used to define an
             element to contains the response to a LockFeature
             operation.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element ref="wfs:LockId">
-				<xsd:annotation>
-					<xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element ref="wfs:LockId">
+            <xsd:annotation>
+               <xsd:documentation>
                   The LockFeatureResponse includes a LockId element
                   that contains a lock identifier.  The lock identifier
                   can be used by a client, in subsequent operations, to
                   operate upon the locked feature instances.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="FeaturesLocked" type="wfs:FeaturesLockedType" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="FeaturesLocked"
+                      type="wfs:FeaturesLockedType" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
                   The LockFeature or GetFeatureWithLock operations
                   identify and attempt to lock a set of feature 
                   instances that satisfy the constraints specified 
@@ -1140,61 +1228,63 @@
                   elements enumerating the feature instances that a WFS
                   actually managed to lock.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="FeaturesNotLocked" type="wfs:FeaturesNotLockedType" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="FeaturesNotLocked"
+                      type="wfs:FeaturesNotLockedType" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
                   In contrast to the FeaturesLocked element, the
                   FeaturesNotLocked element contains a list of 
                   ogc:Filter elements identifying feature instances
                   that a WFS did not manage to lock because they were
                   already locked by another process.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="FeaturesLockedType">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element ref="ogc:FeatureId"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="FeaturesNotLockedType">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element ref="ogc:FeatureId"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<!-- ================================================================== -->
-	<!-- =   TRANSACTION Request and Response                             = -->
-	<!-- ================================================================== -->
-	<!-- REQUEST -->
-	<xsd:element name="Transaction" type="wfs:TransactionType">
-		<xsd:annotation>
-			<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="FeaturesLockedType">
+     <xsd:sequence maxOccurs="unbounded">
+       <xsd:element ref="ogc:FeatureId"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="FeaturesNotLockedType">
+     <xsd:sequence maxOccurs="unbounded">
+       <xsd:element ref="ogc:FeatureId"/>
+     </xsd:sequence>
+   </xsd:complexType>
+
+   <!-- ================================================================== -->
+   <!-- =   TRANSACTION Request and Response                             = -->
+   <!-- ================================================================== -->
+   <!-- REQUEST -->
+   <xsd:element name="Transaction" type="wfs:TransactionType">
+      <xsd:annotation>
+         <xsd:documentation>
             This is the root element for a Transaction request.
             A transaction request allows insert, update and 
             delete operations to be performed to create, change
             or remove feature instances.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="TransactionType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="TransactionType">
+      <xsd:annotation>
+         <xsd:documentation>
             The TransactionType defines the Transaction operation.  A
             Transaction element contains one or more Insert, Update
             Delete and Native elements that allow a client application
             to create, modify or remove feature instances from the 
             feature repository that a Web Feature Service controls.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="wfs:BaseRequestType">
-				<xsd:sequence>
-					<xsd:element ref="wfs:LockId" minOccurs="0">
-						<xsd:annotation>
-							<xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="wfs:BaseRequestType">
+            <xsd:sequence>
+               <xsd:element ref="wfs:LockId" minOccurs="0">
+                  <xsd:annotation>
+                     <xsd:documentation>
                         In order for a client application to operate upon
                         locked feature instances, the Transaction request
                         must include the LockId element.  The content of
@@ -1209,18 +1299,19 @@
                         No LockId element needs to be specified to operate upon
                         unlocked features.
                      </xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:choice minOccurs="0" maxOccurs="unbounded">
-						<xsd:element ref="wfs:Insert"/>
-						<xsd:element ref="wfs:Update"/>
-						<xsd:element ref="wfs:Delete"/>
-						<xsd:element ref="wfs:Native"/>
-					</xsd:choice>
-				</xsd:sequence>
-				<xsd:attribute name="releaseAction" type="wfs:AllSomeType" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
+                  </xsd:annotation>
+               </xsd:element>
+               <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                  <xsd:element ref="wfs:Insert"/>
+                  <xsd:element ref="wfs:Update"/>
+                  <xsd:element ref="wfs:Delete"/>
+                  <xsd:element ref="wfs:Native"/>
+               </xsd:choice>
+            </xsd:sequence>
+            <xsd:attribute name="releaseAction"
+                           type="wfs:AllSomeType" use="optional">
+               <xsd:annotation>
+                  <xsd:documentation>
                      The releaseAction attribute is used to control how a Web
                      Feature service releases locks on feature instances after
                      a Transaction request has been processed.
@@ -1245,56 +1336,58 @@
                      application that same amount of time to post subsequent
                      transactions against the locked features.
                   </xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<xsd:element name="LockId" type="xsd:string">
-		<xsd:annotation>
-			<xsd:documentation>
+               </xsd:annotation>
+            </xsd:attribute>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="LockId" type="xsd:string">
+      <xsd:annotation>
+         <xsd:documentation>
             The LockId element contains the value of the lock identifier
             obtained by a client application from a previous GetFeatureWithLock
             or LockFeature request.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:element name="Insert" type="wfs:InsertElementType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="Insert" type="wfs:InsertElementType">
+      <xsd:annotation>
+         <xsd:documentation>
             The Insert element is used to indicate that the Web Feature
             Service should create a new instance of a feature type.  The
             feature instance is specified using GML3 and one or more 
             feature instances to be created can be contained inside the
             Insert element.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="InsertElementType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="InsertElementType">
+      <xsd:annotation>
+         <xsd:documentation>
             An Insert element may contain a feature collection or one 
             or more feature instances to be inserted into the 
             repository.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element ref="gml:_Feature" maxOccurs="unbounded"/>
-		</xsd:sequence>
-		<xsd:attribute name="idgen" type="wfs:IdentifierGenerationOptionType" use="optional" default="GenerateNew">
-			<xsd:annotation>
-				<xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element ref="gml:_Feature" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="idgen"
+                     type="wfs:IdentifierGenerationOptionType" 
+                     use="optional" default="GenerateNew">
+         <xsd:annotation>
+            <xsd:documentation>
                The idgen attribute control how a WFS generates identifiers
                from newly created feature instances using the Insert action.
                The default action is to have the WFS generate a new id for
                the features.  This is also backward compatible with WFS 1.0
                where the only action was for the WFS to generate an new id.
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="handle" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="handle" type="xsd:string" use="optional">
+         <xsd:annotation>
+            <xsd:documentation>
                The handle attribute allows a client application
                to assign a client-generated request identifier
                to an Insert action.  The handle is included to
@@ -1305,11 +1398,12 @@
                Insert element then a WFS may employee other means of
                localizing the error (e.g. line number).
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="inputFormat" type="xsd:string" use="optional" default="text/xml; subtype=gml/3.1.1">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="inputFormat" type="xsd:string"
+                     use="optional" default="text/xml; subtype=gml/3.1.1">
+         <xsd:annotation>
+            <xsd:documentation>
                This inputFormat attribute is used to indicate 
                the format used to encode a feature instance in
                an Insert element.  The default value of
@@ -1320,25 +1414,25 @@
                declare in the capabilities document, using a 
                Parameter element, which version of GML it supports.
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="srsName" type="xsd:anyURI" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="srsName" type="xsd:anyURI" use="optional">
+        <xsd:annotation>
+           <xsd:documentation>
               ===== PAV 12NOV2004 ====
               WHY IS THIS HERE? WOULDN'T WE KNOW THE INCOMING SRS FROM THE 
               GML GEOMETRY ELEMENTS?   I ASSUME THAT IF THE INCOMING SRS
               DOES NOT MATCH ONE OF THE STORAGE SRS(s) THEN THE WFS WOULD
               EITHER PROJECT INTO THE STORAGE SRS OR RAISE AN EXCEPTION.
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	<xsd:simpleType name="IdentifierGenerationOptionType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="UseExisting">
-				<xsd:annotation>
-					<xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+   <xsd:simpleType name="IdentifierGenerationOptionType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="UseExisting">
+            <xsd:annotation>
+               <xsd:documentation>
                   The UseExsiting value indicates that WFS should not
                   generate a new feature identifier for the feature
                   being inserted into the repositry.  Instead, the WFS
@@ -1346,11 +1440,11 @@
                   If a duplicate exists then the WFS should raise an
                   exception.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="ReplaceDuplicate">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="ReplaceDuplicate">
+            <xsd:annotation>
+               <xsd:documentation>
                   The ReplaceDuplicate value indicates that WFS should
                   not generate a new feature identifier for the feature
                   being inserted into the repositry.  Instead, the WFS
@@ -1359,32 +1453,32 @@
                   existing feature instance with the one encoded in the
                   Insert action.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="GenerateNew">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="GenerateNew">
+            <xsd:annotation>
+               <xsd:documentation>
                   The GenerateNew value indicates that WFS should
                   generate a new unique feature identifier for the
                   feature being inserted into the repositry.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:element name="Update" type="wfs:UpdateElementType">
-		<xsd:annotation>
-			<xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:element name="Update" type="wfs:UpdateElementType">
+      <xsd:annotation>
+         <xsd:documentation>
             One or more existing feature instances can be changed by
             using the Update element.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="UpdateElementType">
-		<xsd:sequence>
-			<xsd:element ref="wfs:Property" maxOccurs="unbounded">
-				<xsd:annotation>
-					<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="UpdateElementType">
+      <xsd:sequence>
+         <xsd:element ref="wfs:Property" maxOccurs="unbounded">
+            <xsd:annotation>
+               <xsd:documentation>
                   Changing or updating a feature instance means that
                   the current value of one or more properties of
                   the feature are replaced with new values.  The Update
@@ -1393,11 +1487,11 @@
                   who's value is to be changed and the replacement value
                   for that property.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element ref="ogc:Filter" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
                   The Filter element is used to constrain the scope
                   of the update operation to those features identified
                   by the filter.  Feature instances can be specified
@@ -1408,12 +1502,12 @@
                   If no filter is specified then update operation 
                   applies to all feature instances.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="handle" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="handle" type="xsd:string" use="optional">
+         <xsd:annotation>
+            <xsd:documentation>
                The handle attribute allows a client application
                to assign a client-generated request identifier
                to an Insert action.  The handle is included to
@@ -1424,22 +1518,23 @@
                Insert element then a WFS may employee other means of
                localizing the error (e.g. line number).
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="typeName" type="xsd:QName" use="required">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="typeName" type="xsd:QName" use="required">
+        <xsd:annotation>
+           <xsd:documentation>
               The value of the typeName attribute is the name 
               of the feature type to be updated. The name
               specified must be a valid type that belongs to
               the feature content as defined by the GML
               Application Schema.
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="inputFormat" type="xsd:string" use="optional" default="x-application/gml:3">
-			<xsd:annotation>
-				<xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="inputFormat" type="xsd:string"
+                     use="optional" default="x-application/gml:3">
+         <xsd:annotation>
+            <xsd:documentation>
                This inputFormat attribute is used to indicate 
                the format used to encode a feature instance in
                an Insert element.  The default value of
@@ -1450,59 +1545,59 @@
                declare in the capabilities document, using a 
                Parameter element, which version of GML it supports.
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="srsName" type="xsd:anyURI" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="srsName" type="xsd:anyURI" use="optional">
+        <xsd:annotation>
+           <xsd:documentation>
                DO WE NEED THIS HERE?
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	<xsd:element name="Property" type="wfs:PropertyType">
-		<xsd:annotation>
-			<xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+   <xsd:element name="Property" type="wfs:PropertyType">
+      <xsd:annotation>
+         <xsd:documentation>
             The Property element is used to specify the new
             value of a feature property inside an Update
             element.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="PropertyType">
-		<xsd:sequence>
-			<xsd:element name="Name" type="xsd:QName">
-				<xsd:annotation>
-					<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="PropertyType">
+      <xsd:sequence>
+         <xsd:element name="Name" type="xsd:QName">
+            <xsd:annotation>
+               <xsd:documentation>
                   The Name element contains the name of a feature property
                   to be updated.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="Value" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Value" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
                   The Value element contains the replacement value for the
                   named property.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:element name="Delete" type="wfs:DeleteElementType">
-		<xsd:annotation>
-			<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="Delete" type="wfs:DeleteElementType">
+      <xsd:annotation>
+         <xsd:documentation>
             The Delete element is used to indicate that one or more
             feature instances should be removed from the feature
             repository.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="DeleteElementType">
-		<xsd:sequence>
-			<xsd:element ref="ogc:Filter">
-				<xsd:annotation>
-					<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="DeleteElementType">
+      <xsd:sequence>
+         <xsd:element ref="ogc:Filter" minOccurs="1" maxOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
                   The Filter element is used to constrain the scope
                   of the delete operation to those features identified
                   by the filter.  Feature instances can be specified
@@ -1514,12 +1609,12 @@
                   be raised since it is unlikely that a client application
                   intends to delete all feature instances.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="handle" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="handle" type="xsd:string" use="optional">
+         <xsd:annotation>
+            <xsd:documentation>
                The handle attribute allows a client application
                to assign a client-generated request identifier
                to an Insert action.  The handle is included to
@@ -1530,43 +1625,43 @@
                Insert element then a WFS may employee other means of
                localizing the error (e.g. line number).
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="typeName" type="xsd:QName" use="required">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="typeName" type="xsd:QName" use="required">
+        <xsd:annotation>
+           <xsd:documentation>
               The value of the typeName attribute is the name 
               of the feature type to be updated. The name
               specified must be a valid type that belongs to
               the feature content as defined by the GML
               Application Schema.
            </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	<xsd:element name="Native" type="wfs:NativeType">
-		<xsd:annotation>
-			<xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+   <xsd:element name="Native" type="wfs:NativeType">
+      <xsd:annotation>
+         <xsd:documentation>
             Many times, a Web Feature Service interacts with a repository
             that may have special vendor specific capabilities.  The native
             element allows vendor specific command to be passed to the
             repository via the Web Feature Service.
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="NativeType">
-		<xsd:attribute name="vendorId" type="xsd:string" use="required">
-			<xsd:annotation>
-				<xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="NativeType">
+      <xsd:attribute name="vendorId" type="xsd:string" use="required">
+         <xsd:annotation>
+            <xsd:documentation>
                The vendorId attribute is used to specify the name of
                vendor who's vendor specific command the client
                application wishes to execute.
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="safeToIgnore" type="xsd:boolean" use="required">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="safeToIgnore" type="xsd:boolean" use="required">
+         <xsd:annotation>
+            <xsd:documentation>
                In the event that a Web Feature Service does not recognize
                the vendorId or does not recognize the vendor specific command,
                the safeToIgnore attribute is used to indicate whether the 
@@ -1576,116 +1671,131 @@
                command and an exception should be raised if a problem is 
                encountered.
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	<!-- REPONSE -->
-	<xsd:element name="TransactionResponse" type="wfs:TransactionResponseType">
-		<xsd:annotation>
-			<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+   <!-- REPONSE -->
+   <xsd:element name="TransactionResponse"
+                type="wfs:TransactionResponseType">
+      <xsd:annotation>
+         <xsd:documentation>
             The TransactionResponse element contains a report
             about the completion status of a Transaction operation.  
          </xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="TransactionResponseType">
-		<xsd:annotation>
-			<xsd:documentation xml:lang="en">
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="TransactionResponseType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
             The response for a transaction request that was successfully
             completed. If the transaction failed for any reason, an
             exception report is returned instead.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element name="TransactionSummary" type="wfs:TransactionSummaryType">
-				<xsd:annotation>
-					<xsd:documentation xml:lang="en">
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="TransactionSummary"
+                      type="wfs:TransactionSummaryType">
+            <xsd:annotation>
+               <xsd:documentation xml:lang="en">
                   The TransactionSummary element is used to summarize
                   the number of feature instances affected by the 
                   transaction.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="TransactionResults" type="wfs:TransactionResultsType" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation xml:lang="en">
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="TransactionResults"
+                      type="wfs:TransactionResultsType"
+                      minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation xml:lang="en">
                   For systems that do not support atomic transactions,
                   the TransactionResults element may be used to report
                   exception codes and messages for all actions of a
                   transaction that failed to execute successfully.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="InsertResults" type="wfs:InsertResultsType" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation xml:lang="en">
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="InsertResults"
+                      type="wfs:InsertResultsType"
+                      minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation xml:lang="en">
                   A transaction is a collection of Insert,Update and Delete
                   actions.  The Update and Delete actions modify features
                   that already exist.  The Insert action, however, creates
                   new features.  The InsertResults element is used to
                   report the identifiers of the newly created features.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="version" type="xsd:string" use="required" fixed="1.1.0">
-			<xsd:annotation>
-				<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="version"
+                     type="xsd:string" use="required" fixed="1.1.0">
+         <xsd:annotation>
+            <xsd:documentation>
                The version attribute contains the version of the request
                that generated this response.  So a V1.1.0 transaction
                request generates a V1.1.0 transaction response.
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	<xsd:complexType name="TransactionSummaryType">
-		<xsd:annotation>
-			<xsd:documentation xml:lang="en">
+         </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+   <xsd:complexType name="TransactionSummaryType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
             Reports the total number of features affected by some kind 
             of write action (i.e, insert, update, delete).
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element name="totalInserted" type="xsd:nonNegativeInteger" minOccurs="0"/>
-			<xsd:element name="totalUpdated" type="xsd:nonNegativeInteger" minOccurs="0"/>
-			<xsd:element name="totalDeleted" type="xsd:nonNegativeInteger" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="TransactionResultsType">
-		<xsd:annotation>
-			<xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="totalInserted"
+                      type="xsd:nonNegativeInteger"
+                      minOccurs="0"/>
+         <xsd:element name="totalUpdated"
+                      type="xsd:nonNegativeInteger"
+                      minOccurs="0"/>
+         <xsd:element name="totalDeleted"
+                      type="xsd:nonNegativeInteger"
+                      minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="TransactionResultsType">
+      <xsd:annotation>
+         <xsd:documentation>
             The TransactionResults element may be used to report exception
             codes and messages for all actions of a transaction that failed
             to complete successfully.
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element name="Action" type="wfs:ActionType" minOccurs="0" maxOccurs="unbounded">
-				<xsd:annotation>
-					<xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="Action" type="wfs:ActionType"
+                      minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+               <xsd:documentation>
                   The Action element reports an exception code
                   and exception message indicating why the
                   corresponding action of a transaction request
                   failed.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="ActionType">
-		<xsd:sequence>
-			<xsd:element name="Message" type="xsd:string" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="ActionType">
+      <xsd:sequence>
+         <xsd:element name="Message" type="xsd:string"
+                      minOccurs="0" maxOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
                   If an action fails, the message element may be used
                   to supply an exception message.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="locator" type="xsd:string" use="required">
-			<xsd:annotation>
-				<xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="locator" type="xsd:string" use="required">
+         <xsd:annotation>
+            <xsd:documentation>
                The locator attribute is used to locate an action 
                within a &lt;Transaction&gt; element.  The value
                of the locator attribute is either a string that
@@ -1699,20 +1809,20 @@
                of the action (i.e. 1=First action, 2=Second action,
                etc.).
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="code" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="code" type="xsd:string" use="optional">
+         <xsd:annotation>
+            <xsd:documentation>
                The code attribute may be used to specify an 
                exception code indicating why an action failed.
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	<xsd:complexType name="InsertResultsType">
-		<xsd:annotation>
-			<xsd:documentation xml:lang="en">
+         </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
+   <xsd:complexType name="InsertResultsType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
             Reports the list of identifiers of all features created 
             by a transaction request.  New features are created using
             the Insert action and the list of idetifiers must be 
@@ -1722,34 +1832,36 @@
             handle attribute (if it was specified on the Insert 
             element).
          </xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element name="Feature" type="wfs:InsertedFeatureType" maxOccurs="unbounded"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="InsertedFeatureType">
-		<xsd:sequence>
-			<xsd:element ref="ogc:FeatureId" maxOccurs="unbounded">
-				<xsd:annotation>
-					<xsd:documentation xml:lang="en">
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="Feature"
+                      type="wfs:InsertedFeatureType"
+                      maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="InsertedFeatureType">
+      <xsd:sequence>
+         <xsd:element ref="ogc:FeatureId" maxOccurs="unbounded">
+            <xsd:annotation>
+               <xsd:documentation xml:lang="en">
                   This is the feature identifier for the newly created
                   feature.  The feature identifier may be generated by
                   the WFS or provided by the client (depending on the 
                   value of the idgen attribute).  In all cases of idgen
                   values, the feature id must be reported here.
                </xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="handle" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation xml:lang="en">
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="handle" type="xsd:string" use="optional">
+         <xsd:annotation>
+            <xsd:documentation xml:lang="en">
                If the insert element that generated this feature 
                had a value for the "handle" attribute then a WFS
                may report it using this attribute to correlate
                the feature created with the action that created it.
             </xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
+         </xsd:annotation>
+      </xsd:attribute>
+   </xsd:complexType>
 </xsd:schema>

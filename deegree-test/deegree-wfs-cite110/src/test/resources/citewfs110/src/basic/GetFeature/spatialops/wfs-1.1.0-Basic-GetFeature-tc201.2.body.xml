@@ -6,7 +6,7 @@
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
       <ogc:Intersects>
         <ogc:PropertyName>sf:attribut.Géométrie</ogc:PropertyName>
-        <gml:MultiPoint srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:MultiPoint srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:pointMember>
             <gml:Point><gml:pos>38.83 16.22</gml:pos></gml:Point>
           </gml:pointMember>

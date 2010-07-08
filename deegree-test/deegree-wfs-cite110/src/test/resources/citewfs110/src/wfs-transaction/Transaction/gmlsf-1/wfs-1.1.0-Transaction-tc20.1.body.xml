@@ -13,7 +13,7 @@
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">cite.gmlsf1-f200</gml:name>
       <gml:name>Nam dignissim</gml:name>
       <sf:geometryProperty>
-        <gml:Curve srsName="urn:x-ogc:def:crs:EPSG:4326">
+        <gml:Curve srsName="urn:ogc:def:crs:EPSG::4326">
           <gml:segments>
             <gml:LineStringSegment interpolation="linear">
               <gml:posList>48.18662 17.18412 49.024483 18.455578 45.291733 20.709015</gml:posList>

@@ -10,7 +10,7 @@
       <wfs:Property>
         <wfs:Name>sf:surfaceProperty</wfs:Name>
         <wfs:Value>
-          <gml:MultiCurve srsName="urn:x-ogc:def:crs:EPSG:4326">
+          <gml:MultiCurve srsName="urn:ogc:def:crs:EPSG::4326">
             <gml:curveMember>
               <gml:LineString>
                 <gml:posList>35.840973 0.14967346 44.11891 3.6755037 48.36785 9.001808 39.459682 9.716776</gml:posList>
