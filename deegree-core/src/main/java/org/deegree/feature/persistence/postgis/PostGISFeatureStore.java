@@ -61,11 +61,13 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
+import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
+import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.query.Query.QueryHint;
 import org.deegree.feature.types.ApplicationSchema;
@@ -104,19 +106,15 @@ public class PostGISFeatureStore implements FeatureStore {
 
     static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
 
-    private final ApplicationSchema schema;
+    private final MappedApplicationSchema schema;
 
     private final Map<QName, Short> ftNameToFtId = new HashMap<QName, Short>();
 
     final Map<QName, Envelope> ftNameToBBox = new HashMap<QName, Envelope>();
 
-    private final Map<QName, FeatureTypeMapping> relMapping;
-
     private final Envelope defaultEnvelope;
 
     private final String jdbcConnId;
-
-    private final String dbSchema;
 
     final CRS storageSRS;
 
@@ -139,21 +137,11 @@ public class PostGISFeatureStore implements FeatureStore {
      *            schema information, must not be <code>null</code>
      * @param jdbcConnId
      *            id of the deegree DB connection pool, must not be <code>null</code>
-     * @param dbSchema
-     *            name of the database schema, can be <code>null</code> (-> public schema)
-     * @param storageSRS
-     *            srs used for stored geometries, must not be <code>null</code>
-     * @param relMapping
-     *            key: feature type name, value: relational mapping information for feature type, may be
-     *            <code>null</code>
      */
-    PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchema, CRS storageSRS,
-                         Map<QName, FeatureTypeMapping> relMapping ) {
+    PostGISFeatureStore( MappedApplicationSchema schema, String jdbcConnId ) {
         this.schema = schema;
+        this.storageSRS = schema.getStorageSRS();
         this.jdbcConnId = jdbcConnId;
-        this.dbSchema = dbSchema;
-        this.storageSRS = storageSRS;
-        this.relMapping = relMapping;
         defaultEnvelope = new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRS.EPSG_4326 );
     }
 
@@ -165,7 +153,7 @@ public class PostGISFeatureStore implements FeatureStore {
      * @return relational mapping for the feature type, may be <code>null</code> (no relational mapping)
      */
     FeatureTypeMapping getMapping( QName ftName ) {
-        return relMapping == null ? null : relMapping.get( ftName );
+        return schema.getMapping( ftName );
     }
 
     /**
@@ -435,11 +423,12 @@ public class PostGISFeatureStore implements FeatureStore {
      * @return dbSchema + "." + tableName, or tableName if dbSchema is <code>null</code>
      */
     String qualifyTableName( String tableName ) {
-        if ( dbSchema == null ) {
-            return tableName;
-        }
-        return dbSchema + "." + tableName;
-    }
+//        if ( dbSchema == null ) {
+//            return tableName;
+//        }
+//        return dbSchema + "." + tableName;
+        return tableName;
+    }    
 
     private void closeSafely( Connection conn, Statement stmt, ResultSet rs ) {
         if ( rs != null ) {
@@ -583,8 +572,8 @@ public class PostGISFeatureStore implements FeatureStore {
             conn = ConnectionManager.getConnection( jdbcConnId );
             String sql = "SELECT x1.gml_id,x1.binary_object FROM " + qualifyTableName( "gml_objects" ) + " x1";
             if ( mapping != null ) {
-                sql += " LEFT JOIN " + qualifyTableName( mapping.getFeatureTypeHints().getDBTable() )
-                       + " x2 ON x1.id=x2.id";
+//                sql += " LEFT JOIN " + qualifyTableName( mapping.getFeatureTypeHints().getDBTable() )
+//                       + " x2 ON x1.id=x2.id";
             }
             sql += " WHERE x1.ft_type=?";
             if ( looseBBox != null ) {

@@ -61,9 +61,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
-import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyMappingType;
-import org.deegree.feature.persistence.postgis.jaxbconfig.PropertyMappingType;
-import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyMappingType;
+import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -394,7 +392,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         } catch ( FilterEvaluationException e ) {
             throw new SQLException( e.getMessage(), e );
         }
-        String tableName = ftMapping.getFeatureTypeHints().getDBTable();
+        String tableName = ftMapping.getTable();
 
         // build SQL string
         StringBuilder sql = new StringBuilder( "INSERT INTO " + store.qualifyTableName( tableName ) + "(id" );
@@ -440,32 +438,32 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FilterEvaluationException {
         LinkedHashMap<String, Object> columnsToValues = new LinkedHashMap<String, Object>();
 
-        for ( Property prop : feature.getProperties() ) {
-            PropertyMappingType propMapping = ftMapping.getPropertyHints( prop.getName() );
-            String dbColumn = null;
-            if ( propMapping != null ) {
-                if ( propMapping instanceof SimplePropertyMappingType ) {
-                    SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) propMapping;
-                    dbColumn = simplePropMapping.getDBColumn().getName();
-                } else if ( propMapping instanceof GeometryPropertyMappingType ) {
-                    GeometryPropertyMappingType geoPropMapping = (GeometryPropertyMappingType) propMapping;
-                    dbColumn = geoPropMapping.getGeometryDBColumn().getName();
-                } else {
-                    String msg = "Relational mapping of " + propMapping.getClass().getName()
-                                 + " is not implemented yet.";
-                    throw new UnsupportedOperationException( msg );
-                }
-
-                Object value = prop.getValue();
-
-                if ( value instanceof Geometry ) {
-                    value = store.getCompatibleGeometry( ( (Geometry) value ), store.storageSRS );
-                }
-                LOG.debug( "Property '" + prop.getName() + "', colum: " + dbColumn );
-
-                columnsToValues.put( dbColumn, value );
-            }
-        }
+//        for ( Property prop : feature.getProperties() ) {
+//            PropertyMappingType propMapping = ftMapping.getPropertyHints( prop.getName() );
+//            String dbColumn = null;
+//            if ( propMapping != null ) {
+//                if ( propMapping instanceof SimplePropertyMappingType ) {
+//                    SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) propMapping;
+//                    dbColumn = simplePropMapping.getDBColumn().getName();
+//                } else if ( propMapping instanceof GeometryPropertyMappingType ) {
+//                    GeometryPropertyMappingType geoPropMapping = (GeometryPropertyMappingType) propMapping;
+//                    dbColumn = geoPropMapping.getGeometryDBColumn().getName();
+//                } else {
+//                    String msg = "Relational mapping of " + propMapping.getClass().getName()
+//                                 + " is not implemented yet.";
+//                    throw new UnsupportedOperationException( msg );
+//                }
+//
+//                Object value = prop.getValue();
+//
+//                if ( value instanceof Geometry ) {
+//                    value = store.getCompatibleGeometry( ( (Geometry) value ), store.storageSRS );
+//                }
+//                LOG.debug( "Property '" + prop.getName() + "', colum: " + dbColumn );
+//
+//                columnsToValues.put( dbColumn, value );
+//            }
+//        }
         return columnsToValues;
     }
 

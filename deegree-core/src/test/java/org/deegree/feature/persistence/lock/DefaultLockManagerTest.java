@@ -36,16 +36,10 @@
 
 package org.deegree.feature.persistence.lock;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
@@ -55,11 +49,9 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.feature.types.JAXBAdapter;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.ReferenceResolvingException;
-import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.lockfeature.FilterLock;
-import org.deegree.protocol.wfs.lockfeature.LockOperation;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -80,10 +72,11 @@ public class DefaultLockManagerTest {
     @Before
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException, ReferenceResolvingException {
-        URL url = DefaultLockManagerTest.class.getResource( "../example.xml" );
-        JAXBAdapter adapter = new JAXBAdapter( url );
-        ApplicationSchema schema = adapter.getApplicationSchema();
+                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException, ReferenceResolvingException, ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );        
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = DefaultLockManagerTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         FeatureStore store = new MemoryFeatureStore( docURL, schema );

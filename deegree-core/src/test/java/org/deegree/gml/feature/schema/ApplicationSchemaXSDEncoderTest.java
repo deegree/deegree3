@@ -39,9 +39,7 @@ package org.deegree.gml.feature.schema;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -50,9 +48,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 
 /**
@@ -64,21 +60,6 @@ import org.junit.Test;
  * @version $Revision: $, $Date: $
  */
 public class ApplicationSchemaXSDEncoderTest {
-
-//    @Test
-    public void testExportAsGML31()
-                            throws XMLStreamException, IOException, JAXBException {
-
-        URL url = ApplicationSchemaXSDEncoderTest.class.getResource( "example.xml" );
-        JAXBAdapter adapter = new JAXBAdapter( url );
-        ApplicationSchema schema = adapter.getApplicationSchema();
-        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-        // outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-
-        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-        new ApplicationSchemaXSDEncoder( GMLVersion.GML_31, null ).export( memoryWriter.getXMLStreamWriter(), schema );
-        memoryWriter.getXMLStreamWriter().close();
-    }
 
     @Test
     public void testReexportCiteSF1()
@@ -92,7 +73,9 @@ public class ApplicationSchemaXSDEncoderTest {
         XMLStreamWriter writer = new FormattingXMLStreamWriter(
                                                                 XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                       new FileWriter(
-System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "out.xml" ) ) );
+                                                                                                                                      System.getProperty( "java.io.tmpdir" )
+                                                                                                                                                              + File.separatorChar
+                                                                                                                                                              + "out.xml" ) ) );
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );

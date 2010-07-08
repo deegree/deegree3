@@ -36,7 +36,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>datasource/0.5.0/coverage/raster.xsd,datasource/0.5.0/coverage/wms.xsd,datasource/0.5.0/observation/simplesql.xsd,datasource/0.5.0/feature/memory.xsd,datasource/0.5.0/feature/postgis.xsd,datasource/0.5.0/feature/shape.xsd,datasource/0.5.0/feature/simplesql.xsd,datasource/0.5.0/feature/mapping.xsd,datasource/0.5.0/record/iso19115.xsd,jdbc/0.5.0/jdbc.xsd,proxy/0.5.0/proxy.xsd,datasource/0.5.0/renderable/file.xsd,datasource/0.5.0/renderable/sql.xsd,datasource/0.5.0/batchedmt/file.xsd,</schemaFiles>
+          <schemaFiles>datasource/0.5.0/coverage/raster.xsd,datasource/0.5.0/coverage/wms.xsd,datasource/0.5.0/observation/simplesql.xsd,datasource/0.5.0/feature/memory.xsd,datasource/feature/postgis/0.5.1/postgis.xsd,datasource/0.5.0/feature/shape.xsd,datasource/0.5.0/feature/simplesql.xsd,datasource/0.5.0/record/iso19115.xsd,jdbc/0.5.0/jdbc.xsd,proxy/0.5.0/proxy.xsd,datasource/0.5.0/renderable/file.xsd,datasource/0.5.0/renderable/sql.xsd,datasource/0.5.0/batchedmt/file.xsd</schemaFiles>
         </configuration>
       </plugin>
       <plugin>

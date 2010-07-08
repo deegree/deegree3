@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PostGISFeatureStore configVersion="0.5.1" xmlns="http://www.deegree.org/datasource/feature/postgis"
+  xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.5.1/postgis.xsd">
+  <NamespaceHint prefix="app" namespaceURI="http://www.deegree.org/app" />
+  <StorageSRS>EPSG:4326</StorageSRS>
+  <JDBCConnId>philosopher-db</JDBCConnId>
+  <FeatureType name="app:Country" mapping="COUNTRY" fidMapping="ID">
+    <SimpleProperty name="app:name" minOccurs="0" type="string" />
+    <GeometryProperty name="app:geom" minOccurs="0" type="Geometry" srid="4326"/>
+  </FeatureType>
+</PostGISFeatureStore>
