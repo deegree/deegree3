@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.mapping;
+package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
@@ -54,11 +54,12 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
-import org.deegree.feature.persistence.mapping.jaxb.AbstractPropertyDecl;
-import org.deegree.feature.persistence.mapping.jaxb.FeatureTypeDecl;
-import org.deegree.feature.persistence.mapping.jaxb.GeometryPropertyDecl;
-import org.deegree.feature.persistence.mapping.jaxb.Mapping;
-import org.deegree.feature.persistence.mapping.jaxb.SimplePropertyDecl;
+import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
+import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -69,14 +70,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps an {@link ApplicationSchema} and corresponding {@link FeatureTypeMapping}s.
+ * Creates an {@link MappedApplicationSchema} from feature type declarations.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class MappedApplicationSchemaBuilder {
+class PostGISApplicationSchemaBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( MappedApplicationSchema.class );
 
@@ -88,21 +89,23 @@ public class MappedApplicationSchemaBuilder {
 
     private DatabaseMetaData md;
 
-    public static MappedApplicationSchema build( Mapping mapping, String jdbcConnId, String dbSchema, CRS storageSRS )
+    static MappedApplicationSchema build( List<FeatureTypeDecl> ftDecls, String jdbcConnId, String dbSchema,
+                                          CRS storageSRS )
                             throws SQLException {
-        MappedApplicationSchemaBuilder builder = new MappedApplicationSchemaBuilder( mapping, jdbcConnId, dbSchema );
+        PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema );
         FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
                                                                                     new FeatureTypeMapping[builder.ftNameToMapping.size()] );
         return new MappedApplicationSchema( fts, null, ftMappings, storageSRS );
     }
 
-    private MappedApplicationSchemaBuilder( Mapping mapping, String connId, String dbSchema ) throws SQLException {
+    private PostGISApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema )
+                            throws SQLException {
 
         Connection conn = ConnectionManager.getConnection( connId );
         md = conn.getMetaData();
 
-        for ( FeatureTypeDecl ftDecl : mapping.getFeatureType() ) {
+        for ( FeatureTypeDecl ftDecl : ftDecls ) {
             process( ftDecl );
         }
         schema = new ApplicationSchema( ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] ), null );
@@ -111,7 +114,7 @@ public class MappedApplicationSchemaBuilder {
     private void process( FeatureTypeDecl ftDecl ) {
 
         QName ftName = ftDecl.getName();
-        LOG.info( "Processing feature type '" + ftName + "'" );
+        LOG.debug( "Processing feature type '" + ftName + "'" );
         boolean isAbstract = ftDecl.isAbstract() == null ? false : ftDecl.isAbstract();
 
         String mapping = ftDecl.getMapping();
@@ -122,6 +125,7 @@ public class MappedApplicationSchemaBuilder {
         }
 
         String fidMapping = ftDecl.getFidMapping();
+        String backendSrs = "-1";
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
         Map<QName, String> propToColumn = new HashMap<QName, String>();
@@ -130,12 +134,20 @@ public class MappedApplicationSchemaBuilder {
             Pair<PropertyType, String> pt = process( propDecl );
             pts.add( pt.first );
             propToColumn.put( pt.first.getName(), pt.second );
+
+            // TODO what about different srids for multiple geometry properties?
+            if ( propDecl instanceof GeometryPropertyDecl ) {
+                GeometryPropertyDecl geoPropDecl = (GeometryPropertyDecl) propDecl;
+                if ( geoPropDecl.getSrid() != null ) {
+                    backendSrs = geoPropDecl.getSrid().toString();
+                }
+            }
         }
 
         FeatureType ft = new GenericFeatureType( ftName, pts, isAbstract );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, "-1" );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
@@ -176,7 +188,7 @@ public class MappedApplicationSchemaBuilder {
         return new Pair<PropertyType, String>( pt, mapping );
     }
 
-    private PrimitiveType getPrimitiveType( org.deegree.feature.persistence.mapping.jaxb.PrimitiveType type ) {
+    private PrimitiveType getPrimitiveType( org.deegree.feature.persistence.postgis.jaxb.PrimitiveType type ) {
         switch ( type ) {
         case BOOLEAN:
             return PrimitiveType.BOOLEAN;
