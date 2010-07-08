@@ -145,18 +145,16 @@ public class FeatureStoreManager {
     }
 
     /**
-     * Returns an uninitialized {@link FeatureStore} instance from the FeatureStore configuration document.
-     * <p>
-     * If the configuration specifies an identifier, the instance is also registered as global {@link FeatureStore}.
-     * </p>
+     * Returns an uninitialized {@link FeatureStore} instance that's created from the specified FeatureStore
+     * configuration document.
      * 
      * @param configURL
      *            URL of the configuration document, must not be <code>null</code>
-     * @return corresponding {@link FeatureStore} instance, initialized and ready to be used
+     * @return corresponding {@link FeatureStore} instance, not yet initialized, never <code>null</code>
      * @throws FeatureStoreException
      *             if the creation fails, e.g. due to a configuration error
      */
-    private static synchronized FeatureStore create( URL configURL )
+    public static synchronized FeatureStore create( URL configURL )
                             throws FeatureStoreException {
 
         String namespace = null;
@@ -169,7 +167,7 @@ public class FeatureStoreManager {
             LOG.error( msg );
             throw new FeatureStoreException( msg );
         }
-        LOG.debug( "Config namespace: '" + namespace  + "'");
+        LOG.debug( "Config namespace: '" + namespace + "'" );
         FeatureStoreProvider provider = getProviders().get( namespace );
         if ( provider == null ) {
             String msg = "No feature store provider for namespace '" + namespace + "' (file: '" + configURL
@@ -181,15 +179,21 @@ public class FeatureStoreManager {
         return fs;
     }
 
-    private static void registerAndInit( FeatureStore fs, String id )
+    /**
+     * 
+     * @param fs
+     * @param id
+     * @throws FeatureStoreException
+     */
+    public static void registerAndInit( FeatureStore fs, String id )
                             throws FeatureStoreException {
-        fs.init();
         if ( id != null ) {
             if ( idToFs.containsKey( id ) ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
                 throw new FeatureStoreException( msg );
             }
-            LOG.info( "Registering global feature store with id '" + id + "', type: '" + fs.getClass().getName() + "'");
+            fs.init();            
+            LOG.info( "Registering global feature store with id '" + id + "', type: '" + fs.getClass().getName() + "'" );
             idToFs.put( id, fs );
         }
     }

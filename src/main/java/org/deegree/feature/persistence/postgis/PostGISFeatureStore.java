@@ -423,12 +423,12 @@ public class PostGISFeatureStore implements FeatureStore {
      * @return dbSchema + "." + tableName, or tableName if dbSchema is <code>null</code>
      */
     String qualifyTableName( String tableName ) {
-//        if ( dbSchema == null ) {
-//            return tableName;
-//        }
-//        return dbSchema + "." + tableName;
+        // if ( dbSchema == null ) {
+        // return tableName;
+        // }
+        // return dbSchema + "." + tableName;
         return tableName;
-    }    
+    }
 
     private void closeSafely( Connection conn, Statement stmt, ResultSet rs ) {
         if ( rs != null ) {
@@ -572,8 +572,8 @@ public class PostGISFeatureStore implements FeatureStore {
             conn = ConnectionManager.getConnection( jdbcConnId );
             String sql = "SELECT x1.gml_id,x1.binary_object FROM " + qualifyTableName( "gml_objects" ) + " x1";
             if ( mapping != null ) {
-//                sql += " LEFT JOIN " + qualifyTableName( mapping.getFeatureTypeHints().getDBTable() )
-//                       + " x2 ON x1.id=x2.id";
+                // sql += " LEFT JOIN " + qualifyTableName( mapping.getFeatureTypeHints().getDBTable() )
+                // + " x2 ON x1.id=x2.id";
             }
             sql += " WHERE x1.ft_type=?";
             if ( looseBBox != null ) {
