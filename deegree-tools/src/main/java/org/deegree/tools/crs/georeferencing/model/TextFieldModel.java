@@ -51,6 +51,8 @@ public class TextFieldModel {
 
     private double yCoordiante;
 
+    private double span;
+
     /**
      * <Code>" "</Code> or <br>
      * ";" or <br>
@@ -67,7 +69,7 @@ public class TextFieldModel {
         Pattern p = Pattern.compile( separator );
         inputParameters = p.split( textInput );
 
-        for ( int i = 0; i < inputParameters.length; i += 2 ) {
+        for ( int i = 0; i < inputParameters.length; i += 3 ) {
             try {
                 xCoordinate = Double.parseDouble( inputParameters[i] );
 
@@ -80,16 +82,42 @@ public class TextFieldModel {
             } catch ( NumberFormatException e ) {
                 yCoordiante = 0.0;
             }
-            System.out.println( "[TextFieldModel] inputParameters: " + xCoordinate + " " + yCoordiante );
+            if ( inputParameters.length == 3 ) {
+                try {
+                    span = Double.parseDouble( inputParameters[i + 2] );
+                } catch ( NumberFormatException e ) {
+                    span = -1;
+                }
+            }
+            System.out.println( "[TextFieldModel] inputParameters: " + xCoordinate + " " + yCoordiante + " " + span );
         }
     }
 
+    /**
+     * The first parameter of the string.
+     * 
+     * @return the xCoordinate
+     */
     public double getxCoordinate() {
         return xCoordinate;
     }
 
+    /**
+     * The second parameter of the string.
+     * 
+     * @return the yCoordinate
+     */
     public double getyCoordiante() {
         return yCoordiante;
+    }
+
+    /**
+     * The optional third parameter of the string.
+     * 
+     * @return the span, if not set, this value is <i>-1</i>
+     */
+    public double getSpan() {
+        return span;
     }
 
     public static String getSeparator() {
