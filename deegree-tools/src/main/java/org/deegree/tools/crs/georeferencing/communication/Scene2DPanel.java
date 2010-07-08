@@ -43,8 +43,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point2d;
-
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -71,8 +69,6 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private List<Polygon> polygonList;
 
-    private Point2d beginDrawImageAtPosition;
-
     private Rectangle imageDimension;
 
     private List<Ring> worldPolygonList;
@@ -82,8 +78,6 @@ public class Scene2DPanel extends AbstractPanel2D {
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
         this.selectedPoints = new ArrayList<Point4Values>();
-        this.beginDrawImageAtPosition = new Point2d( 0, 0 );
-        // this.translationPoint = new Point2d( 0.0, 0.0 );
     }
 
     @Override
@@ -91,10 +85,6 @@ public class Scene2DPanel extends AbstractPanel2D {
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
 
-        // if ( translationPoint == null ) {
-        // translationPoint = new Point2d( 0.0, 0.0 );
-        // }
-        // g2.translate( -translationPoint.x, -translationPoint.y );
         if ( imageToDraw != null ) {
 
             g2.drawImage( imageToDraw, 0, 0, (int) imageDimension.width, (int) imageDimension.height, this );
@@ -119,16 +109,7 @@ public class Scene2DPanel extends AbstractPanel2D {
                 g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
             }
         }
-        // g2.translate( translationPoint.x, translationPoint.y );
 
-    }
-
-    public Point2d getBeginDrawImageAtPosition() {
-        return beginDrawImageAtPosition;
-    }
-
-    public void setBeginDrawImageAtPosition( Point2d beginDrawImageAtPosition ) {
-        this.beginDrawImageAtPosition = beginDrawImageAtPosition;
     }
 
     public Rectangle getImageDimension() {
@@ -194,8 +175,6 @@ public class Scene2DPanel extends AbstractPanel2D {
                     double x = ring.getControlPoints().getX( i );
                     double y = ring.getControlPoints().getY( i );
                     int[] p = sceneValues.getPixelCoord( new GeoReferencedPoint( x, y ) );
-                    // x2[i] = new Double( p[0] + translationPoint.getX() ).intValue();
-                    // y2[i] = new Double( p[1] + translationPoint.getY() ).intValue();
                     x2[i] = new Double( p[0] ).intValue();
                     y2[i] = new Double( p[1] ).intValue();
 

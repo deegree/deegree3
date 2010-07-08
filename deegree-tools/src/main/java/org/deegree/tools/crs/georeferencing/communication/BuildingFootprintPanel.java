@@ -75,17 +75,11 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private List<Ring> worldPolygonList;
 
-    // private FootprintPoint[] pixelCoordinates;
-
     private int offset;
-
-    // private List<Polygon> pixelCoordinatePolygonList;
 
     private final Insets insets = new Insets( 0, 10, 0, 0 );
 
     private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
-
-    // private double initialResolution;
 
     private ArrayList<Polygon> polygonListTranslated;
 
@@ -104,12 +98,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
 
-        // if ( translationPoint == null ) {
-        // translationPoint = new Point2d( 0.0, 0.0 );
-        // }
-
-        // g2.translate( -translationPoint.x, -translationPoint.y );
-
         if ( polygonList != null ) {
             for ( Polygon polygon : polygonList ) {
                 g2.drawPolygon( polygon );
@@ -127,8 +115,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
             g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
         }
-
-        // g2.translate( translationPoint.x, translationPoint.y );
     }
 
     @Override
@@ -159,8 +145,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
                     double x = ring.getControlPoints().getX( i );
                     double y = ring.getControlPoints().getY( i );
                     int[] p = sceneValues.getPixelCoord( new FootprintPoint( x, y ) );
-                    // x2[i] = new Double( p[0] + translationPoint.getX() ).intValue();
-                    // y2[i] = new Double( p[1] + translationPoint.getY() ).intValue();
                     x2[i] = new Double( p[0] ).intValue();
                     y2[i] = new Double( p[1] ).intValue();
 

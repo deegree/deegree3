@@ -206,7 +206,7 @@ public class Controller {
                                                                                                          textFieldModel.getxCoordinate(),
                                                                                                          textFieldModel.getyCoordiante() );
 
-                        sceneValues.moveEnvlopeGeoreference( translatedPoint );
+                        sceneValues.moveEnvelope( translatedPoint );
                         panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                         panel.updatePoints( sceneValues );
                         panel.repaint();
@@ -467,7 +467,7 @@ public class Controller {
                                                                               ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
 
                         sceneValues.setStartRasterEnvelopePosition( mouseGeoRef.getMouseChanging() );
-                        sceneValues.moveEnvlopeGeoreference( mouseGeoRef.getMouseChanging() );
+                        sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
                         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
                         panel.updatePoints( sceneValues );
                     }
@@ -503,7 +503,7 @@ public class Controller {
                                                                              ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
                                                                              ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
 
-                        sceneValues.moveEnvlopeFootprint( mouseFootprint.getMouseChanging() );
+                        sceneValues.moveEnvelope( mouseFootprint.getMouseChanging() );
                         footPanel.updatePoints( sceneValues );
                     }
                     footPanel.repaint();
@@ -600,7 +600,7 @@ public class Controller {
 
     /**
      * 
-     * TODO add class documentation here
+     * Represents the zoom function.
      * 
      * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
      * @author last edited by: $Author$
@@ -608,6 +608,11 @@ public class Controller {
      * @version $Revision$, $Date$
      */
     class Scene2DMouseWheelListener implements MouseWheelListener {
+        private boolean zoomIn = false;
+
+        private float resizing;
+
+        private AbstractGRPoint mouseOver;
 
         @Override
         public void mouseWheelMoved( MouseWheelEvent m ) {
@@ -617,28 +622,29 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    boolean zoomIn = false;
-                    float resizing = .05f;
+                    mouseOver = mouseGeoRef.getMouseMoved();
+                    resizing = .05f;
                     if ( m.getWheelRotation() < 0 ) {
                         zoomIn = true;
                     } else {
                         zoomIn = false;
                     }
-                    sceneValues.computeEnvelopeGeoreference( zoomIn, resizing, mouseGeoRef.getMouseMoved() );
+                    sceneValues.computeZoomedEnvelope( zoomIn, resizing, mouseOver );
                     panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                     panel.updatePoints( sceneValues );
                     panel.repaint();
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-                    boolean zoomIn = false;
-                    float resizing = .1f;
+
+                    resizing = .1f;
+                    mouseOver = mouseFootprint.getMouseMoved();
                     if ( m.getWheelRotation() < 0 ) {
                         zoomIn = true;
                     } else {
                         zoomIn = false;
                     }
-                    sceneValues.computeEnvelopeFootprint( zoomIn, resizing, mouseFootprint.getMouseMoved() );
+                    sceneValues.computeZoomedEnvelope( zoomIn, resizing, mouseOver );
                     footPanel.updatePoints( sceneValues );
                     footPanel.repaint();
                 }

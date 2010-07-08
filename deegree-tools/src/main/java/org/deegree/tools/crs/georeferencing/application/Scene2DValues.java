@@ -66,13 +66,7 @@ public class Scene2DValues {
 
     private RasterRect rasterRect;
 
-    // private Point2d imageMargin;
-
-    //
     private Rectangle imageDimension;
-
-    //
-    // private Point2d imageStartPosition;
 
     /**
      * new width and new height
@@ -83,8 +77,6 @@ public class Scene2DValues {
 
     private double sizeGeoRef;
 
-    // private double sizeFootprint, oldSizeFootprint;
-
     private Point2d minPointRaster;
 
     private Point2d minPointPixel;
@@ -93,16 +85,18 @@ public class Scene2DValues {
 
     private CRS crs;
 
-    private Point2d convertedRasterToPixelPoint;
-
-    private double sizeGeoRefPolygon;
-
     private Rectangle dimensionFootprint;
 
     private Envelope envelopeFootprint;
 
     private GeometryFactory geom;
 
+    /**
+     * Creates a new instance of <Code>Scene2DValues</Code>
+     * 
+     * @param options
+     * @param geom
+     */
     public Scene2DValues( RasterIOOptions options, GeometryFactory geom ) {
         this.options = options;
         this.geom = geom;
@@ -113,7 +107,8 @@ public class Scene2DValues {
      * Converts the pixelPoint to a point with world coordinates.
      * 
      * @param pixelPoint
-     * @return
+     *            , not <Code>null</Code>
+     * @return an AbstractGRPoint in worldCoordinates
      */
     public AbstractGRPoint getWorldPoint( AbstractGRPoint pixelPoint ) {
         switch ( pixelPoint.getPointType() ) {
@@ -164,8 +159,6 @@ public class Scene2DValues {
 
             return new FootprintPoint( getMinX + percentX, getMaxY - percentY );
 
-            // return new FootprintPoint( worldPos[0], worldPos[1] );
-
         }
 
         return null;
@@ -208,6 +201,15 @@ public class Scene2DValues {
         return null;
     }
 
+    /**
+     * Computes the percent of the AbstractGRPoint relative to the Envelope in worldCoordinates.
+     * 
+     * @param env
+     *            of the scene
+     * @param abstractGRPoint
+     *            to compute the percentage of
+     * @return a Point2d which holds the percentage of the abstractGRPoint
+     */
     private Point2d computePercentWorld( Envelope env, AbstractGRPoint abstractGRPoint ) {
         double spanX = env.getSpan0();
         double spanY = env.getSpan1();
@@ -219,6 +221,15 @@ public class Scene2DValues {
 
     }
 
+    /**
+     * Computes the percent of the AbstractGRPoint relative to the sceneDimension in PixelCoordinates.
+     * 
+     * @param dimension
+     *            of the scene
+     * @param abstractGRPoint
+     *            to compute the percentage of
+     * @return a Point2d which holds the percentage of the abstractGRPoint
+     */
     private Point2d computePercentPixel( Rectangle dimension, AbstractGRPoint abstractGRPoint ) {
         double spanX = dimension.width;
         double spanY = dimension.height;
@@ -235,10 +246,6 @@ public class Scene2DValues {
 
     public void setDimenstionFootpanel( Rectangle dimension ) {
         this.dimensionFootprint = dimension;
-    }
-
-    public AbstractRaster getRaster() {
-        return raster;
     }
 
     public void setRaster( AbstractRaster raster ) {
@@ -260,101 +267,64 @@ public class Scene2DValues {
         return null;
     }
 
-    public void setTransformedBounds( Point2d transformedBounds ) {
-        this.transformedRasterSpan = transformedBounds;
-    }
-
-    public Point2d getConvertedPixelToRasterPoint() {
-        return convertedPixelToRasterPoint;
-    }
-
-    public void setConvertedPixelToRasterPoint( Point2d convertedPixelToRasterPoint ) {
-        this.convertedPixelToRasterPoint = convertedPixelToRasterPoint;
-    }
-
-    public double getSizeGeoRef() {
-        return sizeGeoRef;
-    }
-
-    // public double getSizeFootprint() {
-    // return sizeFootprint;
-    // }
-
     public RasterIOOptions getOptions() {
         return options;
     }
 
-    public void setSizeGeoRef( boolean isZoomedIn, double resizing ) {
+    /**
+     * Computes the translation of the envelope for the georeferencing scene or the footprint scene.
+     * 
+     * @param mouseChange
+     *            the translation of the scene in pixelCoordinates, not <Code>null</Code>
+     */
+    public void moveEnvelope( AbstractGRPoint mouseChange ) {
+        Point2d percent;
+        switch ( mouseChange.getPointType() ) {
+        case GeoreferencedPoint:
+            percent = computePercentPixel( imageDimension, mouseChange );
 
-        double newSize = this.sizeGeoRef * ( 1 - resizing );
-        if ( isZoomedIn == false ) {
-            newSize = this.sizeGeoRef * ( 1 / ( 1 - resizing ) );
+            this.subRaster = raster.getAsSimpleRaster().getSubRaster(
+                                                                      createTranslatedEnv( subRaster.getEnvelope(),
+                                                                                           percent ) );
+            break;
+        case FootprintPoint:
+
+            percent = computePercentPixel( dimensionFootprint, mouseChange );
+            this.envelopeFootprint = createTranslatedEnv( envelopeFootprint, percent );
+            break;
         }
-        // BigDecimal b = new BigDecimal( newSize );
-        // b = b.round( new MathContext( 16 ) );
-        // this.size = b.floatValue();
-        this.sizeGeoRef = newSize;
-
-        System.out.println( "[Scene2DValues] newSizeGeoRef: " + this.sizeGeoRef );
-    }
-
-    // public void moveEnvlopeGeorefernce( AbstractGRPoint mouseChanging ) {
-    // System.out.println( "[Scene2DValues] Env before moving: " + this.envelopeFootprint );
-    //
-    // Point2d percent = computePercentPixel( imageDimension, mouseChanging );
-    //
-    // double changeX = subRaster.getEnvelope().getSpan0() * percent.getX();
-    // double changeY = subRaster.getEnvelope().getSpan1() * percent.getY();
-    //
-    // this.envelopeFootprint = geom.createEnvelope( envelopeFootprint.getMin().get0() + changeX,
-    // envelopeFootprint.getMin().get1() - changeY,
-    // envelopeFootprint.getMax().get0() + changeX,
-    // envelopeFootprint.getMax().get1() - changeY,
-    // envelopeFootprint.getCoordinateSystem() );
-    // System.out.println( "[Scene2DValues] Env after moving: " + this.envelopeFootprint );
-    //
-    // }
-
-    public void moveEnvlopeFootprint( AbstractGRPoint mouseChange ) {
-        System.out.println( "[Scene2DValues] Env before moving: " + this.envelopeFootprint );
-
-        Point2d percent = computePercentPixel( dimensionFootprint, mouseChange );
-
-        double changeX = envelopeFootprint.getSpan0() * percent.getX();
-        double changeY = envelopeFootprint.getSpan1() * percent.getY();
-
-        this.envelopeFootprint = geom.createEnvelope( envelopeFootprint.getMin().get0() + changeX,
-                                                      envelopeFootprint.getMin().get1() - changeY,
-                                                      envelopeFootprint.getMax().get0() + changeX,
-                                                      envelopeFootprint.getMax().get1() - changeY,
-                                                      envelopeFootprint.getCoordinateSystem() );
-        System.out.println( "[Scene2DValues] Env after moving: " + this.envelopeFootprint );
-    }
-
-    public void moveEnvlopeGeoreference( AbstractGRPoint mouseChanging ) {
-        System.out.println( "[Scene2DValues] Env before moving: " + subRaster.getEnvelope() );
-
-        Point2d percent = computePercentPixel( imageDimension, mouseChanging );
-
-        double changeX = subRaster.getEnvelope().getSpan0() * percent.getX();
-        double changeY = subRaster.getEnvelope().getSpan1() * percent.getY();
-
-        this.subRaster = raster.getAsSimpleRaster().getSubRaster(
-                                                                  geom.createEnvelope(
-                                                                                       subRaster.getEnvelope().getMin().get0()
-                                                                                                               + changeX,
-                                                                                       subRaster.getEnvelope().getMin().get1()
-                                                                                                               - changeY,
-                                                                                       subRaster.getEnvelope().getMax().get0()
-                                                                                                               + changeX,
-                                                                                       subRaster.getEnvelope().getMax().get1()
-                                                                                                               - changeY,
-                                                                                       subRaster.getEnvelope().getCoordinateSystem() ) );
-        System.out.println( "[Scene2DValues] Env after moving: " + subRaster.getEnvelope() );
 
     }
 
-    public void computeEnvelopeFootprint( boolean isZoomedIn, double resizing, AbstractGRPoint mousePosition ) {
+    /**
+     * Creates the envelope for translation.
+     * 
+     * @param env
+     *            to be translated, not <Code>null</Code>
+     * @param percent
+     *            the percent of the point regarding to the envelope, not <Code>null</Code>
+     * @return the envelope for translation.
+     */
+    private Envelope createTranslatedEnv( Envelope env, Point2d percent ) {
+        double changeX = env.getSpan0() * percent.getX();
+        double changeY = env.getSpan1() * percent.getY();
+
+        return geom.createEnvelope( env.getMin().get0() + changeX, env.getMin().get1() - changeY, env.getMax().get0()
+                                                                                                  + changeX,
+                                    env.getMax().get1() - changeY, env.getCoordinateSystem() );
+    }
+
+    /**
+     * Computes the zoom of the envelope for the georeferencing scene or the footprint scene.
+     * 
+     * @param isZoomedIn
+     *            <i>true</i>, if one zoom in, otherwise <i>false</i>
+     * @param resizing
+     *            the factor the scene should be resized &rarr; <i>0&lt;resizing&lt;1</i>, could be <Code>null</Code>
+     * @param mousePosition
+     *            where the zoom should orient on, not <Code>null</Code>
+     */
+    public void computeZoomedEnvelope( boolean isZoomedIn, double resizing, AbstractGRPoint mousePosition ) {
 
         double newSize = ( 1 - resizing );
         if ( isZoomedIn == false ) {
@@ -362,67 +332,47 @@ public class Scene2DValues {
             newSize = ( 1 / ( 1 - resizing ) );
 
         }
-
-        Envelope envTmp = geom.createEnvelope( envelopeFootprint.getMin().get0(), envelopeFootprint.getMin().get1(),
-                                               envelopeFootprint.getMax().get0(), envelopeFootprint.getMax().get1(),
-                                               envelopeFootprint.getCoordinateSystem() );
-
-        FootprintPoint pCenter = (FootprintPoint) getWorldPoint( mousePosition );
-        Point2d percentP = computePercentWorld( envTmp, pCenter );
-        double spanX = envTmp.getSpan0() * newSize;
-        double spanY = envTmp.getSpan1() * newSize;
-
-        double percentSpanX = spanX * percentP.x;
-        double percentSpanY = spanY * percentP.y;
-        double percentSpanXPos = spanX - percentSpanX;
-        double percentSpanYPos = spanY - percentSpanY;
-
-        double minPointX = pCenter.getX() - percentSpanX;
-        double minPointY = pCenter.getY() - percentSpanY;
-        double maxPointX = pCenter.getX() + percentSpanXPos;
-        double maxPointY = pCenter.getY() + percentSpanYPos;
-        this.envelopeFootprint = geom.createEnvelope( minPointX, minPointY, maxPointX, maxPointY,
-                                                      envTmp.getCoordinateSystem() );
-
-        System.out.println( "[Scene2DValues] Env after resizing: " + this.envelopeFootprint );
+        AbstractGRPoint center;
+        switch ( mousePosition.getPointType() ) {
+        case GeoreferencedPoint:
+            center = (GeoReferencedPoint) getWorldPoint( mousePosition );
+            this.subRaster = raster.getAsSimpleRaster().getSubRaster(
+                                                                      createZoomedEnv( this.subRaster.getEnvelope(),
+                                                                                       newSize, center ) );
+            break;
+        case FootprintPoint:
+            center = (FootprintPoint) getWorldPoint( mousePosition );
+            this.envelopeFootprint = createZoomedEnv( envelopeFootprint, newSize, center );
+            break;
+        }
     }
 
-    public void computeEnvelopeGeoreference( boolean zoomIn, float resizing, AbstractGRPoint mouseMoved ) {
-        double newSize = ( 1 - resizing );
-        if ( zoomIn == false ) {
-
-            newSize = ( 1 / ( 1 - resizing ) );
-
-        }
-        Envelope envTmp = subRaster.getEnvelope();
-        // Envelope envTmp = geom.createEnvelope( subRaster.getEnvelope().getMin().get0(),
-        // envelopeFootprint.getMin().get1(),
-        // envelopeFootprint.getMax().get0(), envelopeFootprint.getMax().get1(),
-        // envelopeFootprint.getCoordinateSystem() );
-
-        GeoReferencedPoint pCenter = (GeoReferencedPoint) getWorldPoint( mouseMoved );
-        Point2d percentP = computePercentWorld( envTmp, pCenter );
-        double spanX = envTmp.getSpan0() * newSize;
-        double spanY = envTmp.getSpan1() * newSize;
+    /**
+     * Creates the envelope for zoom.
+     * 
+     * @param env
+     *            to be zoomed, not <Code>null</Code>
+     * @param newSize
+     *            the absolute value to be resized, not <Code>null<Code>.
+     * @param center
+     *            in worldCoordinates where the zoom should orient on, not <Code>null</Code>
+     * @return the zoomed envelope.
+     */
+    private Envelope createZoomedEnv( Envelope env, double newSize, AbstractGRPoint center ) {
+        Point2d percentP = computePercentWorld( env, center );
+        double spanX = env.getSpan0() * newSize;
+        double spanY = env.getSpan1() * newSize;
 
         double percentSpanX = spanX * percentP.x;
         double percentSpanY = spanY * percentP.y;
         double percentSpanXPos = spanX - percentSpanX;
         double percentSpanYPos = spanY - percentSpanY;
 
-        double minPointX = pCenter.getX() - percentSpanX;
-        double minPointY = pCenter.getY() - percentSpanY;
-        double maxPointX = pCenter.getX() + percentSpanXPos;
-        double maxPointY = pCenter.getY() + percentSpanYPos;
-
-        this.subRaster = raster.getAsSimpleRaster().getSubRaster(
-                                                                  geom.createEnvelope( minPointX, minPointY, maxPointX,
-                                                                                       maxPointY,
-                                                                                       envTmp.getCoordinateSystem() ) );
-
-        System.out.println( "[Scene2DValues] Env after resizing: " + this.subRaster.getEnvelope() + "\n rasterRect: "
-                            + rasterRect );
-
+        double minPointX = center.getX() - percentSpanX;
+        double minPointY = center.getY() - percentSpanY;
+        double maxPointX = center.getX() + percentSpanXPos;
+        double maxPointY = center.getY() + percentSpanYPos;
+        return geom.createEnvelope( minPointX, minPointY, maxPointX, maxPointY, env.getCoordinateSystem() );
     }
 
     /**
@@ -450,14 +400,12 @@ public class Scene2DValues {
             // if < 1 then do orientation on h
             double newWidth = ( w / h ) * sizeGeoRef * rect.width;
             convertedPixelToRasterPoint = new Point2d( newWidth / w, rect.height * sizeGeoRef / h );
-            convertedRasterToPixelPoint = new Point2d( w / newWidth, h / ( rect.height * sizeGeoRef ) );
             transformedRasterSpan = new Point2d( newWidth, rect.height * sizeGeoRef );
             return transformedRasterSpan;
         } else if ( ratio > 1 ) {
             // if > 1 then do orientation on w
             double newHeight = ( h / w ) * sizeGeoRef * rect.height;
             convertedPixelToRasterPoint = new Point2d( rect.width * sizeGeoRef / w, newHeight / h );
-            convertedRasterToPixelPoint = new Point2d( w / ( rect.width * sizeGeoRef ), h / newHeight );
             transformedRasterSpan = new Point2d( rect.width * sizeGeoRef, newHeight );
             return transformedRasterSpan;
         }
