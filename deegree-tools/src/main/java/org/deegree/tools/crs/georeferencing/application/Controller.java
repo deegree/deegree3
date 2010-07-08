@@ -507,8 +507,8 @@ public class Controller {
                              && footPanel.getFocus() == true ) {
                             tablePanel.addRow();
                         }
-                        double x = m.getX() + mouseFootprint.getCumulatedMouseChanging().getX();
-                        double y = m.getY() + mouseFootprint.getCumulatedMouseChanging().getY();
+                        double x = m.getX();
+                        double y = m.getY();
                         System.out.println( "[CONTROLLER] " + x + ", " + y );
                         Pair<AbstractGRPoint, FootprintPoint> point = footPanel.getClosestPoint( new FootprintPoint( x,
                                                                                                                      y ) );
@@ -519,13 +519,7 @@ public class Controller {
                         mouseFootprint.setMouseChanging( new FootprintPoint(
                                                                              ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
                                                                              ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
-                        mouseFootprint.setCumulatedMouseChanging( new Point2d(
-                                                                               mouseFootprint.getCumulatedMouseChanging().getX()
-                                                                                                       + mouseFootprint.getMouseChanging().getX(),
-                                                                               mouseFootprint.getCumulatedMouseChanging().getY()
-                                                                                                       + mouseFootprint.getMouseChanging().getY() ) );
 
-                        // footPanel.setTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
                         sceneValues.moveEnvlopeFootprint( mouseFootprint.getMouseChanging() );
                         footPanel.updatePoints( sceneValues );
                     }
