@@ -83,7 +83,7 @@ public class Scene2DValues {
 
     private double sizeGeoRef;
 
-    private double sizeFootprint, oldSizeFootprint;
+    // private double sizeFootprint, oldSizeFootprint;
 
     private Point2d minPointRaster;
 
@@ -153,11 +153,11 @@ public class Scene2DValues {
         case FootprintPoint:
 
             // determine the minX and the maxY position of the envelope
-            double getMinX = envelopeFootprint.getMin().get0();
-            double getMaxY = envelopeFootprint.getMax().get1();
+            double getMinX = this.envelopeFootprint.getMin().get0();
+            double getMaxY = this.envelopeFootprint.getMax().get1();
 
-            double spanX = envelopeFootprint.getSpan0();
-            double spanY = envelopeFootprint.getSpan1();
+            double spanX = this.envelopeFootprint.getSpan0();
+            double spanY = this.envelopeFootprint.getSpan1();
 
             double percentX = ( pixelPoint.getX() / dimensionFootprint.width ) * spanX;
             double percentY = ( pixelPoint.getY() / dimensionFootprint.height ) * spanY;
@@ -191,14 +191,14 @@ public class Scene2DValues {
 
         case GeoreferencedPoint:
 
-            percentPoint = computePercent( subRaster.getEnvelope(), abstractGRPoint );
+            percentPoint = computePercentWorld( subRaster.getEnvelope(), abstractGRPoint );
 
             pixelPointX = Math.round( (float) ( ( percentPoint.x * imageDimension.width ) ) );
             pixelPointY = Math.round( (float) ( ( ( 1 - percentPoint.y ) * imageDimension.height ) ) );
             return new int[] { pixelPointX, pixelPointY };
         case FootprintPoint:
 
-            percentPoint = computePercent( this.envelopeFootprint, abstractGRPoint );
+            percentPoint = computePercentWorld( this.envelopeFootprint, abstractGRPoint );
 
             pixelPointX = Math.round( (float) ( ( percentPoint.x * dimensionFootprint.width ) ) );
             pixelPointY = Math.round( (float) ( ( ( 1 - percentPoint.y ) * dimensionFootprint.height ) ) );
@@ -208,7 +208,7 @@ public class Scene2DValues {
         return null;
     }
 
-    private Point2d computePercent( Envelope env, AbstractGRPoint abstractGRPoint ) {
+    private Point2d computePercentWorld( Envelope env, AbstractGRPoint abstractGRPoint ) {
         double spanX = env.getSpan0();
         double spanY = env.getSpan1();
         double mathX = -env.getMin().get0();
@@ -217,6 +217,16 @@ public class Scene2DValues {
         double deltaY = mathY + abstractGRPoint.getY();
         return new Point2d( deltaX / spanX, deltaY / spanY );
 
+    }
+
+    private Point2d computePercentPixel( Rectangle dimension, AbstractGRPoint abstractGRPoint ) {
+        double spanX = dimension.width;
+        double spanY = dimension.height;
+        // double mathX = -env.getMin().get0();
+        // double mathY = -env.getMin().get1();
+        // double deltaX = 0 + ;
+        // double deltaY = 0 + ;
+        return new Point2d( abstractGRPoint.getX() / spanX, abstractGRPoint.getY() / spanY );
     }
 
     public Rectangle getImageDimension() {
@@ -270,9 +280,9 @@ public class Scene2DValues {
         return sizeGeoRef;
     }
 
-    public double getSizeFootprint() {
-        return sizeFootprint;
-    }
+    // public double getSizeFootprint() {
+    // return sizeFootprint;
+    // }
 
     public RasterIOOptions getOptions() {
         return options;
@@ -292,28 +302,43 @@ public class Scene2DValues {
         System.out.println( "[Scene2DValues] newSizeGeoRef: " + this.sizeGeoRef );
     }
 
-    public void setSizeFootprint( double sizeFootprint ) {
-        this.sizeFootprint = sizeFootprint;
+    // public void setSizeFootprint( double sizeFootprint ) {
+    // this.sizeFootprint = sizeFootprint;
+    // }
+
+    public void moveEnvlopeFootprint( AbstractGRPoint mouseChange ) {
+        System.out.println( "[Scene2DValues] Env before moving: " + this.envelopeFootprint );
+
+        Point2d percent = computePercentPixel( dimensionFootprint, mouseChange );
+
+        double changeX = envelopeFootprint.getSpan0() * percent.getX();
+        double changeY = envelopeFootprint.getSpan1() * percent.getY();
+
+        this.envelopeFootprint = geom.createEnvelope( envelopeFootprint.getMin().get0() + changeX,
+                                                      envelopeFootprint.getMin().get1() - changeY,
+                                                      envelopeFootprint.getMax().get0() + changeX,
+                                                      envelopeFootprint.getMax().get1() - changeY,
+                                                      envelopeFootprint.getCoordinateSystem() );
+        System.out.println( "[Scene2DValues] Env after moving: " + this.envelopeFootprint );
     }
 
     public void computeEnvelopeFootprint( boolean isZoomedIn, double resizing, AbstractGRPoint mousePosition ) {
-        double newSize = this.sizeFootprint * ( 1 - resizing );
+
+        double newSize = ( 1 - resizing );
         if ( isZoomedIn == false ) {
-            newSize = this.sizeFootprint * ( 1 / ( 1 - resizing ) );
+
+            newSize = ( 1 / ( 1 - resizing ) );
 
         }
-        // this.sizeFootprint = newSize;
 
         Envelope envTmp = geom.createEnvelope( envelopeFootprint.getMin().get0(), envelopeFootprint.getMin().get1(),
                                                envelopeFootprint.getMax().get0(), envelopeFootprint.getMax().get1(),
                                                envelopeFootprint.getCoordinateSystem() );
 
         FootprintPoint pCenter = (FootprintPoint) getWorldPoint( mousePosition );
-
-        Point2d percentP = computePercent( envTmp, pCenter );
-
-        double spanX = envTmp.getSpan0() * ( 1 + newSize - this.sizeFootprint );
-        double spanY = envTmp.getSpan1() * ( 1 + newSize - this.sizeFootprint );
+        Point2d percentP = computePercentWorld( envTmp, pCenter );
+        double spanX = envTmp.getSpan0() * newSize;
+        double spanY = envTmp.getSpan1() * newSize;
 
         double percentSpanX = spanX * percentP.x;
         double percentSpanY = spanY * percentP.y;
@@ -326,8 +351,8 @@ public class Scene2DValues {
         double maxPointY = pCenter.getY() + percentSpanYPos;
         this.envelopeFootprint = geom.createEnvelope( minPointX, minPointY, maxPointX, maxPointY,
                                                       envTmp.getCoordinateSystem() );
-        this.sizeFootprint = newSize;
-        System.out.println( "[Scene2DValues] newSizeFootprint: " + this.sizeFootprint );
+
+        System.out.println( "[Scene2DValues] Env after resizing: " + this.envelopeFootprint );
     }
 
     /**

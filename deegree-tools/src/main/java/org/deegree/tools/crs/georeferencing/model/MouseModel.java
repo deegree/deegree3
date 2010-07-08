@@ -51,7 +51,7 @@ public class MouseModel {
 
     private Point2d pointMousePressed;
 
-    private Point2d mouseChanging;
+    private AbstractGRPoint mouseChanging;
 
     private Point2d persistentCumulatedMouseChanging;
 
@@ -83,7 +83,7 @@ public class MouseModel {
         this.pointMousePressed = pointMousePressed;
     }
 
-    public Point2d getMouseChanging() {
+    public AbstractGRPoint getMouseChanging() {
         return mouseChanging;
     }
 
@@ -107,7 +107,7 @@ public class MouseModel {
      * 
      * @param mouseChanging
      */
-    public void setMouseChanging( Point2d mouseChanging ) {
+    public void setMouseChanging( AbstractGRPoint mouseChanging ) {
         this.mouseChanging = mouseChanging;
     }
 

@@ -314,7 +314,6 @@ public class Controller {
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GET_3DOBJECT ) ) {
 
                     sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
-                    sceneValues.setSizeFootprint( 1.0 );
                     mouseFootprint = new MouseModel();
                     // TODO at the moment the file which is used is static in the GRViewerGUI!!!
                     List<WorldRenderableObject> rese = File3dImporter.open( view, view.fileName() );
@@ -526,8 +525,9 @@ public class Controller {
                                                                                mouseFootprint.getCumulatedMouseChanging().getY()
                                                                                                        + mouseFootprint.getMouseChanging().getY() ) );
 
-                        footPanel.setTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
-
+                        // footPanel.setTranslationPoint( mouseFootprint.getCumulatedMouseChanging() );
+                        sceneValues.moveEnvlopeFootprint( mouseFootprint.getMouseChanging() );
+                        footPanel.updatePoints( sceneValues );
                     }
                     footPanel.repaint();
                 }
