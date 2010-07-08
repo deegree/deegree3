@@ -110,10 +110,6 @@ public class GRViewerGUI extends JFrame {
 
     private JTextField coordinateJumper;
 
-    private String ows7url;
-
-    private String fileName;
-
     public GRViewerGUI() {
         super( WINDOW_TITLE );
 
@@ -158,14 +154,15 @@ public class GRViewerGUI extends JFrame {
         helmert = new JMenuItem( MENUITEM_TRANS_HELMERT );
 
         // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
-        ows7url = "http://localhost:8080/deegree-wms-cite/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
+        // ows7url =
+        // "http://localhost:8080/deegree-wms-cite/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
         // ows7url = "http://www.wms.nrw.de/geobasis/adv_dtk?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1";
-        fileName = "src/main/resources/org/deegree/tools/crs/georeferencing/test_building.gml";
+        // fileName = "src/main/resources/org/deegree/tools/crs/georeferencing/test_building.gml";
 
         // fileName = GRViewerGUI.class.getResource( "georeferencing/test_building.gml" ).toString();
 
-        menuFile.add( import2DMapMenuItem );
-        menuFile.add( import3DObjectMenuItem );
+        // menuFile.add( import2DMapMenuItem );
+        // menuFile.add( import3DObjectMenuItem );
         menuTransformation.add( polynomial_1 );
         // menuTransformation.add( polynomial_2 );
         // menuTransformation.add( polynomial_3 );
@@ -248,27 +245,14 @@ public class GRViewerGUI extends JFrame {
      * @param e
      */
     public void addMenuItemListener( ActionListener e ) {
-        import2DMapMenuItem.addActionListener( e );
-        import3DObjectMenuItem.addActionListener( e );
+        // import2DMapMenuItem.addActionListener( e );
+        // import3DObjectMenuItem.addActionListener( e );
         polynomial_1.addActionListener( e );
         polynomial_2.addActionListener( e );
         polynomial_3.addActionListener( e );
         helmert.addActionListener( e );
         coordinateJumper.addActionListener( e );
 
-    }
-
-    /**
-     * Populates the URL to the resource.
-     * 
-     * @return
-     */
-    public String openUrl() {
-        return ows7url;
-    }
-
-    public String fileName() {
-        return fileName;
     }
 
     /**

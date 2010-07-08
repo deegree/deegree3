@@ -36,7 +36,6 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 
 /**
  * TODO add class documentation here
@@ -85,16 +84,16 @@ public class RasterOptions {
      */
     private static final String RESOLUTION = "RESOLUTION";
 
-    public RasterOptions( GRViewerGUI view ) {
+    public RasterOptions( ParameterStore store ) {
         options = new RasterIOOptions();
 
-        options.add( RasterIOOptions.CRS, "EPSG:4326" );
-        options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
-        options.add( RIO_WMS_LAYERS, "cite:BasicPolygons" );
-        options.add( LEFT_LOWER_X, "-2.0" );
-        options.add( LEFT_LOWER_Y, "-1.0" );
-        options.add( RIGHT_UPPER_X, "2.0" );
-        options.add( RIGHT_UPPER_Y, "6.0" );
+        options.add( RasterIOOptions.CRS, store.getCRS() );
+        options.add( RIO_WMS_DEFAULT_FORMAT, store.getFormat() );
+        options.add( RIO_WMS_LAYERS, store.getLayers() );
+        options.add( LEFT_LOWER_X, store.getLEFT_LOWER_X() );
+        options.add( LEFT_LOWER_Y, store.getLEFT_LOWER_Y() );
+        options.add( RIGHT_UPPER_X, store.getRIGHT_UPPER_X() );
+        options.add( RIGHT_UPPER_Y, store.getRIGHT_UPPER_Y() );
 
         // options.add( RasterIOOptions.CRS, "EPSG:4326" );
         // options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
@@ -118,9 +117,9 @@ public class RasterOptions {
         // options.add( RIO_WMS_LAYERS, "populationgrid" );
 
         options.add( RESOLUTION, "1.0" );
-        options.add( RASTER_URL, view.openUrl() );
+        options.add( RASTER_URL, store.getMapURL() );
         options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
-        options.add( RIO_WMS_SYS_ID, view.openUrl() );
+        options.add( RIO_WMS_SYS_ID, store.getMapURL() );
         options.add( RIO_WMS_MAX_SCALE, "0.1" );
 
         // specify the quality

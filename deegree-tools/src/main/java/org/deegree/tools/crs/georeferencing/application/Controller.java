@@ -135,11 +135,14 @@ public class Controller {
 
     private TransformationType transformationType;
 
+    private ParameterStore store;
+
     public int order;
 
-    public Controller( GRViewerGUI view, Scene2D model ) {
+    public Controller( GRViewerGUI view, Scene2D model, ParameterStore store ) {
+
         geom = new GeometryFactory();
-        options = new RasterOptions( view ).getOptions();
+        options = new RasterOptions( store ).getOptions();
         sceneValues = new Scene2DValues( options, geom );
         this.view = view;
         this.model = model;
@@ -150,6 +153,7 @@ public class Controller {
         this.tablePanel = view.getPointTablePanel();
         this.start = false;
         this.glHandler = view.getOpenGLEventListener();
+        this.store = store;
 
         this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
         this.footPanel.setOffset( 10 );
@@ -320,7 +324,7 @@ public class Controller {
                     sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
                     mouseFootprint = new MouseModel();
                     // TODO at the moment the file which is used is static in the GRViewerGUI!!!
-                    List<WorldRenderableObject> rese = File3dImporter.open( view, view.fileName() );
+                    List<WorldRenderableObject> rese = File3dImporter.open( view, store.getFilename() );
                     sourceCRS = null;
                     for ( WorldRenderableObject res : rese ) {
 
