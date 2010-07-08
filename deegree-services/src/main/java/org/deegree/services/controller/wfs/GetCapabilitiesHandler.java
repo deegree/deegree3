@@ -272,7 +272,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeCharacters( fs.getStorageSRS().getName() );
             }
             writer.writeEndElement();
-            
+
             // wfs:Operations (minOccurs=0, maxOccurs=1)
             exportOperations100();
 
@@ -372,14 +372,20 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writer.writeStartElement( WFS_NS, "Service" );
 
-        // wfs:Name (type="string")
-        writeElement( writer, WFS_NS, "Name", serviceId.getTitle().get( 0 ) );
+        if ( serviceId != null && serviceId.getTitle() != null && !serviceId.getTitle().isEmpty() ) {
+            // wfs:Name (type="string")
+            writeElement( writer, WFS_NS, "Name", serviceId.getTitle().get( 0 ) );
+            // wfs:Title (type="string)
+            writeElement( writer, WFS_NS, "Title", serviceId.getTitle().get( 0 ) );
+        } else {
+            writeElement( writer, WFS_NS, "Name", "" );
+            writeElement( writer, WFS_NS, "Title", "" );
+        }
 
-        // wfs:Title (type="string)
-        writeElement( writer, WFS_NS, "Title", serviceId.getTitle().get( 0 ) );
-
-        // wfs:Abstract
-        writeElement( writer, WFS_NS, "Abstract", serviceId.getAbstract().get( 0 ) );
+        if ( serviceId != null && serviceId.getAbstract() != null && !serviceId.getAbstract().isEmpty() ) {
+            // wfs:Abstract
+            writeElement( writer, WFS_NS, "Abstract", serviceId.getAbstract().get( 0 ) );
+        }
 
         // wfs:Keywords
 
@@ -545,13 +551,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 // wfs:DefaultSRS / wfs:NoSRS
                 FeatureStore fs = service.getStore( ftName );
-                if (querySRS.isEmpty()) {
+                if ( querySRS.isEmpty() ) {
                     if ( fs.getStorageSRS() == null ) {
                         LOG.warn( "No default CRS for feature type '" + ftName + "' defined, using 'EPSG:4326'." );
                         writeElement( writer, WFS_NS, "DefaultSRS", "EPSG:4326" );
                     } else {
                         writeElement( writer, WFS_NS, "DefaultSRS", fs.getStorageSRS().getName() );
-                    }                    
+                    }
                 } else {
                     writeElement( writer, WFS_NS, "DefaultSRS", querySRS.get( 0 ).getName() );
                 }
