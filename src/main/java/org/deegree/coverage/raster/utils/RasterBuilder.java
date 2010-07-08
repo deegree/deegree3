@@ -64,6 +64,7 @@ import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.GriddedBlobTileContainer;
 import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
+import org.deegree.coverage.raster.container.TileContainer;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -183,10 +184,10 @@ public class RasterBuilder implements CoverageBuilder {
             resolver.setSystemId( configURL.toString() );
 
             if ( config instanceof MultiResolutionRasterConfig ) {
-                return fromJAXB( (MultiResolutionRasterConfig) config, resolver );
+                return fromJAXB( (MultiResolutionRasterConfig) config, resolver, null );
             }
             if ( config instanceof RasterConfig ) {
-                return fromJAXB( (RasterConfig) config, resolver, null );
+                return fromJAXB( (RasterConfig) config, resolver, null, null );
             }
             LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
         } catch ( JAXBException e ) {
@@ -202,20 +203,23 @@ public class RasterBuilder implements CoverageBuilder {
      * @param adapter
      * @return a corresponding raster
      */
-    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter ) {
+    private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter, CRS parentCrs ) {
         if ( mrrConfig != null ) {
             String defCRS = mrrConfig.getCrs();
             CRS crs = null;
             if ( defCRS != null ) {
                 crs = new CRS( defCRS );
             }
-            RasterIOOptions options = getOptions( mrrConfig );
+            if ( crs == null ) {
+                LOG.debug( "Using parent crs." );
+                crs = parentCrs;
+            }
+            RasterIOOptions options = getOptions( mrrConfig, parentCrs );
             MultiResolutionRaster mrr = new MultiResolutionRaster();
             mrr.setCoordinateSystem( crs );
             for ( Resolution resolution : mrrConfig.getResolution() ) {
                 if ( resolution != null ) {
-
-                    AbstractRaster rasterLevel = fromJAXB( resolution, adapter, options );
+                    AbstractRaster rasterLevel = fromJAXB( resolution, adapter, options, crs );
                     mrr.addRaster( rasterLevel );
                 }
             }
@@ -224,9 +228,14 @@ public class RasterBuilder implements CoverageBuilder {
         throw new NullPointerException( "The configured multi resolution raster may not be null." );
     }
 
-    private RasterIOOptions getOptions( MultiResolutionRasterConfig config ) {
-        // TODO Auto-generated method stub
-        return null;
+    private RasterIOOptions getOptions( MultiResolutionRasterConfig config, CRS parentCrs ) {
+        RasterIOOptions opts = new RasterIOOptions();
+        if ( config.getCrs() != null ) {
+            opts.add( "CRS", config.getCrs() );
+        } else {
+            opts.add( "CRS", parentCrs.getName() );
+        }
+        return opts;
     }
 
     /**
@@ -234,12 +243,17 @@ public class RasterBuilder implements CoverageBuilder {
      * @param adapter
      * @return a corresponding raster, null if files could not be fund
      */
-    private AbstractRaster fromJAXB( AbstractRasterType config, XMLAdapter adapter, RasterIOOptions options ) {
+    private AbstractRaster fromJAXB( AbstractRasterType config, XMLAdapter adapter, RasterIOOptions options,
+                                     CRS parentCrs ) {
         if ( config != null ) {
             String defCRS = config.getCrs();
             CRS crs = null;
             if ( defCRS != null ) {
                 crs = new CRS( defCRS );
+            }
+            if ( crs == null ) {
+                LOG.debug( "Using parent CRS, since no crs was defined." );
+                crs = parentCrs;
             }
             RasterDirectory directory = config.getRasterDirectory();
             RasterFile file = config.getRasterFile();
@@ -399,9 +413,10 @@ public class RasterBuilder implements CoverageBuilder {
                 // the grid file structure can be defined over multiple 'bin' files, which is used in e.g the WPVS.
                 try {
                     raster = new TiledRaster( GriddedBlobTileContainer.create( directory, opts ) );
-                    readSingleBlobTile = raster != null;
+                    readSingleBlobTile = true;
                 } catch ( IOException e ) {
-                    LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
+                    LOG.debug( "Exception occurred: '{}'", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
                 }
             }
             if ( !readSingleBlobTile ) {
@@ -410,14 +425,17 @@ public class RasterBuilder implements CoverageBuilder {
                 }
                 QTreeInfo inf = buildTiledRaster( coverageFiles, rasters, opts );
                 Envelope domain = inf.envelope;
-                // RasterGeoReference rasterDomain = inf.rasterGeoReference;
-                // IndexedMemoryTileContainer container = new IndexedMemoryTileContainer( domain, rasterDomain,
-                // inf.numberOfObjects );
-                MemoryTileContainer container = new MemoryTileContainer( rasters );
+
+                TileContainer container;
+                if ( rasters.size() > 1000 ) {
+                    container = new IndexedMemoryTileContainer( domain, inf.rasterGeoReference, inf.numberOfObjects );
+                    ( (IndexedMemoryTileContainer) container ).addRasterTiles( rasters );
+                } else {
+                    container = new MemoryTileContainer( rasters );
+                }
                 raster = new TiledRaster( container );
                 raster.setCoordinateSystem( domain.getCoordinateSystem() );
             }
-            // container.addRasterTiles( rasters );
         } else {
             LOG.warn( "No raster files with extension: {}, found in directory {}", extension,
                       directory.getAbsolutePath() );
@@ -492,8 +510,6 @@ public class RasterBuilder implements CoverageBuilder {
      * 
      * @param rasterEnvelope
      * @param resultEnvelope
-     * @param size
-     * @return
      */
     private static int calcBalancedLeafObjectSize( Envelope rasterEnvelope, Envelope resultEnvelope, int treeDepth ) {
         double tw = resultEnvelope.getSpan0();
