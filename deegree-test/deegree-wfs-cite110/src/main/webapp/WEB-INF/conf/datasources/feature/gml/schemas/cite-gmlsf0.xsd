@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema 
-  targetNamespace="http://cite.opengeospatial.org/gmlsf" 
-  xmlns:gml="http://www.opengis.net/gml" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-  xmlns:sf="http://cite.opengeospatial.org/gmlsf" 
-  elementFormDefault="qualified" 
-  version="2007.12">
+<xsd:schema
+  targetNamespace="http://cite.opengeospatial.org/gmlsf"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:sf="http://cite.opengeospatial.org/gmlsf"
+  elementFormDefault="qualified"
+  version="2007.08">
 
   <xsd:annotation>
-    <xsd:appinfo xmlns:gmlsf="http://www.opengis.net/gmlsf" 
+    <xsd:appinfo xmlns:gmlsf="http://www.opengis.net/gmlsf"
       source="http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsfLevels.xsd">
       <gmlsf:ComplianceLevel>0</gmlsf:ComplianceLevel>
       <gmlsf:GMLProfileSchema>
@@ -17,15 +17,15 @@
     </xsd:appinfo>
     <xsd:documentation xml:lang="en">
     GML application schema used to assess compliance with the WFS 1.1 specification.
-    This schema conforms to a subset of level SF-0 defined in the Simple Features 
-    Profile (OGC 06-049): only simple non-spatial property types are used; Curve 
+    This schema conforms to a subset of level SF-0 defined in the Simple Features
+    Profile (OGC 06-049): only simple non-spatial property types are used; Curve
     and Surface geometries are excluded.
     </xsd:documentation>
   </xsd:annotation>
-  
+
   <xsd:import namespace="http://www.opengis.net/gml" />
-    
-  <xsd:element name="SimpleFeatureCollection" type="sf:SimpleFeatureCollectionType" 
+
+  <xsd:element name="SimpleFeatureCollection" type="sf:SimpleFeatureCollectionType"
     substitutionGroup="gml:_GML">
     <xsd:annotation>
     <xsd:documentation xml:lang="en">
@@ -48,12 +48,12 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
-  <xsd:element name="PrimitiveGeoFeature" type="sf:PrimitiveGeoFeatureType" 
+
+  <xsd:element name="PrimitiveGeoFeature" type="sf:PrimitiveGeoFeatureType"
     substitutionGroup="gml:_Feature">
     <xsd:annotation>
     <xsd:documentation xml:lang="en">
-    Feature type with selected simple non-spatial properties and spatial 
+    Feature type with selected simple non-spatial properties and spatial
     properties having primitive geometry values.
     </xsd:documentation>
     </xsd:annotation>
@@ -78,22 +78,28 @@
               </xsd:restriction>
             </xsd:simpleType>
           </xsd:element>
-          <xsd:element name="relatedFeature" type="gml:ReferenceType" minOccurs="0">
+          <xsd:element name="relatedFeature" minOccurs="0">
             <xsd:annotation>
               <xsd:appinfo source="urn:x-gml:targetElement">sf:PrimitiveGeoFeature</xsd:appinfo>
               <xsd:documentation xml:lang="en">A (simple) XLink element that refers to a sf:PrimitiveGeoFeature instance.</xsd:documentation>
             </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence minOccurs="0">
+                <xsd:element ref="gml:_Feature" />
+              </xsd:sequence>
+              <xsd:attributeGroup ref="gml:AssociationAttributeGroup"/>
+            </xsd:complexType>
           </xsd:element>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="AggregateGeoFeature" type="sf:AggregateGeoFeatureType" 
+  <xsd:element name="AggregateGeoFeature" type="sf:AggregateGeoFeatureType"
     substitutionGroup="gml:_Feature">
     <xsd:annotation>
     <xsd:documentation xml:lang="en">
-    Feature type with selected simple non-spatial properties and spatial 
+    Feature type with selected simple non-spatial properties and spatial
     properties having aggregate geometry values.
     </xsd:documentation>
     </xsd:annotation>
@@ -127,15 +133,15 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
-  <xsd:element name="EntitéGénérique" type="sf:EntitéGénériqueType" 
+
+  <xsd:element name="EntitéGénérique" type="sf:EntitéGénériqueType"
     substitutionGroup="gml:_Feature">
     <xsd:annotation>
     <xsd:documentation xml:lang="en">
-    Simple feature with a generic geometry property that includes characters 
-    outside of the range U+0000..U+007F (Basic Latin). Acceptable geometry 
-    representations include any of the following: gml:Point, gml:LineString, 
-    gml:Curve, gml:Polygon, gml:Surface, gml:MultiPoint, gml:MultiCurve, and 
+    Simple feature with a generic geometry property that includes characters
+    outside of the range U+0000..U+007F (Basic Latin). Acceptable geometry
+    representations include any of the following: gml:Point, gml:LineString,
+    gml:Curve, gml:Polygon, gml:Surface, gml:MultiPoint, gml:MultiCurve, and
     gml:MultiSurface.
     </xsd:documentation>
     </xsd:annotation>
