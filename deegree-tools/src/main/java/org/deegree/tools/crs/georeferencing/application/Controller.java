@@ -166,7 +166,77 @@ public class Controller {
         tablePanel.addHorizontalRefListener( new ButtonListener() );
         tablePanel.addTableModelListener( new TableListener() );
 
+        // init the scenePanel and the mouseinteraction of it
+        initGeoReferencingScene();
+
+        // init the footPanel and the mouseinteraction of it
+        initFootprintScene();
+
         isHorizontalRef = false;
+
+    }
+
+    private void initFootprintScene() {
+        footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
+        footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+        footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+
+        sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
+        mouseFootprint = new MouseModel();
+        // TODO at the moment the file which is used is static in the GRViewerGUI!!!
+        List<WorldRenderableObject> rese = File3dImporter.open( view, store.getFilename() );
+        sourceCRS = null;
+        for ( WorldRenderableObject res : rese ) {
+
+            sourceCRS = res.getBbox().getCoordinateSystem();
+
+            glHandler.addDataObjectToScene( res );
+        }
+        List<float[]> geometryThatIsTaken = new ArrayList<float[]>();
+        for ( GeometryQualityModel g : File3dImporter.gm ) {
+
+            ArrayList<SimpleAccessGeometry> h = g.getQualityModelParts();
+            boolean isfirstOccurrence = false;
+            float minimalZ = 0;
+
+            for ( SimpleAccessGeometry b : h ) {
+
+                float[] a = b.getHorizontalGeometries( b.getGeometry() );
+                if ( a != null ) {
+                    if ( isfirstOccurrence == false ) {
+                        minimalZ = a[2];
+                        geometryThatIsTaken.add( a );
+                        isfirstOccurrence = true;
+                    } else {
+                        if ( minimalZ < a[2] ) {
+
+                        } else {
+                            geometryThatIsTaken.remove( geometryThatIsTaken.size() - 1 );
+                            minimalZ = a[2];
+                            geometryThatIsTaken.add( a );
+                        }
+                    }
+                    // System.out.println( a );
+                }
+            }
+
+        }
+
+        footPrint.generateFootprints( geometryThatIsTaken );
+
+        footPanel.setPolygonList( footPrint.getWorldCoordinateRingList(), sceneValues );
+
+        footPanel.repaint();
+
+    }
+
+    private void initGeoReferencingScene() {
+        mouseGeoRef = new MouseModel();
+        init();
+        targetCRS = sceneValues.getCrs();
+        panel.addScene2DMouseListener( new Scene2DMouseListener() );
+        panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+        panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
     }
 
@@ -307,68 +377,6 @@ public class Controller {
                 }
             }
             if ( source instanceof JMenuItem ) {
-                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GETMAP ) ) {
-                    mouseGeoRef = new MouseModel();
-                    init();
-                    targetCRS = sceneValues.getCrs();
-                    panel.addScene2DMouseListener( new Scene2DMouseListener() );
-                    panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-                    panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
-
-                }
-                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_GET_3DOBJECT ) ) {
-                    footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
-                    footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-                    footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
-
-                    sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
-                    mouseFootprint = new MouseModel();
-                    // TODO at the moment the file which is used is static in the GRViewerGUI!!!
-                    List<WorldRenderableObject> rese = File3dImporter.open( view, store.getFilename() );
-                    sourceCRS = null;
-                    for ( WorldRenderableObject res : rese ) {
-
-                        sourceCRS = res.getBbox().getCoordinateSystem();
-
-                        glHandler.addDataObjectToScene( res );
-                    }
-                    List<float[]> geometryThatIsTaken = new ArrayList<float[]>();
-                    for ( GeometryQualityModel g : File3dImporter.gm ) {
-
-                        ArrayList<SimpleAccessGeometry> h = g.getQualityModelParts();
-                        boolean isfirstOccurrence = false;
-                        float minimalZ = 0;
-
-                        for ( SimpleAccessGeometry b : h ) {
-
-                            float[] a = b.getHorizontalGeometries( b.getGeometry() );
-                            if ( a != null ) {
-                                if ( isfirstOccurrence == false ) {
-                                    minimalZ = a[2];
-                                    geometryThatIsTaken.add( a );
-                                    isfirstOccurrence = true;
-                                } else {
-                                    if ( minimalZ < a[2] ) {
-
-                                    } else {
-                                        geometryThatIsTaken.remove( geometryThatIsTaken.size() - 1 );
-                                        minimalZ = a[2];
-                                        geometryThatIsTaken.add( a );
-                                    }
-                                }
-                                // System.out.println( a );
-                            }
-                        }
-
-                    }
-
-                    footPrint.generateFootprints( geometryThatIsTaken );
-
-                    footPanel.setPolygonList( footPrint.getWorldCoordinateRingList(), sceneValues );
-
-                    footPanel.repaint();
-
-                }
 
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
                     transformationType = TransformationMethod.TransformationType.PolynomialFirstOrder;

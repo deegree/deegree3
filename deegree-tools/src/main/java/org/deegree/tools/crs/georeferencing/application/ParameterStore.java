@@ -67,9 +67,20 @@ public class ParameterStore {
 
     private String RIGHT_UPPER_Y;
 
+    /**
+     * Quality of raster in x direction
+     */
+    private String QORX;
+
+    /**
+     * Quality of raster in y direction
+     */
+    private String QORY;
+
     private final static String separator = "\\p{Space}*[ ;/]\\p{Space}*";
 
-    public ParameterStore( String mapURL, String CRS, String format, String layers, String bbox, String filename ) {
+    public ParameterStore( String mapURL, String CRS, String format, String layers, String bbox, String qor,
+                           String filename ) {
 
         this.mapURL = mapURL;
         this.CRS = CRS;
@@ -78,22 +89,34 @@ public class ParameterStore {
         this.bbox = bbox;
         this.filename = filename;
 
-        String[] inputParameters = null;
+        String[] inputParametersBBox = null;
         Pattern p = Pattern.compile( separator );
-        inputParameters = p.split( bbox );
+        inputParametersBBox = p.split( bbox );
 
-        for ( int i = 0; i < inputParameters.length; i += 4 ) {
+        for ( int i = 0; i < inputParametersBBox.length; i += 4 ) {
 
-            LEFT_LOWER_X = inputParameters[i];
+            LEFT_LOWER_X = inputParametersBBox[i];
 
-            LEFT_LOWER_Y = inputParameters[i + 1];
+            LEFT_LOWER_Y = inputParametersBBox[i + 1];
 
-            RIGHT_UPPER_X = inputParameters[i + 2];
+            RIGHT_UPPER_X = inputParametersBBox[i + 2];
 
-            RIGHT_UPPER_Y = inputParameters[i + 3];
+            RIGHT_UPPER_Y = inputParametersBBox[i + 3];
         }
-        System.out.println( "[ParameterStore]" + LEFT_LOWER_X + " " + LEFT_LOWER_Y + " " + RIGHT_UPPER_X + " "
-                            + RIGHT_UPPER_Y );
+        System.out.println( "[ParameterStore] BBOX: <" + LEFT_LOWER_X + "," + LEFT_LOWER_Y + "," + RIGHT_UPPER_X + ","
+                            + RIGHT_UPPER_Y + ">" );
+
+        String[] inputParametersQOR = null;
+        inputParametersQOR = p.split( qor );
+
+        for ( int i = 0; i < inputParametersQOR.length; i += 2 ) {
+
+            QORX = inputParametersQOR[i];
+
+            QORY = inputParametersQOR[i + 1];
+
+        }
+        System.out.println( "[ParameterStore] QOR: <" + QORX + "," + QORY + ">" );
 
     }
 
@@ -135,6 +158,15 @@ public class ParameterStore {
 
     public String getRIGHT_UPPER_Y() {
         return RIGHT_UPPER_Y;
+    }
+
+    public String getQORX() {
+
+        return QORX;
+    }
+
+    public String getQORY() {
+        return QORY;
     }
 
 }

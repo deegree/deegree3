@@ -38,7 +38,7 @@ package org.deegree.tools.crs.georeferencing.application;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 
 /**
- * TODO add class documentation here
+ * Stores the parameter for a getMap() request to a WMS.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -123,8 +123,8 @@ public class RasterOptions {
         options.add( RIO_WMS_MAX_SCALE, "0.1" );
 
         // specify the quality
-        options.add( RIO_WMS_MAX_WIDTH, Integer.toString( 500 ) );
-        options.add( RIO_WMS_MAX_HEIGHT, Integer.toString( 500 ) );
+        options.add( RIO_WMS_MAX_WIDTH, store.getQORX() );
+        options.add( RIO_WMS_MAX_HEIGHT, store.getQORY() );
         options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
         // options.add( RIO_WMS_TIMEOUT, "1000" );
     }
@@ -134,5 +134,3 @@ public class RasterOptions {
     }
 
 }
-// http://gdi.bonn.de/mapbender/dhtml/imagepack.php?basis=gdi.bonn.de/Deegree2wms/services&SERVICE=WMS&REQUEST=GetMap&SRS=EPSG:31466&FORMAT=image/png&STYLES=&VERSION=1.1.1&TRANSPARENT=FALSE&BGCOLOR=0x000000&LAYERS=DD_Stadtplan&interface_id=3&quality=middle&BBOX=
-// 2568347,5610821,2589019,5627689

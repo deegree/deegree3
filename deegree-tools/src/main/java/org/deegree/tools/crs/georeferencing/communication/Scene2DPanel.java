@@ -187,6 +187,7 @@ public class Scene2DPanel extends AbstractPanel2D {
             this.polygonList = polygonListTranslated;
         } else {
             this.polygonList = null;
+            this.worldPolygonList = null;
         }
 
     }
