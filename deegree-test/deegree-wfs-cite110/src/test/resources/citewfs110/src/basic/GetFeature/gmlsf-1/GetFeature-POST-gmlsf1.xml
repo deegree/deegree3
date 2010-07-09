@@ -306,7 +306,7 @@
                                         </ctl:call-test>
                                         <xsl:variable name="expression">
                                           <xsl:choose>
-                                            <xsl:when test="boolean(//gml:featureMember/sf:ComplexGeoFeature)">//gml:featureMember/sf:ComplexGeoFeature/gml:name = 'name-f103'</xsl:when>
+                                            <xsl:when test="boolean($request1//gml:featureMember/sf:ComplexGeoFeature)">//gml:featureMember/sf:ComplexGeoFeature/gml:name = 'name-f103'</xsl:when>
                                             <xsl:otherwise>//gml:featureMembers/sf:ComplexGeoFeature/gml:name = 'name-f103'</xsl:otherwise>
                                           </xsl:choose>
                                         </xsl:variable>
