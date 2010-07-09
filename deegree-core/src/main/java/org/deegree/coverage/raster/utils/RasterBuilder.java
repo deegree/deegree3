@@ -61,9 +61,9 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.TiledRaster;
+import org.deegree.coverage.raster.container.DiskBasedTileContainer;
 import org.deegree.coverage.raster.container.GriddedBlobTileContainer;
 import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
-import org.deegree.coverage.raster.container.MemoryTileContainer;
 import org.deegree.coverage.raster.container.TileContainer;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
@@ -384,62 +384,77 @@ public class RasterBuilder implements CoverageBuilder {
      * @return a new {@link TiledRaster} or <code>null</code> if no raster files were found at the given location, with
      *         the given extension.
      */
-    private AbstractRaster buildTiledRaster( File directory, boolean recursive, RasterIOOptions options ) {
-        LOG.info( "Scanning for files in directory: {}", directory.getAbsolutePath() );
-        String extension = options.get( RasterIOOptions.OPT_FORMAT );
-        List<File> coverageFiles = FileUtils.findFilesForExtensions( directory, recursive, extension );
-        TiledRaster raster = null;
-        if ( !coverageFiles.isEmpty() ) {
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "Found following files: \n{}", coverageFiles.toString() );
-            }
-            List<AbstractRaster> rasters = new ArrayList<AbstractRaster>( coverageFiles.size() );
-            RasterIOOptions opts = new RasterIOOptions();
-            opts.copyOf( options );
-            String cacheDir = opts.get( RasterIOOptions.LOCAL_RASTER_CACHE_DIR );
-            if ( cacheDir == null ) {
-                String dir = directory.getName();
-                if ( directory.getParentFile() != null ) {
-                    dir = directory.getParentFile().getName() + "_" + directory.getName();
+    private static AbstractRaster buildTiledRaster( File directory, boolean recursive, RasterIOOptions options ) {
+        File indexFile = new File( directory, "deegree-pyramid.idx" );
+        if ( !indexFile.exists() || indexFile.lastModified() < directory.lastModified() ) {
+            LOG.info( "Scanning for files in directory: {}", directory.getAbsolutePath() );
+            String extension = options.get( RasterIOOptions.OPT_FORMAT );
+            List<File> coverageFiles = FileUtils.findFilesForExtensions( directory, recursive, extension );
+            TiledRaster raster = null;
+            if ( !coverageFiles.isEmpty() ) {
+                if ( LOG.isDebugEnabled() ) {
+                    LOG.debug( "Found following files: \n{}", coverageFiles.toString() );
                 }
-                opts.add( RasterIOOptions.LOCAL_RASTER_CACHE_DIR, dir );
-            }
-            if ( opts.get( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR ) == null ) {
-                opts.add( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR, "yes" );
-            }
-            String format = opts.get( RasterIOOptions.OPT_FORMAT );
-            boolean readSingleBlobTile = false;
-            if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format ) ) ) {
-                // the grid file structure can be defined over multiple 'bin' files, which is used in e.g the WPVS.
-                try {
-                    raster = new TiledRaster( GriddedBlobTileContainer.create( directory, opts ) );
-                    readSingleBlobTile = true;
-                } catch ( IOException e ) {
-                    LOG.debug( "Exception occurred: '{}'", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
+                RasterIOOptions opts = new RasterIOOptions();
+                opts.copyOf( options );
+                String cacheDir = opts.get( RasterIOOptions.LOCAL_RASTER_CACHE_DIR );
+                if ( cacheDir == null ) {
+                    String dir = directory.getName();
+                    if ( directory.getParentFile() != null ) {
+                        dir = directory.getParentFile().getName() + "_" + directory.getName();
+                    }
+                    opts.add( RasterIOOptions.LOCAL_RASTER_CACHE_DIR, dir );
                 }
-            }
-            if ( !readSingleBlobTile ) {
+                if ( opts.get( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR ) == null ) {
+                    opts.add( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR, "yes" );
+                }
+                String format = opts.get( RasterIOOptions.OPT_FORMAT );
+                boolean readSingleBlobTile = false;
                 if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format ) ) ) {
-                    LOG.info( "Could not instantiate a gridded raster from a single grid file, trying to create a raster from files in directory." );
+                    // the grid file structure can be defined over multiple 'bin' files, which is used in e.g the WPVS.
+                    try {
+                        raster = new TiledRaster( GriddedBlobTileContainer.create( directory, opts ) );
+                        readSingleBlobTile = true;
+                    } catch ( IOException e ) {
+                        LOG.debug( "Exception occurred: '{}'", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                    }
                 }
-                QTreeInfo inf = buildTiledRaster( coverageFiles, rasters, opts );
-                Envelope domain = inf.envelope;
+                if ( !readSingleBlobTile ) {
+                    if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format ) ) ) {
+                        LOG.info( "Could not instantiate a gridded raster from a single grid file, trying to create a raster from files in directory." );
+                    }
+                    List<AbstractRaster> rasters = new ArrayList<AbstractRaster>( coverageFiles.size() );
+                    QTreeInfo inf = buildTiledRaster( coverageFiles, rasters, opts );
+                    Envelope domain = inf.envelope;
 
-                TileContainer container;
-                if ( rasters.size() > 1000 ) {
-                    container = new IndexedMemoryTileContainer( domain, inf.rasterGeoReference, inf.numberOfObjects );
-                    ( (IndexedMemoryTileContainer) container ).addRasterTiles( rasters );
-                } else {
-                    container = new MemoryTileContainer( rasters );
+                    DiskBasedTileContainer container = new DiskBasedTileContainer( inf, coverageFiles, rasters, opts );
+                    container.export( indexFile );
+                    // if ( rasters.size() > 1000 ) {
+                    // container = new IndexedMemoryTileContainer( domain, inf.rasterGeoReference, inf.numberOfObjects
+                    // );
+                    // ( (IndexedMemoryTileContainer) container ).addRasterTiles( rasters );
+                    // } else {
+                    // container = new MemoryTileContainer( rasters );
+                    // }
+                    raster = new TiledRaster( container );
+                    raster.setCoordinateSystem( domain.getCoordinateSystem() );
                 }
-                raster = new TiledRaster( container );
-                raster.setCoordinateSystem( domain.getCoordinateSystem() );
+            } else {
+                LOG.warn( "No raster files with extension: {}, found in directory {}", extension,
+                          directory.getAbsolutePath() );
             }
-        } else {
-            LOG.warn( "No raster files with extension: {}, found in directory {}", extension,
-                      directory.getAbsolutePath() );
+            return raster;
         }
+
+        DiskBasedTileContainer container = new DiskBasedTileContainer( indexFile );
+        if ( !container.isInitialized() ) {
+            indexFile.delete();
+            return buildTiledRaster( directory, recursive, options );
+        }
+        AbstractRaster raster = new TiledRaster( container );
+        raster.setCoordinateSystem( container.getRasterReference().getCrs() );
+
         return raster;
     }
 
@@ -527,12 +542,22 @@ public class RasterBuilder implements CoverageBuilder {
         return Math.max( 3, (int) Math.ceil( leafSize / rw ) );
     }
 
-    private static class QTreeInfo {
-        Envelope envelope;
+    /**
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static class QTreeInfo {
+        /***/
+        public Envelope envelope;
 
-        RasterGeoReference rasterGeoReference;
+        /***/
+        public RasterGeoReference rasterGeoReference;
 
-        int numberOfObjects;
+        /***/
+        public int numberOfObjects;
 
         /**
          * @param envelope

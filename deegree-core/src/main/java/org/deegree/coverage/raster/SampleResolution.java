@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.deegree.coverage.raster.geom.RasterGeoReference;
@@ -49,7 +50,9 @@ import org.deegree.geometry.Envelope;
  * 
  * @version $Revision$, $Date$
  */
-public class SampleResolution {
+public class SampleResolution implements Serializable {
+
+    private static final long serialVersionUID = 8741054911757029539L;
 
     private final double[] resolutions;
 

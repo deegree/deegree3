@@ -36,6 +36,7 @@
 package org.deegree.coverage.raster.io;
 
 import java.io.File;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,11 +61,13 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class RasterIOOptions {
+public class RasterIOOptions implements Serializable {
+
+    private static final long serialVersionUID = 6804424511435114774L;
 
     private final static Logger LOG = LoggerFactory.getLogger( RasterIOOptions.class );
 
-    /** Seperator for text base files */
+    /** Separator for text base files */
     public final static String OPT_TEXT_SEPARATOR = "value_separator";
 
     /**
