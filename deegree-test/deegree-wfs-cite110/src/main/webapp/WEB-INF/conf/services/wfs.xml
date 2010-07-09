@@ -9,7 +9,7 @@
     </SupportedVersions>
     <EnableTransactions>true</EnableTransactions>
     <EnableStreaming>false</EnableStreaming>
-    <QuerySRS>urn:x-ogc:def:crs:EPSG:6.11.2:4326</QuerySRS>
+    <QuerySRS>urn:ogc:def:crs:EPSG:6.11.2:4326</QuerySRS>
     <CheckAreaOfUse>true</CheckAreaOfUse>
   </PublishedInformation>
 </deegreeWFS>

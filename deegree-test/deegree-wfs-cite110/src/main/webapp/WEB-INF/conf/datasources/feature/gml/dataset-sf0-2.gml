@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gml:FeatureCollection gml:id="f106"
-  xmlns:gml="http://www.opengis.net/gml" 
+  xmlns:gml="http://www.opengis.net/gml"
   xmlns:sf="http://cite.opengeospatial.org/gmlsf"
   xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,7 +11,7 @@
   </gml:description>
   <gml:name>CITE/WFS-1.1</gml:name>
   <gml:boundedBy>
-    <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11.2:4326">
+    <gml:Envelope srsName="urn:ogc:def:crs:EPSG:6.11.2:4326">
       <gml:lowerCorner>34.94 -10.52</gml:lowerCorner>
       <gml:upperCorner>71.96 32.19</gml:upperCorner>
     </gml:Envelope>
@@ -34,9 +34,9 @@
       <sf:dateProperty>2006-10-25Z</sf:dateProperty>
       <sf:decimalProperty>5.03</sf:decimalProperty>
     </sf:PrimitiveGeoFeature>
-  </gml:featureMember>   
-  
-  <gml:featureMember>  
+  </gml:featureMember>
+
+  <gml:featureMember>
     <sf:PrimitiveGeoFeature gml:id="f002">
       <gml:description>description-f002</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f002</gml:name>
@@ -52,9 +52,9 @@
       <sf:dateProperty>2006-10-23Z</sf:dateProperty>
       <sf:decimalProperty>4.02</sf:decimalProperty>
     </sf:PrimitiveGeoFeature>
-  </gml:featureMember>    
-    
-  <gml:featureMember> 
+  </gml:featureMember>
+
+  <gml:featureMember>
     <sf:PrimitiveGeoFeature gml:id="f003">
       <gml:description>description-f003</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f003</gml:name>
@@ -69,8 +69,8 @@
       <sf:dateProperty>2006-09-01Z</sf:dateProperty>
       <sf:decimalProperty>12.92</sf:decimalProperty>
     </sf:PrimitiveGeoFeature>
-  </gml:featureMember>    
- 
+  </gml:featureMember>
+
   <gml:featureMember>
     <sf:PrimitiveGeoFeature gml:id="f008">
       <gml:description>description-f008</gml:description>
@@ -91,9 +91,9 @@
       <sf:dateProperty>2006-12-12Z</sf:dateProperty>
       <sf:decimalProperty>18.92</sf:decimalProperty>
     </sf:PrimitiveGeoFeature>
-  </gml:featureMember>    
-  
-  <gml:featureMember>  
+  </gml:featureMember>
+
+  <gml:featureMember>
     <sf:AggregateGeoFeature gml:id="f005">
       <gml:description>description-f005</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f005</gml:name>
@@ -142,7 +142,7 @@
       <sf:strProperty>Ma quande lingues coalesce, li grammatica del resultant.</sf:strProperty>
       <sf:featureCode>GB007</sf:featureCode>
     </sf:AggregateGeoFeature>
-  </gml:featureMember>    
+  </gml:featureMember>
 
   <gml:featureMember>
     <sf:AggregateGeoFeature gml:id="f010">
@@ -190,7 +190,7 @@
     </sf:AggregateGeoFeature>
   </gml:featureMember>
 
-  <gml:featureMember>    
+  <gml:featureMember>
     <sf:EntitéGénérique gml:id="f004">
       <gml:description>description-f004</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f004</gml:name>
@@ -239,7 +239,7 @@
     </sf:EntitéGénérique>
   </gml:featureMember>
 
-  <gml:featureMember>    
+  <gml:featureMember>
     <sf:PrimitiveGeoFeature gml:id="f015">
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f015</gml:name>
       <sf:pointProperty>
@@ -253,7 +253,7 @@
     </sf:PrimitiveGeoFeature>
   </gml:featureMember>
 
-  <gml:featureMember>  
+  <gml:featureMember>
     <sf:AggregateGeoFeature gml:id="f016">
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f016</gml:name>
       <sf:multiSurfaceProperty>
@@ -281,7 +281,7 @@
     </sf:AggregateGeoFeature>
   </gml:featureMember>
 
-  <gml:featureMember>    
+  <gml:featureMember>
     <sf:EntitéGénérique gml:id="f017">
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f017</gml:name>
       <sf:attribut.Géométrie>
@@ -325,7 +325,7 @@
     </sf:PrimitiveGeoFeature>
   </gml:featureMember>
 
-  <gml:featureMember>    
+  <gml:featureMember>
     <sf:PrimitiveGeoFeature gml:id="f093">
       <gml:description>description-f093</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f093</gml:name>
@@ -358,9 +358,9 @@
       <sf:relatedFeature xlink:type="simple" xlink:href="http://vancouver1.demo.galdosinc.com/wfs/http?request=GetFeature&amp;service=WFS&amp;version=1.1.0&amp;typename=sf:PrimitiveGeoFeature#f205" />
     </sf:PrimitiveGeoFeature>
   </gml:featureMember>
-  
-  <!-- second -->  
-  <gml:featureMember>    
+
+  <!-- second -->
+  <gml:featureMember>
     <sf:ComplexGeoFeature gml:id="f101">
       <gml:description>
       Aliquam sed lorem. Nam non risus ut felis pellentesque consequat. Curabitur
@@ -411,8 +411,8 @@
         </sf:Event>
       </sf:auditTrail>
     </sf:ComplexGeoFeature>
-  </gml:featureMember>   
-  
+  </gml:featureMember>
+
   <gml:featureMember>
     <sf:ComplexGeoFeature gml:id="f102">
       <gml:description>
@@ -448,9 +448,9 @@
         </sf:Event>
       </sf:auditTrail>
     </sf:ComplexGeoFeature>
-  </gml:featureMember>   
-  
-  <gml:featureMember>    
+  </gml:featureMember>
+
+  <gml:featureMember>
     <sf:ComplexGeoFeature gml:id="f103">
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f103</gml:name>
       <sf:geometryProperty>
@@ -491,7 +491,7 @@
         </sf:Event>
       </sf:auditTrail>
     </sf:ComplexGeoFeature>
-  </gml:featureMember>   
+  </gml:featureMember>
 
   <!-- third -->
   <gml:featureMember>
@@ -500,8 +500,8 @@
       <sf:reference xlink:type="simple" xlink:href="#f091"
           xlink:role="http://cite.opengeospatial.org/gmlsf#PrimitiveGeoFeature" />
     </sf:LinkedFeature>
-  </gml:featureMember>   
-  
+  </gml:featureMember>
+
   <gml:featureMember>
     <sf:LinkedFeature gml:id="f202">
       <gml:description>description-f202</gml:description>
@@ -515,8 +515,8 @@
         </gml:Point>
       </sf:extent>
     </sf:LinkedFeature>
-  </gml:featureMember>   
-  
+  </gml:featureMember>
+
   <gml:featureMember>
     <sf:LinkedFeature gml:id="f203">
       <gml:description>description-f203</gml:description>
@@ -524,9 +524,9 @@
       <sf:reference xlink:type="simple" xlink:href="#f204"
         xlink:role="http://cite.opengeospatial.org/gmlsf#LinkedFeature" />
     </sf:LinkedFeature>
-  </gml:featureMember>   
-  
-  <gml:featureMember>    
+  </gml:featureMember>
+
+  <gml:featureMember>
     <sf:LinkedFeature gml:id="f204">
       <gml:description>description-f204</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f204</gml:name>
@@ -539,9 +539,9 @@
         </gml:MultiPoint>
       </sf:extent>
     </sf:LinkedFeature>
-  </gml:featureMember>   
-  
-  <gml:featureMember>    
+  </gml:featureMember>
+
+  <gml:featureMember>
     <sf:LinkedFeature gml:id="f205">
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f205</gml:name>
       <sf:reference xlink:type="simple" xlink:href="#f203" />
@@ -549,9 +549,9 @@
         xlink:title="Geometry reference"
         xlink:role="http://www.opengis.net/gml#Polygon" />
     </sf:LinkedFeature>
-  </gml:featureMember>   
-  
-  <gml:featureMember>    
+  </gml:featureMember>
+
+  <gml:featureMember>
     <sf:LinkedFeature gml:id="f206">
       <gml:description>description-f206</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f206</gml:name>
@@ -562,16 +562,16 @@
         </gml:Point>
       </sf:extent>
     </sf:LinkedFeature>
-  </gml:featureMember>   
-  
-  <gml:featureMember>    
+  </gml:featureMember>
+
+  <gml:featureMember>
     <sf:LinkedFeature gml:id="f207">
       <gml:description>description-f207</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f207</gml:name>
       <sf:reference xlink:type="simple" xlink:href="#f210" />
     </sf:LinkedFeature>
-  </gml:featureMember>   
-  
+  </gml:featureMember>
+
   <gml:featureMember>
     <sf:LinkedFeature gml:id="f208">
       <gml:description>description-f208</gml:description>
@@ -580,8 +580,8 @@
         xlink:title="External feature reference"
         xlink:href="ftp://vancouver1.demo.galdosinc.com/wfs/http?request=GetFeature&amp;service=WFS&amp;version=1.1.0&amp;typename=sf:LinkedFeature#f205" />
     </sf:LinkedFeature>
-  </gml:featureMember>   
-  
+  </gml:featureMember>
+
   <!-- OPTIONAL, there is a test expecting an error on not finding the reference -->
   <!-- gml:featureMember>
     <sf:LinkedFeature gml:id="f209">
@@ -589,9 +589,9 @@
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f209</gml:name>
       <sf:reference xlink:type="simple" xlink:href="#_6c566516-a435-11dc-8314-0800200c9a66" />
     </sf:LinkedFeature>
-  </gml:featureMember-->   
-  
-  <gml:featureMember>    
+  </gml:featureMember-->
+
+  <gml:featureMember>
     <sf:LinkedFeature gml:id="f210">
       <gml:description>description-f210</gml:description>
       <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f210</gml:name>
