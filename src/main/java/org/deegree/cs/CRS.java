@@ -38,6 +38,7 @@ package org.deegree.cs;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.deegree.cs.configuration.wkt.WKTParser;
@@ -63,7 +64,9 @@ import org.deegree.cs.exceptions.UnknownCRSException;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CRS {
+public class CRS implements Serializable {
+
+    private static final long serialVersionUID = -2387578425336244509L;
 
     /** The commonly used geographic 'EPSG:4326', with axis order X, Y. */
     public static final CRS EPSG_4326 = new CRS( GeographicCRS.WGS84 );
@@ -76,7 +79,7 @@ public class CRS {
     /**
      * The CoordinateSystem that is identified by the string.
      */
-    private CoordinateSystem crs;
+    private transient CoordinateSystem crs;
 
     private double[] areaOfUse;
 

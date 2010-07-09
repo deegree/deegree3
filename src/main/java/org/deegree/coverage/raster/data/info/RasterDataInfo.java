@@ -38,6 +38,7 @@
 
 package org.deegree.coverage.raster.data.info;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -49,7 +50,9 @@ import java.util.Arrays;
  * @version $Revision$, $Date$
  * 
  */
-public class RasterDataInfo {
+public class RasterDataInfo implements Serializable {
+
+    private static final long serialVersionUID = 3829209281584640476L;
 
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RasterDataInfo.class );
 
@@ -71,7 +74,7 @@ public class RasterDataInfo {
     /** The byte size of a single band unit */
     public final int dataSize;
 
-    private final ByteBuffer noDataWrapper;
+    private transient ByteBuffer noDataWrapper;
 
     /**
      * 
@@ -245,6 +248,9 @@ public class RasterDataInfo {
      * @return the no data value for the given band.
      */
     public short getShortNoDataForBand( int band ) {
+        if ( noDataWrapper == null ) {
+            noDataWrapper = ByteBuffer.wrap( noDataPixel );
+        }
         short result = 0;
         if ( band < this.bands && ( this.dataType == DataType.SHORT || this.dataType == DataType.USHORT ) ) {
             result = noDataWrapper.getShort( band * dataSize );
@@ -264,6 +270,9 @@ public class RasterDataInfo {
      * @return the no data value for the given band.
      */
     public int getIntNoDataForBand( int band ) {
+        if ( noDataWrapper == null ) {
+            noDataWrapper = ByteBuffer.wrap( noDataPixel );
+        }
         int result = 0;
         if ( band < this.bands && this.dataType == DataType.INT ) {
             result = noDataWrapper.getInt( band * dataSize );
@@ -280,6 +289,9 @@ public class RasterDataInfo {
      * @return the no data value for the given band.
      */
     public float getFloatNoDataForBand( int band ) {
+        if ( noDataWrapper == null ) {
+            noDataWrapper = ByteBuffer.wrap( noDataPixel );
+        }
         float result = 0;
         if ( band < this.bands && this.dataType == DataType.FLOAT ) {
             result = noDataWrapper.getFloat( band * dataSize );
@@ -296,6 +308,9 @@ public class RasterDataInfo {
      * @return the no data value for the given band.
      */
     public double getDoubleNoDataForBand( int band ) {
+        if ( noDataWrapper == null ) {
+            noDataWrapper = ByteBuffer.wrap( noDataPixel );
+        }
         double result = 0;
         if ( band < this.bands && this.dataType == DataType.DOUBLE ) {
             result = noDataWrapper.getDouble( band * dataSize );

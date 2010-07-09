@@ -80,6 +80,8 @@ import org.deegree.rendering.r2d.strokes.TextStroke;
  */
 public class GeometryUtils {
 
+    private static GeometryFactory fac = new GeometryFactory();
+
     /**
      * @param env
      * @return a polygon
@@ -322,6 +324,22 @@ public class GeometryUtils {
             envelope[index] = (float) env[2];
         }
         return envelope;
+    }
+
+    /**
+     * @param env
+     * @param crs
+     * @return reverse of the other createEnvelope method
+     */
+    public static final Envelope createEnvelope( float[] env, CRS crs ) {
+        if ( env.length == 4 ) {
+            return fac.createEnvelope( env[0], env[1], env[2], env[3], crs );
+        }
+        if ( env.length == 6 ) {
+            return fac.createEnvelope( new double[] { env[0], env[1], env[2] },
+                                       new double[] { env[3], env[4], env[5] }, crs );
+        }
+        throw new IllegalArgumentException( "The envelope must be 2 or 3 dimensional." );
     }
 
 }

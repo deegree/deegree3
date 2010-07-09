@@ -37,6 +37,7 @@ package org.deegree.coverage;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +52,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class ResolutionInfo {
+public class ResolutionInfo implements Serializable {
+
+    private static final long serialVersionUID = 3626345247575846857L;
 
     private static final Logger LOG = getLogger( ResolutionInfo.class );
 
