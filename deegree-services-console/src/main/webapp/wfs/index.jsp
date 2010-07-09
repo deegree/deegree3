@@ -49,7 +49,7 @@
         if (ft.isAbstract()) {
             out.println (indent + "- <i>" + ft.getName().getLocalPart() + " (abstract)</i><br/>");        
         } else {
-            Query query = new Query( ft.getName(), null, null, 0, -1);
+            Query query = new Query( ft.getName(), null, null, 0, -1, -1 );
             int numInstances = -1;
             try {
                 numInstances = store.queryHits(query);
