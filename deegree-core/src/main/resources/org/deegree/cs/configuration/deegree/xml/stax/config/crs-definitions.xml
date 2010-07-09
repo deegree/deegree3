@@ -8980,7 +8980,7 @@
     <crs:GeographicCRS>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4326</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg:4326</crs:Id>
-      <crs:Id>urn:ogc:def:crs:epsg::4326</crs:Id>    
+      <crs:Id>urn:ogc:def:crs:epsg::4326</crs:Id>
       <crs:Id>urn:opengis:def:crs:epsg::4326</crs:Id>
       <crs:Id>urn:x-ogc:def:crs:epsg:4326</crs:Id>
       <crs:Id>urn:x-ogc:def:crs:epsg:6.11.2:4326</crs:Id>
@@ -66089,6 +66089,7 @@
       <crs:Id>urn:ogc:def:crs:epsg::32629</crs:Id>
       <crs:Id>urn:opengis:def:crs:epsg::32629</crs:Id>
       <crs:Id>urn:x-ogc:def:crs:epsg:6.11:32629</crs:Id>
+      <crs:Id>urn:ogc:def:crs:EPSG:6.11:32629</crs:Id>
       <crs:Name>WGS 84 / UTM zone 29N</crs:Name>
       <crs:Version>2008-1-16T9:49</crs:Version>
       <crs:AreaOfUse>-12.0,0.0,-6.0,84.0</crs:AreaOfUse>
