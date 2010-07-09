@@ -130,10 +130,11 @@ public class DiskBasedTileContainer implements TileContainer {
             qtree = (QTree<File>) in.readObject();
             envelope = createEnvelope( (float[]) in.readObject(), null );
             rasterDataInfo = (RasterDataInfo) in.readObject();
-            
-            rasterGeoReference = new RasterGeoReference((OriginLocation)in.readObject(), in.readDouble(), in.readDouble(), in.readDouble(), in.readDouble(), in.readDouble(), in.readDouble(), (CRS)in.readObject());
-            
-//            rasterGeoReference = (RasterGeoReference) in.readObject();
+
+            rasterGeoReference = new RasterGeoReference( (OriginLocation) in.readObject(), in.readDouble(),
+                                                         in.readDouble(), in.readDouble(), in.readDouble(),
+                                                         in.readDouble(), in.readDouble(), (CRS) in.readObject() );
+
             envelope.setCoordinateSystem( rasterGeoReference.getCrs() );
             resolutionInfo = (ResolutionInfo) in.readObject();
             options = (RasterIOOptions) in.readObject();
@@ -217,17 +218,14 @@ public class DiskBasedTileContainer implements TileContainer {
             out.writeObject( qtree );
             out.writeObject( createEnvelope( envelope ) );
             out.writeObject( rasterDataInfo );
-//            out.writeObject( rasterGeoReference );
-//            OriginLocation location, double resolutionX, double resolutionY, double rotationX,
-//            double rotationY, double origin0, double origin1, CRS crs
-            out.writeObject(rasterGeoReference.getOriginLocation());
-            out.writeDouble(rasterGeoReference.getResolutionX());
-            out.writeDouble(rasterGeoReference.getResolutionY());
-            out.writeDouble(rasterGeoReference.getRotationX());
-            out.writeDouble(rasterGeoReference.getRotationY());
-            out.writeDouble(rasterGeoReference.getOriginEasting());
-            out.writeDouble(rasterGeoReference.getOriginNorthing());
-            out.writeObject(rasterGeoReference.getCrs());
+            out.writeObject( rasterGeoReference.getOriginLocation() );
+            out.writeDouble( rasterGeoReference.getResolutionX() );
+            out.writeDouble( rasterGeoReference.getResolutionY() );
+            out.writeDouble( rasterGeoReference.getRotationX() );
+            out.writeDouble( rasterGeoReference.getRotationY() );
+            out.writeDouble( rasterGeoReference.getOriginEasting() );
+            out.writeDouble( rasterGeoReference.getOriginNorthing() );
+            out.writeObject( rasterGeoReference.getCrs() );
             out.writeObject( resolutionInfo );
             out.writeObject( options );
             LOG.debug( "Done." );
