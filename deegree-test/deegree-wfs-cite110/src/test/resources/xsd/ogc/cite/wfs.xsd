@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
-<xsd:schema xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sf="http://cite.opengeospatial.org/gmlsf" targetNamespace="http://www.opengis.net/wfs" elementFormDefault="qualified" version="1.1.0">
+<xsd:schema xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.opengis.net/wfs" elementFormDefault="qualified" version="1.1.0">
 	<!-- ==============================================================
         Includes and Imports
         ============================================================== -->
-	<!--<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="./gmlsf2.xsd"/>
-	<xsd:import namespace="http://cite.opengeospatial.org/gmlsf" schemaLocation="./cite-gmlsf2.xsd"/>
-	<xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="../filter/1.1.0/filter-1.1.0.xsd"/>
-	<xsd:import namespace="http://www.opengis.net/ows" schemaLocation="../ows/1.0.0/ows-1.0.0.xsd"/>-->
+	<!--<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="../../gml/3.1.1/base/gml-3.1.1.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="../../filter/1.1.0/filter-1.1.0.xsd"/>
+	<xsd:import namespace="http://www.opengis.net/ows" schemaLocation="../../ows/1.0.0/ows-1.0.0.xsd"/>-->
 	<xsd:import namespace="http://www.opengis.net/gml"/>
-	<xsd:import namespace="http://cite.opengeospatial.org/gmlsf"/>
 	<xsd:import namespace="http://www.opengis.net/ogc"/>
-	<xsd:import namespace="http://www.opengis.net/ows"/>
+	<xsd:import namespace="http://www.opengis.net/ows"/>	
 	<!-- ================================================================== -->
 	<!-- =   BASE REQUEST TYPE                                            = -->
 	<!-- ================================================================== -->
@@ -1618,7 +1616,7 @@
                </xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="InsertResults" type="wfs:InsertResultsType">
+			<xsd:element name="InsertResults" type="wfs:InsertResultsType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">
                   A transaction is a collection of Insert,Update and Delete
