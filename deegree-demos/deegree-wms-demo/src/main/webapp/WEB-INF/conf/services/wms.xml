@@ -74,11 +74,11 @@
           <Name>Roads</Name>
           <Title>Roads of Utah</Title>
           <FeatureStoreId>utah_roads</FeatureStoreId>
-          <DirectStyle>
+        <!--  <DirectStyle>
             <File>../styles/utah_roads.se</File>
-          </DirectStyle>
-          <SupportedFeatures>
-            <MaxFeatures>50000</MaxFeatures>
+          </DirectStyle>-->
+         <SupportedFeatures>
+            <MaxFeatures>10000000</MaxFeatures>
           </SupportedFeatures>
         </RequestableLayer>
         <RequestableLayer>
@@ -105,14 +105,36 @@
         <RequestableLayer>
           <Name>ElevationContours</Name>
           <Title>Elevationcontours in Utah</Title>
-          <FeatureStoreId>utah_contours500ft</FeatureStoreId>
-          <SLDStyle>
-            <File>../styles/utah_contours.sld</File>
-            <NamedLayer>ElevationContours</NamedLayer>
-            <Name>ElevationContours</Name>
-            <UserStyle>default:ElevationContours</UserStyle>
-            <UserStyle>ElevationContoursSimple</UserStyle>
-          </SLDStyle>
+          <LogicalLayer>
+            <FeatureStoreId>utah_contours500ft</FeatureStoreId>
+            <SLDStyle>
+              <File>../styles/utah_contours.sld</File>
+              <NamedLayer>ElevationContours</NamedLayer>
+              <Name>ElevationContours</Name>
+              <UserStyle>default:ElevationContours</UserStyle>
+              <UserStyle>ElevationContoursSimple</UserStyle>
+            </SLDStyle>
+          </LogicalLayer>
+          <LogicalLayer>
+            <FeatureStoreId>utah_contours1000ft</FeatureStoreId>
+            <SLDStyle>
+              <File>../styles/utah_contours.sld</File>
+              <NamedLayer>ElevationContours</NamedLayer>
+              <Name>ElevationContours</Name>
+              <UserStyle>default:ElevationContours</UserStyle>
+              <UserStyle>ElevationContoursSimple</UserStyle>
+            </SLDStyle>
+          </LogicalLayer>
+          <LogicalLayer>
+            <FeatureStoreId>utah_contours2500ft</FeatureStoreId>
+            <SLDStyle>
+              <File>../styles/utah_contours.sld</File>
+              <NamedLayer>ElevationContours</NamedLayer>
+              <Name>ElevationContours</Name>
+              <UserStyle>default:ElevationContours</UserStyle>
+              <UserStyle>ElevationContoursSimple</UserStyle>
+            </SLDStyle>
+          </LogicalLayer>
         </RequestableLayer>
       </RequestableLayer>
 
@@ -120,19 +142,19 @@
         <Name>Hydrology</Name>
         <Title>Hydrology of Utah</Title>
         <RequestableLayer>
-          <Name>Springs</Name>
-          <Title>Springs in Utah</Title>
-          <FeatureStoreId>utah_springs</FeatureStoreId>
-          <DirectStyle>
-            <File>../styles/utah_springs.se</File>
-          </DirectStyle>
-        </RequestableLayer>
-        <RequestableLayer>
           <Name>Rivers</Name>
           <Title>Rivers in Utah County</Title>
           <FeatureStoreId>utah_rivers</FeatureStoreId>
           <DirectStyle>
             <File>../styles/utah_rivers.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>GroundWater</Name>
+          <Title>Groundwater in Utah County</Title>
+          <FeatureStoreId>utah_groundwater</FeatureStoreId>
+          <DirectStyle>
+            <File>../styles/utah_groundwater.se</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -144,11 +166,11 @@
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
-          <Name>GroundWater</Name>
-          <Title>Groundwater in Utah County</Title>
-          <FeatureStoreId>utah_groundwater</FeatureStoreId>
+          <Name>Springs</Name>
+          <Title>Springs in Utah</Title>
+          <FeatureStoreId>utah_springs</FeatureStoreId>
           <DirectStyle>
-            <File>../styles/utah_groundwater.se</File>
+            <File>../styles/utah_springs.se</File>
           </DirectStyle>
         </RequestableLayer>
       </RequestableLayer>
