@@ -2,5 +2,8 @@
 <Raster configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/coverage/raster" crs="EPSG:26912"
   originLocation="outer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/0.5.0/coverage/raster.xsd">
+  <!-- This datasource configuration shows, how defining a RasterDirectory as datasource for deegree WMS works.
+       You have to look up for the crs in the root element and for the fileType attribute
+       in the RasterDirectory element similar to the configuration of a single RasterFile. -->
   <RasterDirectory fileType="tiff">../../../data/utah/raster/Satellite_Provo/</RasterDirectory>
 </Raster>
