@@ -36162,6 +36162,7 @@
       <crs:Id>urn:ogc:def:crs:epsg::32631</crs:Id>
       <crs:Id>urn:opengis:def:crs:epsg::32631</crs:Id>
       <crs:Id>urn:x-ogc:def:crs:epsg:6.11:32631</crs:Id>
+      <crs:Id>urn:ogc:def:crs:EPSG:6.11:32631</crs:Id>
       <crs:Name>WGS 84 / UTM zone 31N</crs:Name>
       <crs:Version>2008-1-16T9:49</crs:Version>
       <crs:AreaOfUse>0.0,0.0,6.0,84.0</crs:AreaOfUse>
