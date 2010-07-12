@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link PostGISMapping} for the {@link PostGISFeatureStore}.
+ * {@link PostGISMapping} for the {@link PostGISFeatureStore} thats base on {@link FeatureTypeMapping} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -74,25 +74,11 @@ class PostGISFeatureMapping implements PostGISMapping {
     public PropertyNameMapping getMapping( PropertyName propName )
                             throws FilterEvaluationException {
 
-//        Pair<PropertyType, PropertyMappingType> mapping = findMapping( propName );
-//        if ( mapping == null ) {
-//            return null;
-//        }
-//
-//        PropertyMappingType ptMapping = mapping.second;
-//        String dbColumn = null;
-//        if ( ptMapping instanceof GeometryPropertyMappingType ) {
-//            GeometryPropertyMappingType geomPropMapping = (GeometryPropertyMappingType) ptMapping;
-//            dbColumn = geomPropMapping.getGeometryDBColumn().getName();
-//        } else if ( ptMapping instanceof SimplePropertyMappingType ) {
-//            SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) ptMapping;
-//            dbColumn = simplePropMapping.getDBColumn().getName();
-//        } else {
-//            // not implemented yet
-//            return null;
-//        }
-//        return new PropertyNameMapping( "x2", dbColumn );
-        return null;
+        String dbColumn = ftMapping.getColumn( propName.getAsQName() );
+        if ( dbColumn == null ) {
+            return null;
+        }
+        return new PropertyNameMapping( "X1", dbColumn );
     }
 
     @Override
@@ -101,25 +87,25 @@ class PostGISFeatureMapping implements PostGISMapping {
 
         Object pgValue = null;
 
-//        if ( propName == null ) {
-//            pgValue = literal.getValue().toString();
-//        } else {
-//            Pair<PropertyType, PropertyMappingType> mapping = findMapping( propName );
-//            if ( mapping == null || mapping.second == null ) {
-//                pgValue = literal.getValue().toString();
-//            } else {
-//                // TODO implement properly
-//                PropertyType pt = mapping.first;
-//                if ( pt instanceof SimplePropertyType ) {
-//                    Object internalValue = XMLValueMangler.xmlToInternal(
-//                                                                          literal.getValue().toString(),
-//                                                                          ( (SimplePropertyType) pt ).getPrimitiveType() );
-//                    pgValue = SQLValueMangler.internalToSQL( internalValue );
-//                } else {
-//                    pgValue = literal.getValue().toString();
-//                }
-//            }
-//        }
+        // if ( propName == null ) {
+        // pgValue = literal.getValue().toString();
+        // } else {
+        // Pair<PropertyType, PropertyMappingType> mapping = findMapping( propName );
+        // if ( mapping == null || mapping.second == null ) {
+        // pgValue = literal.getValue().toString();
+        // } else {
+        // // TODO implement properly
+        // PropertyType pt = mapping.first;
+        // if ( pt instanceof SimplePropertyType ) {
+        // Object internalValue = XMLValueMangler.xmlToInternal(
+        // literal.getValue().toString(),
+        // ( (SimplePropertyType) pt ).getPrimitiveType() );
+        // pgValue = SQLValueMangler.internalToSQL( internalValue );
+        // } else {
+        // pgValue = literal.getValue().toString();
+        // }
+        // }
+        // }
 
         return pgValue;
     }
@@ -129,18 +115,19 @@ class PostGISFeatureMapping implements PostGISMapping {
                             throws FilterEvaluationException {
 
         byte[] pgValue = null;
-//        Pair<PropertyType, PropertyMappingType> mapping = findMapping( propName );
-//        if ( mapping.first == null || !( mapping.first instanceof GeometryPropertyType ) ) {
-//            throw new FilterEvaluationException( "Property '" + propName + "' is not known or not a geometry property." );
-//        }
-//
-//        // TODO srs conversion?
-//        GeometryPropertyType pt = (GeometryPropertyType) mapping.first;
-//        try {
-//            pgValue = WKBWriter.write( fs.getCompatibleGeometry( literal ) );
-//        } catch ( ParseException e ) {
-//            throw new FilterEvaluationException( e.getMessage() );
-//        }
+        // Pair<PropertyType, PropertyMappingType> mapping = findMapping( propName );
+        // if ( mapping.first == null || !( mapping.first instanceof GeometryPropertyType ) ) {
+        // throw new FilterEvaluationException( "Property '" + propName + "' is not known or not a geometry property."
+        // );
+        // }
+        //
+        // // TODO srs conversion?
+        // GeometryPropertyType pt = (GeometryPropertyType) mapping.first;
+        // try {
+        // pgValue = WKBWriter.write( fs.getCompatibleGeometry( literal ) );
+        // } catch ( ParseException e ) {
+        // throw new FilterEvaluationException( e.getMessage() );
+        // }
         return pgValue;
     }
 

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
+import static org.deegree.feature.persistence.mapping.FeatureTypeMapping.MappingType.RELATIONAL;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +54,17 @@ import org.deegree.feature.types.FeatureType;
  */
 public class FeatureTypeMapping {
 
+    public enum MappingType {
+        /** Each property of a feature is decomposed to an individual table column or a property table. */
+        RELATIONAL,
+        /** Each feature is stored as a BLOB */
+        BLOB,
+        /** Feature type use BLOB and (partial) RELATIONAL mapping. */
+        DUAL
+    }
+
+    private MappingType type;
+
     private QName ftName;
 
     private String table;
@@ -65,12 +78,19 @@ public class FeatureTypeMapping {
     // TODO: enable more mapping possibilities (e.g. app:Country/gmlName[1]/text()='Blabla')
     private Map<QName, String> propToColumn = new HashMap<QName, String>();
 
-    public FeatureTypeMapping (QName ftName, String table, String fidColumn, Map<QName,String> propToColumn, String backendSrs) {
+    public FeatureTypeMapping( QName ftName, String table, String fidColumn, Map<QName, String> propToColumn,
+                               String backendSrs ) {
         this.ftName = ftName;
         this.table = table;
         this.fidColumn = fidColumn;
         this.propToColumn = propToColumn;
         this.backendSrs = backendSrs;
+        // TODO make this configurable
+        this.type = RELATIONAL;
+    }
+
+    public MappingType getMappingType() {
+        return type;
     }
     
     /**
@@ -87,14 +107,15 @@ public class FeatureTypeMapping {
      * 
      * @return the name of the table, may be <code>null</code> (for BLOB-only mappings)
      */
-    public String getTable() {
+    public String getFtTable() {
         return table;
     }
 
     /**
      * Returns the names of the column that stores the id of the feature.
      * 
-     * @return the names of the columns that stores the id of the feature, may be <code>null</code> (for BLOB-only mappings)
+     * @return the names of the columns that stores the id of the feature, may be <code>null</code> (for BLOB-only
+     *         mappings)
      */
     public String getFidColumn() {
         return fidColumn;
@@ -110,8 +131,8 @@ public class FeatureTypeMapping {
     public String getColumn( QName propName ) {
         return propToColumn.get( propName );
     }
-    
-    public String getBackendSrs () {
+
+    public String getBackendSrs() {
         return backendSrs;
     }
 }

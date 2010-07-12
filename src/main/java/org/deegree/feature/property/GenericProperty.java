@@ -61,7 +61,7 @@ public class GenericProperty implements Property {
     private boolean nilled;
 
     /**
-     * Creates a new {@link GenericProperty} instance that is of type {@link SimplePropertyType}.
+     * Creates a new {@link GenericProperty} instance.
      * 
      * @param declaration
      *            type information
@@ -73,7 +73,7 @@ public class GenericProperty implements Property {
     }
 
     /**
-     * Creates a new {@link GenericProperty} instance that is of type {@link SimplePropertyType}.
+     * Creates a new {@link GenericProperty} instance.
      * 
      * @param declaration
      *            type information
@@ -103,7 +103,7 @@ public class GenericProperty implements Property {
     }
 
     /**
-     * Creates a new {@link GenericProperty} instance that is of type {@link SimplePropertyType}.
+     * Creates a new {@link GenericProperty} instance.
      * 
      * @param declaration
      *            type information

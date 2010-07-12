@@ -9,4 +9,9 @@
     <SimpleProperty name="app:name" minOccurs="0" type="string" />
     <GeometryProperty name="app:geom" minOccurs="0" type="Geometry" srid="4326"/>
   </FeatureType>
+  <!-- GlobalMapping>
+    <FeatureTypesTable>feature_types</FeatureTypesTable>  
+    <GMLObjectTable>gml_objects</GMLObjectTable>
+    <GMLNamesTable>gml_names</GMLNamesTable>
+  </GlobalMapping-->
 </PostGISFeatureStore>
