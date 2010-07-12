@@ -83,22 +83,22 @@ public class PostGISFeatureStoreTest {
     public void testInstantiation()
                             throws FeatureStoreException {
 
-        ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
-                                         "deegreetest", "deegreetest", 1, 10 );
-
-        URL configURL = this.getClass().getResource( "philosopher.xml" );
-        PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
-        fs.init();
-
-        ApplicationSchema schema = fs.getSchema();
-        Assert.assertEquals( 1, schema.getFeatureTypes().length );
-
-        FeatureType ft = schema.getFeatureTypes()[0];
-        System.out.println( ft );
-
-        QName countryName = QName.valueOf( "{http://www.deegree.org/app}Country" );
-        Envelope env = fs.getEnvelope( countryName );
-        System.out.println( env );
+//        ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
+//                                         "deegreetest", "deegreetest", 1, 10 );
+//
+//        URL configURL = this.getClass().getResource( "philosopher.xml" );
+//        PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+//        fs.init();
+//
+//        ApplicationSchema schema = fs.getSchema();
+//        Assert.assertEquals( 1, schema.getFeatureTypes().length );
+//
+//        FeatureType ft = schema.getFeatureTypes()[0];
+//        System.out.println( ft );
+//
+//        QName countryName = QName.valueOf( "{http://www.deegree.org/app}Country" );
+//        Envelope env = fs.getEnvelope( countryName );
+//        System.out.println( env );
     }
 
     @Test
@@ -106,34 +106,34 @@ public class PostGISFeatureStoreTest {
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
                             FactoryConfigurationError, UnknownCRSException, TransformationException {
 
-        ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
-                                         "deegreetest", "deegreetest", 1, 10 );
-
-        URL configURL = this.getClass().getResource( "philosopher.xml" );
-        PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
-        fs.init();
-
-        ApplicationSchema schema = fs.getSchema();
-        Assert.assertEquals( 1, schema.getFeatureTypes().length );
-
-        FeatureType ft = schema.getFeatureTypes()[0];
-        System.out.println( ft );
-
-        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Country" ),
-                                                              null ) };
-        Query query = new Query( typeNames, null, null, null, null );
-        FeatureResultSet rs = fs.query( query );
-        try {
-            FeatureCollection fc = rs.toCollection();
-            XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
-                                                                       XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                             System.out ) );
-            GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
-            gmlStream.write( fc );
-            gmlStream.close();
-        } finally {
-            rs.close();
-        }
+//        ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
+//                                         "deegreetest", "deegreetest", 1, 10 );
+//
+//        URL configURL = this.getClass().getResource( "philosopher.xml" );
+//        PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+//        fs.init();
+//
+//        ApplicationSchema schema = fs.getSchema();
+//        Assert.assertEquals( 1, schema.getFeatureTypes().length );
+//
+//        FeatureType ft = schema.getFeatureTypes()[0];
+//        System.out.println( ft );
+//
+//        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Country" ),
+//                                                              null ) };
+//        Query query = new Query( typeNames, null, null, null, null );
+//        FeatureResultSet rs = fs.query( query );
+//        try {
+//            FeatureCollection fc = rs.toCollection();
+//            XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
+//                                                                       XMLOutputFactory.newInstance().createXMLStreamWriter(
+//                                                                                                                             System.out ) );
+//            GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
+//            gmlStream.write( fc );
+//            gmlStream.close();
+//        } finally {
+//            rs.close();
+//        }
     }
 
     @Test
@@ -141,38 +141,38 @@ public class PostGISFeatureStoreTest {
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
                             FactoryConfigurationError, UnknownCRSException, TransformationException {
 
-        ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
-                                         "deegreetest", "deegreetest", 1, 10 );
-
-        URL configURL = this.getClass().getResource( "philosopher.xml" );
-        PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
-        fs.init();
-
-        ApplicationSchema schema = fs.getSchema();
-        Assert.assertEquals( 1, schema.getFeatureTypes().length );
-
-        FeatureType ft = schema.getFeatureTypes()[0];
-        System.out.println( ft );
-
-        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Country" ),
-                                                              null ) };
-        PropertyName propName = new PropertyName( QName.valueOf( "{http://www.deegree.org/app}name" ) );
-        Literal literal = new Literal( "United Kingdom" );
-
-        PropertyIsEqualTo propIsEqualTo = new PropertyIsEqualTo( propName, literal, false );
-        Filter filter = new OperatorFilter( propIsEqualTo );
-        Query query = new Query( typeNames, filter, null, null, null );
-        FeatureResultSet rs = fs.query( query );
-        try {
-            FeatureCollection fc = rs.toCollection();
-            XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
-                                                                       XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                             System.out ) );
-            GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
-            gmlStream.write( fc );
-            gmlStream.close();
-        } finally {
-            rs.close();
-        }
+//        ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
+//                                         "deegreetest", "deegreetest", 1, 10 );
+//
+//        URL configURL = this.getClass().getResource( "philosopher.xml" );
+//        PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+//        fs.init();
+//
+//        ApplicationSchema schema = fs.getSchema();
+//        Assert.assertEquals( 1, schema.getFeatureTypes().length );
+//
+//        FeatureType ft = schema.getFeatureTypes()[0];
+//        System.out.println( ft );
+//
+//        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Country" ),
+//                                                              null ) };
+//        PropertyName propName = new PropertyName( QName.valueOf( "{http://www.deegree.org/app}name" ) );
+//        Literal literal = new Literal( "United Kingdom" );
+//
+//        PropertyIsEqualTo propIsEqualTo = new PropertyIsEqualTo( propName, literal, false );
+//        Filter filter = new OperatorFilter( propIsEqualTo );
+//        Query query = new Query( typeNames, filter, null, null, null );
+//        FeatureResultSet rs = fs.query( query );
+//        try {
+//            FeatureCollection fc = rs.toCollection();
+//            XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
+//                                                                       XMLOutputFactory.newInstance().createXMLStreamWriter(
+//                                                                                                                             System.out ) );
+//            GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
+//            gmlStream.write( fc );
+//            gmlStream.close();
+//        } finally {
+//            rs.close();
+//        }
     }
 }
