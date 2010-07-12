@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -124,9 +123,9 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public void commit()
                             throws FeatureStoreException {
+
         LOG.debug( "Committing transaction." );
         try {
-            persistEnvelopes();
             conn.commit();
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
@@ -134,18 +133,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new FeatureStoreException( "Unable to commit SQL transaction: " + e.getMessage() );
         } finally {
             store.releaseTransaction( this );
-        }
-    }
-
-    public void prepareCommit()
-                            throws FeatureStoreException {
-        LOG.debug( "Preparing commit of transaction." );
-        try {
-            persistEnvelopes();
-        } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            LOG.debug( e.getMessage(), e.getNextException() );
-            throw new FeatureStoreException( "Unable to prepare commit of SQL transaction: " + e.getMessage() );
         }
     }
 
@@ -344,22 +331,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         // stmt.addBatch();
         stmt.execute();
 
-        Envelope env = feature.getEnvelope();
-        if ( env != null ) {
-            try {
-                env = (Envelope) ftBBoxTransformer.transform( env );
-                Envelope ftEnv = store.ftNameToBBox.get( feature.getName() );
-                if ( ftEnv != null ) {
-                    ftEnv = ftEnv.merge( env );
-                } else {
-                    ftEnv = env;
-                }
-                store.setEnvelope( feature.getType(), ftEnv );
-            } catch ( Exception e ) {
-                throw new SQLException( e.getMessage(), e );
-            }
-        }
-
         int internalId = -1;
         PreparedStatement idSelect = null;
         ResultSet rs = null;
@@ -392,7 +363,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         } catch ( FilterEvaluationException e ) {
             throw new SQLException( e.getMessage(), e );
         }
-        String tableName = ftMapping.getTable();
+        String tableName = ftMapping.getFtTable();
 
         // build SQL string
         StringBuilder sql = new StringBuilder( "INSERT INTO " + store.qualifyTableName( tableName ) + "(id" );
@@ -509,25 +480,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             geometries.add( geometry );
             if ( geometry.getId() != null ) {
                 gids.add( geometry.getId() );
-            }
-        }
-    }
-
-    private void persistEnvelopes()
-                            throws SQLException {
-
-        PreparedStatement stmt = null;
-        try {
-            stmt = conn.prepareStatement( "UPDATE " + store.qualifyTableName( "feature_types" )
-                                          + " SET wgs84bbox=? WHERE id=?" );
-            for ( Map.Entry<QName, Envelope> ftBbox : store.ftNameToBBox.entrySet() ) {
-                stmt.setObject( 1, store.toPGPolygon( ftBbox.getValue(), 4326 ) );
-                stmt.setShort( 2, store.getFtId( ftBbox.getKey() ) );
-                stmt.executeUpdate();
-            }
-        } finally {
-            if ( stmt != null ) {
-                stmt.close();
             }
         }
     }

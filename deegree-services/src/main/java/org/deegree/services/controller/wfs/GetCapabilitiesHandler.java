@@ -60,6 +60,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.xml.FilterCapabilitiesExporter;
 import org.deegree.geometry.Envelope;
@@ -277,7 +278,12 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             exportOperations100();
 
             // wfs:LatLongBoundingBox (minOccurs=0, maxOccurs=unbounded)
-            Envelope env = fs.getEnvelope( ftName );
+            Envelope env = null;
+            try {
+                env = fs.getEnvelope( ftName );
+            } catch ( FeatureStoreException e ) {
+                LOG.error( "Error retrieving envelope from FeatureStore: " + e.getMessage(), e );
+            }
             if ( env != null ) {
                 try {
                     env = (Envelope) transformer.transform( env );
@@ -570,7 +576,12 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writeOutputFormats110( writer );
 
                 // ows:WGS84BoundingBox (minOccurs=0, maxOccurs=unbounded)
-                Envelope env = fs.getEnvelope( ftName );
+                Envelope env = null;
+                try {
+                    env = fs.getEnvelope( ftName );
+                } catch ( FeatureStoreException e ) {
+                    LOG.error( "Error retrieving envelope from FeatureStore: " + e.getMessage(), e );
+                }
                 if ( env != null ) {
                     try {
                         env = (Envelope) transformer.transform( env );

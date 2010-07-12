@@ -208,7 +208,7 @@ public class OracleFeatureStore implements FeatureStore {
             Statement stmt = null;
             try {
                 conn = ConnectionManager.getConnection( connId );
-                String table = ftMapping.getTable();
+                String table = ftMapping.getFtTable();
                 GeometryPropertyType geomPt = ft.getDefaultGeometryPropertyDeclaration();
                 if ( geomPt != null ) {
                     String geomColumn = ftMapping.getColumn( geomPt.getName() );
@@ -365,7 +365,7 @@ public class OracleFeatureStore implements FeatureStore {
             }
 
             sql.append( " FROM " );
-            sql.append( ftMapping.getTable() );
+            sql.append( ftMapping.getFtTable() );
             sql.append( " X1" );
 
             if ( where != null ) {

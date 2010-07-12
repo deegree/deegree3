@@ -148,7 +148,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
         PreparedStatement stmt = null;
         try {
             StringBuilder sql = new StringBuilder( "DELETE FROM " );
-            sql.append( ftMapping.getTable() );
+            sql.append( ftMapping.getFtTable() );
             sql.append( " WHERE " );
             sql.append( ftMapping.getFidColumn() );
             sql.append( " IN(?" );
@@ -203,7 +203,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
         String fid = determineNewFid( mode, f.getId(), ftMapping );
 
         StringBuilder sql = new StringBuilder( "INSERT INTO " );
-        sql.append( ftMapping.getTable() );
+        sql.append( ftMapping.getFtTable() );
         sql.append( " (" );
         sql.append( ftMapping.getFidColumn() );
         StringBuffer qMarks = new StringBuffer( "?" );
@@ -268,7 +268,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
             ResultSet rs = null;
             try {
                 stmt = conn.prepareStatement( "SELECT MAX(" + ftMapping.getFidColumn() + ") + 1 FROM "
-                                              + ftMapping.getTable() );
+                                              + ftMapping.getFtTable() );
                 rs = stmt.executeQuery();
                 rs.next();
                 String prefix = ftMapping.getFeatureType().getLocalPart().toUpperCase();
@@ -377,7 +377,7 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
             OracleConnection oraConn = (OracleConnection) ( (DelegatingConnection) conn ).getInnermostDelegate();
 
             StringBuilder sql = new StringBuilder( "UPDATE " );
-            sql.append( ftMapping.getTable() );
+            sql.append( ftMapping.getFtTable() );
             sql.append( " SET " );
             boolean first = true;
             for ( Property replacementProp : replacementProps ) {

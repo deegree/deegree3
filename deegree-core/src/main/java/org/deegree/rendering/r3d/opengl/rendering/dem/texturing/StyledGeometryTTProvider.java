@@ -134,9 +134,10 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
      * @param cacheSize
      *            size of the cache in bytes.
      * @throws IOException
+     * @throws FeatureStoreException 
      */
     public StyledGeometryTTProvider( double[] offsetVector, CRS wpvsCRS, FeatureStore featureStore, Style style,
-                                     double maxUnitsPerPixel, File cacheDir, long cacheSize ) throws IOException {
+                                     double maxUnitsPerPixel, File cacheDir, long cacheSize ) throws IOException, FeatureStoreException {
 
         this.maxResolution = Math.max( 0, maxUnitsPerPixel );
         fac = new GeometryFactory();

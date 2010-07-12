@@ -40,8 +40,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -49,6 +51,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
@@ -70,27 +73,39 @@ import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.query.Query.QueryHint;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.sql.expression.SQLExpression;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.WKBReader;
+import org.deegree.geometry.standard.DefaultEnvelope;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.gml.GMLObject;
 import org.postgis.LineString;
 import org.postgis.LinearRing;
+import org.postgis.PGboxbase;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
 import org.postgis.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link FeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
@@ -109,8 +124,6 @@ public class PostGISFeatureStore implements FeatureStore {
     private final MappedApplicationSchema schema;
 
     private final Map<QName, Short> ftNameToFtId = new HashMap<QName, Short>();
-
-    final Map<QName, Envelope> ftNameToBBox = new HashMap<QName, Envelope>();
 
     private final Envelope defaultEnvelope;
 
@@ -236,24 +249,147 @@ public class PostGISFeatureStore implements FeatureStore {
     }
 
     @Override
-    public Envelope getEnvelope( QName ftName ) {
-        Envelope env = ftNameToBBox.get( ftName );
-        if ( env == null ) {
-            env = defaultEnvelope;
+    public Envelope getEnvelope( QName ftName )
+                            throws FeatureStoreException {
+        Envelope env = null;
+        FeatureType ft = schema.getFeatureType( ftName );
+        if ( ft != null ) {
+            // TODO bbox caching
+            env = getEnvelope( ft );
         }
         return env;
     }
 
-    /**
-     * Sets the envelope for the given feature type.
-     * 
-     * @param ft
-     *            feature type, must not be <code>null</code>
-     * @param ftEnv
-     *            envelope, must not be <code>null</code> and use EPSG:4326
-     */
-    void setEnvelope( FeatureType ft, Envelope ftEnv ) {
-        ftNameToBBox.put( ft.getName(), ftEnv );
+    private Envelope getEnvelope( FeatureType ft )
+                            throws FeatureStoreException {
+
+        Envelope env = null;
+
+        FeatureTypeMapping mapping = schema.getMapping( ft.getName() );
+        switch ( mapping.getMappingType() ) {
+        case RELATIONAL: {
+            String table = mapping.getFtTable();
+            GeometryPropertyType gpt = ft.getDefaultGeometryPropertyDeclaration();
+            String column = mapping.getColumn( gpt.getName() );
+            env = getEnvelope( table, column );
+            break;
+        }
+        case BLOB:
+        case DUAL: {
+            // TODO BLOB mode
+            // stmt = conn.createStatement();
+            // rs = stmt.executeQuery( "SELECT id,qname,tablename,wgs84bbox FROM " + qualifyTableName( "feature_types" )
+            // );
+            // while ( rs.next() ) {
+            // short ftId = rs.getShort( 1 );
+            // QName ftName = QName.valueOf( rs.getString( 2 ) );
+            // String tableName = rs.getString( 3 ).trim();
+            // PGgeometry pgGeom = (PGgeometry) rs.getObject( 4 );
+            // LOG.debug( "{" + ftId + "," + ftName + "," + tableName + "," + pgGeom + "}" );
+            //
+            // // create feature type metadata (TODO BBOX, configurability)
+            // FeatureType ft = schema.getFeatureType( ftName );
+            // if ( ft == null ) {
+            // String msg = "Configuration inconsistency. Feature type '" + ftName
+            // + "' is not defined in the application schemas of the feature store.";
+            // throw new FeatureStoreException( msg );
+            // }
+            // if ( ft.isAbstract() ) {
+            // String msg = "Configuration inconsistency. Feature type '" + ftName
+            // + "' is abstract according to the application schemas of the feature store.";
+            // throw new FeatureStoreException( msg );
+            // }
+            // ftNameToFtId.put( ftName, ftId );
+            //
+            // if ( pgGeom != null ) {
+            // double[] min = new double[] { 180.0, 90.0 };
+            // double[] max = new double[] { -180.0, -90.0 };
+            // if ( pgGeom.getGeoType() == org.postgis.Geometry.POINT ) {
+            // Point point = (Point) pgGeom.getGeometry();
+            // min[0] = point.x;
+            // min[1] = point.y;
+            // max[0] = point.x;
+            // max[1] = point.y;
+            // } else if ( pgGeom.getGeoType() == org.postgis.Geometry.LINESTRING ) {
+            // LineString line = (LineString) pgGeom.getGeometry();
+            // min[0] = line.getFirstPoint().x;
+            // min[1] = line.getFirstPoint().y;
+            // max[0] = line.getLastPoint().x;
+            // max[1] = line.getLastPoint().y;
+            // } else if ( pgGeom.getGeoType() == org.postgis.Geometry.POLYGON ) {
+            // Polygon polygon = (Polygon) pgGeom.getGeometry();
+            // for ( int i = 0; i < polygon.numPoints(); i++ ) {
+            // Point point = polygon.getPoint( i );
+            // if ( min[0] > point.x ) {
+            // min[0] = point.x;
+            // }
+            // if ( min[1] > point.y ) {
+            // min[1] = point.y;
+            // }
+            // if ( max[0] < point.x ) {
+            // max[0] = point.x;
+            // }
+            // if ( max[1] < point.y ) {
+            // max[1] = point.y;
+            // }
+            // }
+            // } else {
+            // throw new RuntimeException();
+            // }
+            // Envelope env = new GeometryFactory().createEnvelope( min, max, CRS.EPSG_4326 );
+            // ftNameToBBox.put( ftName, env );
+            // }
+            // }
+            break;
+        }
+        }
+        return env;
+    }
+
+    private Envelope getEnvelope( String table, String column )
+                            throws FeatureStoreException {
+
+        Envelope env = null;
+        StringBuilder sql = new StringBuilder( "SELECT " );
+        if ( useLegacyPredicates ) {
+            sql.append( "extent" );
+        } else {
+            sql.append( "ST_Extent" );
+        }
+        sql.append( "(" );
+        sql.append( column );
+        sql.append( ") FROM " );
+        sql.append( table );
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionManager.getConnection( jdbcConnId );
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( sql.toString() );
+            rs.next();
+            PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
+            org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB() );
+            org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT() );
+            env = new DefaultEnvelope( null, storageSRS, null, min, max );
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new FeatureStoreException( e.getMessage(), e );
+        } finally {
+            closeSafely( conn, stmt, rs );
+        }
+        return env;
+    }
+
+    private org.deegree.geometry.primitive.Point getPoint( org.postgis.Point p ) {
+        double[] coords = new double[p.getDimension()];
+        coords[0] = p.getX();
+        coords[1] = p.getY();
+        if ( p.getDimension() > 2 ) {
+            coords[2] = p.getZ();
+        }
+        return new DefaultPoint( null, storageSRS, null, coords );
     }
 
     @Override
@@ -309,6 +445,7 @@ public class PostGISFeatureStore implements FeatureStore {
     @Override
     public void init()
                             throws FeatureStoreException {
+
         LOG.debug( "init" );
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
 
@@ -317,7 +454,6 @@ public class PostGISFeatureStore implements FeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
-
             String version = determinePostGISVersion( conn );
             if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
                  || version.startsWith( "1.2" ) ) {
@@ -325,69 +461,6 @@ public class PostGISFeatureStore implements FeatureStore {
                 useLegacyPredicates = true;
             } else {
                 LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
-            }
-
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT id,qname,tablename,wgs84bbox FROM " + qualifyTableName( "feature_types" ) );
-            while ( rs.next() ) {
-                short ftId = rs.getShort( 1 );
-                QName ftName = QName.valueOf( rs.getString( 2 ) );
-                String tableName = rs.getString( 3 ).trim();
-                PGgeometry pgGeom = (PGgeometry) rs.getObject( 4 );
-                LOG.debug( "{" + ftId + "," + ftName + "," + tableName + "," + pgGeom + "}" );
-
-                // create feature type metadata (TODO BBOX, configurability)
-                FeatureType ft = schema.getFeatureType( ftName );
-                if ( ft == null ) {
-                    String msg = "Configuration inconsistency. Feature type '" + ftName
-                                 + "' is not defined in the application schemas of the feature store.";
-                    throw new FeatureStoreException( msg );
-                }
-                if ( ft.isAbstract() ) {
-                    String msg = "Configuration inconsistency. Feature type '" + ftName
-                                 + "' is abstract according to the application schemas of the feature store.";
-                    throw new FeatureStoreException( msg );
-                }
-                ftNameToFtId.put( ftName, ftId );
-
-                if ( pgGeom != null ) {
-                    double[] min = new double[] { 180.0, 90.0 };
-                    double[] max = new double[] { -180.0, -90.0 };
-                    if ( pgGeom.getGeoType() == org.postgis.Geometry.POINT ) {
-                        Point point = (Point) pgGeom.getGeometry();
-                        min[0] = point.x;
-                        min[1] = point.y;
-                        max[0] = point.x;
-                        max[1] = point.y;
-                    } else if ( pgGeom.getGeoType() == org.postgis.Geometry.LINESTRING ) {
-                        LineString line = (LineString) pgGeom.getGeometry();
-                        min[0] = line.getFirstPoint().x;
-                        min[1] = line.getFirstPoint().y;
-                        max[0] = line.getLastPoint().x;
-                        max[1] = line.getLastPoint().y;
-                    } else if ( pgGeom.getGeoType() == org.postgis.Geometry.POLYGON ) {
-                        Polygon polygon = (Polygon) pgGeom.getGeometry();
-                        for ( int i = 0; i < polygon.numPoints(); i++ ) {
-                            Point point = polygon.getPoint( i );
-                            if ( min[0] > point.x ) {
-                                min[0] = point.x;
-                            }
-                            if ( min[1] > point.y ) {
-                                min[1] = point.y;
-                            }
-                            if ( max[0] < point.x ) {
-                                max[0] = point.x;
-                            }
-                            if ( max[1] < point.y ) {
-                                max[1] = point.y;
-                            }
-                        }
-                    } else {
-                        throw new RuntimeException();
-                    }
-                    Envelope env = new GeometryFactory().createEnvelope( min, max, CRS.EPSG_4326 );
-                    ftNameToBBox.put( ftName, env );
-                }
             }
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
@@ -478,8 +551,7 @@ public class PostGISFeatureStore implements FeatureStore {
                 String msg = "Feature type '" + ftName + "' is not served by this feature store.";
                 throw new FeatureStoreException( msg );
             }
-            result = queryByOperatorFilter( ftName, (OperatorFilter) filter,
-                                            (Envelope) query.getHint( QueryHint.HINT_LOOSE_BBOX ),
+            result = queryByOperatorFilter( ftName, (OperatorFilter) filter, query.getPrefilterBBox(),
                                             query.getSortProperties() );
         } else {
             // must be an id filter based query
@@ -519,8 +591,8 @@ public class PostGISFeatureStore implements FeatureStore {
             rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
                                     + " A, temp_ids B WHERE A.gml_id=b.fid" );
 
-            result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
-                                                                          new FeatureStoreGMLIdResolver( this ) ) );
+            result = new IteratorResultSet( new ResultSetIteratorBlob( rs, conn, stmt,
+                                                                       new FeatureStoreGMLIdResolver( this ) ) );
         } catch ( Exception e ) {
             closeSafely( conn, stmt, rs );
             String msg = "Error performing query: " + e.getMessage();
@@ -551,7 +623,136 @@ public class PostGISFeatureStore implements FeatureStore {
                                                     SortProperty[] sortCrit )
                             throws FeatureStoreException, FilterEvaluationException {
 
-        LOG.debug( "Query by operator filter" );
+        FeatureResultSet rs = null;
+
+        FeatureTypeMapping mapping = getMapping( ftName );
+        switch ( mapping.getMappingType() ) {
+        case BLOB:
+        case DUAL: {
+            rs = queryBlob( ftName, filter, looseBBox, sortCrit );
+            break;
+        }
+        case RELATIONAL: {
+            rs = queryRelational( ftName, filter, looseBBox, sortCrit );
+            break;
+        }
+        }
+        return rs;
+    }
+
+    private FeatureResultSet queryRelational( QName ftName, OperatorFilter filter, Envelope looseBBox,
+                                              SortProperty[] sortCrit )
+                            throws FilterEvaluationException, FeatureStoreException {
+
+        LOG.debug( "Performing query (relational)" );
+
+        FeatureType ft = schema.getFeatureType( ftName );
+        FeatureTypeMapping mapping = getMapping( ftName );
+
+        PostGISWhereBuilder wb = null;
+        
+        FeatureResultSet result = null;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = ConnectionManager.getConnection( jdbcConnId );
+
+            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( ft, mapping, this );
+            wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit, useLegacyPredicates );
+            SQLExpression where = wb.getWhereClause();
+            SQLExpression orderBy = wb.getOrderBy();
+            LOG.debug( "WHERE clause: " + where );
+            LOG.debug( "ORDER BY clause: " + orderBy );
+
+            StringBuilder sql = new StringBuilder( "SELECT " );
+            sql.append( mapping.getFidColumn() );
+            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+                // append every (mapped) property to SELECT list
+                String column = mapping.getColumn( pt.getName() );
+                if ( column != null ) {
+                    if ( pt instanceof SimplePropertyType ) {
+                        sql.append( ',' );
+                        sql.append( column );
+                    } else if ( pt instanceof GeometryPropertyType ) {
+                        sql.append( ',' );
+                        if ( useLegacyPredicates ) {
+                            sql.append( "AsBinary(" );
+                        } else {
+                            sql.append( "ST_AsBinary(" );
+                        }
+                        sql.append( column );
+                        sql.append( ')' );
+                    } else {
+                        LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                                  + "' not handled in PostGISFeatureStore." );
+                    }
+                }
+            }
+
+            sql.append( " FROM " );
+            sql.append( mapping.getFtTable() );
+            sql.append( " X1" );
+
+            if ( where != null ) {
+                sql.append( " WHERE " );
+                sql.append( where.getSQL() );
+            }
+            if ( orderBy != null ) {
+                sql.append( " ORDER BY " );
+                sql.append( orderBy.getSQL() );
+            }
+
+            LOG.info( "Preparing SELECT: " + sql );
+            stmt = conn.prepareStatement( sql.toString() );
+
+            int i = 1;
+            if ( where != null ) {
+                for ( SQLLiteral o : where.getLiterals() ) {
+                    stmt.setObject( i++, o.getValue() );
+                }
+            }
+            if ( orderBy != null ) {
+                for ( SQLLiteral o : orderBy.getLiterals() ) {
+                    stmt.setObject( i++, o.getValue() );
+                }
+            }
+
+            rs = stmt.executeQuery();
+            result = new IteratorResultSet( new ResultSetIteratorRelational( rs, conn, stmt, ft, mapping ) );
+
+        } catch ( Exception e ) {
+            closeSafely( conn, stmt, rs );
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.info( msg, e );
+            throw new FeatureStoreException( msg, e );
+        }
+
+        if ( mapping == null ) {
+            if ( filter != null ) {
+                result = new FilteredFeatureResultSet( result, filter );
+            }
+            if ( sortCrit != null ) {
+                result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
+            }
+        } else {
+            if ( wb != null && wb.getPostFilter() != null ) {
+                LOG.debug( "Applying in-memory post-filtering." );
+                result = new FilteredFeatureResultSet( result, wb.getPostFilter() );
+            }
+            if ( wb != null && wb.getPostSortCriteria() != null ) {
+                LOG.debug( "Applying in-memory post-sorting." );
+                result = new MemoryFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
+            }
+        }
+        return result;
+    }
+
+    private FeatureResultSet queryBlob( QName ftName, OperatorFilter filter, Envelope looseBBox, SortProperty[] sortCrit )
+                            throws FilterEvaluationException, FeatureStoreException {
+
+        LOG.debug( "Performing query (BLOB)" );
 
         FeatureType ft = schema.getFeatureType( ftName );
         FeatureTypeMapping mapping = getMapping( ftName );
@@ -564,7 +765,6 @@ public class PostGISFeatureStore implements FeatureStore {
         }
 
         FeatureResultSet result = null;
-
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -602,8 +802,8 @@ public class PostGISFeatureStore implements FeatureStore {
                 }
             }
             rs = stmt.executeQuery();
-            result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
-                                                                          new FeatureStoreGMLIdResolver( this ) ) );
+            result = new IteratorResultSet( new ResultSetIteratorBlob( rs, conn, stmt,
+                                                                       new FeatureStoreGMLIdResolver( this ) ) );
         } catch ( Exception e ) {
             closeSafely( conn, stmt, rs );
             String msg = "Error performing query: " + e.getMessage();
@@ -678,8 +878,8 @@ public class PostGISFeatureStore implements FeatureStore {
             LOG.debug( "Query {}", stmt );
 
             rs = stmt.executeQuery();
-            result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
-                                                                          new FeatureStoreGMLIdResolver( this ) ) );
+            result = new IteratorResultSet( new ResultSetIteratorBlob( rs, conn, stmt,
+                                                                       new FeatureStoreGMLIdResolver( this ) ) );
         } catch ( Exception e ) {
             closeSafely( conn, stmt, rs );
             String msg = "Error performing query: " + e.getMessage();
@@ -926,12 +1126,49 @@ public class PostGISFeatureStore implements FeatureStore {
         return pgGeometry;
     }
 
-    private class FeatureResultSetIterator extends ResultSetIterator<Feature> {
+    private Feature buildFeature( ResultSet rs, FeatureType ft, FeatureTypeMapping ftMapping )
+                            throws SQLException {
+
+        String fid = ft.getName().getLocalPart().toUpperCase() + "_" + rs.getString( 1 );
+        List<Property> props = new ArrayList<Property>();
+        int i = 2;
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            // if it is mappable, it has been SELECTed
+            if ( ftMapping.getColumn( pt.getName() ) != null ) {
+                if ( pt instanceof SimplePropertyType ) {
+                    String value = rs.getString( i );
+                    if ( value != null ) {
+                        PrimitiveValue pv = new PrimitiveValue( value, ( (SimplePropertyType) pt ).getPrimitiveType() );
+                        Property prop = new GenericProperty( pt, pv );
+                        props.add( prop );
+                    }
+                } else if ( pt instanceof GeometryPropertyType ) {
+                    byte[] wkb = rs.getBytes( i );
+                    if ( wkb != null ) {
+                        try {
+                            Geometry geom = WKBReader.read( wkb );
+                            geom.setCoordinateSystem( storageSRS );
+                            Property prop = new GenericProperty( pt, geom );
+                            props.add( prop );
+                        } catch ( ParseException e ) {
+                            throw new SQLException( "Error parsing WKB from PostGIS: " + e.getMessage(), e );
+                        }
+                    }
+                } else {
+                    LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                              + "' not handled in PostGISFeatureStore." );
+                }
+                i++;
+            }
+        }
+        return ft.newFeature( fid, props, null );
+    }
+
+    private class ResultSetIteratorBlob extends ResultSetIterator<Feature> {
 
         private final FeatureStoreGMLIdResolver resolver;
 
-        public FeatureResultSetIterator( ResultSet rs, Connection conn, Statement stmt,
-                                         FeatureStoreGMLIdResolver resolver ) {
+        public ResultSetIteratorBlob( ResultSet rs, Connection conn, Statement stmt, FeatureStoreGMLIdResolver resolver ) {
             super( rs, conn, stmt );
             this.resolver = resolver;
         }
@@ -956,6 +1193,27 @@ public class PostGISFeatureStore implements FeatureStore {
                 throw new SQLException( msg, e );
             }
             return feature;
+        }
+    }
+
+    private class ResultSetIteratorRelational extends ResultSetIterator<Feature> {
+
+        private FeatureType ft;
+
+        private FeatureTypeMapping ftMapping;
+
+        public ResultSetIteratorRelational( ResultSet rs, Connection conn, Statement stmt, FeatureType ft,
+                                            FeatureTypeMapping ftMapping ) {
+            super( rs, conn, stmt );
+            this.ft = ft;
+            this.ftMapping = ftMapping;
+        }
+
+        @SuppressWarnings("synthetic-access")
+        @Override
+        protected Feature createElement( ResultSet rs )
+                                throws SQLException {
+            return buildFeature( rs, ft, ftMapping );
         }
     }
 }

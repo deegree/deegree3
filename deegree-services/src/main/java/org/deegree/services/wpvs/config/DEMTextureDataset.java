@@ -57,6 +57,7 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
@@ -335,9 +336,14 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
             }
             cacheSize = rasterCache.getCacheSize();
         }
-        StyledGeometryTTProvider tProv = new StyledGeometryTTProvider( toLocalCRS, sceneEnvelope.getCoordinateSystem(),
-                                                                       store, style, unitsPerPixel, cacheDir,
-                                                                       Math.round( cacheSize * 1024 * 1024 * 1024 ) );
+        StyledGeometryTTProvider tProv;
+        try {
+            tProv = new StyledGeometryTTProvider( toLocalCRS, sceneEnvelope.getCoordinateSystem(), store, style,
+                                                  unitsPerPixel, cacheDir, Math.round( cacheSize * 1024 * 1024 * 1024 ) );
+        } catch ( FeatureStoreException e ) {
+            LOG.error( "Error retrieving envelope from FeatureStore: " + e.getMessage(), e );
+            throw new IOException( "Error retrieving envelope from FeatureStore: " + e.getMessage(), e );
+        }
         tileProviders.add( tProv );
         return tProv.getEnvelope();
 

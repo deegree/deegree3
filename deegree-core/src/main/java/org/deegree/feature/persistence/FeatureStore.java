@@ -96,9 +96,9 @@ public interface FeatureStore {
     public ApplicationSchema getSchema();
 
     /**
-     * Returns the native CRS used for storing geometries.
+     * Returns the CRS used for storing geometries.
      * 
-     * @return the native CRS used for storing geometries, can be <code>null</code>
+     * @return the CRS used for storing geometries, can be <code>null</code>
      */
     public CRS getStorageSRS();
 
@@ -107,9 +107,11 @@ public interface FeatureStore {
      * 
      * @param ftName
      *            name of the feature type, must not be <code>null</code> and must be served by this store
-     * @return the envelope (using the native CRS), or <code>null</code> if the feature type is not known
+     * @return the envelope (using the storage CRS), or <code>null</code> if the feature type does not have an envelope
+     *         (no geometry properties or no instances)
+     * @throws FeatureStoreException 
      */
-    public Envelope getEnvelope( QName ftName );
+    public Envelope getEnvelope( QName ftName ) throws FeatureStoreException;
 
     /**
      * Performs the given query and returns the matching features as a {@link FeatureResultSet}.
@@ -170,11 +172,9 @@ public interface FeatureStore {
     /**
      * Retrieves the stored object with a certain id.
      * 
-     * TODO check if a common interface for returned objects should be used here (instead of <code>Object</code>)
-     * 
      * @param id
      *            identifier of the object to be retrieved
-     * @return the stored object (either a {@link Feature} or a {@link Geometry}) or <code>null</code> if no object with
+     * @return the stored object (currently either a {@link Feature} or a {@link Geometry}) or <code>null</code> if no object with
      *         the given id is known
      * @throws FeatureStoreException
      *             if the query could not be performed

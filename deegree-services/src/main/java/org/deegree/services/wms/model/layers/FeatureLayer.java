@@ -163,7 +163,7 @@ public class FeatureLayer extends Layer {
         if ( !datastore.isAvailable() ) {
             LOG.error( "Layer could not be loaded, because the feature store is not available." );
         }
-        CRS crs = datastore.getEnvelope( null ).getCoordinateSystem();
+        CRS crs = datastore.getStorageSRS();
         if ( crs != null ) {
             try {
                 LinkedList<CRS> ss = getSrs();
@@ -182,7 +182,12 @@ public class FeatureLayer extends Layer {
         // always use up-to-date envelope
         Envelope bbox = null;
         for ( FeatureType t : datastore.getSchema().getFeatureTypes() ) {
-            Envelope thisBox = datastore.getEnvelope( t.getName() );
+            Envelope thisBox = null;
+            try {
+                thisBox = datastore.getEnvelope( t.getName() );
+            } catch ( FeatureStoreException e ) {
+                LOG.error( "Error retrieving envelope from FeatureStore: " + e.getMessage(), e );
+            }
             if ( bbox == null ) {
                 bbox = thisBox;
             } else {
