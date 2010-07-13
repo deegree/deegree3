@@ -26,29 +26,29 @@
     <ctl:param name="supports.atomic.trx" />
     <ctl:assertion>Run test group for Transaction requests using the POST method</ctl:assertion>
     <ctl:code>
-    
-		<ctl:call-test name="wfs:Transaction-invalid-lock">
-			<ctl:with-param name="CAPABILITIES" select="$wfs.GetCapabilities.document" />
-		</ctl:call-test>
-		<ctl:call-test name="wfs:Transaction-idgen-generate-new">
-			<ctl:with-param name="CAPABILITIES" select="$wfs.GetCapabilities.document" />
-		</ctl:call-test>
-		<ctl:call-test name="wfs:Transaction-idgen-use-existing">
-			<ctl:with-param name="CAPABILITIES" select="$wfs.GetCapabilities.document" />
-		</ctl:call-test>		
-		<ctl:call-test name="wfs:Transaction-idgen-use-existing-update">
-			<ctl:with-param name="CAPABILITIES" select="$wfs.GetCapabilities.document" />
-		</ctl:call-test>
-    
+
+                <ctl:call-test name="wfs:Transaction-invalid-lock">
+                        <ctl:with-param name="CAPABILITIES" select="$wfs.GetCapabilities.document" />
+                </ctl:call-test>
+                <ctl:call-test name="wfs:Transaction-idgen-generate-new">
+                        <ctl:with-param name="CAPABILITIES" select="$wfs.GetCapabilities.document" />
+                </ctl:call-test>
+                <ctl:call-test name="wfs:Transaction-idgen-use-existing">
+                        <ctl:with-param name="CAPABILITIES" select="$wfs.GetCapabilities.document" />
+                </ctl:call-test>
+                <ctl:call-test name="wfs:Transaction-idgen-use-existing-update">
+                        <ctl:with-param name="CAPABILITIES" select="$wfs.GetCapabilities.document" />
+                </ctl:call-test>
+
       <xsl:variable name="wfs.Transaction.post.url">
         <xsl:value-of select="$wfs.GetCapabilities.document//ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
-	  </xsl:variable>
+          </xsl:variable>
       <xsl:variable name="wfs.GetFeature.get.url">
         <xsl:value-of select="$wfs.GetCapabilities.document//ows:OperationsMetadata/ows:Operation[@name='GetFeature']/ows:DCP/ows:HTTP/ows:Get/@xlink:href"/>
-	  </xsl:variable>
+          </xsl:variable>
       <xsl:variable name="wfs.GetFeature.post.url">
         <xsl:value-of select="$wfs.GetCapabilities.document//ows:OperationsMetadata/ows:Operation[@name='GetFeature']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
-	  </xsl:variable>
+          </xsl:variable>
       <xsl:variable name="wfs.GetFeatureWithLock" select="boolean($wfs.GetCapabilities.document//ows:OperationsMetadata/ows:Operation[@name='GetFeatureWithLock'])"/>
       <xsl:variable name="wfs.LockFeature" select="boolean($wfs.GetCapabilities.document//ows:OperationsMetadata/ows:Operation[@name='LockFeature'])"/>
       <xsl:variable name="idgen.UseExisting" select="$wfs.GetCapabilities.document//ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:Parameter[@name='Idgen']//ows:Value = 'UseExisting'"/>
@@ -117,19 +117,19 @@
 
         <xsl:if test="$gmlsf.level = 'sf-1'">
           <ctl:call-test name="wfs:run-Transaction-XML-gmlsf1">
-		    <ctl:with-param name="wfs.Transaction.post.url" select="$wfs.Transaction.post.url"/>
+                    <ctl:with-param name="wfs.Transaction.post.url" select="$wfs.Transaction.post.url"/>
             <ctl:with-param name="wfs.GetFeature.get.url" select="$wfs.GetFeature.get.url"/>
-		  </ctl:call-test>
+                  </ctl:call-test>
         </xsl:if>
         <xsl:if test="idgen.UseExisting">
           <ctl:message>User-assigned gml:id values are supported.</ctl:message>
         </xsl:if>
 
       <!-- Cleanup the inserted features -->
-	  <ctl:call-test name="wfs:run-Transaction-Cleanup">
-		<ctl:with-param name="wfs.GetCapabilities.document" select="$wfs.GetCapabilities.document"/>
-		<ctl:with-param name="gmlsf.level" select="$gmlsf.level"/>
-	  </ctl:call-test>
+          <ctl:call-test name="wfs:run-Transaction-Cleanup">
+                <ctl:with-param name="wfs.GetCapabilities.document" select="$wfs.GetCapabilities.document"/>
+                <ctl:with-param name="gmlsf.level" select="$gmlsf.level"/>
+          </ctl:call-test>
 
       </ctl:code>
     </ctl:test>
@@ -145,19 +145,19 @@
       is schema valid; (2) TransactionSummary/totalInserted = 3; and (3) the
       wfs:InsertResults element has three child wfs:Feature elements.</comment>
       <link>wfs-1.1.0-Transaction-atc1</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc1.1.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1/>
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1/>
+                                </request>
+                        </xsl:variable>
 
             <xsl:choose>
               <xsl:when test="not($response/*)">
@@ -167,10 +167,10 @@
               <xsl:otherwise>
                 <xsl:variable name="totalInserted" select="$response//wfs:totalInserted" />
                 <ctl:call-test name="ctl:SchematronValidatingParser">
-		            <ctl:with-param name="doc" select="$response" />
-		            <ctl:with-param name="schema">sch/wfs/1.1.0/Transaction.sch</ctl:with-param>
-		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
-	            </ctl:call-test>
+                            <ctl:with-param name="doc" select="$response" />
+                            <ctl:with-param name="schema">sch/wfs/1.1.0/Transaction.sch</ctl:with-param>
+                            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+                    </ctl:call-test>
                 <xsl:if test="$totalInserted != 3">
                   <ctl:message>FAILURE: Expected totalInserted = 3 (reported total is <xsl:value-of select="$totalInserted"/>)</ctl:message>
                   <ctl:fail/>
@@ -184,12 +184,12 @@
                 </xsl:for-each>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc2.1">
       <param name="wfs.Transaction.post.url"/>
-	  <param name="wfs.GetFeature.get.url"/>
+          <param name="wfs.GetFeature.get.url"/>
       <assertion>
       The global srsName attribute must be applied to all submitted geometries
       which do not specify an alternative supported CRS.
@@ -198,19 +198,19 @@
       is schema valid; (2) TransactionSummary/totalInserted = 1; and (3) the
       wfs:InsertResults element has one child wfs:Feature element.</comment>
       <link>wfs-1.1.0-Transaction-atc2</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc2.1.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1/>
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1/>
+                                </request>
+                        </xsl:variable>
 
             <xsl:choose>
               <xsl:when test="not($response/*)">
@@ -219,10 +219,10 @@
               </xsl:when>
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
-		            <ctl:with-param name="doc" select="$response" />
-		            <ctl:with-param name="schema">sch/wfs/1.1.0/Transaction.sch</ctl:with-param>
-		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
-	            </ctl:call-test>
+                            <ctl:with-param name="doc" select="$response" />
+                            <ctl:with-param name="schema">sch/wfs/1.1.0/Transaction.sch</ctl:with-param>
+                            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+                    </ctl:call-test>
                 <xsl:variable name="totalInserted" select="$response//wfs:totalInserted" />
                 <xsl:if test="$totalInserted != 1">
                   <ctl:message>FAILURE: Expected totalInserted = 1 (reported total is <xsl:value-of select="$totalInserted"/>)</ctl:message>
@@ -235,8 +235,8 @@
                 </ctl:call-test>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc2.2">
       <param name="wfs.Transaction.post.url"/>
@@ -248,19 +248,19 @@
       is a valid ows:ExceptionReport; (2) the reported exceptionCode is "InvalidParameterValuePhase".
       </comment>
       <link>wfs-1.1.0-Transaction-atc2</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc2.2.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.OWS />
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.OWS />
+                                </request>
+                        </xsl:variable>
 
             <xsl:choose>
               <xsl:when test="not($response/*)">
@@ -269,14 +269,14 @@
               </xsl:when>
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
-		            <ctl:with-param name="doc" select="$response" />
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
-		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
-	            </ctl:call-test>
+                            <ctl:with-param name="doc" select="$response" />
+                            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+                            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+                    </ctl:call-test>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc3.1">
       <param name="wfs.Transaction.post.url"/>
@@ -295,27 +295,27 @@
           indicating the failing statement.
       </comment>
       <link></link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc3.1.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1 />
-				</request>
-			</xsl:variable>
-			<xsl:variable name="docElement" select="local-name($response/*[1])" />
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1 />
+                                </request>
+                        </xsl:variable>
+                        <xsl:variable name="docElement" select="local-name($response/*[1])" />
             <xsl:choose>
               <xsl:when test="not($supports.atomic.trx)">
                 <ctl:call-test name="ctl:SchematronValidatingParser">
-		            <ctl:with-param name="doc" select="$response" />
-		            <ctl:with-param name="schema">sch/wfs/1.1.0/Transaction.sch</ctl:with-param>
-		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
-	            </ctl:call-test>
+                            <ctl:with-param name="doc" select="$response" />
+                            <ctl:with-param name="schema">sch/wfs/1.1.0/Transaction.sch</ctl:with-param>
+                            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+                    </ctl:call-test>
                 <xsl:if test="count($response//wfs:InsertResults/*) != 1">
                   <ctl:message>FAILURE: Expected wfs:InsertResults to have 1 child element</ctl:message>
                   <ctl:fail/>
@@ -333,14 +333,14 @@
               </xsl:when>
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
-		            <ctl:with-param name="doc" select="$response" />
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
-		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
-	            </ctl:call-test>
+                            <ctl:with-param name="doc" select="$response" />
+                            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+                            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+                    </ctl:call-test>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc4.1">
       <param name="wfs.Transaction.post.url"/>
@@ -354,19 +354,19 @@
       was inserted, one was deleted, and none were updated.
       </comment>
       <link>wfs-1.1.0-Transaction-atc4</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc4.1.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1 />
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1 />
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing response entity.</ctl:message>
@@ -374,10 +374,10 @@
               </xsl:when>
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
-		            <ctl:with-param name="doc" select="$response" />
-		            <ctl:with-param name="schema">sch/wfs/1.1.0/Transaction.sch</ctl:with-param>
-		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
-	            </ctl:call-test>
+                            <ctl:with-param name="doc" select="$response" />
+                            <ctl:with-param name="schema">sch/wfs/1.1.0/Transaction.sch</ctl:with-param>
+                            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+                    </ctl:call-test>
                 <xsl:variable name="totalInserted" select="$response//wfs:totalInserted" />
                 <xsl:if test="$totalInserted != 1">
                   <ctl:message>FAILURE: Expected totalInserted = 1 (reported total is <xsl:value-of select="$totalInserted"/>)</ctl:message>
@@ -408,8 +408,8 @@
                 </ctl:call-test>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc5.1">
       <param name="wfs.Transaction.post.url"/>
@@ -423,19 +423,19 @@
       must report that one feature was inserted and one was updated.
       </comment>
       <link>wfs-1.1.0-Transaction-atc5</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc5.1.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1 />
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1 />
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing response entity.</ctl:message>
@@ -460,8 +460,8 @@
                 </ctl:call-test>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc6.1">
       <param name="wfs.Transaction.post.url"/>
@@ -474,19 +474,19 @@
       </comment>
       <ctl:link>wfs-1.1.0-Transaction-atc1</ctl:link>
       <ctl:link>OGC 04-094, 7.5, p.22</ctl:link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc6.1.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.OWS />
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.OWS />
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing response entity.</ctl:message>
@@ -494,14 +494,14 @@
               </xsl:when>
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
-		            <ctl:with-param name="doc" select="$response" />
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
-		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
-	            </ctl:call-test>
+                            <ctl:with-param name="doc" select="$response" />
+                            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+                            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+                    </ctl:call-test>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc7.1">
       <param name="wfs.Transaction.post.url"/>
@@ -516,19 +516,19 @@
       and one was updated.
       </comment>
       <link>wfs-1.1.0-Transaction-atc5</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc7.1.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1 />
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1 />
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing response entity.</ctl:message>
@@ -550,26 +550,26 @@
                   <xsl:value-of select="$response//wfs:InsertResults/wfs:Feature[1]/ogc:FeatureId/@fid"/>
                 </xsl:variable>
                 <xsl:variable name="response2">
-				  <ctl:request>
-					<ctl:url>
-						<xsl:value-of select="$wfs.GetFeature.get.url"/>
-					</ctl:url>
-					<ctl:method>GET</ctl:method>
-					<ctl:param name="service">WFS</ctl:param>
+                                  <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$wfs.GetFeature.get.url"/>
+                                        </ctl:url>
+                                        <ctl:method>GET</ctl:method>
+                                        <ctl:param name="service">WFS</ctl:param>
                     <ctl:param name="version">1.1.0</ctl:param>
-					<ctl:param name="request">GetFeature</ctl:param>
+                                        <ctl:param name="request">GetFeature</ctl:param>
                     <ctl:param name="featureid"><xsl:value-of select="encode-for-uri($fid)"/></ctl:param>
                     <p:XMLValidatingParser.GMLSF1/>
-				  </ctl:request>
-	            </xsl:variable>
+                                  </ctl:request>
+                    </xsl:variable>
                 <xsl:if test="local-name($response2//sf:attribut.Géométrie/*) != 'MultiSurface'">
                   <ctl:message>FAILURE: Expected geometry value is gml:MultiSurface (feature gml:id="<xsl:value-of select="$fid"/>")</ctl:message>
                   <ctl:fail/>
                 </xsl:if>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc7.2">
       <param name="wfs.Transaction.post.url"/>
@@ -583,19 +583,19 @@
       refers the failing insert statement.
       </comment>
       <link>wfs-1.1.0-Transaction-atc6</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc7.2.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1/>
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1/>
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing response entity.</ctl:message>
@@ -619,8 +619,8 @@
                 </xsl:if>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc8.1">
       <param name="wfs.Transaction.post.url"/>
@@ -632,19 +632,19 @@
       Pass if all properties are successfully updated.
       </comment>
       <link>wfs-1.1.0-Transaction-atc6</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc8.1.1.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1/>
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1/>
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing response entity.</ctl:message>
@@ -661,17 +661,17 @@
                   <xsl:value-of select="$response//wfs:InsertResults/wfs:Feature[1]/ogc:FeatureId/@fid"/>
                 </xsl:variable>
                 <xsl:variable name="response2">
-				  <request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                                  <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc8.1.2.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1 />
-				  </request>
-			    </xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1 />
+                                  </request>
+                            </xsl:variable>
                 <xsl:variable name="totalUpdated" select="$response2//wfs:totalUpdated" />
                 <xsl:if test="$totalUpdated != 1">
                   <ctl:message>FAILURE: Expected totalUpdated = 1 (reported total is <xsl:value-of select="$totalUpdated"/>)</ctl:message>
@@ -686,8 +686,8 @@
                 </ctl:call-test>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc9.1">
       <param name="wfs.Transaction.post.url"/>
@@ -701,19 +701,19 @@
       Pass if the update fails and an exception report is returned.
       </comment>
       <link>wfs-1.1.0-Transaction-atc7</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc9.1.1.body.xml"/>
-					</body>
-					<p:XMLValidatingParser.GMLSF1/>
-				</request>
-			</xsl:variable>
+                                        </body>
+                                        <p:XMLValidatingParser.GMLSF1/>
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing response entity.</ctl:message>
@@ -730,60 +730,60 @@
                   <xsl:value-of select="$response//wfs:InsertResults/wfs:Feature[1]/ogc:FeatureId/@fid"/>
                 </xsl:variable>
                 <xsl:variable name="response2">
-				  <request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                                  <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc9.1.2.body.xml"/>
-					</body>
-				  </request>
-			    </xsl:variable>
+                                        </body>
+                                  </request>
+                            </xsl:variable>
 
-			    <xsl:choose>
-					<xsl:when test="$supports.atomic.trx">
-						<ctl:call-test name="ctl:SchematronValidatingParser">
-							<ctl:with-param name="doc" select="$response2" />
-							<ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
-							<ctl:with-param name="phase">DefaultPhase</ctl:with-param>
-						</ctl:call-test>
-					</xsl:when>
-					<xsl:otherwise>				
-						<xsl:variable name="totalUpdated"><xsl:value-of select="$response2//wfs:totalUpdated"/></xsl:variable>
-						<xsl:if test="$totalUpdated != 0">
-						  <ctl:message>FAILURE: Expected totalUpdated = 0 (reported total is <xsl:value-of select="$totalUpdated"/>)</ctl:message>
-						  <ctl:fail/>
-						</xsl:if>		
-						<xsl:if test="$response2//wfs:TransactionResults/wfs:Action/@locator != 'upd-1'">
-						  <ctl:message>FAILURE: Expected wfs:Action/@locator = 'upd-1'</ctl:message>
-						  <ctl:fail/>
-						</xsl:if>										
-					</xsl:otherwise>
-			    </xsl:choose>   
+                            <xsl:choose>
+                                        <xsl:when test="$supports.atomic.trx">
+                                                <ctl:call-test name="ctl:SchematronValidatingParser">
+                                                        <ctl:with-param name="doc" select="$response2" />
+                                                        <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+                                                        <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+                                                </ctl:call-test>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                                <xsl:variable name="totalUpdated"><xsl:value-of select="$response2//wfs:totalUpdated"/></xsl:variable>
+                                                <xsl:if test="$totalUpdated != 0">
+                                                  <ctl:message>FAILURE: Expected totalUpdated = 0 (reported total is <xsl:value-of select="$totalUpdated"/>)</ctl:message>
+                                                  <ctl:fail/>
+                                                </xsl:if>
+                                                <xsl:if test="$response2//wfs:TransactionResults/wfs:Action/@locator != 'upd-1'">
+                                                  <ctl:message>FAILURE: Expected wfs:Action/@locator = 'upd-1'</ctl:message>
+                                                  <ctl:fail/>
+                                                </xsl:if>
+                                        </xsl:otherwise>
+                            </xsl:choose>
 
                 <!-- Confirm that update failed -->
                 <xsl:variable name="response3">
-				  <ctl:request>
-					<ctl:url>
-						<xsl:value-of select="$wfs.GetFeature.get.url"/>
-					</ctl:url>
-					<ctl:method>GET</ctl:method>
-					<ctl:param name="service">WFS</ctl:param>
+                                  <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$wfs.GetFeature.get.url"/>
+                                        </ctl:url>
+                                        <ctl:method>GET</ctl:method>
+                                        <ctl:param name="service">WFS</ctl:param>
                     <ctl:param name="version">1.1.0</ctl:param>
-					<ctl:param name="request">GetFeature</ctl:param>
+                                        <ctl:param name="request">GetFeature</ctl:param>
                     <ctl:param name="featureid"><xsl:value-of select="encode-for-uri($fid)"/></ctl:param>
                     <p:XMLValidatingParser.GMLSF1/>
-				  </ctl:request>
-	            </xsl:variable>
+                                  </ctl:request>
+                    </xsl:variable>
                 <xsl:if test="xsd:double($response3//sf:AggregateGeoFeature/sf:doubleProperty) != xsd:double('2.4510E4')">
                   <ctl:message>FAILURE: Expected sf:doubleProperty = 2.4510E4 (<xsl:value-of select="$fid"/>.</ctl:message>
                   <ctl:fail/>
                 </xsl:if>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc10.1">
       <param name="wfs.Transaction.post.url"/>
@@ -798,19 +798,19 @@
       in the response.
       </comment>
       <link>wfs-1.1.0-Transaction-atc7</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc10.1.1.body.xml"/>
                     </body>
-					<p:XMLValidatingParser.GMLSF1/>
-				</request>
-			</xsl:variable>
+                                        <p:XMLValidatingParser.GMLSF1/>
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing or invalid response entity.</ctl:message>
@@ -827,17 +827,17 @@
                   <xsl:value-of select="$response//wfs:InsertResults/wfs:Feature[1]/ogc:FeatureId/@fid"/>
                 </xsl:variable>
                 <xsl:variable name="response2">
-				  <request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                                  <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc10.1.2.body.xml"/>
-					</body>
+                                        </body>
                     <p:XMLValidatingParser.GMLSF1/>
-				  </request>
-			    </xsl:variable>
+                                  </request>
+                            </xsl:variable>
                 <!-- accommodate fine-grained or coarse-grained transactions -->
                 <xsl:choose>
                     <xsl:when test="not($supports.atomic.trx)">
@@ -861,8 +861,8 @@
                 </xsl:choose>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc11.1">
       <param name="wfs.Transaction.post.url"/>
@@ -875,19 +875,19 @@
       Pass if the update succeeds and the properties are removed.
       </comment>
       <link>wfs-1.1.0-Transaction-atc7</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc11.1.1.body.xml"/>
                       </body>
-					  <p:XMLValidatingParser.GMLSF1/>
-				</request>
-			</xsl:variable>
+                                          <p:XMLValidatingParser.GMLSF1/>
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing response entity.</ctl:message>
@@ -904,43 +904,43 @@
                   <xsl:value-of select="$response//wfs:InsertResults/wfs:Feature[1]/ogc:FeatureId/@fid"/>
                 </xsl:variable>
                 <xsl:variable name="response2">
-				  <request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                                  <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc11.1.2.body.xml"/>
-					</body>
+                                        </body>
                     <p:XMLValidatingParser.GMLSF1/>
-				  </request>
-			    </xsl:variable>
+                                  </request>
+                            </xsl:variable>
                 <xsl:variable name="totalUpdated" select="$response2//wfs:totalUpdated" />
                 <xsl:if test="$totalUpdated != 1">
                   <ctl:message>FAILURE: Expected totalUpdated = 1 (reported total is <xsl:value-of select="$totalUpdated"/>)</ctl:message>
                   <ctl:fail/>
                 </xsl:if>
                 <xsl:variable name="response3">
-				  <ctl:request>
-					<ctl:url>
-						<xsl:value-of select="$wfs.GetFeature.get.url"/>
-					</ctl:url>
-					<ctl:method>GET</ctl:method>
-					<ctl:param name="service">WFS</ctl:param>
+                                  <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$wfs.GetFeature.get.url"/>
+                                        </ctl:url>
+                                        <ctl:method>GET</ctl:method>
+                                        <ctl:param name="service">WFS</ctl:param>
                     <ctl:param name="version">1.1.0</ctl:param>
-					<ctl:param name="request">GetFeature</ctl:param>
+                                        <ctl:param name="request">GetFeature</ctl:param>
                     <ctl:param name="featureid"><xsl:value-of select="encode-for-uri($fid)"/></ctl:param>
                     <p:XMLValidatingParser.GMLSF1/>
-				  </ctl:request>
-	            </xsl:variable>
+                                  </ctl:request>
+                    </xsl:variable>
                 <xsl:if test="count($response3//sf:PrimitiveGeoFeature/gml:name) != 0">
                   <ctl:message>FAILURE: Expected no gml:name properties (<xsl:value-of select="$fid"/>)</ctl:message>
                   <ctl:fail/>
                 </xsl:if>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc12.1">
       <param name="wfs.Transaction.post.url"/>
@@ -952,19 +952,19 @@
       is a valid ows:ExceptionReport; (2) the reported exceptionCode is "MissingParameterValuePhase".
       </comment>
       <link>wfs-1.1.0-Transaction-atcX</link>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc12.1.body.xml"/>
                     </body>
-					<p:XMLValidatingParser.OWS />
-				</request>
-			</xsl:variable>
+                                        <p:XMLValidatingParser.OWS />
+                                </request>
+                        </xsl:variable>
 
             <xsl:choose>
               <xsl:when test="not($response/*)">
@@ -973,14 +973,14 @@
               </xsl:when>
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
-		            <ctl:with-param name="doc" select="$response" />
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
-		            <ctl:with-param name="phase">MissingParameterValuePhase</ctl:with-param>
-	            </ctl:call-test>
+                            <ctl:with-param name="doc" select="$response" />
+                            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+                            <ctl:with-param name="phase">MissingParameterValuePhase</ctl:with-param>
+                    </ctl:call-test>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
+                </code>
+        </test>
 
     <test name="wfs:wfs-1.1.0-Transaction-tc13.1">
       <param name="wfs.Transaction.post.url"/>
@@ -991,19 +991,19 @@
       <comment>
       Pass if the delete actions succeed.
       </comment>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc13.1.1.body.xml"/>
                       </body>
-					  <p:XMLValidatingParser.GMLSF1/>
-				</request>
-			</xsl:variable>
+                                          <p:XMLValidatingParser.GMLSF1/>
+                                </request>
+                        </xsl:variable>
             <xsl:choose>
               <xsl:when test="not($response/*)">
                   <ctl:message>FAILURE: Missing response entity.</ctl:message>
@@ -1026,17 +1026,17 @@
                   <xsl:value-of select="$response//wfs:InsertResults/wfs:Feature[3]/ogc:FeatureId/@fid"/>
                 </xsl:variable>
                 <xsl:variable name="response2">
-				  <request>
-					<url>
-						<xsl:value-of select="$wfs.Transaction.post.url"/>
-					</url>
+                                  <request>
+                                        <url>
+                                                <xsl:value-of select="$wfs.Transaction.post.url"/>
+                                        </url>
                     <method>POST</method>
-					<body>
+                                        <body>
                       <xi:include href="./wfs-1.1.0-Transaction-tc13.1.2.body.xml"/>
-					</body>
+                                        </body>
                     <p:XMLValidatingParser.GMLSF1/>
-				  </request>
-			    </xsl:variable>
+                                  </request>
+                            </xsl:variable>
                 <xsl:variable name="totalDeleted" select="$response2//wfs:totalDeleted" />
                 <xsl:if test="$totalDeleted != 3">
                   <ctl:message>FAILURE: Expected totalDeleted = 3 (reported total is <xsl:value-of select="$totalDeleted"/>)</ctl:message>
@@ -1060,328 +1060,328 @@
                 </ctl:call-test>
               </xsl:otherwise>
             </xsl:choose>
-		</code>
-	</test>
-	
-		<ctl:test name="wfs:Transaction-invalid-lock">
-		<ctl:param name="CAPABILITIES" />
-		<ctl:assertion>A transaction request with an invalid lock identifier returns an exception.</ctl:assertion>
-		<ctl:comment></ctl:comment>				
-      	<ctl:link>OGC 04-094, 12.2.3, p.65</ctl:link>
-		<ctl:code>
-			<xsl:choose>
-	            <xsl:when test="not($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='sf:PrimitiveGeoFeature'])">
-					<ctl:message>sf:PrimitiveGeoFeature does not exist</ctl:message>		        	
-	            </xsl:when>
-	            <xsl:otherwise>
-					<xsl:variable name="RESPONSE">
-						<ctl:request>
-							<ctl:url>
-								<xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>			
-							</ctl:url>
-		                    <method>POST</method>
-							<body>
-							<wfs:Transaction service="WFS" version="1.1.0"
-								  xmlns:wfs="http://www.opengis.net/wfs"
-								  xmlns:gml="http://www.opengis.net/gml"
-								  xmlns:ogc="http://www.opengis.net/ogc"
-								  xmlns:sf="http://cite.opengeospatial.org/gmlsf">					
-								<wfs:LockID>InvalidLockId</wfs:LockID>
-							    <wfs:Update handle="upd-1" typeName="sf:PrimitiveGeoFeature">
-							      <wfs:Property>
-							        <wfs:Name>gml:description</wfs:Name>
-							        <wfs:Value>description-f001-updated</wfs:Value>
-							      </wfs:Property>
-							      <ogc:Filter>
-							        <ogc:GmlObjectId gml:id="PrimitiveGeoFeature.01" />
-							      </ogc:Filter>
-							    </wfs:Update>						
-							</wfs:Transaction>
-							</body>
-				            <parsers:HTTPParser>
-				               <parsers:parse>
-				                  <parsers:HTTPParser/>
-				               </parsers:parse>
-				            </parsers:HTTPParser>
-						</ctl:request>
-					</xsl:variable>	
-					<xsl:if test="not($RESPONSE//ows:Exception/*)">
-						<ctl:fail/>
-					</xsl:if>
-					
-				</xsl:otherwise>
-			</xsl:choose>	
-		</ctl:code>
-	</ctl:test>
+                </code>
+        </test>
+
+                <ctl:test name="wfs:Transaction-invalid-lock">
+                <ctl:param name="CAPABILITIES" />
+                <ctl:assertion>A transaction request with an invalid lock identifier returns an exception.</ctl:assertion>
+                <ctl:comment></ctl:comment>
+        <ctl:link>OGC 04-094, 12.2.3, p.65</ctl:link>
+                <ctl:code>
+                        <xsl:choose>
+                    <xsl:when test="not($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='sf:PrimitiveGeoFeature'])">
+                                        <ctl:message>sf:PrimitiveGeoFeature does not exist</ctl:message>
+                    </xsl:when>
+                    <xsl:otherwise>
+                                        <xsl:variable name="RESPONSE">
+                                                <ctl:request>
+                                                        <ctl:url>
+                                                                <xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+                                                        </ctl:url>
+                                    <method>POST</method>
+                                                        <body>
+                                                        <wfs:Transaction service="WFS" version="1.1.0"
+                                                                  xmlns:wfs="http://www.opengis.net/wfs"
+                                                                  xmlns:gml="http://www.opengis.net/gml"
+                                                                  xmlns:ogc="http://www.opengis.net/ogc"
+                                                                  xmlns:sf="http://cite.opengeospatial.org/gmlsf">
+                                                                <wfs:LockID>InvalidLockId</wfs:LockID>
+                                                            <wfs:Update handle="upd-1" typeName="sf:PrimitiveGeoFeature">
+                                                              <wfs:Property>
+                                                                <wfs:Name>gml:description</wfs:Name>
+                                                                <wfs:Value>description-f001-updated</wfs:Value>
+                                                              </wfs:Property>
+                                                              <ogc:Filter>
+                                                                <ogc:GmlObjectId gml:id="PrimitiveGeoFeature.01" />
+                                                              </ogc:Filter>
+                                                            </wfs:Update>
+                                                        </wfs:Transaction>
+                                                        </body>
+                                            <parsers:HTTPParser>
+                                               <parsers:parse>
+                                                  <parsers:HTTPParser/>
+                                               </parsers:parse>
+                                            </parsers:HTTPParser>
+                                                </ctl:request>
+                                        </xsl:variable>
+                                        <xsl:if test="not($RESPONSE//ows:Exception/*)">
+                                                <ctl:fail/>
+                                        </xsl:if>
+
+                                </xsl:otherwise>
+                        </xsl:choose>
+                </ctl:code>
+        </ctl:test>
 
 
-	<ctl:test name="wfs:Transaction-idgen-generate-new">
-		<ctl:param name="CAPABILITIES" />
-		<ctl:assertion>In response to an Insert Transaction request with idgen=GenerateNew, the service generates unique identifiers for the newly inserted feature instances.</ctl:assertion>
-		<ctl:comment></ctl:comment>				
-      	<ctl:link>OGC 04-094, 12.2.4, p.67</ctl:link>
-		<ctl:code>
-			<xsl:choose>
-	            <xsl:when test="not($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='sf:PrimitiveGeoFeature'])">
-					<ctl:message>sf:PrimitiveGeoFeature does not exist</ctl:message>		        	
-	            </xsl:when>
-	            <xsl:otherwise>
-					<xsl:variable name="INS-RESPONSE">
-						<ctl:request>
-							<ctl:url>
-								<xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>			
-							</ctl:url>
-		                    <method>POST</method>
-							<body>
-							<wfs:Transaction service="WFS" version="1.1.0"
-								  xmlns:wfs="http://www.opengis.net/wfs"
-								  xmlns:gml="http://www.opengis.net/gml"
-								  xmlns:ogc="http://www.opengis.net/ogc"
-								  xmlns:sf="http://cite.opengeospatial.org/gmlsf">					
-    							<wfs:Insert handle="insert-idgen" idgen="GenerateNew">
-									<sf:PrimitiveGeoFeature >
-										<gml:name>cite.gmlsf0-f501</gml:name>
-										<gml:boundedBy>
-											<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
-												<gml:lowerCorner>48.608284 15.7836</gml:lowerCorner>
-												<gml:upperCorner>50.849854 20.034142</gml:upperCorner>
-											</gml:Envelope>
-										</gml:boundedBy>
-										<sf:curveProperty>
-											<gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
-												<gml:posList>48.608284 20.034142 50.286873 15.7836
-													50.849854 16.764992</gml:posList>
-											</gml:LineString>
-										</sf:curveProperty>
-										<sf:intProperty>1025</sf:intProperty>
-										<sf:measurand>63.94</sf:measurand>
-										<sf:dateTimeProperty>2006-08-23T08:45:12-05:00</sf:dateTimeProperty>
-										<sf:decimalProperty>92.51</sf:decimalProperty>
-									</sf:PrimitiveGeoFeature>
-							    </wfs:Insert>						
-							</wfs:Transaction>
-							</body>
-				            <parsers:HTTPParser>
-				               <parsers:parse>
-				                  <parsers:HTTPParser/>
-				               </parsers:parse>
-				            </parsers:HTTPParser>
-						</ctl:request>
-					</xsl:variable>	
-					<xsl:variable name="FEATUREID">
-						<xsl:value-of select="$INS-RESPONSE//wfs:InsertResults/wfs:Feature/ogc:FeatureId/@fid"/>								
-					</xsl:variable>					
-					
-					<xsl:if test="$FEATUREID=''">
-						<ctl:fail/>
-					</xsl:if>
-					<!-- clean up -->
-					<xsl:variable name="RESPONSE">
-						<ctl:request>
-							<ctl:url>
-								<xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>			
-							</ctl:url>
-		                    <method>POST</method>
-							<body>
-								<wfs:Transaction service="WFS" version="1.1.0"
-									  xmlns:wfs="http://www.opengis.net/wfs"
-									  xmlns:gml="http://www.opengis.net/gml"
-									  xmlns:ogc="http://www.opengis.net/ogc"
-									  xmlns:sf="http://cite.opengeospatial.org/gmlsf">					
-									<wfs:Delete typeName="sf:PrimitiveGeoFeature">
-									<ogc:Filter>
-										<ogc:GmlObjectId gml:id="${FEATUREID}"/>
-									</ogc:Filter>
-									</wfs:Delete>							
-								</wfs:Transaction>
-							</body>
-				            <parsers:HTTPParser>
-				               <parsers:parse>
-				                  <parsers:HTTPParser/>
-				               </parsers:parse>
-				            </parsers:HTTPParser>
-						</ctl:request>
-					</xsl:variable>	
-				</xsl:otherwise>
-			</xsl:choose>	
-		</ctl:code>
-	</ctl:test>
+        <ctl:test name="wfs:Transaction-idgen-generate-new">
+                <ctl:param name="CAPABILITIES" />
+                <ctl:assertion>In response to an Insert Transaction request with idgen=GenerateNew, the service generates unique identifiers for the newly inserted feature instances.</ctl:assertion>
+                <ctl:comment></ctl:comment>
+        <ctl:link>OGC 04-094, 12.2.4, p.67</ctl:link>
+                <ctl:code>
+                        <xsl:choose>
+                    <xsl:when test="not($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='sf:PrimitiveGeoFeature'])">
+                                        <ctl:message>sf:PrimitiveGeoFeature does not exist</ctl:message>
+                    </xsl:when>
+                    <xsl:otherwise>
+                                        <xsl:variable name="INS-RESPONSE">
+                                                <ctl:request>
+                                                        <ctl:url>
+                                                                <xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+                                                        </ctl:url>
+                                    <method>POST</method>
+                                                        <body>
+                                                        <wfs:Transaction service="WFS" version="1.1.0"
+                                                                  xmlns:wfs="http://www.opengis.net/wfs"
+                                                                  xmlns:gml="http://www.opengis.net/gml"
+                                                                  xmlns:ogc="http://www.opengis.net/ogc"
+                                                                  xmlns:sf="http://cite.opengeospatial.org/gmlsf">
+                                                        <wfs:Insert handle="insert-idgen" idgen="GenerateNew">
+                                                                        <sf:PrimitiveGeoFeature >
+                                                                                <gml:name>cite.gmlsf0-f501</gml:name>
+                                                                                <gml:boundedBy>
+                                                                                        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
+                                                                                                <gml:lowerCorner>48.608284 15.7836</gml:lowerCorner>
+                                                                                                <gml:upperCorner>50.849854 20.034142</gml:upperCorner>
+                                                                                        </gml:Envelope>
+                                                                                </gml:boundedBy>
+                                                                                <sf:curveProperty>
+                                                                                        <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
+                                                                                                <gml:posList>48.608284 20.034142 50.286873 15.7836
+                                                                                                        50.849854 16.764992</gml:posList>
+                                                                                        </gml:LineString>
+                                                                                </sf:curveProperty>
+                                                                                <sf:intProperty>1025</sf:intProperty>
+                                                                                <sf:measurand>63.94</sf:measurand>
+                                                                                <sf:dateTimeProperty>2006-08-23T08:45:12-05:00</sf:dateTimeProperty>
+                                                                                <sf:decimalProperty>92.51</sf:decimalProperty>
+                                                                        </sf:PrimitiveGeoFeature>
+                                                            </wfs:Insert>
+                                                        </wfs:Transaction>
+                                                        </body>
+                                            <parsers:HTTPParser>
+                                               <parsers:parse>
+                                                  <parsers:HTTPParser/>
+                                               </parsers:parse>
+                                            </parsers:HTTPParser>
+                                                </ctl:request>
+                                        </xsl:variable>
+                                        <xsl:variable name="FEATUREID">
+                                                <xsl:value-of select="$INS-RESPONSE//wfs:InsertResults/wfs:Feature/ogc:FeatureId/@fid"/>
+                                        </xsl:variable>
 
-	<ctl:test name="wfs:Transaction-idgen-use-existing">
-		<ctl:param name="CAPABILITIES" />
-		<ctl:assertion>In response to an Insert Transaction request with idgen=UseExisting where the identifiers are new values that do not belong to any existing features in the WFS, the service uses the existing gml:id identifiers for the newly inserted feature instances.</ctl:assertion>
-		<ctl:comment></ctl:comment>				
-      	<ctl:link>OGC 04-094, 12.2.4, p.67</ctl:link>
-		<ctl:code>
-			<xsl:choose>
-	            <xsl:when test="not($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='sf:PrimitiveGeoFeature'])">
-					<ctl:message>sf:PrimitiveGeoFeature does not exist</ctl:message>		        	
-	            </xsl:when>
-	            <xsl:otherwise>
-					<xsl:variable name="INS-RESPONSE">
-						<ctl:request>
-							<ctl:url>
-								<xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>			
-							</ctl:url>
-		                    <method>POST</method>
-							<body>
-							<wfs:Transaction service="WFS" version="1.1.0"
-								  xmlns:wfs="http://www.opengis.net/wfs"
-								  xmlns:gml="http://www.opengis.net/gml"
-								  xmlns:ogc="http://www.opengis.net/ogc"
-								  xmlns:sf="http://cite.opengeospatial.org/gmlsf">					
-    							<wfs:Insert handle="insert-idgen" idgen="UseExisting">
-									<sf:PrimitiveGeoFeature gml:id="PrimitiveGeoFeature.111">
-										<gml:name>cite.gmlsf0-f501</gml:name>
-										<gml:boundedBy>
-											<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
-												<gml:lowerCorner>48.608284 15.7836</gml:lowerCorner>
-												<gml:upperCorner>50.849854 20.034142</gml:upperCorner>
-											</gml:Envelope>
-										</gml:boundedBy>
-										<sf:curveProperty>
-											<gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
-												<gml:posList>48.608284 20.034142 50.286873 15.7836
-													50.849854 16.764992</gml:posList>
-											</gml:LineString>
-										</sf:curveProperty>
-										<sf:intProperty>1025</sf:intProperty>
-										<sf:measurand>63.94</sf:measurand>
-										<sf:dateTimeProperty>2006-08-23T08:45:12-05:00</sf:dateTimeProperty>
-										<sf:decimalProperty>92.51</sf:decimalProperty>
-									</sf:PrimitiveGeoFeature>
-								</wfs:Insert>
-							</wfs:Transaction>
-							</body>
-				            <parsers:HTTPParser>
-				               <parsers:parse>
-				                  <parsers:HTTPParser/>
-				               </parsers:parse>
-				            </parsers:HTTPParser>
-						</ctl:request>
-					</xsl:variable>	
-					<xsl:variable name="FEATUREID">
-						<xsl:value-of select="$INS-RESPONSE//wfs:InsertResults/wfs:Feature/ogc:FeatureId/@fid"/>								
-					</xsl:variable>										
-					<xsl:if test="not($FEATUREID='PrimitiveGeoFeature.111')">
-						<ctl:fail/>
-					</xsl:if>
-					<!-- clean up -->
-					<xsl:variable name="RESPONSE">
-						<ctl:request>
-							<ctl:url>
-								<xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>			
-							</ctl:url>
-		                    <method>POST</method>
-							<body>
-								<wfs:Transaction service="WFS" version="1.1.0"
-									  xmlns:wfs="http://www.opengis.net/wfs"
-									  xmlns:gml="http://www.opengis.net/gml"
-									  xmlns:ogc="http://www.opengis.net/ogc"
-									  xmlns:sf="http://cite.opengeospatial.org/gmlsf">					
-									<wfs:Delete typeName="sf:PrimitiveGeoFeature">
-									<ogc:Filter>
-										<ogc:GmlObjectId gml:id="${FEATUREID}"/>
-									</ogc:Filter>
-									</wfs:Delete>							
-								</wfs:Transaction>
-							</body>
-				            <parsers:HTTPParser>
-				               <parsers:parse>
-				                  <parsers:HTTPParser/>
-				               </parsers:parse>
-				            </parsers:HTTPParser>
-						</ctl:request>
-					</xsl:variable>	
-				</xsl:otherwise>
-			</xsl:choose>	
-		</ctl:code>
-	</ctl:test>
+                                        <xsl:if test="$FEATUREID=''">
+                                                <ctl:fail/>
+                                        </xsl:if>
+                                        <!-- clean up -->
+                                        <xsl:variable name="RESPONSE">
+                                                <ctl:request>
+                                                        <ctl:url>
+                                                                <xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+                                                        </ctl:url>
+                                    <method>POST</method>
+                                                        <body>
+                                                                <wfs:Transaction service="WFS" version="1.1.0"
+                                                                          xmlns:wfs="http://www.opengis.net/wfs"
+                                                                          xmlns:gml="http://www.opengis.net/gml"
+                                                                          xmlns:ogc="http://www.opengis.net/ogc"
+                                                                          xmlns:sf="http://cite.opengeospatial.org/gmlsf">
+                                                                        <wfs:Delete typeName="sf:PrimitiveGeoFeature">
+                                                                        <ogc:Filter>
+                                                                                <ogc:GmlObjectId gml:id="{$FEATUREID}"/>
+                                                                        </ogc:Filter>
+                                                                        </wfs:Delete>
+                                                                </wfs:Transaction>
+                                                        </body>
+                                            <parsers:HTTPParser>
+                                               <parsers:parse>
+                                                  <parsers:HTTPParser/>
+                                               </parsers:parse>
+                                            </parsers:HTTPParser>
+                                                </ctl:request>
+                                        </xsl:variable>
+                                </xsl:otherwise>
+                        </xsl:choose>
+                </ctl:code>
+        </ctl:test>
 
-	<ctl:test name="wfs:Transaction-idgen-use-existing-update">
-		<ctl:param name="CAPABILITIES" />
-		<ctl:assertion>In response to an Insert Transaction request with idgen=UseExisting where one of the identifiers used belongs to any existing features in the WFS, the service returns an exception.</ctl:assertion>
-		<ctl:comment></ctl:comment>				
-      	<ctl:link>OGC 04-094, 12.2.4, p.67</ctl:link>
-		<ctl:code>
-			<xsl:variable name="RESPONSE">
-				<ctl:request>
-					<ctl:url>
-						<xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='GetFeature']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>			
-					</ctl:url>
+        <ctl:test name="wfs:Transaction-idgen-use-existing">
+                <ctl:param name="CAPABILITIES" />
+                <ctl:assertion>In response to an Insert Transaction request with idgen=UseExisting where the identifiers are new values that do not belong to any existing features in the WFS, the service uses the existing gml:id identifiers for the newly inserted feature instances.</ctl:assertion>
+                <ctl:comment></ctl:comment>
+        <ctl:link>OGC 04-094, 12.2.4, p.67</ctl:link>
+                <ctl:code>
+                        <xsl:choose>
+                    <xsl:when test="not($CAPABILITIES/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='sf:PrimitiveGeoFeature'])">
+                                        <ctl:message>sf:PrimitiveGeoFeature does not exist</ctl:message>
+                    </xsl:when>
+                    <xsl:otherwise>
+                                        <xsl:variable name="INS-RESPONSE">
+                                                <ctl:request>
+                                                        <ctl:url>
+                                                                <xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+                                                        </ctl:url>
+                                    <method>POST</method>
+                                                        <body>
+                                                        <wfs:Transaction service="WFS" version="1.1.0"
+                                                                  xmlns:wfs="http://www.opengis.net/wfs"
+                                                                  xmlns:gml="http://www.opengis.net/gml"
+                                                                  xmlns:ogc="http://www.opengis.net/ogc"
+                                                                  xmlns:sf="http://cite.opengeospatial.org/gmlsf">
+                                                        <wfs:Insert handle="insert-idgen" idgen="UseExisting">
+                                                                        <sf:PrimitiveGeoFeature gml:id="PrimitiveGeoFeature.111">
+                                                                                <gml:name>cite.gmlsf0-f501</gml:name>
+                                                                                <gml:boundedBy>
+                                                                                        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
+                                                                                                <gml:lowerCorner>48.608284 15.7836</gml:lowerCorner>
+                                                                                                <gml:upperCorner>50.849854 20.034142</gml:upperCorner>
+                                                                                        </gml:Envelope>
+                                                                                </gml:boundedBy>
+                                                                                <sf:curveProperty>
+                                                                                        <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
+                                                                                                <gml:posList>48.608284 20.034142 50.286873 15.7836
+                                                                                                        50.849854 16.764992</gml:posList>
+                                                                                        </gml:LineString>
+                                                                                </sf:curveProperty>
+                                                                                <sf:intProperty>1025</sf:intProperty>
+                                                                                <sf:measurand>63.94</sf:measurand>
+                                                                                <sf:dateTimeProperty>2006-08-23T08:45:12-05:00</sf:dateTimeProperty>
+                                                                                <sf:decimalProperty>92.51</sf:decimalProperty>
+                                                                        </sf:PrimitiveGeoFeature>
+                                                                </wfs:Insert>
+                                                        </wfs:Transaction>
+                                                        </body>
+                                            <parsers:HTTPParser>
+                                               <parsers:parse>
+                                                  <parsers:HTTPParser/>
+                                               </parsers:parse>
+                                            </parsers:HTTPParser>
+                                                </ctl:request>
+                                        </xsl:variable>
+                                        <xsl:variable name="FEATUREID">
+                                                <xsl:value-of select="$INS-RESPONSE//wfs:InsertResults/wfs:Feature/ogc:FeatureId/@fid"/>
+                                        </xsl:variable>
+                                        <xsl:if test="not($FEATUREID='PrimitiveGeoFeature.111')">
+                                                <ctl:fail/>
+                                        </xsl:if>
+                                        <!-- clean up -->
+                                        <xsl:variable name="RESPONSE">
+                                                <ctl:request>
+                                                        <ctl:url>
+                                                                <xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+                                                        </ctl:url>
+                                    <method>POST</method>
+                                                        <body>
+                                                                <wfs:Transaction service="WFS" version="1.1.0"
+                                                                          xmlns:wfs="http://www.opengis.net/wfs"
+                                                                          xmlns:gml="http://www.opengis.net/gml"
+                                                                          xmlns:ogc="http://www.opengis.net/ogc"
+                                                                          xmlns:sf="http://cite.opengeospatial.org/gmlsf">
+                                                                        <wfs:Delete typeName="sf:PrimitiveGeoFeature">
+                                                                        <ogc:Filter>
+                                                                                <ogc:GmlObjectId gml:id="{$FEATUREID}"/>
+                                                                        </ogc:Filter>
+                                                                        </wfs:Delete>
+                                                                </wfs:Transaction>
+                                                        </body>
+                                            <parsers:HTTPParser>
+                                               <parsers:parse>
+                                                  <parsers:HTTPParser/>
+                                               </parsers:parse>
+                                            </parsers:HTTPParser>
+                                                </ctl:request>
+                                        </xsl:variable>
+                                </xsl:otherwise>
+                        </xsl:choose>
+                </ctl:code>
+        </ctl:test>
+
+        <ctl:test name="wfs:Transaction-idgen-use-existing-update">
+                <ctl:param name="CAPABILITIES" />
+                <ctl:assertion>In response to an Insert Transaction request with idgen=UseExisting where one of the identifiers used belongs to any existing features in the WFS, the service returns an exception.</ctl:assertion>
+                <ctl:comment></ctl:comment>
+        <ctl:link>OGC 04-094, 12.2.4, p.67</ctl:link>
+                <ctl:code>
+                        <xsl:variable name="RESPONSE">
+                                <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='GetFeature']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+                                        </ctl:url>
                     <ctl:method>POST</ctl:method>
-					<ctl:body>					
-					<wfs:GetFeature service="WFS" version="1.1.0" 
-					  xmlns:wfs="http://www.opengis.net/wfs" 
-					  xmlns:gml="http://www.opengis.net/gml" 
-					  xmlns:sf="http://cite.opengeospatial.org/gmlsf">					  
-					  <wfs:Query typeName="sf:PrimitiveGeoFeature" >
-						  <ogc:Filter>
-							<ogc:GmlObjectId gml:id="PrimitiveGeoFeature.1"/>
-						  </ogc:Filter>
-					  </wfs:Query>
-					</wfs:GetFeature>
-					</ctl:body>
-		            <parsers:HTTPParser>
-		               <parsers:parse>
-		                  <parsers:HTTPParser/>
-		               </parsers:parse>
-		            </parsers:HTTPParser>
-				</ctl:request>
-			</xsl:variable>			
-			<xsl:choose>
-	            <xsl:when test="not($RESPONSE//gml:featureMembers/sf:PrimitiveGeoFeature[@gml:id='PrimitiveGeoFeature.1'])">
-					<ctl:message>sf:PrimitiveGeoFeature.1 does not exist</ctl:message>		        	
-	            </xsl:when>
-	            <xsl:otherwise>
-					<xsl:variable name="INS-RESPONSE">
-						<ctl:request>
-							<ctl:url>
-								<xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>			
-							</ctl:url>
-		                    <method>POST</method>
-							<body>
-							<wfs:Transaction service="WFS" version="1.1.0"
-								  xmlns:wfs="http://www.opengis.net/wfs"
-								  xmlns:gml="http://www.opengis.net/gml"
-								  xmlns:ogc="http://www.opengis.net/ogc"
-								  xmlns:sf="http://cite.opengeospatial.org/gmlsf">					
-    							<wfs:Insert handle="insert-idgen" idgen="UseExisting">
-									<sf:PrimitiveGeoFeature gml:id="PrimitiveGeoFeature.1">
-										<gml:name>cite.gmlsf0-f501</gml:name>
-										<gml:boundedBy>
-											<gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
-												<gml:lowerCorner>48.608284 15.7836</gml:lowerCorner>
-												<gml:upperCorner>50.849854 20.034142</gml:upperCorner>
-											</gml:Envelope>
-										</gml:boundedBy>
-										<sf:curveProperty>
-											<gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
-												<gml:posList>48.608284 20.034142 50.286873 15.7836
-													50.849854 16.764992</gml:posList>
-											</gml:LineString>
-										</sf:curveProperty>
-										<sf:intProperty>1025</sf:intProperty>
-										<sf:measurand>63.94</sf:measurand>
-										<sf:dateTimeProperty>2006-08-23T08:45:12-05:00</sf:dateTimeProperty>
-										<sf:decimalProperty>92.51</sf:decimalProperty>
-									</sf:PrimitiveGeoFeature>
-								</wfs:Insert>
-							</wfs:Transaction>
-							</body>
-				            <parsers:HTTPParser>
-				               <parsers:parse>
-				                  <parsers:HTTPParser/>
-				               </parsers:parse>
-				            </parsers:HTTPParser>
-						</ctl:request>
-					</xsl:variable>	
-					<xsl:if test="not($INS-RESPONSE//ows:Exception/*)">
-						<ctl:fail/>
-					</xsl:if>
-				</xsl:otherwise>
-			</xsl:choose>	
-		</ctl:code>
-	</ctl:test>
-	
+                                        <ctl:body>
+                                        <wfs:GetFeature service="WFS" version="1.1.0"
+                                          xmlns:wfs="http://www.opengis.net/wfs"
+                                          xmlns:gml="http://www.opengis.net/gml"
+                                          xmlns:sf="http://cite.opengeospatial.org/gmlsf">
+                                          <wfs:Query typeName="sf:PrimitiveGeoFeature" >
+                                                  <ogc:Filter>
+                                                        <ogc:GmlObjectId gml:id="PrimitiveGeoFeature.1"/>
+                                                  </ogc:Filter>
+                                          </wfs:Query>
+                                        </wfs:GetFeature>
+                                        </ctl:body>
+                            <parsers:HTTPParser>
+                               <parsers:parse>
+                                  <parsers:HTTPParser/>
+                               </parsers:parse>
+                            </parsers:HTTPParser>
+                                </ctl:request>
+                        </xsl:variable>
+                        <xsl:choose>
+                    <xsl:when test="not($RESPONSE//gml:featureMembers/sf:PrimitiveGeoFeature[@gml:id='PrimitiveGeoFeature.1'])">
+                                        <ctl:message>sf:PrimitiveGeoFeature.1 does not exist</ctl:message>
+                    </xsl:when>
+                    <xsl:otherwise>
+                                        <xsl:variable name="INS-RESPONSE">
+                                                <ctl:request>
+                                                        <ctl:url>
+                                                                <xsl:value-of select="$CAPABILITIES/ows:OperationsMetadata/ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+                                                        </ctl:url>
+                                    <method>POST</method>
+                                                        <body>
+                                                        <wfs:Transaction service="WFS" version="1.1.0"
+                                                                  xmlns:wfs="http://www.opengis.net/wfs"
+                                                                  xmlns:gml="http://www.opengis.net/gml"
+                                                                  xmlns:ogc="http://www.opengis.net/ogc"
+                                                                  xmlns:sf="http://cite.opengeospatial.org/gmlsf">
+                                                        <wfs:Insert handle="insert-idgen" idgen="UseExisting">
+                                                                        <sf:PrimitiveGeoFeature gml:id="PrimitiveGeoFeature.1">
+                                                                                <gml:name>cite.gmlsf0-f501</gml:name>
+                                                                                <gml:boundedBy>
+                                                                                        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">
+                                                                                                <gml:lowerCorner>48.608284 15.7836</gml:lowerCorner>
+                                                                                                <gml:upperCorner>50.849854 20.034142</gml:upperCorner>
+                                                                                        </gml:Envelope>
+                                                                                </gml:boundedBy>
+                                                                                <sf:curveProperty>
+                                                                                        <gml:LineString srsName="urn:ogc:def:crs:EPSG::4326">
+                                                                                                <gml:posList>48.608284 20.034142 50.286873 15.7836
+                                                                                                        50.849854 16.764992</gml:posList>
+                                                                                        </gml:LineString>
+                                                                                </sf:curveProperty>
+                                                                                <sf:intProperty>1025</sf:intProperty>
+                                                                                <sf:measurand>63.94</sf:measurand>
+                                                                                <sf:dateTimeProperty>2006-08-23T08:45:12-05:00</sf:dateTimeProperty>
+                                                                                <sf:decimalProperty>92.51</sf:decimalProperty>
+                                                                        </sf:PrimitiveGeoFeature>
+                                                                </wfs:Insert>
+                                                        </wfs:Transaction>
+                                                        </body>
+                                            <parsers:HTTPParser>
+                                               <parsers:parse>
+                                                  <parsers:HTTPParser/>
+                                               </parsers:parse>
+                                            </parsers:HTTPParser>
+                                                </ctl:request>
+                                        </xsl:variable>
+                                        <xsl:if test="not($INS-RESPONSE//ows:Exception/*)">
+                                                <ctl:fail/>
+                                        </xsl:if>
+                                </xsl:otherwise>
+                        </xsl:choose>
+                </ctl:code>
+        </ctl:test>
+
 </ctl:package>
