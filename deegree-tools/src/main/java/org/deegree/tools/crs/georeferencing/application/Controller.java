@@ -280,6 +280,7 @@ public class Controller {
                                                                                                          textFieldModel.getxCoordinate(),
                                                                                                          textFieldModel.getyCoordiante() );
 
+                        System.out.println( textFieldModel.toString() );
                         // if ( textFieldModel.getSpan() != -1 ) {
                         // int[] spanInPixel = sceneValues.getPixelCoord( new GeoReferencedPoint(
                         // textFieldModel.getSpan(),

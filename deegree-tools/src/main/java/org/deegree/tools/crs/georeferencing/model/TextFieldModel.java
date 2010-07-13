@@ -51,7 +51,9 @@ public class TextFieldModel {
 
     private double yCoordiante;
 
-    private double span;
+    private double spanX;
+
+    private double spanY;
 
     /**
      * <Code>" "</Code> or <br>
@@ -68,28 +70,38 @@ public class TextFieldModel {
         String[] inputParameters = null;
         Pattern p = Pattern.compile( separator );
         inputParameters = p.split( textInput );
+        int numberOfParameters = inputParameters.length;
 
-        for ( int i = 0; i < inputParameters.length; i += 3 ) {
-            try {
-                xCoordinate = Double.parseDouble( inputParameters[i] );
-
-            } catch ( NumberFormatException e ) {
-                xCoordinate = 0.0;
-
-            }
-            try {
-                yCoordiante = Double.parseDouble( inputParameters[i + 1] );
-            } catch ( NumberFormatException e ) {
-                yCoordiante = 0.0;
-            }
-            if ( inputParameters.length == 3 ) {
+        for ( int i = 0; i < inputParameters.length; i += numberOfParameters ) {
+            if ( numberOfParameters < 1 ) {
+                throw new ArrayIndexOutOfBoundsException(
+                                                          "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
+            } else {
                 try {
-                    span = Double.parseDouble( inputParameters[i + 2] );
+                    xCoordinate = Double.parseDouble( inputParameters[i] );
+                    yCoordiante = Double.parseDouble( inputParameters[i + 1] );
+
                 } catch ( NumberFormatException e ) {
-                    span = -1;
+                    xCoordinate = 0.0;
+                    yCoordiante = 0.0;
+
+                }
+
+                if ( numberOfParameters > 2 ) {
+                    try {
+                        spanX = Double.parseDouble( inputParameters[i + 2] );
+                        spanY = Double.parseDouble( inputParameters[i + 3] );
+                    } catch ( NumberFormatException e ) {
+                        spanX = -1;
+                        spanY = -1;
+                    }
+                }
+                if ( inputParameters.length > 4 ) {
+                    throw new ArrayIndexOutOfBoundsException(
+                                                              "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
                 }
             }
-            System.out.println( "[TextFieldModel] inputParameters: " + xCoordinate + " " + yCoordiante + " " + span );
+
         }
     }
 
@@ -112,12 +124,21 @@ public class TextFieldModel {
     }
 
     /**
-     * The optional third parameter of the string.
+     * The optional third parameter of the string to get the width.
      * 
-     * @return the span, if not set, this value is <i>-1</i>
+     * @return the spanX, if not set, this value is <i>-1</i>
      */
-    public double getSpan() {
-        return span;
+    public double getSpanX() {
+        return spanX;
+    }
+
+    /**
+     * The optional fourth parameter of the string to get the height.
+     * 
+     * @return the spanY, if not set, this value is <i>-1</i>
+     */
+    public double getSpanY() {
+        return spanY;
     }
 
     public static String getSeparator() {
@@ -126,6 +147,19 @@ public class TextFieldModel {
 
     public String getTextInput() {
         return textInput;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        String preSpace = "               ";
+        sb.append( "\nTextfieldimput \n" );
+        sb.append( preSpace ).append( "X-Coordinate: " ).append( "\t" ).append( xCoordinate ).append( "\n" );
+        sb.append( preSpace ).append( "Y-Coodinate: " ).append( "\t" ).append( yCoordiante ).append( "\n" );
+        sb.append( preSpace ).append( "Width: " ).append( "\t\t" ).append( spanX ).append( "\n" );
+        sb.append( preSpace ).append( "Height: " ).append( "\t\t" ).append( spanY ).append( "\n" );
+
+        return sb.toString();
     }
 
 }
