@@ -376,6 +376,8 @@ public class Controller {
                     panel.setPolygonList( polygonRing, sceneValues );
 
                     panel.repaint();
+
+                    reset();
                 }
             }
             if ( source instanceof JMenuItem ) {
@@ -476,6 +478,7 @@ public class Controller {
                              && panel.getFocus() == true ) {
                             tablePanel.addRow();
                         }
+
                         double x = m.getX();
                         double y = m.getY();
                         GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
@@ -771,6 +774,11 @@ public class Controller {
         panel.setLastAbstractPoint( null, null );
         panel.repaint();
         footPanel.repaint();
+        reset();
+
+    }
+
+    private void reset() {
         panel.setFocus( false );
         footPanel.setFocus( false );
         start = false;
