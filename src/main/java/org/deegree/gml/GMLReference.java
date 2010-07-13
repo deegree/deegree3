@@ -73,6 +73,9 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
     public GMLReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         this.resolver = resolver;
         this.uri = uri;
+//        if ( isLocal() ) {
+//            id = uri.substring( 1 );
+//        }
         this.baseURL = baseURL;
     }
 
@@ -116,6 +119,9 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
 
     @Override
     public String getId() {
+        if (object != null) {
+            return object.getId();
+        }
         return getReferencedObject().getId();
     }
 

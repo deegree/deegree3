@@ -77,6 +77,7 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -96,6 +97,7 @@ import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.gml.GMLObject;
+import org.deegree.gml.feature.FeatureReference;
 import org.postgis.LineString;
 import org.postgis.LinearRing;
 import org.postgis.PGboxbase;
@@ -122,6 +124,8 @@ public class PostGISFeatureStore implements FeatureStore {
     static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
 
     private final MappedApplicationSchema schema;
+
+    private final FeatureStoreGMLIdResolver resolver = new FeatureStoreGMLIdResolver( this );
 
     private final Map<QName, Short> ftNameToFtId = new HashMap<QName, Short>();
 
@@ -591,8 +595,7 @@ public class PostGISFeatureStore implements FeatureStore {
             rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
                                     + " A, temp_ids B WHERE A.gml_id=b.fid" );
 
-            result = new IteratorResultSet( new ResultSetIteratorBlob( rs, conn, stmt,
-                                                                       new FeatureStoreGMLIdResolver( this ) ) );
+            result = new IteratorResultSet( new ResultSetIteratorBlob( rs, conn, stmt, resolver ) );
         } catch ( Exception e ) {
             closeSafely( conn, stmt, rs );
             String msg = "Error performing query: " + e.getMessage();
@@ -650,7 +653,7 @@ public class PostGISFeatureStore implements FeatureStore {
         FeatureTypeMapping mapping = getMapping( ftName );
 
         PostGISWhereBuilder wb = null;
-        
+
         FeatureResultSet result = null;
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -670,6 +673,8 @@ public class PostGISFeatureStore implements FeatureStore {
             sql.append( mapping.getFidColumn() );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 // append every (mapped) property to SELECT list
+
+                // TODO columns in related tables
                 String column = mapping.getColumn( pt.getName() );
                 if ( column != null ) {
                     if ( pt instanceof SimplePropertyType ) {
@@ -684,6 +689,9 @@ public class PostGISFeatureStore implements FeatureStore {
                         }
                         sql.append( column );
                         sql.append( ')' );
+                    } else if ( pt instanceof FeaturePropertyType ) {
+                        sql.append( ',' );
+                        sql.append( column );
                     } else {
                         LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
                                   + "' not handled in PostGISFeatureStore." );
@@ -802,8 +810,7 @@ public class PostGISFeatureStore implements FeatureStore {
                 }
             }
             rs = stmt.executeQuery();
-            result = new IteratorResultSet( new ResultSetIteratorBlob( rs, conn, stmt,
-                                                                       new FeatureStoreGMLIdResolver( this ) ) );
+            result = new IteratorResultSet( new ResultSetIteratorBlob( rs, conn, stmt, resolver ) );
         } catch ( Exception e ) {
             closeSafely( conn, stmt, rs );
             String msg = "Error performing query: " + e.getMessage();
@@ -878,8 +885,7 @@ public class PostGISFeatureStore implements FeatureStore {
             LOG.debug( "Query {}", stmt );
 
             rs = stmt.executeQuery();
-            result = new IteratorResultSet( new ResultSetIteratorBlob( rs, conn, stmt,
-                                                                       new FeatureStoreGMLIdResolver( this ) ) );
+            result = new IteratorResultSet( new ResultSetIteratorBlob( rs, conn, stmt, resolver ) );
         } catch ( Exception e ) {
             closeSafely( conn, stmt, rs );
             String msg = "Error performing query: " + e.getMessage();
@@ -1133,7 +1139,7 @@ public class PostGISFeatureStore implements FeatureStore {
         List<Property> props = new ArrayList<Property>();
         int i = 2;
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            // if it is mappable, it has been SELECTed
+            // if it is mappable, it has been SELECTed by contract
             if ( ftMapping.getColumn( pt.getName() ) != null ) {
                 if ( pt instanceof SimplePropertyType ) {
                     String value = rs.getString( i );
@@ -1153,6 +1159,14 @@ public class PostGISFeatureStore implements FeatureStore {
                         } catch ( ParseException e ) {
                             throw new SQLException( "Error parsing WKB from PostGIS: " + e.getMessage(), e );
                         }
+                    }
+                } else if ( pt instanceof FeaturePropertyType ) {
+                    String subFid = rs.getString( i );
+                    if ( subFid != null ) {
+                        String uri = "#" + subFid;
+                        FeatureReference ref = new FeatureReference( resolver, uri, null );
+                        Property prop = new GenericProperty( pt, ref );
+                        props.add( prop );
                     }
                 } else {
                     LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()

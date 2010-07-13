@@ -175,15 +175,15 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
-        Set<Geometry> geometries = new HashSet<Geometry>();
-        Set<Feature> features = new HashSet<Feature>();
+        Set<Geometry> geometries = new LinkedHashSet<Geometry>();
+        Set<Feature> features = new LinkedHashSet<Feature>();
         Set<String> fids = new LinkedHashSet<String>();
         Set<String> gids = new LinkedHashSet<String>();
         findFeaturesAndGeometries( fc, geometries, features, fids, gids );
 
         switch ( mode ) {
         case GENERATE_NEW: {
-            // TODO don't change incoming features / geometries
+            // TODO don't alter incoming features / geometries
             for ( Feature feature : features ) {
                 String newFid = "FEATURE_" + generateNewId();
                 String oldFid = feature.getId();
