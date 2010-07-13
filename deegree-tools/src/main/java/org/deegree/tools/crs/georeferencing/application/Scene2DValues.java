@@ -41,6 +41,7 @@ import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
@@ -90,6 +91,12 @@ public class Scene2DValues {
     private Envelope envelopeFootprint;
 
     private GeometryFactory geom;
+
+    private double ratio;
+
+    private RasterGeoReference ref;
+
+    private double size;
 
     /**
      * Creates a new instance of <Code>Scene2DValues</Code>
@@ -193,6 +200,78 @@ public class Scene2DValues {
     }
 
     /**
+     * Sets the point as the centroid of the envelope with specified spans in x- and y-direction. These parameters will
+     * be corrected if there is a mismatch regarding to the proportion of the requested envelope.
+     * 
+     * @param xCoord
+     *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * @param yCoord
+     *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * @param spanX
+     *            x-dimension that should be the width of the envelope, if not specified use
+     *            {@link #setCentroidRasterEnvelopePosition(double, double)} instead.
+     * @param spanY
+     *            y-dimension that should be the height of the envelope, if not specified use
+     *            {@link #setCentroidRasterEnvelopePosition(double, double)} instead.
+     */
+    public void setCentroidRasterEnvelopePosition( double xCoord, double yCoord, double spanX, double spanY ) {
+
+        double halfSpanXWorld;
+        double halfSpanYWorld;
+
+        double minX;
+        double minY;
+        if ( spanX != -1 && spanY != -1 ) {
+            if ( ratio < 1 ) {
+                halfSpanYWorld = spanY / 2;
+                halfSpanXWorld = halfSpanYWorld * transformedRasterSpan.x / transformedRasterSpan.y;
+
+            } else {
+
+                halfSpanXWorld = spanX / 2;
+                halfSpanYWorld = halfSpanXWorld * transformedRasterSpan.y / transformedRasterSpan.x;
+
+            }
+            minX = xCoord - halfSpanXWorld;
+            minY = yCoord - halfSpanYWorld;
+            double maxX = xCoord + halfSpanXWorld;
+            double maxY = yCoord + halfSpanYWorld;
+            Envelope enve = geom.createEnvelope( minX, minY, maxX, maxY, crs );
+            this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
+            rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
+
+        } else {
+            halfSpanXWorld = this.subRaster.getEnvelope().getSpan0() / 2;
+            halfSpanYWorld = this.subRaster.getEnvelope().getSpan1() / 2;
+
+            minX = xCoord - halfSpanXWorld;
+            minY = yCoord + halfSpanYWorld;
+            // get the worldPoint in pixelCoordinates
+            int[] p = getPixelCoord( new GeoReferencedPoint( minX, minY ) );
+
+            // set all the relevant parameters for generating the georefernced map
+            setStartRasterEnvelopePosition( new Point2d( p[0], p[1] ) );
+
+            moveEnvelope( new GeoReferencedPoint( minX, minY ) );
+        }
+
+    }
+
+    /**
+     * 
+     * Sets the point as the centroid of the envelope.
+     * 
+     * @param xCoord
+     *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * @param yCoord
+     *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * 
+     */
+    public void setCentroidRasterEnvelopePosition( double xCoord, double yCoord ) {
+        this.setCentroidRasterEnvelopePosition( xCoord, yCoord, -1, -1 );
+    }
+
+    /**
      * Computes the percent of the AbstractGRPoint relative to the Envelope in worldCoordinates.
      * 
      * @param env
@@ -251,11 +330,15 @@ public class Scene2DValues {
         this.subRaster = subRaster;
     }
 
-    public Point2d getTransformedBounds() {
+    public Point2d generateTransformedBounds() {
         if ( rasterRect != null ) {
             return transformProportion( rasterRect );
         }
         return null;
+    }
+
+    public Point2d getTransformedBounds() {
+        return this.transformedRasterSpan;
     }
 
     public RasterIOOptions getOptions() {
@@ -329,7 +412,10 @@ public class Scene2DValues {
             center = (GeoReferencedPoint) getWorldPoint( mousePosition );
             Envelope enve = createZoomedEnv( this.subRaster.getEnvelope(), newSize, center );
             this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
-            transformProportion( this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve ) );
+            System.out.println( "[Scene2DValues] Subrasterzoomed " + subRaster + " SPAN: " + enve.getSpan0() + ", "
+                                + enve.getSpan1() );
+            rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
+            // transformProportion( rasterRect );
             break;
         case FootprintPoint:
             center = (FootprintPoint) getWorldPoint( mousePosition );
@@ -350,6 +436,7 @@ public class Scene2DValues {
      * @return the zoomed envelope.
      */
     private Envelope createZoomedEnv( Envelope env, double newSize, AbstractGRPoint center ) {
+
         Point2d percentP = computePercentWorld( env, center );
         double spanX = env.getSpan0() * newSize;
         double spanY = env.getSpan1() * newSize;
@@ -383,7 +470,7 @@ public class Scene2DValues {
         double w = dimensionGeoreference.width;
         double h = dimensionGeoreference.height;
 
-        double ratio = w / h;
+        ratio = w / h;
         if ( sizeGeoRef == 0.0f ) {
             sizeGeoRef = 1.0f;
         }
@@ -431,35 +518,7 @@ public class Scene2DValues {
 
         this.minPointRaster = new Point2d( minRX, minRY );
         this.minPointPixel = new Point2d( minPX, minPY );
-        // System.out.println( "[Scene2DValues] minPixel: " + minPointPixel + " minRaster: " + minPointRaster );
-    }
-
-    /**
-     * 
-     * Sets the point as the centroid of the envelope.
-     * 
-     * @param xCoord
-     *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
-     * @param yCoord
-     *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
-     * @return AbstractGRPoint which is the translation needed to get the xCoord and yCoord as center of the scene.
-     * 
-     */
-    public AbstractGRPoint setCentroidRasterEnvelopePosition( double xCoord, double yCoord ) {
-
-        double halfSpanX = subRaster.getEnvelope().getSpan0() / 2;
-        double halfSpanY = subRaster.getEnvelope().getSpan1() / 2;
-
-        double x = xCoord - halfSpanX;
-        double y = yCoord + halfSpanY;
-
-        // get the worldPoint in pixelCoordinates
-        int[] p = getPixelCoord( new GeoReferencedPoint( x, y ) );
-
-        // set all the relevant parameters for generating the georefernced map
-        setStartRasterEnvelopePosition( new Point2d( p[0], p[1] ) );
-
-        return new GeoReferencedPoint( p[0], p[1] );
+        System.out.println( "[Scene2DValues] minPixel: " + minPointPixel + " minRaster: " + minPointRaster );
     }
 
     public Point2d getMinPointRaster() {
@@ -494,6 +553,11 @@ public class Scene2DValues {
 
     public void setEnvelopeFootprint( Envelope createEnvelope ) {
         this.envelopeFootprint = createEnvelope;
+
+    }
+
+    public void setRasterGeoRef( RasterGeoReference ref ) {
+        this.ref = ref;
 
     }
 

@@ -276,21 +276,20 @@ public class Controller {
 
                     textFieldModel = new TextFieldModel( tF.getText() );
                     if ( sceneValues.getTransformedBounds() != null ) {
-                        AbstractGRPoint translatedPoint = sceneValues.setCentroidRasterEnvelopePosition(
-                                                                                                         textFieldModel.getxCoordinate(),
-                                                                                                         textFieldModel.getyCoordiante() );
-
                         System.out.println( textFieldModel.toString() );
-                        // if ( textFieldModel.getSpan() != -1 ) {
-                        // int[] spanInPixel = sceneValues.getPixelCoord( new GeoReferencedPoint(
-                        // textFieldModel.getSpan(),
-                        // textFieldModel.getSpan() ) );
-                        // panel.setImageToDraw( model.generateSubImage( new Rectangle( spanInPixel[0], spanInPixel[1] )
-                        // ) );
-                        // } else {
-                        sceneValues.moveEnvelope( translatedPoint );
+                        if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
+
+                            sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                           textFieldModel.getyCoordiante(),
+                                                                           textFieldModel.getSpanX(),
+                                                                           textFieldModel.getSpanY() );
+
+                        } else {
+                            sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                           textFieldModel.getyCoordiante() );
+
+                        }
                         panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-                        // }
                         panel.updatePoints( sceneValues );
                         panel.repaint();
                     }

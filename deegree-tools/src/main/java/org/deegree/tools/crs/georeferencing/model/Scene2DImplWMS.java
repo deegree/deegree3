@@ -126,6 +126,7 @@ public class Scene2DImplWMS implements Scene2D {
                                                                        Double.parseDouble( options.get( "RIGHT_UPPER_Y" ) ) );
             this.sceneValues.setRaster( ra );
             ref = ra.getRasterReference();
+            this.sceneValues.setRasterGeoRef( ref );
             rasterRect = ref.convertEnvelopeToRasterCRS( ra.getEnvelope() );
             this.sceneValues.setRasterRect( rasterRect );
             this.sceneValues.setCrs( raster.getCoordinateSystem() );
@@ -170,8 +171,8 @@ public class Scene2DImplWMS implements Scene2D {
 
     @Override
     public BufferedImage generateSubImage( Rectangle bounds ) {
-        Point2d transformedBounds = sceneValues.getTransformedBounds();
-        System.out.println( "transformedBounds: " + transformedBounds );
+        Point2d transformedBounds = sceneValues.generateTransformedBounds();
+        System.out.println( "[Scene2DImplWMS] transformedBounds: " + transformedBounds );
         if ( sceneValues.getMinPointRaster() == null ) {
             sceneValues.setMinPointRaster( new Point2d( rasterRect.x, rasterRect.y ) );
 
@@ -191,7 +192,7 @@ public class Scene2DImplWMS implements Scene2D {
         subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
         sceneValues.setSubRaster( subRaster );
         rasterData = subRaster.getRasterData();
-        System.out.println( "subRaster: " + subRaster );
+        System.out.println( "[Scene2DImplWMS] subRaster: " + subRaster );
         return generatedImage = generateMap( subRaster.getEnvelope() );
 
     }
