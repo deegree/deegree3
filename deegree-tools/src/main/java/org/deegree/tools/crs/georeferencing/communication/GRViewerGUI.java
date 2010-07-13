@@ -110,6 +110,8 @@ public class GRViewerGUI extends JFrame {
 
     private JTextField coordinateJumper;
 
+    private ErrorDialog errorDialog;
+
     public GRViewerGUI() {
         super( WINDOW_TITLE );
 
@@ -279,6 +281,14 @@ public class GRViewerGUI extends JFrame {
 
     public OpenGLEventHandler getOpenGLEventListener() {
         return openGLEventListener;
+    }
+
+    public ErrorDialog getErrorDialog() {
+        return errorDialog;
+    }
+
+    public void setErrorDialog( ErrorDialog errorDialog ) {
+        this.errorDialog = errorDialog;
     }
 
 }

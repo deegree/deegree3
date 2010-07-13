@@ -55,15 +55,11 @@ public class TextFieldModel {
 
     private double spanY;
 
-    /**
-     * <Code>" "</Code> or <br>
-     * ";" or <br>
-     * "/" or
-     * 
-     */
     private final static String separator = "\\p{Space}*[ ;/]\\p{Space}*";
 
     private String textInput;
+
+    private ErrorDialogModel error;
 
     public TextFieldModel() {
 
@@ -77,9 +73,8 @@ public class TextFieldModel {
         int numberOfParameters = inputParameters.length;
 
         for ( int i = 0; i < inputParameters.length; i += numberOfParameters ) {
-            if ( numberOfParameters < 1 ) {
-                throw new ArrayIndexOutOfBoundsException(
-                                                          "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
+            if ( numberOfParameters < 2 ) {
+                error = new ErrorDialogModel( "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
             } else {
                 try {
                     xCoordinate = Double.parseDouble( inputParameters[i] );
@@ -90,7 +85,10 @@ public class TextFieldModel {
                     yCoordiante = 0.0;
 
                 }
-
+                if ( numberOfParameters > 2 && numberOfParameters < 4 ) {
+                    error = new ErrorDialogModel(
+                                                  "You have to specify either non of width and height or both of them! " );
+                }
                 if ( numberOfParameters > 2 ) {
                     try {
                         spanX = Double.parseDouble( inputParameters[i + 2] );
@@ -101,8 +99,8 @@ public class TextFieldModel {
                     }
                 }
                 if ( inputParameters.length > 4 ) {
-                    throw new ArrayIndexOutOfBoundsException(
-                                                              "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
+                    error = new ErrorDialogModel(
+                                                  "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
                 }
             }
 
@@ -145,14 +143,33 @@ public class TextFieldModel {
         return spanY;
     }
 
+    /**
+     * <Code>" "</Code> or <br>
+     * ";" or <br>
+     * "/" or
+     * 
+     * @return the separators of this component.
+     */
     public static String getSeparator() {
         return separator;
     }
 
+    /**
+     * 
+     * @return the textinput of this component.
+     */
     public String getTextInput() {
         return textInput;
     }
 
+    public ErrorDialogModel getError() {
+        return error;
+    }
+
+    /**
+     * 
+     * @return the tooltip of this component.
+     */
     public String getTooltipText() {
         StringBuilder sb = new StringBuilder();
         sb.append( "<html><center>" );
@@ -166,7 +183,7 @@ public class TextFieldModel {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         String preSpace = "               ";
-        sb.append( "\nTextfieldimput \n" );
+        sb.append( "\nTextfieldinput\n" );
         sb.append( preSpace ).append( "X-Coordinate: " ).append( "\t" ).append( xCoordinate ).append( "\n" );
         sb.append( preSpace ).append( "Y-Coodinate: " ).append( "\t" ).append( yCoordiante ).append( "\n" );
         sb.append( preSpace ).append( "Width: " ).append( "\t\t" ).append( spanX ).append( "\n" );

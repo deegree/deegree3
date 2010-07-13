@@ -50,11 +50,10 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
@@ -71,6 +70,7 @@ import org.deegree.tools.crs.georeferencing.application.transformation.Polynomia
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
+import org.deegree.tools.crs.georeferencing.communication.ErrorDialog;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
@@ -165,7 +165,6 @@ public class Controller {
         view.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
 
         tablePanel.addHorizontalRefListener( new ButtonListener() );
-        tablePanel.addTableModelListener( new TableListener() );
 
         // init the scenePanel and the mouseinteraction of it
         initGeoReferencingScene();
@@ -177,6 +176,9 @@ public class Controller {
 
     }
 
+    /**
+     * Initializes the footprint scene.
+     */
     private void initFootprintScene() {
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
         footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
@@ -217,7 +219,7 @@ public class Controller {
                             geometryThatIsTaken.add( a );
                         }
                     }
-                    // System.out.println( a );
+
                 }
             }
 
@@ -231,6 +233,9 @@ public class Controller {
 
     }
 
+    /**
+     * Initializes the georeferenced scene.
+     */
     private void initGeoReferencingScene() {
         mouseGeoRef = new MouseModel();
         init();
@@ -276,24 +281,28 @@ public class Controller {
                     System.out.println( "put something in the textfield: " + tF.getText() );
 
                     textFieldModel.setTextInput( tF.getText() );
+                    if ( textFieldModel.getError() != null ) {
+                        view.setErrorDialog( new ErrorDialog( view, JDialog.ERROR,
+                                                              textFieldModel.getError().getErrorMessage() ) );
+                    } else {
+                        if ( sceneValues.getTransformedBounds() != null ) {
+                            System.out.println( textFieldModel.toString() );
+                            if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
 
-                    if ( sceneValues.getTransformedBounds() != null ) {
-                        System.out.println( textFieldModel.toString() );
-                        if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
+                                sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                               textFieldModel.getyCoordiante(),
+                                                                               textFieldModel.getSpanX(),
+                                                                               textFieldModel.getSpanY() );
 
-                            sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                           textFieldModel.getyCoordiante(),
-                                                                           textFieldModel.getSpanX(),
-                                                                           textFieldModel.getSpanY() );
+                            } else {
+                                sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                               textFieldModel.getyCoordiante() );
 
-                        } else {
-                            sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                           textFieldModel.getyCoordiante() );
-
+                            }
+                            panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                            panel.updatePoints( sceneValues );
+                            panel.repaint();
                         }
-                        panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-                        panel.updatePoints( sceneValues );
-                        panel.repaint();
                     }
                 }
 
@@ -405,15 +414,6 @@ public class Controller {
             }
 
         }
-    }
-
-    class TableListener implements TableModelListener {
-
-        @Override
-        public void tableChanged( TableModelEvent e ) {
-
-        }
-
     }
 
     /**
@@ -538,7 +538,7 @@ public class Controller {
     }
 
     /**
-     * Sets values to the JTableModel and adds a new row to it.
+     * Sets values to the JTableModel.
      */
     private void setValues() {
 
@@ -582,7 +582,7 @@ public class Controller {
 
     /**
      * 
-     * TODO add class documentation here
+     * Registeres the mouseMotion in the component.
      * 
      * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
      * @author last edited by: $Author$
@@ -725,14 +725,12 @@ public class Controller {
 
         sceneValues.setImageDimension( new Rectangle( panel.getBounds().width, panel.getBounds().height ) );
         panel.setImageDimension( sceneValues.getImageDimension() );
-
         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
-
         panel.repaint();
     }
 
     /**
-     * Adds the <Code>AbstractPoint</Code>s to a map
+     * Adds the <Code>AbstractPoint</Code>s to a map, if specified.
      * 
      * @param mappedPointKey
      * @param mappedPointValue
@@ -744,26 +742,21 @@ public class Controller {
 
     }
 
-    private void updateMappedPoints() {
-        for ( Pair<Point4Values, Point4Values> pair : mappedPoints ) {
-            List<Point4Values> points = footPanel.getSelectedPoints();
-            for ( Point4Values p : points ) {
-                if ( p.getOldValue() == pair.first.getOldValue() ) {
-                    pair.first = new Point4Values( p.getOldValue(), p.getInitialValue(), p.getNewValue(),
-                                                   p.getWorldCoords() );
-                    break;
-                }
-            }
-
-        }
-    }
-
+    /**
+     * Removes sample points in panels and the table.
+     * 
+     * @param pointFromTable
+     *            that should be removed, could be <Code>null</Code>
+     */
     private void removeFromMappedPoints( Pair<Point4Values, Point4Values> pointFromTable ) {
         if ( pointFromTable != null ) {
             mappedPoints.remove( pointFromTable );
         }
     }
 
+    /**
+     * Removes everything after a complete deletion of the points.
+     */
     private void removeAllFromMappedPoints() {
         mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
         tablePanel.removeAllRows();
@@ -778,6 +771,9 @@ public class Controller {
 
     }
 
+    /**
+     * Resets the focus of the panels and the startPanel.
+     */
     private void reset() {
         panel.setFocus( false );
         footPanel.setFocus( false );
