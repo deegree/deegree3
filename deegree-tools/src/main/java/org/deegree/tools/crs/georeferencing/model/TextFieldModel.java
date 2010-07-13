@@ -79,23 +79,27 @@ public class TextFieldModel {
                 try {
                     xCoordinate = Double.parseDouble( inputParameters[i] );
                     yCoordiante = Double.parseDouble( inputParameters[i + 1] );
+                    spanX = -1;
+                    spanY = -1;
 
                 } catch ( NumberFormatException e ) {
                     xCoordinate = 0.0;
                     yCoordiante = 0.0;
 
                 }
-                if ( numberOfParameters > 2 && numberOfParameters < 4 ) {
-                    error = new ErrorDialogModel(
-                                                  "You have to specify either non of width and height or both of them! " );
-                }
+
                 if ( numberOfParameters > 2 ) {
-                    try {
-                        spanX = Double.parseDouble( inputParameters[i + 2] );
-                        spanY = Double.parseDouble( inputParameters[i + 3] );
-                    } catch ( NumberFormatException e ) {
-                        spanX = -1;
-                        spanY = -1;
+                    if ( numberOfParameters == 3 ) {
+                        error = new ErrorDialogModel(
+                                                      "You have to specify either non of width and height or both of them! " );
+                    } else {
+                        try {
+                            spanX = Double.parseDouble( inputParameters[i + 2] );
+                            spanY = Double.parseDouble( inputParameters[i + 3] );
+                        } catch ( NumberFormatException e ) {
+                            spanX = -1;
+                            spanY = -1;
+                        }
                     }
                 }
                 if ( inputParameters.length > 4 ) {
@@ -190,6 +194,14 @@ public class TextFieldModel {
         sb.append( preSpace ).append( "Height: " ).append( "\t\t" ).append( spanY ).append( "\n" );
 
         return sb.toString();
+    }
+
+    /**
+     * Resets the errorMessage back to null.
+     */
+    public void resetError() {
+        error = null;
+
     }
 
 }

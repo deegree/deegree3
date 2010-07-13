@@ -284,6 +284,7 @@ public class Controller {
                     if ( textFieldModel.getError() != null ) {
                         view.setErrorDialog( new ErrorDialog( view, JDialog.ERROR,
                                                               textFieldModel.getError().getErrorMessage() ) );
+                        textFieldModel.resetError();
                     } else {
                         if ( sceneValues.getTransformedBounds() != null ) {
                             System.out.println( textFieldModel.toString() );
