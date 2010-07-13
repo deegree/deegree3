@@ -154,14 +154,15 @@ public class Controller {
         this.start = false;
         this.glHandler = view.getOpenGLEventListener();
         this.store = store;
+        this.textFieldModel = new TextFieldModel();
 
         this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
-        this.footPanel.setOffset( 10 );
 
         model.init( options, sceneValues );
         view.addMenuItemListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
         navPanel.addHorizontalRefListener( new ButtonListener() );
+        view.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
 
         tablePanel.addHorizontalRefListener( new ButtonListener() );
         tablePanel.addTableModelListener( new TableListener() );
@@ -274,7 +275,8 @@ public class Controller {
                 if ( tF.getName().startsWith( GRViewerGUI.JTEXTFIELD_COORDINATE_JUMPER ) ) {
                     System.out.println( "put something in the textfield: " + tF.getText() );
 
-                    textFieldModel = new TextFieldModel( tF.getText() );
+                    textFieldModel.setTextInput( tF.getText() );
+
                     if ( sceneValues.getTransformedBounds() != null ) {
                         System.out.println( textFieldModel.toString() );
                         if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {

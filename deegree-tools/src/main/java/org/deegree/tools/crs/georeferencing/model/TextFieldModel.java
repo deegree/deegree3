@@ -65,7 +65,11 @@ public class TextFieldModel {
 
     private String textInput;
 
-    public TextFieldModel( String textInput ) {
+    public TextFieldModel() {
+
+    }
+
+    public void setTextInput( String textInput ) {
         this.textInput = textInput;
         String[] inputParameters = null;
         Pattern p = Pattern.compile( separator );
@@ -147,6 +151,15 @@ public class TextFieldModel {
 
     public String getTextInput() {
         return textInput;
+    }
+
+    public String getTooltipText() {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "<html><center>" );
+        sb.append( "Example: x-Coordinate y-Coordinate [width height]" ).append( "<br>" );
+        sb.append( "The separators between the parameters are: SPACE, SEMICOLON, SLASH" );
+        sb.append( "</center></html>" );
+        return sb.toString();
     }
 
     @Override

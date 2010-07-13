@@ -75,8 +75,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
 
     private List<Ring> worldPolygonList;
 
-    private int offset;
-
     private final Insets insets = new Insets( 0, 10, 0, 0 );
 
     private Map<FootprintPoint, FootprintPoint> pointsPixelToWorld;
@@ -163,19 +161,6 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             this.polygonList = null;
         }
 
-    }
-
-    public int getOffset() {
-        return offset;
-    }
-
-    /**
-     * This value specifies how many pixels the lowest position should be.
-     * 
-     * @param offset
-     */
-    public void setOffset( int offset ) {
-        this.offset = offset;
     }
 
     /**

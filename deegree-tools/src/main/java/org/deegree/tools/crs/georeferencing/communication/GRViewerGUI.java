@@ -153,14 +153,6 @@ public class GRViewerGUI extends JFrame {
         polynomial_3 = new JMenuItem( MENUITEM_TRANS_POLYNOM_THIRD );
         helmert = new JMenuItem( MENUITEM_TRANS_HELMERT );
 
-        // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
-        // ows7url =
-        // "http://localhost:8080/deegree-wms-cite/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
-        // ows7url = "http://www.wms.nrw.de/geobasis/adv_dtk?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1";
-        // fileName = "src/main/resources/org/deegree/tools/crs/georeferencing/test_building.gml";
-
-        // fileName = GRViewerGUI.class.getResource( "georeferencing/test_building.gml" ).toString();
-
         // menuFile.add( import2DMapMenuItem );
         // menuFile.add( import3DObjectMenuItem );
         menuTransformation.add( polynomial_1 );
@@ -176,7 +168,7 @@ public class GRViewerGUI extends JFrame {
         navigationPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         navigationPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        coordinateJumper = new JTextField( 30 );
+        coordinateJumper = new JTextField( 15 );
         coordinateJumper.setName( JTEXTFIELD_COORDINATE_JUMPER );
         navigationPanel.add( coordinateJumper );
 
@@ -271,6 +263,10 @@ public class GRViewerGUI extends JFrame {
     public void addHoleWindowListener( ComponentListener c ) {
         this.addComponentListener( c );
 
+    }
+
+    public JTextField getCoordinateJumper() {
+        return coordinateJumper;
     }
 
     public NavigationBarPanel getNavigationPanel() {
