@@ -515,16 +515,16 @@ public class WFSController extends AbstractOGCServiceController {
                 baseUrl = OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=1.1.0&";
                 template = baseUrl + "REQUEST=GetGmlObject&OUTPUTFORMAT="
                            + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" )
-                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}";
+                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
             } else if ( VERSION_110.equals( version ) ) {
                 template = baseUrl + "REQUEST=GetGmlObject&OUTPUTFORMAT="
                            + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" )
-                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}";
+                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
             } else if ( VERSION_200.equals( version ) ) {
                 // TODO check spec.
                 template = baseUrl + "REQUEST=GetPropertyValue&OUTPUTFORMAT="
                            + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" )
-                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}";
+                           + "&TRAVERSEXLINKDEPTH=0&GMLOBJECTID={}#{}";
             } else {
                 throw new UnsupportedOperationException( Messages.getMessage( "WFS_BACKREFERENCE_UNSUPPORTED", version ) );
             }

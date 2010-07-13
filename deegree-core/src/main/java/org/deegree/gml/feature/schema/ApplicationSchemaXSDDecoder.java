@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
@@ -51,6 +52,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.impl.dv.XSSimpleType;
 import org.apache.xerces.xs.XSAnnotation;
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -516,7 +519,14 @@ public class ApplicationSchemaXSDDecoder {
             return pt;
         }
 
+        boolean allowsXLink = allowsXLink( typeDef );
+
         switch ( typeDef.getContentType() ) {
+        case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
+            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null, elementDecl.getAbstract(),
+                                          ptSubstitutions, ValueRepresentation.REMOTE );
+            return pt;
+        }
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
             LOG.trace( "CONTENTTYPE_ELEMENT" );
             XSParticle particle = typeDef.getParticle();
@@ -551,13 +561,25 @@ public class ApplicationSchemaXSDDecoder {
                             LOG.trace( "Identified a feature property." );
                             pt = null;
                             if ( gmlNs.equals( elementName.getNamespaceURI() ) ) {
-                                pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
-                                                              elementDecl2.getAbstract(), ptSubstitutions,
-                                                              ValueRepresentation.BOTH );
+                                if ( allowsXLink ) {
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
+                                                                  elementDecl.getAbstract(), ptSubstitutions,
+                                                                  ValueRepresentation.BOTH );
+                                } else {
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
+                                                                  elementDecl.getAbstract(), ptSubstitutions,
+                                                                  ValueRepresentation.INLINE );
+                                }
                             } else {
-                                pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementName,
-                                                              elementDecl2.getAbstract(), ptSubstitutions,
-                                                              ValueRepresentation.BOTH );
+                                if ( allowsXLink ) {
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementName,
+                                                                  elementDecl.getAbstract(), ptSubstitutions,
+                                                                  ValueRepresentation.BOTH );
+                                } else {
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
+                                                                  elementDecl.getAbstract(), ptSubstitutions,
+                                                                  ValueRepresentation.INLINE );
+                                }
                             }
                             featurePropertyTypes.add( pt );
                             return pt;
@@ -592,11 +614,24 @@ public class ApplicationSchemaXSDDecoder {
                 assert false;
             }
             }
-            // contents = new Sequence( elements );
             break;
+        }
+        default: {
+            LOG.debug( "Unhandled content type in buildFeaturePropertyType(...) encountered." );
         }
         }
         return null;
+    }
+
+    private boolean allowsXLink( XSComplexTypeDefinition typeDef ) {
+        XSObjectList xsObjectList = typeDef.getAttributeUses();
+        for ( int i = 0; i < xsObjectList.getLength(); i++ ) {
+            XSAttributeDeclaration attr = ( (XSAttributeUse) xsObjectList.item( i ) ).getAttrDeclaration();
+            if ( "href".equals( attr.getName() ) && XLNNS.equals( attr.getNamespace() ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private FeaturePropertyType buildFeaturePropertyTypeXGml( XSElementDeclaration elementDecl,

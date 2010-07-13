@@ -57,12 +57,14 @@ import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.postgis.jaxb.AbstractPropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxb.FeaturePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -85,8 +87,6 @@ class PostGISApplicationSchemaBuilder {
 
     private Map<QName, FeatureTypeMapping> ftNameToMapping = new HashMap<QName, FeatureTypeMapping>();
 
-    private ApplicationSchema schema;
-
     private DatabaseMetaData md;
 
     static MappedApplicationSchema build( List<FeatureTypeDecl> ftDecls, String jdbcConnId, String dbSchema,
@@ -94,6 +94,7 @@ class PostGISApplicationSchemaBuilder {
                             throws SQLException {
         PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema );
         FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
+        System.out.println ("BLA: " + fts.length);
         FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
                                                                                     new FeatureTypeMapping[builder.ftNameToMapping.size()] );
         return new MappedApplicationSchema( fts, null, ftMappings, storageSRS );
@@ -108,7 +109,7 @@ class PostGISApplicationSchemaBuilder {
         for ( FeatureTypeDecl ftDecl : ftDecls ) {
             process( ftDecl );
         }
-        schema = new ApplicationSchema( ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] ), null );
+//        schema = new ApplicationSchema( ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] ), null );
     }
 
     private void process( FeatureTypeDecl ftDecl ) {
@@ -174,6 +175,9 @@ class PostGISApplicationSchemaBuilder {
         } else if ( propDecl instanceof GeometryPropertyDecl ) {
             GeometryPropertyDecl gpt = (GeometryPropertyDecl) propDecl;
             pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, GEOMETRY, DIM_2, false, null, BOTH );
+        } else if ( propDecl instanceof FeaturePropertyDecl ) {
+            FeaturePropertyDecl fpt = (FeaturePropertyDecl) propDecl;
+            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, fpt.getType(), false, null, BOTH );
         } else {
             throw new RuntimeException( "Internal error: Unhandled property JAXB property type: " + propDecl.getClass() );
         }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+  <!--
   This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
 -->
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:postgisfs="http://www.deegree.org/datasource/feature/postgis"
@@ -279,4 +279,26 @@
       <enumeration value="MultiSolid" />
     </restriction>
   </simpleType>
+  <!--
+    === Feature property definition ===
+  -->
+  <element name="FeatureProperty" substitutionGroup="postgisfs:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a feature-valued property of a feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="FeaturePropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="postgisfs:AbstractPropertyType">
+          <attribute name="type" type="QName" use="optional">
+            <annotation>
+              <documentation>Allowed feature type.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
 </schema>

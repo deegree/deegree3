@@ -100,7 +100,7 @@ public class ApplicationSchema {
      */
     public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt )
                             throws IllegalArgumentException {
-                
+       
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
             ft.setSchema( this );

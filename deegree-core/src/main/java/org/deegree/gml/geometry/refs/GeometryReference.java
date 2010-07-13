@@ -130,11 +130,6 @@ public class GeometryReference<T extends Geometry> extends GMLReference<T> imple
     }
 
     @Override
-    public String getId() {
-        return getReferencedObject().getId();
-    }
-
-    @Override
     public PrecisionModel getPrecision() {
         return getReferencedObject().getPrecision();
     }

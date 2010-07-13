@@ -505,10 +505,8 @@ public class GMLFeatureWriter {
             } else {
                 Geometry gValue = (Geometry) value;
                 if ( !exportSf && gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
-                    writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     writer.writeAttribute( XLNNS, "href", "#" + gValue.getId() );
-                    writer.writeComment( "Reference to geometry '" + gValue.getId() + "'" );
-                    writer.writeEndElement();
                 } else {
                     writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     if ( gValue.getId() != null ) {
@@ -672,10 +670,8 @@ public class GMLFeatureWriter {
                 if ( exportedIds.contains( subFid ) ) {
                     // already exported -> put a local xlink to an already
                     // exported feature instance
-                    writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
                     writer.writeAttribute( XLNNS, "href", "#" + subFid );
-                    writer.writeComment( "Reference to feature '" + subFid + "'" );
-                    writer.writeEndElement();
                 } else {
                     // not exported yet
                     if ( ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) || referenceTemplate == null
@@ -688,11 +684,9 @@ public class GMLFeatureWriter {
                         writer.writeEndElement();
                     } else {
                         // must be exported by reference
-                        writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                        writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
                         String uri = referenceTemplate.replace( "{}", subFid );
                         writer.writeAttribute( XLNNS, "href", uri );
-                        writer.writeComment( "Reference to feature '" + subFid + "'" );
-                        writer.writeEndElement();
                     }
                 }
             }
@@ -715,18 +709,13 @@ public class GMLFeatureWriter {
                     // writer.writeEndElement();
                 } catch ( MalformedURLException e ) {
                     LOG.warn( "Not inlining remote feature reference -- not a valid URI." );
-                    writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
                     writer.writeAttribute( XLNNS, "href", ref.getURI() );
-                    writer.writeComment( "Reference to remote feature '" + ref.getURI()
-                                         + "' (should have been inlined, but reference is not a valid URI)." );
-                    writer.writeEndElement();
                 }
             } else {
                 // must be exported by reference
-                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeAttribute( XLNNS, "href", ref.getURI() );
-                writer.writeComment( "Reference to remote feature '" + ref.getURI() + "'" );
-                writer.writeEndElement();
             }
         }
         //

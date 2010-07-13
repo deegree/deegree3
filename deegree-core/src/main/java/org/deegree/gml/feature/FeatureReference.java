@@ -87,11 +87,6 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     }
 
     @Override
-    public String getId() {
-        return getReferencedObject().getId();
-    }
-
-    @Override
     public QName getName() {
         return getReferencedObject().getName();
     }

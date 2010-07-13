@@ -35,38 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
-import java.net.URL;
-
-import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
-import junit.framework.Assert;
-
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.persistence.query.FeatureResultSet;
-import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.comparison.PropertyIsEqualTo;
-import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
-import org.deegree.geometry.Envelope;
-import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.GMLStreamWriter;
-import org.deegree.gml.GMLVersion;
-import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.Test;
 
 /**
@@ -91,7 +66,7 @@ public class PostGISFeatureStoreTest {
 //        fs.init();
 //
 //        ApplicationSchema schema = fs.getSchema();
-//        Assert.assertEquals( 1, schema.getFeatureTypes().length );
+//        Assert.assertEquals( 4, schema.getFeatureTypes().length );
 //
 //        FeatureType ft = schema.getFeatureTypes()[0];
 //        System.out.println( ft );
@@ -112,12 +87,6 @@ public class PostGISFeatureStoreTest {
 //        URL configURL = this.getClass().getResource( "philosopher.xml" );
 //        PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
 //        fs.init();
-//
-//        ApplicationSchema schema = fs.getSchema();
-//        Assert.assertEquals( 1, schema.getFeatureTypes().length );
-//
-//        FeatureType ft = schema.getFeatureTypes()[0];
-//        System.out.println( ft );
 //
 //        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Country" ),
 //                                                              null ) };
@@ -175,4 +144,35 @@ public class PostGISFeatureStoreTest {
 //            rs.close();
 //        }
     }
+    
+    @Test
+    public void testQueryPlace()
+                            throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
+                            FactoryConfigurationError, UnknownCRSException, TransformationException {
+
+//        ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
+//                                         "deegreetest", "deegreetest", 1, 10 );
+//
+//        URL configURL = this.getClass().getResource( "philosopher.xml" );
+//        PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+//        fs.init();
+//
+//        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Place" ),
+//                                                              null ) };
+//        Query query = new Query( typeNames, null, null, null, null );
+//        FeatureResultSet rs = fs.query( query );
+//        try {
+//            FeatureCollection fc = rs.toCollection();
+//            XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
+//                                                                       XMLOutputFactory.newInstance().createXMLStreamWriter(
+//                                                                                                                             System.out ) );
+//            GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
+//            gmlStream.setLocalXLinkTemplate( "http://bla?fid={}" );
+//            gmlStream.setXLinkDepth( -1 );
+//            gmlStream.write( fc );
+//            gmlStream.close();
+//        } finally {
+//            rs.close();
+//        }
+    }    
 }
