@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication;
+package org.deegree.tools.crs.georeferencing.communication.dialog;
 
 import java.awt.Component;
 
@@ -41,17 +41,17 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 /**
- * Custom class to provide the functionality to show errors in the GUI or other kinds of dialogs.
+ * Custom class to provide the functionality to show errors.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Dialog extends JDialog {
+public class ErrorDialog extends JDialog {
 
     /**
-     * Creates an instance of {@link Dialog} to show error messages.
+     * Creates a new instance of {@code Dialog} to show error messages.
      * 
      * @param com
      *            the parent component of this error message.
@@ -60,7 +60,7 @@ public class Dialog extends JDialog {
      * @param messageText
      *            the customized message that should be shown.
      */
-    public Dialog( Component com, int messageType, String messageText ) {
+    public ErrorDialog( Component com, int messageType, String messageText ) {
 
         switch ( messageType ) {
 

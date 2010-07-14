@@ -55,6 +55,8 @@ import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
+import org.deegree.tools.crs.georeferencing.communication.dialog.ErrorDialog;
+import org.deegree.tools.crs.georeferencing.communication.dialog.OptionDialog;
 
 /**
  * The <Code>GRViewerGUI</Code> class provides the client to view georeferencing tools/windows.
@@ -64,23 +66,7 @@ import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
  * 
  * @version $Revision$, $Date$
  */
-public class GRViewerGUI extends JFrame {
-
-    private final static String WINDOW_TITLE = " deegree3 Georeferencing Client ";
-
-    public final static String MENUITEM_GETMAP = "Import 2D Map";
-
-    public final static String MENUITEM_GET_3DOBJECT = "Import 3D Object";
-
-    public final static String MENUITEM_TRANS_POLYNOM_FIRST = "Polynomial 1";
-
-    public final static String MENUITEM_TRANS_POLYNOM_SECOND = "Polynomial 2";
-
-    public final static String MENUITEM_TRANS_POLYNOM_THIRD = "Polynomial 3";
-
-    public final static String MENUITEM_TRANS_HELMERT = "Helmert";
-
-    public final static String JTEXTFIELD_COORDINATE_JUMPER = "CoordinateJumper";
+public class GRViewerGUI extends JFrame implements GUIConstants {
 
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
@@ -98,6 +84,8 @@ public class GRViewerGUI extends JFrame {
 
     private JMenuItem import2DMapMenuItem;
 
+    private JMenuItem editMenuItem;
+
     private JMenuItem import3DObjectMenuItem;
 
     private JMenuItem polynomial_1;
@@ -111,6 +99,8 @@ public class GRViewerGUI extends JFrame {
     private JTextField coordinateJumper;
 
     private ErrorDialog errorDialog;
+
+    private OptionDialog optionDialog;
 
     public GRViewerGUI() {
         super( WINDOW_TITLE );
@@ -139,15 +129,19 @@ public class GRViewerGUI extends JFrame {
 
         JMenuBar menuBar;
         JMenu menuFile;
+        JMenu menuEdit;
         JMenu menuTransformation;
 
         menuBar = new JMenuBar();
-        menuFile = new JMenu( "File" );
-        menuTransformation = new JMenu( "Transformation" );
+        menuFile = new JMenu( MENU_FILE );
+        menuEdit = new JMenu( MENU_EDIT );
+        menuTransformation = new JMenu( MENU_TRANSFORMATION );
 
         menuBar.add( menuFile );
+        menuBar.add( menuEdit );
         menuBar.add( menuTransformation );
 
+        editMenuItem = new JMenuItem( MENUITEM_EDIT_OPTIONS );
         import2DMapMenuItem = new JMenuItem( MENUITEM_GETMAP );
         import3DObjectMenuItem = new JMenuItem( MENUITEM_GET_3DOBJECT );
         polynomial_1 = new JMenuItem( MENUITEM_TRANS_POLYNOM_FIRST );
@@ -161,6 +155,7 @@ public class GRViewerGUI extends JFrame {
         // menuTransformation.add( polynomial_2 );
         // menuTransformation.add( polynomial_3 );
         // menuTransformation.add( helmert );
+        menuEdit.add( editMenuItem );
 
         this.getRootPane().setJMenuBar( menuBar );
     }
@@ -246,6 +241,7 @@ public class GRViewerGUI extends JFrame {
         polynomial_3.addActionListener( e );
         helmert.addActionListener( e );
         coordinateJumper.addActionListener( e );
+        editMenuItem.addActionListener( e );
 
     }
 
@@ -283,12 +279,13 @@ public class GRViewerGUI extends JFrame {
         return openGLEventListener;
     }
 
-    public ErrorDialog getErrorDialog() {
-        return errorDialog;
-    }
-
     public void setErrorDialog( ErrorDialog errorDialog ) {
         this.errorDialog = errorDialog;
+
+    }
+
+    public void setOptionDialog( OptionDialog optionDialog ) {
+        this.optionDialog = optionDialog;
     }
 
 }

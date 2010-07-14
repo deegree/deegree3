@@ -33,30 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication;
+package org.deegree.tools.crs.georeferencing.communication.dialog;
+
+import java.awt.Frame;
 
 import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 /**
- * TODO add class documentation here
+ * Custom class to provide the functionality to show option dialogs.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ErrorDialog extends JDialog {
-    public ErrorDialog( JFrame frame, int messageType, String messageText ) {
+public class OptionDialog extends JDialog {
 
-        switch ( messageType ) {
-
-        case JDialog.ERROR:
-            JOptionPane.showMessageDialog( frame, messageText, "Error", JOptionPane.ERROR_MESSAGE );
-
-        }
-
+    /**
+     * Creates a new instance of {@code Dialog} with the modal attribute <i>true</i>.
+     * 
+     * @param frame
+     *            the parentFrame, not <Code>null</Code>.
+     */
+    public OptionDialog( Frame frame ) {
+        super( frame, true );
+        this.setVisible( true );
     }
 
 }
