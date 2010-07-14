@@ -200,8 +200,9 @@ public class Scene2DValues {
     }
 
     /**
-     * Sets the point as the centroid of the envelope with specified spans in x- and y-direction. These parameters will
-     * be corrected if there is a mismatch regarding to the proportion of the requested envelope.
+     * Sets the points <i>xCoord</i> and <i>yCoord</i> as the centroid of the envelope with specified spans in x- and
+     * y-direction. These parameters will be corrected if there is a mismatch regarding to the proportion of the
+     * requested envelope.
      * 
      * @param xCoord
      *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
@@ -219,8 +220,6 @@ public class Scene2DValues {
         double halfSpanXWorld;
         double halfSpanYWorld;
 
-        double minX;
-        double minY;
         if ( spanX != -1 && spanY != -1 ) {
             if ( ratio < 1 ) {
                 halfSpanYWorld = spanY / 2;
@@ -232,28 +231,20 @@ public class Scene2DValues {
                 halfSpanYWorld = halfSpanXWorld * transformedRasterSpan.y / transformedRasterSpan.x;
 
             }
-            minX = xCoord - halfSpanXWorld;
-            minY = yCoord - halfSpanYWorld;
-            double maxX = xCoord + halfSpanXWorld;
-            double maxY = yCoord + halfSpanYWorld;
-            Envelope enve = geom.createEnvelope( minX, minY, maxX, maxY, crs );
-            this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
-            rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
 
         } else {
             halfSpanXWorld = this.subRaster.getEnvelope().getSpan0() / 2;
             halfSpanYWorld = this.subRaster.getEnvelope().getSpan1() / 2;
 
-            minX = xCoord - halfSpanXWorld;
-            minY = yCoord + halfSpanYWorld;
-            // get the worldPoint in pixelCoordinates
-            int[] p = getPixelCoord( new GeoReferencedPoint( minX, minY ) );
-
-            // set all the relevant parameters for generating the georefernced map
-            setStartRasterEnvelopePosition( new Point2d( p[0], p[1] ) );
-
-            moveEnvelope( new GeoReferencedPoint( minX, minY ) );
         }
+
+        double minX = xCoord - halfSpanXWorld;
+        double minY = yCoord - halfSpanYWorld;
+        double maxX = xCoord + halfSpanXWorld;
+        double maxY = yCoord + halfSpanYWorld;
+        Envelope enve = geom.createEnvelope( minX, minY, maxX, maxY, crs );
+        this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
+        rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
 
     }
 
