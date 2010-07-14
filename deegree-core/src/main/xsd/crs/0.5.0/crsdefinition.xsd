@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:crs="http://www.deegree.org/crs" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/crs" elementFormDefault="qualified">
+  <xs:complexType name="_Definitions" abstract="true">
+    <xs:annotation>
+      <xs:documentation>The abstract root is used for the sole defenition of the configurations version attribute</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="version" fixed="0.5.0"/>
+  </xs:complexType>
+  <xs:element name="CRSConfiguration">
+    <xs:annotation>
+      <xs:documentation>
+        The root node of the deegree crs-definitions-xml file. The definitions contains the reference to the files from which the definitions can be read.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="crs:_Definitions">
+          <xs:sequence>
+            <xs:element name="ProjectionsFile" type="xs:string" default="projection-definitions.xml"/>
+            <xs:element name="TransformationsFile" type="xs:string" default="transformation-definitions.xml"/>
+            <xs:element name="PrimeMeridiansFile" type="xs:string" default="pm-definitions.xml"/>
+            <xs:element name="EllispoidsFile" type="xs:string" default="ellipsoid-definitions.xml"/>
+            <xs:element name="DatumsFile" type="xs:string" default="datum-definitions.xml"/>
+            <xs:element name="CRSsFile" type="xs:string" default="crs-definitions.xml"/>
+            <xs:element ref="crs:ProjectionDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:TransformationDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:PMDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:EllipsoidDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:DatumDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:CRSDefinitions" minOccurs="0"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CRSDefinitions">
+    <xs:annotation>
+      <xs:documentation>
+        The root node of the deegree crs-definitions-xml file. The definitions node must at least contain one ellipsoid
+        a datum element and a crs.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="crs:_Definitions">
+          <xs:sequence>
+            <xs:element name="GeographicCRS" type="crs:GeographicCRSType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="ProjectedCRS" type="crs:ProjectedCRSType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="GeocentricCRS" type="crs:GeocentricCRSType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="CompoundCRS" type="crs:CompoundCRSType" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DatumDefinitions">
+    <xs:annotation>
+      <xs:documentation>
+        The root node of the deegree datum definitions (file). The definitions node must contain at least one datum element.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="crs:_Definitions">
+          <xs:sequence>
+            <xs:element name="GeodeticDatum" type="crs:GeodeticDatumType" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EllipsoidDefinitions">
+    <xs:annotation>
+      <xs:documentation>
+        The root node of the ellipsoid definitions (file). The definitions node must contain at least one ellipsoid element.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="crs:_Definitions">
+          <xs:sequence>
+            <xs:element name="Ellipsoid" type="crs:EllipsoidType" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PMDefinitions">
+    <xs:annotation>
+      <xs:documentation>
+        The root node of the prime meridian definitions (file). The definitions node must contain at least one prime meridian element.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="crs:_Definitions">
+          <xs:sequence>
+            <xs:element name="PrimeMeridian" type="crs:PrimeMeridianType" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="TransformationDefinitions">
+    <xs:annotation>
+      <xs:documentation>
+        The root node of the transformation definitions (file). The definitions node must contain at least one transformation element.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="crs:_Definitions">
+          <xs:sequence>
+            <xs:element name="UserDefined" type="crs:ProjectionType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Helmert" type="crs:HelmertTransformationType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="NTv2" type="crs:NTv2TransformationType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LeastSquare" type="crs:LeastSquareTransformationType" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProjectionDefinitions">
+    <xs:annotation>
+      <xs:documentation>
+        The root node of the projection definitions (file). The definitions node must contain at least one projection element.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="crs:_Definitions">
+          <xs:sequence>
+            <xs:element name="UserDefined" type="crs:ProjectionType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LambertAzimuthalEqualArea" type="crs:ProjectionType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LambertConformalConic" type="crs:LambertConformalConicType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="StereographicAzimuthal" type="crs:StereographicAzimuthalType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="StereographicAlternative" type="crs:ProjectionType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="TransverseMercator" type="crs:TransverseMercatorType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Mercator" type="crs:ProjectionType" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- ######################
+    # Compontent defintions #
+    ######################### -->
+  <xs:element name="AxisOrientation">
+    <xs:annotation>
+      <xs:documentation>A simple element defining the possible axis' orientation</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="north"/>
+        <xs:enumeration value="south"/>
+        <xs:enumeration value="west"/>
+        <xs:enumeration value="east"/>
+        <xs:enumeration value="front"/>
+        <xs:enumeration value="back"/>
+        <xs:enumeration value="up"/>
+        <xs:enumeration value="down"/>
+        <xs:enumeration value="other"/>
+        <xs:enumeration value="perpendicular"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Units">
+    <xs:annotation>
+      <xs:documentation>The units currently supported by the deegree-crs-library.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="metre"/>
+        <xs:enumeration value="degree"/>
+        <xs:enumeration value="britishyard"/>
+        <xs:enumeration value="usfoot"/>
+        <xs:enumeration value="arcsec"/>
+        <xs:enumeration value="unknown"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:complexType name="_Identifiable" abstract="true">
+    <xs:annotation>
+      <xs:documentation>
+        The ellipsoids, datums, wgs84Transformations, projections and crs's must have at least one identifier and may
+        have more descriptive values.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Id" type="xs:string" maxOccurs="unbounded"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Name" type="xs:string"/>
+        <xs:element name="Version" type="xs:string"/>
+        <xs:element name="Description" type="xs:string"/>
+        <xs:element name="AreaOfUse" type="xs:string"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="AxisType">
+    <xs:annotation>
+      <xs:documentation>The definition of an Axis in the deegree-crs-library.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string"/>
+      <xs:element ref="crs:Units"/>
+      <xs:element ref="crs:AxisOrientation"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PrimeMeridianType">
+    <xs:annotation>
+      <xs:documentation>The definition of a prime meridian, with longitude (in units) from greenwich.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_Identifiable">
+        <xs:sequence>
+          <xs:element ref="crs:Units"/>
+          <xs:element name="Longitude" type="crs:LatLongType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeodeticDatumType">
+    <xs:annotation>
+      <xs:documentation>
+        The definition of a Datum in the deegree-crs-library. The usedEllipsoid is a reference to the id of an ellipsoid
+        defined in the crs-configuration. Same is true for the usedPrimeMeridian, if this is omitted the greenwich
+        meridian is used. If no conversionInfo (also a link to an existing object) is given, it is assumed that the
+        datum needs no conversion into wgs84 (e.g. the ESR:89 datum).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_Identifiable">
+        <xs:sequence>
+          <xs:element name="UsedEllipsoid" type="xs:string"/>
+          <xs:element name="UsedPrimeMeridian" type="xs:string" minOccurs="0"/>
+          <xs:element name="UsedWGS84ConversionInfo" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="EllipsoidType">
+    <xs:annotation>
+      <xs:documentation>The definition of an ellipsoid in deegree-crs-library.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_Identifiable">
+        <xs:sequence>
+          <xs:element ref="crs:Units"/>
+          <xs:element name="SemiMajorAxis" type="xs:double"/>
+          <xs:choice>
+            <xs:element name="Eccentricity" type="xs:double"/>
+            <xs:element name="InverseFlattening" type="xs:double"/>
+            <xs:element name="SemiMinorAxis" type="xs:double"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!-- ##########################
+    # Transformations definitions #
+    ###############################-->
+  <xs:complexType name="_TransformationType" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Defines a transformation (change of datum) for a given source and a given target crs</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_Identifiable">
+        <xs:sequence>
+          <xs:element name="SourceCRS" type="xs:string"/>
+          <xs:element name="TargetCRS" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="class" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="HelmertTransformationType">
+    <xs:annotation>
+      <xs:documentation>
+        A Transformation defines the parameters necessary to transform a specific datum into the wgs-84 datum.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_TransformationType">
+        <xs:sequence>
+          <xs:element name="XAxisTranslation" type="xs:double"/>
+          <xs:element name="YAxisTranslation" type="xs:double"/>
+          <xs:element name="ZAxisTranslation" type="xs:double"/>
+          <xs:element name="XAxisRotation" type="xs:double"/>
+          <xs:element name="YAxisRotation" type="xs:double"/>
+          <xs:element name="ZAxisRotation" type="xs:double"/>
+          <xs:element name="ScaleDifference" type="xs:double"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="NTv2TransformationType">
+    <xs:annotation>
+      <xs:documentation>
+        A Transformation defines the parameters necessary to transform a specific datum into the wgs-84 datum.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_TransformationType">
+        <xs:sequence>
+          <xs:element name="Gridfile" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PolynomialTransformationBaseType">
+    <xs:annotation>
+      <xs:documentation>
+        The base type of all transformations defines standard elements used in all transformations.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_TransformationType">
+        <xs:sequence>
+          <xs:element name="PolynomialOrder" type="xs:double" minOccurs="0"/>
+          <xs:element name="XParameters" type="crs:PolynomialParameters"/>
+          <xs:element name="YParameters" type="crs:PolynomialParameters"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="LeastSquareTransformationType">
+    <xs:annotation>
+      <xs:documentation>
+        The least square type defines scale x and scale y values.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:PolynomialTransformationBaseType">
+        <xs:sequence>
+          <xs:element name="ScaleX" type="xs:double" minOccurs="0"/>
+          <xs:element name="ScaleY" type="xs:double" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:group name="DefinedPolynomialTransformations">
+    <xs:choice>
+      <xs:element name="Leastsquare" type="crs:LeastSquareTransformationType"/>
+    </xs:choice>
+  </xs:group>
+  <xs:simpleType name="PolynomialParameters">
+    <xs:annotation>
+      <xs:documentation>
+        A simple list of doubles
+      </xs:documentation>
+    </xs:annotation>
+    <xs:list itemType="xs:double"/>
+  </xs:simpleType>
+  <!-- #######################
+    # PROJECTIONS definitions#
+    ##########################-->
+  <xs:complexType name="LatLongType">
+    <xs:annotation>
+      <xs:documentation>
+        A simple type, which can be used to define a lat-lon in radians or degrees. False if the given
+        latitude/longitude is in radians. If omited degrees will be assumed.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:double">
+        <xs:attribute name="inDegrees" type="xs:boolean" default="true"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="ProjectionType">
+    <xs:annotation>
+      <xs:documentation>
+        The base type of all projections defines standard elements used in all projection.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_Identifiable">
+        <xs:sequence>
+          <xs:element name="LatitudeOfNaturalOrigin" type="crs:LatLongType"/>
+          <xs:element name="LongitudeOfNaturalOrigin" type="crs:LatLongType"/>
+          <xs:element name="ScaleFactor" type="xs:double" default="1" minOccurs="0"/>
+          <xs:element name="FalseEasting" type="xs:double" default="0" minOccurs="0"/>
+          <xs:element name="FalseNorthing" type="xs:double" default="0" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="class" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TransverseMercatorType">
+    <xs:annotation>
+      <xs:documentation>
+        A transverse mercator projection only needs the supplement information of the norther/southern hemisphere, if
+        failing northern hemisphere is assumed.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:ProjectionType">
+        <xs:attribute name="northernHemisphere" type="xs:boolean" default="true"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="StereographicAzimuthalType">
+    <xs:annotation>
+      <xs:documentation>
+        A Stereographic Azimuthal projection only needs the supplement information of the true scale latitude, which
+        defines the latitude (in radians) around the projection point for which the projection has a true scale. If
+        failing the projection latitude is assumed.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:ProjectionType">
+        <xs:sequence>
+          <xs:element name="TrueScaleLatitude" type="crs:LatLongType" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="LambertConformalConicType">
+    <xs:annotation>
+      <xs:documentation>
+        A Lambert Conformal Conic projection needs the supplement information (like all conic projections) of the first
+        and/or second projection parallels, e.g. the parallels which intersect with the datum. If failing the projection
+        latitude will be assumed.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:ProjectionType">
+        <xs:sequence>
+          <xs:element name="FirstParallelLatitude" type="crs:LatLongType" minOccurs="0"/>
+          <xs:element name="SecondParallelLatitude" type="crs:LatLongType" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--  #############################
+    # Coordinate system definitions # 
+    ################################# -->
+  <xs:complexType name="AbstractCRS" abstract="true">
+    <xs:annotation>
+      <xs:documentation>
+        The base type of all crs's defines an extra element to define the axis-order of the implementing crs. Deegree
+        supports up to 3 axis.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_Identifiable">
+        <xs:sequence>
+          <xs:choice maxOccurs="3">
+            <xs:element name="Axis" type="crs:AxisType"/>
+          </xs:choice>
+          <!-- rb: the axis order is given by the axis sequence -->
+          <!---xs:element ref="crs:AxisOrder"/-->
+          <xs:element name="PolynomialTransformation" minOccurs="0">
+            <xs:complexType>
+              <xs:group ref="crs:DefinedPolynomialTransformations"/>
+              <xs:attribute name="class" type="xs:string" use="optional"/>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeographicCRSType">
+    <xs:annotation>
+      <xs:documentation>
+        A geographic crs is defined on a datum. The value should be a valid id of an element in the configuration.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:AbstractCRS">
+        <xs:sequence>
+          <xs:element name="UsedDatum" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CompoundCRSType">
+    <xs:annotation>
+      <xs:documentation>
+        A compound crs is defined on a crs with a vertical Axis defining the height above or below the ellipsoid. The
+        default height, denotes a height value if no z coordinate is given.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:_Identifiable">
+        <xs:sequence>
+          <xs:element name="UsedCRS" type="xs:string"/>
+          <xs:element name="HeightAxis" type="crs:AxisType"/>
+          <xs:element name="DefaultHeight" type="xs:double" default="0" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeocentricCRSType">
+    <xs:annotation>
+      <xs:documentation>
+        A geocentricCRS is a coordinate system which is defined with it's center at the earths mass.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:AbstractCRS">
+        <xs:sequence>
+          <xs:element name="UsedGeodeticDatum" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ProjectedCRSType">
+    <xs:annotation>
+      <xs:documentation>
+        A projectedCRS is a coordinatesystem which uses a projection as well as a geographicCRS. Both should be
+        references to an id defined in the deegree-crs-configuration.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="crs:AbstractCRS">
+        <xs:sequence>
+          <xs:element name="UsedGeographicCRS" type="xs:string"/>
+          <xs:element name="UsedProjection" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>

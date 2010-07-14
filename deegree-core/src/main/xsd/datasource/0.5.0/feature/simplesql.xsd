@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+  This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/feature/simplesql" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.feature.persistence.simplesql.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="SimpleSQLFeatureStore">
+    <annotation>
+      <documentation>SQL FeatureStore that is configured by an SQL statement/connection.</documentation>
+      <appinfo>
+        <jaxb:class name="SimpleSQLFeatureStoreConfig" />
+      </appinfo>      
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="StorageSRS" type="string" />
+        <element name="ConnectionPoolId" type="string" />
+        <element name="SQLStatement" type="string" />
+        <element name="BBoxStatement" type="string" />
+        <element name="LODStatement" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="aboveScale" type="int" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <element name="Namespace" type="string" minOccurs="0" />
+        <element name="FeatureTypeName" type="string" minOccurs="0" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+    </complexType>
+  </element>
+</schema>

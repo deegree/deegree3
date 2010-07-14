@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+  <Rule>
+    <PointSymbolizer />
+    <TextSymbolizer>
+      <Label>
+        <Categorize fallbackValue="1">
+          <LookupValue>
+            <ogc:PropertyName>vehiclesPerHour</ogc:PropertyName>
+          </LookupValue>
+          <Value>1</Value>
+          <Threshold>5000</Threshold>
+          <Value>2</Value>
+          <Threshold>15000</Threshold>
+          <Value>3</Value>
+          <Threshold>40000</Threshold>
+          <Value>4</Value>
+          <Threshold>75000</Threshold>
+          <Value>5</Value>
+        </Categorize>
+      </Label>
+      <Font>
+        <SvgParameter name="font-size">20</SvgParameter>
+      </Font>
+    </TextSymbolizer>
+  </Rule>
+</FeatureTypeStyle>

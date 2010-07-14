@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PostGISFeatureStore configVersion="0.6.0" xmlns="http://www.deegree.org/datasource/feature/postgis"
+  xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/datasource/feature/postgis/0.6.0/postgis.xsd">
+  <NamespaceHint prefix="app" namespaceURI="http://www.deegree.org/app" />
+  <StorageSRS>EPSG:4326</StorageSRS>
+  <JDBCConnId>philosopher-db</JDBCConnId>
+  <FeatureType name="app:Philosopher" mapping="PHILOSOPHER" fidMapping="ID">
+    <SimpleProperty name="app:name" type="string" />
+    <SimpleProperty name="app:sex" type="string" />
+    <SimpleProperty name="app:subject" minOccurs="0" maxOccurs="unbounded" mapping="ID->SUBJECT.PHILOSOPHER_ID->NAME" type="string" />
+    <FeatureProperty name="app:isAuthorOf" minOccurs="0" maxOccurs="unbounded" mapping="ID->IS_AUTHOR_OF.PHILOSOPHER_ID->BOOK_ID" type="app:Book" />
+    <SimpleProperty name="app:dateOfBirth" mapping="DATE_OF_BIRTH" type="date" />
+    <FeatureProperty name="app:placeOfBirth" mapping="PLACE_OF_BIRTH" type="app:Place" />
+    <SimpleProperty name="app:dateOfDeath" mapping="DATE_OF_DEATH" type="date" />
+    <FeatureProperty name="app:placeOfDeath" mapping="PLACE_OF_DEATH" type="app:Place" />
+    <FeatureProperty name="app:friend" mapping="ID->IS_FRIEND_OF.PHILOSOPHER1_ID->PHILOSOPHER_2_ID" type="app:Philosopher" />
+  </FeatureType>
+  <FeatureType name="app:Book" mapping="BOOK" fidMapping="ID">
+    <SimpleProperty name="app:title" type="string" />
+    <SimpleProperty name="app:publicationDate" minOccurs="0" mapping="PUB_DATE" type="date" />
+  </FeatureType>  
+  <FeatureType name="app:Place" mapping="PLACE" fidMapping="ID">
+    <SimpleProperty name="app:name" type="string" />
+    <FeatureProperty name="app:country" minOccurs="0" type="app:Country" mapping="COUNTRY_ID"/>
+  </FeatureType>
+  <FeatureType name="app:Country" mapping="COUNTRY" fidMapping="ID">
+    <SimpleProperty name="app:name" type="string" />
+    <GeometryProperty name="app:geom" minOccurs="0" type="Geometry" srid="4326" />
+  </FeatureType>
+  <!--
+    GlobalMapping> <FeatureTypesTable>feature_types</FeatureTypesTable> <GMLObjectTable>gml_objects</GMLObjectTable>
+    <GMLNamesTable>gml_names</GMLNamesTable> </GlobalMapping
+  -->
+</PostGISFeatureStore>

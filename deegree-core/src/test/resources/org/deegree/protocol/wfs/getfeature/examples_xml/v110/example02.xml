@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- OGC 04-094 (Web Feature Service Implementation 1.1.0), page 40-->
+<wfs:GetFeature service="WFS" version="1.1.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:myns="http://www.someserver.com/myns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <wfs:Query typeName="myns:InWaterA1M">
+    <wfs:PropertyName>myns:wkbGeom</wfs:PropertyName>
+    <wfs:PropertyName>myns:tileId</wfs:PropertyName>
+    <wfs:PropertyName>myns:facId</wfs:PropertyName>
+    <ogc:Filter>
+      <ogc:GmlObjectId gml:id="InWaterA1M.1013"/>
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>

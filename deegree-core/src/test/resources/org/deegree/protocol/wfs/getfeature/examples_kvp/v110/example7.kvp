@@ -1,0 +1,5 @@
+SERVICE=WFS
+VERSION=1.1.0
+REQUEST=GetFeature
+TYPENAME=InWaterA_1M
+FILTER=<Filter xmlns="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd http://www.opengis.net/gml http://schemas.opengis.net//gml/3.1.1/base/gml.xsd"><Within><PropertyName>InWaterA_1M/wkbGeom</PropertyName><gml:Envelope><gml:lowerCorner>10 10</gml:lowerCorner><gml:upperCorner>20 20</gml:upperCorner></gml:Envelope></Within></Filter>

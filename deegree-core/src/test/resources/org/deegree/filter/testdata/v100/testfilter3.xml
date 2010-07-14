@@ -1,0 +1,11 @@
+<Filter xmlns="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml"
+	xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.0.0/filter.xsd">
+	<Not>
+		<Disjoint>
+			<PropertyName>Geometry</PropertyName>
+			<gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326" >
+				<gml:coordinates>13.0983,31.5899 35.5472,42.8143</gml:coordinates>
+			</gml:Box>
+		</Disjoint>
+	</Not>
+</Filter>
