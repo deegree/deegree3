@@ -35,9 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.dialog;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Rectangle;
 
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.border.BevelBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * Custom class to provide the functionality to show option dialogs.
@@ -49,14 +56,65 @@ import javax.swing.JDialog;
  */
 public class OptionDialog extends JDialog {
 
+    private final static Dimension DIALOG_DIMENSION = new Dimension( 300, 300 );
+
+    /*
+     * PANEL_NAVIGATION_WIDTH
+     */
+    private final static int PNW = 100;
+
+    private NavigationPanel navigationPanel;
+
+    private SettingsPanel settingsPanel;
+
     /**
      * Creates a new instance of {@code Dialog} with the modal attribute <i>true</i>.
      * 
      * @param frame
      *            the parentFrame, not <Code>null</Code>.
+     * @param root
      */
-    public OptionDialog( Frame frame ) {
-        super( frame, true );
+    public OptionDialog( Frame frame, DefaultMutableTreeNode root ) {
+        super( frame, "Options", true );
+        this.setBounds( new Rectangle( DIALOG_DIMENSION ) );
+        setLayout( new BorderLayout() );
+
+        navigationPanel = new NavigationPanel( new FlowLayout(), root );
+        navigationPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+        navigationPanel.setPreferredSize( new Dimension( PNW, this.getBounds().height ) );
+
+        settingsPanel = new SettingsPanel();
+        settingsPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+        settingsPanel.setPreferredSize( new Dimension( this.getBounds().width - PNW, this.getBounds().height ) );
+        settingsPanel.setBounds( new Rectangle( new Dimension( this.getBounds().width - PNW, this.getBounds().height ) ) );
+
+        this.add( navigationPanel, BorderLayout.WEST );
+        this.add( settingsPanel, BorderLayout.CENTER );
+
+        this.pack();
+    }
+
+    public NavigationPanel getNavigationPanel() {
+        return navigationPanel;
+    }
+
+    public SettingsPanel getSettingsPanel() {
+        return settingsPanel;
+    }
+
+    public void setNavigationPanel( NavigationPanel navigationPanel ) {
+        this.navigationPanel = navigationPanel;
+        this.setVisible( true );
+    }
+
+    public void setSettingsPanel( SettingsPanel settingsPanel ) {
+        this.settingsPanel = settingsPanel;
+
+        reset();
+    }
+
+    public void reset() {
+        this.repaint();
         this.setVisible( true );
     }
 

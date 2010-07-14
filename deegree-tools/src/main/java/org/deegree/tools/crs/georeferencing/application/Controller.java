@@ -51,9 +51,14 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
@@ -70,15 +75,23 @@ import org.deegree.tools.crs.georeferencing.application.transformation.Polynomia
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
-import org.deegree.tools.crs.georeferencing.communication.ErrorDialog;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.ErrorDialog;
+import org.deegree.tools.crs.georeferencing.communication.dialog.GeneralPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.GenericSettingsPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.NavigationPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.OptionDialog;
+import org.deegree.tools.crs.georeferencing.communication.dialog.SettingsPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.ViewPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.GenericSettingsPanel.PanelType;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.TextFieldModel;
+import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -137,7 +150,15 @@ public class Controller {
 
     private ParameterStore store;
 
+    private NavigationPanel optionNavPanel;
+
+    private OptionDialogModel dialogModel;
+
     public int order;
+
+    private SettingsPanel optionSettPanel;
+
+    private OptionDialog dialog;
 
     public Controller( GRViewerGUI view, Scene2D model, ParameterStore store ) {
 
@@ -257,11 +278,6 @@ public class Controller {
      */
     class ButtonListener implements ActionListener {
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-         */
         @Override
         public void actionPerformed( ActionEvent e ) {
             Object source = e.getSource();
@@ -410,6 +426,74 @@ public class Controller {
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_HELMERT ) ) {
                     transformationType = TransformationMethod.TransformationType.Helmert_3;
                     order = 1;
+                }
+                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_EDIT_OPTIONS ) ) {
+                    DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
+                    dialogModel = new OptionDialogModel();
+                    dialogModel.createNodes( root );
+                    dialog = new OptionDialog( view, root );
+                    optionNavPanel = dialog.getNavigationPanel();
+                    optionSettPanel = dialog.getSettingsPanel();
+
+                    // add the listener to the navigation panel
+                    optionNavPanel.addTreeListener( new NavigationTreeSelectionListener() );
+
+                    view.setOptionDialog( dialog );
+
+                }
+
+            }
+
+        }
+    }
+
+    /**
+     * 
+     * Provides functionality to handle user interaction within a JTree.
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    class NavigationTreeSelectionListener implements TreeSelectionListener {
+
+        @Override
+        public void valueChanged( TreeSelectionEvent e ) {
+            Object source = e.getSource();
+            if ( ( (JTree) source ).getName().equals( NavigationPanel.TREE_NAME ) ) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) optionNavPanel.getTree().getLastSelectedPathComponent();
+
+                if ( node == null )
+                    // Nothing is selected.
+                    return;
+
+                Object nodeInfo = node.getUserObject();
+                if ( node.isLeaf() ) {
+                    PanelType panelType = null;
+                    if ( nodeInfo.equals( OptionDialogModel.GENERAL ) ) {
+                        panelType = GenericSettingsPanel.PanelType.GeneralPanel;
+
+                    } else if ( nodeInfo.equals( OptionDialogModel.VIEW ) ) {
+                        panelType = GenericSettingsPanel.PanelType.ViewPanel;
+                    }
+
+                    switch ( panelType ) {
+                    case GeneralPanel:
+                        GeneralPanel generalPanel = new GeneralPanel( optionSettPanel );
+                        optionSettPanel.setCurrentPanel( generalPanel );
+                        dialog.setSettingsPanel( optionSettPanel );
+                        break;
+                    case ViewPanel:
+                        ViewPanel viewPanel = new ViewPanel();
+                        optionSettPanel.setCurrentPanel( viewPanel );
+                        dialog.setSettingsPanel( optionSettPanel );
+                        break;
+                    }
+
+                } else {
+                    optionSettPanel.reset();
+                    dialog.reset();
                 }
 
             }
@@ -704,9 +788,13 @@ public class Controller {
 
         @Override
         public void componentResized( ComponentEvent c ) {
-            if ( model.getGeneratedImage() != null ) {
-                init();
+            Object source = c.getSource();
 
+            if ( source instanceof JFrame ) {
+                if ( model.getGeneratedImage() != null ) {
+                    init();
+
+                }
             }
 
         }

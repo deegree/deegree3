@@ -284,8 +284,14 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
 
     }
 
+    /**
+     * Sets the dialog and makes it visible.
+     * 
+     * @param optionDialog
+     */
     public void setOptionDialog( OptionDialog optionDialog ) {
         this.optionDialog = optionDialog;
+        optionDialog.setVisible( true );
     }
 
 }
