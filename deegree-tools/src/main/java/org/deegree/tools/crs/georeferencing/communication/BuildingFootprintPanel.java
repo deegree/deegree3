@@ -103,15 +103,18 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         }
         if ( selectedPoints != null ) {
             for ( Point4Values point : selectedPoints ) {
-                g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
+                g2.fillOval( new Double( point.getNewValue().getX() ).intValue() - selectedPointSize,
+                             new Double( point.getNewValue().getY() ).intValue() - selectedPointSize,
+                             selectedPointSize * 2, selectedPointSize * 2 );
             }
         }
         if ( lastAbstractPoint != null ) {
 
-            Point2d p = new Point2d( lastAbstractPoint.getNewValue().getX() - 5,
-                                     lastAbstractPoint.getNewValue().getY() - 5 );
+            Point2d p = new Point2d( lastAbstractPoint.getNewValue().getX() - selectedPointSize,
+                                     lastAbstractPoint.getNewValue().getY() - selectedPointSize );
 
-            g2.fillOval( (int) p.x, (int) p.y, 10, 10 );
+            g2.fillOval( new Double( p.x ).intValue(), new Double( p.y ).intValue(), selectedPointSize * 2,
+                         selectedPointSize * 2 );
         }
     }
 

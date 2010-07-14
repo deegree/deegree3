@@ -82,18 +82,21 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     @Override
     public void paintComponent( Graphics g ) {
+
         super.paintComponent( g );
         Graphics2D g2 = (Graphics2D) g;
 
         if ( imageToDraw != null ) {
 
-            g2.drawImage( imageToDraw, 0, 0, (int) imageDimension.width, (int) imageDimension.height, this );
+            g2.drawImage( imageToDraw, 0, 0, new Double( imageDimension.width ).intValue(),
+                          new Double( imageDimension.height ).intValue(), this );
 
         }
 
         if ( lastAbstractPoint != null ) {
-            g2.fillOval( (int) lastAbstractPoint.getNewValue().getX() - 5,
-                         (int) lastAbstractPoint.getNewValue().getY() - 5, 10, 10 );
+            g2.fillOval( new Double( lastAbstractPoint.getNewValue().getX() ).intValue() - selectedPointSize,
+                         new Double( lastAbstractPoint.getNewValue().getY() ).intValue() - selectedPointSize,
+                         selectedPointSize * 2, selectedPointSize * 2 );
         }
 
         if ( polygonList != null ) {
@@ -106,7 +109,9 @@ public class Scene2DPanel extends AbstractPanel2D {
 
         if ( selectedPoints != null ) {
             for ( Point4Values point : selectedPoints ) {
-                g2.fillOval( (int) point.getNewValue().getX() - 5, (int) point.getNewValue().getY() - 5, 10, 10 );
+                g2.fillOval( new Double( point.getNewValue().getX() ).intValue() - selectedPointSize,
+                             new Double( point.getNewValue().getY() ).intValue() - selectedPointSize,
+                             selectedPointSize * 2, selectedPointSize * 2 );
             }
         }
 

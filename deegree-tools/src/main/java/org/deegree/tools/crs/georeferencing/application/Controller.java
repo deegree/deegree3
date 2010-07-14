@@ -54,6 +54,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
@@ -74,6 +75,7 @@ import org.deegree.tools.crs.georeferencing.application.transformation.Helmert3T
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
+import org.deegree.tools.crs.georeferencing.communication.AbstractPanel2D;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
@@ -160,6 +162,8 @@ public class Controller {
 
     private OptionDialog dialog;
 
+    private GenericSettingsPanel optionSettingPanel;
+
     public Controller( GRViewerGUI view, Scene2D model, ParameterStore store ) {
 
         geom = new GeometryFactory();
@@ -176,6 +180,8 @@ public class Controller {
         this.glHandler = view.getOpenGLEventListener();
         this.store = store;
         this.textFieldModel = new TextFieldModel();
+        this.dialogModel = new OptionDialogModel();
+        AbstractPanel2D.selectedPointSize = this.dialogModel.getSelectionPointSize();
 
         this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
 
@@ -294,7 +300,7 @@ public class Controller {
             if ( source instanceof JTextField ) {
                 JTextField tF = (JTextField) source;
                 if ( tF.getName().startsWith( GRViewerGUI.JTEXTFIELD_COORDINATE_JUMPER ) ) {
-                    System.out.println( "put something in the textfield: " + tF.getText() );
+                    System.out.println( "[Controller] put something in the textfield: " + tF.getText() );
 
                     textFieldModel.setTextInput( tF.getText() );
                     if ( textFieldModel.getError() != null ) {
@@ -429,8 +435,9 @@ public class Controller {
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_EDIT_OPTIONS ) ) {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
-                    dialogModel = new OptionDialogModel();
+
                     dialogModel.createNodes( root );
+                    // textFieldKeyString = dialogModel.getTextFieldKeyString();
                     dialog = new OptionDialog( view, root );
                     optionNavPanel = dialog.getNavigationPanel();
                     optionSettPanel = dialog.getSettingsPanel();
@@ -442,6 +449,27 @@ public class Controller {
 
                 }
 
+            }
+            if ( source instanceof JRadioButton ) {
+                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.DEFAULT ) ) {
+                    System.out.println( "[Controller] default" );
+                    dialogModel.setSelectionPointSize( 5 );
+                }
+                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.SEVEN ) ) {
+                    System.out.println( "[Controller] seven" );
+                    dialogModel.setSelectionPointSize( 7 );
+                }
+                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TEN ) ) {
+                    System.out.println( "[Controller] ten" );
+                    dialogModel.setSelectionPointSize( 10 );
+                }
+                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.CUSTOM ) ) {
+
+                    // dialogModel.setTextFieldKeyString( textFieldKeyString );
+                    dialogModel.setTextFieldKeyString( ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
+                    dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
+                    System.out.println( "[Controller] custom " + dialogModel.getTextFieldKeyString() );
+                }
             }
 
         }
@@ -480,13 +508,14 @@ public class Controller {
 
                     switch ( panelType ) {
                     case GeneralPanel:
-                        GeneralPanel generalPanel = new GeneralPanel( optionSettPanel );
-                        optionSettPanel.setCurrentPanel( generalPanel );
+                        optionSettingPanel = new GeneralPanel( optionSettPanel );
+                        optionSettPanel.setCurrentPanel( optionSettingPanel );
                         dialog.setSettingsPanel( optionSettPanel );
                         break;
                     case ViewPanel:
-                        ViewPanel viewPanel = new ViewPanel( dialogModel );
-                        optionSettPanel.setCurrentPanel( viewPanel );
+                        optionSettingPanel = new ViewPanel( dialogModel );
+                        ( (ViewPanel) optionSettingPanel ).addRadioButtonListener( new ButtonListener() );
+                        optionSettPanel.setCurrentPanel( optionSettingPanel );
                         dialog.setSettingsPanel( optionSettPanel );
                         break;
                     }

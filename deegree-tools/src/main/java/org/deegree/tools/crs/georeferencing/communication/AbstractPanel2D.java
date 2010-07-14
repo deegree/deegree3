@@ -66,6 +66,8 @@ public abstract class AbstractPanel2D extends JPanel {
 
     protected Point4Values lastAbstractPoint;
 
+    public static int selectedPointSize;
+
     // protected Point2d translationPoint;
 
     public void addScene2DMouseListener( MouseListener m ) {
@@ -112,14 +114,6 @@ public abstract class AbstractPanel2D extends JPanel {
         selectedPoints.add( point );
 
     }
-
-    // public Point2d getTranslationPoint() {
-    // return translationPoint;
-    // }
-    //
-    // public void setTranslationPoint( Point2d translationPoint ) {
-    // this.translationPoint = translationPoint;
-    // }
 
     public void removeFromSelectedPoints( Point4Values point ) {
         selectedPoints.remove( point );

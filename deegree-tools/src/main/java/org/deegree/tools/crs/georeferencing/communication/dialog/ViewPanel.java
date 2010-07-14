@@ -65,6 +65,8 @@ public class ViewPanel extends GenericSettingsPanel {
 
     public static final String CUSTOM = "custom";
 
+    public static final String CUSTOM_TEXTFIELD = "customTextField";
+
     private JRadioButton radioDefault;
 
     private JRadioButton radio7PT;
@@ -89,6 +91,10 @@ public class ViewPanel extends GenericSettingsPanel {
         radio10PT = new JRadioButton( TEN );
         radioCustom = new JRadioButton( CUSTOM );
         textFieldCustom = new JTextField( 10 );
+        radioDefault.setName( DEFAULT );
+        radio7PT.setName( SEVEN );
+        radio10PT.setName( TEN );
+        textFieldCustom.setName( CUSTOM_TEXTFIELD );
 
         int pointSize = dialogModel.getSelectionPointSize();
 
@@ -133,6 +139,10 @@ public class ViewPanel extends GenericSettingsPanel {
     public PanelType getType() {
 
         return PanelType.ViewPanel;
+    }
+
+    public JTextField getTextFieldCustom() {
+        return textFieldCustom;
     }
 
 }

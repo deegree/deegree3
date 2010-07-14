@@ -55,6 +55,19 @@ public class OptionDialogModel {
 
     private int selectionPointSize;
 
+    private String textFieldKeyString;
+
+    public OptionDialogModel() {
+        if ( selectionPointSize == 0 ) {
+            selectionPointSize = 5;
+        }
+        if ( textFieldKeyString == null ) {
+            textFieldKeyString = "";
+
+        }
+
+    }
+
     public void createNodes( DefaultMutableTreeNode root ) {
         DefaultMutableTreeNode general = null;
         DefaultMutableTreeNode view = null;
@@ -86,6 +99,14 @@ public class OptionDialogModel {
 
     public void setSelectionPointSize( int selectionPointSize ) {
         this.selectionPointSize = selectionPointSize;
+    }
+
+    public String getTextFieldKeyString() {
+        return textFieldKeyString;
+    }
+
+    public void setTextFieldKeyString( String textFieldKeyString ) {
+        this.textFieldKeyString = textFieldKeyString;
     }
 
 }
