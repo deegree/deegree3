@@ -518,7 +518,7 @@ public class CityGMLImporter implements ModelImporter {
         }
         qmList.add( qm );
 
-        Envelope env = geomFac.createEnvelope( min, max, null );
+        Envelope env = geomFac.createEnvelope( min, max, building.getEnvelope().getCoordinateSystem() );
         WorldRenderableObject rwo = new WorldRenderableObject( id,
                                                                new Timestamp( System.currentTimeMillis() ).toString(),
                                                                env, numberOfLevels );
@@ -584,6 +584,7 @@ public class CityGMLImporter implements ModelImporter {
         Map<String, WorldRenderableObject> bMap = new HashMap<String, WorldRenderableObject>( fc.size() );
         for ( Feature f : fc ) {
             if ( BUILDING_QNAME.equals( f.getName() ) ) {
+
                 WorldRenderableObject wro = createDataObjectWithMaterial( f, numberOfQualityLevels, qualityLevel );
                 if ( wro != null ) {
                     if ( !bMap.containsKey( wro.getId() ) ) {
