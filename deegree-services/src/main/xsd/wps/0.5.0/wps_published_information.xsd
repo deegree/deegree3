@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/services/wps"
+  targetNamespace="http://www.deegree.org/services/wps" elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+  <element name="PublishedInformation">
+    <complexType>
+      <sequence>
+        <element name="OfferedVersions">
+          <complexType>
+            <sequence>
+              <element name="Version" type="string" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>
