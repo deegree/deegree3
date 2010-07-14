@@ -37,6 +37,10 @@ package org.deegree.tools.crs.georeferencing.model;
 
 import java.util.regex.Pattern;
 
+import javax.swing.JDialog;
+
+import org.deegree.tools.crs.georeferencing.model.dialog.ErrorDialogModel;
+
 /**
  * Model that holds the relevant information for textfields.
  * 
@@ -74,7 +78,8 @@ public class TextFieldModel {
 
         for ( int i = 0; i < inputParameters.length; i += numberOfParameters ) {
             if ( numberOfParameters < 2 ) {
-                error = new ErrorDialogModel( "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
+                error = new ErrorDialogModel( JDialog.ERROR,
+                                              "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
             } else {
                 try {
                     xCoordinate = Double.parseDouble( inputParameters[i] );
@@ -90,7 +95,7 @@ public class TextFieldModel {
 
                 if ( numberOfParameters > 2 ) {
                     if ( numberOfParameters == 3 ) {
-                        error = new ErrorDialogModel(
+                        error = new ErrorDialogModel( JDialog.ERROR,
                                                       "You have to specify either non of width and height or both of them! " );
                     } else {
                         try {
@@ -103,7 +108,7 @@ public class TextFieldModel {
                     }
                 }
                 if ( inputParameters.length > 4 ) {
-                    error = new ErrorDialogModel(
+                    error = new ErrorDialogModel( JDialog.ERROR,
                                                   "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
                 }
             }

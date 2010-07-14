@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.model;
+package org.deegree.tools.crs.georeferencing.model.dialog;
 
 /**
  * Handles the error messages to show in the GUI.
@@ -47,12 +47,19 @@ public class ErrorDialogModel {
 
     private String errorMessage;
 
-    public ErrorDialogModel( String errorMessage ) {
+    private int errorType;
+
+    public ErrorDialogModel( int errorType, String errorMessage ) {
         this.errorMessage = errorMessage;
+        this.errorType = errorType;
     }
 
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public int getErrorType() {
+        return errorType;
     }
 
 }
