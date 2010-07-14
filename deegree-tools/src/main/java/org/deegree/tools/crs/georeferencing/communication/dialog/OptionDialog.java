@@ -43,6 +43,7 @@ import java.awt.Rectangle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.JSplitPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -56,7 +57,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class OptionDialog extends JDialog {
 
-    private final static Dimension DIALOG_DIMENSION = new Dimension( 300, 300 );
+    private final static Dimension DIALOG_DIMENSION = new Dimension( 500, 300 );
 
     /*
      * PANEL_NAVIGATION_WIDTH
@@ -78,19 +79,21 @@ public class OptionDialog extends JDialog {
         super( frame, "Options", true );
         this.setBounds( new Rectangle( DIALOG_DIMENSION ) );
         setLayout( new BorderLayout() );
+        JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
 
         navigationPanel = new NavigationPanel( new FlowLayout(), root );
         navigationPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         navigationPanel.setPreferredSize( new Dimension( PNW, this.getBounds().height ) );
+        navigationPanel.setMinimumSize( new Dimension( PNW, this.getBounds().height ) );
 
         settingsPanel = new SettingsPanel();
         settingsPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         settingsPanel.setPreferredSize( new Dimension( this.getBounds().width - PNW, this.getBounds().height ) );
         settingsPanel.setBounds( new Rectangle( new Dimension( this.getBounds().width - PNW, this.getBounds().height ) ) );
 
-        this.add( navigationPanel, BorderLayout.WEST );
-        this.add( settingsPanel, BorderLayout.CENTER );
-
+        splitPane.setLeftComponent( navigationPanel );
+        splitPane.setRightComponent( settingsPanel );
+        this.add( splitPane, BorderLayout.CENTER );
         this.pack();
     }
 

@@ -485,7 +485,7 @@ public class Controller {
                         dialog.setSettingsPanel( optionSettPanel );
                         break;
                     case ViewPanel:
-                        ViewPanel viewPanel = new ViewPanel();
+                        ViewPanel viewPanel = new ViewPanel( dialogModel );
                         optionSettPanel.setCurrentPanel( viewPanel );
                         dialog.setSettingsPanel( optionSettPanel );
                         break;

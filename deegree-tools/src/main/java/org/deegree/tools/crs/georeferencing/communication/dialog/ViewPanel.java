@@ -35,15 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.dialog;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
+
 /**
- * View panel. TODO custom
+ * View panel.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -66,33 +71,62 @@ public class ViewPanel extends GenericSettingsPanel {
 
     private JRadioButton radio10PT;
 
-    private JTextField custom;
+    private JRadioButton radioCustom;
 
-    public ViewPanel() {
-        this.setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
+    private JTextField textFieldCustom;
+
+    public ViewPanel( OptionDialogModel dialogModel ) {
+
+        JPanel defined = new JPanel();
+        defined.setLayout( new BoxLayout( defined, BoxLayout.Y_AXIS ) );
+        JPanel custom = new JPanel();
+        custom.setLayout( new BoxLayout( custom, BoxLayout.X_AXIS ) );
+
+        this.setLayout( new BorderLayout() );
+
         radioDefault = new JRadioButton( DEFAULT );
         radio7PT = new JRadioButton( SEVEN );
         radio10PT = new JRadioButton( TEN );
-        custom = new JTextField();
+        radioCustom = new JRadioButton( CUSTOM );
+        textFieldCustom = new JTextField( 10 );
 
-        // radioDefault.setActionCommand( DEFAULT );
-        // radio7PT.setActionCommand( SEVEN );
-        // radio10PT.setActionCommand( TEN );
+        int pointSize = dialogModel.getSelectionPointSize();
 
         ButtonGroup group = new ButtonGroup();
         group.add( radioDefault );
         group.add( radio7PT );
         group.add( radio10PT );
-        this.add( radioDefault, this );
-        this.add( radio7PT, this );
-        this.add( radio10PT, this );
+        group.add( radioCustom );
 
+        switch ( pointSize ) {
+        case 5:
+            radioDefault.setSelected( true );
+            break;
+        case 7:
+            radio7PT.setSelected( true );
+            break;
+        case 10:
+            radio10PT.setSelected( true );
+            break;
+        default:
+            radioCustom.setSelected( true );
+            textFieldCustom.setText( Integer.toString( pointSize ) );
+        }
+
+        defined.add( radioDefault, Component.LEFT_ALIGNMENT );
+        defined.add( radio7PT, Component.LEFT_ALIGNMENT );
+        defined.add( radio10PT, Component.LEFT_ALIGNMENT );
+        custom.add( radioCustom, Component.LEFT_ALIGNMENT );
+        custom.add( textFieldCustom );
+        this.add( defined, BorderLayout.PAGE_START );
+        this.add( custom, BorderLayout.PAGE_END );
     }
 
     public void addRadioButtonListener( ActionListener e ) {
         radioDefault.addActionListener( e );
         radio7PT.addActionListener( e );
         radio10PT.addActionListener( e );
+        radioCustom.addActionListener( e );
     }
 
     @Override

@@ -53,6 +53,8 @@ public class OptionDialogModel {
 
     private boolean snappingOnOff;
 
+    private int selectionPointSize;
+
     public void createNodes( DefaultMutableTreeNode root ) {
         DefaultMutableTreeNode general = null;
         DefaultMutableTreeNode view = null;
@@ -76,6 +78,14 @@ public class OptionDialogModel {
 
     public void setSnappingOnOff( boolean snappingOnOff ) {
         this.snappingOnOff = snappingOnOff;
+    }
+
+    public int getSelectionPointSize() {
+        return selectionPointSize;
+    }
+
+    public void setSelectionPointSize( int selectionPointSize ) {
+        this.selectionPointSize = selectionPointSize;
     }
 
 }
