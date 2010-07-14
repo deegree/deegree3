@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<TextSymbolizer xmlns="http://www.opengis.net/sld"
+                 xmlns:ogc="http://www.opengis.net/ogc"
+                 xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <Geometry>
+    <ogc:PropertyName>app:someGeometryProp</ogc:PropertyName>
+  </Geometry>
+  <Label>sometext</Label>
+  <Font>
+    <CssParameter name="font-family">times</CssParameter>
+    <CssParameter name="font-weight">bold</CssParameter>
+    <CssParameter name="font-size">8</CssParameter>
+    <CssParameter name="font-style">italic</CssParameter>
+  </Font>
+  <LabelPlacement>
+    <LinePlacement>
+      <PerpendicularOffset>786</PerpendicularOffset>
+    </LinePlacement>
+  </LabelPlacement>
+</TextSymbolizer>

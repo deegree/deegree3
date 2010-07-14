@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd">
+  <ogc:PropertyIsLessThan>
+    <ogc:PropertyName>app:id</ogc:PropertyName>
+    <ogc:Literal>03.1</ogc:Literal>
+  </ogc:PropertyIsLessThan>
+</ogc:Filter>
