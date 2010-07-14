@@ -86,7 +86,7 @@ class DefaultLock implements Lock {
 
     private final int numFailed;
 
-    private final int numLocked;
+    private int numLocked;
 
     /**
      * Creates a new {@link DefaultLock} instance.
@@ -269,6 +269,8 @@ class DefaultLock implements Lock {
                     conn = ConnectionManager.getConnection( jdbcConnId );
                     stmt = conn.createStatement();
                     stmt.executeUpdate( "DELETE FROM LOCKED_FIDS WHERE FID='" + fid + "'" );
+                    conn.commit();
+                    --numLocked;
                 } catch ( SQLException e ) {
                     String msg = "Could not release locked feature: " + e.getMessage();
                     LOG.debug( msg, e );

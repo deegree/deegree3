@@ -50,6 +50,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
 import static org.deegree.services.controller.wfs.WFSController.getXMLResponseWriter;
 
 import java.io.IOException;
@@ -212,7 +213,8 @@ public class TransactionHandler {
 
             // if a lockId has been specified and releaseAction="ALL", release lock
             ReleaseAction releaseAction = request.getReleaseAction();
-            if ( lock != null && ( releaseAction == null || releaseAction == ReleaseAction.ALL ) ) {
+            if ( lock != null
+                 && ( releaseAction == null || releaseAction == ReleaseAction.ALL || lock.getNumLocked() == 0 ) ) {
                 lock.release();
             } else {
                 // TODO renew expiry timeout according to WFS spec
@@ -233,6 +235,10 @@ public class TransactionHandler {
                     LOG.debug( "Error occured during rollback: " + e.getMessage(), e );
                 }
             }
+            if ( request.getVersion().equals( VERSION_100 ) ) {
+                sendResponse100( request, response, true );
+                return;
+            }
             throw new OWSException( "Error occured during transaction: " + e.getMessage(),
                                     OWSException.MISSING_PARAMETER_VALUE, e.getName() );
         } catch ( InvalidParameterValueException e ) {
@@ -245,6 +251,10 @@ public class TransactionHandler {
                 } catch ( FeatureStoreException e1 ) {
                     LOG.debug( "Error occured during rollback: " + e.getMessage(), e );
                 }
+            }
+            if ( request.getVersion().equals( VERSION_100 ) ) {
+                sendResponse100( request, response, true );
+                return;
             }
             throw new OWSException( "Error occured during transaction: " + e.getMessage(),
                                     OWSException.INVALID_PARAMETER_VALUE, e.getName() );
@@ -270,12 +280,11 @@ public class TransactionHandler {
                 }
             }
             e.printStackTrace();
-            throw new OWSException( "Error occured during transaction: " + e.getMessage(),
-                                    OWSException.NO_APPLICABLE_CODE );
+            throw new OWSException( "Error occured during transaction: " + e.getMessage(), NO_APPLICABLE_CODE );
         }
 
         if ( VERSION_100.equals( request.getVersion() ) ) {
-            sendResponse100( request, response );
+            sendResponse100( request, response, false );
         } else {
             sendResponse110and200( request, response );
         }
@@ -561,7 +570,7 @@ public class TransactionHandler {
         return ta;
     }
 
-    private void sendResponse100( Transaction request, HttpResponseBuffer response )
+    private void sendResponse100( Transaction request, HttpResponseBuffer response, boolean failed )
                             throws XMLStreamException, IOException {
         response.setContentType( "text/xml; charset=UTF-8" );
         String schemaLocation = WFS_NS + " " + WFS_100_TRANSACTION_URL;
@@ -598,7 +607,11 @@ public class TransactionHandler {
         xmlWriter.writeStartElement( "wfs", "TransactionResult", WFS_NS );
         writeHandle( xmlWriter, request.getHandle() );
         xmlWriter.writeStartElement( "wfs", "Status", WFS_NS );
-        xmlWriter.writeEmptyElement( "wfs", "SUCCESS", WFS_NS );
+        if ( failed ) {
+            xmlWriter.writeEmptyElement( "wfs", "FAILED", WFS_NS );
+        } else {
+            xmlWriter.writeEmptyElement( "wfs", "SUCCESS", WFS_NS );
+        }
 
         xmlWriter.writeEndElement(); // wfs:Status
         xmlWriter.writeEndElement(); // wfs:TransactionResult
