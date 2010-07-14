@@ -58,6 +58,8 @@ public class MappedApplicationSchema extends ApplicationSchema {
 
     private final CRS storageSRS;
 
+    private final IdAnalyzer idAnalyzer;
+
     /**
      * Creates a new {@link MappedApplicationSchema} from the given parameters.
      * 
@@ -83,6 +85,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
             ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );
         }
         this.storageSRS = storageSRS;
+        this.idAnalyzer = new IdAnalyzer( this );
     }
 
     /**
@@ -113,5 +116,27 @@ public class MappedApplicationSchema extends ApplicationSchema {
      */
     public CRS getStorageSRS() {
         return storageSRS;
+    }
+
+    /**
+     * Returns the name of the global id lookup table (that allows the lookup of features / geometries by id).
+     * 
+     * @return the name of the lookup table, can be <code>null</code> (no global lookup table, only per feature type)
+     */
+    public String getIdLookupTable() {
+        return null;
+    }
+
+    /**
+     * Returns an analysis of the given feature or geometry id.
+     * 
+     * @param featureOrGeomId
+     * @return
+     * @throws IllegalArgumentException
+     *             if the id does not denote a feature or geometry id
+     */
+    public IdAnalysis analyzeId( String featureOrGeomId )
+                            throws IllegalArgumentException {
+        return idAnalyzer.analyze( featureOrGeomId );
     }
 }
