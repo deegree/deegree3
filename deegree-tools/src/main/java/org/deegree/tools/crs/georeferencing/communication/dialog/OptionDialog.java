@@ -36,13 +36,18 @@
 package org.deegree.tools.crs.georeferencing.communication.dialog;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -59,6 +64,10 @@ public class OptionDialog extends JDialog {
 
     private final static Dimension DIALOG_DIMENSION = new Dimension( 500, 300 );
 
+    public static final String BUTTON_NAME_OK = "OK";
+
+    public static final String BUTTON_PANEL_NAME = "buttonPanel";
+
     /*
      * PANEL_NAVIGATION_WIDTH
      */
@@ -67,6 +76,10 @@ public class OptionDialog extends JDialog {
     private NavigationPanel navigationPanel;
 
     private SettingsPanel settingsPanel;
+
+    private JPanel buttonPanel;
+
+    private JButton ok;
 
     /**
      * Creates a new instance of {@code Dialog} with the modal attribute <i>true</i>.
@@ -91,9 +104,18 @@ public class OptionDialog extends JDialog {
         settingsPanel.setPreferredSize( new Dimension( this.getBounds().width - PNW, this.getBounds().height ) );
         settingsPanel.setBounds( new Rectangle( new Dimension( this.getBounds().width - PNW, this.getBounds().height ) ) );
 
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout( new BoxLayout( buttonPanel, BoxLayout.X_AXIS ) );
+        buttonPanel.setName( BUTTON_PANEL_NAME );
+
+        ok = new JButton( BUTTON_NAME_OK );
+
+        buttonPanel.add( ok, Component.RIGHT_ALIGNMENT );
+
         splitPane.setLeftComponent( navigationPanel );
         splitPane.setRightComponent( settingsPanel );
         this.add( splitPane, BorderLayout.CENTER );
+        this.add( buttonPanel, BorderLayout.PAGE_END );
         this.pack();
     }
 
@@ -119,6 +141,10 @@ public class OptionDialog extends JDialog {
     public void reset() {
         this.repaint();
         this.setVisible( true );
+    }
+
+    public void addActionKeyListener( ActionListener e ) {
+        ok.addActionListener( e );
     }
 
 }

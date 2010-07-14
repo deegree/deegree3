@@ -77,6 +77,8 @@ public class ViewPanel extends GenericSettingsPanel {
 
     private JTextField textFieldCustom;
 
+    private int pointSize;
+
     public ViewPanel( OptionDialogModel dialogModel ) {
 
         JPanel defined = new JPanel();
@@ -96,7 +98,7 @@ public class ViewPanel extends GenericSettingsPanel {
         radio10PT.setName( TEN );
         textFieldCustom.setName( CUSTOM_TEXTFIELD );
 
-        int pointSize = dialogModel.getSelectionPointSize();
+        pointSize = dialogModel.getSelectionPointSize();
 
         ButtonGroup group = new ButtonGroup();
         group.add( radioDefault );
@@ -107,16 +109,20 @@ public class ViewPanel extends GenericSettingsPanel {
         switch ( pointSize ) {
         case 5:
             radioDefault.setSelected( true );
+
             break;
         case 7:
             radio7PT.setSelected( true );
+
             break;
         case 10:
             radio10PT.setSelected( true );
+
             break;
         default:
             radioCustom.setSelected( true );
             textFieldCustom.setText( Integer.toString( pointSize ) );
+
         }
 
         defined.add( radioDefault, Component.LEFT_ALIGNMENT );
@@ -143,6 +149,14 @@ public class ViewPanel extends GenericSettingsPanel {
 
     public JTextField getTextFieldCustom() {
         return textFieldCustom;
+    }
+
+    public int getPointSize() {
+        return pointSize;
+    }
+
+    public void setPointSize( int pointSize ) {
+        this.pointSize = pointSize;
     }
 
 }

@@ -368,6 +368,21 @@ public class Controller {
                     panel.repaint();
                     footPanel.repaint();
                 }
+                if ( ( (JButton) source ).getText().startsWith( OptionDialog.BUTTON_NAME_OK ) ) {
+                    // switch ( optionSettingPanel.getType() ) {
+                    // case GeneralPanel:
+                    // // TODO
+                    // break;
+                    //
+                    // case ViewPanel:
+                    // ViewPanel viewPanel = (ViewPanel) optionSettingPanel;
+                    // viewPanel.getPointSize();
+                    // dialogModel.getSelectionPointSize();
+                    // break;
+                    //
+                    // }
+                    dialog.setVisible( false );
+                }
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
                     System.out.println( "you clicked on delete all" );
                     removeAllFromMappedPoints();
@@ -439,6 +454,7 @@ public class Controller {
                     dialogModel.createNodes( root );
                     // textFieldKeyString = dialogModel.getTextFieldKeyString();
                     dialog = new OptionDialog( view, root );
+                    dialog.addActionKeyListener( new ButtonListener() );
                     optionNavPanel = dialog.getNavigationPanel();
                     optionSettPanel = dialog.getSettingsPanel();
 
@@ -454,6 +470,7 @@ public class Controller {
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.DEFAULT ) ) {
                     System.out.println( "[Controller] default" );
                     dialogModel.setSelectionPointSize( 5 );
+
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.SEVEN ) ) {
                     System.out.println( "[Controller] seven" );
@@ -470,6 +487,7 @@ public class Controller {
                     dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
                     System.out.println( "[Controller] custom " + dialogModel.getTextFieldKeyString() );
                 }
+                AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize();
             }
 
         }
