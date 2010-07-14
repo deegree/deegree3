@@ -1,7 +1,0 @@
-WFS 1.0.0 Test Suite Release Notes
-
-Changes included in this revision:
-
-2009-10-12 (kstegemoller):
-- tag r1 - WFS 1.0.0
-
