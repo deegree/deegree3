@@ -65,6 +65,7 @@ import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+import org.deegree.feature.persistence.mapping.IdAnalysis;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
@@ -146,6 +147,8 @@ public class PostGISFeatureStore implements FeatureStore {
 
     // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
     private boolean useLegacyPredicates;
+
+    private boolean hasLookupTable;
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
@@ -409,29 +412,119 @@ public class PostGISFeatureStore implements FeatureStore {
         GMLObject geomOrFeature = cache.get( id );
 
         if ( geomOrFeature == null ) {
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
-                conn.setAutoCommit( false );
-                stmt = conn.prepareStatement( "SELECT binary_object FROM " + qualifyTableName( "gml_objects" )
-                                              + " WHERE gml_id=?" );
-                stmt.setString( 1, id );
-                rs = stmt.executeQuery();
-                if ( rs.next() ) {
-                    LOG.debug( "Recreating object '" + id + "' from bytea." );
-                    geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, storageSRS,
-                                                         new FeatureStoreGMLIdResolver( this ) );
-                    cache.add( geomOrFeature );
-                }
-            } catch ( Exception e ) {
-                String msg = "Error performing query: " + e.getMessage();
-                LOG.debug( msg, e );
-                throw new FeatureStoreException( msg, e );
-            } finally {
-                closeSafely( conn, stmt, rs );
+            if ( schema.getIdLookupTable() != null ) {
+                geomOrFeature = getObjectBlob( id );
+            } else {
+                geomOrFeature = getObjectRelational( id );
             }
+        }
+        return geomOrFeature;
+    }
+
+    private GMLObject getObjectRelational( String id )
+                            throws FeatureStoreException {
+
+        GMLObject result = null;
+
+        IdAnalysis idAnalysis = schema.analyzeId( id );
+        if ( !idAnalysis.isFid() ) {
+            String msg = "Fetching of geometries by id (relational) is not implemented yet.";
+            throw new UnsupportedOperationException( msg );
+        }
+
+        FeatureType ft = idAnalysis.getFeatureType();
+        FeatureTypeMapping mapping = schema.getMapping( ft.getName() );
+        String table = mapping.getFtTable();
+        String fidColumn = mapping.getFidColumn();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = ConnectionManager.getConnection( jdbcConnId );
+
+            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( ft, mapping, this );
+
+            StringBuilder sql = new StringBuilder( "SELECT " );
+            sql.append( mapping.getFidColumn() );
+            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+                // append every (mapped) property to SELECT list
+
+                // TODO columns in related tables
+                String column = mapping.getColumn( pt.getName() );
+                if ( column != null ) {
+                    if ( pt instanceof SimplePropertyType ) {
+                        sql.append( ',' );
+                        sql.append( column );
+                    } else if ( pt instanceof GeometryPropertyType ) {
+                        sql.append( ',' );
+                        if ( useLegacyPredicates ) {
+                            sql.append( "AsBinary(" );
+                        } else {
+                            sql.append( "ST_AsBinary(" );
+                        }
+                        sql.append( column );
+                        sql.append( ')' );
+                    } else if ( pt instanceof FeaturePropertyType ) {
+                        sql.append( ',' );
+                        sql.append( column );
+                    } else {
+                        LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                                  + "' not handled in PostGISFeatureStore." );
+                    }
+                }
+            }
+
+            sql.append( " FROM " );
+            sql.append( mapping.getFtTable() );
+            sql.append( " WHERE " );
+            sql.append( mapping.getFidColumn() );
+            sql.append( "=?" );
+
+            LOG.info( "Preparing SELECT: " + sql );
+            stmt = conn.prepareStatement( sql.toString() );
+            stmt.setString( 1, idAnalysis.getIdKernel() );
+
+            rs = stmt.executeQuery();
+            if ( rs.next() ) {
+                result = buildFeature( rs, ft, mapping );
+            }
+        } catch ( Exception e ) {
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.info( msg, e );
+            throw new FeatureStoreException( msg, e );
+        } finally {
+            closeSafely( conn, stmt, rs );
+        }
+        return result;
+    }
+
+    private GMLObject getObjectBlob( String id )
+                            throws FeatureStoreException {
+        GMLObject geomOrFeature = null;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn.setAutoCommit( false );
+            stmt = conn.prepareStatement( "SELECT binary_object FROM " + qualifyTableName( "gml_objects" )
+                                          + " WHERE gml_id=?" );
+            stmt.setString( 1, id );
+            rs = stmt.executeQuery();
+            if ( rs.next() ) {
+                LOG.debug( "Recreating object '" + id + "' from bytea." );
+                geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, storageSRS,
+                                                     new FeatureStoreGMLIdResolver( this ) );
+                cache.add( geomOrFeature );
+            }
+        } catch ( Exception e ) {
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.debug( msg, e );
+            throw new FeatureStoreException( msg, e );
+        } finally {
+            closeSafely( conn, stmt, rs );
         }
         return geomOrFeature;
     }
@@ -1163,6 +1256,10 @@ public class PostGISFeatureStore implements FeatureStore {
                 } else if ( pt instanceof FeaturePropertyType ) {
                     String subFid = rs.getString( i );
                     if ( subFid != null ) {
+                        QName valueFtName = ( (FeaturePropertyType) pt ).getFTName();
+                        if ( valueFtName != null ) {
+                            subFid = valueFtName.getLocalPart().toUpperCase() + "_" + subFid;
+                        }
                         String uri = "#" + subFid;
                         FeatureReference ref = new FeatureReference( resolver, uri, null );
                         Property prop = new GenericProperty( pt, ref );
