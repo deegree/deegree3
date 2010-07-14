@@ -706,7 +706,7 @@ public class ISORecordStore implements RecordStore {
         // building the StringBuilder to get the BLOB data from backend
         StringBuilder s = new StringBuilder();
         s.append( "SELECT " ).append( COUNT_PRE ).append( formatTypeAlias ).append( '.' );
-        s.append( data ).append( COUNT_SUF );
+        s.append( fk_datasets ).append( COUNT_SUF );
         s.append( " FROM " ).append( formatType ).append( " AS " ).append( formatTypeAlias );
         s.append( " WHERE " ).append( formatTypeAlias ).append( '.' );
         s.append( fk_datasets ).append( " IN (" );
@@ -971,7 +971,6 @@ public class ISORecordStore implements RecordStore {
             break;
 
         case DELETE:
-
             DeleteTransaction delete = (DeleteTransaction) operations;
 
             PostGISWhereBuilder builder = null;
@@ -989,9 +988,10 @@ public class ISORecordStore implements RecordStore {
                     }
                 }
             } else {
-                formatNumbers = new int[2];
+                // TODO remove hack,
+                // but: a csw record is available in every case, if not there is no iso, as well
+                formatNumbers = new int[1];
                 formatNumbers[0] = 1;
-                formatNumbers[1] = 2;
             }
             if ( formatNumber == 0 ) {
                 for ( int formatNum : formatNumbers ) {
@@ -1007,7 +1007,7 @@ public class ISORecordStore implements RecordStore {
 
                     ResultSet rs = null;
                     PreparedStatement preparedStatement = null;
-
+                    // test if there is a record to delete
                     try {
                         preparedStatement = generateSELECTStatement(
                                                                      formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
@@ -1026,7 +1026,7 @@ public class ISORecordStore implements RecordStore {
 
                     if ( rs != null ) {
                         while ( rs.next() ) {
-                            deletableDatasets.add( rs.getInt( 2 ) );
+                            deletableDatasets.add( rs.getInt( 1 ) );
 
                         }
                         rs.close();
@@ -1040,6 +1040,7 @@ public class ISORecordStore implements RecordStore {
                         }
                     }
                     affectedIds.addAll( deletableDatasets );
+
                 }
 
             }
@@ -1363,10 +1364,10 @@ public class ISORecordStore implements RecordStore {
             LOG.debug( "error: " + e.getMessage(), e );
         }
         // catch ( FileNotFoundException e ) {
-        // // TODO Auto-generated catch block
+        // 
         // LOG.debug( "error: " + e.getMessage(), e );
         // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
+        // 
         // LOG.debug( "error: " + e.getMessage(), e );
         // }
 
