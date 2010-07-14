@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Raster configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/coverage/raster" crs="EPSG:26912"
+  originLocation="outer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/0.5.0/coverage/raster.xsd">
+<!--This example shows the configuration of a RasterFile as datasource for deegree WMS.
+    Please think about indicating the crs if your raster file in the root element.
+    If fileType is not jpg, you have to define it in the RasterFile element, like below.-->  
+  <RasterFile fileType="tiff">../../../data/utah/raster/dem.tiff</RasterFile>
+</Raster>
