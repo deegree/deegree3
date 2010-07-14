@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:wms="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/wms" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.wms" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:include schemaLocation="wms_published_information.xsd" />
+  <xs:include schemaLocation="wms_service_configuration.xsd" />
+
+  <xs:element name="deegreeWMS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="wms:ServiceConfiguration" />
+        <xs:element ref="wms:PublishedInformation" minOccurs="0" />
+        <xs:element name="CustomConfiguration" type="xs:anyType" minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="configVersion" use="required" fixed="0.5.0" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
