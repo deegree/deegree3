@@ -85,11 +85,13 @@ public class ToolBox {
                                       new ToolInfo( org.deegree.tools.rendering.InteractiveWPVS.class ),
                                       new ToolInfo( org.deegree.tools.feature.gml.MappingShortener.class ),
                                       new ToolInfo( org.deegree.tools.rendering.manager.ModelGeneralizor.class ),
+                                      new ToolInfo( org.deegree.tools.rendering.r2d.se.PostgreSQLImporter.class ),
                                       new ToolInfo( org.deegree.tools.rendering.manager.PrototypeAssigner.class ),
                                       new ToolInfo( org.deegree.tools.coverage.RTBClient.class ),
                                       new ToolInfo( org.deegree.tools.coverage.converter.RasterConverter.class ),
                                       new ToolInfo( org.deegree.tools.coverage.gridifier.RasterTreeGridifier.class ),
                                       new ToolInfo( org.deegree.tools.feature.gml.SchemaAnalyzer.class ),
+                                      new ToolInfo( org.deegree.tools.rendering.r2d.se.StyleChecker.class ),
                                       new ToolInfo( org.deegree.tools.coverage.TransformRaster.class ),
 
                                       // Following classes define public static void main methods, but do not implement

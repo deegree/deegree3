@@ -56,6 +56,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.rendering.r2d.se.parser.PostgreSQLReader;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.tools.CommandUtils;
+import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.i18n.Messages;
 import org.slf4j.Logger;
 
@@ -67,6 +68,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@Tool(value = "This tool can be used to check and remove faulty styles in a WMS style database (PostgreSQL).")
 public class StyleChecker {
     private static final Logger LOG = getLogger( StyleChecker.class );
 

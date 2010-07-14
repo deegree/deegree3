@@ -51,6 +51,7 @@ import org.deegree.rendering.r2d.se.parser.PostgreSQLWriter;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.tools.CommandUtils;
+import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.i18n.Messages;
 
 /**
@@ -61,6 +62,7 @@ import org.deegree.tools.i18n.Messages;
  * 
  * @version $Revision$, $Date$
  */
+@Tool(value = "This tool can be used to import SLD/SE files into a WMS styles database.")
 public class PostgreSQLImporter {
     private static Options initOptions() {
         Options opts = new Options();
