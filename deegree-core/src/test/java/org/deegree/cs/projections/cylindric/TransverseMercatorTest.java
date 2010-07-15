@@ -44,7 +44,6 @@ import org.deegree.cs.components.Unit;
 import org.deegree.cs.exceptions.ProjectionException;
 import org.deegree.cs.projections.ProjectionBase;
 import org.deegree.cs.projections.conic.LambertConformalConic;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**

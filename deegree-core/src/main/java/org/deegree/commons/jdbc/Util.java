@@ -37,8 +37,8 @@ package org.deegree.commons.jdbc;
 
 import static java.sql.Types.BINARY;
 import static java.sql.Types.BIT;
-import static java.sql.Types.CHAR;
 import static java.sql.Types.BLOB;
+import static java.sql.Types.CHAR;
 import static java.sql.Types.DOUBLE;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.NUMERIC;

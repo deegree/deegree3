@@ -60,8 +60,6 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
-import org.deegree.gml.geometry.GML2GeometryReader;
-import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;

@@ -51,8 +51,8 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.props.GMLStdPropsReader;
 import org.deegree.gml.props.GMLStdProps;
+import org.deegree.gml.props.GMLStdPropsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

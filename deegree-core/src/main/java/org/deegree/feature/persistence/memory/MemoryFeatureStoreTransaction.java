@@ -39,7 +39,6 @@ package org.deegree.feature.persistence.memory;
 import static org.deegree.feature.i18n.Messages.getMessage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;

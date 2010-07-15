@@ -64,7 +64,6 @@ import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.DiskBasedTileContainer;
 import org.deegree.coverage.raster.container.GriddedBlobTileContainer;
 import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
-import org.deegree.coverage.raster.container.TileContainer;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;

@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2009 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,36 +33,42 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.tom.genericxml;
+package org.deegree.feature.persistence.mapping.antlr;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
-import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.junit.Test;
 
 /**
- * {@link TypedObjectNode} that represents a generic XML element with associated XML schema type information.
+ * Tests the parsing of FML (FeatureMappingLanguage) expressions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GenericXMLElement extends GenericXMLElementContent {
+public class FMLParserTest {
 
-    private QName name;
-
-    public GenericXMLElement( QName name, XSTypeDefinition type, Map<QName, PrimitiveValue> attrs,
-                              List<TypedObjectNode> children ) {
-        super( type, attrs, children );
-        this.name = name;
+    @Test
+    public void testParsingUnqualifiedColumn()
+                            throws RecognitionException {
+        ANTLRStringStream in = new ANTLRStringStream( "NAME" );
+        FMLLexer lexer = new FMLLexer( in );
+        CommonTokenStream tokens = new CommonTokenStream( lexer );
+        FMLParser parser = new FMLParser( tokens );
+        Object result = parser.eval().value;
+        // System.out.println (result);
     }
 
-    public QName getName() {
-        return name;
-    }
+//    @Test(expected = ExpectException.class)
+//    public void testParsingBrokenExpression()
+//                            throws RecognitionException {
+//        ANTLRStringStream in = new ANTLRStringStream( "NAME NAME" );
+//        FMLLexer lexer = new FMLLexer( in );
+//        CommonTokenStream tokens = new CommonTokenStream( lexer );
+//        FMLParser parser = new FMLParser( tokens );
+//        parser.eval();
+//    }
+
 }

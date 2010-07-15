@@ -50,7 +50,6 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
-import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.BillBoard;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;

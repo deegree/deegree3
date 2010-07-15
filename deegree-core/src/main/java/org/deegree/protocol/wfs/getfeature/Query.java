@@ -36,7 +36,6 @@
 package org.deegree.protocol.wfs.getfeature;
 
 import org.deegree.cs.CRS;
-import org.deegree.filter.expression.Function;
 import org.deegree.filter.sort.SortProperty;
 
 /**

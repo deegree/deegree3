@@ -40,7 +40,6 @@ package org.deegree.cs;
 
 import junit.framework.TestCase;
 
-import org.deegree.cs.CRSCodeType;
 import org.junit.Test;
 
 /**

@@ -36,9 +36,9 @@
 
 package org.deegree.cs.configuration.deegree;
 
-import org.junit.Test;
-
 import junit.framework.TestCase;
+
+import org.junit.Test;
 
 /**
  * <b>Since the retrieval of all CRSs takes too much time this test should be skipped</b>

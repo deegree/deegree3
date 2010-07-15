@@ -41,7 +41,6 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
