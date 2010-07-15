@@ -40,6 +40,18 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr3-maven-plugin</artifactId>
+        <version>3.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>antlr</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.5</version>
@@ -113,7 +125,7 @@
     <repository>
       <id>deegree-releases</id>
       <url>http://artefacts.deegree.org/libs-releases-local</url>
-    </repository>  
+    </repository>
     <snapshotRepository>
       <id>deegree-snapshots</id>
       <url>http://artefacts.deegree.org/libs-snapshots-local</url>
@@ -129,6 +141,11 @@
       <groupId>org.apache.ws.commons.axiom</groupId>
       <artifactId>axiom-api</artifactId>
       <version>1.2.9-deegreeversion</version>
+    </dependency>
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr-runtime</artifactId>
+      <version>3.2</version>
     </dependency>
     <dependency>
       <groupId>net.sf.squirrel-sql.thirdparty.non-maven</groupId>
