@@ -36,21 +36,26 @@
 package org.deegree.tools.crs.georeferencing.model.exceptions;
 
 /**
- * If there are numbers given (or not) but they don't match the minimum size of numbers needed.
+ * If there are numbers given but they don't match the maximium size of numbers.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class TooLessNumberException extends NumberException {
+public class MaximumNumberException extends NumberException {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private String message;
 
-    public TooLessNumberException() {
+    public MaximumNumberException() {
 
     }
 
-    public TooLessNumberException( String message ) {
+    public MaximumNumberException( String message ) {
         super( message );
         this.message = message;
     }

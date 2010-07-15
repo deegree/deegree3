@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 
 import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.exceptions.NumberMissmatch;
-import org.deegree.tools.crs.georeferencing.model.exceptions.TooManyNumbersException;
+import org.deegree.tools.crs.georeferencing.model.exceptions.MaximumNumberException;
 
 /**
  * Model that holds the relevant information for textfields.
@@ -114,7 +114,7 @@ public class TextFieldModel extends AbstractTextfieldModel {
                 if ( inputParameters.length > 4 ) {
                     // error = new ErrorDialogModel( JDialog.ERROR,
                     // "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
-                    throw new TooManyNumbersException(
+                    throw new MaximumNumberException(
                                                        "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
                 }
             }

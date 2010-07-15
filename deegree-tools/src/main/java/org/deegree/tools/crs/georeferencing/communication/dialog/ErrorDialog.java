@@ -41,7 +41,10 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 /**
- * Custom class to provide the functionality to show errors.
+ * Custom class to provide the functionality to show errors. <br>
+ * TODO implement an own ErrorDialog because this one hears just on the parentFrame but should hear on its near standing
+ * parent which can be a Dialog as well
+ * 
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -49,6 +52,11 @@ import javax.swing.JOptionPane;
  * @version $Revision$, $Date$
  */
 public class ErrorDialog extends JDialog {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates a new instance of {@code Dialog} to show error messages.
