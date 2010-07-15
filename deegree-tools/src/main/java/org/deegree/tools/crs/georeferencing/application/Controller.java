@@ -432,22 +432,26 @@ public class Controller {
                 }
                 if ( ( (JButton) source ).getText().startsWith( OptionDialog.BUTTON_NAME_OK ) ) {
 
-                    // if the custom radiobutton is selected and there is something inside the textField
-                    if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
-                         && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects()[0] != null ) {
-                        // here you have to check about the input for the custom textfield. Keylistener for the
-                        // textfield while typing in is problematic because you can workaround with copy&paste...so this
-                        // should be the way to go.
+                    if ( optionSettingPanel != null ) {
 
-                        String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
-                        if ( AbstractTextfieldModel.validateInt( textInput ) ) {
-                            dialogModel.setTextFieldKeyString( textInput );
-                            dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
-                        } else {
-                            dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR, "Insert numbers only!" ) );
+                        // if the custom radiobutton is selected and there is something inside the textField
+                        if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
+                             && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects()[0] != null ) {
+                            // here you have to check about the input for the custom textfield. Keylistener for the
+                            // textfield while typing in is problematic because you can workaround with copy&paste...so
+                            // this
+                            // should be the way to go.
+
+                            String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
+                            if ( AbstractTextfieldModel.validateInt( textInput ) ) {
+                                dialogModel.setTextFieldKeyString( textInput );
+                                dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
+                            } else {
+                                dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR, "Insert numbers only!" ) );
+
+                            }
 
                         }
-
                     }
 
                     panel.repaint();
@@ -480,7 +484,6 @@ public class Controller {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
 
                     dialogModel.createNodes( root );
-                    // textFieldKeyString = dialogModel.getTextFieldKeyString();
                     dialog = new OptionDialog( view, root );
                     dialog.addActionKeyListener( new ButtonListener() );
                     optionNavPanel = dialog.getNavigationPanel();
