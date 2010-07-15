@@ -130,13 +130,9 @@ public class Scene2DValues {
                 double getMinX = subRaster.getEnvelope().getMin().get0();
                 double getMaxY = subRaster.getEnvelope().getMax().get1();
 
-                // determine the span of the envelope
-                double spanX = this.subRaster.getEnvelope().getSpan0();
-                double spanY = this.subRaster.getEnvelope().getSpan1();
-
                 // determine the percentage of the requested point
-                double percentX = ( pixelPoint.getX() / dimensionGeoreference.width ) * spanX;
-                double percentY = ( pixelPoint.getY() / dimensionGeoreference.height ) * spanY;
+                double percentX = getWorldDimension( pixelPoint ).getX();
+                double percentY = getWorldDimension( pixelPoint ).getY();
 
                 return new GeoReferencedPoint( getMinX + percentX, getMaxY - percentY );
 
@@ -147,15 +143,53 @@ public class Scene2DValues {
             double getMinX = this.envelopeFootprint.getMin().get0();
             double getMaxY = this.envelopeFootprint.getMax().get1();
 
+            // determine the percentage of the requested point
+            double percentX = getWorldDimension( pixelPoint ).getX();
+            double percentY = getWorldDimension( pixelPoint ).getY();
+
+            return new FootprintPoint( getMinX + percentX, getMaxY - percentY );
+
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts the pixelDimension to a dimension with world coordinates.
+     * 
+     * @param dimension
+     *            , not <Code>null</Code>.
+     * @return an AbstractGRPoint in worldCoordinates.
+     */
+    private AbstractGRPoint getWorldDimension( AbstractGRPoint dimension ) {
+        switch ( dimension.getPointType() ) {
+
+        case GeoreferencedPoint:
+
+            if ( subRaster != null ) {
+
+                // determine the span of the envelope
+                double spanX = this.subRaster.getEnvelope().getSpan0();
+                double spanY = this.subRaster.getEnvelope().getSpan1();
+
+                // determine the percentage of the requested point
+                double percentX = ( dimension.getX() / dimensionGeoreference.width ) * spanX;
+                double percentY = ( dimension.getY() / dimensionGeoreference.height ) * spanY;
+
+                return new GeoReferencedPoint( percentX, percentY );
+
+            }
+        case FootprintPoint:
+
             // determine the span of the envelope
             double spanX = this.envelopeFootprint.getSpan0();
             double spanY = this.envelopeFootprint.getSpan1();
 
             // determine the percentage of the requested point
-            double percentX = ( pixelPoint.getX() / dimensionFootprint.width ) * spanX;
-            double percentY = ( pixelPoint.getY() / dimensionFootprint.height ) * spanY;
+            double percentX = ( dimension.getX() / dimensionFootprint.width ) * spanX;
+            double percentY = ( dimension.getY() / dimensionFootprint.height ) * spanY;
 
-            return new FootprintPoint( getMinX + percentX, getMaxY - percentY );
+            return new FootprintPoint( percentX, percentY );
 
         }
 
@@ -210,12 +244,12 @@ public class Scene2DValues {
      *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
      * @param spanX
      *            x-dimension that should be the width of the envelope, if not specified use
-     *            {@link #setCentroidRasterEnvelopePosition(double, double)} instead.
+     *            {@link #setCentroidWorldEnvelopePosition(double, double)} instead.
      * @param spanY
      *            y-dimension that should be the height of the envelope, if not specified use
-     *            {@link #setCentroidRasterEnvelopePosition(double, double)} instead.
+     *            {@link #setCentroidWorldEnvelopePosition(double, double)} instead.
      */
-    public void setCentroidRasterEnvelopePosition( double xCoord, double yCoord, double spanX, double spanY ) {
+    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, double spanX, double spanY ) {
 
         double halfSpanXWorld;
         double halfSpanYWorld;
@@ -258,8 +292,25 @@ public class Scene2DValues {
      *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
      * 
      */
-    public void setCentroidRasterEnvelopePosition( double xCoord, double yCoord ) {
-        this.setCentroidRasterEnvelopePosition( xCoord, yCoord, -1, -1 );
+    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord ) {
+        this.setCentroidWorldEnvelopePosition( xCoord, yCoord, -1, -1 );
+    }
+
+    /**
+     * Resizes the envelope in world coordinates to the specified size. The specified centroid will be the
+     * centerposition of the new envelope.
+     * 
+     * @param centroid
+     *            the centroid position in pixel coordinates, not <Code>null</Code>.
+     * 
+     * @param dimension
+     *            the width and height of the envelope in pixel coordinates, not <Code>null</Code>.
+     */
+    public void setCentroidRasterEnvelopePosition( AbstractGRPoint centroid, AbstractGRPoint dimension ) {
+        AbstractGRPoint center = getWorldPoint( centroid );
+        AbstractGRPoint dim = getWorldDimension( dimension );
+
+        this.setCentroidWorldEnvelopePosition( center.getX(), center.getY(), dim.getX(), dim.getY() );
     }
 
     /**

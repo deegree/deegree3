@@ -284,10 +284,6 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
 
     }
 
-    // public void resetErrorDialog() {
-    // this.errorDialog = null;
-    // }
-
     /**
      * Sets the dialog and makes it visible.
      * 

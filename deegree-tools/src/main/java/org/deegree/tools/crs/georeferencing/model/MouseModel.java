@@ -55,6 +55,8 @@ public class MouseModel {
 
     private AbstractGRPoint mouseMoved;
 
+    private boolean mouseInside;
+
     // private Point2d cumulatedMouseChanging;
 
     private final static Point2d NULL_POINT = new Point2d( 0.0, 0.0 );
@@ -84,21 +86,13 @@ public class MouseModel {
         return mouseChanging;
     }
 
-    // /**
-    // *
-    // * @return
-    // */
-    // public Point2d getCumulatedMouseChanging() {
-    // return cumulatedMouseChanging;
-    // }
-    //
-    // /**
-    // *
-    // * @param cumulatedMouseChanging
-    // */
-    // public void setCumulatedMouseChanging( Point2d cumulatedMouseChanging ) {
-    // this.cumulatedMouseChanging = cumulatedMouseChanging;
-    // }
+    public boolean isMouseInside() {
+        return mouseInside;
+    }
+
+    public void setMouseInside( boolean mouseInside ) {
+        this.mouseInside = mouseInside;
+    }
 
     /**
      * 

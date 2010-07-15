@@ -40,6 +40,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -140,7 +144,7 @@ public class Controller {
 
     private Point2d changePoint;
 
-    private boolean isHorizontalRef, start;
+    private boolean isHorizontalRef, start, isControlDown;
 
     private GeometryFactory geom;
 
@@ -212,6 +216,8 @@ public class Controller {
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
         footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
         footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+        footPanel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
+        // footPanel.addScene2DFocusListener( new Scene2DFocusListener() );
 
         sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
         mouseFootprint = new MouseModel();
@@ -272,6 +278,8 @@ public class Controller {
         panel.addScene2DMouseListener( new Scene2DMouseListener() );
         panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
         panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+        panel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
+        // panel.addScene2DFocusListener( new Scene2DFocusListener() );
 
     }
 
@@ -310,14 +318,14 @@ public class Controller {
                             System.out.println( textFieldModel.toString() );
                             if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
 
-                                sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                               textFieldModel.getyCoordiante(),
-                                                                               textFieldModel.getSpanX(),
-                                                                               textFieldModel.getSpanY() );
+                                sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                              textFieldModel.getyCoordiante(),
+                                                                              textFieldModel.getSpanX(),
+                                                                              textFieldModel.getSpanY() );
 
                             } else {
-                                sceneValues.setCentroidRasterEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                               textFieldModel.getyCoordiante() );
+                                sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                              textFieldModel.getyCoordiante() );
 
                             }
                             panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
@@ -574,6 +582,102 @@ public class Controller {
         }
     }
 
+    class Scene2DFocusListener implements FocusListener {
+
+        @Override
+        public void focusGained( FocusEvent e ) {
+            System.out.println( "[Controller] has focus" );
+
+        }
+
+        @Override
+        public void focusLost( FocusEvent e ) {
+            System.out.println( "[Controller] has focus lost" );
+
+        }
+
+    }
+
+    class Scene2DActionKeyListener implements KeyListener {
+
+        @Override
+        public void keyPressed( KeyEvent e ) {
+            if ( e.getKeyCode() == 17 ) {
+                char c = e.getKeyChar();
+                boolean isControl = e.isControlDown();
+                int control = KeyEvent.VK_CONTROL;
+
+                System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
+            }
+            if ( mouseGeoRef.isMouseInside() ) {
+                char c = e.getKeyChar();
+                boolean isControl = e.isControlDown();
+                int control = KeyEvent.VK_CONTROL;
+
+                System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
+            }
+            if ( mouseFootprint.isMouseInside() ) {
+                char c = e.getKeyChar();
+                boolean isControl = e.isControlDown();
+                int control = KeyEvent.VK_CONTROL;
+
+                System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent e ) {
+            if ( e.getKeyCode() == 17 ) {
+                char c = e.getKeyChar();
+                boolean isControl = e.isControlDown();
+                int control = KeyEvent.VK_CONTROL;
+
+                System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
+            }
+            if ( mouseGeoRef.isMouseInside() ) {
+                char c = e.getKeyChar();
+                boolean isControl = e.isControlDown();
+                int control = KeyEvent.VK_CONTROL;
+
+                System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
+            }
+            if ( mouseFootprint.isMouseInside() ) {
+                char c = e.getKeyChar();
+                boolean isControl = e.isControlDown();
+                int control = KeyEvent.VK_CONTROL;
+
+                System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
+            }
+
+        }
+
+        @Override
+        public void keyTyped( KeyEvent e ) {
+            if ( e.getKeyCode() == 17 ) {
+                char c = e.getKeyChar();
+                boolean isControl = e.isControlDown();
+                int control = KeyEvent.VK_CONTROL;
+
+                System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
+            }
+            if ( mouseGeoRef.isMouseInside() ) {
+                char c = e.getKeyChar();
+                boolean isControl = e.isControlDown();
+                int control = KeyEvent.VK_CONTROL;
+
+                System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
+            }
+            if ( mouseFootprint.isMouseInside() ) {
+                char c = e.getKeyChar();
+                boolean isControl = e.isControlDown();
+                int control = KeyEvent.VK_CONTROL;
+
+                System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
+            }
+        }
+
+    }
+
     /**
      * 
      * Controls the MouseListener
@@ -591,13 +695,41 @@ public class Controller {
         }
 
         @Override
-        public void mouseEntered( MouseEvent arg0 ) {
+        public void mouseEntered( MouseEvent m ) {
+            Object source = m.getSource();
+            if ( source instanceof JPanel ) {
+                // Scene2DPanel
+                if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
+                    // panel.setFocusable( true );
+                    mouseGeoRef.setMouseInside( true );
+                    System.out.println( "[Controller] has focus georef" );
 
+                    // panel.setBorder( BorderFactory.createTitledBorder( "test" ) );
+                    // panel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
+                }
+                if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
+                    System.out.println( "[Controller] has focus footprint" );
+                    // footPanel.setFocusable( true );
+                    mouseFootprint.setMouseInside( true );
+                    // footPanel.requestFocusInWindow();
+                }
+            }
         }
 
         @Override
-        public void mouseExited( MouseEvent arg0 ) {
+        public void mouseExited( MouseEvent m ) {
+            Object source = m.getSource();
+            if ( source instanceof JPanel ) {
+                // Scene2DPanel
+                if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
+                    mouseGeoRef.setMouseInside( false );
 
+                }
+                if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
+                    mouseFootprint.setMouseInside( false );
+
+                }
+            }
         }
 
         @Override
@@ -607,6 +739,10 @@ public class Controller {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                     mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+                    isControlDown = m.isControlDown();
+                    if ( isControlDown ) {
+                        System.out.println( "[Controller] down" );
+                    }
                 }
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
@@ -621,40 +757,72 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-
-                    if ( isHorizontalRef == true ) {
-                        if ( start == false ) {
-                            start = true;
-                            footPanel.setFocus( false );
-                            panel.setFocus( true );
+                    if ( isControlDown ) {
+                        GeoReferencedPoint change = new GeoReferencedPoint(
+                                                                            ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
+                                                                            ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) );
+                        GeoReferencedPoint pointPressed = new GeoReferencedPoint(
+                                                                                  mouseGeoRef.getPointMousePressed().getX(),
+                                                                                  mouseGeoRef.getPointMousePressed().getY() );
+                        GeoReferencedPoint pointReleased = new GeoReferencedPoint( m.getX(), m.getY() );
+                        GeoReferencedPoint minPoint;
+                        GeoReferencedPoint maxPoint;
+                        if ( pointPressed.getX() < pointReleased.getX() ) {
+                            minPoint = pointPressed;
+                            maxPoint = pointReleased;
+                        } else {
+                            minPoint = pointReleased;
+                            maxPoint = pointPressed;
                         }
-                        if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
-                             && panel.getFocus() == true ) {
-                            setValues();
-                        }
-                        if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
-                             && panel.getFocus() == true ) {
-                            tablePanel.addRow();
-                        }
+                        Rectangle r = new Rectangle( (int) minPoint.getX(), (int) minPoint.getY(),
+                                                     Math.abs( (int) maxPoint.getX() - (int) minPoint.getX() ),
+                                                     Math.abs( (int) maxPoint.getY() - (int) minPoint.getY() ) );
+                        System.out.println( "[Controller]" + r );
+                        GeoReferencedPoint center = new GeoReferencedPoint( r.getCenterX(), r.getCenterY() );
+                        GeoReferencedPoint dimension = new GeoReferencedPoint( r.getWidth(), r.getHeight() );
+                        sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
 
-                        double x = m.getX();
-                        double y = m.getY();
-                        GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                        GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
-                        panel.setLastAbstractPoint( geoReferencedPoint, g );
-                        tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
-
-                    } else {
-                        mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
-                                                                              ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
-                                                                              ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
-
-                        sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
                         panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                         panel.updatePoints( sceneValues );
-                    }
+                        panel.repaint();
+                        // minPoint = new
+                        // Point2d(mouseGeoRef.getPointMousePressed().getX(),mouseGeoRef.getPointMousePressed().getY());
+                        // maxPoint = new Point2d( m.getX(), m.getY());
+                    } else {
+                        if ( isHorizontalRef == true ) {
+                            if ( start == false ) {
+                                start = true;
+                                footPanel.setFocus( false );
+                                panel.setFocus( true );
+                            }
+                            if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
+                                 && panel.getFocus() == true ) {
+                                setValues();
+                            }
+                            if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
+                                 && panel.getFocus() == true ) {
+                                tablePanel.addRow();
+                            }
 
-                    panel.repaint();
+                            double x = m.getX();
+                            double y = m.getY();
+                            GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
+                            GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
+                            panel.setLastAbstractPoint( geoReferencedPoint, g );
+                            tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
+
+                        } else {
+                            mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
+                                                                                  ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
+                                                                                  ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
+
+                            sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
+                            panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                            panel.updatePoints( sceneValues );
+                        }
+
+                        panel.repaint();
+                    }
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
@@ -750,8 +918,13 @@ public class Controller {
     class Scene2DMouseMotionListener implements MouseMotionListener {
 
         @Override
-        public void mouseDragged( MouseEvent arg0 ) {
-            // TODO Auto-generated method stub
+        public void mouseDragged( MouseEvent m ) {
+
+            // Graphics g = panel;
+            // g.drawRect( (int) mouseGeoRef.getPointMousePressed().getX(),
+            // (int) mouseGeoRef.getPointMousePressed().getY(),
+            // (int) m.getX() - (int) mouseGeoRef.getPointMousePressed().getX(),
+            // (int) m.getY() - (int) mouseGeoRef.getPointMousePressed().getY() );
 
         }
 

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
+import java.awt.event.FocusListener;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
@@ -68,8 +70,6 @@ public abstract class AbstractPanel2D extends JPanel {
 
     public static int selectedPointSize;
 
-    // protected Point2d translationPoint;
-
     public void addScene2DMouseListener( MouseListener m ) {
 
         this.addMouseListener( m );
@@ -84,6 +84,18 @@ public abstract class AbstractPanel2D extends JPanel {
     public void addScene2DMouseWheelListener( MouseWheelListener m ) {
         this.addMouseWheelListener( m );
     }
+
+    public void addScene2DActionKeyListener( KeyListener l ) {
+        this.addKeyListener( l );
+    }
+
+    public void addScene2DFocusListener( FocusListener l ) {
+        this.addFocusListener( l );
+    }
+
+    // public void addActionButtonListener(ActionListener l){
+    // this.add
+    // }
 
     public void setFocus( boolean focus ) {
         this.focus = focus;
