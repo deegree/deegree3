@@ -93,6 +93,7 @@ public class ToolBox {
                                       new ToolInfo( org.deegree.tools.feature.gml.SchemaAnalyzer.class ),
                                       new ToolInfo( org.deegree.tools.rendering.r2d.se.StyleChecker.class ),
                                       new ToolInfo( org.deegree.tools.coverage.TransformRaster.class ),
+                                      new ToolInfo( org.deegree.tools.crs.georeferencing.communication.GRViewer.class ),
 
                                       // Following classes define public static void main methods, but do not implement
                                       // the tools annotation (maybe fix them?)
