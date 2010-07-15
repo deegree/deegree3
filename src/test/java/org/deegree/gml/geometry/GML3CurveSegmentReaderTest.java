@@ -63,7 +63,6 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryReader;
 import org.junit.Before;
 import org.junit.Test;
 

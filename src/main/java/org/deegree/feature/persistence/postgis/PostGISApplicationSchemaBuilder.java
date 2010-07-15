@@ -61,7 +61,6 @@ import org.deegree.feature.persistence.postgis.jaxb.FeaturePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
-import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;

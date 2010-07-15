@@ -46,7 +46,6 @@ import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
 import org.deegree.cs.projections.ProjectionBase;
-import org.deegree.cs.projections.azimuthal.StereographicAlternative;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.junit.Test;
 

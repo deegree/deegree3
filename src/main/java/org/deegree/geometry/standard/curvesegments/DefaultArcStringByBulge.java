@@ -38,7 +38,6 @@ package org.deegree.geometry.standard.curvesegments;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.segments.ArcStringByBulge;
-import org.deegree.geometry.primitive.segments.CurveSegment;
 
 /**
  * Default implementation of {@link ArcStringByBulge} segments.

@@ -60,7 +60,6 @@ import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.Triangle;
-import org.deegree.gml.GMLVersion;
 
 /**
  * Handles the parsing of <code>gml:_SurfacePatch</code> elements, i.e concrete element declarations that are in the

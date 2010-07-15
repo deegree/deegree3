@@ -47,7 +47,6 @@ import static org.deegree.cs.components.Unit.USFOOT;
 import static org.deegree.cs.utilities.ProjectionUtils.DTR;
 import junit.framework.TestCase;
 
-import org.deegree.cs.components.Unit;
 import org.junit.Test;
 
 /**

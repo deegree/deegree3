@@ -35,12 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.capabilities;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**

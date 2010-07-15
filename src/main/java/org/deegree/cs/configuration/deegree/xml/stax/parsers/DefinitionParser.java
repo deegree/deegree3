@@ -57,7 +57,6 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
 import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;

@@ -2,7 +2,7 @@
 
 package org.deegree.feature.utils.templating;
 
-import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
 
 /**
  * <code>TemplatingLexer</code>

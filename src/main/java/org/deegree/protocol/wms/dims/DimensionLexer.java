@@ -2,7 +2,7 @@
 
 package org.deegree.protocol.wms.dims;
 
-import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
 
 /**
  * <code>DimensionLexer</code>

@@ -39,7 +39,6 @@ import org.deegree.commons.uom.Angle;
 import org.deegree.commons.uom.Length;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.segments.CircleByCenterPoint;
-import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link CircleByCenterPoint} segments.

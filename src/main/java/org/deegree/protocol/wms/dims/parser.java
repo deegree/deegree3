@@ -7,8 +7,6 @@
 package org.deegree.protocol.wms.dims;
 
 import java.util.LinkedList;
-import java_cup.runtime.*;
-import org.deegree.commons.utils.*;
 
 /** CUP v0.10k generated parser.
   * @version Fri Oct 09 13:13:23 CEST 2009

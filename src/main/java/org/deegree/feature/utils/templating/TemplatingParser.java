@@ -9,9 +9,20 @@ package org.deegree.feature.utils.templating;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java_cup.runtime.*;
-import org.deegree.commons.utils.*;
-import org.deegree.feature.utils.templating.lang.*;
+
+import org.deegree.commons.utils.Triple;
+import org.deegree.feature.utils.templating.lang.Definition;
+import org.deegree.feature.utils.templating.lang.FeatureTemplateCall;
+import org.deegree.feature.utils.templating.lang.GMLId;
+import org.deegree.feature.utils.templating.lang.Index;
+import org.deegree.feature.utils.templating.lang.Link;
+import org.deegree.feature.utils.templating.lang.MapCall;
+import org.deegree.feature.utils.templating.lang.MapDefinition;
+import org.deegree.feature.utils.templating.lang.Name;
+import org.deegree.feature.utils.templating.lang.OddEven;
+import org.deegree.feature.utils.templating.lang.PropertyTemplateCall;
+import org.deegree.feature.utils.templating.lang.TemplateDefinition;
+import org.deegree.feature.utils.templating.lang.Value;
 
 /** CUP v0.11a beta 20060608 generated parser.
   * @version Tue Jan 26 15:08:06 CET 2010
