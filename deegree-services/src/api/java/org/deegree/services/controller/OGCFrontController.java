@@ -395,7 +395,7 @@ public class OGCFrontController extends HttpServlet {
      * query string, but in the POST body. In this case, the <code>content-type</code> field in the header must be
      * <code>application/x-www-form-urlencoded</code>.</li>
      * <li><b>XML</b>: The POST body contains an XML document. In this case, the <code>content-type</code> field in the
-     * header has to be <code>text/xml</code>, but the implemenation does not rely on this in order to be more tolerant
+     * header has to be <code>text/xml</code>, but the implementation does not rely on this in order to be more tolerant
      * to clients.</li>
      * <li><b>SOAP</b>: TODO</li>
      * <li><b>Multipart</b>: TODO</li>
