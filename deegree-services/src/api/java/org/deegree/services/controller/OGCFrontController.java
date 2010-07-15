@@ -35,13 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
+import static java.io.File.createTempFile;
 import static org.deegree.services.controller.FrontControllerStats.incomingKVP;
 
 import java.beans.Introspector;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -91,9 +92,9 @@ import org.apache.log4j.LogManager;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
-import org.deegree.commons.utils.LogUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.commons.xml.XMLAdapter;
@@ -429,14 +430,7 @@ public class OGCFrontController extends HttpServlet {
             if ( multiParts == null ) {
                 // TODO log multiparts requests
                 if ( LOG.isDebugEnabled() ) {
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    byte[] readBuffer = new byte[1024];
-                    int numBytes = -1;
-                    while ( ( numBytes = is.read( readBuffer ) ) != -1 ) {
-                        bos.write( readBuffer, 0, numBytes );
-                    }
-                    is = new ByteArrayInputStream( bos.toByteArray() );
-                    LogUtils.writeTempFile( LOG, "request", ".body", bos.toString() );
+                    is = new LoggingInputStream( is, new FileOutputStream( createTempFile( "request", ".body" ) ) );
                 }
             }
 
