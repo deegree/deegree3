@@ -2,7 +2,7 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sos="http://www.deegree.org/services/sos" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:md="http://www.deegree.org/webservices" targetNamespace="http://www.deegree.org/services/sos"
   elementFormDefault="qualified" attributeFormDefault="unqualified">
-  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.5.0/services_metadata.xsd" />
+  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.6.0/metadata.xsd" />
   <element name="PublishedInformation">
     <complexType>
       <sequence>

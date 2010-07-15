@@ -51,15 +51,16 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.services.controller.wcs.describecoverage.CoverageDescription100XMLAdapter;
-import org.deegree.services.jaxb.metadata.AddressType;
-import org.deegree.services.jaxb.metadata.CodeType;
-import org.deegree.services.jaxb.metadata.DCPType;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.KeywordsType;
-import org.deegree.services.jaxb.metadata.LanguageStringType;
-import org.deegree.services.jaxb.metadata.ServiceContactType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.main.AddressType;
+import org.deegree.services.jaxb.main.CodeType;
+import org.deegree.services.jaxb.main.DCPType;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.KeywordsType;
+import org.deegree.services.jaxb.main.LanguageStringType;
+import org.deegree.services.jaxb.main.ServiceContactType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 
@@ -103,6 +104,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
      *            all coverages of this WCS web service
      * @param serviceMetadata
      *            metadata for the service
+     * @param mainConf
      * @param writer
      * @param updateSequence
      *            of this wcs
@@ -111,7 +113,8 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
     public static void export( XMLStreamWriter xmlWriter, GetCapabilities request,
                                ServiceIdentificationType identification, ServiceProviderType provider,
                                List<String> allowedOperations, Set<Sections> sections, List<WCSCoverage> coverages,
-                               DeegreeServicesMetadata serviceMetadata, XMLStreamWriter writer, int updateSequence )
+                               DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
+                               XMLStreamWriter writer, int updateSequence )
                             throws XMLStreamException {
         writer.setDefaultNamespace( WCS_100_NS );
         writer.setPrefix( GML_PREFIX, GML_NS );
@@ -123,13 +126,13 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
             writer.writeAttribute( XSINS, "schemaLocation", WCS_100_NS + " " + WCS_100_SCHEMA );
             writeVersionAndUpdateSequence( writer, updateSequence );
             exportService( writer, identification, provider, updateSequence, false );
-            exportCapability( writer, serviceMetadata, allowedOperations, updateSequence, false );
+            exportCapability( writer, mainConf, allowedOperations, updateSequence, false );
             exportContentMetadata( writer, coverages, updateSequence, false );
         } else {
             if ( sections.contains( Sections.Service ) ) {
                 exportService( writer, identification, provider, updateSequence, true );
             } else if ( sections.contains( Sections.Capability ) ) {
-                exportCapability( writer, serviceMetadata, allowedOperations, updateSequence, true );
+                exportCapability( writer, mainConf, allowedOperations, updateSequence, true );
             } else if ( sections.contains( Sections.ContentMetadata ) ) {
                 exportContentMetadata( writer, coverages, updateSequence, true );
             }
@@ -169,7 +172,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
         writer.writeAttribute( "updateSequence", Integer.toString( updateSequence ) );
     }
 
-    private static void exportCapability( XMLStreamWriter writer, DeegreeServicesMetadata serviceMetadata,
+    private static void exportCapability( XMLStreamWriter writer, DeegreeServiceControllerType mainConf,
                                           List<String> allowedOperations, int updateSequence, boolean isSection )
                             throws XMLStreamException {
 
@@ -180,7 +183,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
             writeVersionAndUpdateSequence( writer, updateSequence );
         }
 
-        exportOperationsMetadata( writer, allowedOperations, serviceMetadata.getDCP() );
+        exportOperationsMetadata( writer, allowedOperations, mainConf.getDCP() );
 
         writer.writeStartElement( WCS_100_NS, "Exception" );
         writeElement( writer, WCS_100_NS, "Format", "application/vnd.ogc.se_xml" );

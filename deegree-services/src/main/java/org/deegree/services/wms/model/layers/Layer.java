@@ -79,7 +79,7 @@ import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetMap;
-import org.deegree.services.jaxb.metadata.LanguageStringType;
+import org.deegree.services.jaxb.main.LanguageStringType;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BoundingBoxType;
 import org.deegree.services.jaxb.wms.DimensionType;

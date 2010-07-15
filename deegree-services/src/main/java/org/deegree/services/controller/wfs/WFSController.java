@@ -117,9 +117,10 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException100XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.PublishedInformation;
@@ -185,11 +186,12 @@ public class WFSController extends AbstractOGCServiceController {
     private ServiceProviderType serviceProvider;
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadata serviceMetadata )
+    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
+                      DeegreeServiceControllerType mainConf )
                             throws ControllerInitException {
 
         LOG.info( "Initializing WFS controller." );
-        init( serviceMetadata, IMPLEMENTATION_METADATA, controllerConf );
+        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         // TODO merge with WFS configuration
         serviceId = serviceMetadata.getServiceIdentification();

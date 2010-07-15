@@ -3,7 +3,7 @@
   xmlns:ws="http://www.deegree.org/webservices" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/wms"
   elementFormDefault="qualified">
 
-  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.5.0/services_metadata.xsd" />
+  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.6.0/metadata.xsd" />
 
   <!--  copied from commons: -->
   <!-- =========================================================== -->

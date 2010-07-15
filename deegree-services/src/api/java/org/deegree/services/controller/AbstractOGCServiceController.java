@@ -81,12 +81,13 @@ import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.wpvs.WPVSController;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.jaxb.metadata.AddressType;
-import org.deegree.services.jaxb.metadata.DCPType;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.ServiceContactType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.main.AddressType;
+import org.deegree.services.jaxb.main.DCPType;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.ServiceContactType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -111,7 +112,9 @@ public abstract class AbstractOGCServiceController {
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOGCServiceController.class );
 
     /** Common configuration (metadata) of parent {@link OGCFrontController}. */
-    protected DeegreeServicesMetadata mainControllerConf;
+    protected DeegreeServicesMetadataType mainMetadataConf;
+
+    protected DeegreeServiceControllerType mainControllerConf;
 
     private final static SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
 
@@ -126,16 +129,17 @@ public abstract class AbstractOGCServiceController {
     /**
      * Initializes the {@link AbstractOGCServiceController} instance.
      * 
-     * @param mainControllerConf
+     * @param mainMetadataConf
      * @param serviceInformation
      * @param controllerConfig
      *            controller configuration, must not be null
      * @throws ControllerInitException
      *             if the config version does not match one of the supported versions
      */
-    protected void init( DeegreeServicesMetadata mainControllerConf,
+    protected void init( DeegreeServicesMetadataType mainMetadataConf, DeegreeServiceControllerType mainControllerConf,
                          ImplementationMetadata<? extends Enum<?>> serviceInformation, XMLAdapter controllerConfig )
                             throws ControllerInitException {
+        this.mainMetadataConf = mainMetadataConf;
         this.mainControllerConf = mainControllerConf;
         this.implementationMetadata = serviceInformation;
         String configVersion = controllerConfig.getRootElement().getAttributeValue( new QName( "configVersion" ) );
@@ -167,10 +171,13 @@ public abstract class AbstractOGCServiceController {
      *            provides access to the (always xml-based) configuration of the controller
      * @param serviceMetadata
      *            services metadata from the main service configuration for all services
+     * @param serviceController
+     *            from the main.xml
      * @throws ControllerInitException
      *             indicates that the initialization failed
      */
-    public abstract void init( XMLAdapter controllerConf, DeegreeServicesMetadata serviceMetadata )
+    public abstract void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
+                               DeegreeServiceControllerType serviceController )
                             throws ControllerInitException;
 
     /**
@@ -598,7 +605,7 @@ public abstract class AbstractOGCServiceController {
      */
     protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf(
                                                                                     ServiceProviderType configuredServiceProvider ) {
-        ServiceProviderType mainProvider = mainControllerConf.getServiceProvider();
+        ServiceProviderType mainProvider = mainMetadataConf.getServiceProvider();
         ServiceProviderType result = configuredServiceProvider;
         if ( configuredServiceProvider == null ) {
             result = new ServiceProviderType();
@@ -621,7 +628,7 @@ public abstract class AbstractOGCServiceController {
      */
     protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController(
                                                                                             ServiceIdentificationType serviceIdentification ) {
-        ServiceIdentificationType mainID = mainControllerConf.getServiceIdentification();
+        ServiceIdentificationType mainID = mainMetadataConf.getServiceIdentification();
         ServiceIdentificationType result = serviceIdentification;
         if ( mainID != null ) {
             if ( serviceIdentification == null ) {

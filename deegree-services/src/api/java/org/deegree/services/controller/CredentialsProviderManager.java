@@ -38,7 +38,7 @@ package org.deegree.services.controller;
 import org.deegree.services.authentication.DeegreeAuthentication;
 import org.deegree.services.authentication.HttpBasicAuthentication;
 import org.deegree.services.authentication.SOAPAuthentication;
-import org.deegree.services.jaxb.metadata.AuthenticationMethodType;
+import org.deegree.services.jaxb.main.AuthenticationMethodType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

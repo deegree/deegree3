@@ -42,14 +42,14 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
-import org.deegree.services.jaxb.metadata.AddressType;
-import org.deegree.services.jaxb.metadata.CodeType;
-import org.deegree.services.jaxb.metadata.DCPType;
-import org.deegree.services.jaxb.metadata.KeywordsType;
-import org.deegree.services.jaxb.metadata.LanguageStringType;
-import org.deegree.services.jaxb.metadata.ServiceContactType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.main.AddressType;
+import org.deegree.services.jaxb.main.CodeType;
+import org.deegree.services.jaxb.main.DCPType;
+import org.deegree.services.jaxb.main.KeywordsType;
+import org.deegree.services.jaxb.main.LanguageStringType;
+import org.deegree.services.jaxb.main.ServiceContactType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

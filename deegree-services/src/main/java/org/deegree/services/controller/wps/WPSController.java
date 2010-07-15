@@ -107,7 +107,8 @@ import org.deegree.services.controller.wps.storage.OutputStorage;
 import org.deegree.services.controller.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.controller.wps.storage.StorageManager;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.PublishedInformation;
 import org.deegree.services.jaxb.wps.ServiceConfiguration;
@@ -166,10 +167,11 @@ public class WPSController extends AbstractOGCServiceController {
     private Map<CodeType, File> processIdToWSDL = new HashMap<CodeType, File>();
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadata serviceMetadata )
+    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
+                      DeegreeServiceControllerType mainConf )
                             throws ControllerInitException {
 
-        init( serviceMetadata, IMPLEMENTATION_METADATA, controllerConf );
+        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         storageManager = new StorageManager( TempFileManager.getBaseDir() );
 
@@ -512,7 +514,7 @@ public class WPSController extends AbstractOGCServiceController {
         if ( serviceWSDLFile != null ) {
             wsdlURL = OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetWPSWSDL";
         }
-        CapabilitiesXMLAdapter.export100( xmlWriter, service.getAllProcessDefinitions(), mainControllerConf, wsdlURL );
+        CapabilitiesXMLAdapter.export100( xmlWriter, service.getAllProcessDefinitions(), mainMetadataConf, wsdlURL );
 
         LOG.trace( "doGetCapabilities finished" );
     }
@@ -554,12 +556,12 @@ public class WPSController extends AbstractOGCServiceController {
                 }
             }
 
-//            TransformCoordinates tc = new TransformCoordinates();
-//            ProcessDescription pd = tc.getClass().getAnnotation( ProcessDescription.class );
-//            List<ProcessDescription> pdA = new LinkedList<ProcessDescription>();
-//            if ( pd != null ) {
-//                pdA.add( pd );
-//            }
+            // TransformCoordinates tc = new TransformCoordinates();
+            // ProcessDescription pd = tc.getClass().getAnnotation( ProcessDescription.class );
+            // List<ProcessDescription> pdA = new LinkedList<ProcessDescription>();
+            // if ( pd != null ) {
+            // pdA.add( pd );
+            // }
             // TODO what about annotations?
             DescribeProcessResponseXMLAdapter.export100( xmlWriter, processDefinitions, processDefToWSDLUrl, null );
             xmlWriter.flush();

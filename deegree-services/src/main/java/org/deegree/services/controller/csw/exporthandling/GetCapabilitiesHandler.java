@@ -55,11 +55,12 @@ import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.jaxb.metadata.DCPType;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.KeywordsType;
-import org.deegree.services.jaxb.metadata.LanguageStringType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.DCPType;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.KeywordsType;
+import org.deegree.services.jaxb.main.LanguageStringType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
 
 /**
  * Does the exportHandling for the Capabilities. This is a very static handling for explanation.
@@ -124,19 +125,20 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      * 
      * @param writer
      * @param mainControllerConf
+     * @param mainConf
      * @param sections
      * @param identification
-     * @param optionalOperations
      * @param version
+     * @param isSoap
      * @throws XMLStreamException
      */
-    public static void export( XMLStreamWriter writer, DeegreeServicesMetadata mainControllerConf,
-                               Set<Sections> sections, ServiceIdentificationType identification, Version version,
-                               boolean isSoap )
+    public static void export( XMLStreamWriter writer, DeegreeServicesMetadataType mainControllerConf,
+                               DeegreeServiceControllerType mainConf, Set<Sections> sections,
+                               ServiceIdentificationType identification, Version version, boolean isSoap )
                             throws XMLStreamException {
 
         if ( VERSION_202.equals( version ) ) {
-            export100( writer, sections, identification, mainControllerConf, isSoap );
+            export100( writer, sections, identification, mainControllerConf, mainConf, isSoap );
         } else {
             throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
         }
@@ -144,7 +146,8 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private static void export100( XMLStreamWriter writer, Set<Sections> sections,
                                    ServiceIdentificationType identification,
-                                   DeegreeServicesMetadata mainControllerConf, boolean isSoap )
+                                   DeegreeServicesMetadataType mainControllerConf,
+                                   DeegreeServiceControllerType mainConf, boolean isSoap )
                             throws XMLStreamException {
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
         writer.setPrefix( "ows", OWS_NS );
@@ -170,7 +173,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         // ows:OperationsMetadata
         if ( sections.isEmpty() || sections.contains( Sections.OperationsMetadata ) ) {
 
-            exportOperationsMetadata( writer, mainControllerConf.getDCP(), OWS_NS );
+            exportOperationsMetadata( writer, mainConf.getDCP(), OWS_NS );
         }
 
         // mandatory

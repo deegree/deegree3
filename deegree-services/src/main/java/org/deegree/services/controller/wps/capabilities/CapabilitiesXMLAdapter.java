@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.controller.wps.capabilities;
 
@@ -44,17 +44,17 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.jaxb.metadata.DCPType;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.main.DCPType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
 
 /**
  * Responsible for the generation of WPS GetCapabilities response documents.
- *
+ * 
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author last edited by: $Author: $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
@@ -90,7 +90,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
      * @throws XMLStreamException
      */
     public static void export100( XMLStreamWriter writer, ProcessDefinition[] processes,
-                                  DeegreeServicesMetadata serviceMetadata, String serviceWSDLURL )
+                                  DeegreeServicesMetadataType serviceMetadata, String serviceWSDLURL )
                             throws XMLStreamException {
 
         writer.setPrefix( WPS_PREFIX, WPS_NS );
@@ -190,7 +190,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement(); // ProcessOfferings
     }
 
-    private static void exportOperationsMetadata( XMLStreamWriter writer, DeegreeServicesMetadata serviceMetadata )
+    private static void exportOperationsMetadata( XMLStreamWriter writer, DeegreeServicesMetadataType serviceMetadata )
                             throws XMLStreamException {
         List<String> operations = new LinkedList<String>();
         operations.add( "GetCapabilities" );

@@ -121,9 +121,10 @@ import org.deegree.services.controller.sos.capabilities.Capabilities100XMLAdapte
 import org.deegree.services.controller.sos.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.controller.sos.getobservation.Observation100XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.sos.PublishedInformation;
 import org.deegree.services.sos.SOSBuilder;
 import org.deegree.services.sos.SOSConfigurationException;
@@ -173,10 +174,11 @@ public class SOSController extends AbstractOGCServiceController {
     };
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadata serviceMetadata )
+    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
+                      DeegreeServiceControllerType mainConf )
                             throws ControllerInitException {
 
-        init( serviceMetadata, IMPLEMENTATION_METADATA, controllerConf );
+        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "sos", "http://www.deegree.org/services/sos" );
@@ -270,7 +272,7 @@ public class SOSController extends AbstractOGCServiceController {
                 switch ( IMPLEMENTATION_METADATA.getRequestTypeByName( requestName ) ) {
                 case GetCapabilities:
                     GetCapabilities capabilities = GetCapabilitiesKVPParser.parse( param );
-                    doGetCapabilities( capabilities, mainControllerConf, response );
+                    doGetCapabilities( capabilities, mainMetadataConf, response );
                     break;
                 case DescribeSensor:
                     DescribeSensor sensor = DescribeSensor100KVPAdapter.parse( param );
@@ -314,7 +316,7 @@ public class SOSController extends AbstractOGCServiceController {
             case GetCapabilities:
                 LOG.debug( "start handling GetCapabilities" );
                 GetCapabilitiesXMLParser capabilitiesAdapter = new GetCapabilitiesXMLParser( rootElement );
-                doGetCapabilities( capabilitiesAdapter.parse110(), mainControllerConf, response );
+                doGetCapabilities( capabilitiesAdapter.parse110(), mainMetadataConf, response );
                 break;
             case GetObservation:
                 LOG.debug( "start handling GetObservation" );
@@ -598,7 +600,7 @@ public class SOSController extends AbstractOGCServiceController {
         writer.flush();
     }
 
-    private void doGetCapabilities( GetCapabilities capabilitiesReq, DeegreeServicesMetadata serviceMetadata,
+    private void doGetCapabilities( GetCapabilities capabilitiesReq, DeegreeServicesMetadataType serviceMetadata,
                                     HttpResponseBuffer response )
                             throws XMLStreamException, IOException, OWSException, ObservationDatastoreException {
         negotiateVersion( capabilitiesReq ); // throws OWS Exception, if version is not supported
@@ -677,7 +679,7 @@ public class SOSController extends AbstractOGCServiceController {
         if ( identification == null ) {
             if ( publishedInformation == null || publishedInformation.getServiceIdentification() == null ) {
                 LOG.info( "Using global service identification because no WCS specific service identification was defined." );
-                identification = mainControllerConf.getServiceIdentification();
+                identification = mainMetadataConf.getServiceIdentification();
             } else {
                 identification = synchronizeServiceIdentificationWithMainController( publishedInformation.getServiceIdentification() );
             }
@@ -685,7 +687,7 @@ public class SOSController extends AbstractOGCServiceController {
         if ( provider == null ) {
             if ( publishedInformation == null || publishedInformation.getServiceProvider() == null ) {
                 LOG.info( "Using gloval serviceProvider because no WCS specific service provider was defined." );
-                provider = mainControllerConf.getServiceProvider();
+                provider = mainMetadataConf.getServiceProvider();
             } else {
                 provider = synchronizeServiceProviderWithMainControllerConf( publishedInformation.getServiceProvider() );
             }

@@ -71,6 +71,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
@@ -114,11 +115,12 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.jaxb.metadata.AllowedServices;
-import org.deegree.services.jaxb.metadata.AuthenticationMethodType;
-import org.deegree.services.jaxb.metadata.ConfiguredServicesType;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.ServiceType;
+import org.deegree.services.jaxb.main.AllowedServices;
+import org.deegree.services.jaxb.main.AuthenticationMethodType;
+import org.deegree.services.jaxb.main.ConfiguredServicesType;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,16 +165,20 @@ public class OGCFrontController extends HttpServlet {
 
     private static final long serialVersionUID = -1379869403008798932L;
 
-    private static final Version SUPPORTED_CONFIG_VERSION = Version.parseVersion( "0.5.0" );
+    private static final Version SUPPORTED_CONFIG_VERSION = Version.parseVersion( "0.6.0" );
 
     /** used to decode (already URL-decoded) query strings */
     private static final String DEFAULT_ENCODING = "UTF-8";
 
-    private static DeegreeServicesMetadata serviceConfig;
+    private static DeegreeServicesMetadataType serviceConfig;
+
+    private static DeegreeServiceControllerType mainConfig;
 
     private static final String DEFAULT_CONFIG_PATH = "WEB-INF/conf";
 
     private static final String DEFAULT_SERVICE_METADATA_PATH = DEFAULT_CONFIG_PATH + "/services/metadata.xml";
+
+    private static final String DEFAULT_SERVICE_MAIN_PATH = DEFAULT_CONFIG_PATH + "/services/main.xml";
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
     private static final Map<AllowedServices, AbstractOGCServiceController> serviceNameToController = new HashMap<AllowedServices, AbstractOGCServiceController>();
@@ -218,8 +224,8 @@ public class OGCFrontController extends HttpServlet {
      */
     public static String getHttpPostURL() {
         String url = null;
-        if ( serviceConfig.getDCP().getHTTPPost() != null ) {
-            url = serviceConfig.getDCP().getHTTPPost();
+        if ( mainConfig.getDCP() != null && mainConfig.getDCP().getHTTPPost() != null ) {
+            url = mainConfig.getDCP().getHTTPPost();
         } else {
             url = getContext().getRequestedBaseURL();
         }
@@ -239,8 +245,8 @@ public class OGCFrontController extends HttpServlet {
      */
     public static String getHttpGetURL() {
         String url = null;
-        if ( serviceConfig.getDCP().getHTTPGet() != null ) {
-            url = serviceConfig.getDCP().getHTTPGet();
+        if ( mainConfig.getDCP() != null && mainConfig.getDCP().getHTTPGet() != null ) {
+            url = mainConfig.getDCP().getHTTPGet();
         } else {
             url = getContext().getRequestedBaseURL() + "?";
         }
@@ -568,7 +574,7 @@ public class OGCFrontController extends HttpServlet {
 
         try {
             // TODO handle multiple authentication methods
-            AuthenticationMethodType authType = serviceConfig.getAuthenticationMethod();
+            AuthenticationMethodType authType = mainConfig.getAuthenticationMethod();
 
             Credentials cred = null;
             if ( authType != null ) {
@@ -685,7 +691,7 @@ public class OGCFrontController extends HttpServlet {
 
         try {
             // TODO handle multiple authentication methods
-            AuthenticationMethodType authType = serviceConfig.getAuthenticationMethod();
+            AuthenticationMethodType authType = mainConfig.getAuthenticationMethod();
 
             Credentials cred = null;
             if ( authType != null ) {
@@ -784,7 +790,7 @@ public class OGCFrontController extends HttpServlet {
 
         try {
             // TODO handle multiple authentication methods
-            AuthenticationMethodType authType = serviceConfig.getAuthenticationMethod();
+            AuthenticationMethodType authType = mainConfig.getAuthenticationMethod();
             Credentials cred = null;
             if ( authType != null ) {
                 LOG.debug( "Configured authtype: " + authType );
@@ -1047,8 +1053,17 @@ public class OGCFrontController extends HttpServlet {
         if ( resolvedMetadataURL == null ) {
             throw new ServletException( "Resolving service configuration url failed!" );
         }
+        URL resolvedMainURL = null;
+        try {
+            resolvedMainURL = resolveFileLocation( DEFAULT_SERVICE_MAIN_PATH, getServletContext() );
+        } catch ( MalformedURLException e ) {
+            throw new ServletException( "Resolving of main.xml failed: " + e.getLocalizedMessage(), e );
+        }
+        if ( resolvedMainURL == null ) {
+            throw new ServletException( "Resolving service configuration url for main.xml failed!" );
+        }
 
-        unmarshallConfiguration( resolvedMetadataURL );
+        unmarshallConfiguration( resolvedMetadataURL, resolvedMainURL );
 
         Version configVersion = Version.parseVersion( serviceConfig.getConfigVersion() );
         if ( !configVersion.equals( SUPPORTED_CONFIG_VERSION ) ) {
@@ -1062,7 +1077,7 @@ public class OGCFrontController extends HttpServlet {
             throw new ServletException( msg );
         }
 
-        ConfiguredServicesType servicesConfigured = serviceConfig.getConfiguredServices();
+        ConfiguredServicesType servicesConfigured = mainConfig.getConfiguredServices();
         List<ServiceType> services = null;
         if ( servicesConfigured != null ) {
             services = servicesConfigured.getService();
@@ -1085,7 +1100,7 @@ public class OGCFrontController extends HttpServlet {
             }
         }
         if ( services == null || services.size() == 0 ) {
-            LOG.info( "No service elements were supplied in the file: '" + resolvedMetadataURL
+            LOG.info( "No service elements were supplied in the file: '" + resolvedMainURL
                       + "' -- trying to use the default loading mechanism." );
             try {
                 services = loadServicesFromDefaultLocation();
@@ -1096,7 +1111,7 @@ public class OGCFrontController extends HttpServlet {
         if ( services.size() == 0 ) {
             throw new ServletException(
                                         "No deegree web services could be loaded (manually or automatically) please take a look at your configuration file: "
-                                                                + resolvedMetadataURL
+                                                                + resolvedMainURL
                                                                 + " and or your WEB-INF/conf directory." );
         }
 
@@ -1393,7 +1408,7 @@ public class OGCFrontController extends HttpServlet {
                                                                                                                           OGCFrontController.class.getClassLoader() );
             subController = subControllerClass.newInstance();
             XMLAdapter controllerConf = new XMLAdapter( new URL( configuredService.getConfigurationLocation() ) );
-            subController.init( controllerConf, serviceConfig );
+            subController.init( controllerConf, serviceConfig, mainConfig );
             LOG.info( "" );
             // round to exactly two decimals, I think their should be a java method for this though
             double startupTime = Math.round( ( ( System.currentTimeMillis() - time ) * 0.1 ) ) * 0.01;
@@ -1455,7 +1470,7 @@ public class OGCFrontController extends HttpServlet {
                     String serviceName = fileName.trim().toUpperCase();
                     // to avoid the ugly warning we can afford this extra c(hack)
                     if ( serviceName.equals( ".SVN" ) || !serviceName.endsWith( ".XML" )
-                         || serviceName.equals( "METADATA.XML" ) ) {
+                         || serviceName.equals( "METADATA.XML" ) || serviceName.equals( "MAIN.XML" ) ) {
                         continue;
                     }
                     serviceName = serviceName.substring( 0, fileName.length() - 4 );
@@ -1489,14 +1504,15 @@ public class OGCFrontController extends HttpServlet {
      *            pointing to the configuration file.
      * @throws ServletException
      */
-    private synchronized void unmarshallConfiguration( URL resolvedConfigURL )
+    private synchronized void unmarshallConfiguration( URL resolvedConfigURL, URL resolvedMainURL )
                             throws ServletException {
         if ( serviceConfig == null ) {
             try {
-                String contextName = "org.deegree.services.jaxb.metadata";
+                String contextName = "org.deegree.services.jaxb.main";
                 JAXBContext jc = JAXBContext.newInstance( contextName );
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
-                serviceConfig = (DeegreeServicesMetadata) unmarshaller.unmarshal( resolvedConfigURL );
+                serviceConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) unmarshaller.unmarshal( resolvedConfigURL ) ).getValue();
+                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) unmarshaller.unmarshal( resolvedMainURL ) ).getValue();
             } catch ( JAXBException e ) {
                 String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
                 LOG.error( msg, e );

@@ -49,12 +49,12 @@ import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreManager;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.jaxb.metadata.CodeType;
-import org.deegree.services.jaxb.metadata.DCPType;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.KeywordsType;
-import org.deegree.services.jaxb.metadata.LanguageStringType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.CodeType;
+import org.deegree.services.jaxb.main.DCPType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.KeywordsType;
+import org.deegree.services.jaxb.main.LanguageStringType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
 
 /**
  * This is an xml adapter for SOS 1.0.0 Capabilities documents.
@@ -109,7 +109,7 @@ public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
      * @throws ObservationDatastoreException
      */
     public static void export( Set<Sections> sections, List<Offering> offerings,
-                               DeegreeServicesMetadata serviceMetadata, ServiceIdentificationType identification,
+                               DeegreeServicesMetadataType serviceMetadata, ServiceIdentificationType identification,
                                XMLStreamWriter writer )
                             throws XMLStreamException, ObservationDatastoreException {
         writer.setPrefix( SOS_PREFIX, SOS_NS );

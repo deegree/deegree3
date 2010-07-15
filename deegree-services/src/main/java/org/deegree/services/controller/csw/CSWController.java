@@ -112,7 +112,8 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
 import org.deegree.services.jaxb.csw.PublishedInformation;
 import org.deegree.services.jaxb.csw.ServiceConfiguration;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,9 +164,10 @@ public class CSWController extends AbstractOGCServiceController {
     };
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadata serviceMetadata )
+    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
+                      DeegreeServiceControllerType mainConf )
                             throws ControllerInitException {
-        init( serviceMetadata, IMPLEMENTATION_METADATA, controllerConf );
+        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         LOG.info( "Initializing CSW controller." );
 
@@ -584,8 +586,8 @@ public class CSWController extends AbstractOGCServiceController {
         response.setContentType( "text/xml; charset=UTF-8" );
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
-        GetCapabilitiesHandler.export( xmlWriter, mainControllerConf, sections,
-                                       mainControllerConf.getServiceIdentification(), negotiatedVersion, isSoap );
+        GetCapabilitiesHandler.export( xmlWriter, mainMetadataConf, mainControllerConf, sections,
+                                       mainMetadataConf.getServiceIdentification(), negotiatedVersion, isSoap );
         xmlWriter.flush();
 
     }

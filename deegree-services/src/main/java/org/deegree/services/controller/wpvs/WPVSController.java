@@ -84,10 +84,11 @@ import org.deegree.services.controller.wpvs.getview.GetView;
 import org.deegree.services.controller.wpvs.getview.GetViewKVPAdapter;
 import org.deegree.services.controller.wpvs.getview.GetViewResponseParameters;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.metadata.DCPType;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.main.DCPType;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
@@ -131,10 +132,11 @@ public class WPVSController extends AbstractOGCServiceController {
     };
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadata serviceMetadata )
+    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
+                      DeegreeServiceControllerType mainConf )
                             throws ControllerInitException {
 
-        init( serviceMetadata, IMPLEMENTATION_METADATA, controllerConf );
+        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         LOG.info( "Checking for JOGL." );
         JOGLChecker.check();
@@ -142,7 +144,7 @@ public class WPVSController extends AbstractOGCServiceController {
 
         identification = serviceMetadata.getServiceIdentification();
         provider = serviceMetadata.getServiceProvider();
-        
+
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "wpvs", "http://www.deegree.org/services/wpvs" );
         try {
@@ -291,7 +293,6 @@ public class WPVSController extends AbstractOGCServiceController {
 
     /**
      * @param format
-     * @return
      */
     private String mimeToFormat( String format ) {
         String[] split = format.split( "/" );

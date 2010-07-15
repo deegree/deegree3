@@ -95,9 +95,10 @@ import org.deegree.services.controller.wcs.describecoverage.DescribeCoverage100X
 import org.deegree.services.controller.wcs.getcoverage.GetCoverage;
 import org.deegree.services.controller.wcs.getcoverage.GetCoverage100KVPAdapter;
 import org.deegree.services.controller.wcs.getcoverage.GetCoverage100XMLAdapter;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wcs.PublishedInformation;
 import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wcs.ServiceConfigurationXMLAdapter;
@@ -150,10 +151,11 @@ public class WCSController extends AbstractOGCServiceController {
     };
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadata serviceMetadata )
+    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
+                      DeegreeServiceControllerType mainConf )
                             throws ControllerInitException {
         UPDATE_SEQUENCE++;
-        init( serviceMetadata, IMPLEMENTATION_METADATA, controllerConf );
+        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
 
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( WCSConstants.WCS_100_PRE, WCS_100_NS );
@@ -180,7 +182,7 @@ public class WCSController extends AbstractOGCServiceController {
         if ( identification == null ) {
             if ( publishedInformation == null || publishedInformation.getServiceIdentification() == null ) {
                 LOG.info( "Using global service identification because no WCS specific service identification was defined." );
-                identification = mainControllerConf.getServiceIdentification();
+                identification = mainMetadataConf.getServiceIdentification();
             } else {
                 identification = synchronizeServiceIdentificationWithMainController( publishedInformation.getServiceIdentification() );
             }
@@ -188,7 +190,7 @@ public class WCSController extends AbstractOGCServiceController {
         if ( provider == null ) {
             if ( publishedInformation == null || publishedInformation.getServiceProvider() == null ) {
                 LOG.info( "Using global serviceProvider because no WCS specific service provider was defined." );
-                provider = mainControllerConf.getServiceProvider();
+                provider = mainMetadataConf.getServiceProvider();
             } else {
                 provider = synchronizeServiceProviderWithMainControllerConf( publishedInformation.getServiceProvider() );
             }
@@ -504,8 +506,8 @@ public class WCSController extends AbstractOGCServiceController {
         XMLStreamWriter xmlWriter = getXMLStreamWriter( response.getWriter() );
         if ( negotiateVersion.equals( VERSION_100 ) ) {
             Capabilities100XMLAdapter.export( xmlWriter, request, identification, provider, allowedOperations,
-                                              sections, wcsService.getAllCoverages(), mainControllerConf, xmlWriter,
-                                              UPDATE_SEQUENCE );
+                                              sections, wcsService.getAllCoverages(), mainMetadataConf,
+                                              mainControllerConf, xmlWriter, UPDATE_SEQUENCE );
         } else {
             // the 1.1.0
         }

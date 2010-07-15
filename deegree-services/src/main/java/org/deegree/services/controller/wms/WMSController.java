@@ -118,9 +118,10 @@ import org.deegree.services.controller.wms.plugins.FeatureInfoSerializer;
 import org.deegree.services.controller.wms.plugins.ImageSerializer;
 import org.deegree.services.controller.wms.security.DummyWMSSecurityManager;
 import org.deegree.services.controller.wms.security.WMSSecurityManager;
-import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.ServiceIdentificationType;
+import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wms.PublishedInformation;
 import org.deegree.services.jaxb.wms.ServiceConfiguration;
 import org.deegree.services.jaxb.wms.PublishedInformation.GetFeatureInfoFormat;
@@ -207,13 +208,14 @@ public class WMSController extends AbstractOGCServiceController {
     }
 
     @Override
-    public void init( XMLAdapter controllerConf, DeegreeServicesMetadata serviceMetadata )
+    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
+                      DeegreeServiceControllerType mainConfig )
                             throws ControllerInitException {
 
-        init( serviceMetadata, IMPLEMENTATION_METADATA, controllerConf );
+        init( serviceMetadata, mainConfig, IMPLEMENTATION_METADATA, controllerConf );
 
-        identification = mainControllerConf.getServiceIdentification();
-        provider = mainControllerConf.getServiceProvider();
+        identification = mainMetadataConf.getServiceIdentification();
+        provider = mainMetadataConf.getServiceProvider();
 
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "wms", "http://www.deegree.org/services/wms" );
@@ -513,9 +515,10 @@ public class WMSController extends AbstractOGCServiceController {
                     bindings.put( ns, loc );
                 }
                 bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
-                
+
                 new GMLFeatureWriter( GMLVersion.GML_2, xmlWriter, fi.getCoordinateSystem(), null, null, null, 0, -1,
-                                      null, false, fi.returnGeometries() ).export( col, ns == null ? loc : null, bindings );
+                                      null, false, fi.returnGeometries() ).export( col, ns == null ? loc : null,
+                                                                                   bindings );
             } catch ( XMLStreamException e ) {
                 LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );

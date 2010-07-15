@@ -2,7 +2,7 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
   targetNamespace="http://www.deegree.org/services/wpvs" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
   jaxb:version="2.1">
-  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.5.0/services_metadata.xsd" />
+  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.6.0/metadata.xsd" />
   <element name="ServiceConfiguration">
     <annotation>
       <documentation>
