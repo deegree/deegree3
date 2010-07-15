@@ -1488,7 +1488,7 @@ public class OGCFrontController extends HttpServlet {
                 String fileName = f.getName();
                 if ( fileName != null && !"".equals( fileName.trim() ) ) {
                     String serviceName = fileName.trim().toUpperCase();
-                    // to avoid the ugly warning we can afford this extra c(hack)
+                    // to avoid the ugly warning we can afford this extra s(hack)
                     if ( serviceName.equals( ".SVN" ) || !serviceName.endsWith( ".XML" )
                          || serviceName.equals( "METADATA.XML" ) || serviceName.equals( "MAIN.XML" ) ) {
                         continue;
