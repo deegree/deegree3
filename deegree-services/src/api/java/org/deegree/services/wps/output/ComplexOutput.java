@@ -55,16 +55,15 @@ public interface ComplexOutput extends ProcessletOutput {
     /**
      * Returns a stream for writing binary output.
      * 
-     * @return a stream for writing binary output
+     * @return stream for writing binary output, never <code>null</code>
      */
     public OutputStream getBinaryOutputStream();
 
     /**
-     * Returns a stream for ready for writing XML output. The stream will be initiated with a
-     * {@link XMLStreamWriter#writeStartDocument()} and will have the requested encoding, or 'UTF-8' if no encoding was
-     * specified.
+     * Returns a stream for for writing XML output. The stream is already initialized with a
+     * {@link XMLStreamWriter#writeStartDocument()}.
      * 
-     * @return a stream for writing XML output
+     * @return a stream for writing XML output, never <code>null</code>
      * @throws XMLStreamException
      */
     public XMLStreamWriter getXMLStreamWriter()
