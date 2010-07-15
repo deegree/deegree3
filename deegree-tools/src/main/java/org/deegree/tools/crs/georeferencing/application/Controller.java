@@ -92,12 +92,14 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.GenericSettings
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.MouseModel;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
-import org.deegree.tools.crs.georeferencing.model.TextFieldModel;
 import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
+import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
+import org.deegree.tools.crs.georeferencing.model.textfield.AbstractTextfieldModel;
+import org.deegree.tools.crs.georeferencing.model.textfield.TextFieldModel;
 import org.deegree.tools.rendering.viewer.File3dImporter;
 
 /**
@@ -302,12 +304,8 @@ public class Controller {
                 if ( tF.getName().startsWith( GRViewerGUI.JTEXTFIELD_COORDINATE_JUMPER ) ) {
                     System.out.println( "[Controller] put something in the textfield: " + tF.getText() );
 
-                    textFieldModel.setTextInput( tF.getText() );
-                    if ( textFieldModel.getError() != null ) {
-                        view.setErrorDialog( new ErrorDialog( view, JDialog.ERROR,
-                                                              textFieldModel.getError().getErrorMessage() ) );
-                        textFieldModel.resetError();
-                    } else {
+                    try {
+                        textFieldModel.setTextInput( tF.getText() );
                         if ( sceneValues.getTransformedBounds() != null ) {
                             System.out.println( textFieldModel.toString() );
                             if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
@@ -326,7 +324,17 @@ public class Controller {
                             panel.updatePoints( sceneValues );
                             panel.repaint();
                         }
+                    } catch ( NumberException e1 ) {
+
+                        view.setErrorDialog( new ErrorDialog( view, JDialog.ERROR, e1.getMessage() ) );
                     }
+                    // if ( textFieldModel.getError() != null ) {
+                    // view.setErrorDialog( new ErrorDialog( view, JDialog.ERROR,
+                    // textFieldModel.getError().getErrorMessage() ) );
+                    // textFieldModel.resetError();
+                    // } else {
+
+                    // }
                 }
 
             }
@@ -368,21 +376,7 @@ public class Controller {
                     panel.repaint();
                     footPanel.repaint();
                 }
-                if ( ( (JButton) source ).getText().startsWith( OptionDialog.BUTTON_NAME_OK ) ) {
-                    // switch ( optionSettingPanel.getType() ) {
-                    // case GeneralPanel:
-                    // // TODO
-                    // break;
-                    //
-                    // case ViewPanel:
-                    // ViewPanel viewPanel = (ViewPanel) optionSettingPanel;
-                    // viewPanel.getPointSize();
-                    // dialogModel.getSelectionPointSize();
-                    // break;
-                    //
-                    // }
-                    dialog.setVisible( false );
-                }
+
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
                     System.out.println( "you clicked on delete all" );
                     removeAllFromMappedPoints();
@@ -426,6 +420,30 @@ public class Controller {
 
                     reset();
                 }
+                if ( ( (JButton) source ).getText().startsWith( OptionDialog.BUTTON_NAME_OK ) ) {
+
+                    // if the custom radiobutton is selected and there is something inside the textField
+                    if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
+                         && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects()[0] != null ) {
+                        // here you have to check about the input for the custom textfield. Keylistener for the
+                        // textfield while typing in is problematic because you can workaround with copy&paste...so this
+                        // should be the way to go.
+
+                        String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
+                        if ( AbstractTextfieldModel.validateInt( textInput ) ) {
+                            dialogModel.setTextFieldKeyString( textInput );
+                            dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
+                        } else {
+                            dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR, "Insert numbers only!" ) );
+
+                        }
+
+                    }
+
+                    panel.repaint();
+                    footPanel.repaint();
+                    dialog.setVisible( false );
+                }
             }
             if ( source instanceof JMenuItem ) {
 
@@ -467,6 +485,14 @@ public class Controller {
 
             }
             if ( source instanceof JRadioButton ) {
+                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TWO ) ) {
+                    System.out.println( "[Controller] two" );
+                    dialogModel.setSelectionPointSize( 2 );
+                }
+                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.THREE ) ) {
+                    System.out.println( "[Controller] three" );
+                    dialogModel.setSelectionPointSize( 3 );
+                }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.DEFAULT ) ) {
                     System.out.println( "[Controller] default" );
                     dialogModel.setSelectionPointSize( 5 );
@@ -481,11 +507,11 @@ public class Controller {
                     dialogModel.setSelectionPointSize( 10 );
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.CUSTOM ) ) {
-
-                    // dialogModel.setTextFieldKeyString( textFieldKeyString );
-                    dialogModel.setTextFieldKeyString( ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
-                    dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
-                    System.out.println( "[Controller] custom " + dialogModel.getTextFieldKeyString() );
+                    if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" ) ) {
+                        dialogModel.setTextFieldKeyString( ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
+                        dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
+                        System.out.println( "[Controller] custom " + dialogModel.getTextFieldKeyString() );
+                    }
                 }
                 AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize();
             }

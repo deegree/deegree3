@@ -33,33 +33,23 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.model.dialog;
+package org.deegree.tools.crs.georeferencing.model.textfield;
 
 /**
- * Handles the error messages to show in the GUI.
+ * Abstract base class for all the textfieldmodels
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ErrorDialogModel {
+public abstract class AbstractTextfieldModel {
 
-    private String errorMessage;
+    private final static String validateInteger = "[0-9]*";
 
-    private int errorType;
+    public static boolean validateInt( String textInput ) {
 
-    public ErrorDialogModel( int errorType, String errorMessage ) {
-        this.errorMessage = errorMessage;
-        this.errorType = errorType;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public int getErrorType() {
-        return errorType;
+        return textInput.matches( validateInteger );
     }
 
 }

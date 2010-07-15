@@ -57,6 +57,10 @@ import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
  */
 public class ViewPanel extends GenericSettingsPanel {
 
+    public static final String TWO = "2pt";
+
+    public static final String THREE = "3pt";
+
     public static final String DEFAULT = "5pt (default)";
 
     public static final String SEVEN = "7pt";
@@ -66,6 +70,10 @@ public class ViewPanel extends GenericSettingsPanel {
     public static final String CUSTOM = "custom";
 
     public static final String CUSTOM_TEXTFIELD = "customTextField";
+
+    private JRadioButton radio2PT;
+
+    private JRadioButton radio3PT;
 
     private JRadioButton radioDefault;
 
@@ -88,6 +96,8 @@ public class ViewPanel extends GenericSettingsPanel {
 
         this.setLayout( new BorderLayout() );
 
+        radio2PT = new JRadioButton( TWO );
+        radio3PT = new JRadioButton( THREE );
         radioDefault = new JRadioButton( DEFAULT );
         radio7PT = new JRadioButton( SEVEN );
         radio10PT = new JRadioButton( TEN );
@@ -101,23 +111,28 @@ public class ViewPanel extends GenericSettingsPanel {
         pointSize = dialogModel.getSelectionPointSize();
 
         ButtonGroup group = new ButtonGroup();
+        group.add( radio2PT );
+        group.add( radio3PT );
         group.add( radioDefault );
         group.add( radio7PT );
         group.add( radio10PT );
         group.add( radioCustom );
 
         switch ( pointSize ) {
+        case 2:
+            radio2PT.setSelected( true );
+            break;
+        case 3:
+            radio3PT.setSelected( true );
+            break;
         case 5:
             radioDefault.setSelected( true );
-
             break;
         case 7:
             radio7PT.setSelected( true );
-
             break;
         case 10:
             radio10PT.setSelected( true );
-
             break;
         default:
             radioCustom.setSelected( true );
@@ -125,6 +140,8 @@ public class ViewPanel extends GenericSettingsPanel {
 
         }
 
+        defined.add( radio2PT, Component.LEFT_ALIGNMENT );
+        defined.add( radio3PT, Component.LEFT_ALIGNMENT );
         defined.add( radioDefault, Component.LEFT_ALIGNMENT );
         defined.add( radio7PT, Component.LEFT_ALIGNMENT );
         defined.add( radio10PT, Component.LEFT_ALIGNMENT );
@@ -135,6 +152,8 @@ public class ViewPanel extends GenericSettingsPanel {
     }
 
     public void addRadioButtonListener( ActionListener e ) {
+        radio2PT.addActionListener( e );
+        radio3PT.addActionListener( e );
         radioDefault.addActionListener( e );
         radio7PT.addActionListener( e );
         radio10PT.addActionListener( e );
@@ -157,6 +176,10 @@ public class ViewPanel extends GenericSettingsPanel {
 
     public void setPointSize( int pointSize ) {
         this.pointSize = pointSize;
+    }
+
+    public JRadioButton getRadioCustom() {
+        return radioCustom;
     }
 
 }

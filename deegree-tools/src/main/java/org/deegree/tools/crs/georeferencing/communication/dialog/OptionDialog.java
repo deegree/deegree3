@@ -36,7 +36,6 @@
 package org.deegree.tools.crs.georeferencing.communication.dialog;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -44,7 +43,6 @@ import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -81,6 +79,8 @@ public class OptionDialog extends JDialog {
 
     private JButton ok;
 
+    private ErrorDialog errorDialog;
+
     /**
      * Creates a new instance of {@code Dialog} with the modal attribute <i>true</i>.
      * 
@@ -105,12 +105,12 @@ public class OptionDialog extends JDialog {
         settingsPanel.setBounds( new Rectangle( new Dimension( this.getBounds().width - PNW, this.getBounds().height ) ) );
 
         buttonPanel = new JPanel();
-        buttonPanel.setLayout( new BoxLayout( buttonPanel, BoxLayout.X_AXIS ) );
+        buttonPanel.setLayout( new FlowLayout() );
         buttonPanel.setName( BUTTON_PANEL_NAME );
 
         ok = new JButton( BUTTON_NAME_OK );
 
-        buttonPanel.add( ok, Component.RIGHT_ALIGNMENT );
+        buttonPanel.add( ok );
 
         splitPane.setLeftComponent( navigationPanel );
         splitPane.setRightComponent( settingsPanel );
@@ -145,6 +145,11 @@ public class OptionDialog extends JDialog {
 
     public void addActionKeyListener( ActionListener e ) {
         ok.addActionListener( e );
+    }
+
+    public void setErrorDialog( ErrorDialog errorDialog ) {
+        this.errorDialog = errorDialog;
+
     }
 
 }

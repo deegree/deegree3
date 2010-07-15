@@ -33,13 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.model;
+package org.deegree.tools.crs.georeferencing.model.textfield;
 
 import java.util.regex.Pattern;
 
-import javax.swing.JDialog;
-
-import org.deegree.tools.crs.georeferencing.model.dialog.ErrorDialogModel;
+import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
+import org.deegree.tools.crs.georeferencing.model.exceptions.NumberMissmatch;
+import org.deegree.tools.crs.georeferencing.model.exceptions.TooManyNumbersException;
 
 /**
  * Model that holds the relevant information for textfields.
@@ -49,7 +49,7 @@ import org.deegree.tools.crs.georeferencing.model.dialog.ErrorDialogModel;
  * 
  * @version $Revision$, $Date$
  */
-public class TextFieldModel {
+public class TextFieldModel extends AbstractTextfieldModel {
 
     private double xCoordinate;
 
@@ -63,13 +63,14 @@ public class TextFieldModel {
 
     private String textInput;
 
-    private ErrorDialogModel error;
+    // private ErrorDialogModel error;
 
     public TextFieldModel() {
 
     }
 
-    public void setTextInput( String textInput ) {
+    public void setTextInput( String textInput )
+                            throws NumberException {
         this.textInput = textInput;
         String[] inputParameters = null;
         Pattern p = Pattern.compile( separator );
@@ -78,8 +79,9 @@ public class TextFieldModel {
 
         for ( int i = 0; i < inputParameters.length; i += numberOfParameters ) {
             if ( numberOfParameters < 2 ) {
-                error = new ErrorDialogModel( JDialog.ERROR,
-                                              "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
+                // error = new ErrorDialogModel( JDialog.ERROR,
+                // "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
+                throw new NumberException( "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
             } else {
                 try {
                     xCoordinate = Double.parseDouble( inputParameters[i] );
@@ -95,8 +97,10 @@ public class TextFieldModel {
 
                 if ( numberOfParameters > 2 ) {
                     if ( numberOfParameters == 3 ) {
-                        error = new ErrorDialogModel( JDialog.ERROR,
-                                                      "You have to specify either non of width and height or both of them! " );
+                        // error = new ErrorDialogModel( JDialog.ERROR,
+                        // "You have to specify either non of width and height or both of them! " );
+                        throw new NumberMissmatch(
+                                                   "You have to specify either non of width and height or both of them! " );
                     } else {
                         try {
                             spanX = Double.parseDouble( inputParameters[i + 2] );
@@ -108,8 +112,10 @@ public class TextFieldModel {
                     }
                 }
                 if ( inputParameters.length > 4 ) {
-                    error = new ErrorDialogModel( JDialog.ERROR,
-                                                  "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
+                    // error = new ErrorDialogModel( JDialog.ERROR,
+                    // "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
+                    throw new TooManyNumbersException(
+                                                       "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
                 }
             }
 
@@ -171,9 +177,9 @@ public class TextFieldModel {
         return textInput;
     }
 
-    public ErrorDialogModel getError() {
-        return error;
-    }
+    // public ErrorDialogModel getError() {
+    // return error;
+    // }
 
     /**
      * 
@@ -201,12 +207,12 @@ public class TextFieldModel {
         return sb.toString();
     }
 
-    /**
-     * Resets the errorMessage back to null.
-     */
-    public void resetError() {
-        error = null;
-
-    }
+    // /**
+    // * Resets the errorMessage back to null.
+    // */
+    // public void resetError() {
+    // error = null;
+    //
+    // }
 
 }
