@@ -33,21 +33,21 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.model;
+package org.deegree.tools.crs.georeferencing.model.mouse;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 
 /**
- * The mouse model holds all the relevant information needed for interaction with the mouse.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class MouseModel {
+public abstract class AbstractMouseModel {
 
     private Point2d pointMousePressed;
 
@@ -61,7 +61,7 @@ public class MouseModel {
 
     private final static Point2d NULL_POINT = new Point2d( 0.0, 0.0 );
 
-    public MouseModel() {
+    public AbstractMouseModel() {
         reset();
 
     }

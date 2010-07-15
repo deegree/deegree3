@@ -50,6 +50,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 
 /**
  * Helper for the {@link Controller} to handle operations in painting the scenes.
@@ -249,37 +250,43 @@ public class Scene2DValues {
      *            y-dimension that should be the height of the envelope, if not specified use
      *            {@link #setCentroidWorldEnvelopePosition(double, double)} instead.
      */
-    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, double spanX, double spanY ) {
+    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, double spanX, double spanY,
+                                                  PointType type ) {
 
         double halfSpanXWorld;
         double halfSpanYWorld;
+        switch ( type ) {
+        case GeoreferencedPoint:
+            if ( spanX != -1 && spanY != -1 ) {
+                if ( ratio < 1 ) {
+                    halfSpanYWorld = spanY / 2;
+                    halfSpanXWorld = halfSpanYWorld * transformedRasterSpan.x / transformedRasterSpan.y;
 
-        if ( spanX != -1 && spanY != -1 ) {
-            if ( ratio < 1 ) {
-                halfSpanYWorld = spanY / 2;
-                halfSpanXWorld = halfSpanYWorld * transformedRasterSpan.x / transformedRasterSpan.y;
+                } else {
+
+                    halfSpanXWorld = spanX / 2;
+                    halfSpanYWorld = halfSpanXWorld * transformedRasterSpan.y / transformedRasterSpan.x;
+
+                }
 
             } else {
-
-                halfSpanXWorld = spanX / 2;
-                halfSpanYWorld = halfSpanXWorld * transformedRasterSpan.y / transformedRasterSpan.x;
+                halfSpanXWorld = this.subRaster.getEnvelope().getSpan0() / 2;
+                halfSpanYWorld = this.subRaster.getEnvelope().getSpan1() / 2;
 
             }
 
-        } else {
-            halfSpanXWorld = this.subRaster.getEnvelope().getSpan0() / 2;
-            halfSpanYWorld = this.subRaster.getEnvelope().getSpan1() / 2;
-
+            double minX = xCoord - halfSpanXWorld;
+            double minY = yCoord - halfSpanYWorld;
+            double maxX = xCoord + halfSpanXWorld;
+            double maxY = yCoord + halfSpanYWorld;
+            Envelope enve = geom.createEnvelope( minX, minY, maxX, maxY, crs );
+            this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
+            rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
+            break;
+        case FootprintPoint:
+            // TODO
+            break;
         }
-
-        double minX = xCoord - halfSpanXWorld;
-        double minY = yCoord - halfSpanYWorld;
-        double maxX = xCoord + halfSpanXWorld;
-        double maxY = yCoord + halfSpanYWorld;
-        Envelope enve = geom.createEnvelope( minX, minY, maxX, maxY, crs );
-        this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
-        rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
-
     }
 
     /**
@@ -292,8 +299,8 @@ public class Scene2DValues {
      *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
      * 
      */
-    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord ) {
-        this.setCentroidWorldEnvelopePosition( xCoord, yCoord, -1, -1 );
+    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, PointType type ) {
+        this.setCentroidWorldEnvelopePosition( xCoord, yCoord, -1, -1, type );
     }
 
     /**
@@ -310,7 +317,8 @@ public class Scene2DValues {
         AbstractGRPoint center = getWorldPoint( centroid );
         AbstractGRPoint dim = getWorldDimension( dimension );
 
-        this.setCentroidWorldEnvelopePosition( center.getX(), center.getY(), dim.getX(), dim.getY() );
+        this.setCentroidWorldEnvelopePosition( center.getX(), center.getY(), dim.getX(), dim.getY(),
+                                               center.getPointType() );
     }
 
     /**
