@@ -36,6 +36,8 @@
         </xs:complexType>
       </xs:element>
 
+      <xs:element name="ValidateResponses" type="xs:boolean" minOccurs="0" />
+
     </xs:sequence>
   </xs:complexType>
 

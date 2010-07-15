@@ -286,7 +286,8 @@ public class OGCFrontController extends HttpServlet {
                 sendException( ex, response, null );
                 return;
             }
-            if ( LOG.isDebugEnabled() ) {
+            if ( mainConfig.getFrontControllerOptions() != null
+                 && mainConfig.getFrontControllerOptions().getRequestLogging() != null ) {
                 incomingKVP( queryString, entryTime );
             }
 
@@ -435,8 +436,20 @@ public class OGCFrontController extends HttpServlet {
             InputStream is = request.getInputStream();
             if ( multiParts == null ) {
                 // TODO log multiparts requests
-                if ( LOG.isDebugEnabled() ) {
-                    is = new LoggingInputStream( is, new FileOutputStream( createTempFile( "request", ".body" ) ) );
+                if ( mainConfig.getFrontControllerOptions() != null
+                     && mainConfig.getFrontControllerOptions().getRequestLogging() != null ) {
+                    String dir = mainConfig.getFrontControllerOptions().getRequestLogging().getOutputDirectory();
+                    File file;
+                    if ( dir == null ) {
+                        file = createTempFile( "request", ".body" );
+                    } else {
+                        File directory = new File( dir );
+                        if ( !directory.exists() ) {
+                            directory.mkdirs();
+                        }
+                        file = createTempFile( "request", ".body", directory );
+                    }
+                    is = new LoggingInputStream( is, new FileOutputStream( file ) );
                 }
             }
 
@@ -537,7 +550,8 @@ public class OGCFrontController extends HttpServlet {
             // Parse the request
             result = upload.parseRequest( request );
             LOG.debug( "The multipart request contains: " + result.size() + " items." );
-            if ( LOG.isDebugEnabled() ) {
+            if ( mainConfig.getFrontControllerOptions() != null
+                 && mainConfig.getFrontControllerOptions().getRequestLogging() != null ) {
                 for ( FileItem item : result ) {
                     LOG.debug( item.toString() );
                 }
@@ -635,7 +649,9 @@ public class OGCFrontController extends HttpServlet {
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
-                if ( LOG.isDebugEnabled() ) {
+                if ( mainConfig.getFrontControllerOptions() != null
+                     && mainConfig.getFrontControllerOptions().isValidateResponses() != null
+                     && mainConfig.getFrontControllerOptions().isValidateResponses() ) {
                     validateResponse( responseWrapper );
                 }
                 responseWrapper.flushBuffer();
@@ -728,7 +744,9 @@ public class OGCFrontController extends HttpServlet {
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
-                if ( LOG.isDebugEnabled() ) {
+                if ( mainConfig.getFrontControllerOptions() != null
+                     && mainConfig.getFrontControllerOptions().isValidateResponses() != null
+                     && mainConfig.getFrontControllerOptions().isValidateResponses() ) {
                     validateResponse( responseWrapper );
                 }
                 responseWrapper.flushBuffer();
@@ -845,7 +863,9 @@ public class OGCFrontController extends HttpServlet {
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
-                if ( LOG.isDebugEnabled() ) {
+                if ( mainConfig.getFrontControllerOptions() != null
+                     && mainConfig.getFrontControllerOptions().isValidateResponses() != null
+                     && mainConfig.getFrontControllerOptions().isValidateResponses() ) {
                     validateResponse( responseWrapper );
                 }
                 try {
