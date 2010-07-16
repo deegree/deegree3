@@ -17,7 +17,8 @@
     </ogc:Filter>
       <PolygonSymbolizer>
         <Fill>
-          <SvgParameter name="fill"><Interpolate fallbackValue="#005C29" method="color">
+          <SvgParameter name="fill">
+            <Interpolate fallbackValue="#005C29" method="color">
                 <LookupValue>
                     <ogc:PropertyName>app:CODE</ogc:PropertyName>
                 </LookupValue>
@@ -42,7 +43,33 @@
                     <Value>#ffffff</Value>
                 </InterpolationPoint>
             </Interpolate></SvgParameter>
-          <SvgParameter name="fill-opacity">1</SvgParameter>
+          <SvgParameter name="fill-opacity">
+            <Interpolate fallbackValue="1" method="numeric">
+              <LookupValue>
+                <ogc:PropertyName>app:CODE</ogc:PropertyName>
+              </LookupValue>
+                <InterpolationPoint>
+                    <Data>-1</Data>
+                    <Value>0</Value>
+                </InterpolationPoint>
+                <InterpolationPoint>
+                    <Data>100</Data>
+                    <Value>1</Value>
+                </InterpolationPoint>
+                <InterpolationPoint>
+                    <Data>300</Data>
+                    <Value>1</Value>
+                </InterpolationPoint>
+                <InterpolationPoint>
+                    <Data>500</Data>
+                    <Value>1</Value>
+                </InterpolationPoint>
+                <InterpolationPoint>
+                    <Data>1000</Data>
+                    <Value>0</Value>
+                </InterpolationPoint>
+              </Interpolate>
+            </SvgParameter>
         </Fill>
         <Stroke>
           <SvgParameter name="stroke">#000000</SvgParameter>

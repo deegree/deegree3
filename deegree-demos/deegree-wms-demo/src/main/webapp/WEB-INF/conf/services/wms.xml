@@ -4,7 +4,8 @@
   xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd">
 
   <ServiceConfiguration>
-
+    <FeatureInfoRadius>10</FeatureInfoRadius>
+    
     <UnrequestableLayer>
       <Title>deegree 3 WMS demo</Title>
       <CRS>EPSG:4326 CRS:84 EPSG:26912</CRS>
@@ -32,9 +33,10 @@
               <File>../styles/utah_counties.se</File>
             </DirectStyle>
           </RequestableLayer>
-          <RequestableLayer>
-            <Name>Countynames</Name>
+          <RequestableLayer queryable="0">
+            <Name>CountyNames</Name>
             <Title>Countynames of Utah</Title>
+            <ScaleUntil>5000000</ScaleUntil>
             <FeatureStoreId>utah_counties</FeatureStoreId>
             <DirectStyle>
               <File>../styles/utah_countynames.se</File>
@@ -74,9 +76,9 @@
           <Name>Roads</Name>
           <Title>Roads of Utah</Title>
           <FeatureStoreId>utah_roads</FeatureStoreId>
-        <!--  <DirectStyle>
+        <DirectStyle>
             <File>../styles/utah_roads.se</File>
-          </DirectStyle>-->
+          </DirectStyle>
          <SupportedFeatures>
             <MaxFeatures>10000000</MaxFeatures>
           </SupportedFeatures>
@@ -95,11 +97,26 @@
         <Name>Elevation</Name>
         <Title>Elevation Data of Utah</Title>
         <RequestableLayer>
-          <Name>DEM</Name>
+          <Name>DEM90</Name>
           <Title>DEM 90m Raster of Utah</Title>
           <CoverageStoreId>utah_dem</CoverageStoreId>
           <DirectStyle>
             <File>../styles/utah_dem.se</File>
+          </DirectStyle>
+        </RequestableLayer>
+        <RequestableLayer>
+          <Name>DEM30</Name>
+          <Title>DEM 30m Raster of Utah</Title>
+          <Dimension isElevation="true">
+            <Property>ELEV</Property>
+            <DefaultValue>0/3500</DefaultValue>
+            <MultipleValues>true</MultipleValues>
+            <NearestValue>true</NearestValue>
+            <Extent>0/3500</Extent>
+          </Dimension>
+          <CoverageStoreId>utah_dem30</CoverageStoreId>
+          <DirectStyle>
+            <File>../styles/utah_dem30.se</File>
           </DirectStyle>
         </RequestableLayer>
         <RequestableLayer>
@@ -197,6 +214,9 @@
         <DirectStyle>
           <File>../styles/utah_energyresources.se</File>
         </DirectStyle>
+        <SupportedFeatures>
+          <AntiAliasing>NONE</AntiAliasing>
+        </SupportedFeatures>
       </RequestableLayer>
 
       <RequestableLayer>
@@ -215,7 +235,12 @@
       <StatisticsLayer />
 
     </UnrequestableLayer>
-
+    
   </ServiceConfiguration>
-
+  <PublishedInformation>
+    <GetFeatureInfoFormat>
+      <File>html.gfi</File>
+      <Format>text/html</Format>
+    </GetFeatureInfoFormat>
+  </PublishedInformation>
 </deegreeWMS>
