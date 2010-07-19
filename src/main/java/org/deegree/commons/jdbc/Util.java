@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.jdbc;
 
+import static java.sql.Types.BIGINT;
 import static java.sql.Types.BINARY;
 import static java.sql.Types.BIT;
 import static java.sql.Types.BLOB;
@@ -128,6 +129,7 @@ public class Util {
                     break;
                 case NUMERIC:
                 case DOUBLE:
+                case BIGINT:
                     pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, DECIMAL, false, null );
                     break;
                 case OTHER:
