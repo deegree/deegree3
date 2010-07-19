@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.postgis;
 
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
@@ -74,11 +75,12 @@ class PostGISFeatureMapping implements PostGISMapping {
     public PropertyNameMapping getMapping( PropertyName propName )
                             throws FilterEvaluationException {
 
-        String dbColumn = ftMapping.getColumn( propName.getAsQName() );
+        MappingExpression dbColumn = ftMapping.getMapping( propName.getAsQName() );
         if ( dbColumn == null ) {
             return null;
         }
-        return new PropertyNameMapping( "X1", dbColumn );
+        // TODO handle other (non-trivial) mappings
+        return new PropertyNameMapping( "X1", dbColumn.toString() );
     }
 
     @Override

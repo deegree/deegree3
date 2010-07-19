@@ -9,7 +9,7 @@
     <SimpleProperty name="app:id" type="integer" />
     <SimpleProperty name="app:name" type="string" />
     <SimpleProperty name="app:sex" type="string" />
-    <!-- SimpleProperty name="app:subject" minOccurs="0" maxOccurs="unbounded" mapping="ID->SUBJECT.PHILOSOPHER_ID->NAME" type="string" /-->
+    <SimpleProperty name="app:subject" minOccurs="0" maxOccurs="unbounded" mapping="ID->SUBJECT.PHILOSOPHER_ID->NAME" type="string" />
     <!-- FeatureProperty name="app:isAuthorOf" minOccurs="0" maxOccurs="unbounded" mapping="featureById(ID->IS_AUTHOR_OF.PHILOSOPHER_ID->BOOK_ID)" type="app:Book" /-->
     <SimpleProperty name="app:dateOfBirth" mapping="DATE_OF_BIRTH" type="date" />
     <FeatureProperty name="app:placeOfBirth" mapping="PLACE_OF_BIRTH" type="app:Place" />
