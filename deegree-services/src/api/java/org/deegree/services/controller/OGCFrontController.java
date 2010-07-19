@@ -1532,7 +1532,14 @@ public class OGCFrontController extends HttpServlet {
                 JAXBContext jc = JAXBContext.newInstance( contextName );
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
                 serviceConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) unmarshaller.unmarshal( resolvedConfigURL ) ).getValue();
-                mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) unmarshaller.unmarshal( resolvedMainURL ) ).getValue();
+                try {
+                    mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) unmarshaller.unmarshal( resolvedMainURL ) ).getValue();
+                } catch ( JAXBException e ) {
+                    mainConfig = new DeegreeServiceControllerType();
+                    LOG.info( "main.xml could not be loaded. Proceeding with defaults." );
+                    LOG.debug( "Error was: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
             } catch ( JAXBException e ) {
                 String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
                 LOG.error( msg, e );
