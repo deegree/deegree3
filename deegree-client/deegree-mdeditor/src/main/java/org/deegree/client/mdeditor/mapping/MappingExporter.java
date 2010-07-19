@@ -77,7 +77,7 @@ public class MappingExporter {
         LOG.debug( "Export dataset in file " + file.getAbsolutePath() + " selected mapping is " + mapping.toString() );
         XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream( file ) );
         writer.writeStartDocument();
-
+        
         List<MappingElement> mappingElements = mapping.getMappingElements();
         Iterator<MappingElement> it = mappingElements.iterator();
         if ( it.hasNext() ) {
@@ -92,14 +92,14 @@ public class MappingExporter {
                 String ffPath = currentElement.getFormFieldPath();
                 List<NameStep> nextSteps = new ArrayList<NameStep>();
                 if ( nextElement != null ) {
-                    nextSteps = nextElement.getSchemaPathAsSteps( mapping.getNsContext() );
+                    nextSteps = nextElement.getSchemaPathAsSteps();
                 }
 
                 if ( currentElement instanceof MappingGroup ) {
                     currentIndex = writeMappingGroup( writer, nextSteps, currentIndex, (MappingGroup) currentElement,
                                                       dataGroups.get( ffPath ), ffPath, mapping );
                 } else {
-                    List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps( mapping.getNsContext() );
+                    List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps();
                     if ( formFields.containsKey( ffPath ) && formFields.get( ffPath ) != null ) {
                         currentIndex = writeMappingElement( writer, currentSteps, nextSteps, currentIndex,
                                                             formFields.get( ffPath ).getValue(), ffPath, mapping );
@@ -113,7 +113,7 @@ public class MappingExporter {
         writer.close();
     }
 
-    private static void wtiteDataGroup( XMLStreamWriter writer, MappingInformation mapping,
+    private static void writeDataGroup( XMLStreamWriter writer, MappingInformation mapping,
                                         List<MappingElement> mappingElements, Map<String, Object> values )
                             throws XMLStreamException {
         Iterator<MappingElement> it = mappingElements.iterator();
@@ -129,9 +129,9 @@ public class MappingExporter {
                 if ( values.containsKey( ffPath ) && values.get( ffPath ) != null ) {
                     List<NameStep> nextSteps = new ArrayList<NameStep>();
                     if ( nextElement != null ) {
-                        nextSteps = nextElement.getSchemaPathAsSteps( mapping.getNsContext() );
+                        nextSteps = nextElement.getSchemaPathAsSteps();
                     }
-                    List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps( mapping.getNsContext() );
+                    List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps();
 
                     currentIndex = writeMappingElement( writer, currentSteps, nextSteps, currentIndex,
                                                         values.get( ffPath ), ffPath, mapping );
@@ -148,15 +148,17 @@ public class MappingExporter {
                             throws XMLStreamException {
         if ( dataGroups != null ) {
             LOG.debug( "write mapping group" );
-            List<NameStep> groupSteps = group.getSchemaPathAsSteps( mapping.getNsContext() );
+            List<NameStep> groupSteps = group.getSchemaPathAsSteps();
             for ( ; currentIndex < groupSteps.size(); currentIndex++ ) {
                 NameStep qName = groupSteps.get( currentIndex );
                 String prefix = qName.getPrefix();
-                writer.writeStartElement( prefix, qName.getLocalName(), mapping.getNsContext().getURI( prefix ) );
+                String namespaceURI = mapping.getNsContext().getURI( prefix );
+                writer.writeStartElement( prefix, qName.getLocalName(), namespaceURI );
+                writer.writeNamespace( prefix, namespaceURI );
             }
             for ( DataGroup dg : dataGroups ) {
                 Map<String, Object> values = dg.getValues();
-                wtiteDataGroup( writer, mapping, group.getMappingElements(), values );
+                writeDataGroup( writer, mapping, group.getMappingElements(), values );
             }
             for ( int i = 0; i < groupSteps.size() - currentIndex; i++ ) {
                 writer.writeEndElement();
@@ -183,7 +185,9 @@ public class MappingExporter {
                     break;
                 } else {
                     String prefix = nameStep.getPrefix();
-                    writer.writeStartElement( prefix, nameStep.getLocalName(), mapping.getNsContext().getURI( prefix ) );
+                    String namespaceURI = mapping.getNsContext().getURI( prefix );
+                    writer.writeStartElement( prefix, nameStep.getLocalName(), namespaceURI );
+                    writer.writeNamespace( prefix, namespaceURI );
                     if ( currentIndex == currentSteps.size() - 1 ) {
                         writer.writeCharacters( value.toString() );
                     }
@@ -224,7 +228,9 @@ public class MappingExporter {
                             throws XMLStreamException {
         for ( NameStep step : currentSteps ) {
             String prefix = step.getPrefix();
-            writer.writeStartElement( prefix, step.getLocalName(), mapping.getNsContext().getURI( prefix ) );
+            String namespaceURI = mapping.getNsContext().getURI( prefix );
+            writer.writeStartElement( prefix, step.getLocalName(), namespaceURI );
+            writer.writeNamespace( prefix, namespaceURI );
         }
         writer.writeCharacters( value );
         for ( int i = 0; i < currentSteps.size(); i++ ) {
