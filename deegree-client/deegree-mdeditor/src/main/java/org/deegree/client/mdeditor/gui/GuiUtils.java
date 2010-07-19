@@ -39,7 +39,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.text.MessageFormat;
 import java.util.Locale;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -121,16 +120,6 @@ public class GuiUtils {
             msgSummary = MessageFormat.format( msgSummary, args );
         }
         return new FacesMessage( severity, msgSummary, msgDetail );
-    }
-
-    public synchronized String getConfId()
-                            throws MissingParameterException {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        Map<String, String> params = fc.getExternalContext().getRequestParameterMap();
-        if ( params.containsKey( CONF_ATT_KEY ) ) {
-            throw new MissingParameterException( "Missing parameter with id: " + CONF_ATT_KEY );
-        }
-        return params.get( CONF_ATT_KEY );
     }
 
 }
