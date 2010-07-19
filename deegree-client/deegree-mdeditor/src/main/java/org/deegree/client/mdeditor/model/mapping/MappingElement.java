@@ -40,7 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.xml.NamespaceContext;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
 import org.jaxen.expr.Expr;
@@ -85,7 +84,7 @@ public class MappingElement {
         return schemaPath;
     }
 
-    public List<NameStep> getSchemaPathAsSteps( NamespaceContext nsContext ) {
+    public List<NameStep> getSchemaPathAsSteps() {
         List<NameStep> steps = new ArrayList<NameStep>();
         try {
             Expr xpath = new BaseXPath( schemaPath, null ).getRootExpr();
