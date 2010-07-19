@@ -33,16 +33,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.configuration;
+package org.deegree.client.mdeditor.gui;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.faces.component.html.HtmlPanelGrid;
+
+import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
-import org.deegree.client.mdeditor.model.FormConfigurationDescription;
-import org.junit.Test;
-
-import junit.framework.TestCase;
+import org.deegree.client.mdeditor.gui.creation.FormCreator;
+import org.deegree.client.mdeditor.model.FormConfiguration;
 
 /**
  * TODO add class documentation here
@@ -52,38 +54,42 @@ import junit.framework.TestCase;
  * 
  * @version $Revision: $, $Date: $
  */
-public class MDEditorConfigurationParserTest extends TestCase {
+public class GuiStore {
 
-    @Test
-    public void testParseConfiguration()
+    private static Map<String, HtmlPanelGrid> forms = new HashMap<String, HtmlPanelGrid>();
+
+    /**
+     * @param confId
+     * @param grpId
+     * @return
+     * @throws ConfigurationException
+     */
+    public static HtmlPanelGrid getForm( String confId, String grpId )
                             throws ConfigurationException {
-        Configuration conf = ConfigurationManager.getConfiguration();
-        assertNotNull( conf );
+        if ( grpId == null ) {
+            Configuration conf = ConfigurationManager.getConfiguration();
+            FormConfiguration formConf = conf.getConfiguration( confId );
+            if ( formConf.getFormGroups().size() > 0 ) {
+                grpId = formConf.getFormGroups().get( 0 ).getId();
+            }
+        }
 
-        assertNotNull( conf.getDataDirURL() );
-        assertTrue( conf.getDataDirURL().getPath().endsWith( "data" ) );
-
-        assertNotNull( conf.getExportDirURL() );
-        assertTrue( conf.getExportDirURL().getPath().endsWith( "export" ) );
-
-        assertNotNull( conf.getDescribtions( false ) );
-        assertEquals( 2, conf.getDescribtions( false ).size() );
-
-        FormConfigurationDescription desc = conf.getDescribtions( false ).get( 0 );
-        assertNotNull( desc );
-        assertEquals( "simple", desc.getId() );
-        assertEquals( "Datensätze/Serien", desc.getTitle() );
-        assertNotNull( desc.getDescription() );
-        assertTrue( desc.getDescription().contains( "Erstellen " ) );
-        assertTrue( desc.getConfUrl().toExternalForm().endsWith( "simpleTestConfig.xml" ) );
-
-        List<FormConfigurationDescription> globalDescriptions = conf.getDescribtions( true );
-        assertNotNull( globalDescriptions );
-        assertEquals( 1, globalDescriptions.size() );
-        assertEquals( "global", globalDescriptions.get( 0 ).getId() );
-
-        assertNotNull( conf.getCodeLists() );
-        assertEquals( 3, conf.getCodeLists().size() );
-
+        if ( forms.containsKey( getFormKey( confId, grpId ) ) ) {
+            return forms.get( getFormKey( confId, grpId ) );
+        } else {
+            Configuration conf = ConfigurationManager.getConfiguration();
+            FormConfiguration formConf = conf.getConfiguration( confId );
+            if ( formConf != null ) {
+                HtmlPanelGrid grid = FormCreator.createForm( confId, grpId, formConf, conf.isGlobal( confId ) );
+                forms.put( getFormKey( confId, grpId ), grid );
+                return grid;
+            }
+        }
+        return null;
     }
+
+    private static String getFormKey( String confId, String grpId ) {
+        return confId + '_' + grpId;
+    }
+
 }

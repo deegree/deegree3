@@ -99,7 +99,7 @@ public class MappingExporterTest extends TestCase {
 
     private Map<String, FormField> prepareFormFields()
                             throws ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( "simple" );
         Map<String, FormField> formFields = configuration.getFormFields();
         for ( String path : formFields.keySet() ) {
             FormField ff = formFields.get( path );

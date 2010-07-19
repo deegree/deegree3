@@ -39,6 +39,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -65,6 +66,8 @@ public class GuiUtils {
 
     public static final String GROUPID_ATT_KEY = "groupId";
 
+    public static final String CONF_ATT_KEY = "confId";
+
     public static final String GROUPREF_ATT_KEY = "grpReference";
 
     public static final String ACTION_ATT_KEY = "dgAction";
@@ -74,7 +77,7 @@ public class GuiUtils {
     }
 
     public static final String DG_ID_PARAM = "dataGroupId";
-    
+
     public static final String IS_REFERENCED_PARAM = "isReferencedGrp";
 
     public static String getUniqueId() {
@@ -119,4 +122,15 @@ public class GuiUtils {
         }
         return new FacesMessage( severity, msgSummary, msgDetail );
     }
+
+    public synchronized String getConfId()
+                            throws MissingParameterException {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        Map<String, String> params = fc.getExternalContext().getRequestParameterMap();
+        if ( params.containsKey( CONF_ATT_KEY ) ) {
+            throw new MissingParameterException( "Missing parameter with id: " + CONF_ATT_KEY );
+        }
+        return params.get( CONF_ATT_KEY );
+    }
+
 }

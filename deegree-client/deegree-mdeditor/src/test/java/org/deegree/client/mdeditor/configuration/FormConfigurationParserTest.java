@@ -65,7 +65,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseFormConfiguration()
                             throws ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( "simple" );
 
         assertEquals( LAYOUT_TYPE.TAB, configuration.getLayoutType() );
 
@@ -82,7 +82,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseFormGroups()
                             throws ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
@@ -102,7 +102,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseReferencedFormElementAndIdentifier()
                             throws ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
@@ -123,7 +123,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseFormElements()
                             throws ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
@@ -161,7 +161,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test(expected = org.deegree.client.mdeditor.configuration.ConfigurationException.class)
     public void testdoubleIDException() {
         try {
-            ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
+            ConfigurationManager.getConfiguration().getConfiguration( "simple" );
         } catch ( ConfigurationException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -171,7 +171,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseMapping()
                             throws ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( "simple" );
         List<URL> mappings = configuration.getMappingURLs();
 
         assertNotNull( mappings );
@@ -182,7 +182,7 @@ public class FormConfigurationParserTest extends TestCase {
     @Test
     public void testParseOccurence()
                             throws ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );

@@ -38,6 +38,7 @@ package org.deegree.client.mdeditor.gui;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.model.DataGroup;
 import org.deegree.client.mdeditor.model.FormConfiguration;
+import org.deegree.client.mdeditor.model.FormGroup;
 import org.slf4j.Logger;
 
 /**
@@ -113,21 +115,37 @@ public class DataGroupBean implements Serializable {
             }
         } else {
             FacesContext fc = FacesContext.getCurrentInstance();
-            FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue(
+            EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue(
                                                                                                         fc.getELContext(),
                                                                                                         null,
-                                                                                                        "formFieldBean" );
-            dataGroups.put( grpId, formFieldBean.getDataGroups( grpId ) );
+                                                                                                        "editorBean" );
+            dataGroups.put( grpId, editorBean.getDataGroups( grpId ) );
         }
     }
 
     private void loadDataGroups()
                             throws ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
-        Map<String, Boolean> formGroupIds = configuration.getReferencedFormGroupIds();
-        for ( String id : formGroupIds.keySet() ) {
-            reloadFormGroup( id, formGroupIds.get( id ) );
+        FacesContext fc = FacesContext.getCurrentInstance();
+        EditorBean formCreator = (EditorBean) fc.getApplication().getELResolver().getValue(
+                                                                                                      fc.getELContext(),
+                                                                                                      null,
+                                                                                                      "editorBean" );
+
+        Collection<FormConfiguration> globalConfigurations = ConfigurationManager.getConfiguration().getGlobalConfigurations();
+
+        for ( FormConfiguration formConf : globalConfigurations ) {
+            for ( FormGroup fg : formConf.getFormGroups() ) {
+                reloadFormGroup( fg.getId(), true );
+            }
         }
+
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration(
+                                                                                                    formCreator.getConfId() );
+        List<String> formGroupIds = configuration.getMultipleFormGroupIds();
+        for ( String id : formGroupIds ) {
+            reloadFormGroup( id, false );
+        }
+
     }
 
 }

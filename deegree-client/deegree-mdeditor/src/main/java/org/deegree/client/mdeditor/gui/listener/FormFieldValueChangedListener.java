@@ -43,7 +43,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
-import org.deegree.client.mdeditor.gui.FormFieldBean;
+import org.deegree.client.mdeditor.gui.EditorBean;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.slf4j.Logger;
@@ -66,9 +66,9 @@ public class FormFieldValueChangedListener implements AjaxBehaviorListener {
 
         FacesContext fc = FacesContext.getCurrentInstance();
         fc.getELContext();
-        FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+        EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
-                                                                                                    "formFieldBean" );
+                                                                                                    "editorBean" );
         UIInput input = (UIInput) event.getSource();
 
         FormFieldPath path = (FormFieldPath) input.getAttributes().get( GuiUtils.FIELDPATH_ATT_KEY );
@@ -76,7 +76,7 @@ public class FormFieldValueChangedListener implements AjaxBehaviorListener {
         if ( path == null ) {
             LOG.error( "Can not save value for field " + path + ": groupId or fieldId are null" );
         } else {
-            formFieldBean.setValue( path, input.getValue() );
+            editorBean.setValue( path, input.getValue() );
         }
 
     }

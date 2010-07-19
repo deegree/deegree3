@@ -38,6 +38,7 @@ package org.deegree.client.mdeditor.configuration;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,19 +65,19 @@ public class Configuration {
 
     private List<FormConfigurationDescription> formConfigurationDescriptions;
 
-    private Map<String, FormConfiguration> globalConfigurations = new HashMap<String, FormConfiguration>();
+    private Map<String, FormConfiguration> formConfigurations = new HashMap<String, FormConfiguration>();
 
     private List<FormConfigurationDescription> globalConfigurationDescriptions;
 
-    private Map<String, FormConfiguration> formConfigurations = new HashMap<String, FormConfiguration>();
+    private Map<String, FormConfiguration> globalConfigurations = new HashMap<String, FormConfiguration>();
 
     private List<URL> codeListUrls;
 
     private List<CodeList> codeLists = new ArrayList<CodeList>();
 
-    private boolean codeListParsed = false;
+    private boolean glConfsParsed = false;
 
-    private String selectedConfiguration;
+    private boolean codeListParsed = false;
 
     /**
      * @param dataDirUrl
@@ -111,20 +112,33 @@ public class Configuration {
         return new File( exportDirUrl.getPath() );
     }
 
-    public List<FormConfigurationDescription> getFormConfigurations() {
+    public List<FormConfigurationDescription> getDescribtions( boolean global ) {
+        if ( global ) {
+            return globalConfigurationDescriptions;
+        }
         return formConfigurationDescriptions;
     }
 
-    public List<FormConfigurationDescription> getGlobalConfigurations() {
-        return globalConfigurationDescriptions;
+    /**
+     * @param id
+     * @param global
+     * @return
+     */
+    public FormConfigurationDescription getDescribtion( String id, boolean global ) {
+        if ( id != null ) {
+            for ( FormConfigurationDescription desc : getDescribtions( global ) ) {
+                if ( id.equals( desc.getId() ) ) {
+                    return desc;
+                }
+            }
+        }
+        return null;
     }
 
     public CodeList getCodeList( String id )
                             throws ConfigurationException {
         parseCodeLists();
-        System.out.println( id );
         for ( CodeList cl : codeLists ) {
-            System.out.println( cl.getId() );
             if ( cl.getId().equals( id ) ) {
                 return cl;
             }
@@ -138,33 +152,43 @@ public class Configuration {
         return codeLists;
     }
 
-    private void parseCodeLists()
+    /**
+     * @return reloads the form configuration with the given key
+     * @throws ConfigurationException
+     */
+    public void reloadFormConfigurations()
                             throws ConfigurationException {
-        if ( !codeListParsed ) {
-            for ( URL url : codeListUrls ) {
-                codeLists.addAll( CodeListParser.parseConfiguration( url ) );
-            }
-            codeListParsed = true;
+        formConfigurations.clear();
+    }
+
+    /**
+     * @return
+     * @throws ConfigurationException
+     */
+    public FormConfiguration getConfiguration( String id )
+                            throws ConfigurationException {
+        FormConfiguration globalConf = getGlobalConfiguration( id );
+        if ( globalConf != null ) {
+            return globalConf;
         }
+        return getFormConfiguration( id );
     }
 
     /**
-     * @return the form configuration wich is currently selected
+     * @param confId
+     * @return
      * @throws ConfigurationException
      */
-    public FormConfiguration getSelectedFormConfiguration()
+    public boolean isGlobal( String id )
                             throws ConfigurationException {
-        return getFormConfiguration( selectedConfiguration );
+        FormConfiguration globalConf = getGlobalConfiguration( id );
+        if ( globalConf != null ) {
+            return true;
+        }
+        return false;
     }
 
-    /**
-     * @param id
-     *            identifier of the configuration
-     * @return the form configuration with the given key or null, if the configuration does nor contain a form
-     *         configuration with the given id
-     * @throws ConfigurationException
-     */
-    public FormConfiguration getFormConfiguration( String id )
+    private FormConfiguration getFormConfiguration( String id )
                             throws ConfigurationException {
         if ( !formConfigurations.containsKey( id ) ) {
             for ( FormConfigurationDescription conf : formConfigurationDescriptions ) {
@@ -177,38 +201,43 @@ public class Configuration {
         return formConfigurations.get( id );
     }
 
-    /**
-     * @param id
-     *            identifier of the configuration
-     * @return the global configuration with the given key or null, if the configuration does nor contain a global
-     *         configuration with the given id
-     * @throws ConfigurationException
-     */
-    public FormConfiguration getGlobalConfiguration( String id )
+    private FormConfiguration getGlobalConfiguration( String id )
                             throws ConfigurationException {
-        if ( !globalConfigurations.containsKey( id ) ) {
-            FormConfigurationParser parser = new FormConfigurationParser();
-            for ( FormConfigurationDescription conf : globalConfigurationDescriptions ) {
-                FormConfiguration configuration = parser.parseConfiguration( conf.getConfUrl() );
-                globalConfigurations.put( id, configuration );
-            }
-        }
+        parseGlobalConfigurations();
         return globalConfigurations.get( id );
     }
 
-    /**
-     * @param id
-     *            identifier of the configuration to reload
-     * @return reloads the form configuration with the given key
-     * @throws ConfigurationException
-     */
-    public void reloadFormConfigurations()
+    private void parseGlobalConfigurations()
                             throws ConfigurationException {
-        formConfigurations.clear();
+        if ( !glConfsParsed ) {
+            for ( FormConfigurationDescription conf : globalConfigurationDescriptions ) {
+                FormConfigurationParser parser = new FormConfigurationParser();
+                FormConfiguration configuration = parser.parseConfiguration( conf.getConfUrl() );
+                globalConfigurations.put( conf.getId(), configuration );
+            }
+        }
+        glConfsParsed = true;
     }
 
-    public void setSelectedConfiguration( String id ) {
-        this.selectedConfiguration = id;
+    private void parseCodeLists()
+                            throws ConfigurationException {
+        if ( !codeListParsed ) {
+            for ( URL url : codeListUrls ) {
+                codeLists.addAll( CodeListParser.parseConfiguration( url ) );
+            }
+            codeListParsed = true;
+        }
+    }
+
+    /**
+     * @return
+     * @throws ConfigurationException
+     * 
+     */
+    public Collection<FormConfiguration> getGlobalConfigurations()
+                            throws ConfigurationException {
+        parseGlobalConfigurations();
+        return globalConfigurations.values();
     }
 
 }

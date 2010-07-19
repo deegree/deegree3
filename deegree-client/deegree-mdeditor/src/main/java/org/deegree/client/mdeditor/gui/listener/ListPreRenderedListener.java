@@ -68,11 +68,12 @@ public class ListPreRenderedListener implements ComponentSystemEventListener {
 
         HtmlSelectOneMenu select = (HtmlSelectOneMenu) arg0.getComponent();
         String grpReference = (String) select.getAttributes().get( GuiUtils.GROUPREF_ATT_KEY );
+        String confId = (String) select.getAttributes().get( GuiUtils.CONF_ATT_KEY );
         FormFieldPath path = (FormFieldPath) select.getAttributes().get( GuiUtils.FIELDPATH_ATT_KEY );
 
         try {
             String referenceLabel = null;
-            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( confId );
             FormField formField = configuration.getFormField( path );
             if ( formField instanceof SelectFormField ) {
                 referenceLabel = ( (SelectFormField) formField ).getReferenceText();

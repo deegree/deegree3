@@ -35,45 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui;
 
-import java.io.Serializable;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
-
-import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.ConfigurationManager;
-
 /**
- * Handles navigation not directly connected with the data.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-@ManagedBean
-@RequestScoped
-public class NavigationBean implements Serializable {
+public class MissingParameterException extends Exception {
 
-    private static final long serialVersionUID = 9025028665690108601L;
+    private static final long serialVersionUID = 1455919962015254979L;
 
-    public Object reloadForm() {
-        FacesContext fc = FacesContext.getCurrentInstance();
-
-        try {
-            ConfigurationManager.getConfiguration().reloadFormConfigurations();
-        } catch ( ConfigurationException e ) {
-            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.CONF.RELOAD",
-                                                         e.getMessage() );
-            fc.addMessage( "RELOAD_FAILED", msg );
-            return "/page/form/errorPage.xhtml";
-        }
-
-        FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.RELOAD" );
-        fc.addMessage( "RELOAD_SUCCESS", msg );
-        return "start.xhtml";
+    public MissingParameterException( String msg ) {
+        super( msg );
     }
 
 }

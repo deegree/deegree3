@@ -47,7 +47,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.gui.FormFieldBean;
+import org.deegree.client.mdeditor.gui.EditorBean;
 import org.deegree.client.mdeditor.gui.DataGroupBean;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.io.DataHandler;
@@ -85,9 +85,9 @@ public class DataGroupSelectListener implements AjaxBehaviorListener {
 
         LOG.debug( "Select " + id + " from group " + grpId );
         FacesContext fc = FacesContext.getCurrentInstance();
-        FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+        EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
-                                                                                                    "formFieldBean" );
+                                                                                                    "editorBean" );
         DataGroup dataGroup = null;
         if ( isReferencedGrp ) {
             try {
@@ -97,10 +97,10 @@ public class DataGroupSelectListener implements AjaxBehaviorListener {
                 e.printStackTrace();
             }
         } else {
-            dataGroup = formFieldBean.getDataGroup( grpId, id );
+            dataGroup = editorBean.getDataGroup( grpId, id );
         }
         if ( dataGroup != null ) {
-            formFieldBean.setValues( grpId, dataGroup );
+            editorBean.setValues( grpId, dataGroup );
 
             DataGroupBean dataGroupBean = (DataGroupBean) fc.getApplication().getELResolver().getValue(
                                                                                                         fc.getELContext(),

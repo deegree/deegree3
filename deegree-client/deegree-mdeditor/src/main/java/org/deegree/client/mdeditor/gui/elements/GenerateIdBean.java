@@ -36,6 +36,7 @@
 package org.deegree.client.mdeditor.gui.elements;
 
 import static org.deegree.client.mdeditor.gui.GuiUtils.*;
+
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -53,8 +54,8 @@ import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 
-import org.deegree.client.mdeditor.gui.FormFieldContainer;
 import org.deegree.client.mdeditor.gui.ReferencedElementBean;
+import org.deegree.client.mdeditor.gui.creation.FormCreator;
 import org.deegree.client.mdeditor.model.ReferencedElement;
 
 /**
@@ -68,7 +69,7 @@ import org.deegree.client.mdeditor.model.ReferencedElement;
 
 @ManagedBean
 @SessionScoped
-public class GenerateIdBean extends FormFieldContainer implements ReferencedElementBean, Serializable {
+public class GenerateIdBean implements ReferencedElementBean, Serializable {
 
     private static final long serialVersionUID = 7045997278465081712L;
 
@@ -81,7 +82,6 @@ public class GenerateIdBean extends FormFieldContainer implements ReferencedElem
             Application app = fc.getApplication();
             ExpressionFactory ef = app.getExpressionFactory();
             ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-
             component = new HtmlPanelGroup();
             component.setId( getUniqueId() );
             HtmlInputText text = new HtmlInputText();
@@ -89,16 +89,16 @@ public class GenerateIdBean extends FormFieldContainer implements ReferencedElem
             text.setId( textId );
             text.setDisabled( true );
 
-            setValue( element.getPath().toString(), text, ef, elContext );
-            setVisibility( element.getPath().toString(), text, ef, elContext );
-            setStyleClass( element.getPath().toString(), text, ef, elContext );
-            setTitle( element.getPath().toString(), text, ef, elContext );
+            FormCreator.setValue( element.getPath().toString(), text, ef, elContext );
+            FormCreator.setVisibility( element.getPath().toString(), text, ef, elContext );
+            FormCreator.setStyleClass( element.getPath().toString(), text, ef, elContext );
+            FormCreator.setTitle( element.getPath().toString(), text, ef, elContext );
 
             HtmlCommandButton button = new HtmlCommandButton();
             button.setId( getUniqueId() );
             button.setValue( getResourceText( fc, "mdLabels", "generateIdBean_btLabel" ) );
             button.getAttributes().put( FIELDPATH_ATT_KEY, element.getPath() );
-            setVisibility( element.getPath().toString(), button, ef, elContext );
+            FormCreator.setVisibility( element.getPath().toString(), button, ef, elContext );
 
             AjaxBehavior ajaxBt = new AjaxBehavior();
             List<String> render = new ArrayList<String>();

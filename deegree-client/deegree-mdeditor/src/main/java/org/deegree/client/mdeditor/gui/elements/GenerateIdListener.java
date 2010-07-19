@@ -42,7 +42,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
-import org.deegree.client.mdeditor.gui.FormFieldBean;
+import org.deegree.client.mdeditor.gui.EditorBean;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 
@@ -62,8 +62,8 @@ public class GenerateIdListener implements AjaxBehaviorListener {
         FacesContext fc = FacesContext.getCurrentInstance();
         fc.getELContext();
         FormFieldPath path = (FormFieldPath) arg0.getComponent().getAttributes().get( GuiUtils.FIELDPATH_ATT_KEY );
-        FormFieldBean ffBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
-                                                                                             "formFieldBean" );
+        EditorBean ffBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                             "editorBean" );
         ffBean.getFormFields().get( path.toString() ).setValue( UUID.randomUUID().toString() );
     }
 

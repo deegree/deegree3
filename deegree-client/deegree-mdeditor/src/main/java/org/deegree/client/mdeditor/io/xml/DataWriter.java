@@ -111,9 +111,7 @@ public class DataWriter {
             writer.writeStartElement( DS_ELEM );
 
             for ( FormGroup fg : formGroups ) {
-                if ( !fg.isReferenced() ) {
-                    append( writer, fg, dataGroups.get( fg.getId() ) );
-                }
+                append( writer, fg, dataGroups.get( fg.getId() ) );
             }
 
             writer.writeEndElement();

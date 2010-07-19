@@ -37,17 +37,21 @@ package org.deegree.client.mdeditor.gui;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.bean.CustomScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIForm;
+import javax.faces.component.html.HtmlPanelGrid;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ComponentSystemEvent;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
+import org.deegree.client.mdeditor.gui.components.ListGroup;
 import org.deegree.client.mdeditor.io.Utils;
 import org.deegree.client.mdeditor.model.DataGroup;
 import org.deegree.client.mdeditor.model.FormConfiguration;
@@ -58,7 +62,7 @@ import org.deegree.client.mdeditor.model.FormGroup;
 import org.slf4j.Logger;
 
 /**
- * This Bean allows access to the values of the actual edited dataset.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -66,12 +70,18 @@ import org.slf4j.Logger;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@SessionScoped
-public class FormFieldBean implements Serializable {
+@CustomScoped(value = "#{selectConfigurationBean.map}")
+public class EditorBean {
 
-    private static final long serialVersionUID = 6057122120736649423L;
+    private String confId;
 
-    private static final Logger LOG = getLogger( FormFieldBean.class );
+    private String grpId;
+
+    private UIForm form;
+
+    private ListGroup listGroup;
+
+    private static final Logger LOG = getLogger( EditorBean.class );
 
     private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
@@ -80,13 +90,49 @@ public class FormFieldBean implements Serializable {
     // form group id, data groups
     private Map<String, List<DataGroup>> dataGroups = new HashMap<String, List<DataGroup>>();
 
-    /**
-     * Reload form groups when initializing this bean.
-     * 
-     * @throws ConfigurationException
-     */
-    public FormFieldBean() throws ConfigurationException {
+    public EditorBean( String confId ) throws ConfigurationException {
+        this.confId = confId;
         forceReloaded();
+    }
+
+    public String getConfId() {
+        return confId;
+    }
+
+    public void setGrpId( String grpId ) {
+        this.grpId = grpId;
+    }
+
+    public String getGrpId() {
+        return grpId;
+    }
+
+    public void setForm( UIForm form ) {
+        this.form = form;
+    }
+
+    public UIForm getForm() {
+        return form;
+    }
+
+    public void setListGroup( ListGroup listGroup ) {
+        this.listGroup = listGroup;
+    }
+
+    public ListGroup getListGroup() {
+        return listGroup;
+    }
+
+    public void load( ComponentSystemEvent event )
+                            throws AbortProcessingException, ConfigurationException {
+        form.getChildren().clear();
+        HtmlPanelGrid grid = GuiStore.getForm( confId, grpId );
+        form.getChildren().add( grid );
+
+        Object id = grid.getAttributes().get( GuiUtils.GROUPID_ATT_KEY );
+        if ( id != null ) {
+            setGrpId( (String) id );
+        }
     }
 
     /**
@@ -130,11 +176,13 @@ public class FormFieldBean implements Serializable {
     /**
      * Reload form groups and form fields from configuration
      * 
+     * @param confId
+     * 
      * @throws ConfigurationException
      */
     public void forceReloaded()
                             throws ConfigurationException {
-        FormConfiguration manager = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+        FormConfiguration manager = ConfigurationManager.getConfiguration().getConfiguration( confId );
         formGroups = manager.getFormGroups();
         formFields = manager.getFormFields();
     }

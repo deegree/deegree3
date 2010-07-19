@@ -27,25 +27,6 @@
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
 
-
-    <managed-bean>
-        <managed-bean-name>formFieldBean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.gui.FormFieldBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>formCreatorBean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.gui.FormCreatorBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>menuCreatorBean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.gui.MenuCreatorBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
     <managed-bean>
         <managed-bean-name>generateIdBean</managed-bean-name>
         <managed-bean-class>org.deegree.client.mdeditor.gui.elements.GenerateIdBean</managed-bean-class>
@@ -57,31 +38,37 @@
         <managed-bean-class>org.deegree.client.mdeditor.gui.DatasetBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    
+
     <managed-bean>
         <managed-bean-name>dataGroupBean</managed-bean-name>
         <managed-bean-class>org.deegree.client.mdeditor.gui.DataGroupBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    
+
     <managed-bean>
         <managed-bean-name>exportBean</managed-bean-name>
         <managed-bean-class>org.deegree.client.mdeditor.gui.ExportBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
-    
+
     <managed-bean>
         <managed-bean-name>validationBean</managed-bean-name>
         <managed-bean-class>org.deegree.client.mdeditor.gui.ValidationBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    
+
     <managed-bean>
-        <managed-bean-name>sessionBean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.gui.SessionBean</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-name>selectConfigurationBean</managed-bean-name>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.SelectConfigurationBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    
+
+    <managed-bean>
+        <managed-bean-name>editorBean</managed-bean-name>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.EditorBean</managed-bean-class>
+        <managed-bean-scope>#{selectConfigurationBean.map}</managed-bean-scope>
+    </managed-bean>
+
     <render-kit>
         <renderer>
             <component-family>javax.faces.Panel</component-family>
@@ -117,7 +104,7 @@
         <component-type>org.deegree.HtmlInputTextItems</component-type>
         <component-class>org.deegree.client.mdeditor.gui.components.HtmlInputTextItems</component-class>
     </component>
-    
+
     <!-- PhaseListener -->
     <lifecycle>
         <phase-listener>org.deegree.client.debug.DebugPhaseListener</phase-listener>
@@ -127,12 +114,12 @@
     <factory>
         <exception-handler-factory>org.deegree.client.mdeditor.ExceptionHandlerFactory</exception-handler-factory>
     </factory>
-    
+
     <navigation-rule>
         <from-view-id>*</from-view-id>
         <navigation-case>
             <from-outcome>forms</from-outcome>
-            <to-view-id>/page/form/emptyForm.xhtml?visibility=true</to-view-id>
+            <to-view-id>/page/form/emptyForm.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
 

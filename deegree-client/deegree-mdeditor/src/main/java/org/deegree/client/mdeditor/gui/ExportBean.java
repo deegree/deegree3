@@ -80,15 +80,17 @@ public class ExportBean {
 
     private String resultLink;
 
+    private String confId;
+
     public void exportDataset( AjaxBehaviorEvent event )
                             throws AbortProcessingException, ConfigurationException {
         LOG.debug( "Export dataset; id of the selected mapping: " + selectedMapping );
         FacesContext fc = FacesContext.getCurrentInstance();
-        FormFieldBean formfieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+        EditorBean formfieldBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
-                                                                                                    "formFieldBean" );
+                                                                                                    "editorBean" );
         Map<String, FormField> formFields = formfieldBean.getFormFields();
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( getConfId() );
 
         FormFieldPath pathToIdentifier = configuration.getPathToIdentifier();
         Object value = formFields.get( pathToIdentifier.toString() ).getValue();
@@ -121,7 +123,7 @@ public class ExportBean {
 
     public List<MappingInformation> getMappings() {
         try {
-            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( confId );
             return SchemaManager.getMappings( configuration.getMappingURLs() );
         } catch ( ConfigurationException e ) {
             LOG.debug( "Could not read mappings", e );
@@ -136,6 +138,14 @@ public class ExportBean {
 
     public String getResultLink() {
         return resultLink;
+    }
+
+    public void setConfId( String confId ) {
+        this.confId = confId;
+    }
+
+    public String getConfId() {
+        return confId;
     }
 
 }

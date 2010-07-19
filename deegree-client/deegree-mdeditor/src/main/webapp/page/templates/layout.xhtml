@@ -7,54 +7,23 @@
 <h:body>
 
 				<ui:insert name="metadata" />
-				
+
 				<ui:insert name="javascript" />
 
 				<div id="mdEditor">
 
-				<div id="header">
-					<ui:insert name="header">
-						<ui:include src="/page/header.xhtml" />
-					</ui:insert>
-				</div>
+				<div id="header"><ui:insert name="header">
+								<ui:include src="/page/header.xhtml" />
+				</ui:insert></div>
 
+				<div id="navigation"><ui:include src="/page/form/navigation.xhtml" /></div>
 
-				<div id="headerNav">
-					<ui:insert name="headerNav">
-					</ui:insert>
-				</div>
-				
-				<div id="center">
+				<div id="center"><ui:insert name="center">
+				</ui:insert></div>
 
-					<div id="topBox">
-						<ui:insert name="topBox">
-						</ui:insert>
-					</div>
-					
-					<div id="leftBox">
-						<ui:insert name="leftBox">
-						</ui:insert>
-					</div>
-	
-					<div id="main">
-						<ui:insert name="menu" />
-						<div id="content">
-							<ui:insert name="content">
-						</ui:insert>
-						</div>
-					</div>
-	
-					<div id="rightBox"><ui:insert name="rightBox">
-						</ui:insert>
-					</div>
-				
-				</div>
-
-				<div id="footer">
-					<ui:insert name="footer">
-						<ui:include src="/page/footer.xhtml" />
-					</ui:insert>
-				</div>
+				<div id="footer"><ui:insert name="footer">
+								<ui:include src="/page/footer.xhtml" />
+				</ui:insert></div>
 
 				</div>
 

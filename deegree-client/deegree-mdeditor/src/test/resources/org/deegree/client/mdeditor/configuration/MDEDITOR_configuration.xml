@@ -16,7 +16,7 @@
     <GlobalConfigurations>
         <Configuration xlink:href="globalConfiguration.xml" id="global">
             <title>Adresselemente</title>
-            <describtion>Erstellen von allgemeinen Elementen</describtion>
+            <description>Erstellen von allgemeinen Elementen</description>
         </Configuration>
     </GlobalConfigurations>
     <CodeLists>

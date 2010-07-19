@@ -71,7 +71,7 @@ public class FormIOTest extends TestCase {
     @Test
     public void testDatasetWriter()
                             throws FileNotFoundException, XMLStreamException, ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getFormConfiguration( "simple" );
+        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( "simple" );
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         String v1 = "testWert";

@@ -33,9 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.gui;
+package org.deegree.client.mdeditor.gui.creation;
 
 import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
+import static org.deegree.client.mdeditor.gui.GuiUtils.CONF_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
 import static org.deegree.client.mdeditor.gui.GuiUtils.FIELDPATH_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
@@ -43,21 +44,17 @@ import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPREF_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.IS_REFERENCED_PARAM;
 import static org.deegree.client.mdeditor.gui.GuiUtils.getResourceText;
 import static org.deegree.client.mdeditor.gui.GuiUtils.getUniqueId;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.deegree.client.mdeditor.model.LAYOUT_TYPE.MENU;
+import static org.deegree.client.mdeditor.model.LAYOUT_TYPE.TAB;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.component.UIForm;
+import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UIOutput;
 import javax.faces.component.UIParameter;
@@ -70,23 +67,26 @@ import javax.faces.component.html.HtmlDataTable;
 import javax.faces.component.html.HtmlGraphicImage;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlInputTextarea;
+import javax.faces.component.html.HtmlOutcomeTargetLink;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGrid;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.component.html.HtmlSelectManyListbox;
 import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.context.FacesContext;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.PreRenderComponentEvent;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
+import org.deegree.client.mdeditor.gui.GuiUtils;
+import org.deegree.client.mdeditor.gui.ReferencedElementBean;
 import org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
 import org.deegree.client.mdeditor.gui.components.HtmlInputManyText;
 import org.deegree.client.mdeditor.gui.components.HtmlInputTextItems;
+import org.deegree.client.mdeditor.gui.components.ListGroup;
 import org.deegree.client.mdeditor.gui.listener.DataGroupListener;
 import org.deegree.client.mdeditor.gui.listener.DataGroupSelectListener;
+import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
 import org.deegree.client.mdeditor.gui.listener.ListPreRenderedListener;
 import org.deegree.client.mdeditor.model.CodeList;
@@ -96,71 +96,87 @@ import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.INPUT_TYPE;
 import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.LAYOUT_TYPE;
 import org.deegree.client.mdeditor.model.ReferencedElement;
 import org.deegree.client.mdeditor.model.SELECT_TYPE;
 import org.deegree.client.mdeditor.model.SelectFormField;
-import org.slf4j.Logger;
 
 /**
- * Create the form elements out of the given configuration.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-@ManagedBean
-@SessionScoped
-public class FormCreatorBean extends FormFieldContainer implements Serializable {
+public class FormCreator {
 
-    private static final long serialVersionUID = -1348293091143699536L;
-
-    private static final Logger LOG = getLogger( FormCreatorBean.class );
-
-    private String grpId;
-
-    private UIForm form;
-
-    private Map<String, HtmlPanelGrid> forms = new HashMap<String, HtmlPanelGrid>();
-
-    private FormConfiguration configuration;
-
-    /**
-     * Sets the form element @see #form for the selected group @see #grpId.
-     * 
-     * 
-     * @param event
-     * @throws AbortProcessingException
-     * @throws ConfigurationException
-     */
-    public void load( ComponentSystemEvent event )
-                            throws AbortProcessingException, ConfigurationException {
-
-        LOG.debug( "Load form for goup with id  " + grpId );
-        if ( form != null ) {
-            form.getChildren().clear();
-            if ( forms.containsKey( grpId ) ) {
-                form.getChildren().add( forms.get( grpId ) );
-            } else {
-                configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
-                FormGroup fg = configuration.getFormGroup( grpId );
-                grpId = fg.getId();
-                if ( fg != null ) {
-                    HtmlPanelGrid grid = new HtmlPanelGrid();
-                    grid.setId( getUniqueId() );
-                    addFormGroup( grid, fg, true );
-
-                    forms.put( grpId, grid );
-                    form.getChildren().add( grid );
-                }
+    public static HtmlPanelGrid createForm( String confId, String grpId, FormConfiguration formConf, boolean global )
+                            throws ConfigurationException {
+        FormGroup fg = null;
+        for ( FormGroup formGroup : formConf.getFormGroups() ) {
+            if ( formGroup.getId().equals( grpId ) ) {
+                fg = formGroup;
             }
         }
+        if ( fg != null ) {
+            HtmlPanelGrid grid = new HtmlPanelGrid();
+            grid.setId( getUniqueId() );
+            addMenu( confId, formConf, grid );
+            addFormGroup( confId, grid, fg, true, global );
+            grid.getAttributes().put( GROUPID_ATT_KEY, fg.getId() );
+            return grid;
+        }
+        // ?
+        return null;
     }
 
-    private void addFormGroup( HtmlPanelGrid parentGrid, FormGroup fg, boolean isMain ) {
+    private static void addMenu( String confId, FormConfiguration formConf, HtmlPanelGrid grid ) {
 
-        LOG.debug( "Add FormGroup " + fg.getId() );
+        LAYOUT_TYPE layoutType = formConf.getLayoutType();
+        String menuId = null;
+        String listId = null;
+        if ( MENU.equals( layoutType ) ) {
+            menuId = "verticalMenu";
+            listId = "verticalList";
+        } else if ( TAB.equals( layoutType ) ) {
+            menuId = "horizontalMenu";
+            listId = "horizontalList";
+        }
 
+        ListGroup listGroup = new ListGroup();
+        listGroup.setId( GuiUtils.getUniqueId() );
+        listGroup.getAttributes().put( "listId", listId );
+        listGroup.getAttributes().put( "menuId", menuId );
+        for ( FormGroup formGroup : formConf.getFormGroups() ) {
+            listGroup.getChildren().add( createLink( formGroup ) );
+        }
+        grid.getChildren().add( listGroup );
+    }
+
+    private static HtmlOutcomeTargetLink createLink( FormGroup formGroup ) {
+
+        HtmlOutcomeTargetLink link = new HtmlOutcomeTargetLink();
+        link.setId( GuiUtils.getUniqueId() );
+        link.setValue( formGroup.getLabel() );
+        link.setOutcome( "emptyForm" );
+        UIParameter param = new UIParameter();
+        param.setId( GuiUtils.getUniqueId() );
+        param.setName( "grpId" );
+        param.setValue( formGroup.getId() );
+        link.getChildren().add( param );
+
+        FacesContext fc = FacesContext.getCurrentInstance();
+        String el = "#{editorBean.grpId == '" + formGroup.getId() + "' ? 'menuItemActive' : 'menuItemInactive'}";
+        ValueExpression ve = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(), el,
+                                                                                               String.class );
+        link.setValueExpression( "styleClass", ve );
+        return link;
+    }
+
+    private static void addFormGroup( String confId, HtmlPanelGrid parentGrid, FormGroup fg, boolean isMain,
+                                      boolean isGlobal )
+                            throws ConfigurationException {
         HtmlPanelGrid grid = new HtmlPanelGrid();
         grid.setId( getUniqueId() );
         grid.setColumns( 3 );
@@ -176,29 +192,29 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         for ( FormElement fe : fg.getFormElements() ) {
             if ( fe instanceof FormGroup ) {
                 grid.getChildren().add( new HtmlPanelGroup() );
-                addFormGroup( grid, (FormGroup) fe, false );
+                addFormGroup( confId, grid, (FormGroup) fe, false, false );
                 grid.getChildren().add( new HtmlPanelGroup() );
             } else {
-                addFormField( grid, (FormField) fe );
+                addFormField( confId, grid, (FormField) fe );
             }
         }
 
         parentGrid.getChildren().add( grid );
 
-        if ( fg.isReferenced() || fg.getOccurence() != 1 ) {
+        if ( isGlobal || fg.getOccurence() != 1 ) {
             HtmlPanelGrid referencedGrid = new HtmlPanelGrid();
-            addReferencedFormGroup( fg, referencedGrid );
+            addReferencedFormGroup( fg, referencedGrid, isGlobal );
             parentGrid.getChildren().add( referencedGrid );
         }
     }
 
-    private void addReferencedFormGroup( FormGroup fg, HtmlPanelGrid grid ) {
+    private static void addReferencedFormGroup( FormGroup fg, HtmlPanelGrid grid, boolean isGlobal ) {
         FacesContext fc = FacesContext.getCurrentInstance();
         Application app = fc.getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
         ELContext elContext = FacesContext.getCurrentInstance().getELContext();
 
-        addButtons( fc, grpId, grid, fg.isReferenced() );
+        addButtons( fc, fg.getId(), grid, isGlobal );
 
         // list
         HtmlDataTable dataTable = new HtmlDataTable();
@@ -240,7 +256,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         }
 
         HtmlColumn col = new HtmlColumn();
-        HtmlCommandButton selectButton = createSelectButton( fg );
+        HtmlCommandButton selectButton = createSelectButton( fg, isGlobal );
         col.getChildren().add( selectButton );
         HtmlOutputText header = new HtmlOutputText();
         header.setValue( "Optionen" );
@@ -256,7 +272,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
 
     }
 
-    private void addButtons( FacesContext fc, String grpId, HtmlPanelGrid grid, boolean isReferencedGrp ) {
+    private static void addButtons( FacesContext fc, String grpId, HtmlPanelGrid grid, boolean isReferencedGrp ) {
         HtmlPanelGrid btGrid = new HtmlPanelGrid();
         btGrid.setColumns( 5 );
         HtmlCommandButton saveButton = createButton( grpId, "saveFormGroup", ACTION_ATT_VALUES.SAVE, true,
@@ -281,8 +297,8 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         grid.getChildren().add( btGrid );
     }
 
-    private HtmlCommandButton createButton( String grpId, String labelKey, ACTION_ATT_VALUES action, boolean ifNull,
-                                            boolean isReferencedGrp ) {
+    private static HtmlCommandButton createButton( String grpId, String labelKey, ACTION_ATT_VALUES action,
+                                                   boolean ifNull, boolean isReferencedGrp ) {
 
         Application app = FacesContext.getCurrentInstance().getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
@@ -323,7 +339,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         return bt;
     }
 
-    private HtmlCommandButton createSelectButton( FormGroup formGroup ) {
+    private static HtmlCommandButton createSelectButton( FormGroup formGroup, boolean isGlobal ) {
         FacesContext context = FacesContext.getCurrentInstance();
         ExpressionFactory ef = context.getApplication().getExpressionFactory();
         ELContext elContext = context.getELContext();
@@ -346,7 +362,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         // is referenced param
         UIParameter refParam = new UIParameter();
         refParam.setName( IS_REFERENCED_PARAM );
-        refParam.setValue( formGroup.isReferenced() );
+        refParam.setValue( isGlobal );
         bt.getChildren().add( refParam );
 
         AjaxBehavior ajaxSelectBt = new AjaxBehavior();
@@ -358,9 +374,9 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         return bt;
     }
 
-    private void addFormField( HtmlPanelGrid parentGrid, FormField fe ) {
+    private static void addFormField( String confId, HtmlPanelGrid parentGrid, FormField fe )
+                            throws ConfigurationException {
 
-        LOG.debug( "Add FormField " + fe.getPath() );
         FacesContext fc = FacesContext.getCurrentInstance();
         Application app = fc.getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
@@ -375,7 +391,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
 
         parentGrid.getChildren().add( newOutput );
 
-        addValueField( fe, parentGrid, ef, elContext );
+        addValueField( confId, fe, parentGrid, ef, elContext );
 
         // help
         HtmlCommandLink helpLink = new HtmlCommandLink();
@@ -407,7 +423,9 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         parentGrid.getChildren().add( helpLink );
     }
 
-    private void addValueField( FormField fe, HtmlPanelGrid parentGrid, ExpressionFactory ef, ELContext elContext ) {
+    private static void addValueField( String confId, FormField fe, HtmlPanelGrid parentGrid, ExpressionFactory ef,
+                                       ELContext elContext )
+                            throws ConfigurationException {
         String id = fe.getId();
         UIInput input = null;
         String eventName = null;
@@ -430,6 +448,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
                     addCodeListItems( input, se.getReferenceToCodeList() );
                 } else if ( se.getReferenceToGroup() != null ) {
                     input.getAttributes().put( GROUPREF_ATT_KEY, se.getReferenceToGroup() );
+                    input.getAttributes().put( CONF_ATT_KEY, confId );
                     input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
                 }
             } else {
@@ -438,6 +457,7 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
                     addCodeListItems( input, se.getReferenceToCodeList() );
                 } else if ( se.getReferenceToGroup() != null ) {
                     input.getAttributes().put( GROUPREF_ATT_KEY, se.getReferenceToGroup() );
+                    input.getAttributes().put( CONF_ATT_KEY, confId );
                     input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
                 }
             }
@@ -474,68 +494,107 @@ public class FormCreatorBean extends FormFieldContainer implements Serializable 
         }
     }
 
-    private void addCodeListItems( UIInput select, String codeListRef ) {
-        try {
-            CodeList codeList = ConfigurationManager.getConfiguration().getCodeList( codeListRef );
-            if ( codeList != null ) {
-                for ( String value : codeList.getCodes().keySet() ) {
-                    UISelectItem si = new UISelectItem();
-                    si.setId( getUniqueId() );
-                    si.setItemValue( value );
-                    si.setItemLabel( codeList.getCodes().get( value ) );
-                    select.getChildren().add( si );
-                }
+    private static void addCodeListItems( UIInput select, String codeListRef )
+                            throws ConfigurationException {
+        CodeList codeList = ConfigurationManager.getConfiguration().getCodeList( codeListRef );
+        if ( codeList != null ) {
+            for ( String value : codeList.getCodes().keySet() ) {
+                UISelectItem si = new UISelectItem();
+                si.setId( getUniqueId() );
+                si.setItemValue( value );
+                si.setItemLabel( codeList.getCodes().get( value ) );
+                select.getChildren().add( si );
             }
-        } catch ( ConfigurationException e ) {
-            LOG.error( e.getMessage() );
         }
     }
 
     /**
-     * @param form
-     *            the gui element
+     * Appends a the listener {@link FormFieldValueChangedListener#} as ajax beahviour to the component. The eventName
+     * of the behavior is set to the passed eventName or to thedefault event name of the component if null. Rendered
+     * attribute is set to ""@none" and the event will execute "@this" element.
+     * 
+     * @param component
+     *            the component to add the ajax beahviour
+     * @param eventName
+     *            the name of the event to add; if null the default event name of the component will be added
      */
-    public void setForm( UIForm form ) {
-        this.form = form;
-    }
-
-    /**
-     * @return the gui element
-     */
-    public UIForm getForm() {
-        return form;
-    }
-
-    /**
-     * @param grpId
-     *            the id of the selected grp
-     */
-    public void setGrpId( String grpId ) {
-        this.grpId = grpId;
-    }
-
-    /**
-     * @return the id of the selected grp
-     */
-    public String getGrpId() {
-        return grpId;
-    }
-
-    /**
-     * Recreate the forms next time.
-     */
-    public void forceReloaded() {
-        forms.clear();
-    }
-
-    /**
-     * @return the client id of the form; null, if the form is null
-     */
-    public String getFormId() {
-        if ( form != null ) {
-            return form.getClientId();
+    public static void setFormFieldChangedAjaxBehavior( UIInput component, String eventName ) {
+        AjaxBehavior ajaxInput = new AjaxBehavior();
+        List<String> executes = new ArrayList<String>();
+        executes.add( "@this" );
+        ajaxInput.setExecute( executes );
+        List<String> render = new ArrayList<String>();
+        render.add( "@none" );
+        ajaxInput.setRender( render );
+        ajaxInput.addAjaxBehaviorListener( new FormFieldValueChangedListener() );
+        if ( eventName == null ) {
+            eventName = component.getDefaultEventName();
         }
-        return null;
+        component.addClientBehavior( eventName, ajaxInput );
+    }
+
+    /**
+     * @param path
+     *            the path identifiying the form field
+     * @param component
+     *            the component to add the rendered attribute
+     * @param ef
+     *            the ExpressionFactory
+     * @param elContext
+     *            the ELContext
+     */
+    public static void setVisibility( String path, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
+        String el = "#{editorBean.formFields['" + path + "'].visibility}";
+        ValueExpression ve = ef.createValueExpression( elContext, el, Boolean.class );
+        component.setValueExpression( "rendered", ve );
+    }
+
+    /**
+     * @param path
+     *            the path identifiying the form field
+     * @param component
+     *            the component to add the value attribute
+     * @param ef
+     *            the ExpressionFactory
+     * @param elContext
+     *            the ELContext
+     */
+    public static void setValue( String path, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
+        String el = "#{editorBean.formFields['" + path + "'].value}";
+        ValueExpression ve = ef.createValueExpression( elContext, el, Object.class );
+        component.setValueExpression( "value", ve );
+    }
+
+    /**
+     * @param path
+     *            the path identifiying the form field
+     * @param component
+     *            the component to add the title attribute
+     * @param ef
+     *            the ExpressionFactory
+     * @param elContext
+     *            the ELContext
+     */
+    public static void setTitle( String path, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
+        String el = "#{editorBean.formFields['" + path + "'].title}";
+        ValueExpression ve = ef.createValueExpression( elContext, el, String.class );
+        component.setValueExpression( "title", ve );
+    }
+
+    /**
+     * @param path
+     *            the path identifiying the form field
+     * @param input
+     *            the input component to add the styleClass attribute
+     * @param ef
+     *            the ExpressionFactory
+     * @param elContext
+     *            the ELContext
+     */
+    public static void setStyleClass( String path, UIInput input, ExpressionFactory ef, ELContext elContext ) {
+        String el = "#{editorBean.formFields['" + path + "'].valid ? '' : 'invalidFF'} mdFormInput";
+        ValueExpression ve = ef.createValueExpression( elContext, el, String.class );
+        input.setValueExpression( "styleClass", ve );
     }
 
 }

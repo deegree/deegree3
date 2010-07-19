@@ -13,7 +13,7 @@
 	min-height: 50px;
 }
 
-#mdEditor #headerNav {
+#mdEditor #navigation {
 	position: relative;
 	margin: 10px;
 }
@@ -24,32 +24,6 @@
 	min-height: 300px;
 }
 
-#mdEditor #topBox {
-	position: relative;
-	width: 100%;
-}
-
-#mdEditor #leftBox {
-	position: absolute;
-}
-
-#mdEditor #main {
-	position: relative;
-	margin: 0px 180px 0px 0px;
-	border: 2px solid #194c6b;
-}
-
-#mdEditor #content {
-	
-}
-
-#mdEditor #rightBox {
-	position: absolute;
-	top: 38px;
-	right: 10px;
-	width: 160px;
-	height: 300px;
-}
 
 #mdEditor #footer {
 	height: 50px;
@@ -74,24 +48,4 @@
 
 #mdEditor .footerText {
 	font-size: smaller;
-}
-
-#mdEditor .box {
-}
-
-#mdEditor .boxTitle {
-	font-family: Verdana, "Times New Roman", Times, serif;
-	border-bottom: 1px solid #194c6b;
-	font-size: 110%;
-	font-weight: normal;
-	font-style: italic;
-	background-color: #194c6b;
-	color: #FFFFFF;
-	/*c1cde5*/
-	text-align: left;
-	padding: 3px;
-}
-#mdEditor .boxText {
-	border: 1px solid #194c6b;
-	padding: 3px;
 }

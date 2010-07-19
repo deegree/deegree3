@@ -100,23 +100,6 @@ public class FormConfiguration {
     }
 
     /**
-     * @param id
-     *            the id identifiying the top level form group
-     * @return the form group assigned to the given id, null, if no form group for thi id exist
-     */
-    public FormGroup getFormGroup( String id ) {
-        for ( FormGroup fg : formGroups ) {
-            // return first!
-            if ( id == null ) {
-                return fg;
-            } else if ( id.equals( fg.getId() ) ) {
-                return fg;
-            }
-        }
-        return null;
-    }
-
-    /**
      * @param path
      *            the path of the form field
      * @return the form field with the given path; null if no form field exists
@@ -147,11 +130,11 @@ public class FormConfiguration {
         return null;
     }
 
-    public Map<String, Boolean> getReferencedFormGroupIds() {
-        Map<String, Boolean> ids = new HashMap<String, Boolean>();
+    public List<String> getMultipleFormGroupIds() {
+        List<String> ids = new ArrayList<String>();
         for ( FormGroup fg : formGroups ) {
-            if ( fg.isReferenced() || fg.getOccurence() != 0 ) {
-                ids.put( fg.getId(), fg.isReferenced() );
+            if ( fg.getOccurence() != 0 ) {
+                ids.add( fg.getId() );
             }
         }
         return ids;

@@ -1,5 +1,51 @@
-/***** styles for the menu *****/
-/*** horizontal menu ***/
+/*** layout ***/
+#mdEditor .mdcontent {
+	border: 2px solid #194c6b;
+	padding: 15px;
+}
+
+#mdEditor #top {
+	position: relative;
+}
+
+#mdEditor #content {
+	width: 100%;
+}
+
+#mdEditor #left {
+	width: 78%;
+}
+
+#mdEditor #right {
+	float: right;
+	width: 19%;
+	height: 100%;
+	margin: 1%;
+}
+
+#mdEditor .box {
+	
+}
+
+#mdEditor .boxTitle {
+	font-family: Verdana, "Times New Roman", Times, serif;
+	border-bottom: 1px solid #194c6b;
+	font-size: 110%;
+	font-weight: normal;
+	font-style: italic;
+	background-color: #194c6b;
+	color: #FFFFFF;
+	/*c1cde5*/
+	text-align: left;
+	padding: 3px;
+}
+
+#mdEditor .boxText {
+	border: 1px solid #194c6b;
+	padding: 3px;
+}
+
+/***** styles for the menu *****/ /*** horizontal menu ***/
 #mdEditor ul#horizontalList {
 	margin: 0;
 	padding: 0.8em;

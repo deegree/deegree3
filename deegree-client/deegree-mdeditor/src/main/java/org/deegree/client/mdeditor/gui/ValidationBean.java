@@ -80,20 +80,20 @@ public class ValidationBean implements Serializable {
         LOG.debug( "Validate dataset" );
         validationResult.clear();
         FacesContext fc = FacesContext.getCurrentInstance();
-        FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+        EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
-                                                                                                    "formFieldBean" );
-        List<FormGroup> formGroups = formFieldBean.getFormGroups();
+                                                                                                    "editorBean" );
+        List<FormGroup> formGroups = editorBean.getFormGroups();
         for ( FormGroup formGroup : formGroups ) {
             List<String> formFieldResult = null;
-            if ( !formGroup.isReferenced() ) {
-                if ( formGroup.getOccurence() != 1 ) {
-                    List<DataGroup> dataGroups = formFieldBean.getDataGroups( formGroup.getId() );
-                    // TODO
-                } else {
-                    formFieldResult = validateFormFields( fc, formGroup );
-                }
+            // if ( !formGroup.isReferenced() ) {
+            if ( formGroup.getOccurence() != 1 ) {
+                List<DataGroup> dataGroups = editorBean.getDataGroups( formGroup.getId() );
+                // TODO
+            } else {
+                formFieldResult = validateFormFields( fc, formGroup );
             }
+            // }
 
             if ( formFieldResult != null && formFieldResult.size() > 0 ) {
                 validationResult.add( new ValidationResult( formGroup.getLabel(), formGroup.getId(), formFieldResult ) );

@@ -101,14 +101,15 @@ public class DatasetBean implements Serializable {
         List<DatasetInformation> datasetInformations = new ArrayList<DatasetInformation>();
         try {
             List<Dataset> datasets = DataHandler.getInstance().getDatasets();
-            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( getConfId() );
 
             for ( Dataset dataset : datasets ) {
                 Map<String, Object> values = dataset.getValues();
                 String id = dataset.getId();
                 String title = null;
                 String desc = null;
-                if ( configuration.getPathToIdentifier() != null ) {
+                if ( configuration != null && configuration.getPathToIdentifier() != null ) {
                     if ( configuration.getPathToTitle() != null
                          && values.get( configuration.getPathToTitle().toString() ) != null ) {
                         title = values.get( configuration.getPathToTitle().toString() ).toString();
@@ -150,9 +151,8 @@ public class DatasetBean implements Serializable {
 
         Map<String, Object> values = ds.getValues();
 
-        FormFieldBean formfieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                    null,
-                                                                                                    "formFieldBean" );
+        EditorBean formfieldBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                              "editorBean" );
         formfieldBean.clearFormFields();
         Map<String, FormField> formFields = formfieldBean.getFormFields();
         for ( String path : values.keySet() ) {
@@ -174,7 +174,7 @@ public class DatasetBean implements Serializable {
         // set selected dataset to null => dataset is a NEW one
         if ( asTemplate ) {
             setSelectedDataset( null );
-            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( getConfId() );
             formfieldBean.clearFormField( configuration.getPathToIdentifier() );
         }
 
@@ -185,12 +185,15 @@ public class DatasetBean implements Serializable {
 
     public Object newDataset() {
         LOG.debug( "create new dataset (clear forms)" );
-        FacesContext fc = FacesContext.getCurrentInstance();
-        FormFieldBean formfieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                    null,
-                                                                                                    "formFieldBean" );
-        formfieldBean.clearFormFields();
+        clearForms();
         return "forms";
+    }
+
+    private void clearForms() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        EditorBean formfieldBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                              "editorBean" );
+        formfieldBean.clearFormFields();
     }
 
     public Object deleteDataset() {
@@ -211,20 +214,21 @@ public class DatasetBean implements Serializable {
             e.printStackTrace();
         }
 
+        clearForms();
         FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.DELETE_DATASET", id );
         fc.addMessage( "DELETE_DATASET_SUCCESS", msg );
-        return "/page/form/successPage.xhtml";
+        return "forms";
     }
 
     public Object saveDataset() {
         LOG.debug( "Save dataset" );
         String id;
         FacesContext fc = FacesContext.getCurrentInstance();
-        FormFieldBean formfieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                    null,
-                                                                                                    "formFieldBean" );
+        EditorBean formfieldBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                              "editorBean" );
         try {
-            FormConfiguration configuration = ConfigurationManager.getConfiguration().getSelectedFormConfiguration();
+            String confId = fc.getExternalContext().getRequestParameterMap().get( GuiUtils.CONF_ATT_KEY );
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( confId );
 
             FormFieldPath pathToIdentifier = configuration.getPathToIdentifier();
             Object datasetId = formfieldBean.getFormFields().get( pathToIdentifier.toString() ).getValue();
@@ -250,6 +254,13 @@ public class DatasetBean implements Serializable {
             fc.addMessage( "SAVE_FAILED", msg );
         }
         return "forms";
+    }
+
+    public String getConfId() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                           "editorBean" );
+        return editorBean.getConfId();
     }
 
 }

@@ -3,11 +3,13 @@
 <h:head>
 </h:head>
 <h:body>
-	<ui:composition template="/page/templates/formLayout.xhtml">
+	<ui:composition template="/page/templates/layout.xhtml">
 	
-			<ui:define name="content">
+			<ui:define name="center">
 				<f:subview id="mdChooseDataset">
-						<h:outputText rendered="#{empty datasetBean.datasetInformation}" value="#{mdLabels['loadDataset_noDatasets']}"/>
+						<h:outputText rendered="#{empty datasetBean.datasetInformation}" value="#{mdLabels['loadDataset_noDatasets']}"/><br/>
+						<h:link rendered="#{empty datasetBean.datasetInformation}" value="#{mdLabels['loadDataset_back']}" includeViewParams="true" outcome="forms"/>
+						
 							<h:form id="loadDsForm" rendered="#{!empty datasetBean.datasetInformation}" >
 								<h:outputText value="#{mdLabels['loadDataset_text']}" />
 								
@@ -15,7 +17,7 @@
 									<h:outputLabel value="#{mdLabels['loadDataset_title']}" />
 									<h:outputLabel value="#{mdLabels['loadDataset_describtion']}"  />
 									
-									<h:selectOneListbox id="chooseDatasetLb" value="#{datasetBean.selectedDataset}" required="true" styleClass="chooseDatasetListBox">
+									<h:selectOneListbox id="chooseDatasetLb" value="#{datasetBean.selectedDataset}" required="true" styleClass="chooseDatasetListBox" size="10">
 										<f:selectItems value="#{datasetBean.datasetInformation}" var="dat" itemLabel="#{dat.title}" itemValue="#{dat.identifier}"/>
 										<f:ajax render="chooseDatasetIT" execute="@this"/>
 									</h:selectOneListbox>

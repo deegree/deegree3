@@ -54,7 +54,7 @@ public class FormGroup implements FormElement {
 
     private String title;
 
-    private boolean referenced = false;
+//    private boolean referenced = false;
 
     private List<FormElement> formElements = new ArrayList<FormElement>();
 
@@ -114,13 +114,13 @@ public class FormGroup implements FormElement {
         formElements.add( parseFormGroup );
     }
 
-    public void setReferenced( boolean referenced ) {
-        this.referenced = referenced;
-    }
-
-    public boolean isReferenced() {
-        return referenced;
-    }
+    // public void setReferenced( boolean referenced ) {
+    // this.referenced = referenced;
+    // }
+    //
+    // public boolean isReferenced() {
+    // return referenced;
+    // }
 
     public void reset() {
         for ( FormElement fe : formElements ) {

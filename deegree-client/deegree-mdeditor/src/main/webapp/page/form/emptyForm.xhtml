@@ -1,27 +1,42 @@
 <?xml version="1.0" ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
-				xmlns:ui="http://java.sun.com/jsf/facelets">
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:dg="http://deegree.org/mdeditor">
 <h:head>
 				<h:outputStylesheet name="formStyle.css" />
 </h:head>
 <h:body>
-				<ui:composition template="/page/templates/formLayout.xhtml">
+				<ui:composition template="/page/templates/layout.xhtml">
 
 								<ui:define name="metadata">
 												<f:metadata>
-																<f:viewParam id="visibilityVP" name="visibility" value="#{sessionBean.visible}" />
-																<f:viewParam id="grpVP" name="grpId" value="#{formCreatorBean.grpId}" />
-																<f:event type="preRenderView" listener="#{formCreatorBean.load}" />
+																<f:viewParam id="grpVP" name="grpId" value="#{editorBean.grpId}" />
+																<f:event type="preRenderView" listener="#{editorBean.load}" />
 												</f:metadata>
 								</ui:define>
 
-								<ui:define name="menu">
-												<ui:include src="/page/form/emptyMenu.xhtml" />
+								<ui:define name="javascript">
+												<h:outputStylesheet name="unboundedInputText.css" library="deegree/components" />
+												<h:outputScript name="formJs.js" library="deegree/js" target="head" />
 								</ui:define>
 
-								<ui:define name="content">
-												<f:subview id="mdForm">
-																<h:form id="emptyForm" binding="#{formCreatorBean.form}" />
+								<ui:define name="center">
+								
+								
+								<h:outputText value="Ausgewählte Konfiguration: #{editorBean.confId}"/>
+												<div class="mdcontent">
+
+												<div id="top">
+													<h:panelGroup rendered="#{!sessionScope['status'].global}">
+																<ui:include src="/page/form/datasetNavigation.xhtml" />
+												</h:panelGroup></div>
+
+												<div id="content">
+
+												<div id="right"><ui:include src="/page/form/help.xhtml" /> <ui:include
+																src="/page/form/validationResult.xhtml" /></div>
+																
+												<div id="left"><f:subview id="mdForm">
+																<h:form id="emptyForm" binding="#{editorBean.form}" />
 
 																<!-- invisible ajax field, it seems JSF does not load the JS-Script if ajax is set on the server -->
 																<h:form id="w2" rendered="false">
@@ -36,7 +51,11 @@
 																								fatalClass="statusMsgFatal" infoClass="statusMsgInfo" warnClass="statusMsgWarn"
 																								styleClass="statusMsg" />
 																</h:panelGrid>
-												</f:subview>
+												</f:subview></div>
+
+
+												</div>
+												</div>
 								</ui:define>
 				</ui:composition>
 </h:body>

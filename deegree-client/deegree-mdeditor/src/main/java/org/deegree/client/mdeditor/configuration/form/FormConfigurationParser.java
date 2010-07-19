@@ -100,7 +100,7 @@ public class FormConfigurationParser extends Parser {
 
     private static QName REF_FORM = new QName( NS, "ReferencedFormElement" );
 
-    private List<String> referencedGroups = new ArrayList<String>();
+//    private List<String> referencedGroups = new ArrayList<String>();
 
     private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
@@ -133,7 +133,7 @@ public class FormConfigurationParser extends Parser {
                     nextElement( xmlStream );
                 }
             }
-            updateFormGroups();
+//            updateFormGroups();
             conf.setFormGroups( formGroups );
             return conf;
 
@@ -261,9 +261,9 @@ public class FormConfigurationParser extends Parser {
         SELECT_TYPE selectType = getSelectType( xmlStream );
 
         String referenceToGroup = getText( xmlStream, new QName( NS, "referenceToGroup" ), null, true );
-        if ( referenceToGroup != null ) {
-            referencedGroups.add( referenceToGroup );
-        }
+//        if ( referenceToGroup != null ) {
+//            referencedGroups.add( referenceToGroup );
+//        }
         String referenceText = getText( xmlStream, new QName( NS, "referenceText" ), null, true );
         String referenceToCodeList = getText( xmlStream, new QName( NS, "referenceToCodeList" ), null, true );
 
@@ -401,21 +401,21 @@ public class FormConfigurationParser extends Parser {
         throw new ConfigurationException( "layoutType " + elementText + "is not valid" );
     }
 
-    private void updateFormGroups()
-                            throws ConfigurationException {
-        for ( String reference : referencedGroups ) {
-            boolean referenced = false;
-            for ( FormGroup fg : formGroups ) {
-                if ( reference.equals( fg.getId() ) ) {
-                    fg.setReferenced( true );
-                    referenced = true;
-                    break;
-                }
-            }
-            if ( !referenced ) {
-                throw new ConfigurationException( "Referenced group " + reference + " does not exist!" );
-            }
-        }
-    }
+//    private void updateFormGroups()
+//                            throws ConfigurationException {
+//        for ( String reference : referencedGroups ) {
+//            boolean referenced = false;
+//            for ( FormGroup fg : formGroups ) {
+//                if ( reference.equals( fg.getId() ) ) {
+//                    fg.setReferenced( true );
+//                    referenced = true;
+//                    break;
+//                }
+//            }
+//            if ( !referenced ) {
+//                throw new ConfigurationException( "Referenced group " + reference + " does not exist!" );
+//            }
+//        }
+//    }
 
 }
