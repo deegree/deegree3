@@ -80,15 +80,12 @@ public class ExportBean {
 
     private String resultLink;
 
-    private String confId;
-
     public void exportDataset( AjaxBehaviorEvent event )
                             throws AbortProcessingException, ConfigurationException {
         LOG.debug( "Export dataset; id of the selected mapping: " + selectedMapping );
         FacesContext fc = FacesContext.getCurrentInstance();
-        EditorBean formfieldBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                    null,
-                                                                                                    "editorBean" );
+        EditorBean formfieldBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                              "editorBean" );
         Map<String, FormField> formFields = formfieldBean.getFormFields();
         FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( getConfId() );
 
@@ -123,7 +120,7 @@ public class ExportBean {
 
     public List<MappingInformation> getMappings() {
         try {
-            FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( confId );
+            FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( getConfId() );
             return SchemaManager.getMappings( configuration.getMappingURLs() );
         } catch ( ConfigurationException e ) {
             LOG.debug( "Could not read mappings", e );
@@ -140,12 +137,11 @@ public class ExportBean {
         return resultLink;
     }
 
-    public void setConfId( String confId ) {
-        this.confId = confId;
-    }
-
-    public String getConfId() {
-        return confId;
+    private String getConfId() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                           "editorBean" );
+        return editorBean.getConfId();
     }
 
 }
