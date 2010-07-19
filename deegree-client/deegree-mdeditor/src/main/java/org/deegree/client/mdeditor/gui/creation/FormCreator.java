@@ -41,7 +41,7 @@ import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
 import static org.deegree.client.mdeditor.gui.GuiUtils.FIELDPATH_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPREF_ATT_KEY;
-import static org.deegree.client.mdeditor.gui.GuiUtils.IS_REFERENCED_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.IS_GLOBAL_PARAM;
 import static org.deegree.client.mdeditor.gui.GuiUtils.getResourceText;
 import static org.deegree.client.mdeditor.gui.GuiUtils.getUniqueId;
 import static org.deegree.client.mdeditor.model.LAYOUT_TYPE.MENU;
@@ -332,7 +332,7 @@ public class FormCreator {
         bt.getChildren().add( param );
 
         UIParameter refParam = new UIParameter();
-        refParam.setName( IS_REFERENCED_PARAM );
+        refParam.setName( IS_GLOBAL_PARAM );
         refParam.setValue( isReferencedGrp );
         bt.getChildren().add( refParam );
 
@@ -361,7 +361,7 @@ public class FormCreator {
 
         // is referenced param
         UIParameter refParam = new UIParameter();
-        refParam.setName( IS_REFERENCED_PARAM );
+        refParam.setName( IS_GLOBAL_PARAM );
         refParam.setValue( isGlobal );
         bt.getChildren().add( refParam );
 

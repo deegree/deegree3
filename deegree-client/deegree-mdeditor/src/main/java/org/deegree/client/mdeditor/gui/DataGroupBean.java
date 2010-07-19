@@ -38,7 +38,6 @@ package org.deegree.client.mdeditor.gui;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +50,6 @@ import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.model.DataGroup;
-import org.deegree.client.mdeditor.model.FormConfiguration;
-import org.deegree.client.mdeditor.model.FormGroup;
 import org.slf4j.Logger;
 
 /**
@@ -77,17 +74,16 @@ public class DataGroupBean implements Serializable {
     // grpId, id of the data group
     private Map<String, String> selectedDataGroups = new HashMap<String, String>();
 
-    private boolean fgiLoaded = false;
-
-    public void setDataGroups( Map<String, List<DataGroup>> dataGroups ) {
-        this.dataGroups = dataGroups;
-    }
-
     public Map<String, List<DataGroup>> getDataGroups()
                             throws ConfigurationException {
-        if ( !fgiLoaded ) {
-            loadDataGroups();
-            fgiLoaded = true;
+        FacesContext fc = FacesContext.getCurrentInstance();
+        EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                           "editorBean" );
+
+        String confId = editorBean.getConfId();
+        String grpId = editorBean.getGrpId();
+        if ( !dataGroups.containsKey( grpId ) ) {
+            reloadFormGroup( grpId, ConfigurationManager.getConfiguration().isGlobal( confId ) );
         }
         return dataGroups;
     }
@@ -104,9 +100,9 @@ public class DataGroupBean implements Serializable {
         selectedDataGroups.put( groupId, id );
     }
 
-    public void reloadFormGroup( String grpId, boolean isReferencedGrp ) {
-        LOG.debug( "Form Group with id " + grpId + " has changed. Force reload." );
-        if ( isReferencedGrp ) {
+    public void reloadFormGroup( String grpId, boolean isGlobalElement ) {
+        LOG.debug( ( isGlobalElement ? "global " : "" ) + "Form Group with id " + grpId + " has changed. Force reload." );
+        if ( isGlobalElement ) {
             try {
                 dataGroups.put( grpId, DataHandler.getInstance().getDataGroups( grpId ) );
             } catch ( ConfigurationException e ) {
@@ -115,37 +111,10 @@ public class DataGroupBean implements Serializable {
             }
         } else {
             FacesContext fc = FacesContext.getCurrentInstance();
-            EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue(
-                                                                                                        fc.getELContext(),
-                                                                                                        null,
-                                                                                                        "editorBean" );
+            EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                               "editorBean" );
             dataGroups.put( grpId, editorBean.getDataGroups( grpId ) );
         }
-    }
-
-    private void loadDataGroups()
-                            throws ConfigurationException {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        EditorBean formCreator = (EditorBean) fc.getApplication().getELResolver().getValue(
-                                                                                                      fc.getELContext(),
-                                                                                                      null,
-                                                                                                      "editorBean" );
-
-        Collection<FormConfiguration> globalConfigurations = ConfigurationManager.getConfiguration().getGlobalConfigurations();
-
-        for ( FormConfiguration formConf : globalConfigurations ) {
-            for ( FormGroup fg : formConf.getFormGroups() ) {
-                reloadFormGroup( fg.getId(), true );
-            }
-        }
-
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration(
-                                                                                                    formCreator.getConfId() );
-        List<String> formGroupIds = configuration.getMultipleFormGroupIds();
-        for ( String id : formGroupIds ) {
-            reloadFormGroup( id, false );
-        }
-
     }
 
 }

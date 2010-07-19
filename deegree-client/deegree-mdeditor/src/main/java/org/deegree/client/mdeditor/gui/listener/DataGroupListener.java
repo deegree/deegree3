@@ -41,7 +41,7 @@ import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
 import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
 import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
-import static org.deegree.client.mdeditor.gui.GuiUtils.IS_REFERENCED_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.IS_GLOBAL_PARAM;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
@@ -80,23 +80,22 @@ public class DataGroupListener implements AjaxBehaviorListener {
         ACTION_ATT_VALUES action = (ACTION_ATT_VALUES) comp.getAttributes().get( ACTION_ATT_KEY );
 
         String id = null;
-        boolean isReferencedGrp = true;
+        boolean isGlobalElement = true;
         for ( UIComponent child : comp.getChildren() ) {
             if ( child instanceof UIParameter ) {
                 UIParameter param = (UIParameter) child;
                 if ( DG_ID_PARAM.equals( param.getName() ) ) {
                     id = (String) param.getValue();
-                } else if ( IS_REFERENCED_PARAM.equals( param.getName() ) ) {
-                    isReferencedGrp = (Boolean) param.getValue();
+                } else if ( IS_GLOBAL_PARAM.equals( param.getName() ) ) {
+                    isGlobalElement = (Boolean) param.getValue();
                 }
             }
         }
 
         LOG.debug( "FormGroup with id " + grpId + " action: " + action + " id is " + id );
         FacesContext fc = FacesContext.getCurrentInstance();
-        EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                    null,
-                                                                                                    "editorBean" );
+        EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                           "editorBean" );
         DataGroupBean dataGroupBean = (DataGroupBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                     null,
                                                                                                     "dataGroupBean" );
@@ -106,7 +105,7 @@ public class DataGroupListener implements AjaxBehaviorListener {
             return;
         }
 
-        if ( isReferencedGrp ) {
+        if ( isGlobalElement ) {
             try {
                 handleReferencedGrp( grpId, action, id, fc, editorBean, dataGroupBean );
             } catch ( ConfigurationException e ) {
@@ -116,7 +115,7 @@ public class DataGroupListener implements AjaxBehaviorListener {
         } else {
             handleInlineGrp( grpId, action, id, fc, editorBean, dataGroupBean );
         }
-        dataGroupBean.reloadFormGroup( grpId, isReferencedGrp );
+        dataGroupBean.reloadFormGroup( grpId, isGlobalElement );
 
     }
 

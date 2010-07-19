@@ -23,7 +23,7 @@
 												<ui:include src="selectedConf.xhtml" />
 												<div class="mdcontent">
 												<div id="top">
-													<h:panelGroup rendered="#{!sessionScope['status'].global}">
+													<h:panelGroup rendered="#{!editorBean.global}">
 																<h:form id="dsNavForm">
 																	<span class="dsNavBt">
 																			<h:commandButton id="dsNavNewDSBt" title="#{mdLabels['newDataset']}"

@@ -361,6 +361,11 @@ public class EditorBean {
         }
     }
 
+    public boolean isGlobal()
+                            throws ConfigurationException {
+        return ConfigurationManager.getConfiguration().isGlobal( confId );
+    }
+
     private FormField getFormField( FormFieldPath path ) {
         FormField formField = null;
         if ( path != null ) {

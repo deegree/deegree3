@@ -256,7 +256,7 @@ public class DatasetBean implements Serializable {
         return "forms";
     }
 
-    public String getConfId() {
+    private String getConfId() {
         FacesContext fc = FacesContext.getCurrentInstance();
         EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
                                                                                            "editorBean" );

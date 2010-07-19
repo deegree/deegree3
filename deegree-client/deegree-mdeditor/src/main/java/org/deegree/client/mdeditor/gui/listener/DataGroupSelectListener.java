@@ -36,7 +36,7 @@
 package org.deegree.client.mdeditor.gui.listener;
 
 import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
-import static org.deegree.client.mdeditor.gui.GuiUtils.IS_REFERENCED_PARAM;
+import static org.deegree.client.mdeditor.gui.GuiUtils.IS_GLOBAL_PARAM;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import javax.faces.component.UIComponent;
@@ -71,14 +71,14 @@ public class DataGroupSelectListener implements AjaxBehaviorListener {
                             throws AbortProcessingException {
         String grpId = (String) event.getComponent().getAttributes().get( GuiUtils.GROUPID_ATT_KEY );
         String id = null;
-        boolean isReferencedGrp = true;
+        boolean isGlobalElement = true;
         for ( UIComponent child : event.getComponent().getChildren() ) {
             if ( child instanceof UIParameter ) {
                 UIParameter param = (UIParameter) child;
                 if ( DG_ID_PARAM.equals( param.getName() ) ) {
                     id = (String) param.getValue();
-                } else if ( IS_REFERENCED_PARAM.equals( param.getName() ) ) {
-                    isReferencedGrp = (Boolean) param.getValue();
+                } else if ( IS_GLOBAL_PARAM.equals( param.getName() ) ) {
+                    isGlobalElement = (Boolean) param.getValue();
                 }
             }
         }
@@ -89,7 +89,7 @@ public class DataGroupSelectListener implements AjaxBehaviorListener {
                                                                                                     null,
                                                                                                     "editorBean" );
         DataGroup dataGroup = null;
-        if ( isReferencedGrp ) {
+        if ( isGlobalElement ) {
             try {
                 dataGroup = DataHandler.getInstance().getDataGroup( grpId, id );
             } catch ( ConfigurationException e ) {
