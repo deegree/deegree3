@@ -4,14 +4,7 @@
 </h:head>
 <h:body>
 	<ui:composition template="/page/templates/layout.xhtml">
-	
-			<ui:define name="metadata">
-							<f:metadata>
-											<f:viewParam id="confVP" name="confId" value="#{exportBean.confId}" required="true"
-															requiredMessage="#{mdLabels['missingConfId']}" />
-							</f:metadata>
-			</ui:define>
-			
+				
 			<ui:define name="center">
 				<f:subview id="mdExportDataset">
 						<h:form id="exportDsForm"  >
