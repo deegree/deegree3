@@ -7,41 +7,74 @@ options {
 
 @header {
   package org.deegree.feature.persistence.mapping.antlr;
-  import java.util.HashMap;
-  import org.deegree.feature.persistence.mapping.ColumnName;
+  import java.util.Collections;
+  import org.deegree.feature.persistence.mapping.MappingExpression;
+  import org.deegree.feature.persistence.mapping.JoinChain;
+  import org.deegree.feature.persistence.mapping.DBField;
+  import org.deegree.feature.persistence.mapping.Function;
+  import org.deegree.feature.persistence.mapping.StringConst;
 }
 
 @lexer::header {
   package org.deegree.feature.persistence.mapping.antlr;
 }
 
-/* This will be the entry point of our parser. */
-start
-    :    eval
+/*------------------------------------------------------------------
+ * PARSER RULES
+ *------------------------------------------------------------------*/
+
+expr
+    :    mappingExpr;
+
+mappingExpr returns [MappingExpression value]
+    :    dbField {$value=$dbField.value;}
+    |    joinChain {$value=$joinChain.value;}
+    |    function {$value=$function.value;}
+    |    stringConst {$value=$stringConst.value;}
+    ;
+catch [RecognitionException re] {
+    throw re;
+}
+
+stringConst returns [StringConst value]
+    :   Text  {$value=new StringConst($Text.text.substring(1,$Text.text.length()-1));}
     ;
 
-eval returns [ColumnName value]
-    :    SimpleIdentifier {$value = new ColumnName($SimpleIdentifier.text);}
-    |    QualifiedIdentifier {String[] ss = $QualifiedIdentifier.text.split("[.]"); $value = new ColumnName(ss[0], ss[1]);}
-    |    SimpleIdentifier Arrow eval -> eval
-    |    QualifiedIdentifier Arrow eval -> eval
+function returns [Function value]
+    :    Identifier {$value=new Function($Identifier.text);}
+    '(' ((ma=mappingExpr{$value.addArg($ma.value);}) (',' ma2=mappingExpr{$value.addArg($ma2.value);})*)? ')'
     ;
+catch [RecognitionException re] {
+    throw re;
+}
 
-/* A number: can be an integer value, or a decimal value */
-Number
-    :    ('0'..'9')+ ('.' ('0'..'9')+)?
+joinChain returns [JoinChain value]
+    :    dbf1=dbField '->' dbf2=dbField {$value=new JoinChain($dbf1.value,$dbf2.value);}
+    |    dbf1=dbField '->' jc1=joinChain {$value=new JoinChain($dbf1.value, $jc1.value);}
     ;
-
-SimpleIdentifier
-    :    ('a'..'z' | 'A'..'Z' | '-' | '_')+
-    ;
+catch [RecognitionException re] {
+    throw re;
+}
     
-QualifiedIdentifier
-    :    ('a'..'z' | 'A'..'Z' | '-' | '_')+ '.' ('a'..'z' | 'A'..'Z' | '-' | '_')* ('a'..'z' | 'A'..'Z' | '_')
+dbField returns [DBField value]
+    :    i1=Identifier {$value=new DBField ($i1.text);}
+    |    i1=Identifier '.' i2=Identifier {$value=new DBField ($i1.text,$i2.text);}
+    |    i1=Identifier '.' i2=Identifier '.' i3=Identifier {$value=new DBField ($i1.text,$i2.text,$i3.text);}
+    ;
+catch [RecognitionException re] {
+    throw re;
+}
+   
+/*------------------------------------------------------------------
+ * LEXER RULES
+ *------------------------------------------------------------------*/   
+   
+Identifier
+    :    ('a'..'z' | 'A'..'Z' | '0'..'9' | '_')+
     ;
 
-Arrow
-    :    '-' '>'
+Text
+    :    '\'' ~('\'')* '\''
     ;
 
 /* We're going to ignore all white space characters */

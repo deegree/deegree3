@@ -211,7 +211,8 @@ public class OracleFeatureStore implements FeatureStore {
                 String table = ftMapping.getFtTable();
                 GeometryPropertyType geomPt = ft.getDefaultGeometryPropertyDeclaration();
                 if ( geomPt != null ) {
-                    String geomColumn = ftMapping.getColumn( geomPt.getName() );
+                    // TODO handle non-trivial mappings
+                    String geomColumn = "" + ftMapping.getMapping( geomPt.getName() );
                     String sql = "SELECT SDO_AGGR_MBR(" + geomColumn + ") FROM " + table;
                     LOG.info( "Performing query: '" + sql + "'" );
                     stmt = conn.createStatement();
@@ -361,7 +362,8 @@ public class OracleFeatureStore implements FeatureStore {
             sql.append( ftMapping.getFidColumn() );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 sql.append( ',' );
-                sql.append( ftMapping.getColumn( pt.getName() ) );
+                // TODO handle non-trivial mappings
+                sql.append( ftMapping.getMapping( pt.getName() ) );
             }
 
             sql.append( " FROM " );

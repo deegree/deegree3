@@ -211,7 +211,8 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
             if ( prop.getValue() != null ) {
                 qMarks.append( ",?" );
                 sql.append( "," );
-                sql.append( ftMapping.getColumn( prop.getName() ) );
+                // TODO handle non-trivial mapping
+                sql.append( ftMapping.getMapping( prop.getName() ) );
             }
         }
         sql.append( ") VALUES (" );
@@ -385,7 +386,8 @@ class OracleFeatureStoreTransaction implements FeatureStoreTransaction {
                     sql.append( ',' );
                 }
                 first = false;
-                String column = ftMapping.getColumn( replacementProp.getType().getName() );
+                //  TODO handle non-trivial mapping
+                String column = "" + ftMapping.getMapping( replacementProp.getType().getName() );
                 if ( column == null ) {
                     String msg = "Cannot update property '" + replacementProp.getName() + "' not mapped to a column!?";
                     throw new FeatureStoreException( msg );

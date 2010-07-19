@@ -76,14 +76,14 @@ public class FeatureTypeMapping {
     private String backendSrs;
 
     // TODO: enable more mapping possibilities (e.g. app:Country/gmlName[1]/text()='Blabla')
-    private Map<QName, String> propToColumn = new HashMap<QName, String>();
+    private Map<QName, MappingExpression> propToColumn = new HashMap<QName, MappingExpression>();
 
-    public FeatureTypeMapping( QName ftName, String table, String fidColumn, Map<QName, String> propToColumn,
-                               String backendSrs ) {
+    public FeatureTypeMapping( QName ftName, String table, String fidColumn,
+                               Map<QName, MappingExpression> propToColumn2, String backendSrs ) {
         this.ftName = ftName;
         this.table = table;
         this.fidColumn = fidColumn;
-        this.propToColumn = propToColumn;
+        this.propToColumn = propToColumn2;
         this.backendSrs = backendSrs;
         // TODO make this configurable
         this.type = RELATIONAL;
@@ -92,7 +92,7 @@ public class FeatureTypeMapping {
     public MappingType getMappingType() {
         return type;
     }
-    
+
     /**
      * Returns the name of the feature type.
      * 
@@ -122,13 +122,13 @@ public class FeatureTypeMapping {
     }
 
     /**
-     * Returns the name of the column that the specified property is mapped to.
+     * Returns the mapping for the specified column.
      * 
      * @param propName
      *            name of the property, must not be <code>null</code>
-     * @return column name, may be <code>null</code> (if the property is not mapped)
+     * @return mapping, may be <code>null</code> (if the property is not mapped)
      */
-    public String getColumn( QName propName ) {
+    public MappingExpression getMapping( QName propName ) {
         return propToColumn.get( propName );
     }
 

@@ -50,12 +50,19 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
+import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.mapping.MappingExpression;
+import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
+import org.deegree.feature.persistence.mapping.antlr.FMLParser;
 import org.deegree.feature.persistence.oracle.jaxb.AbstractPropertyDecl;
 import org.deegree.feature.persistence.oracle.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.oracle.jaxb.GeometryPropertyDecl;
@@ -128,10 +135,10 @@ class OracleApplicationSchemaBuilder {
         String backendSrs = "-1";
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
-        Map<QName, String> propToColumn = new HashMap<QName, String>();
+        Map<QName, MappingExpression> propToColumn = new HashMap<QName, MappingExpression>();
         for ( JAXBElement<? extends AbstractPropertyDecl> propDeclEl : ftDecl.getAbstractProperty() ) {
             AbstractPropertyDecl propDecl = propDeclEl.getValue();
-            Pair<PropertyType, String> pt = process( propDecl );
+            Pair<PropertyType, MappingExpression> pt = process( propDecl );
             pts.add( pt.first );
             propToColumn.put( pt.first.getName(), pt.second );
 
@@ -151,7 +158,7 @@ class OracleApplicationSchemaBuilder {
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private Pair<PropertyType, String> process( AbstractPropertyDecl propDecl ) {
+    private Pair<PropertyType, MappingExpression> process( AbstractPropertyDecl propDecl ) {
 
         QName ptName = propDecl.getName();
 
@@ -178,14 +185,25 @@ class OracleApplicationSchemaBuilder {
             throw new RuntimeException( "Internal error: Unhandled property JAXB property type: " + propDecl.getClass() );
         }
 
-        String mapping = propDecl.getMapping();
-        if ( mapping == null ) {
-            mapping = ptName.getLocalPart().toUpperCase();
+        MappingExpression mapping = null;
+        if ( propDecl.getMapping() == null ) {
+            mapping = new DBField( pt.getName().getLocalPart().toUpperCase() );
             LOG.debug( "No explicit mapping for property " + pt.getName()
                        + " specified, defaulting to local property name '" + mapping + "'." );
+        } else {
+            ANTLRStringStream in = new ANTLRStringStream( propDecl.getMapping() );
+            FMLLexer lexer = new FMLLexer( in );
+            CommonTokenStream tokens = new CommonTokenStream( lexer );
+            FMLParser parser = new FMLParser( tokens );
+            try {
+                mapping = parser.mappingExpr().value;
+            } catch ( RecognitionException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
-        return new Pair<PropertyType, String>( pt, mapping );
+        return new Pair<PropertyType, MappingExpression>( pt, mapping );
     }
 
     private PrimitiveType getPrimitiveType( org.deegree.feature.persistence.oracle.jaxb.PrimitiveType type ) {

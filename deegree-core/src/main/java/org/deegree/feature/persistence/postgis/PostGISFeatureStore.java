@@ -67,6 +67,7 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.IdAnalysis;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
@@ -277,7 +278,7 @@ public class PostGISFeatureStore implements FeatureStore {
         case RELATIONAL: {
             String table = mapping.getFtTable();
             GeometryPropertyType gpt = ft.getDefaultGeometryPropertyDeclaration();
-            String column = mapping.getColumn( gpt.getName() );
+            MappingExpression column = mapping.getMapping( gpt.getName() );
             env = getEnvelope( table, column );
             break;
         }
@@ -353,7 +354,7 @@ public class PostGISFeatureStore implements FeatureStore {
         return env;
     }
 
-    private Envelope getEnvelope( String table, String column )
+    private Envelope getEnvelope( String table, MappingExpression column )
                             throws FeatureStoreException {
 
         Envelope env = null;
@@ -452,7 +453,7 @@ public class PostGISFeatureStore implements FeatureStore {
                 // append every (mapped) property to SELECT list
 
                 // TODO columns in related tables
-                String column = mapping.getColumn( pt.getName() );
+                MappingExpression column = mapping.getMapping( pt.getName() );
                 if ( column != null ) {
                     if ( pt instanceof SimplePropertyType ) {
                         sql.append( ',' );
@@ -768,7 +769,7 @@ public class PostGISFeatureStore implements FeatureStore {
                 // append every (mapped) property to SELECT list
 
                 // TODO columns in related tables
-                String column = mapping.getColumn( pt.getName() );
+                MappingExpression column = mapping.getMapping( pt.getName() );
                 if ( column != null ) {
                     if ( pt instanceof SimplePropertyType ) {
                         sql.append( ',' );
@@ -1233,7 +1234,7 @@ public class PostGISFeatureStore implements FeatureStore {
         int i = 2;
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             // if it is mappable, it has been SELECTed by contract
-            if ( ftMapping.getColumn( pt.getName() ) != null ) {
+            if ( ftMapping.getMapping( pt.getName() ) != null ) {
                 if ( pt instanceof SimplePropertyType ) {
                     String value = rs.getString( i );
                     if ( value != null ) {
