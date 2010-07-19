@@ -6,6 +6,8 @@
 	<ui:composition template="/page/templates/layout.xhtml">
 				
 			<ui:define name="center">
+			<ui:include src="selectedConf.xhtml" />
+			<div class="mdcontent">
 				<f:subview id="mdExportDataset">
 						<h:form id="exportDsForm"  >
 							<h:panelGrid >
@@ -31,6 +33,7 @@
 						</h:form>
 								
 					</f:subview>
+			</div>
 			</ui:define>
 			
 	</ui:composition>

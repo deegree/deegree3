@@ -20,11 +20,8 @@
 								</ui:define>
 
 								<ui:define name="center">
-								
-								
-								<h:outputText value="Ausgewählte Konfiguration: #{editorBean.confId}"/>
+												<ui:include src="selectedConf.xhtml" />
 												<div class="mdcontent">
-
 												<div id="top">
 													<h:panelGroup rendered="#{!sessionScope['status'].global}">
 																<h:form id="dsNavForm">

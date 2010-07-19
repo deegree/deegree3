@@ -6,6 +6,8 @@
 	<ui:composition template="/page/templates/layout.xhtml">
 	
 			<ui:define name="center">
+			<ui:include src="selectedConf.xhtml" />
+			<div class="mdcontent">
 				<f:subview id="mdChooseTemplate">
 						<h:outputText rendered="#{empty datasetBean.datasetInformation}" value="#{mdLabels['loadTemplate_noTemplates']}"/><br/>
 						<h:link rendered="#{empty datasetBean.datasetInformation}" value="#{mdLabels['loadTemplate_back']}" includeViewParams="true" outcome="forms"/>
@@ -24,10 +26,11 @@
 									</h:selectOneListbox>
 									<h:inputTextarea id="chooseTemplateIT" value="#{datasetBean.datasetDescribtion}" styleClass="chooseTemplateDescribtionTA" disabled="true"/>
 								</h:panelGrid>
-								<h:message for="chooseTemplateLb" />
+								<h:message for="chooseTemplateLb" /><br/>
 								<h:commandButton id="chooseTemplateBt" value="#{mdLabels['loadTemplate_bt']}" action="#{datasetBean.loadDataset}" />
 						</h:form>
 					</f:subview>
+					</div>
 			</ui:define>
 			
 	</ui:composition>
