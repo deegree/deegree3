@@ -18,8 +18,7 @@
 
 #mdEditor #right {
 	float: right;
-	width: 19%;
-	height: 100%;
+	width: 20%;
 	margin: 1%;
 }
 
@@ -123,6 +122,7 @@
 	margin: 0em auto;
 	margin-bottom: 10px;
 	border-bottom: 2px solid #194c6b;
+	font-size: small;
 }
 
 #mdEditor #verticalMenu {
