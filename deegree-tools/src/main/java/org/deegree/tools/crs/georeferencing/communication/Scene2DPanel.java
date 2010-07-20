@@ -93,6 +93,15 @@ public class Scene2DPanel extends AbstractPanel2D {
 
         }
 
+        if ( zoomRect != null ) {
+            int x = new Double( zoomRect.getX() ).intValue();
+            int y = new Double( zoomRect.getY() ).intValue();
+            int width = new Double( zoomRect.getWidth() ).intValue();
+            int height = new Double( zoomRect.getHeight() ).intValue();
+
+            g2.drawRect( x, y, width, height );
+        }
+
         if ( lastAbstractPoint != null ) {
             g2.fillOval( new Double( lastAbstractPoint.getNewValue().getX() ).intValue() - selectedPointSize,
                          new Double( lastAbstractPoint.getNewValue().getY() ).intValue() - selectedPointSize,

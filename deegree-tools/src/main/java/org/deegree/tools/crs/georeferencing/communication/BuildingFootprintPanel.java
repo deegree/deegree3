@@ -101,6 +101,16 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
                 g2.drawPolygon( polygon );
             }
         }
+
+        if ( zoomRect != null ) {
+            int x = new Double( zoomRect.getX() ).intValue();
+            int y = new Double( zoomRect.getY() ).intValue();
+            int width = new Double( zoomRect.getWidth() ).intValue();
+            int height = new Double( zoomRect.getHeight() ).intValue();
+
+            g2.drawRect( x, y, width, height );
+        }
+
         if ( selectedPoints != null ) {
             for ( Point4Values point : selectedPoints ) {
                 g2.fillOval( new Double( point.getNewValue().getX() ).intValue() - selectedPointSize,

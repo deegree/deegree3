@@ -40,12 +40,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Rectangle;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -62,10 +59,6 @@ public class OptionDialog extends JDialog {
 
     private final static Dimension DIALOG_DIMENSION = new Dimension( 500, 300 );
 
-    public static final String BUTTON_NAME_OK = "OK";
-
-    public static final String BUTTON_PANEL_NAME = "buttonPanel";
-
     /*
      * PANEL_NAVIGATION_WIDTH
      */
@@ -75,9 +68,7 @@ public class OptionDialog extends JDialog {
 
     private SettingsPanel settingsPanel;
 
-    private JPanel buttonPanel;
-
-    private JButton ok;
+    private ButtonPanel buttonPanel;
 
     private ErrorDialog errorDialog;
 
@@ -104,13 +95,7 @@ public class OptionDialog extends JDialog {
         settingsPanel.setPreferredSize( new Dimension( this.getBounds().width - PNW, this.getBounds().height ) );
         settingsPanel.setBounds( new Rectangle( new Dimension( this.getBounds().width - PNW, this.getBounds().height ) ) );
 
-        buttonPanel = new JPanel();
-        buttonPanel.setLayout( new FlowLayout() );
-        buttonPanel.setName( BUTTON_PANEL_NAME );
-
-        ok = new JButton( BUTTON_NAME_OK );
-
-        buttonPanel.add( ok );
+        buttonPanel = new ButtonPanel();
 
         splitPane.setLeftComponent( navigationPanel );
         splitPane.setRightComponent( settingsPanel );
@@ -127,6 +112,10 @@ public class OptionDialog extends JDialog {
         return settingsPanel;
     }
 
+    public ButtonPanel getButtonPanel() {
+        return buttonPanel;
+    }
+
     public void setNavigationPanel( NavigationPanel navigationPanel ) {
         this.navigationPanel = navigationPanel;
         this.setVisible( true );
@@ -141,10 +130,6 @@ public class OptionDialog extends JDialog {
     public void reset() {
         this.repaint();
         this.setVisible( true );
-    }
-
-    public void addActionKeyListener( ActionListener e ) {
-        ok.addActionListener( e );
     }
 
     public void setErrorDialog( ErrorDialog errorDialog ) {

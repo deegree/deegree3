@@ -40,8 +40,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -83,6 +81,7 @@ import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ErrorDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.GenericSettingsPanel;
@@ -338,13 +337,7 @@ public class Controller {
 
                         view.setErrorDialog( new ErrorDialog( view, JDialog.ERROR, e1.getMessage() ) );
                     }
-                    // if ( textFieldModel.getError() != null ) {
-                    // view.setErrorDialog( new ErrorDialog( view, JDialog.ERROR,
-                    // textFieldModel.getError().getErrorMessage() ) );
-                    // textFieldModel.resetError();
-                    // } else {
 
-                    // }
                 }
 
             }
@@ -430,33 +423,34 @@ public class Controller {
 
                     reset();
                 }
-                if ( ( (JButton) source ).getText().startsWith( OptionDialog.BUTTON_NAME_OK ) ) {
-
+                if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_NAME_OK ) ) {
+                    boolean isRunIntoTrouble = false;
                     if ( optionSettingPanel != null ) {
 
                         // if the custom radiobutton is selected and there is something inside the textField
                         if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
-                             && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects()[0] != null ) {
+                             && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects() != null ) {
                             // here you have to check about the input for the custom textfield. Keylistener for the
                             // textfield while typing in is problematic because you can workaround with copy&paste...so
-                            // this
-                            // should be the way to go.
+                            // this should be the way to go.
 
                             String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
                             if ( AbstractTextfieldModel.validateInt( textInput ) ) {
                                 dialogModel.setTextFieldKeyString( textInput );
                                 dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
                             } else {
-                                dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR, "Insert numbers only!" ) );
-
+                                dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR,
+                                                                        "Insert numbers only into the textField!" ) );
+                                isRunIntoTrouble = true;
                             }
 
                         }
                     }
-
-                    panel.repaint();
-                    footPanel.repaint();
-                    dialog.setVisible( false );
+                    if ( isRunIntoTrouble == false ) {
+                        panel.repaint();
+                        footPanel.repaint();
+                        dialog.setVisible( false );
+                    }
                 }
             }
             if ( source instanceof JMenuItem ) {
@@ -485,7 +479,7 @@ public class Controller {
 
                     dialogModel.createNodes( root );
                     dialog = new OptionDialog( view, root );
-                    dialog.addActionKeyListener( new ButtonListener() );
+                    dialog.getButtonPanel().addActionKeyListener( new ButtonListener() );
                     optionNavPanel = dialog.getNavigationPanel();
                     optionSettPanel = dialog.getSettingsPanel();
 
@@ -499,31 +493,37 @@ public class Controller {
             }
             if ( source instanceof JRadioButton ) {
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TWO ) ) {
-                    System.out.println( "[Controller] two" );
+
                     dialogModel.setSelectionPointSize( 2 );
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.THREE ) ) {
-                    System.out.println( "[Controller] three" );
+
                     dialogModel.setSelectionPointSize( 3 );
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.DEFAULT ) ) {
-                    System.out.println( "[Controller] default" );
+
                     dialogModel.setSelectionPointSize( 5 );
 
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.SEVEN ) ) {
-                    System.out.println( "[Controller] seven" );
+
                     dialogModel.setSelectionPointSize( 7 );
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TEN ) ) {
-                    System.out.println( "[Controller] ten" );
+
                     dialogModel.setSelectionPointSize( 10 );
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.CUSTOM ) ) {
                     if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" ) ) {
                         dialogModel.setTextFieldKeyString( ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
-                        dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
-                        System.out.println( "[Controller] custom " + dialogModel.getTextFieldKeyString() );
+                        int i;
+                        try {
+                            i = Integer.parseInt( dialogModel.getTextFieldKeyString() );
+                            dialogModel.setSelectionPointSize( i );
+                        } catch ( NumberFormatException ex ) {
+                            dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR, "This is not a number" ) );
+                        }
+
                     }
                 }
                 AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize();
@@ -585,22 +585,6 @@ public class Controller {
             }
 
         }
-    }
-
-    class Scene2DFocusListener implements FocusListener {
-
-        @Override
-        public void focusGained( FocusEvent e ) {
-            System.out.println( "[Controller] has focus" );
-
-        }
-
-        @Override
-        public void focusLost( FocusEvent e ) {
-            System.out.println( "[Controller] has focus lost" );
-
-        }
-
     }
 
     // class Scene2DActionKeyListener implements KeyListener {
@@ -707,13 +691,12 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                     // panel.setFocusable( true );
                     mouseGeoRef.setMouseInside( true );
-                    System.out.println( "[Controller] has focus georef" );
 
                     // panel.setBorder( BorderFactory.createTitledBorder( "test" ) );
                     // panel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
                 }
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-                    System.out.println( "[Controller] has focus footprint" );
+
                     // footPanel.setFocusable( true );
                     mouseFootprint.setMouseInside( true );
                     // footPanel.requestFocusInWindow();
@@ -739,23 +722,23 @@ public class Controller {
 
         @Override
         public void mousePressed( MouseEvent m ) {
-            Object source = m.getSource();
-            if ( source instanceof JPanel ) {
-                // Scene2DPanel
-                if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
-                    isControlDown = m.isControlDown();
-                    if ( isControlDown ) {
-                        System.out.println( "[Controller] down" );
-                    }
-                }
-                if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-                    mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
-                    if ( isControlDown ) {
-                        System.out.println( "[Controller] down" );
-                    }
-                }
-            }
+            // Object source = m.getSource();
+            // if ( source instanceof JPanel ) {
+            // // Scene2DPanel
+            // if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
+            // mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+            // isControlDown = m.isControlDown();
+            // if ( isControlDown ) {
+            // System.out.println( "[Controller] down" );
+            // }
+            // }
+            // if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
+            // mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+            // if ( isControlDown ) {
+            // System.out.println( "[Controller] down" );
+            // }
+            // }
+            // }
 
         }
 
@@ -783,13 +766,13 @@ public class Controller {
                                                      new Double( minPoint.getY() ).intValue(),
                                                      Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
                                                      Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
-                        // System.out.println( "[Controller]" + r );
                         GeoReferencedPoint center = new GeoReferencedPoint( r.getCenterX(), r.getCenterY() );
                         GeoReferencedPoint dimension = new GeoReferencedPoint( r.getWidth(), r.getHeight() );
                         sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
 
                         panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                         panel.updatePoints( sceneValues );
+                        panel.setZoomRect( null );
                         panel.repaint();
 
                     } else {
@@ -855,7 +838,7 @@ public class Controller {
                         sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
 
                         // footPanel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-
+                        footPanel.setZoomRect( null );
                         footPanel.updatePoints( sceneValues );
                         footPanel.repaint();
 
@@ -956,11 +939,34 @@ public class Controller {
         @Override
         public void mouseDragged( MouseEvent m ) {
 
-            // Graphics g = panel;
-            // g.drawRect( (int) mouseGeoRef.getPointMousePressed().getX(),
-            // (int) mouseGeoRef.getPointMousePressed().getY(),
-            // (int) m.getX() - (int) mouseGeoRef.getPointMousePressed().getX(),
-            // (int) m.getY() - (int) mouseGeoRef.getPointMousePressed().getY() );
+            Object source = m.getSource();
+
+            if ( source instanceof JPanel ) {
+                // Scene2DPanel
+                if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
+                    if ( m.isControlDown() ) {
+                        int x = new Double( mouseGeoRef.getPointMousePressed().getX() ).intValue();
+                        int y = new Double( mouseGeoRef.getPointMousePressed().getY() ).intValue();
+                        int width = new Double( m.getX() - mouseGeoRef.getPointMousePressed().getX() ).intValue();
+                        int height = new Double( m.getY() - mouseGeoRef.getPointMousePressed().getY() ).intValue();
+                        Rectangle rec = new Rectangle( x, y, width, height );
+                        panel.setZoomRect( rec );
+                        panel.repaint();
+                    }
+                }
+                // footprintPanel
+                if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
+                    if ( m.isControlDown() ) {
+                        int x = new Double( mouseFootprint.getPointMousePressed().getX() ).intValue();
+                        int y = new Double( mouseFootprint.getPointMousePressed().getY() ).intValue();
+                        int width = new Double( m.getX() - mouseFootprint.getPointMousePressed().getX() ).intValue();
+                        int height = new Double( m.getY() - mouseFootprint.getPointMousePressed().getY() ).intValue();
+                        Rectangle rec = new Rectangle( x, y, width, height );
+                        footPanel.setZoomRect( rec );
+                        footPanel.repaint();
+                    }
+                }
+            }
 
         }
 

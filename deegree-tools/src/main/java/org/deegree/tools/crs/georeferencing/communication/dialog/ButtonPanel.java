@@ -35,47 +35,42 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.dialog;
 
-import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
 /**
- * Custom class to provide the functionality to show errors. <br>
- * TODO implement an own ErrorDialog because this one hears just on the parentFrame but should hear on its near standing
- * parent which can be a Dialog as well
- * 
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ErrorDialog extends JDialog {
+public class ButtonPanel extends JPanel {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    public static final String BUTTON_NAME_OK = "OK";
 
-    /**
-     * Creates a new instance of {@code Dialog} to show error messages.
-     * 
-     * @param com
-     *            the parent component of this error message.
-     * @param messageType
-     *            one of the types specified by the Java API
-     * @param messageText
-     *            the customized message that should be shown.
-     */
-    public ErrorDialog( Component com, int messageType, String messageText ) {
+    public static final String BUTTON_NAME = "ButtonPanel_OK";
 
-        switch ( messageType ) {
+    public static final String BUTTON_PANEL_NAME = "buttonPanel";
 
-        case JDialog.ERROR:
-            JOptionPane.showMessageDialog( com, messageText, "Error", JOptionPane.ERROR_MESSAGE );
-        }
+    private JButton buttonOK;
 
+    public ButtonPanel() {
+        this.setLayout( new FlowLayout() );
+        this.setName( BUTTON_PANEL_NAME );
+        buttonOK = new JButton( BUTTON_NAME_OK );
+        buttonOK.setName( BUTTON_NAME );
+
+        this.add( buttonOK );
+        this.setVisible( true );
+    }
+
+    public void addActionKeyListener( ActionListener e ) {
+        buttonOK.addActionListener( e );
     }
 
 }
