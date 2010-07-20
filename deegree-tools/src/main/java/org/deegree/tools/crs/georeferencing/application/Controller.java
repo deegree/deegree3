@@ -71,7 +71,7 @@ import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
-import org.deegree.tools.crs.georeferencing.application.transformation.Helmert3Transform;
+import org.deegree.tools.crs.georeferencing.application.transformation.Helmert4Transform;
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
@@ -220,7 +220,7 @@ public class Controller {
 
         sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
         mouseFootprint = new FootprintMouseModel();
-        // TODO at the moment the file which is used is static in the GRViewerGUI!!!
+
         List<WorldRenderableObject> rese = File3dImporter.open( view, store.getFilename() );
         sourceCRS = null;
         for ( WorldRenderableObject res : rese ) {
@@ -408,8 +408,8 @@ public class Controller {
 
                         transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
                         break;
-                    case Helmert_3:
-                        transform = new Helmert3Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
+                    case Helmert_4:
+                        transform = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
                                                            order );
                         // transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order
                         // );
@@ -471,7 +471,7 @@ public class Controller {
 
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_HELMERT ) ) {
-                    transformationType = TransformationMethod.TransformationType.Helmert_3;
+                    transformationType = TransformationMethod.TransformationType.Helmert_4;
                     order = 1;
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_EDIT_OPTIONS ) ) {
@@ -689,17 +689,14 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    // panel.setFocusable( true );
+
                     mouseGeoRef.setMouseInside( true );
 
-                    // panel.setBorder( BorderFactory.createTitledBorder( "test" ) );
-                    // panel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
                 }
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
 
-                    // footPanel.setFocusable( true );
                     mouseFootprint.setMouseInside( true );
-                    // footPanel.requestFocusInWindow();
+
                 }
             }
         }

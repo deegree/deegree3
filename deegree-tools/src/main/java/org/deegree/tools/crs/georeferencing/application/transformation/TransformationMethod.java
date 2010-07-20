@@ -52,7 +52,7 @@ public interface TransformationMethod {
     public enum TransformationType {
         PolynomialFirstOrder,
 
-        Helmert_3,
+        Helmert_4,
 
         LeastSquarePolynomial
     }
