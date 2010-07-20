@@ -40,10 +40,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -51,7 +49,6 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
@@ -66,6 +63,7 @@ import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.IdAnalysis;
+import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.MappingExpression;
 import org.deegree.feature.persistence.query.CombinedResultSet;
@@ -75,8 +73,6 @@ import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.query.Query.QueryHint;
-import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -95,11 +91,9 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.gml.GMLObject;
-import org.deegree.gml.feature.FeatureReference;
 import org.postgis.LineString;
 import org.postgis.LinearRing;
 import org.postgis.PGboxbase;
@@ -108,8 +102,6 @@ import org.postgis.Point;
 import org.postgis.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link FeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
@@ -127,7 +119,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private final MappedApplicationSchema schema;
 
-    private final FeatureStoreGMLIdResolver resolver = new FeatureStoreGMLIdResolver( this );
+    final FeatureStoreGMLIdResolver resolver = new FeatureStoreGMLIdResolver( this );
 
     private final Map<QName, Short> ftNameToFtId = new HashMap<QName, Short>();
 
@@ -455,25 +447,28 @@ public class PostGISFeatureStore implements FeatureStore {
                 // TODO columns in related tables
                 MappingExpression column = mapping.getMapping( pt.getName() );
                 if ( column != null ) {
-                    if ( pt instanceof SimplePropertyType ) {
-                        sql.append( ',' );
-                        sql.append( column );
-                    } else if ( pt instanceof GeometryPropertyType ) {
-                        sql.append( ',' );
-                        if ( useLegacyPredicates ) {
-                            sql.append( "AsBinary(" );
-                        } else {
-                            sql.append( "ST_AsBinary(" );
-                        }
-                        sql.append( column );
-                        sql.append( ')' );
-                    } else if ( pt instanceof FeaturePropertyType ) {
-                        sql.append( ',' );
-                        sql.append( column );
+                    sql.append( ',' );
+                    if ( column instanceof JoinChain ) {
+                        JoinChain jc = (JoinChain) column;
+                        sql.append( jc.getFields().get( 0 ) );
                     } else {
-                        LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                                  + "' not handled in PostGISFeatureStore." );
-                    }
+                        if ( pt instanceof SimplePropertyType ) {
+                            sql.append( column );
+                        } else if ( pt instanceof GeometryPropertyType ) {
+                            if ( useLegacyPredicates ) {
+                                sql.append( "AsBinary(" );
+                            } else {
+                                sql.append( "ST_AsBinary(" );
+                            }
+                            sql.append( column );
+                            sql.append( ')' );
+                        } else if ( pt instanceof FeaturePropertyType ) {
+                            sql.append( column );
+                        } else {
+                            LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                                      + "' not handled in PostGISFeatureStore." );
+                        }
+                    }                    
                 }
             }
 
@@ -483,13 +478,13 @@ public class PostGISFeatureStore implements FeatureStore {
             sql.append( mapping.getFidColumn() );
             sql.append( "=?" );
 
-            LOG.info( "Preparing SELECT: " + sql );
+            LOG.debug( "Preparing SELECT: " + sql );
             stmt = conn.prepareStatement( sql.toString() );
             stmt.setString( 1, idAnalysis.getIdKernel() );
 
             rs = stmt.executeQuery();
             if ( rs.next() ) {
-                result = buildFeature( rs, ft, mapping );
+                result = new FeatureBuilder( this, ft, mapping, conn ).buildFeature( rs );
             }
         } catch ( Exception e ) {
             String msg = "Error performing query: " + e.getMessage();
@@ -771,24 +766,27 @@ public class PostGISFeatureStore implements FeatureStore {
                 // TODO columns in related tables
                 MappingExpression column = mapping.getMapping( pt.getName() );
                 if ( column != null ) {
-                    if ( pt instanceof SimplePropertyType ) {
-                        sql.append( ',' );
-                        sql.append( column );
-                    } else if ( pt instanceof GeometryPropertyType ) {
-                        sql.append( ',' );
-                        if ( useLegacyPredicates ) {
-                            sql.append( "AsBinary(" );
-                        } else {
-                            sql.append( "ST_AsBinary(" );
-                        }
-                        sql.append( column );
-                        sql.append( ')' );
-                    } else if ( pt instanceof FeaturePropertyType ) {
-                        sql.append( ',' );
-                        sql.append( column );
+                    sql.append( ',' );
+                    if ( column instanceof JoinChain ) {
+                        JoinChain jc = (JoinChain) column;
+                        sql.append( jc.getFields().get( 0 ) );
                     } else {
-                        LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                                  + "' not handled in PostGISFeatureStore." );
+                        if ( pt instanceof SimplePropertyType ) {
+                            sql.append( column );
+                        } else if ( pt instanceof GeometryPropertyType ) {
+                            if ( useLegacyPredicates ) {
+                                sql.append( "AsBinary(" );
+                            } else {
+                                sql.append( "ST_AsBinary(" );
+                            }
+                            sql.append( column );
+                            sql.append( ')' );
+                        } else if ( pt instanceof FeaturePropertyType ) {
+                            sql.append( column );
+                        } else {
+                            LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
+                                      + "' not handled in PostGISFeatureStore." );
+                        }
                     }
                 }
             }
@@ -806,7 +804,7 @@ public class PostGISFeatureStore implements FeatureStore {
                 sql.append( orderBy.getSQL() );
             }
 
-            LOG.info( "Preparing SELECT: " + sql );
+            LOG.debug( "Preparing SELECT: " + sql );
             stmt = conn.prepareStatement( sql.toString() );
 
             int i = 1;
@@ -822,7 +820,7 @@ public class PostGISFeatureStore implements FeatureStore {
             }
 
             rs = stmt.executeQuery();
-            result = new IteratorResultSet( new ResultSetIteratorRelational( rs, conn, stmt, ft, mapping ) );
+            result = new IteratorResultSet( new ResultSetIteratorRelational( this, rs, conn, stmt, ft, mapping ) );
 
         } catch ( Exception e ) {
             closeSafely( conn, stmt, rs );
@@ -1226,56 +1224,6 @@ public class PostGISFeatureStore implements FeatureStore {
         return pgGeometry;
     }
 
-    private Feature buildFeature( ResultSet rs, FeatureType ft, FeatureTypeMapping ftMapping )
-                            throws SQLException {
-
-        String fid = ft.getName().getLocalPart().toUpperCase() + "_" + rs.getString( 1 );
-        List<Property> props = new ArrayList<Property>();
-        int i = 2;
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            // if it is mappable, it has been SELECTed by contract
-            if ( ftMapping.getMapping( pt.getName() ) != null ) {
-                if ( pt instanceof SimplePropertyType ) {
-                    String value = rs.getString( i );
-                    if ( value != null ) {
-                        PrimitiveValue pv = new PrimitiveValue( value, ( (SimplePropertyType) pt ).getPrimitiveType() );
-                        Property prop = new GenericProperty( pt, pv );
-                        props.add( prop );
-                    }
-                } else if ( pt instanceof GeometryPropertyType ) {
-                    byte[] wkb = rs.getBytes( i );
-                    if ( wkb != null ) {
-                        try {
-                            Geometry geom = WKBReader.read( wkb );
-                            geom.setCoordinateSystem( storageSRS );
-                            Property prop = new GenericProperty( pt, geom );
-                            props.add( prop );
-                        } catch ( ParseException e ) {
-                            throw new SQLException( "Error parsing WKB from PostGIS: " + e.getMessage(), e );
-                        }
-                    }
-                } else if ( pt instanceof FeaturePropertyType ) {
-                    String subFid = rs.getString( i );
-                    if ( subFid != null ) {
-                        QName valueFtName = ( (FeaturePropertyType) pt ).getFTName();
-                        if ( valueFtName != null ) {
-                            subFid = valueFtName.getLocalPart().toUpperCase() + "_" + subFid;
-                        }
-                        String uri = "#" + subFid;
-                        FeatureReference ref = new FeatureReference( resolver, uri, null );
-                        Property prop = new GenericProperty( pt, ref );
-                        props.add( prop );
-                    }
-                } else {
-                    LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
-                              + "' not handled in PostGISFeatureStore." );
-                }
-                i++;
-            }
-        }
-        return ft.newFeature( fid, props, null );
-    }
-
     private class ResultSetIteratorBlob extends ResultSetIterator<Feature> {
 
         private final FeatureStoreGMLIdResolver resolver;
@@ -1310,22 +1258,18 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private class ResultSetIteratorRelational extends ResultSetIterator<Feature> {
 
-        private FeatureType ft;
+        private final FeatureBuilder builder;
 
-        private FeatureTypeMapping ftMapping;
-
-        public ResultSetIteratorRelational( ResultSet rs, Connection conn, Statement stmt, FeatureType ft,
-                                            FeatureTypeMapping ftMapping ) {
+        public ResultSetIteratorRelational( PostGISFeatureStore fs, ResultSet rs, Connection conn, Statement stmt,
+                                            FeatureType ft, FeatureTypeMapping ftMapping ) {
             super( rs, conn, stmt );
-            this.ft = ft;
-            this.ftMapping = ftMapping;
+            builder = new FeatureBuilder( fs, ft, ftMapping, conn );
         }
 
-        @SuppressWarnings("synthetic-access")
         @Override
         protected Feature createElement( ResultSet rs )
                                 throws SQLException {
-            return buildFeature( rs, ft, ftMapping );
+            return builder.buildFeature( rs );
         }
     }
 }

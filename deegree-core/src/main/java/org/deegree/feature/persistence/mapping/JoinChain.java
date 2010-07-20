@@ -65,7 +65,7 @@ public class JoinChain implements MappingExpression {
     public List<DBField> getFields() {
         return dbFields;
     }
-
+    
     @Override
     public String toString() {
         String s = dbFields.get( 0 ).toString();

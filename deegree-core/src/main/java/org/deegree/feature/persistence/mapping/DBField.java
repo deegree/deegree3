@@ -66,6 +66,18 @@ public class DBField implements MappingExpression {
         this.column = column;
     }
 
+    public String getSchema () {
+        return schema;
+    }
+    
+    public String getTable () {
+        return table;
+    }
+    
+    public String getColumn () {
+        return column;
+    }
+    
     @Override
     public String toString () {
         if (schema != null) {
