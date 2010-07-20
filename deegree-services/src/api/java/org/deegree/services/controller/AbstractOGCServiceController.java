@@ -330,8 +330,6 @@ public abstract class AbstractOGCServiceController {
         xmlWriter.writeEndElement();
         // "soapenv:Envelope"
         xmlWriter.writeEndElement();
-        xmlWriter.flush();
-        xmlWriter.close();
     }
 
     /**

@@ -868,12 +868,7 @@ public class OGCFrontController extends HttpServlet {
                      && mainConfig.getFrontControllerOptions().isValidateResponses() ) {
                     validateResponse( responseWrapper );
                 }
-                try {
-                    responseWrapper.flushBuffer();
-                } catch ( NullPointerException e ) {
-                    LOG.warn( "You've just run into a JDK bug, this StAX version throws exceptions when the buffer is flushed. Trying workaround." );
-                    LOG.trace( "Stack trace:", e );
-                }
+                responseWrapper.flushBuffer();
             } else {
                 String msg = "No subcontroller for request namespace '"
                              + envelope.getSOAPBodyFirstElementNS().getNamespaceURI() + "' available.";

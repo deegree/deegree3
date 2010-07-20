@@ -40,7 +40,6 @@ import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -114,7 +113,6 @@ import org.deegree.services.jaxb.wps.PublishedInformation;
 import org.deegree.services.jaxb.wps.ServiceConfiguration;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPService;
-import org.deegree.services.wps.annotations.ProcessDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -271,23 +269,23 @@ public class WPSController extends AbstractOGCServiceController {
         return processDefinitions;
     }
 
-    private List<ProcessDescription> instantiateFromAnnotations( File processesDir ) {
-        File[] files = processesDir.listFiles( new FileFilter() {
-
-            @Override
-            public boolean accept( File pathname ) {
-                if ( pathname == null || pathname.isDirectory() ) {
-                    return false;
-                }
-                return "class".equalsIgnoreCase( FileUtils.getFileExtension( pathname ) );
-            }
-        } );
-        List<ProcessDescription> result = new ArrayList<ProcessDescription>();
-        if ( files != null && files.length > 0 ) {
-            // add them
-        }
-        return result;
-    }
+    // private List<ProcessDescription> instantiateFromAnnotations( File processesDir ) {
+    // File[] files = processesDir.listFiles( new FileFilter() {
+    //
+    // @Override
+    // public boolean accept( File pathname ) {
+    // if ( pathname == null || pathname.isDirectory() ) {
+    // return false;
+    // }
+    // return "class".equalsIgnoreCase( FileUtils.getFileExtension( pathname ) );
+    // }
+    // } );
+    // List<ProcessDescription> result = new ArrayList<ProcessDescription>();
+    // if ( files != null && files.length > 0 ) {
+    // // add them
+    // }
+    // return result;
+    // }
 
     @Override
     public void doKVP( Map<String, String> kvpParamsUC, HttpServletRequest request, HttpResponseBuffer response,
