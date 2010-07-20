@@ -36,14 +36,19 @@
 package org.deegree.commons.utils.net;
 
 import static java.util.Collections.synchronizedMap;
+import static org.deegree.commons.utils.net.HttpUtils.enableProxyUsage;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 
 /**
@@ -61,6 +66,8 @@ public class DURL {
 
     private static final Map<String, Class<? extends URLStreamHandler>> handlers = synchronizedMap( new HashMap<String, Class<? extends URLStreamHandler>>() );
 
+    private URLStreamHandler handler;
+
     private URL url;
 
     static {
@@ -75,8 +82,8 @@ public class DURL {
         Class<? extends URLStreamHandler> handler = handlers.get( protocol );
         if ( handler != null ) {
             try {
-                URLStreamHandler h = handler.newInstance();
-                this.url = new URL( null, url, h );
+                this.handler = handler.newInstance();
+                this.url = new URL( null, url, this.handler );
             } catch ( InstantiationException e ) {
                 LOG.debug( "URL handler '{}' could not be instantiated: '{}'", handler.getSimpleName(),
                            e.getLocalizedMessage() );
@@ -119,6 +126,23 @@ public class DURL {
      */
     public URL getURL() {
         return url;
+    }
+
+    /**
+     * @return an input stream from the URL
+     * @throws IOException
+     */
+    public InputStream openStream()
+                            throws IOException {
+        // custom handlers should handle proxies themselves
+        if ( handler != null ) {
+            return url.openStream();
+        }
+
+        HttpClient client = enableProxyUsage( new HttpClient(), this );
+        GetMethod get = new GetMethod( url.toExternalForm() );
+        client.executeMethod( get );
+        return get.getResponseBodyAsStream();
     }
 
 }

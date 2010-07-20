@@ -36,8 +36,12 @@
 
 package org.deegree.commons.utils.net;
 
+import static java.lang.Integer.parseInt;
+import static java.lang.System.getProperty;
+import static java.util.Arrays.asList;
 import static javax.imageio.ImageIO.read;
 import static org.deegree.commons.utils.ArrayUtils.join;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -45,20 +49,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.slf4j.Logger;
 
 /**
  * <code>HttpUtils</code>
@@ -66,7 +75,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
  * Example use from rhino:
  * 
  * <code>
- * var u = org.deegree.commons.utils.HttpUtils
+ * var u = org.deegree.commons.utils.net.HttpUtils
  * u.retrieve(u.UTF8STRING, "http://demo.deegree.org/deegree-wms/services?request=capabilities&service=WMS")
  * </code>
  * 
@@ -76,6 +85,8 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
  * @version $Revision$, $Date$
  */
 public class HttpUtils {
+
+    private static final Logger LOG = getLogger( HttpUtils.class );
 
     static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 
@@ -169,10 +180,11 @@ public class HttpUtils {
      * @param <T>
      * @param worker
      * @param url
+     *            must be valid
      * @return some object from the url
      * @throws IOException
      */
-    public static <T> T retrieve( Worker<T> worker, URL url )
+    public static <T> T retrieve( Worker<T> worker, DURL url )
                             throws IOException {
         return worker.work( url.openStream() );
     }
@@ -187,7 +199,7 @@ public class HttpUtils {
      */
     public static <T> T retrieve( Worker<T> worker, String url )
                             throws MalformedURLException, IOException {
-        return retrieve( worker, new URL( url ) );
+        return retrieve( worker, new DURL( url ) );
     }
 
     /**
@@ -195,7 +207,7 @@ public class HttpUtils {
      * @param worker
      * @param url
      * @param map
-     * @return some object from the url
+     * @return some object from the url, null, if url is not valid
      * @throws IOException
      * @throws MalformedURLException
      */
@@ -226,8 +238,8 @@ public class HttpUtils {
      */
     public static <T> T post( Worker<T> worker, String url, InputStream postBody, Map<String, String> headers )
                             throws HttpException, IOException {
-        // TODO no proxies used
-        HttpClient client = new HttpClient();
+        DURL u = new DURL( url );
+        HttpClient client = enableProxyUsage( new HttpClient(), u );
         PostMethod post = new PostMethod( url );
         post.setRequestEntity( new InputStreamRequestEntity( postBody ) );
         for ( String key : headers.keySet() ) {
@@ -244,15 +256,17 @@ public class HttpUtils {
      * @param worker
      * @param url
      * @param headers
-     * @return some object from the url
+     * @return some object from the url, null, if url is not valid
      * @throws HttpException
      * @throws IOException
      */
     public static <T> T get( Worker<T> worker, String url, Map<String, String> headers )
                             throws HttpException, IOException {
-
-        // TODO no proxies used
-        HttpClient client = new HttpClient();
+        DURL u = new DURL( url );
+        if ( !u.valid() ) {
+            return null;
+        }
+        HttpClient client = enableProxyUsage( new HttpClient(), u );
         GetMethod get = new GetMethod( url );
         for ( String key : headers.keySet() ) {
             get.setRequestHeader( key, headers.get( key ) );
@@ -260,4 +274,78 @@ public class HttpUtils {
         client.executeMethod( get );
         return worker.work( get.getResponseBodyAsStream() );
     }
+
+    private static void handleProxies( String protocol, HttpClient client, String host ) {
+        TreeSet<String> nops = new TreeSet<String>();
+
+        String proxyHost = getProperty( ( protocol == null ? "" : protocol + "." ) + "proxyHost" );
+
+        String proxyUser = getProperty( ( protocol == null ? "" : protocol + "." ) + "proxyUser" );
+        String proxyPass = getProperty( ( protocol == null ? "" : protocol + "." ) + "proxyPassword" );
+
+        if ( proxyHost != null ) {
+            String nop = getProperty( ( protocol == null ? "" : protocol + "." ) + "noProxyHosts" );
+            if ( nop != null && !nop.equals( "" ) ) {
+                nops.addAll( asList( nop.split( "\\|" ) ) );
+            }
+            nop = getProperty( ( protocol == null ? "" : protocol + "." ) + "nonProxyHosts" );
+            if ( nop != null && !nop.equals( "" ) ) {
+                nops.addAll( asList( nop.split( "\\|" ) ) );
+            }
+
+            int proxyPort = parseInt( getProperty( ( protocol == null ? "" : protocol + "." ) + "proxyPort" ) );
+
+            HostConfiguration hc = client.getHostConfiguration();
+
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "Found the following no- and nonProxyHosts: {}", nops );
+            }
+
+            if ( proxyUser != null ) {
+                Credentials creds = new UsernamePasswordCredentials( proxyUser, proxyPass );
+                client.getState().setProxyCredentials( AuthScope.ANY, creds );
+                client.getParams().setAuthenticationPreemptive( true );
+            }
+
+            if ( !nops.contains( host ) ) {
+                if ( LOG.isDebugEnabled() ) {
+                    LOG.debug( "Using proxy {}:{}", proxyHost, proxyPort );
+                    if ( protocol == null ) {
+                        LOG.debug( "This overrides the protocol specific settings, if there were any." );
+                    }
+                }
+                hc.setProxy( proxyHost, proxyPort );
+                client.setHostConfiguration( hc );
+            } else {
+                if ( LOG.isDebugEnabled() ) {
+                    LOG.debug( "Proxy was set, but {} was contained in the no-/nonProxyList!", host );
+                    if ( protocol == null ) {
+                        LOG.debug( "If a protocol specific proxy has been set, it will be used anyway!" );
+                    }
+                }
+            }
+        }
+
+        if ( protocol != null ) {
+            handleProxies( null, client, host );
+        }
+    }
+
+    /**
+     * reads proxyHost and proxyPort from system parameters and sets them to the passed HttpClient instance
+     * 
+     * @see HostConfiguration of the passed
+     * @see HttpClient
+     * @param client
+     * @param url
+     *            must be valid
+     * @return HttpClient with proxy configuration
+     */
+    public static HttpClient enableProxyUsage( HttpClient client, DURL url ) {
+        String host = url.getURL().getHost();
+        String protocol = url.getURL().getProtocol().toLowerCase();
+        handleProxies( protocol, client, host );
+        return client;
+    }
+
 }
