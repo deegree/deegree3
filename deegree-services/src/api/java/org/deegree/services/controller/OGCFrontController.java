@@ -36,6 +36,7 @@
 package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
+import static java.lang.Class.forName;
 
 import java.beans.Introspector;
 import java.io.BufferedInputStream;
@@ -114,6 +115,7 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
+import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.main.AllowedServices;
 import org.deegree.services.jaxb.main.AuthenticationMethodType;
@@ -145,8 +147,7 @@ import org.slf4j.LoggerFactory;
  * <li>{@link AbstractOGCServiceController#doKVP(Map, HttpServletRequest, HttpResponseBuffer, List)}</li>
  * <li>{@link AbstractOGCServiceController#doXML(XMLStreamReader, HttpServletRequest, HttpResponseBuffer, List)}</li>
  * <li>
- * {@link AbstractOGCServiceController#doSOAP(SOAPEnvelope, HttpServletRequest, HttpServletResponse, List, SOAPFactory)}
- * </li>
+ * {@link AbstractOGCServiceController#doSOAP(SOAPEnvelope, HttpServletRequest, HttpResponseBuffer, List, SOAPFactory)}</li>
  * </ul>
  * </li>
  * </nl>
@@ -254,6 +255,8 @@ public class OGCFrontController extends HttpServlet {
         }
         return url;
     }
+
+    private RequestLogger requestLogger;
 
     /**
      * Handles HTTP GET requests.
@@ -436,7 +439,7 @@ public class OGCFrontController extends HttpServlet {
             if ( multiParts == null ) {
                 // TODO log multiparts requests
                 FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
-                if ( !isKVP && opts != null && opts.getRequestLogging() != null ) {
+                if ( !isKVP && requestLogger != null ) {
                     String dir = opts.getRequestLogging().getOutputDirectory();
                     File file;
                     if ( dir == null ) {
@@ -451,7 +454,8 @@ public class OGCFrontController extends HttpServlet {
                     is = new LoggingInputStream( is, new FileOutputStream( file ) );
                     Boolean conf = opts.getRequestLogging().isOnlySuccessful();
                     boolean onlySuccessful = conf != null && conf;
-                    response = logging = new LoggingHttpResponseWrapper( response, file, onlySuccessful );
+                    response = logging = new LoggingHttpResponseWrapper( response, file, onlySuccessful, entryTime,
+                                                                         requestLogger );
                 }
             }
 
@@ -519,6 +523,29 @@ public class OGCFrontController extends HttpServlet {
                    + ( System.currentTimeMillis() - entryTime ) + " ms." );
     }
 
+    private static RequestLogger instantiateRequestLogger( String cls ) {
+        if ( cls != null ) {
+            try {
+                return (RequestLogger) forName( cls ).newInstance();
+            } catch ( ClassNotFoundException e ) {
+                LOG.info( "The request logger class '{}' could not be found on the classpath.", cls );
+                LOG.trace( "Stack trace:", e );
+            } catch ( ClassCastException e ) {
+                LOG.info( "The request logger class '{}' does not implement the RequestLogger interface.", cls );
+                LOG.trace( "Stack trace:", e );
+            } catch ( InstantiationException e ) {
+                LOG.info( "The request logger class '{}' could not be instantiated"
+                          + " (needs a default constructor without arguments).", cls );
+                LOG.trace( "Stack trace:", e );
+            } catch ( IllegalAccessException e ) {
+                LOG.info( "The request logger class '{}' could not be instantiated"
+                          + " (default constructor needs to be accessible).", cls );
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+        return new StandardRequestLogger();
+    }
+
     private String readPostBodyAsString( InputStream is )
                             throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -555,8 +582,8 @@ public class OGCFrontController extends HttpServlet {
             // Parse the request
             result = upload.parseRequest( request );
             LOG.debug( "The multipart request contains: " + result.size() + " items." );
-            if ( mainConfig.getFrontControllerOptions() != null
-                 && mainConfig.getFrontControllerOptions().getRequestLogging() != null ) {
+            if ( requestLogger != null ) { // TODO, this is not actually something of the request logger, what is
+                // actually logged here?
                 for ( FileItem item : result ) {
                     LOG.debug( item.toString() );
                 }
@@ -590,11 +617,11 @@ public class OGCFrontController extends HttpServlet {
 
         FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
         LoggingHttpResponseWrapper logging = null;
-        if ( opts != null && opts.getRequestLogging() != null ) {
+        if ( requestLogger != null ) {
             Boolean conf = opts.getRequestLogging().isOnlySuccessful();
             boolean onlySuccessful = conf != null && conf;
             response = logging = new LoggingHttpResponseWrapper( response, requestWrapper.getQueryString(),
-                                                                 onlySuccessful, entryTime );
+                                                                 onlySuccessful, entryTime, requestLogger );
         }
 
         // extract (deegree specific) security information and bind to current thread
@@ -1025,6 +1052,7 @@ public class OGCFrontController extends HttpServlet {
             initRenderableStores();
             initBatchedMTStores();
             initWebServices();
+            initRequestLogger();
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -1155,6 +1183,14 @@ public class OGCFrontController extends HttpServlet {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Webservices started." );
         LOG.info( "--------------------------------------------------------------------------------" );
+    }
+
+    private void initRequestLogger() {
+        FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
+        if ( opts != null && opts.getRequestLogging() != null ) {
+            String cls = opts.getRequestLogging().getRequestLoggerClass();
+            requestLogger = instantiateRequestLogger( cls );
+        }
     }
 
     private void initFeatureStores() {

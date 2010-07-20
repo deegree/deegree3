@@ -35,12 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.utils;
 
-import static org.deegree.services.controller.FrontControllerStats.incomingKVP;
-
 import java.io.File;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+
+import org.deegree.services.controller.RequestLogger;
 
 /**
  * 
@@ -63,17 +63,23 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
 
     private boolean logged;
 
+    private RequestLogger logger;
+
     /**
      * If XML request should possibly be logged.
      * 
      * @param response
      * @param requestLog
      * @param successfulOnly
+     * @param entryTime
+     * @param logger
      */
-    public LoggingHttpResponseWrapper( HttpServletResponse response, File requestLog, boolean successfulOnly ) {
+    public LoggingHttpResponseWrapper( HttpServletResponse response, File requestLog, boolean successfulOnly,
+                                       long entryTime, RequestLogger logger ) {
         super( response );
         this.requestLog = requestLog;
         this.successfulOnly = successfulOnly;
+        this.logger = logger;
     }
 
     /**
@@ -83,12 +89,15 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
      * @param kvp
      * @param successfulOnly
      * @param entryTime
+     * @param logger
      */
-    public LoggingHttpResponseWrapper( HttpServletResponse response, String kvp, boolean successfulOnly, long entryTime ) {
+    public LoggingHttpResponseWrapper( HttpServletResponse response, String kvp, boolean successfulOnly,
+                                       long entryTime, RequestLogger logger ) {
         super( response );
         this.kvp = kvp;
         this.successfulOnly = successfulOnly;
         this.entryTime = entryTime;
+        this.logger = logger;
     }
 
     /**
@@ -117,11 +126,11 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
         logged = true;
         if ( !exceptionSent || !successfulOnly ) {
             if ( kvp != null ) {
-                incomingKVP( kvp, entryTime );
+                logger.logKVP( kvp, entryTime );
             }
         }
         if ( exceptionSent && successfulOnly && requestLog != null ) {
-            requestLog.delete();
+            logger.logXML( requestLog, entryTime );
         }
     }
 

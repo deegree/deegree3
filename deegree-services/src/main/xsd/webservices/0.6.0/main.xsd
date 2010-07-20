@@ -32,6 +32,11 @@
             <xs:element name="OutputDirectory" type="xs:string" minOccurs="0" />
             <!-- Default is true -->
             <xs:element name="OnlySuccessful" type="xs:boolean" minOccurs="0" />
+            <!--
+              Default is the internal logger, logging only to the output directory and the $HOME/.deegree/requests.txt
+              for kvp.
+            -->
+            <xs:element name="RequestLoggerClass" type="xs:string" minOccurs="0" />
           </xs:sequence>
         </xs:complexType>
       </xs:element>
