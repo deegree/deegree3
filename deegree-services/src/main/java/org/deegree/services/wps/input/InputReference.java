@@ -43,7 +43,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.utils.HttpUtils;
+import org.deegree.commons.utils.net.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

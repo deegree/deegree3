@@ -73,8 +73,8 @@ import lombok.Setter;
 
 import org.apache.commons.httpclient.HttpException;
 import org.deegree.commons.utils.CollectionUtils;
-import org.deegree.commons.utils.HttpUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.net.HttpUtils;
 import org.slf4j.Logger;
 
 /**

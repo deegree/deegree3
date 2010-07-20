@@ -38,8 +38,8 @@ package org.deegree.protocol.wms.client;
 
 import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.join;
-import static org.deegree.commons.utils.HttpUtils.IMAGE;
-import static org.deegree.commons.utils.HttpUtils.XML;
+import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
+import static org.deegree.commons.utils.net.HttpUtils.XML;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.protocol.i18n.Messages.get;

@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.commons.utils;
+package org.deegree.commons.utils.net;
 
 import static javax.imageio.ImageIO.read;
 import static org.deegree.commons.utils.ArrayUtils.join;

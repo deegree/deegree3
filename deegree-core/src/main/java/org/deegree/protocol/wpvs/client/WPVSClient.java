@@ -36,8 +36,8 @@
 
 package org.deegree.protocol.wpvs.client;
 
-import static org.deegree.commons.utils.HttpUtils.IMAGE;
-import static org.deegree.commons.utils.HttpUtils.XML;
+import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
+import static org.deegree.commons.utils.net.HttpUtils.XML;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
