@@ -36,7 +36,6 @@
 package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
-import static org.deegree.services.controller.FrontControllerStats.incomingKVP;
 
 import java.beans.Introspector;
 import java.io.BufferedInputStream;
@@ -114,12 +113,14 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.main.AllowedServices;
 import org.deegree.services.jaxb.main.AuthenticationMethodType;
 import org.deegree.services.jaxb.main.ConfiguredServicesType;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.main.FrontControllerOptionsType;
 import org.deegree.services.jaxb.main.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,7 +145,8 @@ import org.slf4j.LoggerFactory;
  * <li>{@link AbstractOGCServiceController#doKVP(Map, HttpServletRequest, HttpResponseBuffer, List)}</li>
  * <li>{@link AbstractOGCServiceController#doXML(XMLStreamReader, HttpServletRequest, HttpResponseBuffer, List)}</li>
  * <li>
- * {@link AbstractOGCServiceController#doSOAP(SOAPEnvelope, HttpServletRequest, HttpResponseBuffer, List, SOAPFactory)}</li>
+ * {@link AbstractOGCServiceController#doSOAP(SOAPEnvelope, HttpServletRequest, HttpServletResponse, List, SOAPFactory)}
+ * </li>
  * </ul>
  * </li>
  * </nl>
@@ -286,12 +288,8 @@ public class OGCFrontController extends HttpServlet {
                 sendException( ex, response, null );
                 return;
             }
-            if ( mainConfig.getFrontControllerOptions() != null
-                 && mainConfig.getFrontControllerOptions().getRequestLogging() != null ) {
-                incomingKVP( queryString, entryTime );
-            }
 
-            // handle as XML, if it request starts with '<'
+            // handle as XML, if the request starts with '<'
             boolean isXML = queryString.startsWith( "<" );
             List<FileItem> multiParts = checkAndRetrieveMultiparts( request );
             if ( isXML ) {
@@ -317,7 +315,7 @@ public class OGCFrontController extends HttpServlet {
                 Map<String, String> normalizedKVPParams = getNormalizedKVPMap( request.getQueryString(),
                                                                                DEFAULT_ENCODING );
                 LOG.debug( "parameter map: " + normalizedKVPParams );
-                dispatchKVPRequest( normalizedKVPParams, request, response, multiParts );
+                dispatchKVPRequest( normalizedKVPParams, request, response, multiParts, entryTime );
             }
         } catch ( XMLProcessingException e ) {
             // the message might be more meaningful
@@ -424,6 +422,7 @@ public class OGCFrontController extends HttpServlet {
 
         LOG.debug( "doPost(), contentType: '" + request.getContentType() + "'" );
 
+        LoggingHttpResponseWrapper logging = null;
         long entryTime = System.currentTimeMillis();
         try {
             // check if content-type implies that it's a KVP request
@@ -436,9 +435,9 @@ public class OGCFrontController extends HttpServlet {
             InputStream is = request.getInputStream();
             if ( multiParts == null ) {
                 // TODO log multiparts requests
-                if ( mainConfig.getFrontControllerOptions() != null
-                     && mainConfig.getFrontControllerOptions().getRequestLogging() != null ) {
-                    String dir = mainConfig.getFrontControllerOptions().getRequestLogging().getOutputDirectory();
+                FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
+                if ( !isKVP && opts != null && opts.getRequestLogging() != null ) {
+                    String dir = opts.getRequestLogging().getOutputDirectory();
                     File file;
                     if ( dir == null ) {
                         file = createTempFile( "request", ".body" );
@@ -450,6 +449,9 @@ public class OGCFrontController extends HttpServlet {
                         file = createTempFile( "request", ".body", directory );
                     }
                     is = new LoggingInputStream( is, new FileOutputStream( file ) );
+                    Boolean conf = opts.getRequestLogging().isOnlySuccessful();
+                    boolean onlySuccessful = conf != null && conf;
+                    response = logging = new LoggingHttpResponseWrapper( response, file, onlySuccessful );
                 }
             }
 
@@ -465,7 +467,7 @@ public class OGCFrontController extends HttpServlet {
                     LOG.debug( "Client encoding information :" + encoding );
                     normalizedKVPParams = getNormalizedKVPMap( queryString, encoding );
                 }
-                dispatchKVPRequest( normalizedKVPParams, request, response, multiParts );
+                dispatchKVPRequest( normalizedKVPParams, request, response, multiParts, entryTime );
             } else {
                 // if( handle multiparts, get first body from multipart (?)
                 // body->requestDoc
@@ -501,6 +503,9 @@ public class OGCFrontController extends HttpServlet {
                     dispatchSOAPRequest( xmlStream, request, response, multiParts );
                 } else {
                     dispatchXMLRequest( xmlStream, request, response, multiParts );
+                }
+                if ( logging != null ) {
+                    logging.finalizeLogging();
                 }
             }
         } catch ( Throwable e ) {
@@ -580,8 +585,17 @@ public class OGCFrontController extends HttpServlet {
      * @throws IOException
      */
     private void dispatchKVPRequest( Map<String, String> normalizedKVPParams, HttpServletRequest requestWrapper,
-                                     HttpServletResponse response, List<FileItem> multiParts )
+                                     HttpServletResponse response, List<FileItem> multiParts, long entryTime )
                             throws ServletException, IOException {
+
+        FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
+        LoggingHttpResponseWrapper logging = null;
+        if ( opts != null && opts.getRequestLogging() != null ) {
+            Boolean conf = opts.getRequestLogging().isOnlySuccessful();
+            boolean onlySuccessful = conf != null && conf;
+            response = logging = new LoggingHttpResponseWrapper( response, requestWrapper.getQueryString(),
+                                                                 onlySuccessful, entryTime );
+        }
 
         // extract (deegree specific) security information and bind to current thread
         CredentialsProvider credProv = null;
@@ -649,12 +663,13 @@ public class OGCFrontController extends HttpServlet {
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
                 }
-                if ( mainConfig.getFrontControllerOptions() != null
-                     && mainConfig.getFrontControllerOptions().isValidateResponses() != null
-                     && mainConfig.getFrontControllerOptions().isValidateResponses() ) {
+                if ( opts != null && opts.isValidateResponses() != null && opts.isValidateResponses() ) {
                     validateResponse( responseWrapper );
                 }
                 responseWrapper.flushBuffer();
+                if ( logging != null ) {
+                    logging.finalizeLogging();
+                }
             } else {
                 String msg = null;
                 if ( service == null && request == null ) {

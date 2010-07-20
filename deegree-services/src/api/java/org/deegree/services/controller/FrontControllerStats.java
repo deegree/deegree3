@@ -111,8 +111,9 @@ public class FrontControllerStats {
     /**
      * @param request
      *            the query string
+     * @param timestamp
      */
-    synchronized static void incomingKVP( String request, long timestamp ) {
+    public synchronized static void incomingKVP( String request, long timestamp ) {
         try {
             OutputStream os = ConfigManager.getOutputResource( "requests.txt", true );
             PrintWriter out = new PrintWriter( new OutputStreamWriter( os, "UTF-8" ) );

@@ -113,13 +113,23 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
 
     private XMLStreamWriter xmlWriter;
 
+    private final HttpServletResponse wrappee;
+
     /**
      * @param response
      */
     public HttpResponseBuffer( HttpServletResponse response ) {
         super( response );
+        wrappee = response;
         buffer = new ByteArrayOutputStream();
         outputStream = new BufferedServletOutputStream( buffer );
+    }
+
+    /**
+     * @return the underlying servlet response
+     */
+    public HttpServletResponse getWrappee() {
+        return wrappee;
     }
 
     /**
@@ -289,6 +299,9 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
         return super.getBufferSize();
     }
 
+    /**
+     * @return the buffer
+     */
     public ByteArrayOutputStream getBuffer() {
         return buffer;
     }

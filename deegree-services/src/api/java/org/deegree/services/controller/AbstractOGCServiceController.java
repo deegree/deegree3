@@ -79,6 +79,7 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
 import org.deegree.services.controller.wpvs.WPVSController;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.main.AddressType;
@@ -507,6 +508,18 @@ public abstract class AbstractOGCServiceController {
                                                                       ExceptionSerializer<T> serializer, T exception,
                                                                       HttpServletResponse response )
                             throws ServletException {
+        // take care of proper request logging
+        LoggingHttpResponseWrapper wrapper = null;
+        if ( response instanceof LoggingHttpResponseWrapper ) {
+            wrapper = (LoggingHttpResponseWrapper) response;
+        }
+        if ( response instanceof HttpResponseBuffer ) {
+            HttpServletResponse wrappee = ( (HttpResponseBuffer) response ).getWrappee();
+            if ( wrappee instanceof LoggingHttpResponseWrapper ) {
+                wrapper = (LoggingHttpResponseWrapper) wrappee;
+            }
+        }
+
         if ( !response.isCommitted() ) {
             try {
                 response.reset();
@@ -532,6 +545,10 @@ public abstract class AbstractOGCServiceController {
             } catch ( IOException e ) {
                 LOG.error( "An error occurred while trying to send an exception: " + e.getLocalizedMessage(), e );
                 throw new ServletException( e );
+            }
+            if ( wrapper != null ) {
+                wrapper.setExceptionSent();
+                wrapper.finalizeLogging();
             }
         }
     }
