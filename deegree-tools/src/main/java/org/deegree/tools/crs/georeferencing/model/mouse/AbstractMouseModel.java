@@ -106,7 +106,6 @@ public abstract class AbstractMouseModel {
      * Resets the mouse values to initial values.
      */
     public void reset() {
-        // cumulatedMouseChanging = NULL_POINT;
         mouseChanging = null;
 
     }

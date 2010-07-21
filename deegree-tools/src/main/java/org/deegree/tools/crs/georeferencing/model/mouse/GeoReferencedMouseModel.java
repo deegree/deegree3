@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.model.mouse;
 
-
 /**
  * The mouse model holds all the relevant information needed for interaction with the mouse.
  * 
@@ -46,4 +45,7 @@ package org.deegree.tools.crs.georeferencing.model.mouse;
  */
 public class GeoReferencedMouseModel extends AbstractMouseModel {
 
+    public GeoReferencedMouseModel() {
+        super();
+    }
 }

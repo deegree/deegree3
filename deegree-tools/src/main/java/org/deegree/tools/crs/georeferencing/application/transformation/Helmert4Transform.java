@@ -101,42 +101,53 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
                 counterSrc++;
 
             }
-            // BalancePointCoordinates
+
+            /*
+             * BalancePointCoordinates
+             */
             double balancedPointSrcX = cumulatedPointsSrcX / arraySize;
             double balancedPointDstX = cumulatedPointsDstX / arraySize;
             double balancedPointSrcY = cumulatedPointsSrcY / arraySize;
             double balancedPointDstY = cumulatedPointsDstY / arraySize;
+            System.out.println( "[Helmert4] BalancedCoords -->  \nE: " + balancedPointSrcY + " \nN: "
+                                + balancedPointSrcX + " \nY: " + balancedPointDstY + " \nX: " + balancedPointDstX );
 
-            // Coordinates related to balancedPoints
-
+            /*
+             * Coordinates related to balancedPoints
+             */
             double[] passPointsSrcX_two = new double[arraySize];
             double[] passPointsSrcY_two = new double[arraySize];
             double[] passPointsDstX_two = new double[arraySize];
             double[] passPointsDstY_two = new double[arraySize];
 
             int counter = 0;
-            for ( double point : passPointsSrcX ) {
-                passPointsSrcX_two[counter] = point - balancedPointSrcX;
-                counter++;
-            }
-            counter = 0;
             for ( double point : passPointsSrcY ) {
                 passPointsSrcY_two[counter] = point - balancedPointSrcY;
+                System.out.println( "[Helmert4] related BalancedCoords -->  \nE\'\': " + passPointsSrcY_two[counter] );
                 counter++;
             }
             counter = 0;
-            for ( double point : passPointsDstX ) {
-                passPointsDstX_two[counter] = point - balancedPointDstX;
+            for ( double point : passPointsSrcX ) {
+                passPointsSrcX_two[counter] = point - balancedPointSrcX;
+                System.out.println( "[Helmert4] related BalancedCoords -->  \nN\'\': " + passPointsSrcX_two[counter] );
                 counter++;
             }
             counter = 0;
             for ( double point : passPointsDstY ) {
                 passPointsDstY_two[counter] = point - balancedPointDstY;
+                System.out.println( "[Helmert4] related BalancedCoords -->   \nY\'\': " + passPointsDstY_two[counter] );
+                counter++;
+            }
+            counter = 0;
+            for ( double point : passPointsDstX ) {
+                passPointsDstX_two[counter] = point - balancedPointDstX;
+                System.out.println( "[Helmert4] related BalancedCoords -->   \nX\'\': " + passPointsDstX_two[counter] );
                 counter++;
             }
 
-            // calculate transformationconstants
-            // helpers
+            /*
+             * calculate transformationconstants with helpers
+             */
             double minuendO = 0;
             double minuendA = 0;
             double subtrahendO = 0;
@@ -150,23 +161,27 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
                 divisor += ( passPointsDstX_two[i] * passPointsDstX_two[i] )
                            + ( passPointsDstY_two[i] * passPointsDstY_two[i] );
             }
+            System.out.println( "[Helmert4] helpers -->  \nminuend O: " + minuendO + " \nsubtrahend O: " + subtrahendO
+                                + " \nminuend A: " + minuendA + " \nsubtrahend A: " + subtrahendA + " \ndivisor: "
+                                + divisor );
 
             double o = ( minuendO - subtrahendO ) / divisor;
-            double a = ( minuendA - subtrahendA ) / divisor;
+            double a = ( minuendA + subtrahendA ) / divisor;
             double m = Math.sqrt( a * a + o * o );
             double o_one = o / m;
             double a_one = a / m;
+            System.out.println( "[Helmert4] o: " + o + " a: " + a + " m: " + m + " o\': " + o_one + " a\': " + a_one );
 
             System.out.println( "[Helmert4] EPSILON -->  ArcSin: " + Math.asin( o_one ) + " ArcCos: "
                                 + Math.acos( a_one ) );
 
-            // calculate the coordinates related to the balanced Point
-            List<Ring> transformedRingListInternal = new ArrayList<Ring>();
             transformedRingList = new ArrayList<Ring>();
             List<Point> pointList;
             GeometryFactory geom = new GeometryFactory();
 
-            // create a new internal ring because of the semantic needs
+            /*
+             * calculate the new coordinates in the target coordinate system
+             */
             for ( Ring ring : footPrint.getWorldCoordinateRingList() ) {
                 pointList = new ArrayList<Point>();
                 for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
@@ -175,31 +190,17 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
 
                     double newX = x - balancedPointDstX;
                     double newY = y - balancedPointDstY;
-                    pointList.add( geom.createPoint( "point", newX, newY, null ) );
 
-                }
-                Points points = new PointsList( pointList );
-                transformedRingListInternal.add( geom.createLinearRing( "ring", null, points ) );
-
-            }
-
-            // create the new worldCoords for the internal ring.
-            for ( Ring ring : transformedRingListInternal ) {
-                pointList = new ArrayList<Point>();
-                for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
-                    double x = ring.getControlPoints().getX( i );
-                    double y = ring.getControlPoints().getY( i );
-
-                    double newX = balancedPointSrcX + ( a * x ) - ( o * y );
-                    double newY = balancedPointSrcY + ( a * y ) + ( o * x );
-
-                    pointList.add( geom.createPoint( "point", newX, newY, null ) );
+                    double calculatedX = balancedPointSrcX + ( a * newX ) - ( o * newY );
+                    double calculatedY = balancedPointSrcY + ( a * newY ) + ( o * newX );
+                    pointList.add( geom.createPoint( "point", calculatedX, calculatedY, null ) );
 
                 }
                 Points points = new PointsList( pointList );
                 transformedRingList.add( geom.createLinearRing( "ring", null, points ) );
 
             }
+
         }
 
         return transformedRingList;

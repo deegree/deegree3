@@ -45,4 +45,8 @@ package org.deegree.tools.crs.georeferencing.model.mouse;
  */
 public class FootprintMouseModel extends AbstractMouseModel {
 
+    public FootprintMouseModel() {
+        super();
+    }
+
 }

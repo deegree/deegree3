@@ -154,7 +154,7 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         menuTransformation.add( polynomial_1 );
         // menuTransformation.add( polynomial_2 );
         // menuTransformation.add( polynomial_3 );
-        // menuTransformation.add( helmert );
+        menuTransformation.add( helmert );
         menuEdit.add( editMenuItem );
 
         this.getRootPane().setJMenuBar( menuBar );

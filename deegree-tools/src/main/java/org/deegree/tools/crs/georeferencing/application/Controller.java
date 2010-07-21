@@ -719,23 +719,23 @@ public class Controller {
 
         @Override
         public void mousePressed( MouseEvent m ) {
-            // Object source = m.getSource();
-            // if ( source instanceof JPanel ) {
-            // // Scene2DPanel
-            // if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-            // mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
-            // isControlDown = m.isControlDown();
-            // if ( isControlDown ) {
-            // System.out.println( "[Controller] down" );
-            // }
-            // }
-            // if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-            // mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
-            // if ( isControlDown ) {
-            // System.out.println( "[Controller] down" );
-            // }
-            // }
-            // }
+            Object source = m.getSource();
+            if ( source instanceof JPanel ) {
+                // Scene2DPanel
+                if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
+                    mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+                    isControlDown = m.isControlDown();
+                    if ( isControlDown ) {
+                        System.out.println( "[Controller] down" );
+                    }
+                }
+                if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
+                    mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
+                    if ( isControlDown ) {
+                        System.out.println( "[Controller] down" );
+                    }
+                }
+            }
 
         }
 
@@ -772,41 +772,41 @@ public class Controller {
                         panel.setZoomRect( null );
                         panel.repaint();
 
-                    } else {
-                        if ( isHorizontalRef == true ) {
-                            if ( start == false ) {
-                                start = true;
-                                footPanel.setFocus( false );
-                                panel.setFocus( true );
-                            }
-                            if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
-                                 && panel.getFocus() == true ) {
-                                setValues();
-                            }
-                            if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
-                                 && panel.getFocus() == true ) {
-                                tablePanel.addRow();
-                            }
-
-                            double x = m.getX();
-                            double y = m.getY();
-                            GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                            GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
-                            panel.setLastAbstractPoint( geoReferencedPoint, g );
-                            tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
-
-                        } else {
-                            mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
-                                                                                  ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
-                                                                                  ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
-
-                            sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
-                            panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-                            panel.updatePoints( sceneValues );
+                    }
+                    if ( isHorizontalRef == true ) {
+                        if ( start == false ) {
+                            start = true;
+                            footPanel.setFocus( false );
+                            panel.setFocus( true );
+                        }
+                        if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
+                             && panel.getFocus() == true ) {
+                            setValues();
+                        }
+                        if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
+                             && panel.getFocus() == true ) {
+                            tablePanel.addRow();
                         }
 
-                        panel.repaint();
+                        double x = m.getX();
+                        double y = m.getY();
+                        GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
+                        GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
+                        panel.setLastAbstractPoint( geoReferencedPoint, g );
+                        tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
+
+                    } else {
+                        mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
+                                                                              ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
+                                                                              ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
+
+                        sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
+                        panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                        panel.updatePoints( sceneValues );
                     }
+
+                    panel.repaint();
+
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
@@ -839,40 +839,39 @@ public class Controller {
                         footPanel.updatePoints( sceneValues );
                         footPanel.repaint();
 
-                    } else {
-                        if ( isHorizontalRef == true ) {
-
-                            if ( start == false ) {
-                                start = true;
-                                footPanel.setFocus( true );
-                                panel.setFocus( false );
-                            }
-                            if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
-                                 && footPanel.getFocus() == true ) {
-                                setValues();
-                            }
-                            if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
-                                 && footPanel.getFocus() == true ) {
-                                tablePanel.addRow();
-                            }
-                            double x = m.getX();
-                            double y = m.getY();
-                            Pair<AbstractGRPoint, FootprintPoint> point = footPanel.getClosestPoint( new FootprintPoint(
-                                                                                                                         x,
-                                                                                                                         y ) );
-                            footPanel.setLastAbstractPoint( point.first, point.second );
-                            tablePanel.setCoords( footPanel.getLastAbstractPoint().getWorldCoords() );
-
-                        } else {
-                            mouseFootprint.setMouseChanging( new FootprintPoint(
-                                                                                 ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
-                                                                                 ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
-
-                            sceneValues.moveEnvelope( mouseFootprint.getMouseChanging() );
-                            footPanel.updatePoints( sceneValues );
-                        }
-                        footPanel.repaint();
                     }
+                    if ( isHorizontalRef == true ) {
+
+                        if ( start == false ) {
+                            start = true;
+                            footPanel.setFocus( true );
+                            panel.setFocus( false );
+                        }
+                        if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
+                             && footPanel.getFocus() == true ) {
+                            setValues();
+                        }
+                        if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
+                             && footPanel.getFocus() == true ) {
+                            tablePanel.addRow();
+                        }
+                        double x = m.getX();
+                        double y = m.getY();
+                        Pair<AbstractGRPoint, FootprintPoint> point = footPanel.getClosestPoint( new FootprintPoint( x,
+                                                                                                                     y ) );
+                        footPanel.setLastAbstractPoint( point.first, point.second );
+                        tablePanel.setCoords( footPanel.getLastAbstractPoint().getWorldCoords() );
+
+                    } else {
+                        mouseFootprint.setMouseChanging( new FootprintPoint(
+                                                                             ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
+                                                                             ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
+
+                        sceneValues.moveEnvelope( mouseFootprint.getMouseChanging() );
+                        footPanel.updatePoints( sceneValues );
+                    }
+                    footPanel.repaint();
+
                 }
             }
         }
