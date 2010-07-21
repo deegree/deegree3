@@ -60,6 +60,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
@@ -85,8 +86,6 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
     private final boolean useLegacyPredicates;
 
-    private final List<PropertyNameMapping> propNameMappingList;
-
     /**
      * Creates a new {@link PostGISWhereBuilder} instance.
      * 
@@ -106,15 +105,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         super( filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
         this.mapping = mapping;
-        this.propNameMappingList = new ArrayList<PropertyNameMapping>();
         build();
-    }
-
-    /**
-     * @return the propNameMappingList
-     */
-    public List<PropertyNameMapping> getPropNameMappingList() {
-        return propNameMappingList;
     }
 
     /**
@@ -323,8 +314,9 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         PropertyNameMapping propMapping = mapping.getMapping( propName );
         if ( propMapping != null ) {
             propNameMappingList.add( propMapping );
-            sql = new SQLColumn( propMapping.getTable(), propMapping.getColumn(), propMapping.isSpatial(),
-                                 propMapping.getSQLType() );
+            // TODO
+            sql = new SQLColumn( propMapping.getTargetField().getTable(), propMapping.getTargetField().getColumn(), true,
+                                 -1 );
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
         }

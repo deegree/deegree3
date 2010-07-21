@@ -63,6 +63,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
+import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
@@ -70,7 +71,6 @@ import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.expression.SQLOperation;
 import org.deegree.filter.sql.expression.SQLOperationBuilder;
 import org.deegree.filter.sql.postgis.PostGISMapping;
-import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 
@@ -240,8 +240,8 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
         SQLExpression sql = null;
         PropertyNameMapping propMapping = mapping.getMapping( propName );
         if ( propMapping != null ) {
-            sql = new SQLColumn( propMapping.getTable(), propMapping.getColumn(), propMapping.isSpatial(),
-                                 propMapping.getSQLType() );
+            sql = new SQLColumn( propMapping.getTargetField().getTable(), propMapping.getTargetField().getColumn(),
+                                 propMapping.isSpatial(), propMapping.getSQLType() );
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
         }

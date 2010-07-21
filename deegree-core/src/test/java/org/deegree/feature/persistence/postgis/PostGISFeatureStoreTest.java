@@ -35,12 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -60,6 +63,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
@@ -205,11 +209,11 @@ public class PostGISFeatureStoreTest {
             }
         }
     }
-    
+
     @Test
     public void testQueryPhilosopher()
                             throws FeatureStoreException, FilterEvaluationException, XMLStreamException,
-                            FactoryConfigurationError, UnknownCRSException, TransformationException {
+                            FactoryConfigurationError, UnknownCRSException, TransformationException, IOException {
 
         if ( enable ) {
             ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
@@ -219,23 +223,37 @@ public class PostGISFeatureStoreTest {
             PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
             fs.init();
 
-            TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
+            Filter filter = parse( "filter1.xml" );
+            System.out.println( filter );
+
+            TypeName[] typeNames = new TypeName[] { new TypeName(
+                                                                  QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
                                                                   null ) };
-            Query query = new Query( typeNames, null, null, null, null );
+            Query query = new Query( typeNames, filter, null, null, null );
             FeatureResultSet rs = fs.query( query );
-            try {
-                FeatureCollection fc = rs.toCollection();
-                XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
-                                                                           XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                 System.out ) );
-                GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
-                gmlStream.setLocalXLinkTemplate( "http://bla?fid={}" );
-                gmlStream.setXLinkDepth( -1 );
-                gmlStream.write( fc );
-                gmlStream.close();
-            } finally {
-                rs.close();
-            }
+            FeatureCollection fc = rs.toCollection();
+            Assert.assertEquals( 1, fc.size() );
         }
+    }
+
+    private void print( FeatureCollection fc )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
+                                                                   XMLOutputFactory.newInstance().createXMLStreamWriter(
+                                                                                                                         System.out ) );
+        GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
+        gmlStream.setLocalXLinkTemplate( "http://bla?fid={}" );
+        gmlStream.setXLinkDepth( -1 );
+        gmlStream.write( fc );
+        gmlStream.close();
+    }
+
+    private Filter parse( String resourceName )
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        URL url = PostGISFeatureStoreTest.class.getResource( resourceName );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
+                                                                                         url.openStream() );
+        xmlStream.nextTag();
+        return Filter110XMLDecoder.parse( xmlStream );
     }
 }

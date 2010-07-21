@@ -437,7 +437,7 @@ public class PostGISFeatureStore implements FeatureStore {
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
 
-            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( ft, mapping, this );
+            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, mapping, this );
 
             StringBuilder sql = new StringBuilder( "SELECT " );
             sql.append( mapping.getFidColumn() );
@@ -468,7 +468,7 @@ public class PostGISFeatureStore implements FeatureStore {
                             LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
                                       + "' not handled in PostGISFeatureStore." );
                         }
-                    }                    
+                    }
                 }
             }
 
@@ -751,7 +751,7 @@ public class PostGISFeatureStore implements FeatureStore {
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
 
-            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( ft, mapping, this );
+            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, mapping, this );
             wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit, useLegacyPredicates );
             SQLExpression where = wb.getWhereClause();
             SQLExpression orderBy = wb.getOrderBy();
@@ -858,7 +858,7 @@ public class PostGISFeatureStore implements FeatureStore {
         FeatureTypeMapping mapping = getMapping( ftName );
         PostGISWhereBuilder wb = null;
         if ( ( sortCrit != null || filter != null ) && mapping != null ) {
-            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( ft, mapping, this );
+            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, mapping, this );
             wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit, useLegacyPredicates );
             LOG.debug( "WHERE clause: " + wb.getWhereClause() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );

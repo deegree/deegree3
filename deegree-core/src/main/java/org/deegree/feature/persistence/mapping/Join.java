@@ -33,75 +33,37 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql.postgis;
-
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.filter.expression.PropertyName;
+package org.deegree.feature.persistence.mapping;
 
 /**
- * Encapsulates the database mapping for a {@link PropertyName}.
- * <p>
- * TODO type information, table alias, join path?
- * </p>
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PropertyNameMapping {
+public class Join {
 
-    private final String dbTable;
+    private final DBField from;
 
-    private final String dbColumn;
+    private final DBField to;
 
-    private PrimitiveType dbColumnType;
-
-    /**
-     * 
-     * @param dbTable
-     * @param dbColumn
-     */
-    public PropertyNameMapping( String dbTable, String dbColumn ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
+    public Join( DBField from, DBField to, DBField pos, int num ) {
+        this.from = from;
+        this.to = to;
     }
 
-    /**
-     * Generates a mapping with an additional information which type has the column.
-     * 
-     * @param dbTable
-     * @param dbColumn
-     * @param dbColumnType
-     */
-    public PropertyNameMapping( String dbTable, String dbColumn, PrimitiveType dbColumnType ) {
-        this.dbTable = dbTable;
-        this.dbColumn = dbColumn;
-        this.dbColumnType = dbColumnType;
+    public DBField getFrom() {
+        return from;
     }
 
-    public String getTable() {
-        return dbTable;
+    public DBField getTo() {
+        return to;
     }
 
-    public String getColumn() {
-        return dbColumn;
-    }
-    
-    public boolean isSpatial () {
-        // TODO
-        return true;
-    }
-
-    /**
-     * @return the dbColumnType
-     */
-    public PrimitiveType getDbColumnType() {
-        return dbColumnType;
-    }
-
-    public int getSQLType() {
-        // TODO Auto-generated method stub
-        return -1;
+    @Override
+    public String toString() {
+        return from + "=" + to;
     }
 }
