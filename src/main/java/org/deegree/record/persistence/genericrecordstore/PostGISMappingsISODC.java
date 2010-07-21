@@ -56,8 +56,8 @@ import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.postgis.PostGISMapping;
-import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
 import org.jaxen.expr.Expr;
@@ -537,9 +537,10 @@ public class PostGISMappingsISODC implements PostGISMapping {
             // TODO handle the case that PropertyName is *not* a QName, but a more complex XPath
             if ( propName.getAsQName().equals( matchingPropertyName ) ) {
 
-                return new PropertyNameMapping( propToTableAndCol.get( matchingPropertyName ).getTable(),
-                                                propToTableAndCol.get( matchingPropertyName ).getColumn(),
-                                                propToTableAndCol.get( matchingPropertyName ).getDbColumnType() );
+                return new PropertyNameMapping(
+                                                propToTableAndCol.get( matchingPropertyName ).getTargetField().getTable(),
+                                                propToTableAndCol.get( matchingPropertyName ).getTargetField().getColumn(),
+                                                propToTableAndCol.get( matchingPropertyName ).getTargetFieldType() );
 
             }
         }
@@ -621,7 +622,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
                 requestedProperty = steps.get( 1 );
             }
 
-            String column = getMapping( new PropertyName( requestedProperty ) ).getColumn();
+            String column = getMapping( new PropertyName( requestedProperty ) ).getTargetField().getColumn();
 
             if ( column == null ) {
                 throw new FilterEvaluationException( column + " doesn't exist!" );
@@ -630,7 +631,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
             Object internalValue = XMLValueMangler.xmlToInternal(
                                                                   literal.getValue().toString(),
-                                                                  getMapping( new PropertyName( requestedProperty ) ).getDbColumnType() );
+                                                                  getMapping( new PropertyName( requestedProperty ) ).getTargetFieldType() );
 
             pgValue = SQLValueMangler.internalToSQL( internalValue );
 
@@ -720,7 +721,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
             requestedProperty = steps.get( 1 );
         }
 
-        String column = getMapping( new PropertyName( requestedProperty ) ).getColumn();
+        String column = getMapping( new PropertyName( requestedProperty ) ).getTargetField().getColumn();
 
         if ( column == null ) {
             throw new FilterEvaluationException( column + " doesn't exist!" );

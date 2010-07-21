@@ -40,7 +40,9 @@ import static java.sql.Types.BOOLEAN;
 import java.sql.ResultSet;
 import java.sql.Types;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.Expression;
@@ -100,6 +102,8 @@ public abstract class AbstractWhereBuilder {
     private final OperatorFilter filter;
 
     private final SortProperty[] sortCrit;
+
+    protected final List<PropertyNameMapping> propNameMappingList = new ArrayList<PropertyNameMapping>();
 
     private SQLExpression whereClause;
 
@@ -202,6 +206,15 @@ public abstract class AbstractWhereBuilder {
     public SortProperty[] getPostSortCriteria() {
         return postSortCrit;
     }
+
+    /**
+     * Returns the mappings of all {@link PropertyName}s found in the filter / sort criteria.
+     * 
+     * @return the mappings, can be empty but never <code>null</code>
+     */
+    public List<PropertyNameMapping> getMappedPropertyNames() {
+        return propNameMappingList;    
+    }    
 
     /**
      * Translates the given {@link Operator} into an {@link SQLExpression}.

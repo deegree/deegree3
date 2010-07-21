@@ -89,9 +89,9 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
+import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
-import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
@@ -518,10 +518,11 @@ public class ISORecordStore implements RecordStore {
     private void createWhereClauseWithAlias( int aliasCount, PostGISWhereBuilder builder, StringBuilder whereClause,
                                              Set<Pair<String, String>> aliasMapping ) {
 
-        for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
-            if ( !propName.getTable().equals( PostGISMappingsISODC.DatabaseTables.datasets.name() ) ) {
-                aliasMapping.add( new Pair<String, String>( propName.getTable(), propName.getTable()
-                                                                                 + Integer.toString( aliasCount ) ) );
+        for ( PropertyNameMapping propName : builder.getMappedPropertyNames() ) {
+            if ( !propName.getTargetField().getTable().equals( PostGISMappingsISODC.DatabaseTables.datasets.name() ) ) {
+                aliasMapping.add( new Pair<String, String>( propName.getTargetField().getTable(),
+                                                            propName.getTargetField().getTable()
+                                                                                    + Integer.toString( aliasCount ) ) );
                 aliasCount++;
             }
         }
@@ -720,7 +721,7 @@ public class ISORecordStore implements RecordStore {
         /*
          * the parameter identified in the WHERE-builder replaces the "?" in the statement
          */
-        if ( builder != null && builder.getPropNameMappingList().size() > 0 ) {
+        if ( builder != null && builder.getMappedPropertyNames().size() > 0 ) {
             int i = 0;
 
             for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
@@ -917,7 +918,7 @@ public class ISORecordStore implements RecordStore {
                                     OMElement omElement = recursiveElementKnotUpdate(
                                                                                       elementBuiltFromDB,
                                                                                       elementBuiltFromDB.getChildElements(),
-                                                                                      propMapping.getColumn(),
+                                                                                      propMapping.getTargetField().getColumn(),
                                                                                       obje.toString() );
 
                                     try {
@@ -1209,11 +1210,11 @@ public class ISORecordStore implements RecordStore {
         s.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( " FROM " );
         s.append( PostGISMappingsISODC.DatabaseTables.datasets.name() ).append( ',' ).append( formatType );
 
-        for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
-            if ( propName.getTable() == null ) {
+        for ( PropertyNameMapping propName : builder.getMappedPropertyNames() ) {
+            if ( propName.getTargetField().getTable() == null ) {
                 s.append( ' ' );
             } else {
-                s.append( ',' ).append( propName.getTable() ).append( ' ' );
+                s.append( ',' ).append( propName.getTargetField().getTable() ).append( ' ' );
             }
         }
 
@@ -1226,11 +1227,11 @@ public class ISORecordStore implements RecordStore {
         s.append( " AND " ).append( formatType ).append( '.' );
         s.append( PostGISMappingsISODC.CommonColumnNames.format.name() ).append( '=' ).append( formatNumber );
 
-        for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
-            if ( propName.getTable() == null ) {
+        for ( PropertyNameMapping propName : builder.getMappedPropertyNames() ) {
+            if ( propName.getTargetField().getTable() == null ) {
                 s.append( ' ' );
             } else {
-                s.append( " AND " ).append( propName.getTable() ).append( '.' );
+                s.append( " AND " ).append( propName.getTargetField().getTable() ).append( '.' );
                 s.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( '=' );
                 s.append( PostGISMappingsISODC.DatabaseTables.datasets.name() ).append( '.' );
                 s.append( PostGISMappingsISODC.CommonColumnNames.id.name() );

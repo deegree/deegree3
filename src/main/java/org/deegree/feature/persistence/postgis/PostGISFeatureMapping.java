@@ -36,13 +36,15 @@
 package org.deegree.feature.persistence.postgis;
 
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
-import org.deegree.feature.persistence.mapping.MappingExpression;
+import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.mapping.MappedXPath;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.postgis.PostGISMapping;
-import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +67,11 @@ class PostGISFeatureMapping implements PostGISMapping {
 
     private final PostGISFeatureStore fs;
 
-    PostGISFeatureMapping( FeatureType ft, FeatureTypeMapping ftMapping, PostGISFeatureStore fs ) {
+    private final MappedApplicationSchema schema;
+
+    PostGISFeatureMapping( MappedApplicationSchema schema, FeatureType ft, FeatureTypeMapping ftMapping,
+                           PostGISFeatureStore fs ) {
+        this.schema = schema;
         this.ft = ft;
         this.ftMapping = ftMapping;
         this.fs = fs;
@@ -75,12 +81,20 @@ class PostGISFeatureMapping implements PostGISMapping {
     public PropertyNameMapping getMapping( PropertyName propName )
                             throws FilterEvaluationException {
 
-        MappingExpression dbColumn = ftMapping.getMapping( propName.getAsQName() );
-        if ( dbColumn == null ) {
+        MappedXPath mapping = null;
+        try {
+            mapping = new MappedXPath( schema, ftMapping, propName );
+            System.out.println( "HUHU: " + mapping );
+        } catch ( UnmappableException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if ( mapping == null ) {
             return null;
         }
         // TODO handle other (non-trivial) mappings
-        return new PropertyNameMapping( "X1", dbColumn.toString() );
+        return new PropertyNameMapping( mapping.getValueField(), mapping.getJoins() );
     }
 
     @Override
