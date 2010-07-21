@@ -47,20 +47,22 @@ import java.io.File;
 public interface RequestLogger {
 
     /**
-     * 
-     * 
      * @param queryString
-     * @param timestamp
+     * @param startTime
+     * @param endTime
+     * @param creds
      */
-    void logKVP( String queryString, long timestamp );
+    void logKVP( String queryString, long startTime, long endTime, Credentials creds );
 
     /**
      * @param logFile
      *            Will contain the logged request once this method is called. It's a temporary file in the configured
      *            requests directory. If you want the request to be saved somewhere else, this is the place where to do
      *            that.
-     * @param timestamp
+     * @param startTime
+     * @param endTime
+     * @param creds
      */
-    void logXML( File logFile, long timestamp );
+    void logXML( File logFile, long startTime, long endTime, Credentials creds );
 
 }

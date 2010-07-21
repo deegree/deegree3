@@ -36,7 +36,14 @@
               Default is the internal logger, logging only to the output directory and the $HOME/.deegree/requests.txt
               for kvp.
             -->
-            <xs:element name="RequestLoggerClass" type="xs:string" minOccurs="0" />
+            <xs:element name="RequestLogger" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Class" type="xs:string" />
+                  <xs:element name="Configuration" type="xs:anyType" minOccurs="0" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
           </xs:sequence>
         </xs:complexType>
       </xs:element>

@@ -39,6 +39,7 @@ import static org.deegree.services.controller.FrontControllerStats.incomingKVP;
 
 import java.io.File;
 
+import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.RequestLogger;
 
 /**
@@ -50,11 +51,11 @@ import org.deegree.services.controller.RequestLogger;
  */
 public class StandardRequestLogger implements RequestLogger {
 
-    public void logKVP( String queryString, long timestamp ) {
-        incomingKVP( queryString, timestamp );
+    public void logKVP( String queryString, long startTime, long endTime, Credentials creds ) {
+        incomingKVP( queryString, startTime );
     }
 
-    public void logXML( File logFile, long timestamp ) {
+    public void logXML( File logFile, long startTime, long endTime, Credentials creds ) {
         logFile.delete();
     }
 

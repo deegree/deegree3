@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -455,7 +456,7 @@ public class OGCFrontController extends HttpServlet {
                     Boolean conf = opts.getRequestLogging().isOnlySuccessful();
                     boolean onlySuccessful = conf != null && conf;
                     response = logging = new LoggingHttpResponseWrapper( response, file, onlySuccessful, entryTime,
-                                                                         requestLogger );
+                                                                         null, requestLogger ); // TODO obtain/set credentials somewhere
                 }
             }
 
@@ -523,10 +524,16 @@ public class OGCFrontController extends HttpServlet {
                    + ( System.currentTimeMillis() - entryTime ) + " ms." );
     }
 
-    private static RequestLogger instantiateRequestLogger( String cls ) {
-        if ( cls != null ) {
+    private static RequestLogger instantiateRequestLogger(
+                                                           org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging.RequestLogger conf ) {
+        if ( conf != null ) {
+            String cls = conf.getClazz();
             try {
-                return (RequestLogger) forName( cls ).newInstance();
+                Object o = conf.getConfiguration();
+                if ( o == null ) {
+                    return (RequestLogger) forName( cls ).newInstance();
+                }
+                return (RequestLogger) forName( cls ).getDeclaredConstructor( Object.class ).newInstance( o );
             } catch ( ClassNotFoundException e ) {
                 LOG.info( "The request logger class '{}' could not be found on the classpath.", cls );
                 LOG.trace( "Stack trace:", e );
@@ -535,11 +542,27 @@ public class OGCFrontController extends HttpServlet {
                 LOG.trace( "Stack trace:", e );
             } catch ( InstantiationException e ) {
                 LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (needs a default constructor without arguments).", cls );
+                          + " (needs a default constructor without arguments if no configuration is given).", cls );
                 LOG.trace( "Stack trace:", e );
             } catch ( IllegalAccessException e ) {
                 LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (default constructor needs to be accessible).", cls );
+                          + " (default constructor needs to be accessible if no configuration is given).", cls );
+                LOG.trace( "Stack trace:", e );
+            } catch ( IllegalArgumentException e ) {
+                LOG.info( "The request logger class '{}' could not be instantiated"
+                          + " (constructor needs to take an object argument if configuration is given).", cls );
+                LOG.trace( "Stack trace:", e );
+            } catch ( java.lang.SecurityException e ) {
+                LOG.info( "The request logger class '{}' could not be instantiated"
+                          + " (JVM does have insufficient rights to instantiate the class).", cls );
+                LOG.trace( "Stack trace:", e );
+            } catch ( InvocationTargetException e ) {
+                LOG.info( "The request logger class '{}' could not be instantiated"
+                          + " (constructor call threw an exception).", cls );
+                LOG.trace( "Stack trace:", e );
+            } catch ( NoSuchMethodException e ) {
+                LOG.info( "The request logger class '{}' could not be instantiated"
+                          + " (constructor needs to take an object argument if configuration is given).", cls );
                 LOG.trace( "Stack trace:", e );
             }
         }
@@ -617,12 +640,6 @@ public class OGCFrontController extends HttpServlet {
 
         FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
         LoggingHttpResponseWrapper logging = null;
-        if ( requestLogger != null ) {
-            Boolean conf = opts.getRequestLogging().isOnlySuccessful();
-            boolean onlySuccessful = conf != null && conf;
-            response = logging = new LoggingHttpResponseWrapper( response, requestWrapper.getQueryString(),
-                                                                 onlySuccessful, entryTime, requestLogger );
-        }
 
         // extract (deegree specific) security information and bind to current thread
         CredentialsProvider credProv = null;
@@ -653,6 +670,13 @@ public class OGCFrontController extends HttpServlet {
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
+
+            if ( requestLogger != null ) {
+                Boolean conf = opts.getRequestLogging().isOnlySuccessful();
+                boolean onlySuccessful = conf != null && conf;
+                response = logging = new LoggingHttpResponseWrapper( response, requestWrapper.getQueryString(),
+                                                                     onlySuccessful, entryTime, cred, requestLogger );
+            }
 
             AbstractOGCServiceController subController = null;
             // first try service parameter, SERVICE-parameter is mandatory for each service and request (except WMS
@@ -1188,8 +1212,8 @@ public class OGCFrontController extends HttpServlet {
     private void initRequestLogger() {
         FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
         if ( opts != null && opts.getRequestLogging() != null ) {
-            String cls = opts.getRequestLogging().getRequestLoggerClass();
-            requestLogger = instantiateRequestLogger( cls );
+            org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging.RequestLogger logger = opts.getRequestLogging().getRequestLogger();
+            requestLogger = instantiateRequestLogger( logger );
         }
     }
 

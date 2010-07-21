@@ -35,11 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.utils;
 
+import static java.lang.System.currentTimeMillis;
+
 import java.io.File;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.RequestLogger;
 
 /**
@@ -65,6 +68,8 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
 
     private RequestLogger logger;
 
+    private Credentials creds;
+
     /**
      * If XML request should possibly be logged.
      * 
@@ -72,13 +77,16 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
      * @param requestLog
      * @param successfulOnly
      * @param entryTime
+     * @param creds
      * @param logger
      */
     public LoggingHttpResponseWrapper( HttpServletResponse response, File requestLog, boolean successfulOnly,
-                                       long entryTime, RequestLogger logger ) {
+                                       long entryTime, Credentials creds, RequestLogger logger ) {
         super( response );
         this.requestLog = requestLog;
         this.successfulOnly = successfulOnly;
+        this.entryTime = entryTime;
+        this.creds = creds;
         this.logger = logger;
     }
 
@@ -89,14 +97,16 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
      * @param kvp
      * @param successfulOnly
      * @param entryTime
+     * @param creds
      * @param logger
      */
     public LoggingHttpResponseWrapper( HttpServletResponse response, String kvp, boolean successfulOnly,
-                                       long entryTime, RequestLogger logger ) {
+                                       long entryTime, Credentials creds, RequestLogger logger ) {
         super( response );
         this.kvp = kvp;
         this.successfulOnly = successfulOnly;
         this.entryTime = entryTime;
+        this.creds = creds;
         this.logger = logger;
     }
 
@@ -126,11 +136,11 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
         logged = true;
         if ( !exceptionSent || !successfulOnly ) {
             if ( kvp != null ) {
-                logger.logKVP( kvp, entryTime );
+                logger.logKVP( kvp, entryTime, currentTimeMillis(), creds );
             }
         }
         if ( exceptionSent && successfulOnly && requestLog != null ) {
-            logger.logXML( requestLog, entryTime );
+            logger.logXML( requestLog, entryTime, currentTimeMillis(), creds );
         }
     }
 
