@@ -185,7 +185,7 @@ public class Footprint {
             Points points = new PointsList( pointList );
             worldCoordinateRingList.add( geom.createLinearRing( "ring", null, points ) );
         }
-
+        System.out.println( "[Footprint] " + minX + " " + minY + " " + maxX + " " + maxY );
         this.values.setEnvelopeFootprint( geom.createEnvelope( minX, minY, maxX, maxY, null ) );
 
     }

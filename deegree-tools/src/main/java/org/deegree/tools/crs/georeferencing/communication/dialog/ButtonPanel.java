@@ -51,26 +51,37 @@ import javax.swing.JPanel;
  */
 public class ButtonPanel extends JPanel {
 
-    public static final String BUTTON_NAME_OK = "OK";
+    public static final String BUTTON_TEXT_OK = "OK";
 
-    public static final String BUTTON_NAME = "ButtonPanel_OK";
+    public static final String BUTTON_NAME_OK = "ButtonPanel_OK";
+
+    public static final String BUTTON_TEXT_CANCEL = "Cancel";
+
+    public static final String BUTTON_NAME_CANCEL = "ButtonPanel_Cancel";
 
     public static final String BUTTON_PANEL_NAME = "buttonPanel";
 
     private JButton buttonOK;
 
+    private JButton buttonCancel;
+
     public ButtonPanel() {
         this.setLayout( new FlowLayout() );
         this.setName( BUTTON_PANEL_NAME );
-        buttonOK = new JButton( BUTTON_NAME_OK );
-        buttonOK.setName( BUTTON_NAME );
+        buttonOK = new JButton( BUTTON_TEXT_OK );
+        buttonOK.setName( BUTTON_NAME_OK );
+        buttonCancel = new JButton( BUTTON_TEXT_CANCEL );
+        buttonCancel.setName( BUTTON_NAME_CANCEL );
 
+        this.add( buttonCancel );
         this.add( buttonOK );
+
         this.setVisible( true );
     }
 
     public void addActionKeyListener( ActionListener e ) {
         buttonOK.addActionListener( e );
+        buttonCancel.addActionListener( e );
     }
 
 }

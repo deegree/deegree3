@@ -120,8 +120,6 @@ public class Scene2DValues {
 
             if ( subRaster != null ) {
 
-                double[] worldPos;
-
                 // determine the minX and the maxY position of the subRaster-envelope
                 double getMinX = subRaster.getEnvelope().getMin().get0();
                 double getMaxY = subRaster.getEnvelope().getMax().get1();

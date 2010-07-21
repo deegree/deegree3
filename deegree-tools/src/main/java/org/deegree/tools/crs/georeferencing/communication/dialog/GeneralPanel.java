@@ -37,6 +37,7 @@ package org.deegree.tools.crs.georeferencing.communication.dialog;
 
 import java.awt.Component;
 import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -52,6 +53,12 @@ import javax.swing.JPanel;
  * @version $Revision$, $Date$
  */
 public class GeneralPanel extends GenericSettingsPanel {
+
+    public static final String SNAPPING = "snapping";
+
+    public static final String SNAPPING_TEXT = "snapping ON/OFF";
+
+    public static final String ZOOM = "zoom";
 
     private static final int SH = 100;
 
@@ -70,24 +77,47 @@ public class GeneralPanel extends GenericSettingsPanel {
         this.setBounds( parent.getBounds() );
 
         snapping = new JPanel();
-        snapping.setBorder( BorderFactory.createTitledBorder( "snapping" ) );
+        snapping.setBorder( BorderFactory.createTitledBorder( SNAPPING ) );
         snapping.setBounds( new Rectangle( parent.getBounds().width, SH ) );
-        snappingOnOff = new JCheckBox( "snapping ON/OFF" );
+        snappingOnOff = new JCheckBox( SNAPPING_TEXT );
         snapping.add( snappingOnOff );
+        snappingOnOff.setToolTipText( getSnappingTooltipText() );
+        snappingOnOff.setName( SNAPPING );
 
         zoom = new JPanel();
         zoom.setBorder( BorderFactory.createTitledBorder( "zoom" ) );
         zoom.setBounds( new Rectangle( parent.getBounds().width, ZH ) );
         zoomValue = new JCheckBox( "zoomValue" );
         zoom.add( zoomValue );
+        zoom.setName( ZOOM );
 
         this.add( snapping, this );
         this.add( zoom, this );
 
     }
 
-    public JCheckBox getSnappingOnOff() {
-        return snappingOnOff;
+    public void addCheckboxListener( ActionListener c ) {
+
+        snappingOnOff.addActionListener( c );
+
+    }
+
+    /**
+     * 
+     * @return the tooltip of the snapping.
+     */
+    private String getSnappingTooltipText() {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "Snapping is activated if the checkmark is set." );
+        return sb.toString();
+    }
+
+    public boolean getSnappingOnOff() {
+        return snappingOnOff.isSelected();
+    }
+
+    public void setSnappingOnOff( boolean setSnapping ) {
+        this.snappingOnOff.setSelected( setSnapping );
     }
 
     @Override

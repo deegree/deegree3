@@ -181,7 +181,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
      * 
      * @param point2d
      *            the specified point
-     * @return an <Code>AbstractPoint</Code> that is the closest point to point2d
+     * @return a Pair of <Code>AbstractPoint</Code> in pixelCoordinates and <Code>FootprintPoint</Code> in
+     *         worldCoordinates that is the closest point to point2d
      */
     public Pair<AbstractGRPoint, FootprintPoint> getClosestPoint( AbstractGRPoint point2d ) {
         Pair<AbstractGRPoint, FootprintPoint> closestPoint = new Pair<AbstractGRPoint, FootprintPoint>();

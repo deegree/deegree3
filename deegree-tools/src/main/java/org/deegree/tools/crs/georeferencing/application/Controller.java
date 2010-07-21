@@ -186,7 +186,7 @@ public class Controller {
         this.store = store;
         this.textFieldModel = new TextFieldModel();
         this.dialogModel = new OptionDialogModel();
-        AbstractPanel2D.selectedPointSize = this.dialogModel.getSelectionPointSize();
+        AbstractPanel2D.selectedPointSize = this.dialogModel.getSelectionPointSize().first;
 
         this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
 
@@ -303,6 +303,17 @@ public class Controller {
                     } else {
                         isHorizontalRef = false;
                     }
+                }
+                if ( ( (JCheckBox) source ).getText().startsWith( GeneralPanel.SNAPPING_TEXT ) ) {
+
+                    boolean isSnappingOn = false;
+                    if ( dialogModel.getSnappingOnOff().second == false ) {
+                        isSnappingOn = true;
+
+                    } else {
+                        isSnappingOn = false;
+                    }
+                    dialogModel.setSnappingOnOff( isSnappingOn );
                 }
 
             }
@@ -423,30 +434,43 @@ public class Controller {
 
                     reset();
                 }
-                if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_NAME_OK ) ) {
+                if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
+                    dialogModel.transferOldToNew();
+                    AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize().first;
+                    panel.repaint();
+                    footPanel.repaint();
+                    dialog.setVisible( false );
+                }
+                if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_OK ) ) {
                     boolean isRunIntoTrouble = false;
                     if ( optionSettingPanel != null ) {
 
-                        // if the custom radiobutton is selected and there is something inside the textField
-                        if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
-                             && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects() != null ) {
-                            // here you have to check about the input for the custom textfield. Keylistener for the
-                            // textfield while typing in is problematic because you can workaround with copy&paste...so
-                            // this should be the way to go.
+                        if ( optionSettingPanel instanceof ViewPanel ) {
+                            // if the custom radiobutton is selected and there is something inside the textField
+                            if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
+                                 && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects() != null ) {
+                                // here you have to check about the input for the custom textfield. Keylistener for the
+                                // textfield while typing in is problematic because you can workaround with
+                                // copy&paste...so
+                                // this should be the way to go.
 
-                            String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
-                            if ( AbstractTextfieldModel.validateInt( textInput ) ) {
-                                dialogModel.setTextFieldKeyString( textInput );
-                                dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString() ) );
-                            } else {
-                                dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR,
-                                                                        "Insert numbers only into the textField!" ) );
-                                isRunIntoTrouble = true;
+                                String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
+                                if ( AbstractTextfieldModel.validateInt( textInput ) ) {
+                                    dialogModel.setTextFieldKeyString( textInput );
+                                    dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString().second ) );
+                                    isRunIntoTrouble = false;
+                                } else {
+                                    dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR,
+                                                                            "Insert numbers only into the textField!" ) );
+                                    isRunIntoTrouble = true;
+                                }
+
                             }
-
                         }
                     }
                     if ( isRunIntoTrouble == false ) {
+                        dialogModel.transferNewToOld();
+                        AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize().first;
                         panel.repaint();
                         footPanel.repaint();
                         dialog.setVisible( false );
@@ -518,7 +542,7 @@ public class Controller {
                         dialogModel.setTextFieldKeyString( ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
                         int i;
                         try {
-                            i = Integer.parseInt( dialogModel.getTextFieldKeyString() );
+                            i = Integer.parseInt( dialogModel.getTextFieldKeyString().second );
                             dialogModel.setSelectionPointSize( i );
                         } catch ( NumberFormatException ex ) {
                             dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR, "This is not a number" ) );
@@ -526,7 +550,7 @@ public class Controller {
 
                     }
                 }
-                AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize();
+
             }
 
         }
@@ -566,16 +590,18 @@ public class Controller {
                     switch ( panelType ) {
                     case GeneralPanel:
                         optionSettingPanel = new GeneralPanel( optionSettPanel );
-                        optionSettPanel.setCurrentPanel( optionSettingPanel );
-                        dialog.setSettingsPanel( optionSettPanel );
+                        ( (GeneralPanel) optionSettingPanel ).addCheckboxListener( new ButtonListener() );
+                        ( (GeneralPanel) optionSettingPanel ).setSnappingOnOff( dialogModel.getSnappingOnOff().second );
                         break;
                     case ViewPanel:
-                        optionSettingPanel = new ViewPanel( dialogModel );
+                        optionSettingPanel = new ViewPanel();
+                        ( (ViewPanel) optionSettingPanel ).setPointSize( dialogModel.getSelectionPointSize().second );
                         ( (ViewPanel) optionSettingPanel ).addRadioButtonListener( new ButtonListener() );
-                        optionSettPanel.setCurrentPanel( optionSettingPanel );
-                        dialog.setSettingsPanel( optionSettPanel );
+
                         break;
                     }
+                    optionSettPanel.setCurrentPanel( optionSettingPanel );
+                    dialog.setSettingsPanel( optionSettPanel );
 
                 } else {
                     optionSettPanel.reset();
@@ -857,8 +883,17 @@ public class Controller {
                         }
                         double x = m.getX();
                         double y = m.getY();
-                        Pair<AbstractGRPoint, FootprintPoint> point = footPanel.getClosestPoint( new FootprintPoint( x,
-                                                                                                                     y ) );
+                        Pair<AbstractGRPoint, FootprintPoint> point = null;
+                        if ( dialogModel.getSnappingOnOff().first ) {
+                            point = footPanel.getClosestPoint( new FootprintPoint( x, y ) );
+                        } else {
+                            point = new Pair<AbstractGRPoint, FootprintPoint>(
+                                                                               new FootprintPoint( x, y ),
+                                                                               (FootprintPoint) sceneValues.getWorldPoint( new FootprintPoint(
+                                                                                                                                               x,
+                                                                                                                                               y ) ) );
+                        }
+
                         footPanel.setLastAbstractPoint( point.first, point.second );
                         tablePanel.setCoords( footPanel.getLastAbstractPoint().getWorldCoords() );
 

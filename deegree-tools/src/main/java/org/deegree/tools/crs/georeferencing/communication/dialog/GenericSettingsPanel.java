@@ -46,6 +46,7 @@ import javax.swing.JPanel;
  * @version $Revision$, $Date$
  */
 public abstract class GenericSettingsPanel extends JPanel {
+
     public enum PanelType {
 
         GeneralPanel,

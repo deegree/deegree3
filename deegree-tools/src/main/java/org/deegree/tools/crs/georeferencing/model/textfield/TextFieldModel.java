@@ -37,9 +37,9 @@ package org.deegree.tools.crs.georeferencing.model.textfield;
 
 import java.util.regex.Pattern;
 
+import org.deegree.tools.crs.georeferencing.model.exceptions.MaximumNumberException;
 import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.exceptions.NumberMissmatch;
-import org.deegree.tools.crs.georeferencing.model.exceptions.MaximumNumberException;
 
 /**
  * Model that holds the relevant information for textfields.
@@ -79,9 +79,10 @@ public class TextFieldModel extends AbstractTextfieldModel {
 
         for ( int i = 0; i < inputParameters.length; i += numberOfParameters ) {
             if ( numberOfParameters < 2 ) {
-                // error = new ErrorDialogModel( JDialog.ERROR,
-                // "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
-                throw new NumberException( "The minimum number of parameters is 2 - xCoordinate and yCoordinate! " );
+
+                throw new NumberException(
+                                           "If you want to use this function you have to type in at least two parameters - xCoordinate and yCoordinate!" );
+
             } else {
                 try {
                     xCoordinate = Double.parseDouble( inputParameters[i] );
@@ -97,8 +98,7 @@ public class TextFieldModel extends AbstractTextfieldModel {
 
                 if ( numberOfParameters > 2 ) {
                     if ( numberOfParameters == 3 ) {
-                        // error = new ErrorDialogModel( JDialog.ERROR,
-                        // "You have to specify either non of width and height or both of them! " );
+
                         throw new NumberMissmatch(
                                                    "You have to specify either non of width and height or both of them! " );
                     } else {
@@ -112,10 +112,9 @@ public class TextFieldModel extends AbstractTextfieldModel {
                     }
                 }
                 if ( inputParameters.length > 4 ) {
-                    // error = new ErrorDialogModel( JDialog.ERROR,
-                    // "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
+
                     throw new MaximumNumberException(
-                                                       "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
+                                                      "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
                 }
             }
 
@@ -176,10 +175,6 @@ public class TextFieldModel extends AbstractTextfieldModel {
     public String getTextInput() {
         return textInput;
     }
-
-    // public ErrorDialogModel getError() {
-    // return error;
-    // }
 
     /**
      * 

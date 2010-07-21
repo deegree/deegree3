@@ -45,8 +45,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
-
 /**
  * View panel.
  * 
@@ -87,7 +85,7 @@ public class ViewPanel extends GenericSettingsPanel {
 
     private int pointSize;
 
-    public ViewPanel( OptionDialogModel dialogModel ) {
+    public ViewPanel() {
 
         JPanel defined = new JPanel();
         defined.setLayout( new BoxLayout( defined, BoxLayout.Y_AXIS ) );
@@ -108,8 +106,6 @@ public class ViewPanel extends GenericSettingsPanel {
         radio10PT.setName( TEN );
         textFieldCustom.setName( CUSTOM_TEXTFIELD );
 
-        pointSize = dialogModel.getSelectionPointSize();
-
         ButtonGroup group = new ButtonGroup();
         group.add( radio2PT );
         group.add( radio3PT );
@@ -117,28 +113,6 @@ public class ViewPanel extends GenericSettingsPanel {
         group.add( radio7PT );
         group.add( radio10PT );
         group.add( radioCustom );
-
-        switch ( pointSize ) {
-        case 2:
-            radio2PT.setSelected( true );
-            break;
-        case 3:
-            radio3PT.setSelected( true );
-            break;
-        case 5:
-            radioDefault.setSelected( true );
-            break;
-        case 7:
-            radio7PT.setSelected( true );
-            break;
-        case 10:
-            radio10PT.setSelected( true );
-            break;
-        default:
-            radioCustom.setSelected( true );
-            textFieldCustom.setText( Integer.toString( pointSize ) );
-
-        }
 
         defined.add( radio2PT, Component.LEFT_ALIGNMENT );
         defined.add( radio3PT, Component.LEFT_ALIGNMENT );
@@ -176,6 +150,27 @@ public class ViewPanel extends GenericSettingsPanel {
 
     public void setPointSize( int pointSize ) {
         this.pointSize = pointSize;
+        switch ( pointSize ) {
+        case 2:
+            radio2PT.setSelected( true );
+            break;
+        case 3:
+            radio3PT.setSelected( true );
+            break;
+        case 5:
+            radioDefault.setSelected( true );
+            break;
+        case 7:
+            radio7PT.setSelected( true );
+            break;
+        case 10:
+            radio10PT.setSelected( true );
+            break;
+        default:
+            radioCustom.setSelected( true );
+            textFieldCustom.setText( Integer.toString( pointSize ) );
+
+        }
     }
 
     public JRadioButton getRadioCustom() {

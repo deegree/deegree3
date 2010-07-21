@@ -37,6 +37,8 @@ package org.deegree.tools.crs.georeferencing.model.dialog;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.deegree.commons.utils.Pair;
+
 /**
  * Handles the option dialogs to show in the GUI.
  * 
@@ -51,20 +53,25 @@ public class OptionDialogModel {
 
     public final static String VIEW = "View";
 
-    private boolean snappingOnOff;
+    /**
+     * oldValue, newValue
+     */
+    private Pair<Boolean, Boolean> snappingOnOff;
 
-    private int selectionPointSize;
+    /**
+     * oldValue, newValue
+     */
+    private Pair<Integer, Integer> selectionPointSize;
 
-    private String textFieldKeyString;
+    /**
+     * oldValue, newValue
+     */
+    private Pair<String, String> textFieldKeyString;
 
     public OptionDialogModel() {
-        if ( selectionPointSize == 0 ) {
-            selectionPointSize = 5;
-        }
-        if ( textFieldKeyString == null ) {
-            textFieldKeyString = "";
-
-        }
+        this.snappingOnOff = new Pair<Boolean, Boolean>( false, false );
+        this.selectionPointSize = new Pair<Integer, Integer>( 5, 5 );
+        this.textFieldKeyString = new Pair<String, String>( "", "" );
 
     }
 
@@ -85,28 +92,67 @@ public class OptionDialogModel {
 
     }
 
-    public boolean isSnappingOnOff() {
+    public Pair<Boolean, Boolean> getSnappingOnOff() {
         return snappingOnOff;
     }
 
-    public void setSnappingOnOff( boolean snappingOnOff ) {
-        this.snappingOnOff = snappingOnOff;
+    public void setSnappingOnOff( boolean setSnapping ) {
+        if ( snappingOnOff != null ) {
+            this.snappingOnOff.second = setSnapping;
+        }
     }
 
-    public int getSelectionPointSize() {
+    public Pair<Integer, Integer> getSelectionPointSize() {
         return selectionPointSize;
     }
 
     public void setSelectionPointSize( int selectionPointSize ) {
-        this.selectionPointSize = selectionPointSize;
+        if ( this.selectionPointSize != null ) {
+
+            this.selectionPointSize.second = selectionPointSize;
+        }
     }
 
-    public String getTextFieldKeyString() {
+    public Pair<String, String> getTextFieldKeyString() {
         return textFieldKeyString;
     }
 
     public void setTextFieldKeyString( String textFieldKeyString ) {
-        this.textFieldKeyString = textFieldKeyString;
+        if ( this.textFieldKeyString != null ) {
+            this.textFieldKeyString.second = textFieldKeyString;
+        }
+    }
+
+    /**
+     * Handles the transfer of the newValue to the oldValue. <br>
+     * When there is a commit like ok.
+     */
+    public void transferNewToOld() {
+        if ( snappingOnOff != null ) {
+            snappingOnOff.first = snappingOnOff.second;
+        }
+        if ( selectionPointSize != null ) {
+            selectionPointSize.first = selectionPointSize.second;
+        }
+        if ( textFieldKeyString != null ) {
+            textFieldKeyString.first = textFieldKeyString.second;
+        }
+    }
+
+    /**
+     * Handles the transfer of the oldValue to the newValue.<br>
+     * If there is a reject like cancel.
+     */
+    public void transferOldToNew() {
+        if ( snappingOnOff != null ) {
+            snappingOnOff.second = snappingOnOff.first;
+        }
+        if ( selectionPointSize != null ) {
+            selectionPointSize.second = selectionPointSize.first;
+        }
+        if ( textFieldKeyString != null ) {
+            textFieldKeyString.second = textFieldKeyString.first;
+        }
     }
 
 }
