@@ -49,20 +49,29 @@ public class SettingsPanel extends JPanel {
 
     private JPanel currentPanel;
 
-    public SettingsPanel() {
-
-    }
-
+    /**
+     * 
+     * @return the currentPanel that is displayed.
+     */
     public JPanel getCurrentPanel() {
         return currentPanel;
     }
 
+    /**
+     * Sets the Panel that should be displayed.
+     * 
+     * @param currentPanel
+     *            , not <Code>null</Code>.
+     */
     public void setCurrentPanel( JPanel currentPanel ) {
         this.currentPanel = currentPanel;
         this.removeAll();
         this.add( currentPanel );
     }
 
+    /**
+     * Removes all the components in this panel.
+     */
     public void reset() {
         this.removeAll();
     }

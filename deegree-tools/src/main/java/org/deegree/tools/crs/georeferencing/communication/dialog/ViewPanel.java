@@ -46,7 +46,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 /**
- * View panel.
+ * <Code>ViewPanel</Code>.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -85,6 +85,9 @@ public class ViewPanel extends GenericSettingsPanel {
 
     private int pointSize;
 
+    /**
+     * Creates a new instance of <Code>ViewPanel</Code>.
+     */
     public ViewPanel() {
 
         JPanel defined = new JPanel();
@@ -125,6 +128,11 @@ public class ViewPanel extends GenericSettingsPanel {
         this.add( custom, BorderLayout.PAGE_END );
     }
 
+    /**
+     * Adds the ActionListener to the RadioButtons.
+     * 
+     * @param e
+     */
     public void addRadioButtonListener( ActionListener e ) {
         radio2PT.addActionListener( e );
         radio3PT.addActionListener( e );
@@ -140,14 +148,27 @@ public class ViewPanel extends GenericSettingsPanel {
         return PanelType.ViewPanel;
     }
 
+    /**
+     * 
+     * @return the content of the textfield.
+     */
     public JTextField getTextFieldCustom() {
         return textFieldCustom;
     }
 
+    /**
+     * 
+     * @return the pointSize that is selected.
+     */
     public int getPointSize() {
         return pointSize;
     }
 
+    /**
+     * Sets the pointSize to this view.
+     * 
+     * @param pointSize
+     */
     public void setPointSize( int pointSize ) {
         this.pointSize = pointSize;
         switch ( pointSize ) {

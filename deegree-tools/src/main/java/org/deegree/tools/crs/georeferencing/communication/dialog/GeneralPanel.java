@@ -45,7 +45,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 /**
- * General panel.
+ * <Code>GeneralPanel</Code>.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -72,6 +72,11 @@ public class GeneralPanel extends GenericSettingsPanel {
 
     private JCheckBox zoomValue;
 
+    /**
+     * Creates a new instance of <Code>GeneralPanel</Code>.
+     * 
+     * @param parent
+     */
     public GeneralPanel( Component parent ) {
         this.setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
         this.setBounds( parent.getBounds() );
@@ -96,6 +101,11 @@ public class GeneralPanel extends GenericSettingsPanel {
 
     }
 
+    /**
+     * Adds the ActionListener to the checkboxes.
+     * 
+     * @param c
+     */
     public void addCheckboxListener( ActionListener c ) {
 
         snappingOnOff.addActionListener( c );
@@ -112,10 +122,20 @@ public class GeneralPanel extends GenericSettingsPanel {
         return sb.toString();
     }
 
+    /**
+     * 
+     * @return true if the snapping is on.
+     */
     public boolean getSnappingOnOff() {
         return snappingOnOff.isSelected();
     }
 
+    /**
+     * Sets the snapping on or off.
+     * 
+     * @param setSnapping
+     *            true for <i>on</i>, false for <i>off</i>
+     */
     public void setSnappingOnOff( boolean setSnapping ) {
         this.snappingOnOff.setSelected( setSnapping );
     }

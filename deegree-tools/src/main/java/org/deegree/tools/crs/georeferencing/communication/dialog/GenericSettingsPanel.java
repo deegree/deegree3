@@ -47,6 +47,15 @@ import javax.swing.JPanel;
  */
 public abstract class GenericSettingsPanel extends JPanel {
 
+    /**
+     * 
+     * The paneltypes that are provided.
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
     public enum PanelType {
 
         GeneralPanel,
@@ -55,5 +64,9 @@ public abstract class GenericSettingsPanel extends JPanel {
 
     }
 
+    /**
+     * 
+     * @return the type of the specific panel.
+     */
     public abstract PanelType getType();
 }

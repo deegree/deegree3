@@ -42,7 +42,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 /**
- * TODO add class documentation here
+ * Panel for outsourcing the Buttons that should commit or reject the actions made in the <Code>OptionPanel</Code>.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -65,6 +65,9 @@ public class ButtonPanel extends JPanel {
 
     private JButton buttonCancel;
 
+    /**
+     * Creates a new instance of <Code>ButtonPanel</Code>.
+     */
     public ButtonPanel() {
         this.setLayout( new FlowLayout() );
         this.setName( BUTTON_PANEL_NAME );
@@ -79,7 +82,12 @@ public class ButtonPanel extends JPanel {
         this.setVisible( true );
     }
 
-    public void addActionKeyListener( ActionListener e ) {
+    /**
+     * Adds the ActionListener to the buttons.
+     * 
+     * @param e
+     */
+    public void addActionButtonListener( ActionListener e ) {
         buttonOK.addActionListener( e );
         buttonCancel.addActionListener( e );
     }

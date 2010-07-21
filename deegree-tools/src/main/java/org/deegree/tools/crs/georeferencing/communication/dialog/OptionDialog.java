@@ -70,8 +70,6 @@ public class OptionDialog extends JDialog {
 
     private ButtonPanel buttonPanel;
 
-    private ErrorDialog errorDialog;
-
     /**
      * Creates a new instance of {@code Dialog} with the modal attribute <i>true</i>.
      * 
@@ -130,11 +128,6 @@ public class OptionDialog extends JDialog {
     public void reset() {
         this.repaint();
         this.setVisible( true );
-    }
-
-    public void setErrorDialog( ErrorDialog errorDialog ) {
-        this.errorDialog = errorDialog;
-
     }
 
 }

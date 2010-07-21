@@ -63,6 +63,9 @@ public class NavigationBarPanel extends JPanel {
 
     private JButton computeTransform = new JButton( COMPUTE_BUTTON_NAME );
 
+    /**
+     * Creates a new instance of <Code>NavigationBarPanel</Code>.
+     */
     public NavigationBarPanel() {
         this.setName( NAVIGATIONBAR_PANEL_NAME );
         this.setLayout( new FlowLayout( 10 ) );
@@ -71,6 +74,11 @@ public class NavigationBarPanel extends JPanel {
         this.repaint();
     }
 
+    /**
+     * Adds the ActionListener to the AbstractButtonsthat should be affected.
+     * 
+     * @param c
+     */
     public void addHorizontalRefListener( ActionListener c ) {
         checkBox1.addActionListener( c );
         computeTransform.addActionListener( c );

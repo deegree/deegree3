@@ -451,8 +451,7 @@ public class Controller {
                                  && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects() != null ) {
                                 // here you have to check about the input for the custom textfield. Keylistener for the
                                 // textfield while typing in is problematic because you can workaround with
-                                // copy&paste...so
-                                // this should be the way to go.
+                                // copy&paste...so this should be the way to go.
 
                                 String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
                                 if ( AbstractTextfieldModel.validateInt( textInput ) ) {
@@ -460,8 +459,8 @@ public class Controller {
                                     dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString().second ) );
                                     isRunIntoTrouble = false;
                                 } else {
-                                    dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR,
-                                                                            "Insert numbers only into the textField!" ) );
+                                    view.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR,
+                                                                          "Insert numbers only into the textField!" ) );
                                     isRunIntoTrouble = true;
                                 }
 
@@ -503,7 +502,7 @@ public class Controller {
 
                     dialogModel.createNodes( root );
                     dialog = new OptionDialog( view, root );
-                    dialog.getButtonPanel().addActionKeyListener( new ButtonListener() );
+                    dialog.getButtonPanel().addActionButtonListener( new ButtonListener() );
                     optionNavPanel = dialog.getNavigationPanel();
                     optionSettPanel = dialog.getSettingsPanel();
 
@@ -545,7 +544,7 @@ public class Controller {
                             i = Integer.parseInt( dialogModel.getTextFieldKeyString().second );
                             dialogModel.setSelectionPointSize( i );
                         } catch ( NumberFormatException ex ) {
-                            dialog.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR, "This is not a number" ) );
+                            view.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR, "This is not a number" ) );
                         }
 
                     }

@@ -54,20 +54,23 @@ public class OptionDialogModel {
     public final static String VIEW = "View";
 
     /**
-     * oldValue, newValue
+     * oldValue, actualValue
      */
     private Pair<Boolean, Boolean> snappingOnOff;
 
     /**
-     * oldValue, newValue
+     * oldValue, actualValue
      */
     private Pair<Integer, Integer> selectionPointSize;
 
     /**
-     * oldValue, newValue
+     * oldValue, actualValue
      */
     private Pair<String, String> textFieldKeyString;
 
+    /**
+     * Creates a new instance of <Code>OptionDialogPanel</Code>.
+     */
     public OptionDialogModel() {
         this.snappingOnOff = new Pair<Boolean, Boolean>( false, false );
         this.selectionPointSize = new Pair<Integer, Integer>( 5, 5 );
@@ -75,37 +78,57 @@ public class OptionDialogModel {
 
     }
 
+    /**
+     * Creates the nodes that for the tree-representation.
+     * 
+     * @param root
+     *            the rootNode, not <Code>null</Code>.
+     */
     public void createNodes( DefaultMutableTreeNode root ) {
         DefaultMutableTreeNode general = null;
         DefaultMutableTreeNode view = null;
-        // DefaultMutableTreeNode snapping = null;
-        // DefaultMutableTreeNode zoom = null;
 
         general = new DefaultMutableTreeNode( GENERAL );
         root.add( general );
         view = new DefaultMutableTreeNode( VIEW );
         root.add( view );
 
-        // snapping = new DefaultMutableTreeNode( "Snapping" );
-        //
-        // zoom = new DefaultMutableTreeNode( "Zoom" );
-
     }
 
+    /**
+     * 
+     * @return the snapping.
+     */
     public Pair<Boolean, Boolean> getSnappingOnOff() {
         return snappingOnOff;
     }
 
+    /**
+     * Sets the second parameter of the Pair.
+     * 
+     * @param setSnapping
+     *            , not <Code>null</Code>.
+     */
     public void setSnappingOnOff( boolean setSnapping ) {
         if ( snappingOnOff != null ) {
             this.snappingOnOff.second = setSnapping;
         }
     }
 
+    /**
+     * 
+     * @return the selectionPointSize.
+     */
     public Pair<Integer, Integer> getSelectionPointSize() {
         return selectionPointSize;
     }
 
+    /**
+     * Sets the second parameter of the Pair.
+     * 
+     * @param selectionPointSize
+     *            , not <Code>null</Code>.
+     */
     public void setSelectionPointSize( int selectionPointSize ) {
         if ( this.selectionPointSize != null ) {
 
@@ -113,10 +136,20 @@ public class OptionDialogModel {
         }
     }
 
+    /**
+     * 
+     * @return the text from the textfield.
+     */
     public Pair<String, String> getTextFieldKeyString() {
         return textFieldKeyString;
     }
 
+    /**
+     * Sets the second parameter of the Pair.
+     * 
+     * @param textFieldKeyString
+     *            , not <Code>null</Code>.
+     */
     public void setTextFieldKeyString( String textFieldKeyString ) {
         if ( this.textFieldKeyString != null ) {
             this.textFieldKeyString.second = textFieldKeyString;
