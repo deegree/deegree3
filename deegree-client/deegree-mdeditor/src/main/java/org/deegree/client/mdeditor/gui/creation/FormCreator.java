@@ -49,6 +49,8 @@ import static org.deegree.client.mdeditor.model.LAYOUT_TYPE.TAB;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -59,6 +61,7 @@ import javax.faces.component.UIInput;
 import javax.faces.component.UIOutput;
 import javax.faces.component.UIParameter;
 import javax.faces.component.UISelectItem;
+import javax.faces.component.UIViewRoot;
 import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlColumn;
 import javax.faces.component.html.HtmlCommandButton;
@@ -89,7 +92,6 @@ import org.deegree.client.mdeditor.gui.listener.DataGroupSelectListener;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
 import org.deegree.client.mdeditor.gui.listener.ListPreRenderedListener;
-import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
@@ -100,6 +102,7 @@ import org.deegree.client.mdeditor.model.LAYOUT_TYPE;
 import org.deegree.client.mdeditor.model.ReferencedElement;
 import org.deegree.client.mdeditor.model.SELECT_TYPE;
 import org.deegree.client.mdeditor.model.SelectFormField;
+import org.deegree.commons.utils.StringPair;
 
 /**
  * TODO add class documentation here
@@ -496,15 +499,27 @@ public class FormCreator {
 
     private static void addCodeListItems( UIInput select, String codeListRef )
                             throws ConfigurationException {
-        CodeList codeList = ConfigurationManager.getConfiguration().getCodeList( codeListRef );
-        if ( codeList != null ) {
-            for ( String value : codeList.getCodes().keySet() ) {
-                UISelectItem si = new UISelectItem();
-                si.setId( getUniqueId() );
-                si.setItemValue( value );
-                si.setItemLabel( codeList.getCodes().get( value ) );
-                select.getChildren().add( si );
+        Locale locale;
+        Locale defaultLocale = Locale.getDefault();
+        locale = defaultLocale;
+        UIViewRoot root;
+        // See if this FacesContext has a ViewRoot
+        if ( null != ( root = FacesContext.getCurrentInstance().getViewRoot() ) ) {
+            // If so, ask it for its Locale
+            if ( null == ( locale = root.getLocale() ) ) {
+                // If the ViewRoot has no Locale, fall back to the default.
+                locale = defaultLocale;
             }
+        }
+
+        Map<String, StringPair> codeList = ConfigurationManager.getConfiguration().getCodeListLabels( codeListRef, locale );
+        for ( String value : codeList.keySet() ) {
+            UISelectItem si = new UISelectItem();
+            si.setId( getUniqueId() );
+            si.setItemValue( value );
+            si.setItemLabel( codeList.get( value ).first );
+            si.setItemDescription( codeList.get( value ).second );
+            select.getChildren().add( si );
         }
     }
 

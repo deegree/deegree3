@@ -41,13 +41,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.deegree.client.mdeditor.configuration.codelist.CodeListParser;
 import org.deegree.client.mdeditor.configuration.form.FormConfigurationParser;
-import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormConfigurationDescription;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.utils.StringPair;
+import org.deegree.gml.dictionary.Definition;
+import org.deegree.gml.dictionary.Dictionary;
 
 /**
  * TODO add class documentation here
@@ -73,11 +77,13 @@ public class Configuration {
 
     private List<URL> codeListUrls;
 
-    private List<CodeList> codeLists = new ArrayList<CodeList>();
+    private List<Dictionary> codeLists = new ArrayList<Dictionary>();
 
     private boolean glConfsParsed = false;
 
     private boolean codeListParsed = false;
+
+    private static final String CODESPACE_ROOT = "urn:org:deegree:igeodesktop";
 
     /**
      * @param dataDirUrl
@@ -135,21 +141,85 @@ public class Configuration {
         return null;
     }
 
-    public CodeList getCodeList( String id )
+    public Map<String, StringPair> getCodeListLabels( String id, Locale locale )
                             throws ConfigurationException {
+        Map<String, StringPair> codelist = new HashMap<String, StringPair>();
         parseCodeLists();
-        for ( CodeList cl : codeLists ) {
-            if ( cl.getId().equals( id ) ) {
-                return cl;
+        for ( Dictionary dict : codeLists ) {
+            for ( Definition def : dict ) {
+                if ( def instanceof Dictionary && def.getId().equals( id ) ) {
+                    Dictionary codeList = (Dictionary) def;
+                    for ( Definition code : codeList ) {
+                        CodeType[] names = code.getNames();
+                        String cd = null;
+                        String label = null;
+                        String description = code.getDescription() != null ? code.getDescription().getString() : null;
+                        String labelDef = null;
+                        for ( int i = 0; i < names.length; i++ ) {
+                            if ( ( CODESPACE_ROOT + ":code" ).equals( names[i].getCodeSpace() ) ) {
+                                cd = names[i].getCode();
+                            } else if ( names[i].getCodeSpace() == null ) {
+                                labelDef = names[i].getCode();
+                            } else if ( ( CODESPACE_ROOT + ":" + locale.getLanguage() ).equals( names[i].getCodeSpace() ) ) {
+                                label = names[i].getCode();
+                            }
+                        }
+                        if ( cd == null ) {
+                            break;
+                        }
+                        if ( label == null ) {
+                            if ( labelDef != null ) {
+                                label = labelDef;
+                            } else {
+                                label = cd;
+                            }
+                        }
+                        codelist.put( cd, new StringPair( label, description ) );
+                    }
+                }
+
             }
         }
-        return null;
+        return codelist;
     }
 
-    public List<CodeList> getCodeLists()
+    /**
+     * @param string
+     * @return
+     * @throws ConfigurationException
+     */
+    public String getCodeListValue( String id, String code )
                             throws ConfigurationException {
         parseCodeLists();
-        return codeLists;
+        for ( Dictionary dict : codeLists ) {
+            for ( Definition def : dict ) {
+                if ( def instanceof Dictionary && def.getId().equals( id ) ) {
+                    Dictionary codeList = (Dictionary) def;
+                    for ( Definition codeEntry : codeList ) {
+                        CodeType[] names = codeEntry.getNames();
+                        boolean found = false;
+                        String value = null;
+                        for ( int i = 0; i < names.length; i++ ) {
+                            if ( ( CODESPACE_ROOT + ":code" ).equals( names[i].getCodeSpace() )
+                                 && code.equals( names[i].getCode() ) ) {
+                                found = true;
+                            } else if ( ( CODESPACE_ROOT + ":value" ).equals( names[i].getCodeSpace() ) ) {
+                                value = names[i].getCode();
+                            }
+                        }
+                        if ( found ) {
+                            if ( value != null ) {
+                                return value;
+                            } else {
+                                return code;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        return code;
     }
 
     /**
@@ -223,7 +293,7 @@ public class Configuration {
                             throws ConfigurationException {
         if ( !codeListParsed ) {
             for ( URL url : codeListUrls ) {
-                codeLists.addAll( CodeListParser.parseConfiguration( url ) );
+                codeLists.add( CodeListParser.parseDictionary( url ) );
             }
             codeListParsed = true;
         }

@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.mapping.MappingParser;
@@ -99,12 +100,13 @@ public class SchemaManager {
      *            the id of the mapping to use for export
      * @param formFields
      *            the form fields to export
+     * @param configuration
      * @param map
      * @return the name of the created file
      * @throws DataIOException
      * @throws ConfigurationException
      */
-    public static String export( String id, String mappingId, Map<String, FormField> formFields,
+    public static String export( String id, String mappingId, Configuration configuration, String confId,
                                  Map<String, List<DataGroup>> dataGroups )
                             throws DataIOException, ConfigurationException {
         String fileName = id;
@@ -130,7 +132,7 @@ public class SchemaManager {
 
                     f.createNewFile();
                 }
-                MappingExporter.export( f, mapping, formFields, dataGroups );
+                MappingExporter.export( f, mapping, configuration, confId, dataGroups );
 
             } catch ( Exception e ) {
                 LOG.debug( "Could not export dataset: ", e );

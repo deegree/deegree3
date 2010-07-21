@@ -221,7 +221,19 @@ public class MappingParser extends Parser {
             fPath = fPath.trim();
             sPath = sPath.trim();
             LOG.debug( "found mapping element: " + fPath + " - " + sPath );
-            mappingSingle = new MappingElement( fPath, sPath );
+            int index = Integer.MIN_VALUE;
+            System.out.println(fPath);
+            if ( fPath.endsWith( "]" ) ) {
+                String indexString = fPath.substring( fPath.lastIndexOf( "[" ) + 1, fPath.lastIndexOf( "]" ) );
+                fPath = fPath.substring( 0, fPath.lastIndexOf( "[" ) - 1 );
+                try {
+                    index = Integer.parseInt( indexString );
+                } catch ( NumberFormatException e ) {
+                    throw new ConfigurationException( "Index " + indexString + " in form field Path " + fPath
+                                                      + " is not a valid integer " );
+                }
+            }
+            mappingSingle = new MappingElement( fPath, sPath, index );
         } else {
             LOG.info( " Found invalid mapping element with formFieldPath " + fPath + " and schemaPath " + sPath
                       + " ignore this element." );

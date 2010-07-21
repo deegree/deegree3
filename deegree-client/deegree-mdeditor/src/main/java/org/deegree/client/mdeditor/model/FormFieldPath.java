@@ -129,4 +129,12 @@ public class FormFieldPath implements Iterator<String> {
         return true;
     }
 
+    public static FormFieldPath getAsPath( String path ) {
+        String[] steps = new String[0];
+        if ( path != null && path.length() > 0 ) {
+            steps = path.split( "/" );
+        }
+        return new FormFieldPath( steps );
+    }
+
 }

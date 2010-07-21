@@ -63,9 +63,16 @@ public class MappingElement {
 
     private String schemaPath;
 
+    private int index = Integer.MIN_VALUE;
+
     public MappingElement( String formFieldPath, String schemaPath ) {
         this.formFieldPath = formFieldPath;
         this.schemaPath = schemaPath;
+    }
+
+    public MappingElement( String formFieldPath, String schemaPath, int index ) {
+        this( formFieldPath, schemaPath );
+        this.setIndex( index );
     }
 
     public void setFormFieldPath( String fieldPath ) {
@@ -108,7 +115,15 @@ public class MappingElement {
 
     @Override
     public String toString() {
-        return formFieldPath + "mapped to: " + schemaPath;
+        return formFieldPath + ( index > -1 ? " [" + index + "]" : "" ) + " mapped to: " + schemaPath;
+    }
+
+    public void setIndex( int index ) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
 }

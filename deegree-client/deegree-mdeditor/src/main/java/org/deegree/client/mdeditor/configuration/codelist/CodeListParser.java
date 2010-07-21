@@ -35,23 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.configuration.codelist;
 
-import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredText;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.moveReaderToFirstMatch;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.Parser;
-import org.deegree.client.mdeditor.model.CodeList;
+import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLVersion;
+import org.deegree.gml.dictionary.Dictionary;
+import org.deegree.gml.dictionary.GMLDictionaryReader;
 import org.slf4j.Logger;
 
 /**
@@ -66,55 +63,26 @@ public class CodeListParser extends Parser {
 
     private static final Logger LOG = getLogger( CodeListParser.class );
 
-    private static QName ROOT = new QName( NS, "CodeListConfiguration" );
-
-    private static QName CODELIST_ELEMENT = new QName( NS, "CodeList" );
-
-    public static List<CodeList> parseConfiguration( URL url )
+    public static Dictionary parseDictionary( URL url )
                             throws ConfigurationException {
         try {
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.openStream() );
-            if ( !moveReaderToFirstMatch( xmlStream, ROOT ) ) {
+            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toExternalForm(),
+                                                                                             url.openStream() );
+            GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_32 );
+            GMLDictionaryReader reader = new GMLDictionaryReader( GMLVersion.GML_32, xmlStream, idContext );
+
+            while ( !xmlStream.isStartElement() && !( XMLStreamConstants.END_DOCUMENT == xmlStream.getEventType() ) ) {
+                xmlStream.next();
+            }
+            if ( XMLStreamConstants.END_DOCUMENT == xmlStream.getEventType() ) {
                 throw new ConfigurationException( "could not parse code list configuration" + url
                                                   + ": root element does not exist" );
             }
-
-            List<CodeList> codeLists = new ArrayList<CodeList>();
-            List<String> ids = new ArrayList<String>();
-            while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( ROOT ) ) ) {
-                QName elementName = xmlStream.getName();
-                if ( CODELIST_ELEMENT.equals( elementName ) ) {
-                    parseCodeList( xmlStream, codeLists, ids );
-                } else {
-                    nextElement( xmlStream );
-                }
-            }
-
-            return codeLists;
+            return reader.readDictionary();
         } catch ( Exception e ) {
             LOG.debug( "could not parse code list configuration" + url, e );
             throw new ConfigurationException( "could not parse code list configuration" + url );
         }
     }
 
-    private static void parseCodeList( XMLStreamReader xmlStream, List<CodeList> codeLists, List<String> ids )
-                            throws XMLStreamException, ConfigurationException {
-        String clId = getId( xmlStream, ids );
-        nextElement( xmlStream );
-        CodeList cl = new CodeList( clId );
-        LOG.debug( "Found CodeList with id " + clId );
-        while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( CODELIST_ELEMENT ) ) ) {
-            if ( xmlStream.isStartElement() && new QName( NS, "Code" ).equals( xmlStream.getName() ) ) {
-                nextElement( xmlStream );
-                String value = getRequiredText( xmlStream, new QName( NS, "value" ), true );
-                String label = getRequiredText( xmlStream, new QName( NS, "label" ), true );
-                cl.addCode( value, label );
-            } else {
-                nextElement( xmlStream );
-            }
-        }
-        LOG.debug( "Found " + cl.getCodes().size() + " codes for codeList " + clId );
-        codeLists.add( cl );
-        nextElement( xmlStream );
-    }
 }

@@ -50,8 +50,14 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.client.mdeditor.configuration.Configuration;
+import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.model.DataGroup;
+import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormField;
+import org.deegree.client.mdeditor.model.FormFieldPath;
+import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.SelectFormField;
 import org.deegree.client.mdeditor.model.mapping.MappingElement;
 import org.deegree.client.mdeditor.model.mapping.MappingGroup;
 import org.deegree.client.mdeditor.model.mapping.MappingInformation;
@@ -71,13 +77,15 @@ public class MappingExporter {
 
     private static final Logger LOG = getLogger( MappingExporter.class );
 
-    public static void export( File file, MappingInformation mapping, Map<String, FormField> formFields,
+    public static void export( File file, MappingInformation mapping, Configuration configuration, String confId,
                                Map<String, List<DataGroup>> dataGroups )
-                            throws XMLStreamException, FileNotFoundException, FactoryConfigurationError {
+                            throws XMLStreamException, FileNotFoundException, FactoryConfigurationError,
+                            ConfigurationException {
+
         LOG.debug( "Export dataset in file " + file.getAbsolutePath() + " selected mapping is " + mapping.toString() );
         XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream( file ) );
         writer.writeStartDocument();
-        
+
         List<MappingElement> mappingElements = mapping.getMappingElements();
         Iterator<MappingElement> it = mappingElements.iterator();
         if ( it.hasNext() ) {
@@ -89,33 +97,71 @@ public class MappingExporter {
                 if ( it.hasNext() ) {
                     nextElement = it.next();
                 }
-                String ffPath = currentElement.getFormFieldPath();
                 List<NameStep> nextSteps = new ArrayList<NameStep>();
                 if ( nextElement != null ) {
                     nextSteps = nextElement.getSchemaPathAsSteps();
                 }
-
+                FormConfiguration formConfiguration = configuration.getConfiguration( confId );
                 if ( currentElement instanceof MappingGroup ) {
-                    currentIndex = writeMappingGroup( writer, nextSteps, currentIndex, (MappingGroup) currentElement,
-                                                      dataGroups.get( ffPath ), ffPath, mapping );
+                    currentIndex = writeMappingGroup( writer, (MappingGroup) currentElement, currentIndex, nextSteps,
+                                                      mapping, configuration, formConfiguration, dataGroups );
                 } else {
-                    List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps();
-                    if ( formFields.containsKey( ffPath ) && formFields.get( ffPath ) != null ) {
-                        currentIndex = writeMappingElement( writer, currentSteps, nextSteps, currentIndex,
-                                                            formFields.get( ffPath ).getValue(), ffPath, mapping );
+                    FormFieldPath path = FormFieldPath.getAsPath( currentElement.getFormFieldPath() );
+                    // size can not be greater than 1, if mapping is for a single mapping element
+                    if ( path.getPath().size() > 0 && dataGroups.containsKey( path.getPath().get( 0 ) ) ) {
+                        List<DataGroup> dgs = dataGroups.get( path.getPath().get( 0 ) );
+                        if ( dgs.size() > 0 ) {
+                            Map<String, Object> v = dgs.get( 0 ).getValues();
+                            FormField formField = getFormField( formConfiguration, currentElement.getFormFieldPath() );
+                            List<String> values = getValuesAsList( v, configuration, formField, currentElement );
+                            currentIndex = writeMappingElement( writer, currentElement, currentIndex, nextSteps,
+                                                                mapping, configuration, formConfiguration, values );
+                        }
                     }
                 }
                 currentElement = nextElement;
             }
         }
-
         writer.writeEndDocument();
         writer.close();
     }
 
+    private static int writeMappingGroup( XMLStreamWriter writer, MappingGroup group, int currentIndex,
+                                          List<NameStep> ntDextSteps, MappingInformation mapping,
+                                          Configuration configuration, FormConfiguration formConfiguration,
+                                          Map<String, List<DataGroup>> dgs )
+                            throws XMLStreamException, ConfigurationException {
+        FormFieldPath path = FormFieldPath.getAsPath( group.getFormFieldPath() );
+        if ( path.getPath().size() > 0 && dgs.containsKey( path.getPath().get( 0 ) ) ) {
+            List<DataGroup> dataGroups = dgs.get( path.getPath().get( 0 ) );
+            if ( dataGroups.size() > 0 ) {
+                LOG.debug( "write mapping group" );
+                List<NameStep> groupSteps = group.getSchemaPathAsSteps();
+                for ( ; currentIndex < groupSteps.size(); currentIndex++ ) {
+                    NameStep qName = groupSteps.get( currentIndex );
+                    String prefix = qName.getPrefix();
+                    String namespaceURI = mapping.getNsContext().getURI( prefix );
+                    writer.writeStartElement( prefix, qName.getLocalName(), namespaceURI );
+                    writer.writeNamespace( prefix, namespaceURI );
+                }
+                for ( DataGroup d : dataGroups ) {
+                    Map<String, Object> values = d.getValues();
+                    writeDataGroup( writer, mapping, group.getMappingElements(), values, configuration,
+                                    formConfiguration );
+                }
+                for ( int i = 0; i < groupSteps.size() - currentIndex; i++ ) {
+                    writer.writeEndElement();
+                }
+
+            }
+        }
+        return currentIndex;
+    }
+
     private static void writeDataGroup( XMLStreamWriter writer, MappingInformation mapping,
-                                        List<MappingElement> mappingElements, Map<String, Object> values )
-                            throws XMLStreamException {
+                                        List<MappingElement> mappingElements, Map<String, Object> values,
+                                        Configuration configuration, FormConfiguration formConfiguration )
+                            throws XMLStreamException, ConfigurationException {
         Iterator<MappingElement> it = mappingElements.iterator();
         if ( it.hasNext() ) {
             MappingElement currentElement = it.next();
@@ -131,57 +177,33 @@ public class MappingExporter {
                     if ( nextElement != null ) {
                         nextSteps = nextElement.getSchemaPathAsSteps();
                     }
-                    List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps();
 
-                    currentIndex = writeMappingElement( writer, currentSteps, nextSteps, currentIndex,
-                                                        values.get( ffPath ), ffPath, mapping );
-
+                    FormField formField = getFormField( formConfiguration, currentElement.getFormFieldPath() );
+                    List<String> v = getValuesAsList( values, configuration, formField, currentElement );
+                    currentIndex = writeMappingElement( writer, currentElement, currentIndex, nextSteps, mapping,
+                                                        configuration, formConfiguration, v );
                 }
                 currentElement = nextElement;
             }
         }
     }
 
-    private static int writeMappingGroup( XMLStreamWriter writer, List<NameStep> nextSteps, int currentIndex,
-                                          MappingGroup group, List<DataGroup> dataGroups, String ffPath,
-                                          MappingInformation mapping )
-                            throws XMLStreamException {
-        if ( dataGroups != null ) {
-            LOG.debug( "write mapping group" );
-            List<NameStep> groupSteps = group.getSchemaPathAsSteps();
-            for ( ; currentIndex < groupSteps.size(); currentIndex++ ) {
-                NameStep qName = groupSteps.get( currentIndex );
-                String prefix = qName.getPrefix();
-                String namespaceURI = mapping.getNsContext().getURI( prefix );
-                writer.writeStartElement( prefix, qName.getLocalName(), namespaceURI );
-                writer.writeNamespace( prefix, namespaceURI );
-            }
-            for ( DataGroup dg : dataGroups ) {
-                Map<String, Object> values = dg.getValues();
-                writeDataGroup( writer, mapping, group.getMappingElements(), values );
-            }
-            for ( int i = 0; i < groupSteps.size() - currentIndex; i++ ) {
-                writer.writeEndElement();
-            }
-
-        }
-        return currentIndex;
-    }
-
-    private static int writeMappingElement( XMLStreamWriter writer, List<NameStep> currentSteps,
-                                            List<NameStep> nextSteps, int currentIndex, Object value, String ffPath,
-                                            MappingInformation mapping )
-                            throws XMLStreamException {
-        if ( value != null ) {
+    private static int writeMappingElement( XMLStreamWriter writer, MappingElement currentElement, int currentIndex,
+                                            List<NameStep> nextSteps, MappingInformation mapping,
+                                            Configuration configuration, FormConfiguration formConfiguration,
+                                            List<String> values )
+                            throws XMLStreamException, ConfigurationException {
+        if ( values.size() > 0 ) {
+            List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps();
             for ( ; currentIndex < currentSteps.size(); currentIndex++ ) {
                 NameStep nameStep = currentSteps.get( currentIndex );
                 // found list of elements
                 if ( "*".equals( nameStep.getLocalName() ) ) {
                     LOG.debug( "found mapping to list of single element" );
-                    writeValue( writer, currentSteps.subList( currentIndex + 1, currentSteps.size() ), value, mapping );
+                    writeList( writer, currentSteps.subList( currentIndex + 1, currentSteps.size() ), values, mapping );
                     break;
                 } else if ( Axis.ATTRIBUTE == nameStep.getAxis() ) {
-                    writeAttribute( writer, nameStep, value, mapping );
+                    writeAttribute( writer, nameStep, values.get( 0 ), mapping );
                     break;
                 } else {
                     String prefix = nameStep.getPrefix();
@@ -189,52 +211,43 @@ public class MappingExporter {
                     writer.writeStartElement( prefix, nameStep.getLocalName(), namespaceURI );
                     writer.writeNamespace( prefix, namespaceURI );
                     if ( currentIndex == currentSteps.size() - 1 ) {
-                        writer.writeCharacters( value.toString() );
+                        writer.writeCharacters( values.get( 0 ) );
                     }
                 }
             }
+            return finishStepsUntilNextCommon( writer, currentSteps, nextSteps, currentIndex );
         }
-        return finishStepsUntilNextCommon( writer, currentSteps, nextSteps, currentIndex );
+        return currentIndex;
     }
 
-    private static void writeAttribute( XMLStreamWriter writer, NameStep nameStep, Object value,
+    private static void writeAttribute( XMLStreamWriter writer, NameStep nameStep, String value,
                                         MappingInformation mapping )
                             throws XMLStreamException {
         LOG.debug( "write attribute " + nameStep + ", value is " + value );
         String prefix = nameStep.getPrefix();
         String ns = mapping.getNsContext().getURI( prefix );
         if ( ns != null ) {
-            writer.writeAttribute( prefix, ns, nameStep.getLocalName(), value.toString() );
+            writer.writeAttribute( prefix, ns, nameStep.getLocalName(), value );
         } else {
-            writer.writeAttribute( nameStep.getLocalName(), value.toString() );
+            writer.writeAttribute( nameStep.getLocalName(), value );
         }
     }
 
-    private static void writeValue( XMLStreamWriter writer, List<NameStep> currentSteps, Object value,
-                                    MappingInformation mapping )
+    private static void writeList( XMLStreamWriter writer, List<NameStep> currentSteps, List<String> values,
+                                   MappingInformation mapping )
                             throws XMLStreamException {
-        if ( value instanceof List<?> ) {
-            LOG.debug( "write list of values" );
-            for ( Object o : (List<?>) value ) {
-                writeSteps( writer, currentSteps, o.toString(), mapping );
+        LOG.debug( "write list of values" );
+        for ( String value : values ) {
+            for ( NameStep step : currentSteps ) {
+                String prefix = step.getPrefix();
+                String namespaceURI = mapping.getNsContext().getURI( prefix );
+                writer.writeStartElement( prefix, step.getLocalName(), namespaceURI );
+                writer.writeNamespace( prefix, namespaceURI );
             }
-        } else {
-            writeSteps( writer, currentSteps, value.toString(), mapping );
-        }
-    }
-
-    private static void writeSteps( XMLStreamWriter writer, List<NameStep> currentSteps, String value,
-                                    MappingInformation mapping )
-                            throws XMLStreamException {
-        for ( NameStep step : currentSteps ) {
-            String prefix = step.getPrefix();
-            String namespaceURI = mapping.getNsContext().getURI( prefix );
-            writer.writeStartElement( prefix, step.getLocalName(), namespaceURI );
-            writer.writeNamespace( prefix, namespaceURI );
-        }
-        writer.writeCharacters( value );
-        for ( int i = 0; i < currentSteps.size(); i++ ) {
-            writer.writeEndElement();
+            writer.writeCharacters( value );
+            for ( int i = 0; i < currentSteps.size(); i++ ) {
+                writer.writeEndElement();
+            }
         }
     }
 
@@ -249,7 +262,7 @@ public class MappingExporter {
                 break;
             }
         }
-        int stepsToClose = currentSteps.size() - equalSteps - ( currentSteps.size() - currentIndex );
+        int stepsToClose = currentIndex - equalSteps;
         for ( int i = 0; i < stepsToClose; i++ ) {
             writer.writeEndElement();
         }
@@ -268,4 +281,67 @@ public class MappingExporter {
         }
         return false;
     }
+
+    private static FormField getFormField( FormConfiguration formConfiguration, String ffPath ) {
+        FormFieldPath path = FormFieldPath.getAsPath( ffPath );
+        return formConfiguration.getFormField( path );
+    }
+
+    private static List<String> getValuesAsList( Map<String, Object> v, Configuration configuration,
+                                                 FormField formField, MappingElement currentElement )
+                            throws ConfigurationException {
+        List<String> values = new ArrayList<String>();
+        if ( formField != null ) {
+            Object o = v.get( formField.getPath().toString() );
+            if ( o != null ) {
+                if ( formField instanceof SelectFormField ) {
+                    SelectFormField ff = (SelectFormField) formField;
+                    if ( ff.getReferenceToCodeList() != null ) {
+                        if ( o instanceof List<?> ) {
+                            for ( Object value : (List<?>) o ) {
+                                values.add( getCodeListValue( configuration, ff, value.toString(),
+                                                              currentElement.getIndex() ) );
+                            }
+                        } else {
+                            values.add( getCodeListValue( configuration, ff, o.toString(), currentElement.getIndex() ) );
+                        }
+                    } else {
+                        // TODO -> Referenz globales Element
+                        if ( o instanceof List<?> ) {
+                            for ( Object value : (List<?>) o ) {
+                                values.add( value.toString() );
+                            }
+                        } else {
+                            values.add( o.toString() );
+                        }
+                    }
+                } else if ( formField instanceof InputFormField ) {
+                    if ( o != null ) {
+                        if ( o instanceof List<?> ) {
+                            for ( Object value : (List<?>) o ) {
+                                values.add( value.toString() );
+                            }
+                        } else {
+                            values.add( o.toString() );
+                        }
+                    }
+                }
+            }
+        }
+        return values;
+    }
+
+    private static String getCodeListValue( Configuration configuration, SelectFormField selectFF, String value,
+                                            int index )
+                            throws ConfigurationException {
+        String codeListValue = configuration.getCodeListValue( selectFF.getReferenceToCodeList(), value );
+        if ( index > -1 ) {
+            String[] values = codeListValue.split( "," );
+            if ( values.length > index ) {
+                return values[index];
+            }
+        }
+        return codeListValue;
+    }
+
 }

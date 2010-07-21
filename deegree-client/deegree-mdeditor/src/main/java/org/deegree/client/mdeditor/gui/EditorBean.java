@@ -233,6 +233,35 @@ public class EditorBean {
     }
 
     /**
+     * @return a map containing all data groups and formFields as datagroups; the key of the map contains the form group
+     *         id
+     */
+    public Map<String, List<DataGroup>> getAllDataGroups() {
+        Map<String, List<DataGroup>> dgs = new HashMap<String, List<DataGroup>>();
+        dgs.putAll( dataGroups );
+        for ( FormGroup fg : formGroups ) {
+            String grpId = fg.getId();
+            if ( !dgs.containsKey( grpId ) ) {
+                dgs.put( grpId, new ArrayList<DataGroup>() );
+            }
+            String newId = Utils.createId();
+            DataGroup newDataGrp = new DataGroup( newId );
+            dgs.get( grpId ).add( newDataGrp );
+
+            // set values
+            Map<String, Object> values = getValuesAsMap( getFormGroup( grpId ) );
+            for ( DataGroup dg : dgs.get( grpId ) ) {
+                if ( newId.equals( dg.getId() ) ) {
+                    dg.setValues( values );
+                    break;
+                }
+            }
+            
+        }
+        return dgs;
+    }
+
+    /**
      * @param grpId
      *            the id of the form group to return
      * @return a list of the data groups of the form group with the given id; an empty list, if no data group for the

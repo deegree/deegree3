@@ -82,8 +82,5 @@ public class MDEditorConfigurationParserTest extends TestCase {
         assertEquals( 1, globalDescriptions.size() );
         assertEquals( "global", globalDescriptions.get( 0 ).getId() );
 
-        assertNotNull( conf.getCodeLists() );
-        assertEquals( 3, conf.getCodeLists().size() );
-
     }
 }

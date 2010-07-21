@@ -50,6 +50,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 
+import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.io.DataIOException;
@@ -84,10 +85,12 @@ public class ExportBean {
                             throws AbortProcessingException, ConfigurationException {
         LOG.debug( "Export dataset; id of the selected mapping: " + selectedMapping );
         FacesContext fc = FacesContext.getCurrentInstance();
-        EditorBean formfieldBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
-                                                                                              "editorBean" );
-        Map<String, FormField> formFields = formfieldBean.getFormFields();
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( getConfId() );
+        EditorBean editorBean = (EditorBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                           "editorBean" );
+        Map<String, FormField> formFields = editorBean.getFormFields();
+        Configuration conf = ConfigurationManager.getConfiguration();
+        String confId = getConfId();
+        FormConfiguration configuration = conf.getConfiguration( confId );
 
         FormFieldPath pathToIdentifier = configuration.getPathToIdentifier();
         Object value = formFields.get( pathToIdentifier.toString() ).getValue();
@@ -97,7 +100,7 @@ public class ExportBean {
         }
 
         try {
-            String fileName = SchemaManager.export( id, selectedMapping, formFields, formfieldBean.getDataGroups() );
+            String fileName = SchemaManager.export( id, selectedMapping, conf, confId, editorBean.getAllDataGroups() );
 
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
 

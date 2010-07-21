@@ -42,4 +42,15 @@
             </Element>
         </Group>
     </DataGroup>
+    
+    <Element>
+        <id>Räumlich/country</id>
+        <value>brd</value>
+    </Element>
+    
+    <Element>
+        <id>FormGroup/selectOne1</id>
+        <value>dataset</value>
+    </Element>
+    
 </Dataset>

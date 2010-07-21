@@ -35,11 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.configuration;
 
-import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.deegree.client.mdeditor.model.CodeList;
+import org.deegree.commons.utils.StringPair;
 import org.junit.Test;
 
 /**
@@ -53,39 +54,59 @@ import org.junit.Test;
 public class CodeListConfigurationParserTest extends TestCase {
 
     @Test
-    public void testParseCodeLists()
+    public void testParseCodeListLabels()
                             throws ConfigurationException {
-        List<CodeList> codeLists = ConfigurationManager.getConfiguration().getCodeLists();
+        Locale locale = new Locale( "de" );
+        Map<String, StringPair> codes = ConfigurationManager.getConfiguration().getCodeListLabels( "hierarchylevel",
+                                                                                                   locale );
 
-        assertNotNull( codeLists );
-        assertTrue( codeLists.size() == 3 );
+        assertNotNull( codes );
+        assertEquals( 4, codes.size() );
 
-        CodeList codeList1 = codeLists.get( 0 );
-        CodeList codeList2 = codeLists.get( 1 );
-        CodeList codeList3 = codeLists.get( 2 );
-        assertEquals( "keyword", codeList1.getId() );
-        assertEquals( "hierarchylevel", codeList2.getId() );
-        assertEquals( "roleCode", codeList3.getId() );
+        assertNotNull( codes.get( "dataset" ) );
+        assertEquals( "Datensatz", codes.get( "dataset" ).first );
+        assertEquals( "Beschreibung Datensatz", codes.get( "dataset" ).second );
 
-        assertEquals( 4, codeList1.getCodes().size() );
-        assertEquals( 2, codeList2.getCodes().size() );
-        assertEquals( 11, codeList3.getCodes().size() );
+        assertNotNull( codes.get( "application" ) );
+        assertEquals( "Application", codes.get( "application" ).first );
+        assertEquals( "Beschreibung Application", codes.get( "application" ).second );
+
+        assertNotNull( codes.get( "test" ) );
+        assertEquals( "test", codes.get( "test" ).first );
+        assertNull( codes.get( "test" ).second );
+
+        locale = new Locale( "en" );
+        codes = ConfigurationManager.getConfiguration().getCodeListLabels( "hierarchylevel", locale );
+
+        assertNotNull( codes );
+        assertEquals( 4, codes.size() );
+
+        assertNotNull( codes.get( "dataset" ) );
+        assertEquals( "Dataset", codes.get( "dataset" ).first );
+        assertEquals( "Beschreibung Datensatz", codes.get( "dataset" ).second );
+
+        assertNotNull( codes.get( "dataseries" ) );
+        assertEquals( "Dataseries", codes.get( "dataseries" ).first );
+        assertEquals( "Beschreibung Datenserie", codes.get( "dataseries" ).second );
+
+        assertNotNull( codes.get( "application" ) );
+        assertEquals( "Application", codes.get( "application" ).first );
+        assertEquals( "Beschreibung Application", codes.get( "application" ).second );
+
+        assertNotNull( codes.get( "test" ) );
+        assertEquals( "test", codes.get( "test" ).first );
+        assertNull( codes.get( "test" ).second );
     }
 
     @Test
-    public void testParseCode()
+    public void testParseCodeListMetadata()
                             throws ConfigurationException {
-        CodeList codeList = ConfigurationManager.getConfiguration().getCodeList( "hierarchylevel" );
+        String value = ConfigurationManager.getConfiguration().getCodeListValue( "countries", "brd" );
+        assertNotNull( value );
+        assertTrue( value.contains( "5.301157108247309, 12.558214689996907, 45.42468009225714, 50.888249141163755" ) );
 
-        assertNotNull( codeList );
-
-        assertEquals( "hierarchylevel", codeList.getId() );
-        assertEquals( 2, codeList.getCodes().size() );
-
-        String value = "service";
-        assertNotNull( codeList.getCodes().get( value ) );
-        assertEquals( "Service", codeList.getCodes().get( value ) );
-
+        value = ConfigurationManager.getConfiguration().getCodeListValue( "countries", "niedersachsen" );
+        assertNotNull( value );
+        assertEquals( "niedersachsen", value );
     }
-
 }

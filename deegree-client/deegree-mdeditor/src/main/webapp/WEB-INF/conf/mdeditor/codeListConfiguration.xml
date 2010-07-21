@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary gml:id="CodeLists" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+    <gml:description>the code lists</gml:description>
+    <gml:name codeSpace="http://www.deegree.org/igeoportal">CodeLists</gml:name>
+    <gml:dictionaryEntry>
+        <gml:Dictionary gml:id="keyword">
+            <gml:description>A simple dictionary of keywords</gml:description>
+            <gml:name codeSpace="http://www.deegree.org/igeoportal">Keywords</gml:name>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="abitur">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">abitur</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">Abitur</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="single">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">single</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">Single</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="abfall">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">abfall</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">Abfall</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+        </gml:Dictionary>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Dictionary gml:id="theme">
+            <gml:description>A simple dictionary of themes</gml:description>
+            <gml:name codeSpace="http://www.deegree.org/igeoportal">theme</gml:name>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="society">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">society</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">society</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:en">society</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="biota">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">biota</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:en">biota</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:en">biota</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="farming">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">farming</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">farming</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:en">farming</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="oceans">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">oceans</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">oceans</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:en">oceans</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+        </gml:Dictionary>
+    </gml:dictionaryEntry>
+    <gml:dictionaryEntry>
+        <gml:Dictionary gml:id="hierarchylevel">
+            <gml:description>A simple dictionary of hierarchylevels</gml:description>
+            <gml:name codeSpace="http://www.deegree.org/igeoportal">hierarchylevel</gml:name>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="dataset">
+                    <gml:description>Beschreibung Datensatz</gml:description>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">dataset</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">Datensatz</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:en">Dataset</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="dataseries">
+                    <gml:description>Beschreibung Datenserie</gml:description>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">dataseries</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">Datenserie</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:en">Dataseries</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+   			<gml:dictionaryEntry>
+                <gml:Definition gml:id="application">
+                    <gml:description>Beschreibung Application</gml:description>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">application</gml:name>
+                    <gml:name>Application</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+        </gml:Dictionary>
+    </gml:dictionaryEntry>
+
+
+    <gml:dictionaryEntry>
+        <gml:Dictionary gml:id="countries">
+            <gml:description>A simple dictionary of countries</gml:description>
+            <gml:name codeSpace="http://www.deegree.org/igeoportal">countries</gml:name>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="brd">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">brd</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">Bundesrepublik</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:value">5.301157108247309, 12.558214689996907, 45.42468009225714, 50.888249141163755</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="nrw">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">nrw</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">Nordrhein-Westfalen</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:value">7.301157108247309, 10.558214689996907, 47.42468009225714, 49.888249141163755</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+            <gml:dictionaryEntry>
+                <gml:Definition gml:id="niedersachsen">
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:code">niedersachsen</gml:name>
+                    <gml:name codeSpace="urn:org:deegree:igeodesktop:de">Niedersachsen</gml:name>
+                </gml:Definition>
+            </gml:dictionaryEntry>
+        </gml:Dictionary>
+    </gml:dictionaryEntry>
+
+</gml:Dictionary>

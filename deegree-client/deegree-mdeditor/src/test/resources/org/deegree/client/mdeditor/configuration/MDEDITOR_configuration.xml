@@ -20,6 +20,6 @@
         </Configuration>
     </GlobalConfigurations>
     <CodeLists>
-        <codeList xlink:href="codeListTestConfiguration.xml" />
+        <codeList xlink:href="codeListConfiguration.xml" />
     </CodeLists>
 </MDEditorConfiguration>

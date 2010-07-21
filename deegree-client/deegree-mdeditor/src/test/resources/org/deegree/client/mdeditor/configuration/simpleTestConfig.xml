@@ -64,6 +64,7 @@
             </InputFormElement>
             <SelectFormElement id="selectOne2" required="false">
                 <selectType>many</selectType>
+            <referenceToCodeList>keyword</referenceToCodeList>
             </SelectFormElement>
         </FormGroup>
     </FormGroup>
@@ -80,6 +81,16 @@
             <label>Problem2:</label>
             <inputType>text</inputType>
         </InputFormElement>
+    </FormGroup>
+    
+     <FormGroup id="SpatialFormGroup">
+        <label>Räumlich</label>
+        <title>Räumliche Angaben zum Metadatensatz</title>
+        <SelectFormElement id="country">
+            <label>Geltungsbereich:</label>
+            <selectType>one</selectType>
+            <referenceToCodeList>countries</referenceToCodeList>
+        </SelectFormElement>
     </FormGroup>
 
 </FormConfiguration>

@@ -106,7 +106,10 @@ public class FormConfiguration {
      */
     public FormField getFormField( FormFieldPath path ) {
         for ( FormGroup fg : formGroups ) {
-            return getFormField( fg, path );
+            FormField formField = getFormField( fg, path );
+            if ( formField != null ) {
+                return formField;
+            }
         }
         return null;
     }

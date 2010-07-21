@@ -100,7 +100,7 @@ public class FormConfigurationParser extends Parser {
 
     private static QName REF_FORM = new QName( NS, "ReferencedFormElement" );
 
-//    private List<String> referencedGroups = new ArrayList<String>();
+    // private List<String> referencedGroups = new ArrayList<String>();
 
     private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
@@ -133,7 +133,7 @@ public class FormConfigurationParser extends Parser {
                     nextElement( xmlStream );
                 }
             }
-//            updateFormGroups();
+            // updateFormGroups();
             conf.setFormGroups( formGroups );
             return conf;
 
@@ -151,13 +151,15 @@ public class FormConfigurationParser extends Parser {
                             throws XMLStreamException, ConfigurationException {
         LOG.debug( "parse DatasetConfiguration" );
         nextElement( xmlStream );
-        FormFieldPath pathToIdentifier = getAsPath( getRequiredText( xmlStream, new QName( NS, "identifier" ), true ) );
+        FormFieldPath pathToIdentifier = FormFieldPath.getAsPath( getRequiredText( xmlStream,
+                                                                                   new QName( NS, "identifier" ), true ) );
         if ( pathToIdentifier == null ) {
             throw new ConfigurationException( "path to identifier must be set!" );
         }
         conf.setPathToIdentifier( pathToIdentifier );
-        conf.setPathToTitle( getAsPath( getText( xmlStream, new QName( NS, "title" ), null, true ) ) );
-        conf.setPathToDescription( getAsPath( getText( xmlStream, new QName( NS, "description" ), null, true ) ) );
+        conf.setPathToTitle( FormFieldPath.getAsPath( getText( xmlStream, new QName( NS, "title" ), null, true ) ) );
+        conf.setPathToDescription( FormFieldPath.getAsPath( getText( xmlStream, new QName( NS, "description" ), null,
+                                                                     true ) ) );
 
         if ( !moveReaderToFirstMatch( xmlStream, MAPPING ) ) {
             throw new ConfigurationException( "could not parse mapping: element does not exist" );
@@ -261,12 +263,13 @@ public class FormConfigurationParser extends Parser {
         SELECT_TYPE selectType = getSelectType( xmlStream );
 
         String referenceToGroup = getText( xmlStream, new QName( NS, "referenceToGroup" ), null, true );
-//        if ( referenceToGroup != null ) {
-//            referencedGroups.add( referenceToGroup );
-//        }
         String referenceText = getText( xmlStream, new QName( NS, "referenceText" ), null, true );
         String referenceToCodeList = getText( xmlStream, new QName( NS, "referenceToCodeList" ), null, true );
 
+        if ( referenceToCodeList == null && referenceToGroup == null ) {
+            throw new ConfigurationException( "could nor parse select form element with id " + id
+                                              + ": reference must be set!" );
+        }
         Object defaultValue = defaultValueAsString;
         if ( SELECT_TYPE.MANY.equals( selectType ) && defaultValueAsString != null ) {
             List<String> selValues = new ArrayList<String>();
@@ -281,14 +284,6 @@ public class FormConfigurationParser extends Parser {
                                                   selectType, referenceToCodeList, referenceToGroup, referenceText );
         return ff;
 
-    }
-
-    private FormFieldPath getAsPath( String path ) {
-        if ( path != null && path.length() > 0 ) {
-            return new FormFieldPath( path.split( "/" ) );
-
-        }
-        return null;
     }
 
     private FormFieldPath getPath( String fieldId ) {
@@ -401,21 +396,21 @@ public class FormConfigurationParser extends Parser {
         throw new ConfigurationException( "layoutType " + elementText + "is not valid" );
     }
 
-//    private void updateFormGroups()
-//                            throws ConfigurationException {
-//        for ( String reference : referencedGroups ) {
-//            boolean referenced = false;
-//            for ( FormGroup fg : formGroups ) {
-//                if ( reference.equals( fg.getId() ) ) {
-//                    fg.setReferenced( true );
-//                    referenced = true;
-//                    break;
-//                }
-//            }
-//            if ( !referenced ) {
-//                throw new ConfigurationException( "Referenced group " + reference + " does not exist!" );
-//            }
-//        }
-//    }
+    // private void updateFormGroups()
+    // throws ConfigurationException {
+    // for ( String reference : referencedGroups ) {
+    // boolean referenced = false;
+    // for ( FormGroup fg : formGroups ) {
+    // if ( reference.equals( fg.getId() ) ) {
+    // fg.setReferenced( true );
+    // referenced = true;
+    // break;
+    // }
+    // }
+    // if ( !referenced ) {
+    // throw new ConfigurationException( "Referenced group " + reference + " does not exist!" );
+    // }
+    // }
+    // }
 
 }

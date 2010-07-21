@@ -36,11 +36,12 @@
 package org.deegree.client.mdeditor.mapping;
 
 import java.io.File;
-
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,17 +50,14 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.math.RandomUtils;
+import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.configuration.mapping.MappingParser;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.io.DataIOException;
+import org.deegree.client.mdeditor.model.DataGroup;
 import org.deegree.client.mdeditor.model.Dataset;
-import org.deegree.client.mdeditor.model.FormConfiguration;
-import org.deegree.client.mdeditor.model.FormField;
-import org.deegree.client.mdeditor.model.InputFormField;
-import org.deegree.client.mdeditor.model.SelectFormField;
 import org.deegree.client.mdeditor.model.mapping.MappingInformation;
 import org.junit.Test;
 
@@ -76,59 +74,48 @@ public class MappingExporterTest extends TestCase {
     @Test
     public void test()
                             throws ConfigurationException, IOException, DataIOException, XMLStreamException,
-                            FactoryConfigurationError {
-        Map<String, FormField> formFields = prepareFormFields();
+                            FactoryConfigurationError, URISyntaxException {
 
-        Dataset readTestDataset = prepareDataset();
-        URL url = new URL(
-                           "file:///home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/mapping/mappingTest.xml" );
+        Configuration conf = ConfigurationManager.getConfiguration();
+        assertNotNull( conf );
+
+        Map<String, List<DataGroup>> dataGroups = prepareDataGroups();
+
+        URL url = MappingExporterTest.class.getResource( "mappingTest.xml" );
         MappingInformation mapping = MappingParser.parseMapping( url );
 
-        File f = new File( "/home/lyn/workspace/deegree-mdeditor/tmp/test/output.xml" );
+        URL output = MappingExporterTest.class.getResource( "output.xml" );
+        File f = new File( output.toURI() );
         if ( f.exists() ) {
             f.delete();
         }
         f.createNewFile();
-        MappingExporter.export( f, mapping, formFields, readTestDataset.getDataGroups() );
+        MappingExporter.export( f, mapping, conf, "simple", dataGroups );
     }
 
-    private Dataset prepareDataset()
+    private Map<String, List<DataGroup>> prepareDataGroups()
                             throws DataIOException, ConfigurationException {
-        return DataHandler.getInstance().getDataset( "exampleDataset.xml" );
-    }
+        Dataset dataset = DataHandler.getInstance().getDataset( "exampleDataset.xml" );
+        Map<String, List<DataGroup>> dataGroups = dataset.getDataGroups();
+        Map<String, Object> values1 = new HashMap<String, Object>();
+        values1.put( "SpatialFormGroup/country", "brd" );
+        dataGroups.put( "SpatialFormGroup", Collections.singletonList( new DataGroup( "dg1", values1 ) ) );
 
-    private Map<String, FormField> prepareFormFields()
-                            throws ConfigurationException {
-        FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( "simple" );
-        Map<String, FormField> formFields = configuration.getFormFields();
-        for ( String path : formFields.keySet() ) {
-            FormField ff = formFields.get( path );
-            if ( ff instanceof InputFormField ) {
-                switch ( ( (InputFormField) ff ).getInputType() ) {
-                case INT:
-                    ff.setValue( RandomUtils.nextInt() );
-                    break;
-                case TIMESTAMP:
-                    ff.setValue( new Date() );
-                default:
-                    ff.setValue( "text" + RandomUtils.nextInt( 50 ) );
-                    break;
-                }
-            } else if ( ff instanceof SelectFormField ) {
-                SelectFormField ffSelect = (SelectFormField) ff;
-                switch ( ffSelect.getSelectType() ) {
-                case MANY:
-                    List<String> list = new ArrayList<String>();
-                    list.add( "selectMany" + RandomUtils.nextInt( 5 ) );
-                    list.add( "selectMany" + RandomUtils.nextInt( 5 ) );
-                    ff.setValue( list );
-                    break;
-                default:
-                    ff.setValue( "select" + RandomUtils.nextInt( 5 ) );
-                    break;
-                }
-            }
-        }
-        return formFields;
+        Map<String, Object> values2 = new HashMap<String, Object>();
+        values2.put( "FormGroup3/text5", "2b2c0938-4000-437f-8466-4a312dfac170" );
+        dataGroups.put( "FormGroup3", Collections.singletonList( new DataGroup( "dg2", values2 ) ) );
+
+        Map<String, Object> values3 = new HashMap<String, Object>();
+        values3.put( "FormGroup/FormGroup11/text2", "testnfff" );
+        List<String> multipleSelect = new ArrayList<String>();
+        multipleSelect.add( "abitur" );
+        multipleSelect.add( "abfall" );
+        values3.put( "FormGroup/FormGroup11/selectOne2", multipleSelect );
+
+        values3.put( "FormGroup/text1", "defaultValue" );
+        values3.put( "FormGroup/selectOne1", "dataset" );
+        dataGroups.put( "FormGroup", Collections.singletonList( new DataGroup( "dg2", values3 ) ) );
+
+        return dataGroups;
     }
 }
