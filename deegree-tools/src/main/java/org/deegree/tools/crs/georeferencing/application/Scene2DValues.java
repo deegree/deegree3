@@ -41,7 +41,6 @@ import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
@@ -94,10 +93,6 @@ public class Scene2DValues {
     private GeometryFactory geom;
 
     private double ratio;
-
-    private RasterGeoReference ref;
-
-    private double size;
 
     /**
      * Creates a new instance of <Code>Scene2DValues</Code>
@@ -603,11 +598,6 @@ public class Scene2DValues {
 
     public void setEnvelopeFootprint( Envelope createEnvelope ) {
         this.envelopeFootprint = createEnvelope;
-
-    }
-
-    public void setRasterGeoRef( RasterGeoReference ref ) {
-        this.ref = ref;
 
     }
 

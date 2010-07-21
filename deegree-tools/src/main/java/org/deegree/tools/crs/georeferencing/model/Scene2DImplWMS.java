@@ -126,7 +126,7 @@ public class Scene2DImplWMS implements Scene2D {
                                                                        Double.parseDouble( options.get( "RIGHT_UPPER_Y" ) ) );
             this.sceneValues.setRaster( ra );
             ref = ra.getRasterReference();
-            this.sceneValues.setRasterGeoRef( ref );
+            // this.sceneValues.setRasterGeoRef( ref );
             rasterRect = ref.convertEnvelopeToRasterCRS( ra.getEnvelope() );
             this.sceneValues.setRasterRect( rasterRect );
             this.sceneValues.setCrs( raster.getCoordinateSystem() );
