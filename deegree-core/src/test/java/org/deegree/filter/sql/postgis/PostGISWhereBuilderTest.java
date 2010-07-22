@@ -49,6 +49,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLExpression;
 import org.deegree.filter.xml.Filter110XMLDecoder;
