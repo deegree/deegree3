@@ -227,6 +227,23 @@
           <File>../styles/utah_cities.se</File>
         </DirectStyle>
       </RequestableLayer>
+      
+      <RequestableLayer>
+        <Name>WeatherStations</Name>
+        <Title>Weatherstations in Utah County</Title>
+        <Dimension isTime="true">
+          <Property>TIMESTAMP</Property>
+          <DefaultValue>2009-01-01T00:00:00Z</DefaultValue>
+          <MultipleValues>true</MultipleValues>
+          <NearestValue>false</NearestValue>
+          <Current>false</Current>
+          <Extent>2009-01-01T00:00:00Z/2009-01-07T00:00:00Z/PTS5</Extent>
+        </Dimension>
+        <FeatureStoreId>utah_weather</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/utah_weather.se</File>
+        </DirectStyle>
+      </RequestableLayer>
 
       <DynamicLayer>
         <ShapefileDirectory>../../data/utah/vector/busroutes</ShapefileDirectory>
