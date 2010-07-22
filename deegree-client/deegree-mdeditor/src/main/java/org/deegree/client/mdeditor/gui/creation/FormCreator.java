@@ -125,8 +125,9 @@ public class FormCreator {
         if ( fg != null ) {
             HtmlPanelGrid grid = new HtmlPanelGrid();
             grid.setId( getUniqueId() );
-            addMenu( confId, formConf, grid );
-            addFormGroup( confId, grid, fg, true, global );
+            FacesContext fc = FacesContext.getCurrentInstance();
+            addMenu( fc, confId, formConf, grid );
+            addFormGroup( fc, confId, grid, fg, true, global );
             grid.getAttributes().put( GROUPID_ATT_KEY, fg.getId() );
             return grid;
         }
@@ -134,7 +135,7 @@ public class FormCreator {
         return null;
     }
 
-    private static void addMenu( String confId, FormConfiguration formConf, HtmlPanelGrid grid ) {
+    private static void addMenu( FacesContext fc, String confId, FormConfiguration formConf, HtmlPanelGrid grid ) {
 
         LAYOUT_TYPE layoutType = formConf.getLayoutType();
         String menuId = null;
@@ -152,16 +153,17 @@ public class FormCreator {
         listGroup.getAttributes().put( "listId", listId );
         listGroup.getAttributes().put( "menuId", menuId );
         for ( FormGroup formGroup : formConf.getFormGroups() ) {
-            listGroup.getChildren().add( createLink( formGroup ) );
+            listGroup.getChildren().add( createLink( fc, formGroup ) );
         }
         grid.getChildren().add( listGroup );
     }
 
-    private static HtmlOutcomeTargetLink createLink( FormGroup formGroup ) {
+    private static HtmlOutcomeTargetLink createLink( FacesContext fc, FormGroup formGroup ) {
 
         HtmlOutcomeTargetLink link = new HtmlOutcomeTargetLink();
         link.setId( GuiUtils.getUniqueId() );
-        link.setValue( formGroup.getLabel() );
+        link.setValueExpression( "value", getLabelVE( fc, formGroup.getLabel() ) );
+
         link.setOutcome( "emptyForm" );
         UIParameter param = new UIParameter();
         param.setId( GuiUtils.getUniqueId() );
@@ -169,7 +171,6 @@ public class FormCreator {
         param.setValue( formGroup.getId() );
         link.getChildren().add( param );
 
-        FacesContext fc = FacesContext.getCurrentInstance();
         String el = "#{editorBean.grpId == '" + formGroup.getId() + "' ? 'menuItemActive' : 'menuItemInactive'}";
         ValueExpression ve = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(), el,
                                                                                                String.class );
@@ -177,8 +178,13 @@ public class FormCreator {
         return link;
     }
 
-    private static void addFormGroup( String confId, HtmlPanelGrid parentGrid, FormGroup fg, boolean isMain,
-                                      boolean isGlobal )
+    private static ValueExpression getLabelVE( FacesContext fc, String key ) {
+        String el = "#{confLabels['" + key + "']}";
+        return fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(), el, String.class );
+    }
+
+    private static void addFormGroup( FacesContext fc, String confId, HtmlPanelGrid parentGrid, FormGroup fg,
+                                      boolean isMain, boolean isGlobal )
                             throws ConfigurationException {
         HtmlPanelGrid grid = new HtmlPanelGrid();
         grid.setId( getUniqueId() );
@@ -188,17 +194,17 @@ public class FormCreator {
 
         // label
         UIOutput title = new UIOutput();
-        title.setValue( fg.getTitle() );
+        title.setValueExpression( "value", getLabelVE( fc, fg.getTitle() ) );
         grid.getFacets().put( "header", title );
 
         // createInputPanelGroup();
         for ( FormElement fe : fg.getFormElements() ) {
             if ( fe instanceof FormGroup ) {
                 grid.getChildren().add( new HtmlPanelGroup() );
-                addFormGroup( confId, grid, (FormGroup) fe, false, false );
+                addFormGroup( fc, confId, grid, (FormGroup) fe, false, false );
                 grid.getChildren().add( new HtmlPanelGroup() );
             } else {
-                addFormField( confId, grid, (FormField) fe );
+                addFormField( fc, confId, grid, (FormField) fe );
             }
         }
 
@@ -206,16 +212,15 @@ public class FormCreator {
 
         if ( isGlobal || fg.getOccurence() != 1 ) {
             HtmlPanelGrid referencedGrid = new HtmlPanelGrid();
-            addReferencedFormGroup( fg, referencedGrid, isGlobal );
+            addReferencedFormGroup( fc, fg, referencedGrid, isGlobal );
             parentGrid.getChildren().add( referencedGrid );
         }
     }
 
-    private static void addReferencedFormGroup( FormGroup fg, HtmlPanelGrid grid, boolean isGlobal ) {
-        FacesContext fc = FacesContext.getCurrentInstance();
+    private static void addReferencedFormGroup( FacesContext fc, FormGroup fg, HtmlPanelGrid grid, boolean isGlobal ) {
         Application app = fc.getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
-        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+        ELContext elContext = fc.getELContext();
 
         addButtons( fc, fg.getId(), grid, isGlobal );
 
@@ -259,7 +264,7 @@ public class FormCreator {
         }
 
         HtmlColumn col = new HtmlColumn();
-        HtmlCommandButton selectButton = createSelectButton( fg, isGlobal );
+        HtmlCommandButton selectButton = createSelectButton( fc, fg, isGlobal );
         col.getChildren().add( selectButton );
         HtmlOutputText header = new HtmlOutputText();
         header.setValue( "Optionen" );
@@ -278,15 +283,15 @@ public class FormCreator {
     private static void addButtons( FacesContext fc, String grpId, HtmlPanelGrid grid, boolean isReferencedGrp ) {
         HtmlPanelGrid btGrid = new HtmlPanelGrid();
         btGrid.setColumns( 5 );
-        HtmlCommandButton saveButton = createButton( grpId, "saveFormGroup", ACTION_ATT_VALUES.SAVE, true,
+        HtmlCommandButton saveButton = createButton( fc, grpId, "saveFormGroup", ACTION_ATT_VALUES.SAVE, true,
                                                      isReferencedGrp );
-        HtmlCommandButton newButton = createButton( grpId, "newFormGroup", ACTION_ATT_VALUES.NEW, false,
+        HtmlCommandButton newButton = createButton( fc, grpId, "newFormGroup", ACTION_ATT_VALUES.NEW, false,
                                                     isReferencedGrp );
-        HtmlCommandButton editButton = createButton( grpId, "editFormGroup", ACTION_ATT_VALUES.EDIT, false,
+        HtmlCommandButton editButton = createButton( fc, grpId, "editFormGroup", ACTION_ATT_VALUES.EDIT, false,
                                                      isReferencedGrp );
-        HtmlCommandButton resetButton = createButton( grpId, "resetFormGroup", ACTION_ATT_VALUES.RESET, false,
+        HtmlCommandButton resetButton = createButton( fc, grpId, "resetFormGroup", ACTION_ATT_VALUES.RESET, false,
                                                       isReferencedGrp );
-        HtmlCommandButton deleteButton = createButton( grpId, "deleteFormGroup", ACTION_ATT_VALUES.DELETE, false,
+        HtmlCommandButton deleteButton = createButton( fc, grpId, "deleteFormGroup", ACTION_ATT_VALUES.DELETE, false,
                                                        isReferencedGrp );
 
         String confirmMsg = getResourceText( fc, "mdLabels", "deleteFormGroup_confirmMsg" );
@@ -300,16 +305,16 @@ public class FormCreator {
         grid.getChildren().add( btGrid );
     }
 
-    private static HtmlCommandButton createButton( String grpId, String labelKey, ACTION_ATT_VALUES action,
-                                                   boolean ifNull, boolean isReferencedGrp ) {
+    private static HtmlCommandButton createButton( FacesContext fc, String grpId, String labelKey,
+                                                   ACTION_ATT_VALUES action, boolean ifNull, boolean isReferencedGrp ) {
 
-        Application app = FacesContext.getCurrentInstance().getApplication();
+        Application app = fc.getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
-        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+        ELContext elContext = fc.getELContext();
 
         HtmlCommandButton bt = new HtmlCommandButton();
         bt.setId( getUniqueId() );
-        bt.setValue( getResourceText( FacesContext.getCurrentInstance(), "mdLabels", labelKey ) );
+        bt.setValue( getResourceText( fc, "mdLabels", labelKey ) );
         bt.getAttributes().put( GROUPID_ATT_KEY, grpId );
         bt.getAttributes().put( ACTION_ATT_KEY, action );
 
@@ -342,10 +347,9 @@ public class FormCreator {
         return bt;
     }
 
-    private static HtmlCommandButton createSelectButton( FormGroup formGroup, boolean isGlobal ) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        ExpressionFactory ef = context.getApplication().getExpressionFactory();
-        ELContext elContext = context.getELContext();
+    private static HtmlCommandButton createSelectButton( FacesContext fc, FormGroup formGroup, boolean isGlobal ) {
+        ExpressionFactory ef = fc.getApplication().getExpressionFactory();
+        ELContext elContext = fc.getELContext();
 
         // button
         HtmlCommandButton bt = new HtmlCommandButton();
@@ -377,24 +381,23 @@ public class FormCreator {
         return bt;
     }
 
-    private static void addFormField( String confId, HtmlPanelGrid parentGrid, FormField fe )
+    private static void addFormField( FacesContext fc, String confId, HtmlPanelGrid parentGrid, FormField fe )
                             throws ConfigurationException {
 
-        FacesContext fc = FacesContext.getCurrentInstance();
         Application app = fc.getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
-        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+        ELContext elContext = fc.getELContext();
 
         // label
         UIOutput newOutput = new UIOutput();
-        newOutput.setValue( fe.getLabel() );
+        newOutput.setValueExpression( "value", getLabelVE( fc, fe.getLabel() ) );
         setVisibility( fe.getPath().toString(), newOutput, ef, elContext );
         newOutput.setId( getUniqueId() );
         newOutput.setValueExpression( "styleClass", ef.createValueExpression( elContext, "mdFormLabel", String.class ) );
 
         parentGrid.getChildren().add( newOutput );
 
-        addValueField( confId, fe, parentGrid, ef, elContext );
+        addValueField( fc, confId, fe, parentGrid, ef, elContext );
 
         // help
         HtmlCommandLink helpLink = new HtmlCommandLink();
@@ -410,7 +413,8 @@ public class FormCreator {
         UIParameter param = new UIParameter();
         param.setId( getUniqueId() );
         param.setName( "mdHelp" );
-        param.setValue( fe.getHelp() );
+        param.setValueExpression( "value", getLabelVE( fc, fe.getHelp() ) );
+
         helpLink.getChildren().add( param );
         helpLink.getChildren().add( helpLink );
 
@@ -426,8 +430,8 @@ public class FormCreator {
         parentGrid.getChildren().add( helpLink );
     }
 
-    private static void addValueField( String confId, FormField fe, HtmlPanelGrid parentGrid, ExpressionFactory ef,
-                                       ELContext elContext )
+    private static void addValueField( FacesContext fc, String confId, FormField fe, HtmlPanelGrid parentGrid,
+                                       ExpressionFactory ef, ELContext elContext )
                             throws ConfigurationException {
         String id = fe.getId();
         UIInput input = null;
@@ -448,7 +452,7 @@ public class FormCreator {
             if ( SELECT_TYPE.MANY.equals( se.getSelectType() ) ) {
                 input = new HtmlSelectManyListbox();
                 if ( se.getReferenceToCodeList() != null ) {
-                    addCodeListItems( input, se.getReferenceToCodeList() );
+                    addCodeListItems( fc, input, se.getReferenceToCodeList() );
                 } else if ( se.getReferenceToGroup() != null ) {
                     input.getAttributes().put( GROUPREF_ATT_KEY, se.getReferenceToGroup() );
                     input.getAttributes().put( CONF_ATT_KEY, confId );
@@ -457,7 +461,7 @@ public class FormCreator {
             } else {
                 input = new HtmlSelectOneMenu();
                 if ( se.getReferenceToCodeList() != null ) {
-                    addCodeListItems( input, se.getReferenceToCodeList() );
+                    addCodeListItems( fc, input, se.getReferenceToCodeList() );
                 } else if ( se.getReferenceToGroup() != null ) {
                     input.getAttributes().put( GROUPREF_ATT_KEY, se.getReferenceToGroup() );
                     input.getAttributes().put( CONF_ATT_KEY, confId );
@@ -466,8 +470,6 @@ public class FormCreator {
             }
         } else if ( fe instanceof ReferencedElement ) {
             ReferencedElement re = (ReferencedElement) fe;
-            FacesContext fc = FacesContext.getCurrentInstance();
-            fc.getELContext();
             ReferencedElementBean refElemBean = (ReferencedElementBean) fc.getApplication().getELResolver().getValue(
                                                                                                                       fc.getELContext(),
                                                                                                                       null,
@@ -497,14 +499,14 @@ public class FormCreator {
         }
     }
 
-    private static void addCodeListItems( UIInput select, String codeListRef )
+    private static void addCodeListItems( FacesContext fc, UIInput select, String codeListRef )
                             throws ConfigurationException {
         Locale locale;
         Locale defaultLocale = Locale.getDefault();
         locale = defaultLocale;
         UIViewRoot root;
         // See if this FacesContext has a ViewRoot
-        if ( null != ( root = FacesContext.getCurrentInstance().getViewRoot() ) ) {
+        if ( null != ( root = fc.getViewRoot() ) ) {
             // If so, ask it for its Locale
             if ( null == ( locale = root.getLocale() ) ) {
                 // If the ViewRoot has no Locale, fall back to the default.
@@ -512,7 +514,8 @@ public class FormCreator {
             }
         }
 
-        Map<String, StringPair> codeList = ConfigurationManager.getConfiguration().getCodeListLabels( codeListRef, locale );
+        Map<String, StringPair> codeList = ConfigurationManager.getConfiguration().getCodeListLabels( codeListRef,
+                                                                                                      locale );
         for ( String value : codeList.keySet() ) {
             UISelectItem si = new UISelectItem();
             si.setId( getUniqueId() );
