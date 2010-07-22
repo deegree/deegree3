@@ -40,6 +40,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.geometry.Geometry;
 
@@ -59,16 +60,22 @@ public interface PostGISMapping {
      * @param propName
      *            property name (from {@link Filter}/sort criterion}, can be <code>null</code> (indicates that the
      *            default geometry property of the root object is requested)
+     * @param aliasManager
+     *            manager for creating and tracking table aliases, never <code>null</code>
      * @return relational mapping, may be <code>null</code> (if no mapping is possible)
      * @throws FilterEvaluationException
      *             thrown to indicate that the {@link PropertyName} is invalid
-     * @throws UnmappableException 
+     * @throws UnmappableException
      */
-    public PropertyNameMapping getMapping( PropertyName propName )
+    public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException;
 
     /**
+     * Returns the value object for the given {@link Literal}, adapted to the SQL type that is imposed by the specified
+     * {@link PropertyName} and its relational mapping.
+     * 
      * @param literal
+     *            literal to be converted, never <code>null</code>
      * @param propName
      * @return
      * @throws FilterEvaluationException
@@ -81,6 +88,7 @@ public interface PostGISMapping {
      * necessary.
      * 
      * @param literal
+     *            literal to be converted, never <code>null</code>
      * @param propName
      * @return
      * @throws FilterEvaluationException

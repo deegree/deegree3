@@ -183,7 +183,9 @@ class FeatureBuilder {
         try {
             LOG.debug( "Preparing SELECT: " + sql );
             stmt = conn.prepareStatement( sql.toString() );
-            stmt.setString( 1, rs.getString( 1 ) );
+            
+            // TODO explicit SQL type handling!?
+            stmt.setObject( 1, rs.getObject( 1 ) );
 
             rs2 = stmt.executeQuery();
 

@@ -150,6 +150,7 @@ public class MappedXPath {
                                  + "' does not define a property with name '" + propName + "'.";
                     throw new UnmappableException( msg );
                 }
+                propStep = false;
             } else {
                 if ( !( pt instanceof FeaturePropertyType ) ) {
                     String msg = "Error in property name, step " + ( i + 1 ) + ": property '" + pt.getName()
@@ -164,20 +165,20 @@ public class MappedXPath {
                                  + "' is not a known feature type.";
                     throw new UnmappableException( msg );
                 }
-                if ( fpt.getValueFt() != null && schema.isSubType( fpt.getValueFt(), ft ) ) {
+                if ( fpt.getValueFt() != null && !schema.isSubType( fpt.getValueFt(), ft ) ) {
                     String msg = "Error in property name, step " + ( i + 1 ) + ": '" + ftName
-                                 + "' is not possible substitution for the value feature type (='" + fpt.getValueFt()
-                                 + "') of property '" + pt.getName() + "'.";
+                                 + "' is not possible substitution for the value feature type (='"
+                                 + fpt.getValueFt().getName() + "') of property '" + pt.getName() + "'.";
                     throw new UnmappableException( msg );
                 }
 
-                FeatureTypeMapping valueFtMapping = schema.getMapping( ft.getName() );
+                FeatureTypeMapping valueFtMapping = schema.getMapping( fpt.getValueFt().getName() );
                 if ( valueFtMapping == null ) {
                     String msg = "Feature type '" + ft.getName() + "' is not mapped.";
                     throw new UnmappableException( msg );
                 }
 
-                MappingExpression propMapping = valueFtMapping.getMapping( pt.getName() );
+                MappingExpression propMapping = ftMapping.getMapping( pt.getName() );
                 if ( propMapping == null ) {
                     String msg = "Property '" + pt.getName() + "' is not mapped.";
                     throw new UnmappableException( msg );
@@ -186,6 +187,7 @@ public class MappedXPath {
                 addJoins( ftMapping, propMapping, valueFtMapping );
 
                 ftMapping = valueFtMapping;
+                propStep = true;
             }
         }
 
@@ -221,7 +223,7 @@ public class MappedXPath {
             JoinChain chain = (JoinChain) propMapping;
             add( chain );
             String table = getCurrentTable();
-            valueField = new DBField( table, ( (DBField) propMapping ).getColumn() );
+            valueField = new DBField( table, chain.getFields().get( chain.getFields().size() - 1 ).getColumn() );
         } else {
             throw new UnmappableException( "Unhandled mapping expression: " + propMapping.getClass() );
         }
@@ -269,7 +271,7 @@ public class MappedXPath {
     public DBField getValueField() {
         return valueField;
     }
-    
+
     /**
      * Returns the required joins.
      * 

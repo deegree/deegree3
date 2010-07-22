@@ -50,6 +50,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLExpression;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -73,7 +74,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter1.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
+                                                          null, false );
         SQLExpression whereClause = wb.getWhereClause();
         Assert.equals( "PHILOSOPHER.NAME = 'Albert Camus'", whereClause.toString() );
     }
@@ -83,7 +85,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter2.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
+                                                          null, false );
         SQLExpression whereClause = wb.getWhereClause();
         System.out.println( whereClause.getSQL() );
     }
@@ -93,7 +96,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter5.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
+                                                          null, false );
         SQLExpression whereClause = wb.getWhereClause();
         System.out.println( whereClause );
     }
@@ -103,7 +107,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter6.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
+                                                          null, false );
         SQLExpression whereClause = wb.getWhereClause();
         System.out.println( whereClause );
     }
@@ -113,7 +118,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter8.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
+                                                          null, false );
         SQLExpression whereClause = wb.getWhereClause();
         System.out.println( whereClause );
     }
@@ -123,7 +129,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter11.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
+                                                          null, false );
         SQLExpression whereClause = wb.getWhereClause();
         System.out.println( whereClause );
     }
@@ -133,7 +140,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter15.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
+                                                          null, false );
         SQLExpression whereClause = wb.getWhereClause();
         System.out.println( whereClause );
     }
@@ -151,7 +159,7 @@ public class PostGISWhereBuilderTest {
     private class DummyPostGISMapping implements PostGISMapping {
 
         @Override
-        public PropertyNameMapping getMapping( PropertyName propName )
+        public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                 throws FilterEvaluationException, UnmappableException {
             if ( propName.getPropertyName().equals( "app:name" ) ) {
                 return new PropertyNameMapping( "PHILOSOPHER", "NAME" );
@@ -173,7 +181,7 @@ public class PostGISWhereBuilderTest {
             }
             if ( propName.getPropertyName().equals( "app:placeOfDeath/app:Place/app:country/app:Country/app:geom" ) ) {
                 return new PropertyNameMapping( "COUNTRY", "GEOM" );
-            }            
+            }
             throw new UnmappableException( "Property '" + propName + "' is not mappable." );
         }
 

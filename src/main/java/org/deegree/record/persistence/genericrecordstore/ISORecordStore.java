@@ -90,6 +90,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.protocol.csw.CSWConstants;
@@ -377,7 +378,8 @@ public class ISORecordStore implements RecordStore {
 
         // TODO sortProperty
         try {
-            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) recordStoreOptions.getFilter(), null,
+            builder = new PostGISWhereBuilder( new TableAliasManager(), mapping,
+                                               (OperatorFilter) recordStoreOptions.getFilter(), null,
                                                useLegacyPredicates );
         } catch ( FilterEvaluationException e ) {
 
@@ -838,7 +840,7 @@ public class ISORecordStore implements RecordStore {
 
                     // TODO sortProperty
 
-                    PostGISWhereBuilder builder = new PostGISWhereBuilder( mapping,
+                    PostGISWhereBuilder builder = new PostGISWhereBuilder( new TableAliasManager(), mapping,
                                                                            (OperatorFilter) upd.getConstraint(), null,
                                                                            useLegacyPredicates );
 
@@ -904,7 +906,7 @@ public class ISORecordStore implements RecordStore {
                             while ( rsGetStoredFullRecordXML.next() ) {
                                 for ( RecordProperty recProp : upd.getRecordProperty() ) {
 
-                                    PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName() );
+                                    PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName(), null );
 
                                     Object obje = mapping.getPostGISValue( (Literal<?>) recProp.getReplacementValue(),
                                                                            recProp.getPropertyName() );
@@ -998,7 +1000,8 @@ public class ISORecordStore implements RecordStore {
                 for ( int formatNum : formatNumbers ) {
                     // TODO sortProperty
                     try {
-                        builder = new PostGISWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(), null,
+                        builder = new PostGISWhereBuilder( new TableAliasManager(), mapping,
+                                                           (OperatorFilter) delete.getConstraint(), null,
                                                            useLegacyPredicates );
 
                     } catch ( FilterEvaluationException e ) {
