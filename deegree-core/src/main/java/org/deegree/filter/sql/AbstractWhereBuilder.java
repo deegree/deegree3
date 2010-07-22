@@ -74,8 +74,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for creating of SQL predicates from {@link Filter} expressions. Such an expression restricts an SQL
- * <code>ResultSet</code> to those rows that contains objects that match the given filter. Also handles the creation of
+ * Base class for creating SQL predicates from {@link Filter} expressions. Such an expression restricts an SQL
+ * <code>ResultSet</code> to those rows that contain objects that match the given filter. Also handles the creation of
  * ORDER BY clauses.
  * <p>
  * Note that the generated WHERE and ORDER-BY expressions are sometimes not sufficient to guarantee that the
@@ -87,7 +87,8 @@ import org.slf4j.LoggerFactory;
  * </p>
  * <p>
  * TODO: Implement partial backend filtering / sorting. Currently, filtering / sorting is performed completely by the
- * database or by the post filter / criteria.
+ * database <i>or</i> by the post filter / criteria (if any property name has been encountered that could not be
+ * mapped).
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -98,6 +99,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractWhereBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractWhereBuilder.class );
+
+    protected final TableAliasManager aliasManager;
 
     private final OperatorFilter filter;
 
@@ -116,6 +119,8 @@ public abstract class AbstractWhereBuilder {
     /**
      * Creates a new {@link AbstractWhereBuilder} instance.
      * 
+     * @param aliasManager
+     *            responsible for creating aliases for qualifying table columns, must not be <code>null</code>
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
@@ -123,7 +128,9 @@ public abstract class AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link PropertyName}s
      */
-    protected AbstractWhereBuilder( OperatorFilter filter, SortProperty[] sortCrit ) throws FilterEvaluationException {
+    protected AbstractWhereBuilder( TableAliasManager aliasManager, OperatorFilter filter, SortProperty[] sortCrit )
+                            throws FilterEvaluationException {
+        this.aliasManager = aliasManager;
         this.filter = filter;
         this.sortCrit = sortCrit;
     }
@@ -208,13 +215,26 @@ public abstract class AbstractWhereBuilder {
     }
 
     /**
+     * Returns the {@link TableAliasManager} that keeps track of the used table aliases.
+     * <p>
+     * The returned manager may also be used for generating additional aliases that are needed for creating the final
+     * SQL statement.
+     * </p>
+     * 
+     * @return the table alias manager, never <code>null</code>
+     */
+    public TableAliasManager getAliasManager() {
+        return aliasManager;
+    }
+
+    /**
      * Returns the mappings of all {@link PropertyName}s found in the filter / sort criteria.
      * 
      * @return the mappings, can be empty but never <code>null</code>
      */
     public List<PropertyNameMapping> getMappedPropertyNames() {
-        return propNameMappingList;    
-    }    
+        return propNameMappingList;
+    }
 
     /**
      * Translates the given {@link Operator} into an {@link SQLExpression}.

@@ -43,6 +43,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.geometry.Geometry;
@@ -78,13 +79,12 @@ class PostGISFeatureMapping implements PostGISMapping {
     }
 
     @Override
-    public PropertyNameMapping getMapping( PropertyName propName )
+    public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException {
 
         MappedXPath mapping = null;
         try {
             mapping = new MappedXPath( schema, ftMapping, propName );
-            System.out.println( "HUHU: " + mapping );
         } catch ( UnmappableException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -93,8 +93,13 @@ class PostGISFeatureMapping implements PostGISMapping {
         if ( mapping == null ) {
             return null;
         }
+
+        PropertyNameMapping propMapping = new PropertyNameMapping( aliasManager, mapping.getValueField(),
+                                                                   mapping.getJoins() );
+        System.out.println( "HUHU: " + propMapping );
+
         // TODO handle other (non-trivial) mappings
-        return new PropertyNameMapping( mapping.getValueField(), mapping.getJoins() );
+        return propMapping;
     }
 
     @Override

@@ -51,12 +51,14 @@ public class DBField implements MappingExpression {
 
     private String column;
 
+    private String alias;
+
     public DBField( String schema, String table, String column ) {
         this.schema = schema;
         this.table = table;
         this.column = column;
     }
-    
+
     public DBField( String table, String column ) {
         this.table = table;
         this.column = column;
@@ -66,26 +68,34 @@ public class DBField implements MappingExpression {
         this.column = column;
     }
 
-    public String getSchema () {
+    public String getSchema() {
         return schema;
     }
-    
-    public String getTable () {
+
+    public String getTable() {
         return table;
     }
-    
-    public String getColumn () {
+
+    public void setAlias( String alias ) {
+        this.alias = alias;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getColumn() {
         return column;
     }
-    
+
     @Override
-    public String toString () {
-        if (schema != null) {
+    public String toString() {
+        if ( schema != null ) {
             return schema + "." + table + "." + column;
         }
-        if (table != null) {
+        if ( table != null ) {
             return table + "." + column;
         }
         return column;
-    }    
+    }
 }

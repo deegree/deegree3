@@ -61,8 +61,10 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.IdAnalysis;
+import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.feature.persistence.mapping.JoinChain;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
 import org.deegree.feature.persistence.mapping.MappingExpression;
@@ -84,6 +86,8 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.expression.SQLExpression;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
@@ -480,7 +484,9 @@ public class PostGISFeatureStore implements FeatureStore {
 
             LOG.debug( "Preparing SELECT: " + sql );
             stmt = conn.prepareStatement( sql.toString() );
-            stmt.setString( 1, idAnalysis.getIdKernel() );
+
+            // TODO proper SQL type handling
+            stmt.setInt( 1, Integer.parseInt( idAnalysis.getIdKernel() ) );
 
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -752,13 +758,17 @@ public class PostGISFeatureStore implements FeatureStore {
             conn = ConnectionManager.getConnection( jdbcConnId );
 
             PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, mapping, this );
-            wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit, useLegacyPredicates );
+            wb = new PostGISWhereBuilder( new TableAliasManager(), pgMapping, filter, sortCrit, useLegacyPredicates );
             SQLExpression where = wb.getWhereClause();
             SQLExpression orderBy = wb.getOrderBy();
             LOG.debug( "WHERE clause: " + where );
             LOG.debug( "ORDER BY clause: " + orderBy );
 
+            String rootTableAlias = wb.getAliasManager().getRootTableAlias();
+
             StringBuilder sql = new StringBuilder( "SELECT " );
+            sql.append( rootTableAlias );
+            sql.append( '.' );
             sql.append( mapping.getFidColumn() );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 // append every (mapped) property to SELECT list
@@ -769,9 +779,13 @@ public class PostGISFeatureStore implements FeatureStore {
                     sql.append( ',' );
                     if ( column instanceof JoinChain ) {
                         JoinChain jc = (JoinChain) column;
+                        sql.append( rootTableAlias );
+                        sql.append( '.' );
                         sql.append( jc.getFields().get( 0 ) );
                     } else {
                         if ( pt instanceof SimplePropertyType ) {
+                            sql.append( rootTableAlias );
+                            sql.append( '.' );
                             sql.append( column );
                         } else if ( pt instanceof GeometryPropertyType ) {
                             if ( useLegacyPredicates ) {
@@ -779,9 +793,13 @@ public class PostGISFeatureStore implements FeatureStore {
                             } else {
                                 sql.append( "ST_AsBinary(" );
                             }
+                            sql.append( rootTableAlias );
+                            sql.append( '.' );
                             sql.append( column );
                             sql.append( ')' );
                         } else if ( pt instanceof FeaturePropertyType ) {
+                            sql.append( rootTableAlias );
+                            sql.append( '.' );
                             sql.append( column );
                         } else {
                             LOG.warn( "Skipping property '" + pt.getName() + "' -- type '" + pt.getClass()
@@ -793,7 +811,29 @@ public class PostGISFeatureStore implements FeatureStore {
 
             sql.append( " FROM " );
             sql.append( mapping.getFtTable() );
-            sql.append( " X1" );
+            sql.append( " " );
+            sql.append( rootTableAlias );
+
+            for ( PropertyNameMapping mappedPropName : wb.getMappedPropertyNames() ) {
+                String currentAlias = rootTableAlias;
+                for ( Join join : mappedPropName.getJoins() ) {
+                    DBField from = join.getFrom();
+                    DBField to = join.getTo();
+                    sql.append( " LEFT OUTER JOIN " );
+                    sql.append( to.getTable() );
+                    sql.append( " AS " );
+                    sql.append( to.getAlias() );
+                    sql.append( " ON " );
+                    sql.append( currentAlias );
+                    sql.append( "." );
+                    sql.append( from.getColumn() );
+                    sql.append( "=" );
+                    currentAlias = to.getAlias();
+                    sql.append( currentAlias );
+                    sql.append( "." );
+                    sql.append( to.getColumn() );
+                }
+            }
 
             if ( where != null ) {
                 sql.append( " WHERE " );
@@ -859,7 +899,7 @@ public class PostGISFeatureStore implements FeatureStore {
         PostGISWhereBuilder wb = null;
         if ( ( sortCrit != null || filter != null ) && mapping != null ) {
             PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, mapping, this );
-            wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit, useLegacyPredicates );
+            wb = new PostGISWhereBuilder( new TableAliasManager(), pgMapping, filter, sortCrit, useLegacyPredicates );
             LOG.debug( "WHERE clause: " + wb.getWhereClause() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
         }

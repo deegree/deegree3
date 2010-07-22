@@ -114,8 +114,8 @@ public class PostGISFeatureStoreTest {
                             FactoryConfigurationError, UnknownCRSException, TransformationException {
 
         if ( enable ) {
-            ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
-                                             "deegreetest", "deegreetest", 1, 10 );
+            ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://192.168.1.2:5432/deegreetest",
+                                             "postgres", "postgres", 1, 10 );
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
@@ -126,17 +126,8 @@ public class PostGISFeatureStoreTest {
                                                                   null ) };
             Query query = new Query( typeNames, null, null, null, null );
             FeatureResultSet rs = fs.query( query );
-            try {
-                FeatureCollection fc = rs.toCollection();
-                XMLStreamWriter xmlStream = new FormattingXMLStreamWriter(
-                                                                           XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                                 System.out ) );
-                GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, xmlStream );
-                gmlStream.write( fc );
-                gmlStream.close();
-            } finally {
-                rs.close();
-            }
+            FeatureCollection fc = rs.toCollection();
+            print( fc );
         }
     }
 
@@ -146,8 +137,8 @@ public class PostGISFeatureStoreTest {
                             FactoryConfigurationError, UnknownCRSException, TransformationException {
 
         if ( enable ) {
-            ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
-                                             "deegreetest", "deegreetest", 1, 10 );
+            ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://192.168.1.2:5432/deegreetest",
+                                             "postgres", "postgres", 1, 10 );
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
@@ -216,8 +207,8 @@ public class PostGISFeatureStoreTest {
                             FactoryConfigurationError, UnknownCRSException, TransformationException, IOException {
 
         if ( enable ) {
-            ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
-                                             "deegreetest", "deegreetest", 1, 10 );
+            ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://192.168.1.2:5432/deegreetest",
+                                             "postgres", "postgres", 1, 10 );
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );
             PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
@@ -232,7 +223,9 @@ public class PostGISFeatureStoreTest {
             Query query = new Query( typeNames, filter, null, null, null );
             FeatureResultSet rs = fs.query( query );
             FeatureCollection fc = rs.toCollection();
-            Assert.assertEquals( 1, fc.size() );
+
+//            FeatureCollection fc = rs.toCollection();
+            print( fc );
         }
     }
 

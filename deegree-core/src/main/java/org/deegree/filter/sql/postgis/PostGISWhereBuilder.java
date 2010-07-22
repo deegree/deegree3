@@ -38,8 +38,6 @@ package org.deegree.filter.sql.postgis;
 import static java.sql.Types.BOOLEAN;
 
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.deegree.cs.CRS;
 import org.deegree.filter.FilterEvaluationException;
@@ -61,6 +59,7 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
@@ -89,6 +88,8 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
     /**
      * Creates a new {@link PostGISWhereBuilder} instance.
      * 
+     * @param aliasManager
+     *            responsible for creating aliases for qualifying table columns, must not be <code>null</code>
      * @param mapping
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
@@ -96,13 +97,14 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * @param sortCrit
      *            criteria to use generating the ORDER BY clause, can be <code>null</code>
      * @param useLegacyPredicates
-     *            if true, legacy PostGIS spatial predicates are used (e.g <code>Intersects</code> instead of
+     *            if true, legacy-style PostGIS spatial predicates are used (e.g. <code>Intersects</code> instead of
      *            <code>ST_Intersects</code>)
      * @throws FilterEvaluationException
+     *             if the expression contains invalid {@link PropertyName}s
      */
-    public PostGISWhereBuilder( PostGISMapping mapping, OperatorFilter filter, SortProperty[] sortCrit,
-                                boolean useLegacyPredicates ) throws FilterEvaluationException {
-        super( filter, sortCrit );
+    public PostGISWhereBuilder( TableAliasManager aliasManager, PostGISMapping mapping, OperatorFilter filter,
+                                SortProperty[] sortCrit, boolean useLegacyPredicates ) throws FilterEvaluationException {
+        super( aliasManager, filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
         this.mapping = mapping;
         build();
@@ -311,12 +313,14 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
     protected SQLExpression toProtoSQL( PropertyName propName )
                             throws UnmappableException, FilterEvaluationException {
         SQLExpression sql = null;
-        PropertyNameMapping propMapping = mapping.getMapping( propName );
+        PropertyNameMapping propMapping = mapping.getMapping( propName, aliasManager );
         if ( propMapping != null ) {
             propNameMappingList.add( propMapping );
             // TODO
-            sql = new SQLColumn( propMapping.getTargetField().getTable(), propMapping.getTargetField().getColumn(), true,
-                                 -1 );
+            sql = new SQLColumn(
+                                 propMapping.getTargetField().getAlias() != null ? propMapping.getTargetField().getAlias()
+                                                                                : propMapping.getTargetField().getTable(),
+                                 propMapping.getTargetField().getColumn(), true, -1 );
         } else {
             throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
         }

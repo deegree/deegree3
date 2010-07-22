@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class MultiResolutionRaster extends AbstractCoverage {
+
     private static final Logger LOG = LoggerFactory.getLogger( MultiResolutionRaster.class );
 
     private List<AbstractRaster> resolutions = new LinkedList<AbstractRaster>();

@@ -79,10 +79,20 @@ public class PropertyNameMapping {
      * @param valueField
      * @param joins
      */
-    public PropertyNameMapping( DBField valueField, List<Join> joins ) {
+    public PropertyNameMapping( TableAliasManager aliasManager, DBField valueField, List<Join> joins ) {
         this.valueField = valueField;
         this.joins = joins;
         this.pt = STRING;
+
+        String currentAlias = aliasManager.getRootTableAlias();
+        if ( joins != null ) {
+            for ( Join join : joins ) {
+                join.getFrom().setAlias( currentAlias );
+                currentAlias = aliasManager.generateNew();
+                join.getTo().setAlias( currentAlias );
+            }
+        }
+        valueField.setAlias( currentAlias );
     }
 
     public DBField getTargetField() {
@@ -103,5 +113,16 @@ public class PropertyNameMapping {
 
     public boolean isSpatial() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        String s = "";
+        for ( Join join : joins ) {
+            s += join;
+            s += ",";
+        }
+        s += valueField;
+        return s;
     }
 }
