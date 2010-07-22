@@ -107,6 +107,7 @@ public class MappingExporterTest extends TestCase {
 
         Map<String, Object> values3 = new HashMap<String, Object>();
         values3.put( "FormGroup/FormGroup11/text2", "testnfff" );
+        values3.put( "FormGroup/FormGroup11/selectOne3", "exampleReference.xml" );
         List<String> multipleSelect = new ArrayList<String>();
         multipleSelect.add( "abitur" );
         multipleSelect.add( "abfall" );

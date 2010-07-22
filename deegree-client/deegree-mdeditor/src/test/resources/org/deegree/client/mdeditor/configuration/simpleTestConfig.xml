@@ -64,7 +64,11 @@
             </InputFormElement>
             <SelectFormElement id="selectOne2" required="false">
                 <selectType>many</selectType>
-            <referenceToCodeList>keyword</referenceToCodeList>
+                <referenceToCodeList>keyword</referenceToCodeList>
+            </SelectFormElement>
+            <SelectFormElement id="selectOne3" required="false">
+                <selectType>one</selectType>
+                <referenceToGroup>ContactFormGroup</referenceToGroup>
             </SelectFormElement>
         </FormGroup>
     </FormGroup>

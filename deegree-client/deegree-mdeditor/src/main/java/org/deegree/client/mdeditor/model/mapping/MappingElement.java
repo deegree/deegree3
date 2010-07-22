@@ -65,14 +65,17 @@ public class MappingElement {
 
     private int index = Integer.MIN_VALUE;
 
+    private String subFormFieldPath;
+
     public MappingElement( String formFieldPath, String schemaPath ) {
         this.formFieldPath = formFieldPath;
         this.schemaPath = schemaPath;
     }
 
-    public MappingElement( String formFieldPath, String schemaPath, int index ) {
+    public MappingElement( String formFieldPath, String schemaPath, int index, String subFormFieldPath ) {
         this( formFieldPath, schemaPath );
-        this.setIndex( index );
+        this.index = index;
+        this.subFormFieldPath = subFormFieldPath;
     }
 
     public void setFormFieldPath( String fieldPath ) {
@@ -124,6 +127,14 @@ public class MappingElement {
 
     public int getIndex() {
         return index;
+    }
+
+    public void setSubFormFieldPath( String subFormFieldPath ) {
+        this.subFormFieldPath = subFormFieldPath;
+    }
+
+    public String getSubFormFieldPath() {
+        return subFormFieldPath;
     }
 
 }

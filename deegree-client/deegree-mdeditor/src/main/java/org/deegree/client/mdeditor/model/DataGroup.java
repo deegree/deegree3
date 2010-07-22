@@ -77,4 +77,9 @@ public class DataGroup {
         return values;
     }
 
+    @Override
+    public String toString() {
+        return id + " " + values;
+    }
+
 }

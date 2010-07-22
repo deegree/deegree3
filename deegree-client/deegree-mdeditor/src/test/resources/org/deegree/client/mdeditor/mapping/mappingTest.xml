@@ -26,11 +26,25 @@
             <formFieldPath>FormGroup/text1</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:MD_ScopeCode/@codeListValue</schemaPath>
         </MappingElement>
+
+        <MappingElement>
+            <formFieldPath>FormGroup/FormGroup11/selectOne3/[ContactFormGroup/KtextName]</formFieldPath>
+            <schemaPath>gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString
+            </schemaPath>
+        </MappingElement>
+        <MappingElement>
+            <formFieldPath>FormGroup/FormGroup11/selectOne3/[ContactFormGroup/KtextOrga]</formFieldPath>
+            <schemaPath>gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString
+            </schemaPath>
+        </MappingElement>
+
         <MappingElement>
             <formFieldPath>FormGroup/FormGroup11/text2</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString
             </schemaPath>
         </MappingElement>
+
+
         <MappingElement>
             <formFieldPath>FormGroup/FormGroup11/text4</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract</schemaPath>
@@ -47,25 +61,25 @@
             <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal
             </schemaPath>
         </MappingElement>
-        
+
         <MappingElement>
             <formFieldPath>SpatialFormGroup/country/[1]</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal
             </schemaPath>
         </MappingElement>
-        
+
         <MappingElement>
             <formFieldPath>SpatialFormGroup/country/[2]</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal
             </schemaPath>
         </MappingElement>
-        
+
         <MappingElement>
             <formFieldPath>SpatialFormGroup/country/[3]</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal
             </schemaPath>
         </MappingElement>
-        
+
         <MappingGroup>
             <formFieldPath>SimpleUnboundedFormGroup</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor

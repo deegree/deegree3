@@ -52,11 +52,11 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.client.mdeditor.configuration.Configuration;
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
+import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.model.DataGroup;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
-import org.deegree.client.mdeditor.model.InputFormField;
 import org.deegree.client.mdeditor.model.SelectFormField;
 import org.deegree.client.mdeditor.model.mapping.MappingElement;
 import org.deegree.client.mdeditor.model.mapping.MappingGroup;
@@ -81,7 +81,6 @@ public class MappingExporter {
                                Map<String, List<DataGroup>> dataGroups )
                             throws XMLStreamException, FileNotFoundException, FactoryConfigurationError,
                             ConfigurationException {
-
         LOG.debug( "Export dataset in file " + file.getAbsolutePath() + " selected mapping is " + mapping.toString() );
         XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream( file ) );
         writer.writeStartDocument();
@@ -199,7 +198,6 @@ public class MappingExporter {
                 NameStep nameStep = currentSteps.get( currentIndex );
                 // found list of elements
                 if ( "*".equals( nameStep.getLocalName() ) ) {
-                    LOG.debug( "found mapping to list of single element" );
                     writeList( writer, currentSteps.subList( currentIndex + 1, currentSteps.size() ), values, mapping );
                     break;
                 } else if ( Axis.ATTRIBUTE == nameStep.getAxis() ) {
@@ -305,17 +303,26 @@ public class MappingExporter {
                         } else {
                             values.add( getCodeListValue( configuration, ff, o.toString(), currentElement.getIndex() ) );
                         }
-                    } else {
+                    } else if ( ff.getReferenceToGroup() != null ) {
                         // TODO -> Referenz globales Element
                         if ( o instanceof List<?> ) {
                             for ( Object value : (List<?>) o ) {
-                                values.add( value.toString() );
+                                List<String> referencedValue = getReferencedValue( ff, value.toString(),
+                                                                                   currentElement.getSubFormFieldPath() );
+                                if ( referencedValue != null ) {
+                                    values.addAll( referencedValue );
+                                }
                             }
                         } else {
-                            values.add( o.toString() );
+                            List<String> referencedValue = getReferencedValue( ff, o.toString(),
+                                                                               currentElement.getSubFormFieldPath() );
+                            if ( referencedValue != null ) {
+                                values.addAll( referencedValue );
+                            }
                         }
+
                     }
-                } else if ( formField instanceof InputFormField ) {
+                } else {
                     if ( o != null ) {
                         if ( o instanceof List<?> ) {
                             for ( Object value : (List<?>) o ) {
@@ -329,6 +336,28 @@ public class MappingExporter {
             }
         }
         return values;
+    }
+
+    private static List<String> getReferencedValue( SelectFormField selectFF, String id, String subFormFieldPath )
+                            throws ConfigurationException {
+        // value: referenzierte Gruppe
+        String referenceToGroup = selectFF.getReferenceToGroup();
+        DataGroup dataGroup = DataHandler.getInstance().getDataGroup( referenceToGroup, id );
+        if ( dataGroup.getValues().containsKey( subFormFieldPath ) ) {
+            Object o = dataGroup.getValues().get( subFormFieldPath );
+            if ( o != null ) {
+                List<String> values = new ArrayList<String>();
+                if ( o instanceof List<?> ) {
+                    for ( Object value : (List<?>) o ) {
+                        values.add( value.toString() );
+                    }
+                } else {
+                    values.add( o.toString() );
+                }
+                return values;
+            }
+        }
+        return null;
     }
 
     private static String getCodeListValue( Configuration configuration, SelectFormField selectFF, String value,

@@ -14,6 +14,11 @@
     </Element>
 
     <Element>
+        <id>FormGroup/FormGroup11/selectOne3</id>
+        <value>exampleReference.xml</value>
+    </Element>
+    
+    <Element>
         <id>FormGroup/FormGroup11/selectOne2</id>
         <value>select1</value>
         <value>select2</value>
