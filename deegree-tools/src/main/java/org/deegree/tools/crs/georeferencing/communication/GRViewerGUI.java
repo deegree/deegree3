@@ -47,6 +47,7 @@ import java.awt.image.BufferedImage;
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -55,8 +56,6 @@ import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
-import org.deegree.tools.crs.georeferencing.communication.dialog.ErrorDialog;
-import org.deegree.tools.crs.georeferencing.communication.dialog.OptionDialog;
 
 /**
  * The <Code>GRViewerGUI</Code> class provides the client to view georeferencing tools/windows.
@@ -82,25 +81,13 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
 
     private BuildingFootprintPanel footprintPanel;
 
-    private JMenuItem import2DMapMenuItem;
-
     private JMenuItem editMenuItem;
 
-    private JMenuItem import3DObjectMenuItem;
-
-    private JMenuItem polynomial_1;
-
-    private JMenuItem polynomial_2;
-
-    private JMenuItem polynomial_3;
-
-    private JMenuItem helmert;
+    private CheckBoxList checkbox;
 
     private JTextField coordinateJumper;
 
-    private ErrorDialog errorDialog;
-
-    private OptionDialog optionDialog;
+    private JMenu menuTransformation;
 
     public GRViewerGUI() {
         super( WINDOW_TITLE );
@@ -130,7 +117,6 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         JMenuBar menuBar;
         JMenu menuFile;
         JMenu menuEdit;
-        JMenu menuTransformation;
 
         menuBar = new JMenuBar();
         menuFile = new JMenu( MENU_FILE );
@@ -142,19 +128,9 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         menuBar.add( menuTransformation );
 
         editMenuItem = new JMenuItem( MENUITEM_EDIT_OPTIONS );
-        import2DMapMenuItem = new JMenuItem( MENUITEM_GETMAP );
-        import3DObjectMenuItem = new JMenuItem( MENUITEM_GET_3DOBJECT );
-        polynomial_1 = new JMenuItem( MENUITEM_TRANS_POLYNOM_FIRST );
-        polynomial_2 = new JMenuItem( MENUITEM_TRANS_POLYNOM_SECOND );
-        polynomial_3 = new JMenuItem( MENUITEM_TRANS_POLYNOM_THIRD );
-        helmert = new JMenuItem( MENUITEM_TRANS_HELMERT );
-
-        // menuFile.add( import2DMapMenuItem );
-        // menuFile.add( import3DObjectMenuItem );
-        menuTransformation.add( polynomial_1 );
-        // menuTransformation.add( polynomial_2 );
-        // menuTransformation.add( polynomial_3 );
-        menuTransformation.add( helmert );
+        String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
+        checkbox = new CheckBoxList( sArray );
+        menuTransformation.add( checkbox );
         menuEdit.add( editMenuItem );
 
         this.getRootPane().setJMenuBar( menuBar );
@@ -234,12 +210,7 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
      * @param e
      */
     public void addMenuItemListener( ActionListener e ) {
-        // import2DMapMenuItem.addActionListener( e );
-        // import3DObjectMenuItem.addActionListener( e );
-        polynomial_1.addActionListener( e );
-        polynomial_2.addActionListener( e );
-        polynomial_3.addActionListener( e );
-        helmert.addActionListener( e );
+        checkbox.addCheckboxListener( e );
         coordinateJumper.addActionListener( e );
         editMenuItem.addActionListener( e );
 
@@ -279,19 +250,16 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         return openGLEventListener;
     }
 
-    public void setErrorDialog( ErrorDialog errorDialog ) {
-        this.errorDialog = errorDialog;
-
-    }
-
     /**
-     * Sets the dialog and makes it visible.
+     * Sets everything that is needed to handle userinteraction with the checkboxes in the transformationMenu.
      * 
-     * @param optionDialog
+     * @param selectedCheckbox
+     *            the checkbox that has been selected by the user.
      */
-    public void setOptionDialog( OptionDialog optionDialog ) {
-        this.optionDialog = optionDialog;
-        optionDialog.setVisible( true );
+    public void activateTransformationCheckbox( JCheckBox selectedCheckbox ) {
+        this.checkbox.selectThisCheckbox( selectedCheckbox );
+        this.menuTransformation.getPopupMenu().setVisible( false );
+        this.menuTransformation.setSelected( false );
     }
 
 }

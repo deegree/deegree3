@@ -63,61 +63,74 @@ public class TextFieldModel extends AbstractTextfieldModel {
 
     private String textInput;
 
-    // private ErrorDialogModel error;
-
     public TextFieldModel() {
 
     }
 
+    /**
+     * Handles the String that should be computed.
+     * 
+     * @param textInput
+     * @throws NumberException
+     */
     public void setTextInput( String textInput )
                             throws NumberException {
         this.textInput = textInput;
-        String[] inputParameters = null;
-        Pattern p = Pattern.compile( separator );
-        inputParameters = p.split( textInput );
-        int numberOfParameters = inputParameters.length;
+        try {
 
-        for ( int i = 0; i < inputParameters.length; i += numberOfParameters ) {
-            if ( numberOfParameters < 2 ) {
+            String[] inputParameters = null;
+            Pattern p = Pattern.compile( separator );
+            inputParameters = p.split( textInput );
+            for ( String s : inputParameters ) {
+                Double.parseDouble( s );
+            }
+            int numberOfParameters = inputParameters.length;
 
-                throw new NumberException(
-                                           "If you want to use this function you have to type in at least two parameters - xCoordinate and yCoordinate!" );
+            for ( int i = 0; i < inputParameters.length; i += numberOfParameters ) {
 
-            } else {
-                try {
-                    xCoordinate = Double.parseDouble( inputParameters[i] );
-                    yCoordiante = Double.parseDouble( inputParameters[i + 1] );
-                    spanX = -1;
-                    spanY = -1;
+                if ( numberOfParameters < 2 ) {
 
-                } catch ( NumberFormatException e ) {
-                    xCoordinate = 0.0;
-                    yCoordiante = 0.0;
+                    throw new NumberException(
+                                               "If you want to use this function you have to type in at least two parameters - xCoordinate and yCoordinate!" );
 
-                }
+                } else {
+                    try {
+                        xCoordinate = Double.parseDouble( inputParameters[i] );
+                        yCoordiante = Double.parseDouble( inputParameters[i + 1] );
+                        spanX = -1;
+                        spanY = -1;
 
-                if ( numberOfParameters > 2 ) {
-                    if ( numberOfParameters == 3 ) {
+                    } catch ( NumberFormatException e ) {
+                        xCoordinate = 0.0;
+                        yCoordiante = 0.0;
 
-                        throw new NumberMissmatch(
-                                                   "You have to specify either non of width and height or both of them! " );
-                    } else {
-                        try {
-                            spanX = Double.parseDouble( inputParameters[i + 2] );
-                            spanY = Double.parseDouble( inputParameters[i + 3] );
-                        } catch ( NumberFormatException e ) {
-                            spanX = -1;
-                            spanY = -1;
+                    }
+
+                    if ( numberOfParameters > 2 ) {
+                        if ( numberOfParameters == 3 ) {
+
+                            throw new NumberMissmatch(
+                                                       "You have to specify either non of width and height or both of them! " );
+                        } else {
+                            try {
+                                spanX = Double.parseDouble( inputParameters[i + 2] );
+                                spanY = Double.parseDouble( inputParameters[i + 3] );
+                            } catch ( NumberFormatException e ) {
+                                spanX = -1;
+                                spanY = -1;
+                            }
                         }
                     }
-                }
-                if ( inputParameters.length > 4 ) {
+                    if ( inputParameters.length > 4 ) {
 
-                    throw new MaximumNumberException(
-                                                      "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
+                        throw new MaximumNumberException(
+                                                          "The maximum number of parameters is 4 - xCoordinate, yCoordinate, spanX and spanY! " );
+                    }
                 }
+
             }
-
+        } catch ( NumberFormatException e ) {
+            throw new NumberException( "Insert numbers only into the textField!" );
         }
     }
 
@@ -201,13 +214,5 @@ public class TextFieldModel extends AbstractTextfieldModel {
 
         return sb.toString();
     }
-
-    // /**
-    // * Resets the errorMessage back to null.
-    // */
-    // public void resetError() {
-    // error = null;
-    //
-    // }
 
 }

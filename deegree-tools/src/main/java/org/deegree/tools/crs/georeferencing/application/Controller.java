@@ -78,6 +78,7 @@ import org.deegree.tools.crs.georeferencing.application.transformation.Transform
 import org.deegree.tools.crs.georeferencing.communication.AbstractPanel2D;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
+import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
@@ -297,14 +298,15 @@ public class Controller {
         public void actionPerformed( ActionEvent e ) {
             Object source = e.getSource();
             if ( source instanceof JCheckBox ) {
-                if ( ( (JCheckBox) source ).getText().startsWith( NavigationBarPanel.HORIZONTAL_REFERENCING ) ) {
+                JCheckBox selectedCheckbox = (JCheckBox) source;
+                if ( ( selectedCheckbox ).getText().startsWith( NavigationBarPanel.HORIZONTAL_REFERENCING ) ) {
                     if ( isHorizontalRef == false ) {
                         isHorizontalRef = true;
                     } else {
                         isHorizontalRef = false;
                     }
                 }
-                if ( ( (JCheckBox) source ).getText().startsWith( GeneralPanel.SNAPPING_TEXT ) ) {
+                if ( ( selectedCheckbox ).getText().startsWith( GeneralPanel.SNAPPING_TEXT ) ) {
 
                     boolean isSnappingOn = false;
                     if ( dialogModel.getSnappingOnOff().second == false ) {
@@ -314,6 +316,16 @@ public class Controller {
                         isSnappingOn = false;
                     }
                     dialogModel.setSnappingOnOff( isSnappingOn );
+                }
+                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
+
+                    transformationType = TransformationType.PolynomialFirstOrder;
+                    view.activateTransformationCheckbox( selectedCheckbox );
+                }
+                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_HELMERT ) ) {
+
+                    transformationType = TransformationType.Helmert_4;
+                    view.activateTransformationCheckbox( selectedCheckbox );
                 }
 
             }
@@ -346,7 +358,7 @@ public class Controller {
                         }
                     } catch ( NumberException e1 ) {
 
-                        view.setErrorDialog( new ErrorDialog( view, JDialog.ERROR, e1.getMessage() ) );
+                        new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
                     }
 
                 }
@@ -416,14 +428,14 @@ public class Controller {
                         // targetCRS, 1 );
                         // transform = new LeastSquarePolynomial( mappedPoints, footPrint, sceneValues, sourceCRS,
                         // targetCRS, order );
-
+                        order = 1;
                         transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
                         break;
                     case Helmert_4:
+                        order = 1;
                         transform = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
                                                            order );
-                        // transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order
-                        // );
+
                         break;
                     }
                     List<Ring> polygonRing = transform.computeRingList();
@@ -459,8 +471,7 @@ public class Controller {
                                     dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString().second ) );
                                     isRunIntoTrouble = false;
                                 } else {
-                                    view.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR,
-                                                                          "Insert numbers only into the textField!" ) );
+                                    new ErrorDialog( dialog, JDialog.ERROR, "Insert numbers only into the textField!" );
                                     isRunIntoTrouble = true;
                                 }
 
@@ -478,25 +489,6 @@ public class Controller {
             }
             if ( source instanceof JMenuItem ) {
 
-                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
-                    transformationType = TransformationMethod.TransformationType.PolynomialFirstOrder;
-                    order = 1;
-
-                }
-                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_POLYNOM_SECOND ) ) {
-                    transformationType = TransformationMethod.TransformationType.PolynomialFirstOrder;
-                    order = 2;
-
-                }
-                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_POLYNOM_THIRD ) ) {
-                    transformationType = TransformationMethod.TransformationType.PolynomialFirstOrder;
-                    order = 3;
-
-                }
-                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_TRANS_HELMERT ) ) {
-                    transformationType = TransformationMethod.TransformationType.Helmert_4;
-                    order = 1;
-                }
                 if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_EDIT_OPTIONS ) ) {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
 
@@ -509,7 +501,7 @@ public class Controller {
                     // add the listener to the navigation panel
                     optionNavPanel.addTreeListener( new NavigationTreeSelectionListener() );
 
-                    view.setOptionDialog( dialog );
+                    dialog.setVisible( true );
 
                 }
 
@@ -544,7 +536,7 @@ public class Controller {
                             i = Integer.parseInt( dialogModel.getTextFieldKeyString().second );
                             dialogModel.setSelectionPointSize( i );
                         } catch ( NumberFormatException ex ) {
-                            view.setErrorDialog( new ErrorDialog( dialog, JDialog.ERROR, "This is not a number" ) );
+                            new ErrorDialog( dialog, JDialog.ERROR, "This is not a number" );
                         }
 
                     }
