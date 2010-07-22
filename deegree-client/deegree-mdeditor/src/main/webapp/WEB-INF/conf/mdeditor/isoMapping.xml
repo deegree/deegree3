@@ -27,6 +27,16 @@
             <schemaPath>gmd:MD_Metadata/gmd:MD_ScopeCode/@codeListValue</schemaPath>
         </MappingElement>
         <MappingElement>
+            <formFieldPath>AllgFormGroup/contactMD/[ContactFormGroup/KtextName]</formFieldPath>
+            <schemaPath>gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString
+            </schemaPath>
+        </MappingElement>
+        <MappingElement>
+            <formFieldPath>AllgFormGroup/contactMD/[ContactFormGroup/KtextOrga]</formFieldPath>
+            <schemaPath>gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString
+            </schemaPath>
+        </MappingElement>
+        <MappingElement>
             <formFieldPath>AllgFormGroup/InhFormGroup/titel</formFieldPath>
             <schemaPath>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString
             </schemaPath>
