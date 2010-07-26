@@ -59,7 +59,6 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.PropertyNameMapping;
-import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
@@ -88,8 +87,6 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
     /**
      * Creates a new {@link PostGISWhereBuilder} instance.
      * 
-     * @param aliasManager
-     *            responsible for creating aliases for qualifying table columns, must not be <code>null</code>
      * @param mapping
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
@@ -102,9 +99,9 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the expression contains invalid {@link PropertyName}s
      */
-    public PostGISWhereBuilder( TableAliasManager aliasManager, PostGISMapping mapping, OperatorFilter filter,
-                                SortProperty[] sortCrit, boolean useLegacyPredicates ) throws FilterEvaluationException {
-        super( aliasManager, filter, sortCrit );
+    public PostGISWhereBuilder( PostGISMapping mapping, OperatorFilter filter, SortProperty[] sortCrit,
+                                boolean useLegacyPredicates ) throws FilterEvaluationException {
+        super( filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
         this.mapping = mapping;
         build();

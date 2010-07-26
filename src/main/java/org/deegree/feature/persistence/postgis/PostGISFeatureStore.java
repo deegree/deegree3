@@ -740,7 +740,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private FeatureResultSet queryRelational( QName ftName, OperatorFilter filter, Envelope looseBBox,
                                               SortProperty[] sortCrit )
-                            throws FilterEvaluationException, FeatureStoreException {
+                            throws FeatureStoreException {
 
         LOG.debug( "Performing query (relational)" );
 
@@ -758,13 +758,14 @@ public class PostGISFeatureStore implements FeatureStore {
             conn = ConnectionManager.getConnection( jdbcConnId );
 
             PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, mapping, this );
-            wb = new PostGISWhereBuilder( new TableAliasManager(), pgMapping, filter, sortCrit, useLegacyPredicates );
-            SQLExpression where = wb.getWhereClause();
+            wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit, useLegacyPredicates );
+            SQLExpression where = wb.getWhere();
             SQLExpression orderBy = wb.getOrderBy();
+            TableAliasManager aliasManager = wb.getAliasManager();
             LOG.debug( "WHERE clause: " + where );
             LOG.debug( "ORDER BY clause: " + orderBy );
 
-            String rootTableAlias = wb.getAliasManager().getRootTableAlias();
+            String rootTableAlias = aliasManager.getRootTableAlias();
 
             StringBuilder sql = new StringBuilder( "SELECT " );
             sql.append( rootTableAlias );
@@ -899,8 +900,8 @@ public class PostGISFeatureStore implements FeatureStore {
         PostGISWhereBuilder wb = null;
         if ( ( sortCrit != null || filter != null ) && mapping != null ) {
             PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, mapping, this );
-            wb = new PostGISWhereBuilder( new TableAliasManager(), pgMapping, filter, sortCrit, useLegacyPredicates );
-            LOG.debug( "WHERE clause: " + wb.getWhereClause() );
+            wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit, useLegacyPredicates );
+            LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
         }
 
@@ -920,8 +921,8 @@ public class PostGISFeatureStore implements FeatureStore {
                 sql += " AND x1.gml_bounded_by && ?";
 
             }
-            if ( wb != null && wb.getWhereClause() != null ) {
-                sql += " AND " + wb.getWhereClause().getSQL();
+            if ( wb != null && wb.getWhere() != null ) {
+                sql += " AND " + wb.getWhere().getSQL();
             }
             if ( wb != null && wb.getOrderBy() != null ) {
                 sql += " ORDER BY " + wb.getOrderBy().getSQL();
@@ -935,8 +936,8 @@ public class PostGISFeatureStore implements FeatureStore {
             if ( looseBBox != null ) {
                 stmt.setObject( argIdx++, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
             }
-            if ( wb != null && wb.getWhereClause() != null ) {
-                for ( SQLLiteral literal : wb.getWhereClause().getLiterals() ) {
+            if ( wb != null && wb.getWhere() != null ) {
+                for ( SQLLiteral literal : wb.getWhere().getLiterals() ) {
                     LOG.debug( "Setting argument: " + literal );
                     stmt.setObject( argIdx++, literal.getValue() );
                 }

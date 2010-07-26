@@ -35,27 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql;
 
-import java.sql.ResultSet;
-
-import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 
 /**
- * Base class for creating SQL predicates from {@link Filter} expressions. Such an expression restricts an SQL
- * <code>ResultSet</code> to those rows that contain objects that match the given filter. Also handles the creation of
- * ORDER BY clauses.
- * <p>
- * Note that the generated WHERE and ORDER-BY expressions are sometimes not sufficient to guarantee that the
- * <code>ResultSet</code> only contains the targeted objects and/or keeps the requested order. This happens when the
- * {@link PropertyName}s used in the Filter/sort criteria are not mappable to columns in the database or the contained
- * XPath expressions are not mappable to an equivalent SQL expression. In these cases, one or both of the methods
- * {@link #getPostFilter()}/{@link #getPostSortCriteria()} return not null and the objects extracted from the
- * corresponding {@link ResultSet} must be filtered/sorted in memory to guarantee the requested constraints/order.
- * </p>
- * <p>
- * TODO: Implement partial backend filtering / sorting. Currently, filtering / sorting is performed completely by the
- * database <i>or</i> by the post filter / criteria.
- * </p>
+ * Creates and tracks table aliases that are needed for mapping {@link PropertyName}s to a relational schema.
+ * 
+ * @see AbstractWhereBuilder
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
@@ -68,15 +53,28 @@ public class TableAliasManager {
 
     private int currentIdx = 1;
 
-    public TableAliasManager() {
+    /**
+     * Creates a new {@link TableAliasManager} instance.
+     */
+    TableAliasManager() {
         rootTableAlias = generateNew();
     }
 
-    public String generateNew() {
-        return "X" + ( currentIdx++ );
-    }
-
+    /**
+     * Returns the table alias for the root table.
+     * 
+     * @return the table alias for the root table, never <code>null</code>
+     */
     public String getRootTableAlias() {
         return rootTableAlias;
+    }
+
+    /**
+     * Returns a new unique table alias.
+     * 
+     * @return a new unique table alias, never <code>null</code>
+     */
+    public String generateNew() {
+        return "X" + ( currentIdx++ );
     }
 }
