@@ -38,8 +38,8 @@ package org.deegree.services.controller.utils;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -57,6 +57,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
@@ -95,7 +96,7 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
     private static final Logger LOG = getLogger( HttpResponseBuffer.class );
 
     // if buffer == null, buffering is disabled
-    private ByteArrayOutputStream buffer;
+    private StreamBufferStore buffer;
 
     /**
      * The servlet api only allows a call to either getWriter or getOutputStream. This enum will protocol the current
@@ -121,7 +122,7 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
     public HttpResponseBuffer( HttpServletResponse response ) {
         super( response );
         wrappee = response;
-        buffer = new ByteArrayOutputStream();
+        buffer = new StreamBufferStore();
         outputStream = new BufferedServletOutputStream( buffer );
     }
 
@@ -302,7 +303,7 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
     /**
      * @return the buffer
      */
-    public ByteArrayOutputStream getBuffer() {
+    public OutputStream getBuffer() {
         return buffer;
     }
 
@@ -311,10 +312,22 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
      */
     private static class BufferedServletOutputStream extends ServletOutputStream {
 
-        private final ByteArrayOutputStream buffer;
+        private final OutputStream buffer;
 
-        public BufferedServletOutputStream( ByteArrayOutputStream buffer ) {
+        public BufferedServletOutputStream( OutputStream buffer ) {
             this.buffer = buffer;
+        }
+
+        @Override
+        public void write( byte[] b )
+                                throws IOException {
+            buffer.write( b );
+        }
+
+        @Override
+        public void write( byte[] b, int off, int len )
+                                throws IOException {
+            buffer.write( b, off, len );
         }
 
         @Override
