@@ -87,6 +87,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLExpression;
 import org.deegree.filter.sql.expression.SQLLiteral;
@@ -347,14 +348,15 @@ public class OracleFeatureStore implements FeatureStore {
                 }
 
                 @Override
-                public PropertyNameMapping getMapping( PropertyName propName )
+                public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                                         throws FilterEvaluationException, UnmappableException {
                     LOG.debug( "Mapping " + propName.getPropertyName() + " to DB." );
                     return new PropertyNameMapping( "X1", propName.getAsQName().getLocalPart() );
                 }
             };
 
-            OracleWhereBuilder wb = new OracleWhereBuilder( mapping, filter, sortCrits, oraConn );
+            OracleWhereBuilder wb = new OracleWhereBuilder( new TableAliasManager(), mapping, filter, sortCrits,
+                                                            oraConn );
             SQLExpression where = wb.getWhereClause();
             SQLExpression orderBy = wb.getOrderBy();
 
