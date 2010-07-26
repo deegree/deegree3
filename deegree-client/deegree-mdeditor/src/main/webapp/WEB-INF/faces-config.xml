@@ -13,6 +13,11 @@
             <base-name>org.deegree.client.mdeditor.messages.labels</base-name>
             <var>mdLabels</var>
         </resource-bundle>
+        <resource-bundle>
+            <base-name>org.deegree.client.mdeditor.messages.confLabels</base-name>
+            <var>confLabels</var>
+        </resource-bundle>
+        <el-resolver>org.deegree.client.mdeditor.gui.LabelResolver</el-resolver>
     </application>
 
     <managed-bean>
