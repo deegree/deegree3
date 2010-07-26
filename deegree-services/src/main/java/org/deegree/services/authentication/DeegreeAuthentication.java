@@ -65,12 +65,6 @@ public class DeegreeAuthentication implements CredentialsProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( DeegreeAuthentication.class );
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialProvider#doKVP(java.util.Map,
-     * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-     */
     @Override
     public Credentials doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest req,
                               HttpServletResponse response )
@@ -84,12 +78,6 @@ public class DeegreeAuthentication implements CredentialsProvider {
         return new Credentials( user, password, tokenId );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialProvider#doXML(javax.xml.stream.XMLStreamReader,
-     * javax.servlet.http.HttpServletRequest)
-     */
     @Override
     public Credentials doXML( XMLStreamReader xmlStream, HttpServletRequest req, HttpServletResponse response )
                             throws SecurityException {
@@ -102,30 +90,18 @@ public class DeegreeAuthentication implements CredentialsProvider {
         return new Credentials( user, password, tokenId );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialProvider#doSOAP(org.apache.axiom.soap.SOAPEnvelope,
-     * javax.servlet.http.HttpServletRequest)
-     */
     @Override
     public Credentials doSOAP( SOAPEnvelope soapDoc, HttpServletRequest req ) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialsProvider#handleException(javax.servlet.http.HttpServletResponse,
-     * org.deegree.services.authentication.SecurityException)
-     */
     @Override
     public void handleException( HttpServletResponse response, SecurityException e )
                             throws IOException {
         if ( e instanceof InvalidCredentialsException ) {
             doInvalidCredentialsExceptionException( response, (InvalidCredentialsException) e );
-        } else if ( e instanceof SecurityException ) {
+        } else {
             doAuthenticationException( response, e );
         }
 
@@ -162,4 +138,5 @@ public class DeegreeAuthentication implements CredentialsProvider {
 
     }
 
+    
 }

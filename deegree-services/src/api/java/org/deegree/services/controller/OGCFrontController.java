@@ -114,12 +114,12 @@ import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
+import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
 import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.main.AllowedServices;
-import org.deegree.services.jaxb.main.AuthenticationMethodType;
 import org.deegree.services.jaxb.main.ConfiguredServicesType;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
@@ -178,7 +178,10 @@ public class OGCFrontController extends HttpServlet {
 
     private static DeegreeServiceControllerType mainConfig;
 
-    private static final String DEFAULT_CONFIG_PATH = "WEB-INF/conf";
+    /**
+     * Default configuration path.
+     */
+    public static final String DEFAULT_CONFIG_PATH = "WEB-INF/conf";
 
     private static final String DEFAULT_SERVICE_METADATA_PATH = DEFAULT_CONFIG_PATH + "/services/metadata.xml";
 
@@ -258,6 +261,8 @@ public class OGCFrontController extends HttpServlet {
     }
 
     private RequestLogger requestLogger;
+
+    private SecurityConfiguration securityConfiguration;
 
     /**
      * Handles HTTP GET requests.
@@ -347,6 +352,15 @@ public class OGCFrontController extends HttpServlet {
      */
     public static Map<String, String> getNormalizedKVPMap( String queryString, String encoding )
                             throws UnsupportedEncodingException {
+
+        // guesses the encoding from the occurrence of the UTF-8 multi byte sequence marker
+        // FF sends UTF-8 when locale setting is UTF-8, and ISO if locale setting is ISO
+        // IE sends always ISO (?, CP1252 for Win95/98 series?)
+        // so relying on DEFAULT_ENCODING == UTF-8 will likely break IE compatibility,
+        // and using this guessing mechanism will work more often than not
+        if ( encoding == null ) {
+            encoding = queryString.toUpperCase().indexOf( "%C3" ) != -1 ? "UTF-8" : "ISO-8859-1";
+        }
 
         Map<String, List<String>> keyToValueList = new HashMap<String, List<String>>();
 
@@ -456,7 +470,8 @@ public class OGCFrontController extends HttpServlet {
                     Boolean conf = opts.getRequestLogging().isOnlySuccessful();
                     boolean onlySuccessful = conf != null && conf;
                     response = logging = new LoggingHttpResponseWrapper( response, file, onlySuccessful, entryTime,
-                                                                         null, requestLogger ); // TODO obtain/set credentials somewhere
+                                                                         null, requestLogger ); // TODO obtain/set
+                    // credentials somewhere
                 }
             }
 
@@ -641,32 +656,15 @@ public class OGCFrontController extends HttpServlet {
         FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
         LoggingHttpResponseWrapper logging = null;
 
-        // extract (deegree specific) security information and bind to current thread
-        CredentialsProvider credProv = null;
+        CredentialsProvider credentialsProvider = securityConfiguration == null ? null
+                                                                               : securityConfiguration.getCredentialsProvider();
 
+        // extract (deegree specific) security information and bind to current thread
         try {
             // TODO handle multiple authentication methods
-            AuthenticationMethodType authType = mainConfig.getAuthenticationMethod();
-
             Credentials cred = null;
-            if ( authType != null ) {
-                LOG.debug( "Configured authtype: " + authType );
-                if ( authType.getSOAPAuthentication() != null ) {
-                    authType.setSOAPAuthentication( null );
-                    credProv = CredentialsProviderManager.create( authType );
-                    LOG.debug( "credProv1: " + credProv );
-                    if ( credProv != null ) {
-                        cred = credProv.doKVP( normalizedKVPParams, requestWrapper, response );
-                    }
-                    authType.setSOAPAuthentication( "" );
-
-                } else {
-                    credProv = CredentialsProviderManager.create( authType );
-                    LOG.debug( "credProv2: " + credProv );
-                    if ( credProv != null ) {
-                        cred = credProv.doKVP( normalizedKVPParams, requestWrapper, response );
-                    }
-                }
+            if ( credentialsProvider != null ) {
+                cred = credentialsProvider.doKVP( normalizedKVPParams, requestWrapper, response );
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -733,9 +731,9 @@ public class OGCFrontController extends HttpServlet {
                 sendException( ex, response, null );
             }
         } catch ( SecurityException e ) {
-            if ( credProv != null ) {
+            if ( credentialsProvider != null ) {
                 LOG.debug( "A security exception was thrown, let the credential provider handle the job." );
-                credProv.handleException( response, e );
+                credentialsProvider.handleException( response, e );
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
@@ -767,28 +765,14 @@ public class OGCFrontController extends HttpServlet {
                                      HttpServletResponse response, List<FileItem> multiParts )
                             throws ServletException, IOException {
 
-        // TODO integrate authentication handling (CredentialsProvider)
-
-        CredentialsProvider credProv = null;
+        CredentialsProvider credentialsProvider = securityConfiguration == null ? null
+                                                                               : securityConfiguration.getCredentialsProvider();
 
         try {
             // TODO handle multiple authentication methods
-            AuthenticationMethodType authType = mainConfig.getAuthenticationMethod();
-
             Credentials cred = null;
-            if ( authType != null ) {
-                LOG.debug( "Configured authtype: " + authType );
-
-                if ( authType.getSOAPAuthentication() != null ) {
-                    authType.setSOAPAuthentication( null );
-                    credProv = CredentialsProviderManager.create( authType );
-                    LOG.debug( "credProv: " + credProv );
-                    if ( credProv != null ) {
-                        cred = credProv.doXML( xmlStream, requestWrapper, response );
-                    }
-                    authType.setSOAPAuthentication( "" );
-                }
-
+            if ( credentialsProvider != null ) {
+                cred = credentialsProvider.doXML( xmlStream, requestWrapper, response );
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -821,9 +805,9 @@ public class OGCFrontController extends HttpServlet {
                 throw new ServletException( msg );
             }
         } catch ( SecurityException e ) {
-            if ( credProv != null ) {
+            if ( credentialsProvider != null ) {
                 LOG.debug( "A security exception was thrown, let the credential provider handle the job." );
-                credProv.handleException( response, e );
+                credentialsProvider.handleException( response, e );
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
@@ -870,28 +854,14 @@ public class OGCFrontController extends HttpServlet {
 
         SOAPEnvelope envelope = soap.getSOAPEnvelope();
 
-        CredentialsProvider credProv = null;
+        CredentialsProvider credentialsProvider = securityConfiguration == null ? null
+                                                                               : securityConfiguration.getCredentialsProvider();
 
         try {
             // TODO handle multiple authentication methods
-            AuthenticationMethodType authType = mainConfig.getAuthenticationMethod();
             Credentials cred = null;
-            if ( authType != null ) {
-                LOG.debug( "Configured authtype: " + authType );
-
-                if ( authType.getHttpBasicAuthentication() != null ) {
-                    // workaround...like a wrapper
-                    authType.setHttpBasicAuthentication( null );
-                    authType.setDeegreeAuthentication( null );
-                    authType.setHttpDigestAuthentication( null );
-
-                    credProv = CredentialsProviderManager.create( authType );
-                    LOG.debug( "credProv: " + credProv );
-                    cred = credProv.doSOAP( envelope, requestWrapper );
-
-                    authType.setHttpBasicAuthentication( "" );
-                }
-
+            if ( credentialsProvider != null ) {
+                cred = credentialsProvider.doSOAP( envelope, requestWrapper );
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -941,9 +911,9 @@ public class OGCFrontController extends HttpServlet {
                 throw new ServletException( msg );
             }
         } catch ( SecurityException e ) {
-            if ( credProv != null ) {
+            if ( credentialsProvider != null ) {
                 LOG.debug( "A security exception was thrown, let the credential provider handle the job." );
-                credProv.handleException( response, e );
+                credentialsProvider.handleException( response, e );
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
@@ -1077,6 +1047,7 @@ public class OGCFrontController extends HttpServlet {
             initBatchedMTStores();
             initWebServices();
             initRequestLogger();
+            initSecurity();
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -1087,6 +1058,10 @@ public class OGCFrontController extends HttpServlet {
             LOG.error( "Initialization failed!" );
             LOG.error( "An unexpected error was caught:", e );
         }
+    }
+
+    private void initSecurity() {
+        securityConfiguration = new SecurityConfiguration( getServletContext() );
     }
 
     private void initProxyConfig() {
@@ -1632,7 +1607,7 @@ public class OGCFrontController extends HttpServlet {
      * @return the full (and whitespace-escaped) URL
      * @throws MalformedURLException
      */
-    private URL resolveFileLocation( String location, ServletContext context )
+    public static URL resolveFileLocation( String location, ServletContext context )
                             throws MalformedURLException {
         URL serviceConfigurationURL = null;
 
@@ -1654,7 +1629,7 @@ public class OGCFrontController extends HttpServlet {
                     LOG.debug( "'Real path' cannot be parsed as URL. Trying to parse as a file location now." );
                     // construction of URI performs whitespace escaping
                     serviceConfigurationURL = new File( realPath ).toURI().toURL();
-                    LOG.debug( "serviceConfigurationURL: " + serviceConfigurationURL );
+                    LOG.debug( "configuration URL: " + serviceConfigurationURL );
                 }
             }
         }

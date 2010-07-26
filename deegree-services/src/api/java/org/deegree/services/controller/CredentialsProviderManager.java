@@ -38,7 +38,7 @@ package org.deegree.services.controller;
 import org.deegree.services.authentication.DeegreeAuthentication;
 import org.deegree.services.authentication.HttpBasicAuthentication;
 import org.deegree.services.authentication.SOAPAuthentication;
-import org.deegree.services.jaxb.main.AuthenticationMethodType;
+import org.deegree.services.jaxb.security.CredentialsProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,20 +61,20 @@ public class CredentialsProviderManager {
      *            is one of the authentication methods that are implemented.
      * @return the configured {@link CredentialsProvider}, never <code>null</code>
      */
-    public static CredentialsProvider create( AuthenticationMethodType authentication ) {
+    public static CredentialsProvider create( CredentialsProviderType authentication ) {
 
         CredentialsProvider credentialProvider = null;
 
-        if ( authentication.getHttpBasicAuthentication() != null ) {
+        if ( authentication.getHttpBasicCredentialsProvider() != null ) {
             credentialProvider = new HttpBasicAuthentication();
             LOG.debug( "httpBasicAuth" );
-        } else if ( authentication.getDeegreeAuthentication() != null ) {
+        } else if ( authentication.getDeegreeCredentialsProvider() != null ) {
             credentialProvider = new DeegreeAuthentication();
             LOG.debug( "deegreeAuth" );
-        } else if ( authentication.getSOAPAuthentication() != null ) {
+        } else if ( authentication.getSOAPCredentialsProvider() != null ) {
             credentialProvider = new SOAPAuthentication();
             LOG.debug( "SOAPAuth" );
-        } else if ( authentication.getHttpDigestAuthentication() != null ) {
+        } else if ( authentication.getHttpDigestCredentialsProvider() != null ) {
             LOG.debug( "digestAuth not implemented yet" );
             throw new UnsupportedOperationException( "digestAuth not implemented yet" );
         }

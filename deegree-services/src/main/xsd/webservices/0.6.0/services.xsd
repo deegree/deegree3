@@ -15,8 +15,6 @@
   <xs:include schemaLocation="metadata.xsd" />
 
   <xs:element name="deegreeServiceController" type="ws:deegreeServiceControllerType" />
-  <!-- Preparations to allow authentication.xml at a later point -->
-  <xs:element name="AuthenticationMethod" type="ws:AuthenticationMethodType" />
   <xs:element name="deegreeServicesMetadata" type="ws:deegreeServicesMetadataType" />
 
 </xs:schema>

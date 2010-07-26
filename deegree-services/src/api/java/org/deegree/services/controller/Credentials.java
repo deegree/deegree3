@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
+import static org.deegree.commons.utils.JavaUtils.generateToString;
+
 /**
  * Basic component for the credentials.
  * 
@@ -95,6 +97,11 @@ public class Credentials {
      */
     public String getSessionId() {
         return sessionId;
+    }
+
+    @Override
+    public String toString() {
+        return generateToString( this );
     }
 
 }

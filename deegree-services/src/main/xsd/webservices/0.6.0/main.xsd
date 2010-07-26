@@ -10,11 +10,10 @@
     </xs:annotation>
     <xs:sequence>
       <xs:element name="DCP" type="dgws:DCPType" minOccurs="0" />
-      <xs:element name="AuthenticationMethod" type="dgws:AuthenticationMethodType" minOccurs="0" />
       <xs:element name="ConfiguredServices" type="dgws:ConfiguredServicesType" minOccurs="0" />
       <xs:element name="FrontControllerOptions" type="dgws:FrontControllerOptionsType" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="configVersion" fixed="0.6.0" use="required" />
+    <xs:attribute name="configVersion" fixed="0.7.0" use="required" />
   </xs:complexType>
 
   <xs:complexType name="FrontControllerOptionsType">
@@ -89,32 +88,7 @@
       <xs:element name="ControllerClass" type="xs:string" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="AuthenticationMethodType">
-    <xs:annotation>
-      <xs:documentation>
-        Defines for the security layer the authentication method used for the service.
-      </xs:documentation>
-    </xs:annotation>
-    <xs:sequence>
-      <xs:element name="HttpBasicAuthentication" type="xs:string" minOccurs="0" />
-      <xs:element name="HttpDigestAuthentication" type="xs:string" minOccurs="0" />
-      <xs:element name="SOAPAuthentication" type="xs:string" minOccurs="0" />
-      <xs:element name="DeegreeAuthentication" type="xs:string" minOccurs="0" />
-    </xs:sequence>
-  </xs:complexType>
 
-
-  <xs:simpleType name="AuthenticationMethods">
-    <xs:annotation>
-      <xs:documentation>A simple type defining the possible authenticationMethods</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="HttpBasicAuthentication" />
-      <xs:enumeration value="DeegreeAuthentication" />
-      <xs:enumeration value="HttpDigestAuthentication" />
-      <xs:enumeration value="SOAPAuthentication" />
-    </xs:restriction>
-  </xs:simpleType>
   <xs:simpleType name="AllowedServices">
     <xs:annotation>
       <xs:documentation>A simple type defining the possible services having a sub controller</xs:documentation>
