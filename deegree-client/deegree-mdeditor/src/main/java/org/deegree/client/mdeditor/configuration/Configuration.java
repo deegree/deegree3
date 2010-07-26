@@ -83,7 +83,7 @@ public class Configuration {
 
     private boolean codeListParsed = false;
 
-    private static final String CODESPACE_ROOT = "urn:org:deegree:igeodesktop";
+    private static final String CODESPACE_ROOT = "urn:org:deegree:mdeditor";
 
     /**
      * @param dataDirUrl
