@@ -110,6 +110,7 @@ public class StreamBufferStore extends OutputStream {
      */
     public InputStream getInputStream()
                             throws IOException {
+        os.flush();
         if ( tmpFile == null ) {
             return new ByteArrayInputStream( ( (ByteArrayOutputStream) os ).toByteArray() );
         }

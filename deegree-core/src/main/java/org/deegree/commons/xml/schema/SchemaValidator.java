@@ -38,7 +38,6 @@ package org.deegree.commons.xml.schema;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -99,21 +98,6 @@ public class SchemaValidator {
 
     /** Honour all schema locations feature id (http://apache.org/xml/features/honour-all-schemaLocations). */
     private static final String HONOUR_ALL_SCHEMA_LOCATIONS_ID = "http://apache.org/xml/features/honour-all-schemaLocations";
-
-    /**
-     * Validates the specified XML instance document according to the contained schema references (
-     * <code>xsi:schemaLocation</code> attribute) and/or to the explicitly specified schema references.
-     * 
-     * @param source
-     *            provides the XML document to be validated, must not be null
-     * @param schemaUris
-     *            URIs of schema documents to be considered, can be null (only the <code>xsi:schemaLocation</code>
-     *            attribute is considered then)
-     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
-     */
-    public static List<String> validate( Reader source, String... schemaUris ) {
-        return validate( new XMLInputSource( null, null, null, source, null ), schemaUris );
-    }
 
     /**
      * Validates the specified XML instance document according to the contained schema references (
@@ -239,28 +223,8 @@ public class SchemaValidator {
      *            additional schema documents to be considered, can be null
      * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
      */
-    public static List<String> validateSchema( Reader inputSchema, String... additionalUris ) {
+    public static List<String> validateSchema( InputStream inputSchema, String... additionalUris ) {
         LSInput input = new DOMInputImpl( null, null, null, inputSchema, null );
-        LSInput[] additionalSchemas = new LSInput[additionalUris.length];
-        for ( int i = 0; i < additionalUris.length; i++ ) {
-            additionalSchemas[i] = new DOMInputImpl( null, additionalUris[i], null );
-        }
-        return validateSchema( input, additionalSchemas );
-    }
-
-    /**
-     * Validates the specified XML schema document, additionally in conjunction with more schemas.
-     * 
-     * @param inputSchema
-     *            provides the XML schema document to be validated, must not be null
-     * @param encoding
-     *            encoding of the input stream, null means system default
-     * @param additionalUris
-     *            additional schema documents to be considered, can be null
-     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
-     */
-    public static List<String> validateSchema( InputStream inputSchema, String encoding, String... additionalUris ) {
-        LSInput input = new DOMInputImpl( null, null, null, inputSchema, encoding );
         LSInput[] additionalSchemas = new LSInput[additionalUris.length];
         for ( int i = 0; i < additionalUris.length; i++ ) {
             additionalSchemas[i] = new DOMInputImpl( null, additionalUris[i], null );

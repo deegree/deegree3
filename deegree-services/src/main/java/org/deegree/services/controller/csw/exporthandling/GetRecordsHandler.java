@@ -41,7 +41,9 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.SQLException;
@@ -302,9 +304,8 @@ public class GetRecordsHandler {
         } catch ( XMLStreamException e ) {
             e.printStackTrace();
         }
-        StringReader reader = new StringReader( s.toString() );
-
-        return SchemaValidator.validate( reader, "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd" );
+        InputStream is = new ByteArrayInputStream( s.toString().getBytes() );
+        return SchemaValidator.validate( is, "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd" );
 
     }
 

@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
@@ -216,33 +215,30 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
     }
 
     /**
-     * Performs a schema-based validation of the response (only if the written output is buffered and was XML).
+     * Performs a schema-based validation of the response (only if the written output has been buffered and was XML).
      */
     public void validate() {
 
         if ( buffer != null ) {
 
-            boolean isXML = xmlWriter != null || ( getContentType() != null && getContentType().contains( "text/xml" ) );
+            boolean isXML = xmlWriter != null || ( getContentType() != null && getContentType().contains( "xml" ) );
 
             if ( isXML && buffer != null ) {
 
                 long begin = System.currentTimeMillis();
                 List<String> messages = null;
-                String output = buffer.toString();
-
-                LOG.debug( "Output: " + output );
 
                 XMLStreamReader reader;
                 try {
-                    reader = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( output ) );
+                    reader = XMLInputFactory.newInstance().createXMLStreamReader( buffer.getInputStream() );
                     reader.nextTag();
                     QName firstElement = reader.getName();
                     if ( new QName( CommonNamespaces.XSNS, "schema" ).equals( firstElement ) ) {
                         LOG.info( "Validating generated XML output (schema document)." );
-                        messages = SchemaValidator.validateSchema( new StringReader( output ) );
+                        messages = SchemaValidator.validateSchema( buffer.getInputStream() );
                     } else {
                         LOG.info( "Validating generated XML output (instance document)." );
-                        messages = SchemaValidator.validate( new StringReader( output ) );
+                        messages = SchemaValidator.validate( buffer.getInputStream() );
                     }
                 } catch ( Exception e ) {
                     messages = Collections.singletonList( e.getLocalizedMessage() );
