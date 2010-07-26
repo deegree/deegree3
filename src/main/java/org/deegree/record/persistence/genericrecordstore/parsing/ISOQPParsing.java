@@ -41,8 +41,9 @@ import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
 import static org.deegree.protocol.csw.CSWConstants.DCT_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -130,12 +131,12 @@ public final class ISOQPParsing extends XMLAdapter {
         } catch ( XMLStreamException e ) {
             LOG.debug( "error: " + e.getMessage(), e );
         }
-        StringReader reader = new StringReader( s.toString() );
+        InputStream is = new ByteArrayInputStream( s.toString().getBytes() );
         if ( elem.getLocalName().equals( "MD_Metadata" ) ) {
-            return SchemaValidator.validate( reader, "http://www.isotc211.org/2005/gmd/metadataEntity.xsd" );
+            return SchemaValidator.validate( is, "http://www.isotc211.org/2005/gmd/metadataEntity.xsd" );
 
         }
-        return SchemaValidator.validate( reader, "http://schemas.opengis.net/csw/2.0.2/record.xsd" );
+        return SchemaValidator.validate( is, "http://schemas.opengis.net/csw/2.0.2/record.xsd" );
     }
 
     /**
