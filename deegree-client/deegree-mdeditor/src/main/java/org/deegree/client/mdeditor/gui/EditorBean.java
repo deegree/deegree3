@@ -42,6 +42,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.CustomScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIForm;
@@ -256,7 +258,7 @@ public class EditorBean {
                     break;
                 }
             }
-            
+
         }
         return dgs;
     }
@@ -450,6 +452,16 @@ public class EditorBean {
                 ff.setValue( values.get( ff.getPath().toString() ) );
             }
         }
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println( "post construct" );
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        System.out.println( "pre destroy" );
     }
 
 }

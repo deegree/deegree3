@@ -40,8 +40,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.event.PostConstructCustomScopeEvent;
+import javax.faces.event.PreDestroyCustomScopeEvent;
+import javax.faces.event.ScopeContext;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
@@ -66,6 +71,8 @@ public class SelectConfigurationBean implements Serializable {
     private boolean global = false;
 
     private Map<String, Object> configBeans = new HashMap<String, Object>();
+
+    private static final String SCOPE_NAME = "editorBean";
 
     public List<FormConfigurationDescription> getDescriptions()
                             throws ConfigurationException {
@@ -103,12 +110,36 @@ public class SelectConfigurationBean implements Serializable {
         return configBeans;
     }
 
-    public Object load()
-                            throws ConfigurationException {
-        // TODO !!!
+    private void removeFromScope() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        ScopeContext context = new ScopeContext( SCOPE_NAME, configBeans );
+        fc.getApplication().publishEvent( fc, PreDestroyCustomScopeEvent.class, context );
         configBeans.clear();
-        configBeans.put( "editorBean", new EditorBean( selectedConfiguration ) );
-        return "forms";
     }
 
+    private void addToScope()
+                            throws ConfigurationException {
+        configBeans.put( SCOPE_NAME, new EditorBean( selectedConfiguration ) );
+        FacesContext fc = FacesContext.getCurrentInstance();
+        ScopeContext context = new ScopeContext( SCOPE_NAME, configBeans );
+        fc.getApplication().publishEvent( fc, PostConstructCustomScopeEvent.class, context );
+    }
+
+    public Object load()
+                            throws ConfigurationException {
+        if ( selectedConfiguration == null ) {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_ERROR, "ERROR.LOAD_CONF_NOID" );
+            fc.addMessage( "LOAD_CONFIGURATION_NO_ID", msg );
+            return "error";
+        }
+        if ( configBeans.containsKey( SCOPE_NAME )
+             && !selectedConfiguration.equals( ( (EditorBean) configBeans.get( SCOPE_NAME ) ).getConfId() ) ) {
+            removeFromScope();
+        }
+        if ( !configBeans.containsKey( SCOPE_NAME ) ) {
+            addToScope();
+        }
+        return "forms";
+    }
 }
