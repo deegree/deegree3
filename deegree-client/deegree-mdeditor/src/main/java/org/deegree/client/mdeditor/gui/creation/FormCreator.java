@@ -251,7 +251,7 @@ public class FormCreator {
                 value.setValueExpression( "value", veValue );
 
                 HtmlOutputText header = new HtmlOutputText();
-                header.setValue( ( (FormField) fe ).getLabel() );
+                header.setValueExpression( "value", getLabelVE( fc, ( (FormField) fe ).getLabel() ) );
                 col.getChildren().add( value );
                 col.getFacets().put( "header", header );
                 dataTable.getChildren().add( col );
@@ -410,12 +410,14 @@ public class FormCreator {
         img.setValueExpression( "name", ef.createValueExpression( elContext, "help.gif", String.class ) );
         helpLink.getChildren().add( img );
 
-        UIParameter param = new UIParameter();
-        param.setId( getUniqueId() );
-        param.setName( "mdHelp" );
-        param.setValueExpression( "value", getLabelVE( fc, fe.getHelp() ) );
+        if ( fe.getHelp() != null ) {
+            UIParameter param = new UIParameter();
+            param.setId( getUniqueId() );
+            param.setName( "mdHelp" );
+            param.setValueExpression( "value", getLabelVE( fc, fe.getHelp() ) );
+            helpLink.getChildren().add( param );
+        }
 
-        helpLink.getChildren().add( param );
         helpLink.getChildren().add( helpLink );
 
         AjaxBehavior ajaxHelp = new AjaxBehavior();

@@ -64,15 +64,14 @@ public class HelpBean implements Serializable {
                             throws AbortProcessingException {
         FacesContext fc = FacesContext.getCurrentInstance();
         Map<String, String> map = fc.getExternalContext().getRequestParameterMap();
+        String value = null;
         for ( String key : map.keySet() ) {
             if ( key.endsWith( "mdHelp" ) ) {
-                helpText = map.get( key );
+                value = map.get( key );
+
             }
         }
-    }
-
-    public void setHelpText( String helpText ) {
-        this.helpText = helpText;
+        helpText = value;
     }
 
     public String getHelpText() {

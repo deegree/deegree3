@@ -57,7 +57,6 @@ public class HelpClickedListener implements AjaxBehaviorListener {
     public void processAjaxBehavior( AjaxBehaviorEvent arg0 )
                             throws AbortProcessingException {
         FacesContext fc = FacesContext.getCurrentInstance();
-        fc.getELContext();
         HelpBean helpBean = (HelpBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                    null,
                                                                                                    "helpBean" );

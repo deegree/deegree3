@@ -8,7 +8,7 @@
 						<h:outputText id="helpOutputTitle" value="#{mdLabels['help']}" styleClass="helpTitle" />
 					</div>
 					<div class="boxText">
-					<h:outputText id="helpOutput" value="#{helpBean.helpText}" styleClass="helpText" />
+					<h:outputText id="helpOutput" value="#{helpBean.helpText != null ? helpBean.helpText : mdLabels['help_noHelp'] }" styleClass="helpText" />
 					</div>
 				</div>
 </h:body>
