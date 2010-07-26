@@ -36,7 +36,6 @@
 package org.deegree.services.controller;
 
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.services.controller.OGCFrontController.getNormalizedKVPMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -53,6 +52,7 @@ import java.util.TreeSet;
 import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.ConfigManager;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -121,7 +121,7 @@ public class FrontControllerStats {
             out.close();
             if ( request.toUpperCase().contains( "REQUEST=GETMAP" ) ) {
                 try {
-                    Map<String, String> map = getNormalizedKVPMap( request, "UTF-8" );
+                    Map<String, String> map = KVPUtils.getNormalizedKVPMap( request, "UTF-8" );
                     if ( map.get( "LAYERS" ).equals( "statistics" ) ) {
                         return;
                     }
@@ -264,7 +264,7 @@ public class FrontControllerStats {
                     continue;
                 }
                 try {
-                    Map<String, String> map = getNormalizedKVPMap( req.second, "UTF-8" );
+                    Map<String, String> map = KVPUtils.getNormalizedKVPMap( req.second, "UTF-8" );
                     if ( map.get( "LAYERS" ).equals( "statistics" ) ) {
                         continue;
                     }

@@ -35,20 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.csw.getrecords;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
-
 import java.net.URI;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.filter.Filter;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.services.controller.csw.AbstractCSWRequest;
 
 /**

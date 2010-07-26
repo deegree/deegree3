@@ -37,8 +37,6 @@
 package org.deegree.services.wps.input;
 
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.services.wps.input.LiteralInput;
-import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.jaxb.wps.LiteralInputDefinition;
 import org.deegree.services.jaxb.wps.LiteralInputDefinition.DataType;
 

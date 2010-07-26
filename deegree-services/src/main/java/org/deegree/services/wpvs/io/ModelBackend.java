@@ -37,24 +37,19 @@
 package org.deegree.services.wpvs.io;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.deegree.commons.index.PositionableModel;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
-import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.wpvs.exception.DatasourceException;
-import org.deegree.services.wpvs.io.db.PostgisBackend;
-import org.deegree.services.wpvs.io.file.FileBackend;
 import org.deegree.services.wpvs.io.serializer.BillBoardSerializer;
 import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
 import org.deegree.services.wpvs.io.serializer.PrototypeSerializer;

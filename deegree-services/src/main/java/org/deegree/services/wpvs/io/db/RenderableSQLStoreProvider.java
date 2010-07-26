@@ -49,7 +49,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.rendering.r3d.jaxb.renderable.RenderableSQLStoreConfig;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;

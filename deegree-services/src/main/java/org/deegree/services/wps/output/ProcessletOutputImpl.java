@@ -38,7 +38,6 @@ package org.deegree.services.wps.output;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.services.wps.output.ProcessletOutput;
 import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
 
 /**

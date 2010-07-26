@@ -58,6 +58,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.cs.CRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
@@ -82,7 +83,6 @@ import org.deegree.rendering.r2d.styling.PolygonStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.services.controller.FrontControllerStats;
-import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetMap;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
@@ -153,7 +153,7 @@ public class StatisticsLayer extends FeatureLayer {
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {
                 try {
-                    Map<String, String> map = OGCFrontController.getNormalizedKVPMap( req.second, "UTF-8" );
+                    Map<String, String> map = KVPUtils.getNormalizedKVPMap( req.second, "UTF-8" );
                     if ( map.get( "LAYERS" ).equals( "statistics" ) ) {
                         continue;
                     }
@@ -205,7 +205,7 @@ public class StatisticsLayer extends FeatureLayer {
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {
                 try {
-                    Map<String, String> map = OGCFrontController.getNormalizedKVPMap( req.second, "UTF-8" );
+                    Map<String, String> map = KVPUtils.getNormalizedKVPMap( req.second, "UTF-8" );
                     if ( map.get( "LAYERS" ).equals( "statistics" ) ) {
                         continue;
                     }

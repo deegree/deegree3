@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.security;
 
-import static org.deegree.services.controller.OGCFrontController.getNormalizedKVPMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -51,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
@@ -125,7 +125,7 @@ public class SecureProxy extends HttpServlet {
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) {
         try {
-            Map<String, String> normalizedKVPParams = getNormalizedKVPMap( request.getQueryString(), null );
+            Map<String, String> normalizedKVPParams = KVPUtils.getNormalizedKVPMap( request.getQueryString(), null );
             Credentials creds = credentialsProvider.doKVP( normalizedKVPParams, request, response );
             System.out.println( "KVP: " + creds );
         } catch ( UnsupportedEncodingException e ) {

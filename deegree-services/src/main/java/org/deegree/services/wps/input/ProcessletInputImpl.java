@@ -39,9 +39,8 @@ package org.deegree.services.wps.input;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.geometry.Envelope;
-import org.deegree.services.wps.Processlet;
-import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
+import org.deegree.services.wps.Processlet;
 
 /**
  * An input parameter of a {@link Processlet} execution.

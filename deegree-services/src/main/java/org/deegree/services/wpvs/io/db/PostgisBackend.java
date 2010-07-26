@@ -43,7 +43,6 @@ import java.sql.SQLException;
 
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
-import org.deegree.services.wpvs.io.ModelBackend.Type;
 import org.postgis.Geometry;
 import org.postgis.LinearRing;
 import org.postgis.PGbox3d;
