@@ -378,8 +378,7 @@ public class ISORecordStore implements RecordStore {
 
         // TODO sortProperty
         try {
-            builder = new PostGISWhereBuilder( new TableAliasManager(), mapping,
-                                               (OperatorFilter) recordStoreOptions.getFilter(), null,
+            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) recordStoreOptions.getFilter(), null,
                                                useLegacyPredicates );
         } catch ( FilterEvaluationException e ) {
 
@@ -529,7 +528,7 @@ public class ISORecordStore implements RecordStore {
             }
         }
         StringBuilder replaceWhereClause = new StringBuilder();
-        replaceWhereClause.append( builder.getWhereClause().getSQL() );
+        replaceWhereClause.append( builder.getWhere().getSQL() );
         for ( Pair<String, String> alias : aliasMapping ) {
 
             Pattern p = Pattern.compile( alias.first + "[.]" );
@@ -650,7 +649,7 @@ public class ISORecordStore implements RecordStore {
         int aliasCount = 0;
         Set<Pair<String, String>> aliasMapping = null;
         StringBuilder whereClause = null;
-        if ( builder.getWhereClause() != null ) {
+        if ( builder.getWhere() != null ) {
             whereClause = new StringBuilder();
             aliasMapping = new HashSet<Pair<String, String>>();
             createWhereClauseWithAlias( aliasCount, builder, whereClause, aliasMapping );
@@ -726,7 +725,7 @@ public class ISORecordStore implements RecordStore {
         if ( builder != null && builder.getMappedPropertyNames().size() > 0 ) {
             int i = 0;
 
-            for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
+            for ( SQLLiteral arg : builder.getWhere().getLiterals() ) {
                 i++;
                 if ( arg.getSQLType() != -1 ) {
                     LOG.debug( "Setting argument: " + arg );
@@ -840,7 +839,7 @@ public class ISORecordStore implements RecordStore {
 
                     // TODO sortProperty
 
-                    PostGISWhereBuilder builder = new PostGISWhereBuilder( new TableAliasManager(), mapping,
+                    PostGISWhereBuilder builder = new PostGISWhereBuilder( mapping,
                                                                            (OperatorFilter) upd.getConstraint(), null,
                                                                            useLegacyPredicates );
 
@@ -906,7 +905,8 @@ public class ISORecordStore implements RecordStore {
                             while ( rsGetStoredFullRecordXML.next() ) {
                                 for ( RecordProperty recProp : upd.getRecordProperty() ) {
 
-                                    PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName(), null );
+                                    PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName(),
+                                                                                          null );
 
                                     Object obje = mapping.getPostGISValue( (Literal<?>) recProp.getReplacementValue(),
                                                                            recProp.getPropertyName() );
@@ -1000,8 +1000,7 @@ public class ISORecordStore implements RecordStore {
                 for ( int formatNum : formatNumbers ) {
                     // TODO sortProperty
                     try {
-                        builder = new PostGISWhereBuilder( new TableAliasManager(), mapping,
-                                                           (OperatorFilter) delete.getConstraint(), null,
+                        builder = new PostGISWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(), null,
                                                            useLegacyPredicates );
 
                     } catch ( FilterEvaluationException e ) {
@@ -1201,10 +1200,10 @@ public class ISORecordStore implements RecordStore {
         PreparedStatement stmt = null;
         StringBuilder constraintExpression = new StringBuilder();
 
-        StringBuilder stringBuilder = builder.getWhereClause().getSQL();
+        StringBuilder stringBuilder = builder.getWhere().getSQL();
 
         if ( stringBuilder.length() != 0 ) {
-            constraintExpression.append( " AND (" ).append( builder.getWhereClause() ).append( ')' );
+            constraintExpression.append( " AND (" ).append( builder.getWhere() ).append( ')' );
         } else {
             constraintExpression.append( ' ' );
         }
@@ -1245,8 +1244,8 @@ public class ISORecordStore implements RecordStore {
 
         stmt = conn.prepareStatement( s.toString() );
 
-        if ( builder.getWhereClause() != null ) {
-            for ( SQLLiteral literal : builder.getWhereClause().getLiterals() ) {
+        if ( builder.getWhere() != null ) {
+            for ( SQLLiteral literal : builder.getWhere().getLiterals() ) {
                 LOG.info( "Setting argument: " + literal );
                 stmt.setObject( 1, literal.getValue() );
             }

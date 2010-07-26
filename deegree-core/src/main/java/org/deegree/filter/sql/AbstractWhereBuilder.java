@@ -80,10 +80,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Note that the generated WHERE and ORDER-BY expressions are sometimes not sufficient to guarantee that the
  * <code>ResultSet</code> only contains the targeted objects and/or keeps the requested order. This happens when the
- * {@link PropertyName}s used in the Filter/sort criteria are not mappable to columns in the database or the contained
+ * {@link PropertyName}s used in the filter/sort criteria are not mappable to columns in the database or the contained
  * XPath expressions are not mappable to an equivalent SQL expression. In these cases, one or both of the methods
- * {@link #getPostFilter()}/{@link #getPostSortCriteria()} return not null and the objects extracted from the
- * corresponding {@link ResultSet} must be filtered/sorted in memory to guarantee the requested constraints/order.
+ * {@link #getPostFilter()}/{@link #getPostSortCriteria()} return not <code>null</code> and the objects extracted from
+ * the corresponding {@link ResultSet} must be filtered/sorted in memory to guarantee the requested constraints/order.
  * </p>
  * <p>
  * TODO: Implement partial backend filtering / sorting. Currently, filtering / sorting is performed completely by the
@@ -100,13 +100,15 @@ public abstract class AbstractWhereBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractWhereBuilder.class );
 
-    protected final TableAliasManager aliasManager;
+    /** Keeps track of all generated table aliases. */
+    protected final TableAliasManager aliasManager = new TableAliasManager();
+
+    /** Keeps track of all successfully mapped property names. */
+    protected final List<PropertyNameMapping> propNameMappingList = new ArrayList<PropertyNameMapping>();
 
     private final OperatorFilter filter;
 
     private final SortProperty[] sortCrit;
-
-    protected final List<PropertyNameMapping> propNameMappingList = new ArrayList<PropertyNameMapping>();
 
     private SQLExpression whereClause;
 
@@ -119,8 +121,6 @@ public abstract class AbstractWhereBuilder {
     /**
      * Creates a new {@link AbstractWhereBuilder} instance.
      * 
-     * @param aliasManager
-     *            responsible for creating aliases for qualifying table columns, must not be <code>null</code>
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
@@ -128,9 +128,7 @@ public abstract class AbstractWhereBuilder {
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link PropertyName}s
      */
-    protected AbstractWhereBuilder( TableAliasManager aliasManager, OperatorFilter filter, SortProperty[] sortCrit )
-                            throws FilterEvaluationException {
-        this.aliasManager = aliasManager;
+    protected AbstractWhereBuilder( OperatorFilter filter, SortProperty[] sortCrit ) throws FilterEvaluationException {
         this.filter = filter;
         this.sortCrit = sortCrit;
     }
@@ -146,8 +144,7 @@ public abstract class AbstractWhereBuilder {
             try {
                 whereClause = toProtoSQL( filter.getOperator() );
             } catch ( UnmappableException e ) {
-                e.printStackTrace();
-                LOG.debug( "Unable to map filter to WHERE-clause. Setting post filter." );
+                LOG.debug( "Unable to map filter to WHERE-clause. Setting post filter.", e );
                 LOG.warn( "Using full filter for post filtering step. Partial backend-filtering is not implemented yet. " );
                 postFilter = filter;
             } catch ( FilterEvaluationException e ) {
@@ -161,8 +158,7 @@ public abstract class AbstractWhereBuilder {
             try {
                 orderByClause = toProtoSQL( sortCrit );
             } catch ( UnmappableException e ) {
-                e.printStackTrace();
-                LOG.debug( "Unable to map sort criteria to ORDER-BY-clause. Setting post order criteria." );
+                LOG.debug( "Unable to map sort criteria to ORDER BY-clause. Setting post order criteria.", e );
                 LOG.warn( "Using all sort criteria for post sorting step. Partial backend-sorting is not implemented yet. " );
                 postSortCrit = sortCrit;
             } catch ( FilterEvaluationException e ) {
@@ -179,7 +175,7 @@ public abstract class AbstractWhereBuilder {
      * 
      * @return the WHERE clause, can be <code>null</code>
      */
-    public SQLExpression getWhereClause() {
+    public SQLExpression getWhere() {
         return whereClause;
     }
 
@@ -228,9 +224,10 @@ public abstract class AbstractWhereBuilder {
     }
 
     /**
-     * Returns the mappings of all {@link PropertyName}s found in the filter / sort criteria.
+     * Returns the mappings of all {@link PropertyName}s from the filter / sort criteria that have been mapped to the
+     * relational model.
      * 
-     * @return the mappings, can be empty but never <code>null</code>
+     * @return the successful mappings, can be empty but never <code>null</code>
      */
     public List<PropertyNameMapping> getMappedPropertyNames() {
         return propNameMappingList;

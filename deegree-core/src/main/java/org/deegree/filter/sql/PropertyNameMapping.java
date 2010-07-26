@@ -43,12 +43,10 @@ import java.util.List;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.Join;
-import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 
 /**
- * Represents a {@link PropertyName} (usually from a {@link Filter} expression) that's mapped to the components (tables,
- * columns) of a relational database.
+ * Represents a {@link PropertyName} that's mapped to a relational model.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

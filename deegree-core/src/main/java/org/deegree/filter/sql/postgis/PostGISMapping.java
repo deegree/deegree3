@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.postgis;
 
-import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
@@ -58,8 +57,8 @@ public interface PostGISMapping {
      * Returns the {@link PropertyNameMapping} for the given {@link PropertyName}.
      * 
      * @param propName
-     *            property name (from {@link Filter}/sort criterion}, can be <code>null</code> (indicates that the
-     *            default geometry property of the root object is requested)
+     *            property name, can be <code>null</code> (indicates that the default geometry property of the root
+     *            object is requested)
      * @param aliasManager
      *            manager for creating and tracking table aliases, never <code>null</code>
      * @return relational mapping, may be <code>null</code> (if no mapping is possible)
@@ -71,26 +70,29 @@ public interface PostGISMapping {
                             throws FilterEvaluationException, UnmappableException;
 
     /**
-     * Returns the value object for the given {@link Literal}, adapted to the SQL type that is imposed by the specified
-     * {@link PropertyName} and its relational mapping.
+     * Returns the value object for the given {@link Literal}, adapted to the SQL type that is imposed by the relational
+     * mapping of the specified {@link PropertyName}.
      * 
      * @param literal
      *            literal to be converted, never <code>null</code>
      * @param propName
-     * @return
+     *            property name, never <code>null</code>
+     * @return value object for the column in the database, may be <code>null</code>
      * @throws FilterEvaluationException
      */
     public Object getPostGISValue( Literal<?> literal, PropertyName propName )
                             throws FilterEvaluationException;
 
     /**
-     * Returns the WKB for the given {@link Geometry}, transformed to the CRS of the specified {@link PropertyName}, if
-     * necessary.
+     * Returns the WKB for the given {@link Geometry} in the CRS that is imposed by the relational mapping of the
+     * specified {@link PropertyName}.
      * 
      * @param literal
      *            literal to be converted, never <code>null</code>
      * @param propName
-     * @return
+     *            property name, can be <code>null</code> (indicates that the default geometry property of the root
+     *            object is requested)
+     * @return value object for the column in the database, may be <code>null</code>
      * @throws FilterEvaluationException
      */
     public byte[] getPostGISValue( Geometry literal, PropertyName propName )

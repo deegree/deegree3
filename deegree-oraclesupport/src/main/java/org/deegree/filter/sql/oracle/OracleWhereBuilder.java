@@ -64,7 +64,6 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.AbstractWhereBuilder;
 import org.deegree.filter.sql.PropertyNameMapping;
-import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.UnmappableException;
 import org.deegree.filter.sql.expression.SQLColumn;
 import org.deegree.filter.sql.expression.SQLExpression;
@@ -92,8 +91,6 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
     /**
      * Creates a new {@link OracleWhereBuilder} instance.
      * 
-     * @param aliasManager
-     *            responsible for creating aliases for qualifying table columns, must not be <code>null</code>
      * @param mapping
      *            provides the mapping from {@link PropertyName}s to DB columns, must not be <code>null</code>
      * @param filter
@@ -104,9 +101,9 @@ public class OracleWhereBuilder extends AbstractWhereBuilder {
      *            Oracle connection, must not be <code>null</code>
      * @throws FilterEvaluationException
      */
-    public OracleWhereBuilder( TableAliasManager aliasManager, PostGISMapping mapping, OperatorFilter filter,
-                               SortProperty[] sortCrit, OracleConnection conn ) throws FilterEvaluationException {
-        super( aliasManager, filter, sortCrit );
+    public OracleWhereBuilder( PostGISMapping mapping, OperatorFilter filter, SortProperty[] sortCrit,
+                               OracleConnection conn ) throws FilterEvaluationException {
+        super( filter, sortCrit );
         this.mapping = mapping;
         this.conn = conn;
         build();

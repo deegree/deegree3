@@ -355,9 +355,8 @@ public class OracleFeatureStore implements FeatureStore {
                 }
             };
 
-            OracleWhereBuilder wb = new OracleWhereBuilder( new TableAliasManager(), mapping, filter, sortCrits,
-                                                            oraConn );
-            SQLExpression where = wb.getWhereClause();
+            OracleWhereBuilder wb = new OracleWhereBuilder( mapping, filter, sortCrits, oraConn );
+            SQLExpression where = wb.getWhere();
             SQLExpression orderBy = wb.getOrderBy();
 
             StringBuilder sql = new StringBuilder( "SELECT " );

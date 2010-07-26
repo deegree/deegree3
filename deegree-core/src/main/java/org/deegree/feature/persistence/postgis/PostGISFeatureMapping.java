@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link PostGISMapping} for the {@link PostGISFeatureStore} thats base on {@link FeatureTypeMapping} objects.
+ * {@link PostGISMapping} for the {@link PostGISFeatureStore} that's based on {@link FeatureTypeMapping} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
