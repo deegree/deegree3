@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.deegree.commons.index.RTree.Entry;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -53,16 +54,19 @@ import org.junit.Test;
  */
 public class RTreeTest {
 
+    public int bigM = 4;
+
+    float[] rootEnvelope = new float[] { 0, 0, 200, 200 };
+
+    public RTree<Integer> tree = new RTree<Integer>( rootEnvelope, bigM );
+
     /**
      * With the sample tree from the wikipedia page http://en.wikipedia.org/wiki/File:R-tree.svg
      * 
      * @param args
      */
-    @Test
-    public void wikipediaTest() {
-        float[] rootEnvelope = new float[] { 0, 0, 100, 100 };
-        RTree<Integer> tree = new RTree<Integer>( rootEnvelope, 3 );
-
+    @Before
+    public void loadWikipediaTree() {
         float[] box = new float[] { 20, 70, 35, 85 };
         tree.insert( box, new Integer( 8 ) );
         box = new float[] { 50, 90, 65, 105 };
@@ -87,10 +91,23 @@ public class RTreeTest {
         tree.insert( box, new Integer( 18 ) );
         box = new float[] { 155, 10, 175, 25 };
         tree.insert( box, new Integer( 19 ) );
+        box = new float[] { 145, 75, 160, 105 };
+        tree.insert( box, new Integer( 20 ) );
+        box = new float[] { 150, 60, 170, 75 };
+        tree.insert( box, new Integer( 21 ) );
+        box = new float[] { 155, 85, 180, 95 };
+        tree.insert( box, new Integer( 22 ) );
         printOut( tree );
+
+        System.out.println();
+        System.out.println();
     }
 
-    private void printOut( RTree tree ) {
+    public static void printOut( RTree tree ) {
+        if ( tree.root == null ) {
+            throw new RuntimeException( "Tree is empty. Nothing to print." );
+        }
+
         List<Entry<Integer>[]> queue = new ArrayList<Entry<Integer>[]>();
         queue.add( tree.root );
         int index = 0;
@@ -118,4 +135,33 @@ public class RTreeTest {
         }
     }
 
+    private void myQuery( float[] box, Entry<Integer>[] entries ) {
+        for ( int i = 0; i < entries.length; i++ ) {
+            if ( entries[i] != null ) {
+                if ( tree.intersects( box, entries[i].bbox, 2 ) ) {
+                    if ( entries[i].next == null ) {
+                        System.out.println( entries[i].entryValue );
+                    } else {
+                        myQuery( box, entries[i].next );
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void queryTest() {
+        System.out.println();
+        System.out.println( "---------------------" );
+        myQuery( new float[] { 0, 0, 50, 50 }, tree.root );
+    }
+
+    /**
+     * Set smallm = bigM / 2 (in the RTree constructors) to test that the whole tree crumbles
+     */
+    @Test
+    public void testRemove() {
+        tree.remove( new Integer( 20 ) );
+        printOut( tree );
+    }
 }
