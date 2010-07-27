@@ -13459,6 +13459,7 @@
     <crs:ProjectedCRS>
       <crs:Id>epsg:25833</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#25833</crs:Id>
+      <crs:Id>urn:adv:crs:etrs89_utm33</crs:Id>      
       <crs:Id>urn:ogc:def:crs:epsg::25833</crs:Id>
       <crs:Id>urn:opengis:def:crs:epsg::25833</crs:Id>
       <crs:Id>urn:x-ogc-def:crs:epsg:25833</crs:Id>
