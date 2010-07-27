@@ -401,6 +401,9 @@ public abstract class Layer {
             if ( children != null && !children.isEmpty() ) {
                 for ( Layer l : children ) {
                     Envelope lbox = l.getBbox();
+                    if ( lbox != null && lbox.getCoordinateDimension() <= 1 ) {
+                        lbox = null;
+                    }
                     if ( lbox != null ) {
                         lbox = (Envelope) new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() ).transform( lbox );
                         if ( bbox == null ) {
