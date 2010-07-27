@@ -50,6 +50,34 @@ import java.util.List;
 
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.tools.annotations.Tool;
+import org.deegree.tools.commons.utils.ScanEncoding;
+import org.deegree.tools.coverage.RTBClient;
+import org.deegree.tools.coverage.TransformRaster;
+import org.deegree.tools.coverage.converter.RasterConverter;
+import org.deegree.tools.coverage.gridifier.RasterTreeGridifier;
+import org.deegree.tools.crs.CRSInfo;
+import org.deegree.tools.crs.ConfigurationConverger;
+import org.deegree.tools.crs.CoordinateTransform;
+import org.deegree.tools.crs.EPSGDBSynchronizer;
+import org.deegree.tools.crs.PolynomialParameterCreator;
+import org.deegree.tools.crs.XMLCoordinateTransform;
+import org.deegree.tools.crs.georeferencing.communication.GRViewer;
+import org.deegree.tools.feature.gml.ApplicationSchemaTool;
+import org.deegree.tools.feature.gml.GMLSchemaAnalyzer;
+import org.deegree.tools.feature.gml.GMLSchemaComparator;
+import org.deegree.tools.feature.gml.MappingShortener;
+import org.deegree.tools.feature.gml.SchemaAnalyzer;
+import org.deegree.tools.record.importhandling.WPSImporter;
+import org.deegree.tools.rendering.InteractiveWPVS;
+import org.deegree.tools.rendering.dem.builder.DEMDatasetGenerator;
+import org.deegree.tools.rendering.dem.filtering.DEMRasterFilterer;
+import org.deegree.tools.rendering.manager.DataManager;
+import org.deegree.tools.rendering.manager.ModelGeneralizor;
+import org.deegree.tools.rendering.manager.PrototypeAssigner;
+import org.deegree.tools.rendering.r2d.se.PostgreSQLImporter;
+import org.deegree.tools.rendering.r2d.se.StyleChecker;
+import org.deegree.tools.rendering.viewer.GLViewer;
+import org.deegree.tools.services.wms.FeatureTypesToLayerTree;
 
 /**
  * Allows for convenient starting and listing of available deegree command line tools.
@@ -71,37 +99,33 @@ public class ToolBox {
 
     // add tool info for every command line tool
     // TODO build this automatically from annotations
-    private final ToolInfo[] tools = {
-                                      new ToolInfo( org.deegree.tools.feature.gml.ApplicationSchemaTool.class ),
-                                      new ToolInfo( org.deegree.tools.crs.CRSInfo.class ),
-                                      new ToolInfo( org.deegree.tools.crs.ConfigurationConverger.class ),
-                                      new ToolInfo( org.deegree.tools.crs.CoordinateTransform.class ),
-                                      new ToolInfo( org.deegree.tools.crs.XMLCoordinateTransform.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.dem.builder.DEMDatasetGenerator.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.dem.filtering.DEMRasterFilterer.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.manager.DataManager.class ),
-                                      new ToolInfo( org.deegree.tools.crs.EPSGDBSynchronizer.class ),
-                                      new ToolInfo( org.deegree.tools.feature.gml.GMLSchemaAnalyzer.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.InteractiveWPVS.class ),
-                                      new ToolInfo( org.deegree.tools.feature.gml.MappingShortener.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.manager.ModelGeneralizor.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.r2d.se.PostgreSQLImporter.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.manager.PrototypeAssigner.class ),
-                                      new ToolInfo( org.deegree.tools.coverage.RTBClient.class ),
-                                      new ToolInfo( org.deegree.tools.coverage.converter.RasterConverter.class ),
-                                      new ToolInfo( org.deegree.tools.coverage.gridifier.RasterTreeGridifier.class ),
-                                      new ToolInfo( org.deegree.tools.feature.gml.SchemaAnalyzer.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.r2d.se.StyleChecker.class ),
-                                      new ToolInfo( org.deegree.tools.coverage.TransformRaster.class ),
-                                      new ToolInfo( org.deegree.tools.crs.georeferencing.communication.GRViewer.class ),
+    private final ToolInfo[] tools = { new ToolInfo( ApplicationSchemaTool.class ), new ToolInfo( CRSInfo.class ),
+                                      new ToolInfo( ConfigurationConverger.class ),
+                                      new ToolInfo( CoordinateTransform.class ),
+                                      new ToolInfo( XMLCoordinateTransform.class ),
+                                      new ToolInfo( DEMDatasetGenerator.class ),
+                                      new ToolInfo( DEMRasterFilterer.class ), new ToolInfo( DataManager.class ),
+                                      new ToolInfo( EPSGDBSynchronizer.class ),
+                                      new ToolInfo( GMLSchemaAnalyzer.class ), new ToolInfo( InteractiveWPVS.class ),
+                                      new ToolInfo( MappingShortener.class ),
+                                      new ToolInfo( ModelGeneralizor.class ),
+                                      new ToolInfo( PostgreSQLImporter.class ),
+                                      new ToolInfo( PrototypeAssigner.class ),
+                                      new ToolInfo( RTBClient.class ),
+                                      new ToolInfo( RasterConverter.class ),
+                                      new ToolInfo( RasterTreeGridifier.class ),
+                                      new ToolInfo( SchemaAnalyzer.class ),
+                                      new ToolInfo( StyleChecker.class ),
+                                      new ToolInfo( FeatureTypesToLayerTree.class ),
+                                      new ToolInfo( TransformRaster.class ),
+                                      new ToolInfo( GRViewer.class ),
 
                                       // Following classes define public static void main methods, but do not implement
                                       // the tools annotation (maybe fix them?)
-                                      new ToolInfo( org.deegree.tools.commons.utils.ScanEncoding.class ),
-                                      new ToolInfo( org.deegree.tools.crs.PolynomialParameterCreator.class ),
-                                      new ToolInfo( org.deegree.tools.feature.gml.GMLSchemaComparator.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.viewer.GLViewer.class ),
-                                      new ToolInfo( org.deegree.tools.record.importhandling.WPSImporter.class ) };
+                                      new ToolInfo( ScanEncoding.class ),
+                                      new ToolInfo( PolynomialParameterCreator.class ),
+                                      new ToolInfo( GMLSchemaComparator.class ), new ToolInfo( GLViewer.class ),
+                                      new ToolInfo( WPSImporter.class ) };
 
     private synchronized static ToolBox getInstance() {
         if ( instance == null ) {
