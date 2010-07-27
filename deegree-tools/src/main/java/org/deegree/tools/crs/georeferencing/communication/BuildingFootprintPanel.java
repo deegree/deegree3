@@ -156,8 +156,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
                     double x = ring.getControlPoints().getX( i );
                     double y = ring.getControlPoints().getY( i );
                     int[] p = sceneValues.getPixelCoord( new FootprintPoint( x, y ) );
-                    x2[i] = new Double( p[0] ).intValue();
-                    y2[i] = new Double( p[1] ).intValue();
+                    x2[i] = p[0];
+                    y2[i] = p[1];
 
                     pointsPixelToWorld.put( new FootprintPoint( x2[i], y2[i] ),
                                             new FootprintPoint( ring.getControlPoints().getX( i ),

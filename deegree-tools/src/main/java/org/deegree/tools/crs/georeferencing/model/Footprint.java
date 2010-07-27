@@ -35,12 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.model;
 
-import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.vecmath.Point2d;
-import javax.vecmath.Point3d;
 
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
@@ -48,7 +44,6 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
-import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 
 /**
  * 
@@ -65,15 +60,7 @@ public class Footprint {
 
     public final static double EP10 = 1e+10;
 
-    private Polygon polygon;
-
     private List<Ring> worldCoordinateRingList;
-
-    private double[] worldCoordinates;
-
-    private FootprintPoint[] worldCoordinatePoints;
-
-    private List<Point3d> worldCoordinatePointsList;
 
     private GeometryFactory geom;
 
@@ -85,44 +72,6 @@ public class Footprint {
     public Footprint( Scene2DValues values, GeometryFactory geom ) {
         this.values = values;
         this.geom = geom;
-    }
-
-    /**
-     * Creates a default instance of a <Code>Polygon</Code> from native Java AWT package.
-     * 
-     * <dl>
-     * <dt>first point</dt>
-     * <dd>50,50</dd>
-     * <dt>second point</dt>
-     * <dd>50,250</dd>
-     * <dt>third point</dt>
-     * <dd>200,200</dd>
-     * <dt>fourth point</dt>
-     * <dd>200,80</dd>
-     * </dl>
-     */
-    public void setDefaultPolygon() {
-        Point2d[] pointsWorldCoordinate = new Point2d[4];
-        pointsWorldCoordinate[0] = new Point2d( 50, 50 );
-        pointsWorldCoordinate[1] = new Point2d( 50, 250 );
-        pointsWorldCoordinate[2] = new Point2d( 200, 200 );
-        pointsWorldCoordinate[3] = new Point2d( 200, 80 );
-
-        this.polygon = new Polygon( new int[] { (int) pointsWorldCoordinate[0].x, (int) pointsWorldCoordinate[1].x,
-                                               (int) pointsWorldCoordinate[2].x, (int) pointsWorldCoordinate[3].x },
-                                    new int[] { (int) pointsWorldCoordinate[0].y, (int) pointsWorldCoordinate[1].y,
-                                               (int) pointsWorldCoordinate[2].y, (int) pointsWorldCoordinate[3].y },
-                                    pointsWorldCoordinate.length );
-
-    }
-
-    /**
-     * This should be a coverage later.
-     * 
-     * @return an AWT <Code>Polygon</Code>
-     */
-    public Polygon getPolygon() {
-        return polygon;
     }
 
     /**
@@ -142,11 +91,7 @@ public class Footprint {
         double minY = EP10;
         double maxX = EPS10;
         double maxY = EPS10;
-        worldCoordinates = new double[size * 2];
-        worldCoordinatePoints = new FootprintPoint[size];
-        worldCoordinatePointsList = new ArrayList<Point3d>();
-        int countWorldCoords = 0;
-        int countWorldCoordsPoint = 0;
+
         for ( float[] f : footprintPointsList ) {
             pointList = new ArrayList<Point>();
             int polygonSize = f.length / 3;
@@ -157,30 +102,25 @@ public class Footprint {
 
             // get all points in 2D, so z-axis is omitted
             for ( int i = 0; i < f.length; i += 3 ) {
-
-                if ( minX > f[i] ) {
-                    minX = f[i];
-                }
-                if ( minY > f[i + 1] ) {
-                    minY = f[i + 1];
-                }
-                if ( maxX < f[i] ) {
-                    maxX = f[i];
-                }
-                if ( maxY < f[i + 1] ) {
-                    maxY = f[i + 1];
-                }
-
                 x[count] = f[i];
                 y[count] = f[i + 1];
-                pointList.add( geom.createPoint( "point", f[i], f[i + 1], null ) );
-                worldCoordinates[countWorldCoords] = f[i];
-                worldCoordinates[++countWorldCoords] = f[i + 1];
-                worldCoordinatePoints[countWorldCoordsPoint] = new FootprintPoint( f[i], f[i + 1] );
-                worldCoordinatePointsList.add( new Point3d( f[i], f[i + 1], 0 ) );
-                countWorldCoords++;
+                if ( minX > x[count] ) {
+                    minX = x[count];
+                }
+                if ( minY > y[count] ) {
+                    minY = y[count];
+                }
+                if ( maxX < x[count] ) {
+                    maxX = x[count];
+                }
+                if ( maxY < y[count] ) {
+                    maxY = y[count];
+                }
+
+                pointList.add( geom.createPoint( "point", x[count], y[count], null ) );
+
                 count++;
-                countWorldCoordsPoint++;
+
             }
             Points points = new PointsList( pointList );
             worldCoordinateRingList.add( geom.createLinearRing( "ring", null, points ) );
@@ -196,18 +136,6 @@ public class Footprint {
      */
     public List<Ring> getWorldCoordinateRingList() {
         return worldCoordinateRingList;
-    }
-
-    public double[] getWorldCoordinates() {
-        return worldCoordinates;
-    }
-
-    public FootprintPoint[] getWorldCoordinatePoints() {
-        return worldCoordinatePoints;
-    }
-
-    public List<Point3d> getWorldCoordinatePointsList() {
-        return worldCoordinatePointsList;
     }
 
 }

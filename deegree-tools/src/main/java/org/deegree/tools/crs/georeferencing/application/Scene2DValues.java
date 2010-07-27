@@ -218,9 +218,9 @@ public class Scene2DValues {
         case FootprintPoint:
 
             percentPoint = computePercentWorld( this.envelopeFootprint, abstractGRPoint );
-
-            pixelPointX = Math.round( (float) ( ( percentPoint.x * dimensionFootprint.width ) ) );
-            pixelPointY = Math.round( (float) ( ( ( 1 - percentPoint.y ) * dimensionFootprint.height ) ) );
+            // transformPropFoot();
+            pixelPointX = new Double( ( percentPoint.x * dimensionFootprint.width ) ).intValue();
+            pixelPointY = new Double( ( 1 - percentPoint.y ) * dimensionFootprint.height ).intValue();
             return new int[] { pixelPointX, pixelPointY };
         }
 
@@ -358,7 +358,9 @@ public class Scene2DValues {
     }
 
     public void setDimenstionFootpanel( Rectangle dimension ) {
+
         this.dimensionFootprint = dimension;
+        transformPropFoot();
     }
 
     public void setRaster( AbstractRaster raster ) {
@@ -521,6 +523,7 @@ public class Scene2DValues {
         if ( ratio < 1 ) {
             // if < 1 then do orientation on h
             double newWidth = ( w / h ) * sizeGeoRef * rect.width;
+
             convertedPixelToRasterPoint = new Point2d( newWidth / w, rect.height * sizeGeoRef / h );
             transformedRasterSpan = new Point2d( newWidth, rect.height * sizeGeoRef );
             return transformedRasterSpan;
@@ -535,6 +538,36 @@ public class Scene2DValues {
         transformedRasterSpan = new Point2d( rect.width * sizeGeoRef, rect.height * sizeGeoRef );
 
         return transformedRasterSpan;
+    }
+
+    private void transformPropFoot() {
+        double w = dimensionFootprint.width;
+        double h = dimensionFootprint.height;
+        double ratio = w / h;
+        // double spanX = 0;
+        // double spanY = 0;
+
+        double parameter = 0;
+        System.out.println( "[Scene2DValues] bevore " + dimensionFootprint + " " + ratio );
+        if ( ratio < 1 ) {
+            parameter = w / h;
+            // spanX = envelopeFootprint.getSpan0() * parameter;
+            // spanY = envelopeFootprint.getSpan1() * parameter;
+            dimensionFootprint.height = new Double( dimensionFootprint.height * parameter ).intValue();
+        } else if ( ratio > 1 ) {
+            parameter = h / w;
+            // spanX = envelopeFootprint.getSpan0() * parameter;
+            // spanY = envelopeFootprint.getSpan1() * parameter;
+            dimensionFootprint.width = new Double( dimensionFootprint.width * parameter ).intValue();
+
+        }
+        System.out.println( "[Scene2DValues] after " + dimensionFootprint );
+        // envelopeFootprint = geom.createEnvelope( envelopeFootprint.getMin().get0(),
+        // envelopeFootprint.getMin().get1(),
+        // envelopeFootprint.getMin().get0() + spanX,
+        // envelopeFootprint.getMin().get1() + spanY,
+        // envelopeFootprint.getCoordinateSystem() );
+
     }
 
     public double getResolution() {

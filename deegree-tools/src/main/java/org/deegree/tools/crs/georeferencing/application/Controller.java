@@ -1123,9 +1123,12 @@ public class Controller {
     private void init() {
 
         sceneValues.setImageDimension( new Rectangle( panel.getBounds().width, panel.getBounds().height ) );
+        sceneValues.setDimenstionFootpanel( new Rectangle( footPanel.getBounds().width, footPanel.getBounds().height ) );
         panel.setImageDimension( sceneValues.getImageDimension() );
+        footPanel.updatePoints( sceneValues );
         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
         panel.repaint();
+        footPanel.repaint();
     }
 
     /**
