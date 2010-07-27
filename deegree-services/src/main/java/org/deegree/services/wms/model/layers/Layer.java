@@ -392,6 +392,9 @@ public abstract class Layer {
     public Envelope getBbox() {
         try {
             Envelope bbox = this.bbox;
+            if ( bbox != null && bbox.getCoordinateDimension() <= 1 ) {
+                bbox = null;
+            }
             if ( bbox != null && bbox.getCoordinateSystem() != CRS.EPSG_4326 ) {
                 bbox = (Envelope) new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() ).transform( bbox );
             }
