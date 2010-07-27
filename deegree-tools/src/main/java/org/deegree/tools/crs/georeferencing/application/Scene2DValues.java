@@ -360,7 +360,9 @@ public class Scene2DValues {
     public void setDimenstionFootpanel( Rectangle dimension ) {
 
         this.dimensionFootprint = dimension;
-        transformPropFoot();
+        if ( envelopeFootprint != null ) {
+            transformPropFoot();
+        }
     }
 
     public void setRaster( AbstractRaster raster ) {
@@ -540,39 +542,30 @@ public class Scene2DValues {
         return transformedRasterSpan;
     }
 
+    /**
+     * Transforms the ratio of the dimensions of the footprintPanel. <br>
+     * It takes the ratio between the dimension -width and -height and the ratio between the envelope -width and
+     * -height.
+     */
     private void transformPropFoot() {
+        double wE = envelopeFootprint.getSpan0();
+        double hE = envelopeFootprint.getSpan1();
         double w = dimensionFootprint.width;
         double h = dimensionFootprint.height;
+        double ratioEnv = wE / hE;
         double ratio = w / h;
-        // double spanX = 0;
-        // double spanY = 0;
 
-        double parameter = 0;
         System.out.println( "[Scene2DValues] bevore " + dimensionFootprint + " " + ratio );
         if ( ratio < 1 ) {
-            parameter = w / h;
-            // spanX = envelopeFootprint.getSpan0() * parameter;
-            // spanY = envelopeFootprint.getSpan1() * parameter;
-            dimensionFootprint.height = new Double( dimensionFootprint.height * parameter ).intValue();
+
+            dimensionFootprint.height = new Double( dimensionFootprint.height * ratio / ratioEnv ).intValue();
         } else if ( ratio > 1 ) {
-            parameter = h / w;
-            // spanX = envelopeFootprint.getSpan0() * parameter;
-            // spanY = envelopeFootprint.getSpan1() * parameter;
-            dimensionFootprint.width = new Double( dimensionFootprint.width * parameter ).intValue();
+
+            dimensionFootprint.width = new Double( dimensionFootprint.width * ratioEnv / ratio ).intValue();
 
         }
-        System.out.println( "[Scene2DValues] after " + dimensionFootprint );
-        // envelopeFootprint = geom.createEnvelope( envelopeFootprint.getMin().get0(),
-        // envelopeFootprint.getMin().get1(),
-        // envelopeFootprint.getMin().get0() + spanX,
-        // envelopeFootprint.getMin().get1() + spanY,
-        // envelopeFootprint.getCoordinateSystem() );
+        System.out.println( "[Scene2DValues] after " + dimensionFootprint + " " + envelopeFootprint );
 
-    }
-
-    public double getResolution() {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     /**
@@ -629,7 +622,6 @@ public class Scene2DValues {
 
     public void setEnvelopeFootprint( Envelope createEnvelope ) {
         this.envelopeFootprint = createEnvelope;
-
     }
 
 }
