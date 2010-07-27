@@ -40,13 +40,18 @@ import static java.lang.Math.min;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -103,16 +108,25 @@ public class RTree<T> extends SpatialIndex<T> {
 
     private final double s = 0.5;
 
+    private final String storagePath = "/main/resources/org/deegree/commons/index/rtree_storage";
+
+    private File storageFile;
+
+    private FileWriter storageWriter;
+
     // rb: output the warning
     boolean outputWarning = true;
 
     private boolean extraFlag;
+
+    private List<Entry<T>> removedEntries;
 
     /**
      * @param rootEnvelope
      *            of this rtree.
      * @param numberOfObjects
      *            each rectangle shall hold before splitting.
+     * @throws IOException
      */
     public RTree( float[] rootEnvelope, int numberOfObjects ) {
         if ( rootEnvelope == null ) {
@@ -121,8 +135,8 @@ public class RTree<T> extends SpatialIndex<T> {
         this.bbox = Arrays.copyOf( rootEnvelope, rootEnvelope.length );
         if ( numberOfObjects > 0 ) {
             this.bigM = numberOfObjects;
-            this.smallm = ( bigM / 5 ) == 0 ? 1 : ( bigM / 5 );
         }
+        this.smallm = ( bigM / 5 ) == 0 ? 1 : ( bigM / 5 );
         this.root = null;
     }
 
@@ -137,11 +151,34 @@ public class RTree<T> extends SpatialIndex<T> {
     public RTree( InputStream is ) throws IOException, ClassNotFoundException {
         ObjectInputStream in = new ObjectInputStream( new BufferedInputStream( is ) );
         bigM = in.readInt();
-        smallm = ( bigM / 5 ) == 0 ? 1 : ( bigM / 5 );
+        smallm = bigM / 2;
         bbox = (float[]) in.readObject();
         root = (Entry[]) in.readObject();
         extraFlag = in.readBoolean();
         in.close();
+    }
+
+    /**
+     * @param filename
+     * @return
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    public static RTree loadFromStorage( String filename )
+                            throws IOException, URISyntaxException {
+        File file = new File( RTree.class.getResource( filename ).toURI() );
+        BufferedReader buffReader = new BufferedReader( new FileReader( file ) );
+        int bigM = Integer.parseInt( buffReader.readLine() );
+        // read root envelope
+        String[] coords = buffReader.readLine().split( " " );
+        // TODO verify the coords are valid
+        float[] rootEnv = new float[] { Float.parseFloat( coords[0] ), Float.parseFloat( coords[1] ),
+                                       Float.parseFloat( coords[2] ), Float.parseFloat( coords[3] ) };
+        RTree rtree = new RTree( rootEnv, bigM );
+
+        // TODO read nodes
+
+        return rtree;
     }
 
     private LinkedList<T> query( final float[] bbox, Entry<T>[] node ) {
@@ -149,7 +186,7 @@ public class RTree<T> extends SpatialIndex<T> {
         LinkedList<T> list = new LinkedList<T>();
 
         for ( Entry<T> e : node ) {
-            if ( intersects( bbox, e.bbox, 2 ) ) {
+            if ( e != null && intersects( bbox, e.bbox, 2 ) ) {
                 if ( e.next == null ) {
                     list.add( e.entryValue );
                     // rb: uncommented
@@ -414,7 +451,156 @@ public class RTree<T> extends SpatialIndex<T> {
 
     @Override
     public boolean remove( T object ) {
-        throw new UnsupportedOperationException( "Deletion of a single object should be implemented" );
+        if ( root == null ) {
+            LOG.error( "The tree is empty. Nothing to remove." );
+            return false;
+        }
+        ArrayEncapsRemove[] trace = findLeafWithValue( object, root );
+        if ( trace != null ) {
+            removeFromArray( trace[0].node, trace[0].index );
+            removedEntries = new ArrayList<Entry<T>>();
+            boolean remove = false;
+            int nnl = notNullLength( trace[0].node );
+            if ( nnl < smallm ) {
+                remove = true;
+                for ( int j = 0; j < nnl; j++ ) {
+                    removedEntries.add( trace[0].node[j] );
+                }
+            }
+            condenseTree( trace, 1, remove );
+            return true;
+        }
+        // the object to-be-removed was not found
+        return false;
+    }
+
+    /**
+     * Returns number of entries in the array that are not null.
+     * 
+     * @param node
+     * @return
+     */
+    private int notNullLength( Entry[] node ) {
+        for ( int i = 0; i < node.length; i++ ) {
+            if ( node[i] == null ) {
+                return i;
+            }
+        }
+        return node.length;
+    }
+
+    /**
+     * Extract and remove the specified index from the array
+     * 
+     * @param node
+     *            the array
+     * @param index
+     *            the index
+     */
+    private void removeFromArray( Object[] node, int index ) {
+        for ( int i = index; i < node.length - 1; i++ ) {
+            node[i] = node[i + 1];
+        }
+        node[node.length - 1] = null;
+    }
+
+    /**
+     * Adjust the ancestors of the leaf node that just shrinked.
+     * 
+     * @param trace
+     *            the descendence path starting with the leaf node
+     * @param traceIndex
+     *            the current index in the trace
+     * @param removed
+     *            boolean, indicates whether the child node has been deleted (having < smallm entries) or not
+     */
+    private void condenseTree( ArrayEncapsRemove[] trace, int traceIndex, boolean removed ) {
+        if ( traceIndex < trace.length ) {
+            int entryIndex = trace[traceIndex].index;
+            Entry<T>[] entries = trace[traceIndex].node;
+            if ( removed ) {
+                // removed child node, parent entry has to be removed
+                removeFromArray( entries, entryIndex );
+
+                if ( notNullLength( entries ) < smallm ) {
+                    for ( int i = 0; i < entries.length; i++ ) {
+                        if ( entries[i] != null ) {
+                            addOrphanedEntries( entries[i] );
+                            entries[i] = null;
+                        }
+                    }
+                    condenseTree( trace, traceIndex + 1, true );
+
+                } else {
+                    condenseTree( trace, traceIndex + 1, false );
+                    // insert orphaned nodes
+                    for ( Entry<T> orphaned : removedEntries ) {
+                        insertNode( orphaned.bbox, orphaned.entryValue, trace[traceIndex].node );
+                    }
+                }
+            } else {
+                // adjust bounding box after one child entry has been removed
+                trace[traceIndex].node[entryIndex].bbox = mbb( copyBoxesFromRange( trace[traceIndex - 1].node, 0,
+                                                                                   trace[traceIndex - 1].node.length ) );
+                condenseTree( trace, traceIndex + 1, false );
+            }
+        } else {
+
+            // insert orphaned nodes into the empty tree
+            for ( Entry<T> orphaned : removedEntries ) {
+                insert( orphaned.bbox, orphaned.entryValue );
+            }
+        }
+    }
+
+    /**
+     * @param removed
+     */
+    private void addOrphanedEntries( Entry<T> entry ) {
+        if ( entry.next == null ) {
+            removedEntries.add( entry );
+            return;
+        }
+        Entry<T>[] nextLevelEntries = entry.next;
+        for ( int i = 0; i < nextLevelEntries.length; i++ ) {
+            if ( nextLevelEntries[i] != null ) {
+                addOrphanedEntries( nextLevelEntries[i] );
+            }
+        }
+    }
+
+    /**
+     * Returns an array of {@ArrayEncapsRemove} i.e. that contains a pairs of (node, index of the
+     * entry in the node)
+     * 
+     * @param object
+     * @param entries
+     */
+    private ArrayEncapsRemove[] findLeafWithValue( T object, Entry<T>[] entries ) {
+        if ( entries[0].next == null ) {
+            // leaf node, try to find object in one of the entries
+            for ( int i = 0; i < entries.length; i++ ) {
+                if ( entries[i] != null && entries[i].entryValue.equals( object ) ) {
+                    return new ArrayEncapsRemove[] { new ArrayEncapsRemove( entries, i ) };
+                }
+            }
+            return null;
+        }
+
+        // non-leaf nodes, continue depth-first search
+        for ( int i = 0; i < entries.length; i++ ) {
+            if ( entries[i] != null ) {
+                ArrayEncapsRemove[] furtherTrace = findLeafWithValue( object, entries[i].next );
+                if ( furtherTrace != null ) {
+                    // add this node to the trace
+                    ArrayEncapsRemove[] updatedResult = new ArrayEncapsRemove[furtherTrace.length + 1];
+                    System.arraycopy( furtherTrace, 0, updatedResult, 0, furtherTrace.length );
+                    updatedResult[furtherTrace.length] = new ArrayEncapsRemove( entries, i );
+                    return updatedResult;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -470,8 +656,7 @@ public class RTree<T> extends SpatialIndex<T> {
 
     @Override
     public boolean insert( float[] insertBox, T object ) {
-
-        if ( root == null ) {
+        if ( root == null || hasNullEntries( root ) ) {
             Entry<T> newEntry = new Entry<T>();
             newEntry.bbox = insertBox;
             newEntry.entryValue = object;
@@ -487,7 +672,17 @@ public class RTree<T> extends SpatialIndex<T> {
     }
 
     /**
-     * Insert the an object of value type T and bbox insertBox among the entries of the current node.
+     * @param array
+     * @return
+     */
+    private boolean hasNullEntries( Entry<T>[] array ) {
+        Entry<T>[] nullArray = new Entry[bigM + 1];
+        Arrays.fill( nullArray, null );
+        return Arrays.equals( nullArray, array );
+    }
+
+    /**
+     * Insert an object of value type T and bbox insertBox among the entries of the current node.
      * 
      * @param insertBox
      * @param object
@@ -519,6 +714,8 @@ public class RTree<T> extends SpatialIndex<T> {
             Arrays.fill( addedNode, null );
             System.arraycopy( leafNode, splitIndex + 1, addedNode, 0, bigM - splitIndex );
             Arrays.fill( leafNode, splitIndex + 1, bigM + 1, null );
+
+            // TODO store()
 
             adjustTree( leafNode, addedNode, trace, trace.size() - 1 );
 
@@ -804,7 +1001,9 @@ public class RTree<T> extends SpatialIndex<T> {
     private float[][] copyBoxesFromRange( Entry<T>[] entries, int i1, int i2 ) {
         float[][] boxes = new float[i2 - i1][];
         for ( int j = i1; j < i2; j++ ) {
-            boxes[j - i1] = entries[j].bbox;
+            if ( entries[j] != null ) {
+                boxes[j - i1] = entries[j].bbox;
+            }
         }
         return boxes;
     }
@@ -910,15 +1109,15 @@ public class RTree<T> extends SpatialIndex<T> {
                             - calculatePerimeter( entries[i].bbox );
         }
 
-        ArrayEncaps<T>[] array = new ArrayEncaps[n];
+        ArrayEncapsInsert<T>[] array = new ArrayEncapsInsert[n];
         for ( int i = 0; i < n; i++ ) {
-            array[i] = new ArrayEncaps();
+            array[i] = new ArrayEncapsInsert();
             array[i].entry = entries[i];
             array[i].value = deltaPerim[i];
             array[i].origIndex = i;
         }
-        Arrays.sort( array, new Comparator<ArrayEncaps>() {
-            public int compare( ArrayEncaps a, ArrayEncaps b ) {
+        Arrays.sort( array, new Comparator<ArrayEncapsInsert>() {
+            public int compare( ArrayEncapsInsert a, ArrayEncapsInsert b ) {
                 return a.value < b.value ? -1 : ( a.value == b.value ? 0 : 1 );
             }
         } );
@@ -963,8 +1162,8 @@ public class RTree<T> extends SpatialIndex<T> {
     /**
      * @param i
      */
-    private void checkComp( int i, int p, ArrayEncaps[] array, float[] insertBox, boolean success, Set<Integer> cand,
-                            int c, double[] overlap ) {
+    private void checkComp( int i, int p, ArrayEncapsInsert[] array, float[] insertBox, boolean success,
+                            Set<Integer> cand, int c, double[] overlap ) {
         cand.add( i );
         for ( int j = 0; j < p; j++ ) {
             if ( j != i ) {
@@ -1007,12 +1206,47 @@ public class RTree<T> extends SpatialIndex<T> {
         return area1 - area2;
     }
 
-    class ArrayEncaps<T> {
+    /**
+     * 
+     * The <code>ArrayEncapsInsert</code> class encapsulates a triplet (entry, value, origIndex). Its primary usage
+     * benefit is the storage of the original index, after the entries have been sorted.
+     * 
+     * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+     * 
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     * 
+     */
+    class ArrayEncapsInsert<T> {
         Entry<T> entry;
 
         double value;
 
         int origIndex;
+    }
+
+    /**
+     * The <code>ArrayEncapsRemove</code> class encapsulates a pair of (entries array, index in this array). Its use is
+     * in recording the trace of entries in nodes, from leaf to root, in the context of removal operation. It has been
+     * preferred to using a Pair for clarity of syntax reasons.
+     * 
+     * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+     * 
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     * 
+     */
+    class ArrayEncapsRemove<T> {
+        Entry<T>[] node;
+
+        int index;
+
+        public ArrayEncapsRemove( Entry<T>[] node, int index ) {
+            this.node = node;
+            this.index = index;
+        }
     }
 
     /**
@@ -1120,17 +1354,19 @@ public class RTree<T> extends SpatialIndex<T> {
         float maxy = entryBoxes[0][3];
 
         for ( int i = 1; i < entryBoxes.length; i++ ) {
-            if ( entryBoxes[i][0] < minx ) {
-                minx = entryBoxes[i][0];
-            }
-            if ( entryBoxes[i][1] < miny ) {
-                miny = entryBoxes[i][1];
-            }
-            if ( maxx < entryBoxes[i][2] ) {
-                maxx = entryBoxes[i][2];
-            }
-            if ( maxy < entryBoxes[i][3] ) {
-                maxy = entryBoxes[i][3];
+            if ( entryBoxes[i] != null ) {
+                if ( entryBoxes[i][0] < minx ) {
+                    minx = entryBoxes[i][0];
+                }
+                if ( entryBoxes[i][1] < miny ) {
+                    miny = entryBoxes[i][1];
+                }
+                if ( maxx < entryBoxes[i][2] ) {
+                    maxx = entryBoxes[i][2];
+                }
+                if ( maxy < entryBoxes[i][3] ) {
+                    maxy = entryBoxes[i][3];
+                }
             }
         }
         return new float[] { minx, miny, maxx, maxy };
