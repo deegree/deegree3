@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.services.wms;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -61,7 +63,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.tools.CommandUtils;
 import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.i18n.Messages;
-import org.deegree.tools.rendering.r2d.se.StyleChecker;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -73,6 +75,8 @@ import org.deegree.tools.rendering.r2d.se.StyleChecker;
 @Tool(value = "generates a WMS layer tree/configuration file from a feature type hierarchy")
 public class FeatureTypesToLayerTree {
 
+    private static final Logger LOG = getLogger( FeatureTypesToLayerTree.class );
+
     private static Options initOptions() {
         Options opts = new Options();
 
@@ -83,15 +87,6 @@ public class FeatureTypesToLayerTree {
         opt = new Option( "o", "output", true, "path to the WMS configuration output file" );
         opt.setRequired( true );
         opts.addOption( opt );
-        //
-        // opt = new Option( "p", "dbpassword", true, "database password, if left off, will be set as empty" );
-        // opt.setRequired( false );
-        // opts.addOption( opt );
-        //
-        // opt = new Option( "c", "clean", false,
-        // "if set, faulty styles will be deleted (currently only in the styles table)" );
-        // opt.setRequired( false );
-        // opts.addOption( opt );
 
         CommandUtils.addDefaultOptions( opts );
 
@@ -182,22 +177,22 @@ public class FeatureTypesToLayerTree {
             out.close();
         } catch ( ParseException exp ) {
             System.err.println( Messages.getMessage( "TOOL_COMMANDLINE_ERROR", exp.getMessage() ) );
-            CommandUtils.printHelp( options, StyleChecker.class.getSimpleName(), null, null );
+            CommandUtils.printHelp( options, FeatureTypesToLayerTree.class.getSimpleName(), null, null );
         } catch ( MalformedURLException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.info( "A filename could not be parsed: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         } catch ( FeatureStoreException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.info( "The feature store could not be loaded: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.info( "A file could not be found: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.info( "The XML output could not be written: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         } catch ( FactoryConfigurationError e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.info( "The XML system could not be initialized: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         }
 
     }
