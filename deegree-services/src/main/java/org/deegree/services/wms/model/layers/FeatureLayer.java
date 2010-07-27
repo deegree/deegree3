@@ -72,6 +72,7 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.query.ThreadedResultSet;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
+import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -181,7 +182,9 @@ public class FeatureLayer extends Layer {
     public Envelope getBbox() {
         // always use up-to-date envelope
         Envelope bbox = null;
-        for ( FeatureType t : datastore.getSchema().getFeatureTypes() ) {
+        ApplicationSchema schema = datastore.getSchema();
+
+        for ( FeatureType t : schema.getFeatureTypes() ) {
             Envelope thisBox = null;
             try {
                 thisBox = datastore.getEnvelope( t.getName() );

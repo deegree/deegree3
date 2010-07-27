@@ -202,7 +202,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
         try {
             latlon = lookup( "CRS:84" );
             Envelope layerEnv = layer.getBbox();
-            if ( layerEnv != null ) {
+            if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
                 Envelope bbox = (Envelope) new GeometryTransformer( latlon ).transform( layerEnv );
                 writer.writeStartElement( WMSNS, "EX_GeographicBoundingBox" );
                 Point min = bbox.getMin();
