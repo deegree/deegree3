@@ -38,8 +38,10 @@ package org.deegree.commons.utils.kvp;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -280,5 +282,70 @@ public class KVPUtils {
             }
         }
         return params;
+    }
+
+    /**
+     * @param queryString
+     * @param encoding
+     *            used for decoding the URL-decoded characters, may be <code>null</code> (turns on guessing, don't do
+     *            it)
+     * @return a map with the query string's kvps parsed (uppercase keys)
+     * @throws UnsupportedEncodingException
+     */
+    public static Map<String, String> getNormalizedKVPMap( String queryString, String encoding )
+                            throws UnsupportedEncodingException {
+    
+        // guesses the encoding from the occurrence of the UTF-8 multi byte sequence marker
+        // FF sends UTF-8 when locale setting is UTF-8, and ISO if locale setting is ISO
+        // IE sends always ISO (?, CP1252 for Win95/98 series?)
+        // so relying on DEFAULT_ENCODING == UTF-8 will likely break IE compatibility,
+        // and using this guessing mechanism will work more often than not
+        if ( encoding == null ) {
+            encoding = queryString.toUpperCase().indexOf( "%C3" ) != -1 ? "UTF-8" : "ISO-8859-1";
+        }
+    
+        Map<String, List<String>> keyToValueList = new HashMap<String, List<String>>();
+    
+        for ( String pair : queryString.split( "&" ) ) {
+            // ignore empty key-values (prevents NPEs later)
+            if ( pair.length() == 0 || !pair.contains( "=" ) ) {
+                continue;
+            }
+            // NOTE: there may be more than one '=' character in pair, so the first one is taken as delimiter
+            String[] parts = pair.split( "=", 2 );
+            String key = parts[0];
+            String value = null;
+            if ( parts.length == 2 ) {
+                value = parts[1];
+            } else {
+                if ( parts[0].endsWith( "=" ) ) {
+                    value = "";
+                }
+            }
+            List<String> values = keyToValueList.get( key );
+            if ( values == null ) {
+                values = new ArrayList<String>();
+            }
+            values.add( value );
+            keyToValueList.put( key, values );
+        }
+    
+        Map<String, String[]> keyToValueArray = new HashMap<String, String[]>();
+        for ( String key : keyToValueList.keySet() ) {
+            List<String> valueList = keyToValueList.get( key );
+            String[] valueArray = new String[valueList.size()];
+            valueList.toArray( valueArray );
+            keyToValueArray.put( key, valueArray );
+        }
+    
+        Map<String, String> kvpParamsUC = new HashMap<String, String>();
+        for ( String key : keyToValueArray.keySet() ) {
+            String[] values = keyToValueArray.get( key );
+            if ( values != null && values.length > 0 ) {
+                String decodedValue = URLDecoder.decode( values[0], encoding );
+                kvpParamsUC.put( key.toUpperCase(), decodedValue );
+            }
+        }
+        return kvpParamsUC;
     }
 }
