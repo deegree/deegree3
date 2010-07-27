@@ -156,12 +156,9 @@ public class RTreeTest {
         myQuery( new float[] { 0, 0, 50, 50 }, tree.root );
     }
 
-    /**
-     * Set smallm = bigM / 2 (in the RTree constructors) to test that the whole tree crumbles
-     */
     @Test
     public void testRemove() {
-        tree.remove( new Integer( 20 ) );
+        tree.remove( new Integer( 11 ) );
         printOut( tree );
     }
 }
