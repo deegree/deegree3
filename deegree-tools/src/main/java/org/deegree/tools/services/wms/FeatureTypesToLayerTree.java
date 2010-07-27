@@ -113,11 +113,12 @@ public class FeatureTypesToLayerTree {
 
         XMLAdapter.writeElement( out, ns, "Name", ft.getName().getLocalPart() );
         XMLAdapter.writeElement( out, ns, "Title", ft.getName().getLocalPart() );
-        XMLAdapter.writeElement( out, ns, "FeatureStoreId", storeId );
 
         for ( FeatureType sub : ft.getSchema().getDirectSubtypes( ft ) ) {
             writeLayer( visited, out, sub, storeId );
         }
+
+        XMLAdapter.writeElement( out, ns, "FeatureStoreId", storeId );
 
         out.writeEndElement();
         out.writeCharacters( "\n" );
@@ -154,7 +155,10 @@ public class FeatureTypesToLayerTree {
             out.writeStartDocument();
             out.writeStartElement( ns, "deegreeWMS" );
             out.writeDefaultNamespace( ns );
-            out.writeAttribute( "version", "0.5.0" );
+            out.writeAttribute( "configVersion", "0.5.0" );
+            out.writeNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+            out.writeAttribute( "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation",
+                                "http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd" );
             out.writeStartElement( ns, "ServiceConfiguration" );
 
             HashSet<FeatureType> visited = new HashSet<FeatureType>();
