@@ -287,16 +287,20 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             if ( env != null ) {
                 try {
                     env = (Envelope) transformer.transform( env );
-                    writer.writeStartElement( WFS_NS, "LatLongBoundingBox" );
                     Point min = env.getMin();
                     Point max = env.getMax();
-                    writer.writeAttribute( "minx", "" + formatter.format( min.get0() ) );
-                    writer.writeAttribute( "miny", "" + formatter.format( min.get1() ) );
-                    writer.writeAttribute( "maxx", "" + formatter.format( max.get0() ) );
-                    writer.writeAttribute( "maxy", "" + formatter.format( max.get1() ) );
+                    double minX = min.get0();
+                    double minY = min.get1();
+                    double maxX = max.get0();
+                    double maxY = max.get1();
+                    writer.writeStartElement( WFS_NS, "LatLongBoundingBox" );
+                    writer.writeAttribute( "minx", "" + formatter.format( minX ) );
+                    writer.writeAttribute( "miny", "" + formatter.format( minY ) );
+                    writer.writeAttribute( "maxx", "" + formatter.format( maxX ) );
+                    writer.writeAttribute( "maxy", "" + formatter.format( maxY ) );
                     writer.writeEndElement();
                 } catch ( Exception e ) {
-                    LOG.error( "Cannot transform feature type envelope to WGS84." );
+                    LOG.error( "Cannot generate WGS84 envelope for feature type '" + ftName + "'.", e );
                 }
             }
             writer.writeEndElement();
@@ -582,6 +586,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 } catch ( FeatureStoreException e ) {
                     LOG.error( "Error retrieving envelope from FeatureStore: " + e.getMessage(), e );
                 }
+
                 if ( env != null ) {
                     try {
                         env = (Envelope) transformer.transform( env );
@@ -595,11 +600,28 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeStartElement( OWS_NS, "WGS84BoundingBox" );
                 Point min = env.getMin();
                 Point max = env.getMax();
+                double minX = -180.0;
+                double minY = -90.0;
+                double maxX = 180.0;
+                double maxY = 90.0;
+                try {
+                    minX = min.get0();
+                    minY = min.get1();
+                    maxX = max.get0();
+                    maxY = max.get1();
+                } catch ( ArrayIndexOutOfBoundsException e ) {
+                    LOG.error( "Cannot generate WGS84 envelope for feature type '" + ftName + "'. Using full extent.",
+                               e );
+                    minX = -180.0;
+                    minY = -90.0;
+                    maxX = 180.0;
+                    maxY = 90.0;
+                }
                 writer.writeStartElement( OWS_NS, "LowerCorner" );
-                writer.writeCharacters( formatter.format( min.get0() ) + " " + formatter.format( min.get1() ) );
+                writer.writeCharacters( formatter.format( minX ) + " " + formatter.format( minY ) );
                 writer.writeEndElement();
                 writer.writeStartElement( OWS_NS, "UpperCorner" );
-                writer.writeCharacters( formatter.format( max.get0() ) + " " + formatter.format( max.get1() ) );
+                writer.writeCharacters( formatter.format( maxX ) + " " + formatter.format( maxY ) );
                 writer.writeEndElement();
                 writer.writeEndElement();
 
