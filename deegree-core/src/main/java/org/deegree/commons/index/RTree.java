@@ -151,7 +151,7 @@ public class RTree<T> extends SpatialIndex<T> {
     public RTree( InputStream is ) throws IOException, ClassNotFoundException {
         ObjectInputStream in = new ObjectInputStream( new BufferedInputStream( is ) );
         bigM = in.readInt();
-        smallm = bigM / 2;
+        this.smallm = ( bigM / 5 ) == 0 ? 1 : ( bigM / 5 );
         bbox = (float[]) in.readObject();
         root = (Entry[]) in.readObject();
         extraFlag = in.readBoolean();
