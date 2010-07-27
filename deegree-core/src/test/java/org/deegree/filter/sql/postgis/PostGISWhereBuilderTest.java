@@ -74,9 +74,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter1.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
-                                                          null, false );
-        SQLExpression whereClause = wb.getWhereClause();
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        SQLExpression whereClause = wb.getWhere();
         Assert.equals( "PHILOSOPHER.NAME = 'Albert Camus'", whereClause.toString() );
     }
 
@@ -85,9 +84,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter2.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
-                                                          null, false );
-        SQLExpression whereClause = wb.getWhereClause();
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        SQLExpression whereClause = wb.getWhere();
         System.out.println( whereClause.getSQL() );
     }
 
@@ -96,9 +94,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter5.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
-                                                          null, false );
-        SQLExpression whereClause = wb.getWhereClause();
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        SQLExpression whereClause = wb.getWhere();
         System.out.println( whereClause );
     }
 
@@ -107,9 +104,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter6.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
-                                                          null, false );
-        SQLExpression whereClause = wb.getWhereClause();
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        SQLExpression whereClause = wb.getWhere();
         System.out.println( whereClause );
     }
 
@@ -118,9 +114,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter8.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
-                                                          null, false );
-        SQLExpression whereClause = wb.getWhereClause();
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        SQLExpression whereClause = wb.getWhere();
         System.out.println( whereClause );
     }
 
@@ -129,9 +124,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter11.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
-                                                          null, false );
-        SQLExpression whereClause = wb.getWhereClause();
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        SQLExpression whereClause = wb.getWhere();
         System.out.println( whereClause );
     }
 
@@ -140,9 +134,8 @@ public class PostGISWhereBuilderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             FilterEvaluationException {
         OperatorFilter filter = parse( "testfilter15.xml" );
-        PostGISWhereBuilder wb = new PostGISWhereBuilder( new TableAliasManager(), new DummyPostGISMapping(), filter,
-                                                          null, false );
-        SQLExpression whereClause = wb.getWhereClause();
+        PostGISWhereBuilder wb = new PostGISWhereBuilder( new DummyPostGISMapping(), filter, null, false );
+        SQLExpression whereClause = wb.getWhere();
         System.out.println( whereClause );
     }
 
