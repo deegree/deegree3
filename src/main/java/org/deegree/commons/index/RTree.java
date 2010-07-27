@@ -544,11 +544,13 @@ public class RTree<T> extends SpatialIndex<T> {
                                                                                    trace[traceIndex - 1].node.length ) );
                 condenseTree( trace, traceIndex + 1, false );
             }
-        } else {
 
-            // insert orphaned nodes into the empty tree
-            for ( Entry<T> orphaned : removedEntries ) {
-                insert( orphaned.bbox, orphaned.entryValue );
+        } else {
+            if ( removed ) {
+                // insert orphaned nodes into the empty tree
+                for ( Entry<T> orphaned : removedEntries ) {
+                    insert( orphaned.bbox, orphaned.entryValue );
+                }
             }
         }
     }
