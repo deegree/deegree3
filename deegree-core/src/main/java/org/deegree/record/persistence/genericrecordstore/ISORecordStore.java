@@ -614,7 +614,7 @@ public class ISORecordStore implements RecordStore {
 
         if ( rs != null && recordStoreOptions.getMaxRecords() != 0 ) {
 
-            writeResultSet( rs, writer );
+            writeResultSet( rs, writer, 2 );
             rs.close();
         }
 
@@ -1183,7 +1183,7 @@ public class ISORecordStore implements RecordStore {
                 stmt.setInt( 2, profileFormatNumberOutputSchema );
 
                 rs = stmt.executeQuery();
-                writeResultSet( rs, writer );
+                writeResultSet( rs, writer, 1 );
                 stmt.close();
             }
         }
@@ -1299,7 +1299,7 @@ public class ISORecordStore implements RecordStore {
             PreparedStatement stmt = conn.prepareStatement( s.toString() );
             stmt.setObject( 1, i );
             rsInsertedDatasets = stmt.executeQuery();
-            writeResultSet( rsInsertedDatasets, writer );
+            writeResultSet( rsInsertedDatasets, writer, 1 );
             stmt.close();
 
         }
@@ -1318,9 +1318,11 @@ public class ISORecordStore implements RecordStore {
      *            that should search the backend
      * @param writer
      *            that writes the data to the output
+     * @param columnIndex
+     *            the column that should be requested, not <Code>null</Code>.
      * @throws SQLException
      */
-    private void writeResultSet( ResultSet resultSet, XMLStreamWriter writer )
+    private void writeResultSet( ResultSet resultSet, XMLStreamWriter writer, int columnIndex )
                             throws SQLException {
         boolean idIsMatching = false;
         InputStreamReader isr = null;
@@ -1328,7 +1330,7 @@ public class ISORecordStore implements RecordStore {
         while ( resultSet.next() ) {
             idIsMatching = true;
 
-            BufferedInputStream bais = new BufferedInputStream( resultSet.getBinaryStream( 1 ) );
+            BufferedInputStream bais = new BufferedInputStream( resultSet.getBinaryStream( columnIndex ) );
 
             try {
                 isr = new InputStreamReader( bais, charset );
