@@ -130,18 +130,14 @@ public class PostGISMappingsISODC implements PostGISMapping {
         // ----------------------<common queryable properties>-------------------------------------
 
         addStringProp( APISO_NS, "title", "isoqp_title", "title" );
+        addStringProp( APISO_NS, "Title", "isoqp_title", "title" );
+        addStringProp( DC_NS, "Title", "isoqp_title", "title" );
+        addStringProp( CSW_202_NS, "Title", "isoqp_title", "title" );
+        addStringProp( APISO_NS, "abstract", "isoqp_abstract", "abstract" );
+        addStringProp( APISO_NS, "Abstract", "isoqp_abstract", "abstract" );
+        addStringProp( DCT_NS, "Abstract", "isoqp_abstract", "abstract" );
+        addStringProp( DCT_NS, "Abstract", "isoqp_abstract", "abstract" );
 
-        propToTableAndCol.put( new QName( APISO_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
-        propToTableAndCol.put( new QName( DC_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
-        propToTableAndCol.put( new QName( CSW_202_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title",
-                                                                                          STRING ) );
-
-        propToTableAndCol.put( new QName( APISO_NS, "abstract" ), new PropertyNameMapping( "isoqp_abstract",
-                                                                                           "abstract", STRING ) );
-        propToTableAndCol.put( new QName( APISO_NS, "Abstract" ), new PropertyNameMapping( "isoqp_abstract",
-                                                                                           "abstract", STRING ) );
-        propToTableAndCol.put( new QName( DCT_NS, "Abstract" ), new PropertyNameMapping( "isoqp_abstract", "abstract",
-                                                                                         STRING ) );
         propToTableAndCol.put( new QName( CSW_202_NS, "Abstract" ), new PropertyNameMapping( "isoqp_abstract",
                                                                                              "abstract", STRING ) );
 
@@ -554,7 +550,14 @@ public class PostGISMappingsISODC implements PostGISMapping {
             String msg = "Cannot map property name '" + propName + "'. Not a simple QName.";
             LOG.debug( msg );
         } else {
-            mapping = propToTableAndCol.get( qName);            
+            mapping = propToTableAndCol.get( qName );
+            if ( mapping != null ) {
+                String alias = aliasManager.getRootTableAlias();
+                if (!mapping.getTargetField().getTable().equals( "datasets" )) {
+                    alias = aliasManager.generateNew();
+                }
+                mapping.getTargetField().setAlias( alias );
+            }
         }
         return mapping;
     }
