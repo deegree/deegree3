@@ -128,7 +128,9 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<common queryable properties>-------------------------------------
-        propToTableAndCol.put( new QName( APISO_NS, "title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
+
+        addStringProp( APISO_NS, "title", "isoqp_title", "title" );
+
         propToTableAndCol.put( new QName( APISO_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
         propToTableAndCol.put( new QName( DC_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
         propToTableAndCol.put( new QName( CSW_202_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title",
@@ -564,6 +566,12 @@ public class PostGISMappingsISODC implements PostGISMapping {
             }
         }
         return null;
+    }
+
+    private static void addStringProp( String propNs, String propName, String table, String column ) {
+        QName qName = new QName( propNs, propName );
+        PropertyNameMapping mapping = new PropertyNameMapping( table, column, STRING );
+        propToTableAndCol.put( qName, mapping );
     }
 
     /*
