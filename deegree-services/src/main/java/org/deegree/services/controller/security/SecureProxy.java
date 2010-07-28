@@ -35,10 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.security;
 
+import static org.deegree.services.controller.OGCFrontController.resolveFileLocation;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -50,6 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.Credentials;
@@ -75,10 +80,13 @@ public class SecureProxy extends HttpServlet {
 
     private XMLInputFactory fac = XMLInputFactory.newInstance();
 
+    private SecurityConfiguration securityConfiguration;
+
     @Override
     public void init( ServletConfig config )
                             throws ServletException {
         super.init( config );
+
         @SuppressWarnings("unchecked")
         Enumeration<String> e = config.getInitParameterNames();
         while ( e.hasMoreElements() ) {
@@ -93,13 +101,32 @@ public class SecureProxy extends HttpServlet {
             LOG.info( msg );
             throw new ServletException( msg );
         }
-        credentialsProvider = new SecurityConfiguration( getServletContext() ).getCredentialsProvider();
+
+        File jdbcDir = null;
+        try {
+            jdbcDir = new File( resolveFileLocation( "WEB-INF/conf/jdbc", getServletContext() ).toURI() );
+        } catch ( MalformedURLException ex ) {
+            LOG.info( "JDBC connection directory could not be resolved: '{}'", ex.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", ex );
+        } catch ( URISyntaxException ex ) {
+            LOG.info( "JDBC connection directory could not be resolved: '{}'", ex.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", ex );
+        }
+        if ( jdbcDir != null && jdbcDir.exists() ) {
+            ConnectionManager.init( jdbcDir );
+        } else {
+            LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
+        }
+
+        securityConfiguration = new SecurityConfiguration( getServletContext() );
+        credentialsProvider = securityConfiguration.getCredentialsProvider();
         if ( credentialsProvider == null ) {
             String msg = "You need to provide an WEB-INF/conf/services/security/security.xml which defines at least one credentials provider.";
             LOG.info( "Secure Proxy was NOT started:" );
             LOG.info( msg );
             throw new ServletException( msg );
         }
+
         LOG.info( "deegree 3 secure proxy initialized." );
     }
 
@@ -109,7 +136,7 @@ public class SecureProxy extends HttpServlet {
             Credentials creds = credentialsProvider.doXML( fac.createXMLStreamReader( request.getInputStream(),
                                                                                       request.getCharacterEncoding() ),
                                                            request, response );
-            System.out.println( "POST: " + creds );
+            securityConfiguration.checkCredentials( creds );
         } catch ( SecurityException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -127,7 +154,7 @@ public class SecureProxy extends HttpServlet {
         try {
             Map<String, String> normalizedKVPParams = KVPUtils.getNormalizedKVPMap( request.getQueryString(), null );
             Credentials creds = credentialsProvider.doKVP( normalizedKVPParams, request, response );
-            System.out.println( "KVP: " + creds );
+            securityConfiguration.checkCredentials( creds );
         } catch ( UnsupportedEncodingException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();

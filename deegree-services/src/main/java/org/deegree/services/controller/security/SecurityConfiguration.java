@@ -35,20 +35,34 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.security;
 
+import static org.deegree.services.controller.OGCFrontController.DEFAULT_CONFIG_PATH;
 import static org.deegree.services.controller.OGCFrontController.resolveFileLocation;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ServiceLoader;
 
 import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.deegree.services.controller.CredentialsProviderManager;
-import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.security.authorities.AuthenticationAuthority;
+import org.deegree.services.controller.security.authorities.AuthenticationAuthorityProvider;
 import org.slf4j.Logger;
 
 /**
@@ -62,12 +76,20 @@ public class SecurityConfiguration {
 
     private static final Logger LOG = getLogger( SecurityConfiguration.class );
 
-    private static final String DEFAULT_SECURITY_PATH = OGCFrontController.DEFAULT_CONFIG_PATH
-                                                        + "/services/security/security.xml";
+    private static final String DEFAULT_SECURITY_PATH = DEFAULT_CONFIG_PATH + "/services/security/security.xml";
 
-    private org.deegree.services.jaxb.security.SecurityConfiguration config;
+    private static HashMap<String, AuthenticationAuthorityProvider> authenticationAuthorityProviders = new HashMap<String, AuthenticationAuthorityProvider>();
 
     private CredentialsProvider providers;
+
+    private ArrayList<AuthenticationAuthority> authorities = new ArrayList<AuthenticationAuthority>();
+
+    static {
+        ServiceLoader<AuthenticationAuthorityProvider> loader = ServiceLoader.load( AuthenticationAuthorityProvider.class );
+        for ( AuthenticationAuthorityProvider auth : loader ) {
+            authenticationAuthorityProviders.put( auth.getConfigNamespace(), auth );
+        }
+    }
 
     /**
      * @param context
@@ -87,6 +109,7 @@ public class SecurityConfiguration {
             try {
                 JAXBContext jc = JAXBContext.newInstance( contextName );
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
+                org.deegree.services.jaxb.security.SecurityConfiguration config;
                 config = (org.deegree.services.jaxb.security.SecurityConfiguration) unmarshaller.unmarshal( securityURL );
                 if ( config.getCredentialsProvider() != null ) {
                     providers = CredentialsProviderManager.create( config.getCredentialsProvider() );
@@ -96,6 +119,48 @@ public class SecurityConfiguration {
                 LOG.trace( "Stack trace:", e );
             }
         }
+
+        try {
+            securityURL = resolveFileLocation( DEFAULT_CONFIG_PATH + "/services/security/authorities/", context );
+            File authorities = new File( securityURL.toURI() );
+            XMLInputFactory fac = XMLInputFactory.newInstance();
+            if ( authorities.exists() && authorities.isDirectory() ) {
+                for ( File f : authorities.listFiles( new FileFilter() {
+                    public boolean accept( File f ) {
+                        return f.toString().toLowerCase().endsWith( ".xml" );
+                    }
+                } ) ) {
+                    try {
+                        XMLStreamReader in = fac.createXMLStreamReader( new FileInputStream( f ) );
+                        in.next();
+                        String ns = in.getNamespaceURI();
+                        if ( ns == null ) {
+                            LOG.info( "The namespace in '{}' was not set, skipping file.", f );
+                            continue;
+                        }
+                        AuthenticationAuthorityProvider prov = authenticationAuthorityProviders.get( ns );
+                        if ( prov == null ) {
+                            LOG.info( "No authentication authority provider for"
+                                      + " namepace '{}', in file '{}', skipping.", ns, f );
+                            continue;
+                        }
+                        this.authorities.add( prov.getAuthenticationAuthority( f.toURI().toURL() ) );
+                    } catch ( FileNotFoundException e ) {
+                        LOG.debug( "File '{}' could not be found?!?", f );
+                        LOG.trace( "Stack trace:", e );
+                    } catch ( XMLStreamException e ) {
+                        LOG.debug( "File '{}' could not be parsed as XML, skipping.", f );
+                        LOG.trace( "Stack trace:", e );
+                    }
+                }
+            }
+        } catch ( MalformedURLException e ) {
+            LOG.debug( "Could not resolve the location of the authorities directory: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } catch ( URISyntaxException e ) {
+            LOG.debug( "Could not resolve the location of the authorities directory: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
     }
 
     /**
@@ -103,6 +168,19 @@ public class SecurityConfiguration {
      */
     public CredentialsProvider getCredentialsProvider() {
         return providers;
+    }
+
+    /**
+     * @param creds
+     * @return true, if an authentication authority does
+     */
+    public boolean checkCredentials( Credentials creds ) {
+        for ( AuthenticationAuthority auth : authorities ) {
+            if ( auth.isAuthorized( creds ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
