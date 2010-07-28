@@ -52,8 +52,12 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
+import org.deegree.commons.utils.Triple;
+import org.deegree.feature.persistence.mapping.DBField;
+import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
@@ -83,7 +87,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
     private static final Logger LOG = getLogger( PostGISMappingsISODC.class );
 
-    private static Map<QName, PropertyNameMapping> propToTableAndCol = new HashMap<QName, PropertyNameMapping>();
+    private static Map<QName, Triple<String, String, PrimitiveType>> propToTableAndCol = new HashMap<QName, Triple<String, String, PrimitiveType>>();
 
     /**
      * Tablename in backend
@@ -451,13 +455,17 @@ public class PostGISMappingsISODC implements PostGISMapping {
             String msg = "Cannot map property name '" + propName + "'. Not a simple QName.";
             LOG.debug( msg );
         } else {
-            mapping = propToTableAndCol.get( qName );
+            Triple<String, String, PrimitiveType> tableColumn = propToTableAndCol.get( qName );
             if ( mapping != null ) {
-                String alias = aliasManager.getRootTableAlias();
-                if ( !mapping.getTargetField().getTable().equals( "datasets" ) ) {
-                    alias = aliasManager.generateNew();
+                List<Join> joins = new ArrayList<Join>();
+                if ( !tableColumn.first.equals( "datasets" ) ) {
+                    DBField from = new DBField( "datasets", "id" );
+                    DBField to = new DBField( tableColumn.first, "fk_datasets" );
+                    joins.add( new Join( from, to, null, 0 ) );
                 }
-                mapping.getTargetField().setAlias( alias );
+                // TODO primitive type
+                DBField valueField = new DBField(tableColumn.first, tableColumn.second);
+                mapping = new PropertyNameMapping( aliasManager, valueField, joins );
             }
         }
         return mapping;
@@ -465,21 +473,24 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
     private static void addBooleanProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        PropertyNameMapping mapping = new PropertyNameMapping( table.name(), column, BOOLEAN );
+        Triple<String, String, PrimitiveType> mapping = new Triple<String, String, PrimitiveType>( table.name(),
+                                                                                                   column, BOOLEAN );
         propToTableAndCol.put( qName, mapping );
 
     }
 
     private static void addDateProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        PropertyNameMapping mapping = new PropertyNameMapping( table.name(), column, DATE );
+        Triple<String, String, PrimitiveType> mapping = new Triple<String, String, PrimitiveType>( table.name(),
+                                                                                                   column, DATE );
         propToTableAndCol.put( qName, mapping );
 
     }
 
     private static void addStringProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        PropertyNameMapping mapping = new PropertyNameMapping( table.name(), column, STRING );
+        Triple<String, String, PrimitiveType> mapping = new Triple<String, String, PrimitiveType>( table.name(),
+                                                                                                   column, STRING );
         propToTableAndCol.put( qName, mapping );
     }
 
@@ -677,8 +688,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
      * 
      * @return a map&lang;QName, PropertyNameMapping&rang; can not be <Code>null</Code>
      */
-    public Map<QName, PropertyNameMapping> getPropToTableAndCol() {
-
+    public Map<QName, Triple<String,String,PrimitiveType>> getPropToTableAndCol() {
         return propToTableAndCol;
     }
 
@@ -688,5 +698,4 @@ public class PostGISMappingsISODC implements PostGISMapping {
     public static Map<String, String> getTableRecordType() {
         return tableRecordType;
     }
-
 }
