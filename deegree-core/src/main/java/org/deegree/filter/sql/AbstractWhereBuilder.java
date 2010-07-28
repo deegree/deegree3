@@ -529,7 +529,9 @@ public abstract class AbstractWhereBuilder {
     }
 
     /**
-     * Translates the given {@link Literal} into an {@link SQLExpression}.
+     * Translates the given {@link Literal} into an {@link SQLExpression}. <br>
+     * TODO be aware: if the literal can be parsed as a date from {@link DateUtils} the literals sqlType will be set to
+     * TIMESTAMP.
      * 
      * @param literal
      *            literal to be translated, must not be <code>null</code>
