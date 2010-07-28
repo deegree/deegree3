@@ -173,7 +173,7 @@ public class StreamBufferStore extends OutputStream {
         BufferedInputStream is = new BufferedInputStream( getInputStream() );
         byte[] buffer = new byte[10240];
         int read = -1;
-        while ( ( read = is.read( buffer ) ) != 0 ) {
+        while ( ( read = is.read( buffer ) ) != -1 ) {
             outputStream.write( buffer, 0, read );
         }
         is.close();
