@@ -25,21 +25,21 @@
             <ogc:And>
                <ogc:PropertyIsLike escapeChar="\" singleChar="?" wildCard="*">
                   <ogc:PropertyName>Title</ogc:PropertyName>
-                  <ogc:Literal>*Elevation*</ogc:Literal>
+                  <ogc:Literal>*DTK 50*</ogc:Literal>
                </ogc:PropertyIsLike>
                <ogc:PropertyIsEqualTo>
                   <ogc:PropertyName>Type</ogc:PropertyName>
-                  <ogc:Literal>Service</ogc:Literal>
+                  <ogc:Literal>dataset</ogc:Literal>
                </ogc:PropertyIsEqualTo>
                <ogc:PropertyIsGreaterThanOrEqualTo>
-                  <ogc:PropertyName>modified</ogc:PropertyName>
+                  <ogc:PropertyName>Modified</ogc:PropertyName>
                   <ogc:Literal>2004-03-01</ogc:Literal>
                </ogc:PropertyIsGreaterThanOrEqualTo>
                <ogc:Intersects>
-                  <ogc:PropertyName>BoundingBox</ogc:PropertyName>
+                  <ogc:PropertyName>boundingBox</ogc:PropertyName>
                   <gml:Envelope>
-                     <gml:lowerCorner>14.05 46.46</gml:lowerCorner>
-                     <gml:upperCorner>17.24 48.42</gml:upperCorner>
+                     <gml:lowerCorner>8.00 49.00</gml:lowerCorner>
+                     <gml:upperCorner>9.00 50.00</gml:upperCorner>
                   </gml:Envelope>
                </ogc:Intersects>
             </ogc:And>
