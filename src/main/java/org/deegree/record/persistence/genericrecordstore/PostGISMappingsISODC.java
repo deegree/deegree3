@@ -129,82 +129,82 @@ public class PostGISMappingsISODC implements PostGISMapping {
         // ----------------------------------------------------------------------------------------
         // ----------------------<common queryable properties>-------------------------------------
 
-        addStringProp( APISO_NS, "title", "isoqp_title", "title" );
-        addStringProp( APISO_NS, "Title", "isoqp_title", "title" );
-        addStringProp( DC_NS, "Title", "isoqp_title", "title" );
-        addStringProp( CSW_202_NS, "Title", "isoqp_title", "title" );
-        addStringProp( APISO_NS, "abstract", "isoqp_abstract", "abstract" );
-        addStringProp( APISO_NS, "Abstract", "isoqp_abstract", "abstract" );
-        addStringProp( DCT_NS, "Abstract", "isoqp_abstract", "abstract" );
-        addStringProp( CSW_202_NS, "Abstract", "isoqp_abstract", "abstract" );
-        addStringProp( APISO_NS, "BoundingBox", "isoqp_BoundingBox", "bbox" );
-        addStringProp( DC_NS, "coverage", "isoqp_BoundingBox", "bbox" );
-        addStringProp( OWS_NS, "BoundingBox", "isoqp_BoundingBox", "bbox" );
-        addStringProp( OWS_NS, "boundingBox", "isoqp_BoundingBox", "bbox" );
-        addStringProp( CSW_202_NS, "BoundingBox", "isoqp_BoundingBox", "bbox" );
-        addStringProp( APISO_NS, "type", "isoqp_type", "type" );
-        addStringProp( APISO_NS, "Type", "isoqp_type", "type" );
-        addStringProp( DC_NS, "Type", "isoqp_type", "type" );
-        addStringProp( CSW_202_NS, "Type", "isoqp_type", "type" );
-        addStringProp( APISO_NS, "format", "isoqp_format", "format" );
-        addStringProp( APISO_NS, "Format", "isoqp_format", "format" );
-        addStringProp( DC_NS, "Format", "isoqp_format", "format" );
-        addStringProp( CSW_202_NS, "Format", "isoqp_format", "format" );
-        addStringProp( APISO_NS, "Subject", "isoqp_keyword", "keyword" );
-        addStringProp( APISO_NS, "subject", "isoqp_keyword", "keyword" );
-        addStringProp( DC_NS, "Subject", "isoqp_keyword", "keyword" );
-        addStringProp( CSW_202_NS, "Subject", "isoqp_keyword", "keyword" );
-        addStringProp( APISO_NS, "AnyText", "datasets", "anytext" );
-        addStringProp( APISO_NS, "anyText", "datasets", "anytext" );
-        addStringProp( CSW_202_NS, "AnyText", "datasets", "anytext" );
-        addStringProp( APISO_NS, "identifier", "qp_identifier", "identifier" );
-        addStringProp( APISO_NS, "Identifier", "qp_identifier", "identifier" );
-        addStringProp( DC_NS, "Identifier", "qp_identifier", "identifier" );
-        addStringProp( CSW_202_NS, "Identifier", "qp_identifier", "identifier" );
-        addDateProp( APISO_NS, "modified", "datasets", "modified" );
-        addDateProp( APISO_NS, "Modified", "datasets", "modified" );
-        addDateProp( DCT_NS, "Modified", "datasets", "modified" );
-        addDateProp( CSW_202_NS, "Modified", "datasets", "modified" );
-        addStringProp( APISO_NS, "CRS", "isoqp_crs", "crs" );
-        addStringProp( DC_NS, "CRS", "isoqp_crs", "crs" );
-        addStringProp( APISO_NS, "association", "isoqp_association", "relation" );
-        addStringProp( APISO_NS, "Association", "isoqp_association", "relation" );
-        addStringProp( CSW_202_NS, "Association", "isoqp_association", "relation" );
-        addStringProp( DC_NS, "Relation", "isoqp_association", "relation" );
+        addStringProp( APISO_NS, "title", DatabaseTables.isoqp_title, "title" );
+        addStringProp( APISO_NS, "Title", DatabaseTables.isoqp_title, "title" );
+        addStringProp( DC_NS, "Title", DatabaseTables.isoqp_title, "title" );
+        addStringProp( CSW_202_NS, "Title", DatabaseTables.isoqp_title, "title" );
+        addStringProp( APISO_NS, "abstract", DatabaseTables.isoqp_abstract, "abstract" );
+        addStringProp( APISO_NS, "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
+        addStringProp( DCT_NS, "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
+        addStringProp( CSW_202_NS, "Abstract", DatabaseTables.isoqp_abstract, "abstract" );
+        addStringProp( APISO_NS, "BoundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
+        addStringProp( DC_NS, "coverage", DatabaseTables.isoqp_BoundingBox, "bbox" );
+        addStringProp( OWS_NS, "BoundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
+        addStringProp( OWS_NS, "boundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
+        addStringProp( CSW_202_NS, "BoundingBox", DatabaseTables.isoqp_BoundingBox, "bbox" );
+        addStringProp( APISO_NS, "type", DatabaseTables.isoqp_type, "type" );
+        addStringProp( APISO_NS, "Type", DatabaseTables.isoqp_type, "type" );
+        addStringProp( DC_NS, "Type", DatabaseTables.isoqp_type, "type" );
+        addStringProp( CSW_202_NS, "Type", DatabaseTables.isoqp_type, "type" );
+        addStringProp( APISO_NS, "format", DatabaseTables.isoqp_format, "format" );
+        addStringProp( APISO_NS, "Format", DatabaseTables.isoqp_format, "format" );
+        addStringProp( DC_NS, "Format", DatabaseTables.isoqp_format, "format" );
+        addStringProp( CSW_202_NS, "Format", DatabaseTables.isoqp_format, "format" );
+        addStringProp( APISO_NS, "Subject", DatabaseTables.isoqp_keyword, "keyword" );
+        addStringProp( APISO_NS, "subject", DatabaseTables.isoqp_keyword, "keyword" );
+        addStringProp( DC_NS, "Subject", DatabaseTables.isoqp_keyword, "keyword" );
+        addStringProp( CSW_202_NS, "Subject", DatabaseTables.isoqp_keyword, "keyword" );
+        addStringProp( APISO_NS, "AnyText", DatabaseTables.datasets, "anytext" );
+        addStringProp( APISO_NS, "anyText", DatabaseTables.datasets, "anytext" );
+        addStringProp( CSW_202_NS, "AnyText", DatabaseTables.datasets, "anytext" );
+        addStringProp( APISO_NS, "identifier", DatabaseTables.qp_identifier, "identifier" );
+        addStringProp( APISO_NS, "Identifier", DatabaseTables.qp_identifier, "identifier" );
+        addStringProp( DC_NS, "Identifier", DatabaseTables.qp_identifier, "identifier" );
+        addStringProp( CSW_202_NS, "Identifier", DatabaseTables.qp_identifier, "identifier" );
+        addDateProp( APISO_NS, "modified", DatabaseTables.datasets, "modified" );
+        addDateProp( APISO_NS, "Modified", DatabaseTables.datasets, "modified" );
+        addDateProp( DCT_NS, "Modified", DatabaseTables.datasets, "modified" );
+        addDateProp( CSW_202_NS, "Modified", DatabaseTables.datasets, "modified" );
+        addStringProp( APISO_NS, "CRS", DatabaseTables.isoqp_crs, "crs" );
+        addStringProp( DC_NS, "CRS", DatabaseTables.isoqp_crs, "crs" );
+        addStringProp( APISO_NS, "association", DatabaseTables.isoqp_association, "relation" );
+        addStringProp( APISO_NS, "Association", DatabaseTables.isoqp_association, "relation" );
+        addStringProp( CSW_202_NS, "Association", DatabaseTables.isoqp_association, "relation" );
+        addStringProp( DC_NS, "Relation", DatabaseTables.isoqp_association, "relation" );
 
         // ----------------------</common queryable properties>------------------------------------
         // ----------------------------------------------------------------------------------------
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<additional common queryable properties>--------------------------
-        addStringProp( APISO_NS, "Language", "datasets", "language" );
-        addStringProp( APISO_NS, "language", "datasets", "language" );
-        addDateProp( APISO_NS, "RevisionDate", "isoqp_revisiondate", "revisiondate" );
-        addStringProp( APISO_NS, "AlternateTitle", "isoqp_alternatetitle", "alternatetitle" );
-        addDateProp( APISO_NS, "RevisionDate", "isoqp_revisiondate", "revisiondate" );
-        addDateProp( APISO_NS, "PublicationDate", "isoqp_publicationdate", "publicationdate" );
-        addStringProp( APISO_NS, "OrganisationName", "isoqp_organisationname", "organisationname" );
-        addBooleanProp( APISO_NS, "HasSecurityConstraint", "datasets", "hassecurityconstraint" );
-        addStringProp( APISO_NS, "ResourceIdentifier", "isoqp_resourceidentifier", "resourceidentifier" );
-        addStringProp( APISO_NS, "ParentIdentifier", "datasets", "parentidentifier" );
-        addStringProp( APISO_NS, "KeywordType", "isoqp_keyword", "keywordType" );
-        addStringProp( APISO_NS, "TopicCategory", "isoqp_topiccategory", "topiccategory" );
-        addStringProp( APISO_NS, "ResourceLanguage", "datasets", "resourcelanguage" );
-        addStringProp( APISO_NS, "GeographicDescriptionCode", "isoqp_geographicdescriptioncode",
+        addStringProp( APISO_NS, "Language", DatabaseTables.datasets, "language" );
+        addStringProp( APISO_NS, "language", DatabaseTables.datasets, "language" );
+        addDateProp( APISO_NS, "RevisionDate", DatabaseTables.isoqp_revisiondate, "revisiondate" );
+        addStringProp( APISO_NS, "AlternateTitle", DatabaseTables.isoqp_alternatetitle, "alternatetitle" );
+        // addDateProp( APISO_NS, "RevisionDate", "isoqp_revisiondate", "revisiondate" );
+        addDateProp( APISO_NS, "PublicationDate", DatabaseTables.isoqp_publicationdate, "publicationdate" );
+        addStringProp( APISO_NS, "OrganisationName", DatabaseTables.isoqp_organisationname, "organisationname" );
+        addBooleanProp( APISO_NS, "HasSecurityConstraint", DatabaseTables.datasets, "hassecurityconstraint" );
+        addStringProp( APISO_NS, "ResourceIdentifier", DatabaseTables.isoqp_resourceidentifier, "resourceidentifier" );
+        addStringProp( APISO_NS, "ParentIdentifier", DatabaseTables.datasets, "parentidentifier" );
+        addStringProp( APISO_NS, "KeywordType", DatabaseTables.isoqp_keyword, "keywordType" );
+        addStringProp( APISO_NS, "TopicCategory", DatabaseTables.isoqp_topiccategory, "topiccategory" );
+        addStringProp( APISO_NS, "ResourceLanguage", DatabaseTables.datasets, "resourcelanguage" );
+        addStringProp( APISO_NS, "GeographicDescriptionCode", DatabaseTables.isoqp_geographicdescriptioncode,
                        "geographicdescriptioncode" );
-        addStringProp( APISO_NS, "Denominator", "isoqp_spatialresolution", "denominator" );
-        addStringProp( APISO_NS, "DistanceValue", "isoqp_spatialresolution", "distancevalue" );
-        addStringProp( APISO_NS, "DistanceUOM", "isoqp_spatialresolution", "distanceuom" );
-        addStringProp( APISO_NS, "Denominator", "isoqp_spatialresolution", "denominator" );
-        addDateProp( APISO_NS, "TempExtent_begin", "isoqp_temporalextent", "tempextent_begin" );
-        addDateProp( APISO_NS, "TempExtent_end", "isoqp_temporalextent", "tempextent_end" );
-        addStringProp( APISO_NS, "ServiceType", "isoqp_servicetype", "servicetype" );
-        addStringProp( APISO_NS, "ServiceTypeVersion", "isoqp_servicetypeversion", "servicetypeversion" );
-        addStringProp( APISO_NS, "Operation", "isoqp_operation", "operation" );
-        addStringProp( APISO_NS, "OperatesOn", "isoqp_operatesondata", "operateson" );
-        addStringProp( APISO_NS, "OperatesOnIdentifier", "isoqp_operatesondata", "operatesonidentifier" );
-        addStringProp( APISO_NS, "OperatesOnName", "isoqp_operatesondata", "operatesonname" );
-        addStringProp( APISO_NS, "CouplingType", "isoqp_couplingtype", "couplingtype" );
+        addStringProp( APISO_NS, "Denominator", DatabaseTables.isoqp_spatialresolution, "denominator" );
+        addStringProp( APISO_NS, "DistanceValue", DatabaseTables.isoqp_spatialresolution, "distancevalue" );
+        addStringProp( APISO_NS, "DistanceUOM", DatabaseTables.isoqp_spatialresolution, "distanceuom" );
+        addStringProp( APISO_NS, "Denominator", DatabaseTables.isoqp_spatialresolution, "denominator" );
+        addDateProp( APISO_NS, "TempExtent_begin", DatabaseTables.isoqp_temporalextent, "tempextent_begin" );
+        addDateProp( APISO_NS, "TempExtent_end", DatabaseTables.isoqp_temporalextent, "tempextent_end" );
+        addStringProp( APISO_NS, "ServiceType", DatabaseTables.isoqp_servicetype, "servicetype" );
+        addStringProp( APISO_NS, "ServiceTypeVersion", DatabaseTables.isoqp_servicetypeversion, "servicetypeversion" );
+        addStringProp( APISO_NS, "Operation", DatabaseTables.isoqp_operation, "operation" );
+        addStringProp( APISO_NS, "OperatesOn", DatabaseTables.isoqp_operatesondata, "operateson" );
+        addStringProp( APISO_NS, "OperatesOnIdentifier", DatabaseTables.isoqp_operatesondata, "operatesonidentifier" );
+        addStringProp( APISO_NS, "OperatesOnName", DatabaseTables.isoqp_operatesondata, "operatesonname" );
+        addStringProp( APISO_NS, "CouplingType", DatabaseTables.isoqp_couplingtype, "couplingtype" );
 
         // ----------------------</additional common queryable properties>-------------------------
         // ----------------------------------------------------------------------------------------
@@ -212,15 +212,15 @@ public class PostGISMappingsISODC implements PostGISMapping {
         // ----------------------------------------------------------------------------------------
         // ----------------------<additional queryable properties for INSPIRE>--------------------------
 
-        addBooleanProp( APISO_NS, "Degree", "addqp_degree", "degree" );
-        addStringProp( APISO_NS, "AccessConstraints", "addqp_accessconstraint", "accessconstraint" );
-        addStringProp( APISO_NS, "OtherConstraints", "addqp_otherconstraint", "otherconstraint" );
-        addStringProp( APISO_NS, "Classification", "addqp_classification", "classification" );
-        addStringProp( APISO_NS, "ConditionApplyingToAccessAndUse", "addqp_limitation", "limitation" );
-        addStringProp( APISO_NS, "Lineage", "addqp_lineage", "lineage" );
-        addStringProp( APISO_NS, "SpecificationTitle", "addqp_specification", "specificationtitle" );
-        addStringProp( APISO_NS, "SpecificationDateType", "addqp_specification", "specificationdatetype" );
-        addDateProp( APISO_NS, "SpecificationDate", "addqp_specification", "specificationdate" );
+        addBooleanProp( APISO_NS, "Degree", DatabaseTables.addqp_degree, "degree" );
+        addStringProp( APISO_NS, "AccessConstraints", DatabaseTables.addqp_accessconstraint, "accessconstraint" );
+        addStringProp( APISO_NS, "OtherConstraints", DatabaseTables.addqp_otherconstraint, "otherconstraint" );
+        addStringProp( APISO_NS, "Classification", DatabaseTables.addqp_classification, "classification" );
+        addStringProp( APISO_NS, "ConditionApplyingToAccessAndUse", DatabaseTables.addqp_limitation, "limitation" );
+        addStringProp( APISO_NS, "Lineage", DatabaseTables.addqp_lineage, "lineage" );
+        addStringProp( APISO_NS, "SpecificationTitle", DatabaseTables.addqp_specification, "specificationtitle" );
+        addStringProp( APISO_NS, "SpecificationDateType", DatabaseTables.addqp_specification, "specificationdatetype" );
+        addDateProp( APISO_NS, "SpecificationDate", DatabaseTables.addqp_specification, "specificationdate" );
 
         // ----------------------</additional queryable properties for INSPIRE>-------------------------
         // ----------------------------------------------------------------------------------------
@@ -351,12 +351,16 @@ public class PostGISMappingsISODC implements PostGISMapping {
         /**
          * identifier of the resource that can be coupled with a service record
          */
-        isoqp_resourceIdentifier,
+        isoqp_resourceidentifier,
 
         /**
          * alternate title of the record
          */
         isoqp_alternatetitle,
+        /**
+         * the relation of the record
+         */
+        isoqp_association,
 
         /**
          * the title of the record
@@ -391,7 +395,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
         /**
          * the bounding box that encapsulates the record by spatial boundaries
          */
-        isoqp_boundingbox,
+        isoqp_BoundingBox,
 
         /**
          * the coordinate reference system of the bounding box(es)
@@ -417,12 +421,12 @@ public class PostGISMappingsISODC implements PostGISMapping {
          * assures the protection of privacy or intellectual property. Regarding special restrictions or limitations on
          * obtaining the resource.
          */
-        addqp_accessConstraint,
+        addqp_accessconstraint,
 
         /**
          * legal prerequisites for accessing and using the resource or metadata
          */
-        addqp_otherConstraint,
+        addqp_otherconstraint,
 
         /**
          * name of the handling restrictions on the resource.
@@ -459,23 +463,23 @@ public class PostGISMappingsISODC implements PostGISMapping {
         return mapping;
     }
 
-    private static void addBooleanProp( String propNs, String propName, String table, String column ) {
+    private static void addBooleanProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        PropertyNameMapping mapping = new PropertyNameMapping( table, column, BOOLEAN );
+        PropertyNameMapping mapping = new PropertyNameMapping( table.name(), column, BOOLEAN );
         propToTableAndCol.put( qName, mapping );
 
     }
 
-    private static void addDateProp( String propNs, String propName, String table, String column ) {
+    private static void addDateProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        PropertyNameMapping mapping = new PropertyNameMapping( table, column, DATE );
+        PropertyNameMapping mapping = new PropertyNameMapping( table.name(), column, DATE );
         propToTableAndCol.put( qName, mapping );
 
     }
 
-    private static void addStringProp( String propNs, String propName, String table, String column ) {
+    private static void addStringProp( String propNs, String propName, DatabaseTables table, String column ) {
         QName qName = new QName( propNs, propName );
-        PropertyNameMapping mapping = new PropertyNameMapping( table, column, STRING );
+        PropertyNameMapping mapping = new PropertyNameMapping( table.name(), column, STRING );
         propToTableAndCol.put( qName, mapping );
     }
 
