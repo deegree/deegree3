@@ -665,8 +665,6 @@ public class ISORecordStore implements RecordStore {
 
         // String datasetsAlias = PostGISMappingsISODC.DatabaseTables.datasets.name() + Integer.toString( 1 );
         StringBuilder COUNT;
-        StringBuilder COUNT_PRE;
-        StringBuilder COUNT_SUF;
         StringBuilder SET_OFFSET;
 
         LOG.debug( "wherebuilder: " + builder );
@@ -694,18 +692,12 @@ public class ISORecordStore implements RecordStore {
          * precondition if there is a counting of rows needed
          */
         if ( setCount == true ) {
-            COUNT = new StringBuilder().append( "COUNT(" ).append( formatTypeAlias ).append( '.' ).append( data ).append(
-                                                                                                                          ')' );
-            COUNT_PRE = new StringBuilder().append( "COUNT(" );
-            COUNT_SUF = new StringBuilder().append( ')' );
+            COUNT = new StringBuilder().append( "COUNT(" ).append( formatTypeAlias ).append( '.' );
+            COUNT.append( data ).append( ')' );
             SET_OFFSET = new StringBuilder();
         } else {
-            COUNT = new StringBuilder().append( formatTypeAlias ).append( '.' ).append( fk_datasets ).append( ',' ).append(
-                                                                                                                            formatTypeAlias ).append(
-                                                                                                                                                      '.' ).append(
-                                                                                                                                                                    data );
-            COUNT_PRE = new StringBuilder();
-            COUNT_SUF = new StringBuilder();
+            COUNT = new StringBuilder().append( formatTypeAlias ).append( '.' ).append( fk_datasets );
+            COUNT.append( ',' ).append( formatTypeAlias ).append( '.' ).append( data );
             SET_OFFSET = new StringBuilder();
             if ( recordStoreOptions != null ) {
                 SET_OFFSET.append( " OFFSET " ).append( Integer.toString( recordStoreOptions.getStartPosition() - 1 ) );
@@ -715,8 +707,6 @@ public class ISORecordStore implements RecordStore {
 
         // building the StringBuilder to get the BLOB data from backend
         StringBuilder s = new StringBuilder();
-        // s.append( "SELECT " ).append( COUNT_PRE ).append( formatTypeAlias ).append( '.' );
-        // s.append( data ).append( COUNT_SUF );
         s.append( "SELECT " ).append( COUNT );
         s.append( " FROM " ).append( formatType ).append( " AS " ).append( formatTypeAlias );
         s.append( " WHERE " ).append( formatTypeAlias ).append( '.' );
