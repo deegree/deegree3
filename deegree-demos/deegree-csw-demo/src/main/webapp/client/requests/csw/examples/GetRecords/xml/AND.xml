@@ -13,11 +13,11 @@
         <ogc:And>
           <ogc:PropertyIsEqualTo>
             <ogc:PropertyName>Title</ogc:PropertyName>
-            <ogc:Literal>Template for Dublin Core</ogc:Literal>
+            <ogc:Literal>Hessen Wasser Analyser</ogc:Literal>
           </ogc:PropertyIsEqualTo>
           <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-            <ogc:PropertyName>Type</ogc:PropertyName>
-            <ogc:Literal>%s%</ogc:Literal>
+            <ogc:PropertyName>Subject</ogc:PropertyName>
+            <ogc:Literal>%Karte%</ogc:Literal>
           </ogc:PropertyIsLike>
         </ogc:And>
       </ogc:Filter>

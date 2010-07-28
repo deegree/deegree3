@@ -9,7 +9,7 @@
         <LanguageCode codeList="http://www.w3.org/WAI/ER/IG/ert/iso639.htm" codeListValue="ger"/>
       </language>
       <characterSet>
-        <MD_CharacterSetCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_CharacterSetCode" codeListValue="utf-8"/>
+        <MD_CharacterSetCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_CharacterSetCode" codeListValue="utf8"/>
       </characterSet>
       <hierarchyLevel>
         <MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MX_ScopeCode" codeListValue="service"/>
@@ -311,7 +311,7 @@
         <LanguageCode codeList="http://www.w3.org/WAI/ER/IG/ert/iso639.htm" codeListValue="ger"/>
       </language>
       <characterSet>
-        <MD_CharacterSetCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_CharacterSetCode" codeListValue="utf-8"/>
+        <MD_CharacterSetCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_CharacterSetCode" codeListValue="utf8"/>
       </characterSet>
       <hierarchyLevel>
         <MD_ScopeCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_ScopeCode" codeListValue="service"/>
@@ -629,7 +629,7 @@ Der WMS kann natürlich auch wiederum von anderen WMS genutzt werden.</gco:Chara
         <LanguageCode codeList="http://www.w3.org/WAI/ER/IG/ert/iso639.htm" codeListValue="ger"/>
       </language>
       <characterSet>
-        <MD_CharacterSetCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_CharacterSetCode" codeListValue="utf-8"/>
+        <MD_CharacterSetCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_CharacterSetCode" codeListValue="utf8"/>
       </characterSet>
       <hierarchyLevel>
         <MD_ScopeCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml?MD_ScopeCode" codeListValue="service"/>

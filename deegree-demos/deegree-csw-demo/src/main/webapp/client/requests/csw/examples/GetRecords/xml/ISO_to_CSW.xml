@@ -13,7 +13,7 @@
         
           <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
             <ogc:PropertyName>Identifier</ogc:PropertyName>
-            <ogc:Literal>%2345-aa453-ade45%</ogc:Literal>
+            <ogc:Literal>655e5998-a20e-66b5-c888-00005553421</ogc:Literal>
           </ogc:PropertyIsLike>
         
       </ogc:Filter>
