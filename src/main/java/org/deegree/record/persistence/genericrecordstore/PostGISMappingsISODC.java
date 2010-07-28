@@ -543,29 +543,20 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.filter.sql.postgis.PostGISMapping#getMapping(org.deegree.filter.expression.PropertyName)
-     */
     @Override
     public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException {
 
-        for ( QName matchingPropertyName : propToTableAndCol.keySet() ) {
-            LOG.debug( matchingPropertyName + " - " + propName.getAsQName() );
-            LOG.info( "PropName: " + propName.getAsQName() );
-            // TODO handle the case that PropertyName is *not* a QName, but a more complex XPath
-            if ( propName.getAsQName().equals( matchingPropertyName ) ) {
+        PropertyNameMapping mapping = null;
 
-                return new PropertyNameMapping(
-                                                propToTableAndCol.get( matchingPropertyName ).getTargetField().getTable(),
-                                                propToTableAndCol.get( matchingPropertyName ).getTargetField().getColumn(),
-                                                propToTableAndCol.get( matchingPropertyName ).getTargetFieldType() );
-
-            }
+        QName qName = propName.getAsQName();
+        if ( qName == null ) {
+            String msg = "Cannot map property name '" + propName + "'. Not a simple QName.";
+            LOG.debug( msg );
+        } else {
+            mapping = propToTableAndCol.get( qName);            
         }
-        return null;
+        return mapping;
     }
 
     private static void addStringProp( String propNs, String propName, String table, String column ) {
@@ -574,12 +565,6 @@ public class PostGISMappingsISODC implements PostGISMapping {
         propToTableAndCol.put( qName, mapping );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.filter.sql.postgis.PostGISMapping#getPostGISValue(org.deegree.filter.expression.Literal,
-     * org.deegree.filter.expression.PropertyName)
-     */
     @Override
     public Object getPostGISValue( Literal literal, PropertyName propName )
                             throws FilterEvaluationException {
@@ -678,12 +663,6 @@ public class PostGISMappingsISODC implements PostGISMapping {
         return pgValue;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.filter.sql.postgis.PostGISMapping#getPostGISValue(org.deegree.geometry.Geometry,
-     * org.deegree.filter.expression.PropertyName)
-     */
     @Override
     public byte[] getPostGISValue( Geometry literal, PropertyName propName )
                             throws FilterEvaluationException {
