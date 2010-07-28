@@ -518,7 +518,7 @@ public class ISORecordStore implements RecordStore {
      */
     private void createWhereClauseWithAlias( int aliasCount, PostGISWhereBuilder builder, StringBuilder whereClause,
                                              Set<Pair<String, String>> aliasMapping ) {
-
+        TableAliasManager aliasManager = builder.getAliasManager();
         for ( PropertyNameMapping propName : builder.getMappedPropertyNames() ) {
             if ( !propName.getTargetField().getTable().equals( PostGISMappingsISODC.DatabaseTables.datasets.name() ) ) {
                 aliasMapping.add( new Pair<String, String>( propName.getTargetField().getTable(),
@@ -649,6 +649,7 @@ public class ISORecordStore implements RecordStore {
         int aliasCount = 0;
         Set<Pair<String, String>> aliasMapping = null;
         StringBuilder whereClause = null;
+
         if ( builder.getWhere() != null ) {
             whereClause = new StringBuilder();
             aliasMapping = new HashSet<Pair<String, String>>();
@@ -663,6 +664,7 @@ public class ISORecordStore implements RecordStore {
         String formatTypeAlias = formatType + aliasCount;
 
         // String datasetsAlias = PostGISMappingsISODC.DatabaseTables.datasets.name() + Integer.toString( 1 );
+        StringBuilder COUNT;
         StringBuilder COUNT_PRE;
         StringBuilder COUNT_SUF;
         StringBuilder SET_OFFSET;
@@ -692,10 +694,16 @@ public class ISORecordStore implements RecordStore {
          * precondition if there is a counting of rows needed
          */
         if ( setCount == true ) {
+            COUNT = new StringBuilder().append( "COUNT(" ).append( formatTypeAlias ).append( '.' ).append( data ).append(
+                                                                                                                          ')' );
             COUNT_PRE = new StringBuilder().append( "COUNT(" );
             COUNT_SUF = new StringBuilder().append( ')' );
             SET_OFFSET = new StringBuilder();
         } else {
+            COUNT = new StringBuilder().append( formatTypeAlias ).append( '.' ).append( fk_datasets ).append( ',' ).append(
+                                                                                                                            formatTypeAlias ).append(
+                                                                                                                                                      '.' ).append(
+                                                                                                                                                                    data );
             COUNT_PRE = new StringBuilder();
             COUNT_SUF = new StringBuilder();
             SET_OFFSET = new StringBuilder();
@@ -707,8 +715,9 @@ public class ISORecordStore implements RecordStore {
 
         // building the StringBuilder to get the BLOB data from backend
         StringBuilder s = new StringBuilder();
-        s.append( "SELECT " ).append( COUNT_PRE ).append( formatTypeAlias ).append( '.' );
-        s.append( fk_datasets ).append( COUNT_SUF );
+        // s.append( "SELECT " ).append( COUNT_PRE ).append( formatTypeAlias ).append( '.' );
+        // s.append( data ).append( COUNT_SUF );
+        s.append( "SELECT " ).append( COUNT );
         s.append( " FROM " ).append( formatType ).append( " AS " ).append( formatTypeAlias );
         s.append( " WHERE " ).append( formatTypeAlias ).append( '.' );
         s.append( fk_datasets ).append( " IN (" );
@@ -729,7 +738,11 @@ public class ISORecordStore implements RecordStore {
                 i++;
                 if ( arg.getSQLType() != -1 ) {
                     LOG.debug( "Setting argument: " + arg );
-                    preparedStatement.setObject( i, arg.getValue(), arg.getSQLType() );
+                    try {
+                        preparedStatement.setObject( i, arg.getValue(), arg.getSQLType() );
+                    } catch ( SQLException e ) {
+                        preparedStatement.setObject( i, arg.getValue(), java.sql.Types.VARCHAR );
+                    }
                 } else {
                     LOG.debug( "Setting argument: " + arg );
                     preparedStatement.setObject( i, arg.getValue() );
@@ -1347,7 +1360,7 @@ public class ISORecordStore implements RecordStore {
 
         XMLStreamReader xmlReader;
         try {
-            // FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
+            // FileOutputStream fout = new FileOutputStream( "/home/thomas/Desktop/test.xml" );
             // XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
 
             xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
@@ -1367,10 +1380,10 @@ public class ISORecordStore implements RecordStore {
             LOG.debug( "error: " + e.getMessage(), e );
         }
         // catch ( FileNotFoundException e ) {
-        // 
+        //
         // LOG.debug( "error: " + e.getMessage(), e );
         // } catch ( IOException e ) {
-        // 
+        //
         // LOG.debug( "error: " + e.getMessage(), e );
         // }
 

@@ -39,6 +39,7 @@ import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.PrimitiveType.DATE;
 import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
 import static org.deegree.protocol.csw.CSWConstants.DC_NS;
 import static org.deegree.protocol.ows.OWSCommonXMLAdapter.OWS_NS;
@@ -130,6 +131,8 @@ public class PostGISMappingsISODC implements PostGISMapping {
         propToTableAndCol.put( new QName( APISO_NS, "title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
         propToTableAndCol.put( new QName( DC_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title",
+                                                                                          STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "abstract" ), new PropertyNameMapping( "isoqp_abstract",
                                                                                            "abstract", STRING ) );
@@ -137,6 +140,8 @@ public class PostGISMappingsISODC implements PostGISMapping {
                                                                                            "abstract", STRING ) );
         propToTableAndCol.put( new QName( DCT_NS, "Abstract" ), new PropertyNameMapping( "isoqp_abstract", "abstract",
                                                                                          STRING ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "Abstract" ), new PropertyNameMapping( "isoqp_abstract",
+                                                                                             "abstract", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "BoundingBox" ), new PropertyNameMapping( "isoqp_BoundingBox",
                                                                                               "bbox" ) );
@@ -145,18 +150,21 @@ public class PostGISMappingsISODC implements PostGISMapping {
                                new PropertyNameMapping( "isoqp_BoundingBox", "bbox" ) );
         propToTableAndCol.put( new QName( OWS_NS, "boundingBox" ),
                                new PropertyNameMapping( "isoqp_BoundingBox", "bbox" ) );
-        propToTableAndCol.put( new QName( APISO_NS, "boundingBox" ), new PropertyNameMapping( "isoqp_BoundingBox",
-                                                                                              "bbox" ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "boundingBox" ), new PropertyNameMapping( "isoqp_BoundingBox",
+                                                                                                "bbox" ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "Type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
         propToTableAndCol.put( new QName( DC_NS, "Type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "Type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "format" ), new PropertyNameMapping( "isoqp_format", "format",
                                                                                          STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "Format" ), new PropertyNameMapping( "isoqp_format", "format",
                                                                                          STRING ) );
         propToTableAndCol.put( new QName( DC_NS, "Format" ), new PropertyNameMapping( "isoqp_format", "format", STRING ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "Format" ), new PropertyNameMapping( "isoqp_format", "format",
+                                                                                           STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
                                                                                           STRING ) );
@@ -164,11 +172,15 @@ public class PostGISMappingsISODC implements PostGISMapping {
                                                                                           STRING ) );
         propToTableAndCol.put( new QName( DC_NS, "Subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
                                                                                        STRING ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "Subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
+                                                                                            STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "anyText" ),
                                new PropertyNameMapping( "datasets", "anytext", STRING ) );
         propToTableAndCol.put( new QName( APISO_NS, "AnyText" ),
                                new PropertyNameMapping( "datasets", "anytext", STRING ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "AnyText" ), new PropertyNameMapping( "datasets", "anytext",
+                                                                                            STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "identifier" ), new PropertyNameMapping( "qp_identifier",
                                                                                              "identifier", STRING ) );
@@ -176,12 +188,16 @@ public class PostGISMappingsISODC implements PostGISMapping {
                                                                                              "identifier", STRING ) );
         propToTableAndCol.put( new QName( DC_NS, "Identifier" ), new PropertyNameMapping( "qp_identifier",
                                                                                           "identifier", STRING ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "Identifier" ), new PropertyNameMapping( "qp_identifier",
+                                                                                               "identifier", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "modified" ),
                                new PropertyNameMapping( "datasets", "modified", DATE ) );
         propToTableAndCol.put( new QName( APISO_NS, "Modified" ),
                                new PropertyNameMapping( "datasets", "modified", DATE ) );
         propToTableAndCol.put( new QName( DCT_NS, "Modified" ), new PropertyNameMapping( "datasets", "modified", DATE ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "Modified" ), new PropertyNameMapping( "datasets", "modified",
+                                                                                             DATE ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "CRS" ), new PropertyNameMapping( "isoqp_crs", "crs" ) );
         propToTableAndCol.put( new QName( DC_NS, "CRS" ), new PropertyNameMapping( "isoqp_crs", "crs" ) );
@@ -190,6 +206,8 @@ public class PostGISMappingsISODC implements PostGISMapping {
                                                                                               "relation" ) );
         propToTableAndCol.put( new QName( APISO_NS, "Association" ), new PropertyNameMapping( "isoqp_association",
                                                                                               "relation" ) );
+        propToTableAndCol.put( new QName( CSW_202_NS, "Association" ), new PropertyNameMapping( "isoqp_association",
+                                                                                                "relation" ) );
         propToTableAndCol.put( new QName( DC_NS, "Relation" ),
                                new PropertyNameMapping( "isoqp_association", "relation" ) );
         // ----------------------</common queryable properties>------------------------------------
@@ -534,7 +552,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         for ( QName matchingPropertyName : propToTableAndCol.keySet() ) {
             LOG.debug( matchingPropertyName + " - " + propName.getAsQName() );
-
+            LOG.info( "PropName: " + propName.getAsQName() );
             // TODO handle the case that PropertyName is *not* a QName, but a more complex XPath
             if ( propName.getAsQName().equals( matchingPropertyName ) ) {
 
