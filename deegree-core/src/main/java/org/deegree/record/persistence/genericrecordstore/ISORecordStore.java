@@ -69,8 +69,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -82,15 +80,15 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.feature.persistence.mapping.DBField;
+import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.PropertyNameMapping;
-import org.deegree.filter.sql.TableAliasManager;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.protocol.csw.CSWConstants;
@@ -447,20 +445,7 @@ public class ISORecordStore implements RecordStore {
 
         PreparedStatement ps = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
                                                         profileFormatNumberOutputSchema, true, builder );
-        // /*
-        // * the parameter identified in the WHERE-builder replaces the "?" in the statement
-        // */
-        // if ( builder != null && builder.getPropNameMappingList().size() > 0 ) {
-        // int i = 0;
-        //
-        // for ( SQLLiteral arg : builder.getWhereClause().getLiterals() ) {
-        // i++;
-        //
-        // LOG.debug( "Setting argument: " + arg );
-        // ps.setObject( i, arg.getValue() );
-        // }
-        //
-        // }
+
         ResultSet rs = ps.executeQuery();
 
         while ( rs.next() ) {
@@ -505,41 +490,6 @@ public class ISORecordStore implements RecordStore {
         ps.close();
         rs.close();
         conn.close();
-
-    }
-
-    /**
-     * Replace the dbTablenames with aliasNames.
-     * 
-     * @param aliasCount
-     * @param builder
-     * @param whereClause
-     * @param aliasMapping
-     */
-    private void createWhereClauseWithAlias( int aliasCount, PostGISWhereBuilder builder, StringBuilder whereClause,
-                                             Set<Pair<String, String>> aliasMapping ) {
-        TableAliasManager aliasManager = builder.getAliasManager();
-        for ( PropertyNameMapping propName : builder.getMappedPropertyNames() ) {
-            if ( !propName.getTargetField().getTable().equals( PostGISMappingsISODC.DatabaseTables.datasets.name() ) ) {
-                aliasMapping.add( new Pair<String, String>( propName.getTargetField().getTable(),
-                                                            propName.getTargetField().getTable()
-                                                                                    + Integer.toString( aliasCount ) ) );
-                aliasCount++;
-            }
-        }
-        StringBuilder replaceWhereClause = new StringBuilder();
-        replaceWhereClause.append( builder.getWhere().getSQL() );
-        for ( Pair<String, String> alias : aliasMapping ) {
-
-            Pattern p = Pattern.compile( alias.first + "[.]" );
-            Matcher m = p.matcher( (CharSequence) replaceWhereClause );
-            String replaceString = m.replaceFirst( alias.second + "." );
-            System.out.println( replaceString );
-            replaceWhereClause.delete( 0, replaceWhereClause.capacity() );
-            replaceWhereClause.append( replaceString );
-
-        }
-        whereClause.append( replaceWhereClause );
 
     }
 
@@ -645,104 +595,107 @@ public class ISORecordStore implements RecordStore {
                                                        int typeNameFormatNumber, int profileFormatNumberOutputSchema,
                                                        boolean setCount, PostGISWhereBuilder builder )
                             throws IOException, SQLException {
-        PreparedStatement preparedStatement;
-        int aliasCount = 0;
-        Set<Pair<String, String>> aliasMapping = null;
-        StringBuilder whereClause = null;
 
-        if ( builder.getWhere() != null ) {
-            whereClause = new StringBuilder();
-            aliasMapping = new HashSet<Pair<String, String>>();
-            createWhereClauseWithAlias( aliasCount, builder, whereClause, aliasMapping );
-        }
         String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
         String format = PostGISMappingsISODC.CommonColumnNames.format.name();
         String data = PostGISMappingsISODC.CommonColumnNames.data.name();
         String id = PostGISMappingsISODC.CommonColumnNames.id.name();
         String datasets = PostGISMappingsISODC.DatabaseTables.datasets.name();
         StringBuilder getDatasetIDs = new StringBuilder( 300 );
-        String formatTypeAlias = formatType + aliasCount;
-
-        // String datasetsAlias = PostGISMappingsISODC.DatabaseTables.datasets.name() + Integer.toString( 1 );
-        StringBuilder COUNT;
-        StringBuilder SET_OFFSET;
 
         LOG.debug( "wherebuilder: " + builder );
 
-        getDatasetIDs.append( "SELECT " ).append( datasets ).append( '.' );
-        getDatasetIDs.append( id );
-        getDatasetIDs.append( " FROM " ).append( datasets );
+        String rootTableAlias = builder.getAliasManager().getRootTableAlias();
+        String blobTableAlias = builder.getAliasManager().generateNew();
 
-        // LEFT OUTER JOINs
-        if ( whereClause != null ) {
-            Iterator aliasIter = aliasMapping.iterator();
-            while ( aliasIter.hasNext() ) {
-                Pair<String, String> aliasPair = (Pair<String, String>) aliasIter.next();
-                getDatasetIDs.append( " LEFT OUTER JOIN " ).append( aliasPair.first );
-                getDatasetIDs.append( " AS " ).append( aliasPair.second ).append( " ON " );
-                getDatasetIDs.append( aliasPair.second ).append( '.' );
-                getDatasetIDs.append( fk_datasets ).append( '=' );
-                getDatasetIDs.append( datasets ).append( '.' ).append( id );
-            }
-
-            getDatasetIDs.append( " WHERE " ).append( whereClause );
-        }
-
-        /*
-         * precondition if there is a counting of rows needed
-         */
-        if ( setCount == true ) {
-            COUNT = new StringBuilder().append( "COUNT(" ).append( formatTypeAlias ).append( '.' );
-            COUNT.append( data ).append( ')' );
-            SET_OFFSET = new StringBuilder();
+        getDatasetIDs.append( "SELECT " );
+        if ( setCount ) {
+            getDatasetIDs.append( "COUNT(*)" );
         } else {
-            COUNT = new StringBuilder().append( formatTypeAlias ).append( '.' ).append( fk_datasets );
-            COUNT.append( ',' ).append( formatTypeAlias ).append( '.' ).append( data );
-            SET_OFFSET = new StringBuilder();
-            if ( recordStoreOptions != null ) {
-                SET_OFFSET.append( " OFFSET " ).append( Integer.toString( recordStoreOptions.getStartPosition() - 1 ) );
-                SET_OFFSET.append( " LIMIT " ).append( recordStoreOptions.getMaxRecords() );
+            getDatasetIDs.append( rootTableAlias );
+            getDatasetIDs.append( '.' );
+            getDatasetIDs.append( id );
+            getDatasetIDs.append( ',' );
+            getDatasetIDs.append( blobTableAlias );
+            getDatasetIDs.append( '.' );
+            getDatasetIDs.append( data );
+        }
+        getDatasetIDs.append( " FROM " );
+        getDatasetIDs.append( datasets );
+        getDatasetIDs.append( " " );
+        getDatasetIDs.append( rootTableAlias );
+
+        for ( PropertyNameMapping mappedPropName : builder.getMappedPropertyNames() ) {
+            String currentAlias = rootTableAlias;
+            for ( Join join : mappedPropName.getJoins() ) {
+                DBField from = join.getFrom();
+                DBField to = join.getTo();
+                getDatasetIDs.append( " LEFT OUTER JOIN " );
+                getDatasetIDs.append( to.getTable() );
+                getDatasetIDs.append( " AS " );
+                getDatasetIDs.append( to.getAlias() );
+                getDatasetIDs.append( " ON " );
+                getDatasetIDs.append( currentAlias );
+                getDatasetIDs.append( "." );
+                getDatasetIDs.append( from.getColumn() );
+                getDatasetIDs.append( "=" );
+                currentAlias = to.getAlias();
+                getDatasetIDs.append( currentAlias );
+                getDatasetIDs.append( "." );
+                getDatasetIDs.append( to.getColumn() );
             }
         }
 
-        // building the StringBuilder to get the BLOB data from backend
-        StringBuilder s = new StringBuilder();
-        s.append( "SELECT " ).append( COUNT );
-        s.append( " FROM " ).append( formatType ).append( " AS " ).append( formatTypeAlias );
-        s.append( " WHERE " ).append( formatTypeAlias ).append( '.' );
-        s.append( fk_datasets ).append( " IN (" );
-        s.append( getDatasetIDs ).append( ')' );
-        s.append( " AND " ).append( formatTypeAlias ).append( '.' );
-        s.append( format ).append( '=' );
-        s.append( typeNameFormatNumber ).append( ' ' ).append( SET_OFFSET ).append( ";" );
+        getDatasetIDs.append( " LEFT OUTER JOIN " );
+        getDatasetIDs.append( formatType );
+        getDatasetIDs.append( " AS " );
+        getDatasetIDs.append( blobTableAlias );
+        getDatasetIDs.append( " ON " );
+        getDatasetIDs.append( rootTableAlias );
+        getDatasetIDs.append( "." );
+        getDatasetIDs.append( id );
+        getDatasetIDs.append( "=" );
+        getDatasetIDs.append( blobTableAlias );
+        getDatasetIDs.append( "." );
+        getDatasetIDs.append( fk_datasets );
 
-        preparedStatement = conn.prepareStatement( s.toString() );
+        getDatasetIDs.append( " WHERE " );
+        getDatasetIDs.append( blobTableAlias );
+        getDatasetIDs.append( '.' );
+        getDatasetIDs.append( format );
+        getDatasetIDs.append( "=?" );
 
-        /*
-         * the parameter identified in the WHERE-builder replaces the "?" in the statement
-         */
-        if ( builder != null && builder.getMappedPropertyNames().size() > 0 ) {
-            int i = 0;
-
-            for ( SQLLiteral arg : builder.getWhere().getLiterals() ) {
-                i++;
-                if ( arg.getSQLType() != -1 ) {
-                    LOG.debug( "Setting argument: " + arg );
-                    try {
-                        preparedStatement.setObject( i, arg.getValue(), arg.getSQLType() );
-                    } catch ( SQLException e ) {
-                        preparedStatement.setObject( i, arg.getValue(), java.sql.Types.VARCHAR );
-                    }
-                } else {
-                    LOG.debug( "Setting argument: " + arg );
-                    preparedStatement.setObject( i, arg.getValue() );
-                }
-            }
-
+        if ( builder.getWhere() != null ) {
+            getDatasetIDs.append( builder.getWhere().getSQL() );
         }
+        if ( builder.getOrderBy() != null ) {
+            getDatasetIDs.append( " ORDER BY " );
+            getDatasetIDs.append( builder.getOrderBy().getSQL() );
+        }
+
+        if ( !setCount && recordStoreOptions != null ) {
+            getDatasetIDs.append( " OFFSET " ).append( Integer.toString( recordStoreOptions.getStartPosition() - 1 ) );
+            getDatasetIDs.append( " LIMIT " ).append( recordStoreOptions.getMaxRecords() );
+        }
+
+        PreparedStatement preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
+
+        int i = 1;
+        preparedStatement.setInt( i++, typeNameFormatNumber );
+
+        if ( builder.getWhere() != null ) {
+            for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
+                preparedStatement.setObject( i++, o.getValue() );
+            }
+        }
+        if ( builder.getOrderBy() != null ) {
+            for ( SQLLiteral o : builder.getOrderBy().getLiterals() ) {
+                preparedStatement.setObject( i++, o.getValue() );
+            }
+        }
+
         LOG.info( preparedStatement.toString() );
         return preparedStatement;
-
     }
 
     /*

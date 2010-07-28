@@ -831,7 +831,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_ResourceIdentifierStatement( boolean isUpdate, Connection connection, int operatesOnId,
                                                             QueryableProperties qp ) {
-        final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_resourceIdentifier.name();
+        final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_resourceidentifier.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -1095,7 +1095,7 @@ public class GenerateQueryableProperties {
      */
     private void generateADDQP_AccessConstraintsStatement( boolean isUpdate, Connection connection, int operatesOnId,
                                                            QueryableProperties qp ) {
-        final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_accessConstraint.name();
+        final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_accessconstraint.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -1141,7 +1141,7 @@ public class GenerateQueryableProperties {
      */
     private void generateADDQP_OtherConstraintsStatement( boolean isUpdate, Connection connection, int operatesOnId,
                                                           QueryableProperties qp ) {
-        final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_otherConstraint.name();
+        final String databaseTable = PostGISMappingsISODC.DatabaseTables.addqp_otherconstraint.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -1189,7 +1189,7 @@ public class GenerateQueryableProperties {
     // TODO one record got one or more bboxes?
     private void generateISOQP_BoundingBoxStatement( boolean isUpdate, Connection connection, int operatesOnId,
                                                      QueryableProperties qp ) {
-        final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_boundingbox.name();
+        final String databaseTable = PostGISMappingsISODC.DatabaseTables.isoqp_BoundingBox.name();
         StringWriter sqlStatement = new StringWriter( 500 );
         PreparedStatement stm = null;
         double east = qp.getBoundingBox().getEastBoundLongitude();
