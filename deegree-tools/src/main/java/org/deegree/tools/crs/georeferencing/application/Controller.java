@@ -1126,7 +1126,10 @@ public class Controller {
         sceneValues.setDimenstionFootpanel( new Rectangle( footPanel.getBounds().width, footPanel.getBounds().height ) );
         panel.setImageDimension( sceneValues.getImageDimension() );
         footPanel.updatePoints( sceneValues );
+        // TODO make a modularization in Scene2DValues because there is a strict sequence in this case. If there is the
+        // update of the points before the new envelope is computed the polygons will be drawn on the wrong position
         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
+        panel.updatePoints( sceneValues );
         panel.repaint();
         footPanel.repaint();
     }
