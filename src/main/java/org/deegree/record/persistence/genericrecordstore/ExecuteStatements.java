@@ -42,10 +42,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.record.persistence.genericrecordstore.generating.BuildRecordXMLRepresentation;
 import org.deegree.record.persistence.genericrecordstore.generating.GenerateQueryableProperties;
 import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
@@ -141,13 +143,17 @@ public class ExecuteStatements {
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildRecordXMLRepresentation();
 
+        PreparedStatement stm = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
         StringBuilder sqlStatementUpdate = new StringBuilder( 500 );
 
         int requestedId = 0;
         String modifiedAttribute = "null";
 
         try {
-            PreparedStatement stm = null;
+            stmt = connection.createStatement();
             for ( String identifierString : parsedElement.getQueryableProperties().getIdentifier() ) {
 
                 sqlStatementUpdate.append( "SELECT " ).append( databaseTable ).append( '.' );
@@ -164,15 +170,13 @@ public class ExecuteStatements {
 
                 stm = connection.prepareStatement( sqlStatementUpdate.toString() );
                 stm.setObject( 1, identifierString );
-                ResultSet rs = stm.executeQuery();
+                rs = stm.executeQuery();
                 sqlStatementUpdate.setLength( 0 );
 
                 while ( rs.next() ) {
                     requestedId = rs.getInt( 1 );
                     LOG.debug( "resultSet: " + rs.getInt( 1 ) );
                 }
-
-                rs.close();
 
                 if ( requestedId != 0 ) {
 
@@ -192,7 +196,7 @@ public class ExecuteStatements {
                                                                                                                  "' WHERE " );
                         sqlStatementUpdate.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( '=' );
                         sqlStatementUpdate.append( requestedId );
-                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        stmt.executeUpdate( sqlStatementUpdate.toString() );
                         sqlStatementUpdate.setLength( 0 );
 
                     }
@@ -203,7 +207,7 @@ public class ExecuteStatements {
                                                                                                                             modifiedAttribute );
                         sqlStatementUpdate.append( " WHERE " ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
                         sqlStatementUpdate.append( '=' ).append( requestedId );
-                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        stmt.executeUpdate( sqlStatementUpdate.toString() );
                         sqlStatementUpdate.setLength( 0 );
                     }
                     // hassecurityconstraints
@@ -215,7 +219,7 @@ public class ExecuteStatements {
                                                                         PostGISMappingsISODC.CommonColumnNames.id.name() );
                         sqlStatementUpdate.append( '=' ).append( requestedId );
 
-                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        stmt.executeUpdate( sqlStatementUpdate.toString() );
                         sqlStatementUpdate.setLength( 0 );
                     }
 
@@ -227,7 +231,7 @@ public class ExecuteStatements {
                         sqlStatementUpdate.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( '=' );
                         sqlStatementUpdate.append( requestedId );
 
-                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        stmt.executeUpdate( sqlStatementUpdate.toString() );
                         sqlStatementUpdate.setLength( 0 );
                     }
                     // parentidentifier
@@ -239,7 +243,7 @@ public class ExecuteStatements {
                                                                         PostGISMappingsISODC.CommonColumnNames.id.name() );
                         sqlStatementUpdate.append( '=' ).append( requestedId );
 
-                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        stmt.executeUpdate( sqlStatementUpdate.toString() );
                         sqlStatementUpdate.setLength( 0 );
                     }
                     // TODO source
@@ -257,10 +261,15 @@ public class ExecuteStatements {
                                  + parsedElement.getQueryableProperties().getIdentifier() + " <--. ";
                     throw new SQLException( msg );
                 }
+                rs.close();
+            }
+            if ( stmt != null ) {
+                stmt.close();
             }
             if ( stm != null ) {
                 stm.close();
             }
+
         } catch ( SQLException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
@@ -270,6 +279,9 @@ public class ExecuteStatements {
         } catch ( ParseException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
+        } finally {
+            JDBCUtils.close( rs, stm, connection, LOG );
+            JDBCUtils.close( null, stmt, null, LOG );
         }
     }
 

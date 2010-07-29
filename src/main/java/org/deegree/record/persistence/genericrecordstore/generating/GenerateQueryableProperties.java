@@ -336,7 +336,7 @@ public class GenerateQueryableProperties {
             }
             localId = getLastDatasetId( connection, databaseTable );
             localId++;
-
+            sqlStatement = new StringWriter( 500 );
             sqlStatement.append( queryablePropertyStatement_PRE.toString() + " VALUES ( ?,?,"
                                  + queryablePropertyStatement_POST.toString() );
 
@@ -347,7 +347,7 @@ public class GenerateQueryableProperties {
             stm.close();
 
             /*
-             * clean the Writer
+             * clean the Writer...TODO is that really necessary?
              */
             StringBuffer buf = ( (StringWriter) queryablePropertyStatement_POST ).getBuffer();
             buf.setLength( 0 );
