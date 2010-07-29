@@ -456,7 +456,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
             LOG.debug( msg );
         } else {
             Triple<String, String, PrimitiveType> tableColumn = propToTableAndCol.get( qName );
-            if ( mapping != null ) {
+            if ( tableColumn != null ) {
                 List<Join> joins = new ArrayList<Join>();
                 if ( !tableColumn.first.equals( "datasets" ) ) {
                     DBField from = new DBField( "datasets", "id" );
@@ -464,7 +464,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
                     joins.add( new Join( from, to, null, 0 ) );
                 }
                 // TODO primitive type
-                DBField valueField = new DBField(tableColumn.first, tableColumn.second);
+                DBField valueField = new DBField( tableColumn.first, tableColumn.second );
                 mapping = new PropertyNameMapping( aliasManager, valueField, joins );
             }
         }
@@ -688,7 +688,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
      * 
      * @return a map&lang;QName, PropertyNameMapping&rang; can not be <Code>null</Code>
      */
-    public Map<QName, Triple<String,String,PrimitiveType>> getPropToTableAndCol() {
+    public Map<QName, Triple<String, String, PrimitiveType>> getPropToTableAndCol() {
         return propToTableAndCol;
     }
 
