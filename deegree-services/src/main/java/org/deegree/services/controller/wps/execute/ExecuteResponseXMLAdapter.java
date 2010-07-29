@@ -53,8 +53,8 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
-import org.deegree.services.controller.wps.ProcessletExecution;
-import org.deegree.services.controller.wps.ProcessletExecution.ExecutionState;
+import org.deegree.services.controller.wps.ProcessExecution;
+import org.deegree.services.controller.wps.ProcessExecution.ExecutionState;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
@@ -438,7 +438,7 @@ public class ExecuteResponseXMLAdapter extends XMLAdapter {
         writer.writeEndElement(); // wps:Process
     }
 
-    private static void exportStatus( XMLStreamWriter writer, ProcessletExecution state )
+    private static void exportStatus( XMLStreamWriter writer, ProcessExecution state )
                             throws XMLStreamException {
 
         writer.writeStartElement( WPS_NS, "Status" );

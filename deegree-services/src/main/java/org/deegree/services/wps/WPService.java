@@ -36,19 +36,21 @@
 
 package org.deegree.services.wps;
 
-import java.util.Collection;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
-import javax.xml.bind.JAXBElement;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
-import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
-import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
-import org.deegree.services.jaxb.wps.ProcessDefinition.InputParameters;
-import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,115 +67,125 @@ public class WPService {
 
     private static final Logger LOG = LoggerFactory.getLogger( WPService.class );
 
-    private Map<CodeType, Processlet> idToProcess = new HashMap<CodeType, Processlet>();
+    private List<ProcessManager> managers = new ArrayList<ProcessManager>();
 
-    private Map<CodeType, ProcessDefinition> idToProcessDefinition = new HashMap<CodeType, ProcessDefinition>();
+    private static ServiceLoader<ProcessManagerProvider> providerLoader = ServiceLoader.load( ProcessManagerProvider.class );
 
-    private Map<CodeType, ExceptionCustomizer> idToExceptionCustomizer = new HashMap<CodeType, ExceptionCustomizer>();
+    private static Map<String, ProcessManagerProvider> nsToProvider = null;
 
     /**
      * Creates a new {@link WPService} instance with the given configuration.
      * 
-     * @param processDefinitions
+     * @param processesDir
+     *            directory to be scanned for process provider configuration documents, never <code>null</code>
      * @throws ServiceInitException
-     *             if a process class in the configuration could not be initialized
      */
-    public WPService( Collection<ProcessDefinition> processDefinitions ) throws ServiceInitException {
-        for ( ProcessDefinition processDefinition : processDefinitions ) {
-            CodeType processId = new CodeType( processDefinition.getIdentifier().getValue(),
-                                               processDefinition.getIdentifier().getCodeSpace() );
-            String className = processDefinition.getJavaClass();
+    public WPService( File processesDir ) throws ServiceInitException {
+        File[] fsConfigFiles = processesDir.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept( File dir, String name ) {
+                return name.toLowerCase().endsWith( ".xml" );
+            }
+        } );
+        for ( File fsConfigFile : fsConfigFiles ) {
+            String fileName = fsConfigFile.getName();
+            LOG.info( "Setting up process manager from file '" + fileName + "'..." + "" );
             try {
-                LOG.info( "Initializing process with id '" + processId + "'" );
-                LOG.info( "- process class: " + className );
-                Processlet processlet = (Processlet) Class.forName( className ).newInstance();
-                processlet.init();
-                idToProcess.put( processId, processlet );
-                idToProcessDefinition.put( processId, processDefinition );
-                if ( processlet instanceof ExceptionAwareProcesslet ) {
-                    ExceptionCustomizer customizer = ( (ExceptionAwareProcesslet) processlet ).getExceptionCustomizer();
-                    if ( customizer != null ) {
-                        idToExceptionCustomizer.put( processId, customizer );
+                ProcessManager manager = create( fsConfigFile.toURI().toURL() );
+                manager.init();
+                managers.add( manager );
+            } catch ( Exception e ) {
+                LOG.error( "Error creating process manager: " + e.getMessage(), e );
+            }
+        }
+    }
+
+    /**
+     * Returns all available {@link ProcessManagerProvider} instances.
+     * 
+     * @return all available providers, keys: config namespace, value: provider instance
+     */
+    static synchronized Map<String, ProcessManagerProvider> getProviders() {
+        if ( nsToProvider == null ) {
+            nsToProvider = new HashMap<String, ProcessManagerProvider>();
+            try {
+                for ( ProcessManagerProvider provider : providerLoader ) {
+                    LOG.debug( "Process manager provider: " + provider + ", namespace: "
+                               + provider.getConfigNamespace() );
+                    if ( nsToProvider.containsKey( provider.getConfigNamespace() ) ) {
+                        LOG.error( "Multiple manager providers for config namespace: '" + provider.getConfigNamespace()
+                                   + "' on classpath -- omitting provider '" + provider.getClass().getName() + "'." );
+                        continue;
                     }
+                    nsToProvider.put( provider.getConfigNamespace(), provider );
                 }
             } catch ( Exception e ) {
-                String msg = "Could not create a process instance. Class name ('" + className
-                             + "') was not found on the classpath. "
-                             + "Hint: spelling in configuration file might be incorrect.";
-                throw new ServiceInitException( msg, e );
+                LOG.error( e.getMessage(), e );
             }
 
-            InputParameters inputParams = processDefinition.getInputParameters();
-            if ( inputParams != null ) {
-                for ( JAXBElement<? extends ProcessletInputDefinition> el : inputParams.getProcessInput() ) {
-                    LOG.info( "- input parameter: " + el.getValue().getIdentifier().getValue() );
-                }
-            }
-
-            if ( processDefinition.getOutputParameters() != null ) {
-                OutputParameters outputParams = processDefinition.getOutputParameters();
-                for ( JAXBElement<? extends ProcessletOutputDefinition> el : outputParams.getProcessOutput() ) {
-                    LOG.info( "- output parameter: " + el.getValue().getIdentifier().getValue() );
-                }
-            }
         }
+        return nsToProvider;
     }
 
     /**
-     * Returns all registered processes.
+     * Returns an uninitialized {@link ProcessManager} instance that's created from the specified process manager
+     * configuration document.
      * 
-     * @return all registered processes
+     * @param configURL
+     *            URL of the configuration document, must not be <code>null</code>
+     * @return corresponding {@link ProcessManager} instance, not yet initialized, never <code>null</code>
+     * @throws ServiceInitException
      */
-    public Processlet[] getAllProcesses() {
-        return idToProcess.values().toArray( new Processlet[idToProcess.size()] );
+    public static synchronized ProcessManager create( URL configURL )
+                            throws ServiceInitException {
+
+        String namespace = null;
+        try {
+            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
+            StAXParsingHelper.nextElement( xmlReader );
+            namespace = xmlReader.getNamespaceURI();
+        } catch ( Exception e ) {
+            String msg = "Error determining configuration namespace for file '" + configURL + "'.";
+            LOG.error( msg );
+            throw new ServiceInitException( msg );
+        }
+        LOG.debug( "Config namespace: '" + namespace + "'" );
+        ProcessManagerProvider provider = getProviders().get( namespace );
+        if ( provider == null ) {
+            String msg = "No process manager provider for namespace '" + namespace + "' (file: '" + configURL
+                         + "') registered. Skipping it.";
+            LOG.error( msg );
+            throw new ServiceInitException( msg );
+        }
+        ProcessManager manager = provider.createManager( configURL );
+        return manager;
     }
 
-    /**
-     * Returns the process with the given identifier.
-     * 
-     * @param identifier
-     * @return the process with the given identifier
-     */
-    public Processlet getProcess( CodeType identifier ) {
-        return idToProcess.get( identifier );
-    }
-
-    public Map<CodeType, ProcessDefinition> getProcessDefinitions() {
-        return idToProcessDefinition;
-    }
-
-    public ProcessDefinition[] getAllProcessDefinitions() {
-        return idToProcessDefinition.values().toArray( new ProcessDefinition[idToProcessDefinition.size()] );
-    }
-
-    public ProcessDefinition getProcessDefinition( CodeType identifier ) {
-        return idToProcessDefinition.get( identifier );
-    }
-
-    /**
-     *
-     */
     public void destroy() {
-        for ( Processlet processlet : idToProcess.values() ) {
-            LOG.debug( "Taking processlet '" + processlet.getClass().getName() + "' out of service." );
-            processlet.destroy();
+        for ( ProcessManager manager : managers ) {
+            manager.destroy();
         }
     }
 
-    /**
-     * @return the map containing all process and their respective id's. This is the live map, altering the map will
-     *         result in an inconsistent state of the WPService.
-     */
-    public Map<CodeType, Processlet> getProcesses() {
-        return idToProcess;
+    public Map<CodeType, WPSProcess> getProcesses() {
+        Map<CodeType, WPSProcess> processes = new HashMap<CodeType, WPSProcess>();
+        for ( ProcessManager manager : managers ) {
+            Map<CodeType, WPSProcess> managerProcesses = manager.getProcesses();
+            if ( managerProcesses != null ) {
+                processes.putAll( manager.getProcesses() );
+            }
+        }
+        return processes;
     }
 
-    /**
-     * @return the map containing all processlet (id's) which supplied an {@link ExceptionCustomizer} . This is the live
-     *         map, altering the map will result in an inconsistent state of the WPService. The result maybe empty, but
-     *         never <code>null</code>
-     */
-    public Map<CodeType, ExceptionCustomizer> getCustomExceptionHandlers() {
-        return idToExceptionCustomizer;
+    public WPSProcess getProcess( CodeType id ) {
+        WPSProcess process = null;
+        for ( ProcessManager manager : managers ) {
+            process = manager.getProcess( id );
+            if ( process != null ) {
+                break;
+            }
+        }
+        return process;
     }
 }

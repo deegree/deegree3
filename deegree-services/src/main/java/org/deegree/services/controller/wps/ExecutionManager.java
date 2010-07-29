@@ -60,7 +60,7 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wps.ProcessletExecution.ExecutionState;
+import org.deegree.services.controller.wps.ProcessExecution.ExecutionState;
 import org.deegree.services.controller.wps.execute.ExecuteRequest;
 import org.deegree.services.controller.wps.execute.ExecuteResponse;
 import org.deegree.services.controller.wps.execute.ExecuteResponseXMLAdapter;
@@ -79,6 +79,7 @@ import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.output.BoundingBoxOutputImpl;
 import org.deegree.services.wps.output.ComplexOutputImpl;
 import org.deegree.services.wps.output.LiteralOutputImpl;
@@ -110,10 +111,10 @@ public class ExecutionManager {
     private static int MAX_ENTRIES = 100;
 
     // A list of all processes that have been run or are currently running.
-    private ConcurrentLinkedQueue<ProcessletExecution> processStateList = new ConcurrentLinkedQueue<ProcessletExecution>();
+    private ConcurrentLinkedQueue<ProcessExecution> processStateList = new ConcurrentLinkedQueue<ProcessExecution>();
 
     // key: response document of the process (currently running), value: status object
-    private Map<ResponseDocumentStorage, ProcessletExecution> responseDocumentIdToState = new ConcurrentHashMap<ResponseDocumentStorage, ProcessletExecution>();
+    private Map<ResponseDocumentStorage, ProcessExecution> responseDocumentIdToState = new ConcurrentHashMap<ResponseDocumentStorage, ProcessExecution>();
 
     /**
      * Creates a new {@link ExecutionManager} for a {@link WPSController}.
@@ -131,12 +132,12 @@ public class ExecutionManager {
 
     /**
      * This method should be called in lieu of the constructor directly to ensure the ProcessExecution gets added to the
-     * processList. See {@link ProcessletExecution} for a definition of the parameters.
+     * processList. See {@link ProcessExecution} for a definition of the parameters.
      */
-    private ProcessletExecution createProcessletExecution( ExecuteRequest request, StorageLocation responseStorage,
+    private ProcessExecution createProcessletExecution( ExecuteRequest request, StorageLocation responseStorage,
                                                            URL serviceInstance, List<RequestedOutput> outputParams,
                                                            ProcessletOutputs outputs ) {
-        ProcessletExecution result = new ProcessletExecution( request, responseStorage, serviceInstance, outputParams,
+        ProcessExecution result = new ProcessExecution( request, responseStorage, serviceInstance, outputParams,
                                                               outputs );
         synchronized ( processStateList ) {
             if ( processStateList.size() == MAX_ENTRIES ) {
@@ -154,7 +155,7 @@ public class ExecutionManager {
      * @return Returns a collection of information on all processes, including processes that haven't run, are running
      *         and have already stopped. The returned result should not be modified.
      */
-    public Collection<ProcessletExecution> getAllProcesses() {
+    public Collection<ProcessExecution> getAllProcesses() {
         return processStateList;
     }
 
@@ -163,7 +164,7 @@ public class ExecutionManager {
      * 
      * @return Returns a collection of information on all running processes. The returned result should not be modified.
      */
-    public Collection<ProcessletExecution> getRunningProcesses() {
+    public Collection<ProcessExecution> getRunningProcesses() {
         return responseDocumentIdToState.values();
     }
 
@@ -185,7 +186,7 @@ public class ExecutionManager {
      * @throws XMLStreamException
      * @throws OWSException
      */
-    void handleRawDataOutput( ExecuteRequest request, HttpResponseBuffer response, Processlet process )
+    void handleRawDataOutput( ExecuteRequest request, HttpResponseBuffer response, WPSProcess process )
                             throws IOException, ProcessletException, XMLStreamException, OWSException {
 
         ProcessDefinition processDef = request.getProcessDefinition();
@@ -210,8 +211,8 @@ public class ExecutionManager {
         }
         ProcessletOutputs outputParams = new ProcessletOutputs( processDef, Collections.singletonList( outputParam ) );
 
-        ProcessletExecution state = createProcessletExecution( request, null, null, null, outputParams );
-        executeProcess( process, inputs, outputParams, state );
+        ProcessExecution state = createProcessletExecution( request, null, null, null, outputParams );
+        executeProcess( process.getProcesslet(), inputs, outputParams, state );
         if ( state.getExecutionState() == ExecutionState.FAILED ) {
             OWSException e = state.getFailedException();
             if ( e == null ) {
@@ -240,7 +241,7 @@ public class ExecutionManager {
      * @throws IOException
      * @throws XMLStreamException
      */
-    void handleResponseDocumentOutput( ExecuteRequest request, HttpResponseBuffer response, Processlet process )
+    void handleResponseDocumentOutput( ExecuteRequest request, HttpResponseBuffer response, WPSProcess process )
                             throws OWSException, ProcessletException, XMLStreamException, IOException {
 
         LOG.debug( "ResponseDocument" );
@@ -289,7 +290,7 @@ public class ExecutionManager {
 
         ProcessletOutputs outputs = new ProcessletOutputs( processDef, out );
         ResponseDocumentStorage responseStorage = null;
-        ProcessletExecution state = null;
+        ProcessExecution state = null;
 
         if ( outputFormat != null && outputFormat.getStoreExecuteResponse() ) {
             // response will be stored as a web-accessible resource, only a dummy response document is directly
@@ -302,7 +303,8 @@ public class ExecutionManager {
             state = createProcessletExecution( request, responseStorage, serviceInstance, outputParams, outputs );
 
             // submit the process for asynchronous execution
-            ProcessWorker worker = new ProcessWorker( process, outputs, state, outputParams, responseStorage, request );
+            ProcessWorker worker = new ProcessWorker( process.getProcesslet(), outputs, state, outputParams,
+                                                      responseStorage, request );
             exec.execute( worker );
         } else {
             // response is directly returned in the HTTP response stream (-> synchronous process execution)
@@ -314,7 +316,7 @@ public class ExecutionManager {
             }
 
             state = createProcessletExecution( request, responseStorage, serviceInstance, outputParams, outputs );
-            executeProcess( process, inputs, outputs, state );
+            executeProcess( process.getProcesslet(), inputs, outputs, state );
         }
 
         // write ExecuteResponse document
@@ -335,7 +337,7 @@ public class ExecutionManager {
 
     void sendResponseDocument( HttpResponseBuffer response, ResponseDocumentStorage location ) {
 
-        ProcessletExecution status = responseDocumentIdToState.get( location );
+        ProcessExecution status = responseDocumentIdToState.get( location );
 
         LOG.debug( "Checking if a process corresponding to output '" + location.getId()
                    + "' is known (=still running)." );
@@ -366,13 +368,13 @@ public class ExecutionManager {
     }
 
     /**
-     * Returns the {@link ProcessletExecution} for a given response document location.
+     * Returns the {@link ProcessExecution} for a given response document location.
      * 
      * @param location
      *            storage location of a response document
-     * @return the {@link ProcessletExecution} of the corresponding process if it is still running, null otherwise
+     * @return the {@link ProcessExecution} of the corresponding process if it is still running, null otherwise
      */
-    ProcessletExecution getPendingExecutionState( StorageLocation location ) {
+    ProcessExecution getPendingExecutionState( StorageLocation location ) {
         return responseDocumentIdToState.get( location );
     }
 
@@ -410,7 +412,7 @@ public class ExecutionManager {
     }
 
     private void executeProcess( Processlet process, ProcessletInputs inputs, ProcessletOutputs outputs,
-                                 ProcessletExecution state ) {
+                                 ProcessExecution state ) {
         try {
             // process execution is about to start right now
             state.setStarted();
@@ -457,7 +459,7 @@ public class ExecutionManager {
 
         private ProcessletOutputs outputs;
 
-        private ProcessletExecution state;
+        private ProcessExecution state;
 
         private ResponseDocumentStorage responseStorage;
 
@@ -465,7 +467,7 @@ public class ExecutionManager {
 
         private ExecuteRequest request;
 
-        ProcessWorker( Processlet process, ProcessletOutputs outputs, ProcessletExecution state,
+        ProcessWorker( Processlet process, ProcessletOutputs outputs, ProcessExecution state,
                        List<RequestedOutput> outputParams, ResponseDocumentStorage responseStorage,
                        ExecuteRequest request ) {
             this.process = process;

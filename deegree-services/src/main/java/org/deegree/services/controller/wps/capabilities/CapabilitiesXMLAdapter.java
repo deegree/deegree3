@@ -38,16 +38,19 @@ package org.deegree.services.controller.wps.capabilities;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.jaxb.main.DCPType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
+import org.deegree.services.wps.WPSProcess;
 
 /**
  * Responsible for the generation of WPS GetCapabilities response documents.
@@ -89,7 +92,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
      *            location of a WSDL document which describes the entire service, may be null
      * @throws XMLStreamException
      */
-    public static void export100( XMLStreamWriter writer, ProcessDefinition[] processes,
+    public static void export100( XMLStreamWriter writer, Map<CodeType, WPSProcess> processes,
                                   DeegreeServicesMetadataType serviceMetadata, String serviceWSDLURL )
                             throws XMLStreamException {
 
@@ -123,45 +126,46 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement(); // Capabilities
     }
 
-    private static void exportProcessOfferings( XMLStreamWriter writer, ProcessDefinition[] processes )
+    private static void exportProcessOfferings( XMLStreamWriter writer, Map<CodeType, WPSProcess> processes )
                             throws XMLStreamException {
 
         writer.writeStartElement( WPS_NS, "ProcessOfferings" );
-        for ( ProcessDefinition process : processes ) {
+        for ( WPSProcess process : processes.values() ) {
+            ProcessDefinition processDef = process.getDescription();
             writer.writeStartElement( WPS_NS, "Process" );
-            writer.writeAttribute( WPS_NS, "processVersion", process.getProcessVersion() );
+            writer.writeAttribute( WPS_NS, "processVersion", processDef.getProcessVersion() );
 
             // "ows:Identifier" (minOccurs="1", maxOccurs="1")
             writer.writeStartElement( OWS_NS, "Identifier" );
-            if ( process.getIdentifier().getCodeSpace() != null ) {
-                writer.writeAttribute( "codeSpace", process.getIdentifier().getCodeSpace() );
+            if ( processDef.getIdentifier().getCodeSpace() != null ) {
+                writer.writeAttribute( "codeSpace", processDef.getIdentifier().getCodeSpace() );
             }
-            writer.writeCharacters( process.getIdentifier().getValue() );
+            writer.writeCharacters( processDef.getIdentifier().getValue() );
             writer.writeEndElement();
 
             // "ows:Title" (minOccurs="1", maxOccurs="1")
-            if ( process.getTitle() != null ) {
+            if ( processDef.getTitle() != null ) {
                 writer.writeStartElement( OWS_NS, "Title" );
-                if ( process.getTitle().getLang() != null ) {
-                    writer.writeAttribute( "xml:lang", process.getTitle().getLang() );
+                if ( processDef.getTitle().getLang() != null ) {
+                    writer.writeAttribute( "xml:lang", processDef.getTitle().getLang() );
                 }
-                writer.writeCharacters( process.getTitle().getValue() );
+                writer.writeCharacters( processDef.getTitle().getValue() );
                 writer.writeEndElement();
             }
 
             // "ows:Abstract" (minOccurs="0", maxOccurs="1")
-            if ( process.getAbstract() != null ) {
+            if ( processDef.getAbstract() != null ) {
                 writer.writeStartElement( OWS_NS, "Abstract" );
-                if ( process.getAbstract().getLang() != null ) {
-                    writer.writeAttribute( "xml:lang", process.getAbstract().getLang() );
+                if ( processDef.getAbstract().getLang() != null ) {
+                    writer.writeAttribute( "xml:lang", processDef.getAbstract().getLang() );
                 }
-                writer.writeCharacters( process.getAbstract().getValue() );
+                writer.writeCharacters( processDef.getAbstract().getValue() );
                 writer.writeEndElement();
             }
 
             // "ows:Metadata" (minOccurs="0", maxOccurs="unbounded")
-            if ( process.getMetadata() != null ) {
-                for ( Metadata metadata : process.getMetadata() ) {
+            if ( processDef.getMetadata() != null ) {
+                for ( Metadata metadata : processDef.getMetadata() ) {
                     writer.writeStartElement( OWS_NS, "Metadata" );
                     if ( metadata.getAbout() != null ) {
                         writer.writeAttribute( "about", metadata.getAbout() );
@@ -174,15 +178,15 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
             }
 
             // "wps:Profile" (minOccurs="0", maxOccurs="unbounded")
-            if ( process.getProfile() != null ) {
-                for ( String profile : process.getProfile() ) {
+            if ( processDef.getProfile() != null ) {
+                for ( String profile : processDef.getProfile() ) {
                     writeElement( writer, WPS_NS, "Profile", profile );
                 }
             }
 
             // "wps:WSDL" (minOccurs="0", maxOccurs="unbounded")
-            if ( process.getWSDL() != null ) {
-                writeElement( writer, WPS_NS, "WSDL", XLN_NS, "href", process.getWSDL() );
+            if ( processDef.getWSDL() != null ) {
+                writeElement( writer, WPS_NS, "WSDL", XLN_NS, "href", processDef.getWSDL() );
             }
 
             writer.writeEndElement(); // Process

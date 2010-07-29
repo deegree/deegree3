@@ -73,6 +73,7 @@ import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.DefaultExceptionCustomizer;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.ProcessletInputs;
+import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.input.BoundingBoxInput;
 import org.deegree.services.wps.input.BoundingBoxInputImpl;
 import org.deegree.services.wps.input.ComplexInput;
@@ -124,17 +125,13 @@ public class ExecuteRequestKVPAdapter {
      * 
      * @param kvpParams
      *            key-value pairs, keys must be uppercase
-     * @param idToProcessDefinition
-     *            key: process identifier, value: process definition
-     * @param idToExceptionCustomizer
-     *            map containing {@link ExceptionCustomizer}s for processlets
+     * @param idToProcess
+     *            key: process identifier, value: process
      * @return corresponding {@link ExecuteRequest} object
      * @throws OWSException
      * @throws UnknownCRSException
      */
-    public static ExecuteRequest parse100( Map<String, String> kvpParams,
-                                           Map<CodeType, ProcessDefinition> idToProcessDefinition,
-                                           Map<CodeType, ExceptionCustomizer> idToExceptionCustomizer )
+    public static ExecuteRequest parse100( Map<String, String> kvpParams, Map<CodeType, WPSProcess> idToProcess )
                             throws OWSException, UnknownCRSException {
 
         LOG.debug( "parse100" );
@@ -147,9 +144,9 @@ public class ExecuteRequestKVPAdapter {
                                     "IDENTIFIER" );
         }
         CodeType processId = new CodeType( identifierString );
-        ProcessDefinition processDef = lookupProcessDefinition( processId, idToProcessDefinition );
-
-        ExceptionCustomizer eCustomizer = lookupExceptionCustomizer( processId, idToExceptionCustomizer );
+        WPSProcess process = lookupProcess( processId, idToProcess );
+        ProcessDefinition processDef = process.getDescription();
+        ExceptionCustomizer eCustomizer = lookupExceptionCustomizer( processId, idToProcess );
 
         // "LANGUAGE" (optional)
         String language = kvpParams.get( "LANGUAGE" );
@@ -175,22 +172,6 @@ public class ExecuteRequestKVPAdapter {
         }
 
         return new ExecuteRequest( WPSConstants.VERSION_100, language, processDef, inputs, responseForm );
-    }
-
-    /**
-     * @param processId
-     * @param idToProcesses
-     * @return
-     * @throws OWSException
-     */
-    private static ExceptionCustomizer lookupExceptionCustomizer( CodeType processId,
-                                                                  Map<CodeType, ExceptionCustomizer> idToExceptionCustomizer )
-                            throws OWSException {
-        ExceptionCustomizer result = idToExceptionCustomizer.get( processId );
-        if ( result == null ) {
-            result = new DefaultExceptionCustomizer( processId );
-        }
-        return result;
     }
 
     private static ProcessletInputs parseDataInputs( String dataInputsString, ProcessDefinition processDef,
@@ -654,15 +635,23 @@ public class ExecuteRequestKVPAdapter {
         return new RawDataOutput( requestedOutput );
     }
 
-    private static ProcessDefinition lookupProcessDefinition( CodeType identifier,
-                                                              Map<CodeType, ProcessDefinition> idToProcessDefinition )
+    private static WPSProcess lookupProcess( CodeType identifier, Map<CodeType, WPSProcess> idToProcess )
                             throws OWSException {
-        ProcessDefinition processDef = idToProcessDefinition.get( identifier );
-        if ( processDef == null ) {
+        WPSProcess process = idToProcess.get( identifier );
+        if ( process == null ) {
             String msg = "No process with identifier '" + identifier + "' is known to the WPS.";
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "ows:Identifier" );
         }
-        return processDef;
+        return process;
+    }
+
+    private static ExceptionCustomizer lookupExceptionCustomizer( CodeType processId,
+                                                                  Map<CodeType, WPSProcess> idToProcess ) {
+        ExceptionCustomizer result = idToProcess.get( processId ).getExceptionCustomizer();
+        if ( result == null ) {
+            result = new DefaultExceptionCustomizer( processId );
+        }
+        return result;
     }
 
     private static ProcessletInputDefinition lookupInputDefinition( CodeType identifier, ProcessDefinition processDef,

@@ -63,6 +63,7 @@ import org.deegree.services.jaxb.wps.LiteralOutputDefinition.DataType;
 import org.deegree.services.jaxb.wps.LiteralOutputDefinition.DefaultUOM;
 import org.deegree.services.jaxb.wps.LiteralOutputDefinition.OtherUOM;
 import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
+import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.annotations.ProcessDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +103,7 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
      * @param processAnnotations
      * @throws XMLStreamException
      */
-    public static void export100( XMLStreamWriter writer, List<ProcessDefinition> processes,
+    public static void export100( XMLStreamWriter writer, List<WPSProcess> processes,
                                   Map<ProcessDefinition, String> processDefToWSDLUrl,
                                   List<ProcessDescription> processAnnotations )
                             throws XMLStreamException {
@@ -122,7 +123,7 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
                                "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd" );
 
         if ( processes != null && !processes.isEmpty() ) {
-            for ( ProcessDefinition process : processes ) {
+            for ( WPSProcess process : processes ) {
                 exportDescription100( writer, process, processDefToWSDLUrl.get( process ) );
             }
         }
@@ -135,46 +136,48 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
         writer.writeEndElement();
     }
 
-    private static void exportDescription100( XMLStreamWriter writer, ProcessDefinition process, String wsdlURL )
+    private static void exportDescription100( XMLStreamWriter writer, WPSProcess process, String wsdlURL )
                             throws XMLStreamException {
 
+        ProcessDefinition processDef = process.getDescription();
+        
         writer.writeStartElement( "ProcessDescription" );
 
-        writer.writeAttribute( WPS_NS, "processVersion", process.getProcessVersion() );
-        writer.writeAttribute( "storeSupported", Boolean.toString( process.isStoreSupported() ) );
-        writer.writeAttribute( "statusSupported", Boolean.toString( process.isStatusSupported() ) );
+        writer.writeAttribute( WPS_NS, "processVersion", processDef.getProcessVersion() );
+        writer.writeAttribute( "storeSupported", Boolean.toString( processDef.isStoreSupported() ) );
+        writer.writeAttribute( "statusSupported", Boolean.toString( processDef.isStatusSupported() ) );
 
         // "ows:Identifier" (minOccurs="1", maxOccurs="1")
         writer.writeStartElement( OWS_NS, "Identifier" );
-        if ( process.getIdentifier().getCodeSpace() != null ) {
-            writer.writeAttribute( "codeSpace", process.getIdentifier().getCodeSpace() );
+        if ( processDef.getIdentifier().getCodeSpace() != null ) {
+            writer.writeAttribute( "codeSpace", processDef.getIdentifier().getCodeSpace() );
         }
-        writer.writeCharacters( process.getIdentifier().getValue() );
+        writer.writeCharacters( processDef.getIdentifier().getValue() );
         writer.writeEndElement();
 
         // "ows:Title" (minOccurs="1", maxOccurs="1")
-        if ( process.getTitle() != null ) {
+        if ( processDef.getTitle() != null ) {
             writer.writeStartElement( OWS_NS, "Title" );
-            if ( process.getTitle().getLang() != null ) {
-                writer.writeAttribute( "xml:lang", process.getTitle().getLang() );
+            if ( processDef.getTitle().getLang() != null ) {
+                writer.writeAttribute( "xml:lang", processDef.getTitle().getLang() );
             }
-            writer.writeCharacters( process.getTitle().getValue() );
+            writer.writeCharacters( processDef.getTitle().getValue() );
             writer.writeEndElement();
         }
 
         // "ows:Abstract" (minOccurs="0", maxOccurs="1")
-        if ( process.getAbstract() != null ) {
+        if ( processDef.getAbstract() != null ) {
             writer.writeStartElement( OWS_NS, "Abstract" );
-            if ( process.getAbstract().getLang() != null ) {
-                writer.writeAttribute( "xml:lang", process.getAbstract().getLang() );
+            if ( processDef.getAbstract().getLang() != null ) {
+                writer.writeAttribute( "xml:lang", processDef.getAbstract().getLang() );
             }
-            writer.writeCharacters( process.getAbstract().getValue() );
+            writer.writeCharacters( processDef.getAbstract().getValue() );
             writer.writeEndElement();
         }
 
         // "ows:Metadata" (minOccurs="0", maxOccurs="unbounded")
-        if ( process.getMetadata() != null ) {
-            for ( Metadata metadata : process.getMetadata() ) {
+        if ( processDef.getMetadata() != null ) {
+            for ( Metadata metadata : processDef.getMetadata() ) {
                 writer.writeStartElement( OWS_NS, "Metadata" );
                 if ( metadata.getAbout() != null ) {
                     writer.writeAttribute( "about", metadata.getAbout() );
@@ -187,8 +190,8 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
         }
 
         // "wps:Profile" (minOccurs="0", maxOccurs="unbounded")
-        if ( process.getProfile() != null ) {
-            for ( String profile : process.getProfile() ) {
+        if ( processDef.getProfile() != null ) {
+            for ( String profile : processDef.getProfile() ) {
                 writeElement( writer, WPS_NS, "Profile", profile );
             }
         }
@@ -199,9 +202,9 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
         }
 
         // "DataInputs" (minOccurs="0", maxOccurs="1")
-        if ( process.getInputParameters() != null ) {
+        if ( processDef.getInputParameters() != null ) {
             writer.writeStartElement( "DataInputs" );
-            for ( JAXBElement<? extends ProcessletInputDefinition> input : process.getInputParameters().getProcessInput() ) {
+            for ( JAXBElement<? extends ProcessletInputDefinition> input : processDef.getInputParameters().getProcessInput() ) {
                 exportInput100( writer, input.getValue() );
             }
             writer.writeEndElement();
@@ -209,7 +212,7 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
 
         // "wps:ProcessOutputs" (minOccurs="1", maxOccurs="1")
         writer.writeStartElement( "ProcessOutputs" );
-        for ( JAXBElement<? extends ProcessletOutputDefinition> output : process.getOutputParameters().getProcessOutput() ) {
+        for ( JAXBElement<? extends ProcessletOutputDefinition> output : processDef.getOutputParameters().getProcessOutput() ) {
             exportOutput100( writer, output.getValue() );
         }
         writer.writeEndElement();

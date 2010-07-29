@@ -41,15 +41,12 @@ import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +108,7 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.PublishedInformation;
 import org.deegree.services.jaxb.wps.ServiceConfiguration;
-import org.deegree.services.wps.Processlet;
+import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.WPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,16 +189,11 @@ public class WPSController extends AbstractOGCServiceController {
             throw new ControllerInitException( "TODO", e );
         }
 
-        // create service instance with serviceConfiguration from configFile
-        Collection<ProcessDefinition> processDefinitions = null;
-
         URL controllerConfURL;
         try {
             controllerConfURL = new URL( controllerConf.getSystemId() );
             File resolvedProcessesDir = FileUtils.getAsFile( new URL( controllerConfURL, sc.getProcessesDirectory() ) );
-            processDefinitions = retrieveProcessDefinitions( resolvedProcessesDir );
-
-            this.service = new WPService( processDefinitions );
+            this.service = new WPService( resolvedProcessesDir );
 
             OMElement piElement = controllerConf.getRequiredElement( controllerConf.getRootElement(),
                                                                      new XPath( "wps:PublishedInformation", nsContext ) );
@@ -227,65 +219,6 @@ public class WPSController extends AbstractOGCServiceController {
     public void destroy() {
         service.destroy();
     }
-
-    private List<ProcessDefinition> retrieveProcessDefinitions( File processesDir )
-                            throws ControllerInitException {
-
-        LOG.info( "Scanning directory: '" + processesDir.toString() + "' for process definitions." );
-        String[] processDefinitionFiles = processesDir.list( new FilenameFilter() {
-            @Override
-            public boolean accept( File dir, String name ) {
-                return name.endsWith( ".xml" );
-            }
-        } );
-
-        List<ProcessDefinition> processDefinitions = new ArrayList<ProcessDefinition>( processDefinitionFiles.length );
-        for ( String definitionFile : processDefinitionFiles ) {
-            LOG.info( "Loading process definition from file '" + definitionFile + "'." );
-            try {
-                JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
-                Unmarshaller unmarshaller = jc.createUnmarshaller();
-                ProcessDefinition processDef = (ProcessDefinition) unmarshaller.unmarshal( new File( processesDir,
-                                                                                                     definitionFile ) );
-                checkConfigVersion( definitionFile, processDef.getConfigVersion() );
-                processDefinitions.add( processDef );
-
-                String wsdlFile = definitionFile.substring( 0, definitionFile.lastIndexOf( ".xml" ) ) + ".wsdl";
-                LOG.debug( "Checking for process WSDL file: '" + wsdlFile + "'" );
-                File f = new File( processesDir, wsdlFile );
-                if ( f.exists() ) {
-                    CodeType processId = new CodeType( processDef.getIdentifier().getValue(),
-                                                       processDef.getIdentifier().getCodeSpace() );
-                    LOG.info( "Found process WSDL file." );
-                    processIdToWSDL.put( processId, f );
-                }
-            } catch ( JAXBException e ) {
-                e.printStackTrace();
-            }
-        }
-
-        // now find annotated processes.
-
-        return processDefinitions;
-    }
-
-    // private List<ProcessDescription> instantiateFromAnnotations( File processesDir ) {
-    // File[] files = processesDir.listFiles( new FileFilter() {
-    //
-    // @Override
-    // public boolean accept( File pathname ) {
-    // if ( pathname == null || pathname.isDirectory() ) {
-    // return false;
-    // }
-    // return "class".equalsIgnoreCase( FileUtils.getFileExtension( pathname ) );
-    // }
-    // } );
-    // List<ProcessDescription> result = new ArrayList<ProcessDescription>();
-    // if ( files != null && files.length > 0 ) {
-    // // add them
-    // }
-    // return result;
-    // }
 
     @Override
     public void doKVP( Map<String, String> kvpParamsUC, HttpServletRequest request, HttpResponseBuffer response,
@@ -313,9 +246,7 @@ public class WPSController extends AbstractOGCServiceController {
                 doDescribeProcess( describeProcessRequest, response );
                 break;
             case Execute:
-                ExecuteRequest executeRequest = ExecuteRequestKVPAdapter.parse100( kvpParamsUC,
-                                                                                   service.getProcessDefinitions(),
-                                                                                   service.getCustomExceptionHandlers() );
+                ExecuteRequest executeRequest = ExecuteRequestKVPAdapter.parse100( kvpParamsUC, service.getProcesses() );
                 doExecute( executeRequest, response );
                 break;
             case GetOutput:
@@ -374,10 +305,10 @@ public class WPSController extends AbstractOGCServiceController {
                 doDescribeProcess( describeProcessRequest, response );
                 break;
             case Execute:
-                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcessDefinitions() );
+                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcesses() );
                 executeAdapter.setRootElement( requestDoc.getRootElement() );
                 executeAdapter.setSystemId( requestDoc.getSystemId() );
-                ExecuteRequest executeRequest = executeAdapter.parse100( service.getCustomExceptionHandlers() );
+                ExecuteRequest executeRequest = executeAdapter.parse100();
                 doExecute( executeRequest, response );
                 break;
             case GetOutput:
@@ -429,10 +360,10 @@ public class WPSController extends AbstractOGCServiceController {
                 doDescribeProcess( describeProcessRequest, response );
                 break;
             case Execute:
-                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcessDefinitions() );
+                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcesses() );
                 executeAdapter.setRootElement( requestElement );
                 // executeAdapter.setSystemId( soapDoc.getSystemId() );
-                ExecuteRequest executeRequest = executeAdapter.parse100( service.getCustomExceptionHandlers() );
+                ExecuteRequest executeRequest = executeAdapter.parse100();
                 doExecute( executeRequest, response );
                 break;
             case GetOutput:
@@ -512,7 +443,7 @@ public class WPSController extends AbstractOGCServiceController {
         if ( serviceWSDLFile != null ) {
             wsdlURL = OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetWPSWSDL";
         }
-        CapabilitiesXMLAdapter.export100( xmlWriter, service.getAllProcessDefinitions(), mainMetadataConf, wsdlURL );
+        CapabilitiesXMLAdapter.export100( xmlWriter, service.getProcesses(), mainMetadataConf, wsdlURL );
 
         LOG.trace( "doGetCapabilities finished" );
     }
@@ -523,16 +454,16 @@ public class WPSController extends AbstractOGCServiceController {
         LOG.trace( "doDescribeProcess invoked, request: " + request );
 
         // check that all requested processes exist (and resolve special value 'ALL')
-        List<ProcessDefinition> processDefinitions = new ArrayList<ProcessDefinition>();
+        List<WPSProcess> processes = new ArrayList<WPSProcess>();
         for ( CodeType identifier : request.getIdentifiers() ) {
             LOG.debug( "Looking up process '" + identifier + "'" );
             if ( ALL_PROCESSES_IDENTIFIER.equals( identifier ) ) {
-                processDefinitions = Arrays.asList( service.getAllProcessDefinitions() );
+                processes.addAll( service.getProcesses().values() );
                 break;
             }
-            ProcessDefinition processDefinition = service.getProcessDefinition( identifier );
-            if ( processDefinition != null ) {
-                processDefinitions.add( processDefinition );
+            WPSProcess process = service.getProcess( identifier );
+            if ( process != null ) {
+                processes.add( process );
             } else {
                 throw new OWSException( "InvalidParameterValue: Identifier\nNo process with id " + identifier
                                         + " is registered in the WPS.", OWSException.INVALID_PARAMETER_VALUE );
@@ -544,7 +475,8 @@ public class WPSController extends AbstractOGCServiceController {
             XMLStreamWriter xmlWriter = response.getXMLWriter();
 
             Map<ProcessDefinition, String> processDefToWSDLUrl = new HashMap<ProcessDefinition, String>();
-            for ( ProcessDefinition processDef : processDefinitions ) {
+            for ( WPSProcess process : processes ) {
+                ProcessDefinition processDef = process.getDescription();
                 CodeType processId = new CodeType( processDef.getIdentifier().getValue(),
                                                    processDef.getIdentifier().getCodeSpace() );
                 if ( processIdToWSDL.containsKey( processId ) ) {
@@ -561,7 +493,7 @@ public class WPSController extends AbstractOGCServiceController {
             // pdA.add( pd );
             // }
             // TODO what about annotations?
-            DescribeProcessResponseXMLAdapter.export100( xmlWriter, processDefinitions, processDefToWSDLUrl, null );
+            DescribeProcessResponseXMLAdapter.export100( xmlWriter, processes, processDefToWSDLUrl, null );
             xmlWriter.flush();
         } catch ( XMLStreamException e ) {
             e.printStackTrace();
@@ -586,7 +518,7 @@ public class WPSController extends AbstractOGCServiceController {
         long start = System.currentTimeMillis();
 
         CodeType processId = request.getProcessId();
-        Processlet process = service.getProcess( processId );
+        WPSProcess process = service.getProcess( processId );
         if ( process == null ) {
             String msg = "Internal error. Process '" + processId + "' not found.";
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );

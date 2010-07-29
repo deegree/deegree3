@@ -78,6 +78,7 @@ import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.DefaultExceptionCustomizer;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.ProcessletInputs;
+import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.input.BoundingBoxInput;
 import org.deegree.services.wps.input.BoundingBoxInputImpl;
 import org.deegree.services.wps.input.EmbeddedComplexInput;
@@ -96,7 +97,7 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>Process identifier: must refer to a known process <code>p</code></li>
  * <li>Input parameters: each present input parameter must be defined in the definition of <code>p</code></li>
- * <li>Output parameters:</li>
+ * <li>Output parameters: TBD</li>
  * </ul>
  * In case of a detected error, an appropriate {@link OWSException} is thrown.
  * </p>
@@ -123,16 +124,16 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         nsContext.addNamespace( WPS_PREFIX, WPS_NS );
     }
 
-    private Map<CodeType, ProcessDefinition> idToProcessDefinition;
+    private Map<CodeType, WPSProcess> idToProcess;
 
     /**
      * Creates a new {@link ExecuteRequestXMLAdapter} for parsing execute requests for the submitted processes.
      * 
-     * @param idToProcessDefinition
-     *            key: process identifier, value: process definition
+     * @param idToProcess
+     *            key: process identifier, value: process
      */
-    public ExecuteRequestXMLAdapter( Map<CodeType, ProcessDefinition> idToProcessDefinition ) {
-        this.idToProcessDefinition = idToProcessDefinition;
+    public ExecuteRequestXMLAdapter( Map<CodeType, WPSProcess> idToProcess ) {
+        this.idToProcess = idToProcess;
     }
 
     /**
@@ -145,16 +146,13 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
      * <li>The value of the <code>version</code> attribute of the element is <code>1.0.0</code>.</li>
      * </p>
      * 
-     * @param idToExceptionCustomizer
-     *            map containing {@link ExceptionCustomizer}s for processlets
-     * 
      * @return corresponding <code>ExecuteRequest</code> object
      * @throws XMLParsingException
      *             if a syntactical or semantical error has been encountered in the request document
      * @throws OWSException
      * @throws UnknownCRSException
      */
-    public ExecuteRequest parse100( Map<CodeType, ExceptionCustomizer> idToExceptionCustomizer )
+    public ExecuteRequest parse100()
                             throws OWSException, UnknownCRSException {
 
         // "language" attribute (optional)
@@ -162,9 +160,11 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 
         // "ows:Identifier" element (minOccurs="1", maxOccurs="1")
         CodeType identifier = parseRequiredIdentifier( rootElement, new DefaultExceptionCustomizer( null ) );
-        ProcessDefinition processDef = lookupProcessDefinition( identifier );
-
-        ExceptionCustomizer eCustomizer = lookupExceptionCustomizer( identifier, idToExceptionCustomizer );
+        WPSProcess process = lookupProcess( identifier );
+        ProcessDefinition processDef = process.getDescription();
+        ExceptionCustomizer eCustomizer = process.getExceptionCustomizer() == null ? new DefaultExceptionCustomizer(
+                                                                                                                     null )
+                                                                                  : process.getExceptionCustomizer();
 
         // "wps:DataInputs" element (minOccurs="0", maxOccurs="1")
         ProcessletInputs dataInputs = null;
@@ -876,31 +876,14 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         return new LanguageString( value, lang );
     }
 
-    private ProcessDefinition lookupProcessDefinition( CodeType identifier )
+    private WPSProcess lookupProcess( CodeType identifier )
                             throws OWSException {
-        ProcessDefinition processDef = idToProcessDefinition.get( identifier );
-        if ( processDef == null ) {
+        WPSProcess process = idToProcess.get( identifier );
+        if ( process == null ) {
             String msg = "No process with identifier '" + identifier + "' is known to the WPS.";
             throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "ows:Identifier" );
         }
-        return processDef;
-    }
-
-    /**
-     * @param processId
-     * @param idToProcesses
-     * @return
-     * @throws OWSException
-     */
-    private static ExceptionCustomizer lookupExceptionCustomizer(
-                                                                  CodeType processId,
-                                                                  Map<CodeType, ExceptionCustomizer> idToExceptionCustomizer )
-                            throws OWSException {
-        ExceptionCustomizer result = idToExceptionCustomizer.get( processId );
-        if ( result == null ) {
-            result = new DefaultExceptionCustomizer( processId );
-        }
-        return result;
+        return process;
     }
 
     private ProcessletInputDefinition lookupInputDefinition( CodeType identifier, ProcessDefinition processDef,

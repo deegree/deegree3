@@ -39,7 +39,7 @@ package org.deegree.services.controller.wps.execute;
 import java.net.URL;
 import java.util.List;
 
-import org.deegree.services.controller.wps.ProcessletExecution;
+import org.deegree.services.controller.wps.ProcessExecution;
 import org.deegree.services.controller.wps.storage.StorageLocation;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.wps.ProcessletInputs;
@@ -59,7 +59,7 @@ public class ExecuteResponse {
 
     private URL serviceInstance;
 
-    private ProcessletExecution executionStatus;
+    private ProcessExecution executionStatus;
 
     private List<RequestedOutput> outputDefinitions;
 
@@ -83,7 +83,7 @@ public class ExecuteResponse {
      * @param request
      */
     public ExecuteResponse( StorageLocation statusLocation, URL serviceInstance,
-                            ProcessletExecution status, List<RequestedOutput> outputDefinitions,
+                            ProcessExecution status, List<RequestedOutput> outputDefinitions,
                             ProcessletOutputs outputs, ExecuteRequest request ) {
         this.statusLocation = statusLocation;
         this.serviceInstance = serviceInstance;
@@ -115,7 +115,7 @@ public class ExecuteResponse {
     /**
      * @return the executionStatus
      */
-    public ProcessletExecution getExecutionStatus() {
+    public ProcessExecution getExecutionStatus() {
         return executionStatus;
     }
 

@@ -50,9 +50,10 @@ import org.deegree.services.controller.wps.storage.StorageLocation;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.WPSProcess;
 
 /**
- * Encapsulates the status of a {@link Processlet} execution.
+ * Encapsulates the status of a {@link WPSProcess} execution.
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -60,7 +61,7 @@ import org.deegree.services.wps.ProcessletOutputs;
  *
  * @version $Revision: $, $Date: $
  */
-public class ProcessletExecution implements ProcessletExecutionInfo {
+public class ProcessExecution implements ProcessletExecutionInfo {
 
     private ExecuteRequest request;
 
@@ -112,7 +113,7 @@ public class ProcessletExecution implements ProcessletExecutionInfo {
     }
 
     /**
-     * Creates a new {@link ProcessletExecution} for a {@link Processlet} that has been accepted for execution.
+     * Creates a new {@link ProcessExecution} for a {@link Processlet} that has been accepted for execution.
      * <p>
      * Processing state is {@link ExecutionState#ACCEPTED}.
      * </p>
@@ -123,7 +124,7 @@ public class ProcessletExecution implements ProcessletExecutionInfo {
      * @param outputParams 
      * @param outputs 
      */
-    public ProcessletExecution( ExecuteRequest request, StorageLocation responseStorage, URL serviceInstance,
+    public ProcessExecution( ExecuteRequest request, StorageLocation responseStorage, URL serviceInstance,
                                 List<RequestedOutput> outputParams, ProcessletOutputs outputs ) {
         this.request = request;
         this.responseStorage = responseStorage;
