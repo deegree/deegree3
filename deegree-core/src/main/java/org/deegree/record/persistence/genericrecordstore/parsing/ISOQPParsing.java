@@ -133,6 +133,7 @@ public final class ISOQPParsing extends XMLAdapter {
         }
         InputStream is = new ByteArrayInputStream( s.toString().getBytes() );
         if ( elem.getLocalName().equals( "MD_Metadata" ) ) {
+            // TODO use local copy of schema
             return SchemaValidator.validate( is, "http://www.isotc211.org/2005/gmd/metadataEntity.xsd" );
 
         }

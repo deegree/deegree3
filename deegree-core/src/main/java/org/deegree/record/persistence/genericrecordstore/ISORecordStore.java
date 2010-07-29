@@ -80,6 +80,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
@@ -299,7 +300,8 @@ public class ISORecordStore implements RecordStore {
             rs.close();
         } catch ( Exception e ) {
             LOG.warn( "Could not determine PostGRES encoding: " + e.getMessage() + " -- defaulting to UTF-8" );
-            closeSafely( null, stmt, rs );
+        } finally {
+            JDBCUtils.close( rs, stmt, null, LOG );
         }
 
         return encodingPostGRES;
@@ -320,33 +322,10 @@ public class ISORecordStore implements RecordStore {
             rs.close();
         } catch ( Exception e ) {
             LOG.warn( "Could not determine PostGIS version: " + e.getMessage() + " -- defaulting to 1.0.0" );
-            closeSafely( null, stmt, rs );
+        } finally {
+            JDBCUtils.close( rs, stmt, null, LOG );
         }
         return version;
-    }
-
-    private void closeSafely( Connection conn, Statement stmt, ResultSet rs ) {
-        if ( rs != null ) {
-            try {
-                rs.close();
-            } catch ( SQLException e ) {
-                LOG.warn( e.getMessage(), e );
-            }
-        }
-        if ( stmt != null ) {
-            try {
-                stmt.close();
-            } catch ( SQLException e ) {
-                LOG.warn( e.getMessage(), e );
-            }
-        }
-        if ( conn != null ) {
-            try {
-                conn.close();
-            } catch ( SQLException e ) {
-                LOG.warn( e.getMessage(), e );
-            }
-        }
     }
 
     /*
@@ -447,11 +426,9 @@ public class ISORecordStore implements RecordStore {
                                                         profileFormatNumberOutputSchema, true, builder );
 
         ResultSet rs = ps.executeQuery();
-
-        while ( rs.next() ) {
-            countRows = rs.getInt( 1 );
-            LOG.debug( "rs for rowCount: " + rs.getInt( 1 ) );
-        }
+        rs.next();
+        countRows = rs.getInt( 1 );
+        LOG.debug( "rs for rowCount: " + rs.getInt( 1 ) );
 
         if ( resultType.equals( ResultType.hits ) ) {
             writer.writeAttribute( "elementSet", recordStoreOptions.getSetOfReturnableElements().name() );
@@ -666,6 +643,7 @@ public class ISORecordStore implements RecordStore {
         getDatasetIDs.append( "=?" );
 
         if ( builder.getWhere() != null ) {
+            getDatasetIDs.append( " AND " );
             getDatasetIDs.append( builder.getWhere().getSQL() );
         }
         if ( builder.getOrderBy() != null ) {
