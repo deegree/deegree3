@@ -988,8 +988,9 @@ public class ISORecordStore implements RecordStore {
 
             break;
         }
-        conn.close();
-
+        if ( conn.isClosed() == false ) {
+            conn.close();
+        }
         return affectedIds;
     }
 
