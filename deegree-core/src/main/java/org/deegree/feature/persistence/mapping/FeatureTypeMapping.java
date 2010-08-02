@@ -35,9 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
-import static org.deegree.feature.persistence.mapping.FeatureTypeMapping.MappingType.RELATIONAL;
-
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -54,43 +51,40 @@ import org.deegree.feature.types.FeatureType;
  */
 public class FeatureTypeMapping {
 
-    public enum MappingType {
-        /** Each property of a feature is decomposed to an individual table column or a property table. */
-        RELATIONAL,
-        /** Each feature is stored as a BLOB */
-        BLOB,
-        /** Feature type use BLOB and (partial) RELATIONAL mapping. */
-        DUAL
-    }
+    private final QName ftName;
 
-    private MappingType type;
+    private final String table;
 
-    private QName ftName;
+    private final String fidColumn;
 
-    private String table;
+    private final String backendSrs;
 
-    private BlobMapping blobMapping;
+    private final Map<QName, MappingExpression> propToColumn;
 
-    private String fidColumn;
-
-    private String backendSrs;
-
-    // TODO: enable more mapping possibilities (e.g. app:Country/gmlName[1]/text()='Blabla')
-    private Map<QName, MappingExpression> propToColumn = new HashMap<QName, MappingExpression>();
-
+    /**
+     * Creates a new {@link FeatureTypeMapping} instance.
+     * 
+     * @param ftName
+     *            name of the mapped feature type, must not be <code>null</code>
+     * @param table
+     *            name of the database table that the feature type is mapped to, may be <code>null</code> (for BLOB-only
+     *            mappings)
+     * @param fidColumn
+     *            name of the columns where the feature id is stored, may be <code>null</code> (for BLOB-only mappings)
+     * @param propToColumn
+     *            mapping parameters for the properties of the feature type, may be <code>null</code> (for BLOB-only
+     *            mappings)
+     * @param backendSrs
+     *            the native SRS identifier used by the backend, may be <code>null</code> (for BLOB-only mappings)
+     */
     public FeatureTypeMapping( QName ftName, String table, String fidColumn,
-                               Map<QName, MappingExpression> propToColumn2, String backendSrs ) {
+                               Map<QName, MappingExpression> propToColumn, String backendSrs ) {
         this.ftName = ftName;
         this.table = table;
         this.fidColumn = fidColumn;
-        this.propToColumn = propToColumn2;
+        this.propToColumn = propToColumn;
         this.backendSrs = backendSrs;
-        // TODO make this configurable
-        this.type = RELATIONAL;
-    }
 
-    public MappingType getMappingType() {
-        return type;
     }
 
     /**
@@ -122,7 +116,7 @@ public class FeatureTypeMapping {
     }
 
     /**
-     * Returns the mapping for the specified column.
+     * Returns the mapping parameters for the specified column.
      * 
      * @param propName
      *            name of the property, must not be <code>null</code>
@@ -132,6 +126,11 @@ public class FeatureTypeMapping {
         return propToColumn.get( propName );
     }
 
+    /**
+     * Returns the native SRS identifier used by the backend.
+     * 
+     * @return the native SRS identifier used by the backend, may be <code>null</code> (for BLOB-only mappings)
+     */
     public String getBackendSrs() {
         return backendSrs;
     }

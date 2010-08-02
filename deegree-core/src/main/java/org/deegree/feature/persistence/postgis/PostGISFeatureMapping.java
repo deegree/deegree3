@@ -82,6 +82,10 @@ class PostGISFeatureMapping implements PostGISMapping {
     public PropertyNameMapping getMapping( PropertyName propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException {
 
+        if ( ftMapping == null ) {
+            return null;
+        }
+
         MappedXPath mapping = null;
         try {
             mapping = new MappedXPath( schema, ftMapping, propName );
@@ -96,9 +100,6 @@ class PostGISFeatureMapping implements PostGISMapping {
 
         PropertyNameMapping propMapping = new PropertyNameMapping( aliasManager, mapping.getValueField(),
                                                                    mapping.getJoins() );
-        System.out.println( "HUHU: " + propMapping );
-
-        // TODO handle other (non-trivial) mappings
         return propMapping;
     }
 
