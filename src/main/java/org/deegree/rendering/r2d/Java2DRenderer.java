@@ -460,7 +460,9 @@ public class Java2DRenderer implements Renderer {
         Double line = new Double();
 
         // TODO use error criterion
+        CRS crs = curve.getCoordinateSystem();
         curve = linearizer.linearize( curve, new NumPointsCriterion( 100 ) );
+        curve.setCoordinateSystem( crs );
         Points points = curve.getControlPoints();
         Iterator<Point> iter = points.iterator();
         Point p = iter.next();
