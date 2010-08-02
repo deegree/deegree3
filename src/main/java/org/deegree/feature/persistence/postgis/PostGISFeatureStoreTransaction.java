@@ -55,7 +55,7 @@ import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.persistence.FeatureCoder;
+import org.deegree.feature.persistence.FeatureCodec;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -310,7 +310,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            FeatureCoder.encode( feature, bos, storageCRS );
+            FeatureCodec codec = store.getSchema().getBlobMapping().getCodec();
+            codec.encode( feature, bos, storageCRS );
         } catch ( Exception e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e.getMessage() );

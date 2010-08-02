@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
+import org.deegree.feature.persistence.FeatureCodec;
 import org.deegree.gml.GMLVersion;
 
 /**
@@ -51,19 +52,19 @@ public class BlobMapping {
 
     private final String table;
 
-    private final GMLVersion storageFormat;
+    private final FeatureCodec codec;
 
     /**
      * Creates a new {@link BlobMapping} instance.
      * 
      * @param table
      *            the name of the table that stores the BLOBs, must not be <code>null</code>
-     * @param storageFormat
-     *            the format used for the BLOBs, must not be <code>null</code>
+     * @param codec
+     *            the decoder / encoder used for the BLOBs, must not be <code>null</code>
      */
-    public BlobMapping( String table, GMLVersion storageFormat ) {
+    public BlobMapping( String table, FeatureCodec codec ) {
         this.table = table;
-        this.storageFormat = storageFormat;
+        this.codec = codec;
     }
 
     /**
@@ -79,8 +80,8 @@ public class BlobMapping {
      * 
      * @return
      */
-    public GMLVersion getStorageFormat() {
-        return storageFormat;
+    public FeatureCodec getCodec() {
+        return codec;
     }
 
     /**
@@ -98,7 +99,7 @@ public class BlobMapping {
     public String getDataColumn() {
         return "gml_data";
     }
-    
+
     /**
      * 
      * @return
@@ -117,5 +118,5 @@ public class BlobMapping {
 
     public String getInternalFIDColumn() {
         return "int_fid";
-    }    
+    }
 }
