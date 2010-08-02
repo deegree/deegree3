@@ -79,7 +79,10 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.linearization.CurveLinearizer;
+import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
@@ -124,6 +127,8 @@ public class Java2DRenderer implements Renderer {
     private double pixelSize = 0.28;
 
     private double res;
+
+    private static final CurveLinearizer linearizer = new CurveLinearizer( new GeometryFactory() );
 
     /**
      * @param graphics
@@ -454,7 +459,9 @@ public class Java2DRenderer implements Renderer {
     Double fromCurve( Curve curve ) {
         Double line = new Double();
 
-        Points points = curve.getAsLineString().getControlPoints();
+        // TODO use error criterion
+        curve = linearizer.linearize( curve, new NumPointsCriterion( 100 ) );
+        Points points = curve.getControlPoints();
         Iterator<Point> iter = points.iterator();
         Point p = iter.next();
         double x = p.get0(), y = p.get1();
