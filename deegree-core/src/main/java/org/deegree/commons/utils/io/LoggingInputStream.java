@@ -88,7 +88,7 @@ public class LoggingInputStream extends InputStream {
     public int read( byte[] bs, int off, int len )
                             throws IOException {
         int read = in.read( bs, off, len );
-        out.write( bs, off, read );
+        out.write( bs, off, len );
         return read;
     }
 
