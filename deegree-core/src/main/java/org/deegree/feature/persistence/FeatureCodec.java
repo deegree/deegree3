@@ -38,7 +38,6 @@ package org.deegree.feature.persistence;
 
 import static java.lang.Boolean.TRUE;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
-import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -60,6 +59,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLStreamReader;
@@ -69,7 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides methods for storing / retrieving single {@link Feature} instances in binary form.
+ * Provides methods for storing / retrieving {@link GMLObject} instances in binary form, e.g. in BLOBs.
  * 
  * TODO implement efficient binary format (instead of GML)
  * 
@@ -78,9 +78,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureCoder {
+public class FeatureCodec {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FeatureCoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( FeatureCodec.class );
 
     private static final XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
 
@@ -90,9 +90,26 @@ public class FeatureCoder {
         xmlOutputFactory.setProperty( IS_REPAIRING_NAMESPACES, TRUE );
     }
 
+    private GMLVersion gmlVersion;
+
+    private Compression compression;
+
+    public enum Compression {
+        NONE, GZIP, FAST_INFOSET
+    }
+
+    public FeatureCodec( GMLVersion gmlVersion, Compression compression ) {
+        this.gmlVersion = gmlVersion;
+        this.compression = compression;
+    }
+
     /**
+     * Encodes the given {@link Feature} to the specified output stream.
+     * 
      * @param feature
+     *            object to be encoded, must not be <code>null</code>
      * @param os
+     *            output stream to write to, must not be <code>null</code>
      * @param crs
      * @throws FeatureStoreException
      * @throws XMLStreamException
@@ -101,7 +118,7 @@ public class FeatureCoder {
      * @throws TransformationException
      * @throws IOException
      */
-    public static void encode( Feature feature, OutputStream os, CRS crs )
+    public void encode( Feature feature, OutputStream os, CRS crs )
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError,
                             UnknownCRSException, TransformationException, IOException {
 
@@ -109,7 +126,7 @@ public class FeatureCoder {
         // GZIPOutputStream gos = new GZIPOutputStream( os );
         XMLStreamWriter xmlWriter = xmlOutputFactory.createXMLStreamWriter( os, "UTF-8" );
         xmlWriter.setPrefix( XMLConstants.DEFAULT_NS_PREFIX, feature.getName().getNamespaceURI() );
-        GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_31, xmlWriter );
+        GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
         gmlWriter.setOutputCRS( crs );
         gmlWriter.setLocalXLinkTemplate( "#{}" );
         gmlWriter.setXLinkDepth( 0 );
@@ -117,13 +134,16 @@ public class FeatureCoder {
         gmlWriter.write( feature );
         gmlWriter.close();
         // gos.close();
-        long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Encoding feature: " + elapsed + " [ms]" );
+        LOG.debug( "Encoding feature took {} [ms]", System.currentTimeMillis() - begin );
     }
 
     /**
+     * Decodes the given {@link Feature} from the specified input stream.
+     * 
      * @param is
+     *            input stream to read from, must not be <code>null</code>
      * @param schema
+     *            application schema, must not be <code>null</code>
      * @param crs
      * @param idResolver
      * @return
@@ -133,20 +153,19 @@ public class FeatureCoder {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    public static Feature decode( InputStream is, ApplicationSchema schema, CRS crs, GMLReferenceResolver idResolver )
+    public Feature decode( InputStream is, ApplicationSchema schema, CRS crs, GMLReferenceResolver idResolver )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
 
         long begin = System.currentTimeMillis();
         BufferedInputStream bis = new BufferedInputStream( is );
         XMLStreamReader xmlStream = xmlInputFactory.createXMLStreamReader( bis, "UTF-8" );
-        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, xmlStream );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, xmlStream );
         gmlReader.setResolver( idResolver );
         gmlReader.setApplicationSchema( schema );
         gmlReader.setDefaultCRS( crs );
         Feature feature = gmlReader.readFeature();
-        long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Decoding feature: " + elapsed + " [ms]" );
+        LOG.debug( "Decoding feature took {} [ms]", System.currentTimeMillis() - begin );
         return feature;
     }
 }

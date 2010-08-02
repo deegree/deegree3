@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import static org.deegree.feature.persistence.FeatureCodec.Compression.NONE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
@@ -58,6 +59,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
+import org.deegree.feature.persistence.FeatureCodec;
 import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
@@ -102,11 +104,11 @@ class PostGISApplicationSchemaBuilder {
                             throws SQLException {
         PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema );
         FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-        FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(                           
-                                                                                   new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+        FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
+                                                                                    new FeatureTypeMapping[builder.ftNameToMapping.size()] );
 
         // TODO make this configurable
-        BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", GML_32 );        
+        BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new FeatureCodec( GML_32, NONE ) );
         return new MappedApplicationSchema( fts, null, ftMappings, storageSRS, blobMapping );
     }
 
@@ -158,8 +160,7 @@ class PostGISApplicationSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, isAbstract );
         ftNameToFt.put( ftName, ft );
 
-
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, backendSrs);
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, mapping, fidMapping, propToColumn, backendSrs );
         ftNameToMapping.put( ftName, ftMapping );
     }
 

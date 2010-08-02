@@ -39,7 +39,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.FeatureCoder;
+import org.deegree.feature.persistence.FeatureCodec;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,17 +52,17 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 25480 $, $Date: 2010-07-22 19:36:56 +0200 (Do, 22. Jul 2010) $
  */
-class FeatureBuilderBlob implements FeatureBuilder{
+class FeatureBuilderBlob implements FeatureBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
 
     private final PostGISFeatureStore fs;
 
-    private final FeatureCoder coder;
+    private final FeatureCodec codec;
 
-    FeatureBuilderBlob( PostGISFeatureStore fs, FeatureCoder coder ) {
+    FeatureBuilderBlob( PostGISFeatureStore fs, FeatureCodec codec ) {
         this.fs = fs;
-        this.coder = coder;
+        this.codec = codec;
     }
 
     /**
@@ -86,8 +86,8 @@ class FeatureBuilderBlob implements FeatureBuilder{
             feature = (Feature) fs.getCache().get( gmlId );
             if ( feature == null ) {
                 LOG.debug( "Cache miss. Recreating object '" + gmlId + "' from blob." );
-                feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), fs.getSchema(), fs.getStorageSRS(),
-                                               new FeatureStoreGMLIdResolver( fs ) );
+                feature = codec.decode( rs.getBinaryStream( 2 ), fs.getSchema(), fs.getStorageSRS(),
+                                        new FeatureStoreGMLIdResolver( fs ) );
                 fs.getCache().add( feature );
             } else {
                 LOG.debug( "Cache hit." );

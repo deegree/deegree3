@@ -36,6 +36,8 @@
 package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.feature.persistence.FeatureCodec.Compression.NONE;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,7 +55,7 @@ import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.feature.persistence.FeatureCoder;
+import org.deegree.feature.persistence.FeatureCodec;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
@@ -484,8 +486,8 @@ public class PostGISFeatureStore implements FeatureStore {
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
-                geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, storageSRS,
-                                                     new FeatureStoreGMLIdResolver( this ) );
+                geomOrFeature = new FeatureCodec( GML_32, NONE ).decode( rs.getBinaryStream( 1 ), schema, storageSRS,
+                                                                         new FeatureStoreGMLIdResolver( this ) );
                 cache.add( geomOrFeature );
             }
         } catch ( Exception e ) {
@@ -499,7 +501,7 @@ public class PostGISFeatureStore implements FeatureStore {
     }
 
     @Override
-    public ApplicationSchema getSchema() {
+    public MappedApplicationSchema getSchema() {
         return schema;
     }
 
@@ -631,7 +633,7 @@ public class PostGISFeatureStore implements FeatureStore {
             rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
                                     + " A, temp_ids B WHERE A.gml_id=b.fid" );
 
-            FeatureBuilder builder = new FeatureBuilderBlob( this, new FeatureCoder() );
+            FeatureBuilder builder = new FeatureBuilderBlob( this, new FeatureCodec( GML_32, NONE ) );
             result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
@@ -801,7 +803,7 @@ public class PostGISFeatureStore implements FeatureStore {
                 if ( blobMapping != null ) {
                     sql.append( " AND " );
                 } else {
-                    sql.append( " WHERE " );   
+                    sql.append( " WHERE " );
                 }
                 sql.append( wb.getWhere().getSQL() );
             }
@@ -836,7 +838,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
             FeatureBuilder builder = null;
             if ( blobMapping != null ) {
-                builder = new FeatureBuilderBlob( this, new FeatureCoder() );
+                builder = new FeatureBuilderBlob( this, blobMapping.getCodec() );
             } else {
                 builder = new FeatureBuilderRelational( this, ft, ftMapping, conn );
             }
@@ -906,7 +908,7 @@ public class PostGISFeatureStore implements FeatureStore {
             LOG.debug( "Query {}", stmt );
 
             rs = stmt.executeQuery();
-            FeatureBuilder builder = new FeatureBuilderBlob( this, new FeatureCoder() );
+            FeatureBuilder builder = new FeatureBuilderBlob( this, schema.getBlobMapping().getCodec() );
             result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
@@ -1153,7 +1155,7 @@ public class PostGISFeatureStore implements FeatureStore {
         }
         return pgGeometry;
     }
-    
+
     FeatureStoreCache getCache() {
         return cache;
     }
