@@ -35,15 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.security;
 
+import static javax.xml.stream.XMLStreamConstants.CDATA;
+import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.utils.ProxyUtils.setupProxyParameters;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.post;
+import static org.deegree.commons.utils.net.HttpUtils.retrieve;
 import static org.deegree.services.controller.OGCFrontController.resolveFileLocation;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
@@ -52,11 +65,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.slf4j.Logger;
@@ -70,15 +85,17 @@ import org.slf4j.Logger;
  */
 public class SecureProxy extends HttpServlet {
 
-    private static final Logger LOG = getLogger( SecureProxy.class );
+    static final Logger LOG = getLogger( SecureProxy.class );
 
     private static final long serialVersionUID = 6154340524804958669L;
 
-    private String proxiedUrl;
+    String proxiedUrl;
 
     private CredentialsProvider credentialsProvider;
 
-    private XMLInputFactory fac = XMLInputFactory.newInstance();
+    XMLInputFactory inFac = XMLInputFactory.newInstance();
+
+    XMLOutputFactory outFac = XMLOutputFactory.newInstance();
 
     private SecurityConfiguration securityConfiguration;
 
@@ -101,6 +118,8 @@ public class SecureProxy extends HttpServlet {
             LOG.info( msg );
             throw new ServletException( msg );
         }
+        // working around unwanted deegree 2 ant artefacts... an URL normalization would be nice
+        proxiedUrl = proxiedUrl.replace( ":80", "" );
 
         File jdbcDir = null;
         try {
@@ -127,25 +146,87 @@ public class SecureProxy extends HttpServlet {
             throw new ServletException( msg );
         }
 
+        File proxyUrl = null;
+        try {
+            proxyUrl = new File( resolveFileLocation( "WEB-INF/conf/proxy.xml", getServletContext() ).toURI() );
+            if ( proxyUrl.exists() ) {
+                setupProxyParameters( proxyUrl );
+            } else {
+                LOG.info( "No proxy configuration found." );
+            }
+        } catch ( MalformedURLException ex ) {
+            LOG.info( "No proxy configuration found: '{}'", ex.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", ex );
+        } catch ( URISyntaxException ex ) {
+            LOG.info( "No proxy configuration found: '{}'", ex.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", ex );
+        }
+
         LOG.info( "deegree 3 secure proxy initialized." );
     }
 
     @Override
-    protected void doPost( HttpServletRequest request, HttpServletResponse response ) {
+    protected void doPost( final HttpServletRequest request, final HttpServletResponse response ) {
         try {
-            Credentials creds = credentialsProvider.doXML( fac.createXMLStreamReader( request.getInputStream(),
-                                                                                      request.getCharacterEncoding() ),
-                                                           request, response );
-            securityConfiguration.checkCredentials( creds );
-        } catch ( SecurityException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            final XMLStreamReader reader = inFac.createXMLStreamReader( request.getInputStream(),
+                                                                        request.getCharacterEncoding() );
+            reader.next();
+            Credentials creds = credentialsProvider.doXML( reader, request, response );
+            boolean loggedIn = securityConfiguration.checkCredentials( creds );
+            boolean serviceRights = securityConfiguration.verifyAddress( creds, proxiedUrl );
+            final String requestURL = request.getRequestURL().toString();
+            if ( loggedIn && serviceRights ) {
+                final PipedOutputStream pout = new PipedOutputStream();
+                final PipedInputStream pin = new PipedInputStream( pout );
+
+                Thread writerThread = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            XMLStreamWriter writer = outFac.createXMLStreamWriter( pout );
+                            copyXML( reader, writer, request.getRequestURL().toString() );
+                            pout.close();
+                        } catch ( IOException e ) {
+                            LOG.debug( "IO-error occurred while proxying: '{}'", e.getLocalizedMessage() );
+                            LOG.trace( "Stack trace:", e );
+                        } catch ( XMLStreamException e ) {
+                            LOG.debug( "IO-error occurred while proxying: '{}'", e.getLocalizedMessage() );
+                            LOG.trace( "Stack trace:", e );
+                        }
+                    }
+                };
+                writerThread.start();
+
+                Map<String, String> headers = new HashMap<String, String>();
+                @SuppressWarnings("unchecked")
+                Enumeration<String> iter = request.getHeaderNames();
+                while ( iter.hasMoreElements() ) {
+                    String next = iter.nextElement();
+                    // by re-exporting the XML and omitting user/password the length may change...
+                    // not removing it will cause the post call below to hang indefinitely!
+                    if ( next.equalsIgnoreCase( "content-length" ) ) {
+                        continue;
+                    }
+                    headers.put( next, request.getHeader( next ) );
+                }
+
+                InputStream in = post( STREAM, proxiedUrl, pin, headers );
+                pin.close();
+                OutputStream out = response.getOutputStream();
+                XMLStreamReader responseReader = inFac.createXMLStreamReader( in );
+                responseReader.next();
+                copyXML( responseReader, outFac.createXMLStreamWriter( out ), requestURL );
+            } else {
+                writeUnauthorized( response, loggedIn );
+            }
+        } catch ( UnsupportedEncodingException e ) {
+            LOG.trace( "Stack trace:", e );
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "IO-error occurred while proxying: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( "Error while writing 'not authorized' response: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         }
     }
 
@@ -154,11 +235,149 @@ public class SecureProxy extends HttpServlet {
         try {
             Map<String, String> normalizedKVPParams = KVPUtils.getNormalizedKVPMap( request.getQueryString(), null );
             Credentials creds = credentialsProvider.doKVP( normalizedKVPParams, request, response );
-            securityConfiguration.checkCredentials( creds );
+            boolean loggedIn = securityConfiguration.checkCredentials( creds );
+            boolean serviceRights = securityConfiguration.verifyAddress( creds, proxiedUrl );
+            if ( loggedIn && serviceRights ) {
+                normalizedKVPParams.remove( "USER" );
+                normalizedKVPParams.remove( "PASSWORD" );
+                InputStream in = retrieve( STREAM, proxiedUrl, normalizedKVPParams );
+                OutputStream out = response.getOutputStream();
+                if ( normalizedKVPParams.get( "REQUEST" ).equalsIgnoreCase( "GetCapabilities" ) ) {
+                    XMLStreamReader reader = inFac.createXMLStreamReader( in );
+                    reader.next();
+                    copyXML( reader, outFac.createXMLStreamWriter( out ), request.getRequestURL().toString() );
+                } else {
+                    copy( in, out );
+                }
+            } else {
+                writeUnauthorized( response, loggedIn );
+            }
         } catch ( UnsupportedEncodingException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.trace( "Stack trace:", e );
+        } catch ( IOException e ) {
+            LOG.debug( "IO-error occurred while proxying: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( "Error while writing 'not authorized' response: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
         }
+    }
+
+    void copyXML( XMLStreamReader reader, XMLStreamWriter writer, String serverUrl )
+                            throws XMLStreamException {
+        writer.writeStartDocument();
+
+        int openElements = 0;
+        boolean firstRun = true;
+        while ( firstRun || openElements > 0 ) {
+            firstRun = false;
+            int eventType = reader.getEventType();
+
+            switch ( eventType ) {
+            case CDATA: {
+                writer.writeCData( reader.getText() );
+                break;
+            }
+            case CHARACTERS: {
+                writer.writeCharacters( reader.getTextCharacters(), reader.getTextStart(), reader.getTextLength() );
+                break;
+            }
+            case END_ELEMENT: {
+                writer.writeEndElement();
+                openElements--;
+                break;
+            }
+            case START_ELEMENT: {
+                if ( reader.getNamespaceURI() == null || reader.getPrefix() == null ) {
+                    writer.writeStartElement( reader.getLocalName() );
+                } else {
+                    writer.writeStartElement( reader.getPrefix(), reader.getLocalName(), reader.getNamespaceURI() );
+                }
+                // copy all namespace bindings
+                for ( int i = 0; i < reader.getNamespaceCount(); i++ ) {
+                    String nsPrefix = reader.getNamespacePrefix( i );
+                    String nsURI = reader.getNamespaceURI( i );
+                    writer.writeNamespace( nsPrefix, nsURI );
+                }
+
+                // copy all attributes
+                for ( int i = 0; i < reader.getAttributeCount(); i++ ) {
+                    String localName = reader.getAttributeLocalName( i );
+                    String nsPrefix = reader.getAttributePrefix( i );
+                    String value = reader.getAttributeValue( i );
+                    String nsURI = reader.getAttributeNamespace( i );
+                    if ( openElements == 1 && ( localName.equals( "user" ) || localName.equals( "password" ) ) ) {
+                        System.out.println( "skipping " + localName );
+                        continue;
+                    }
+
+                    if ( nsURI == null ) {
+                        writer.writeAttribute( localName, value );
+                    } else {
+                        if ( nsURI.equals( "http://www.w3.org/1999/xlink" ) ) {
+                            String link = value.replace( ":80", "" ); // again, normalization would be nice
+                            if ( link.startsWith( proxiedUrl ) ) {
+                                link = link.replace( proxiedUrl, serverUrl );
+                            }
+                            writer.writeAttribute( nsPrefix, nsURI, localName, link );
+                        } else {
+                            writer.writeAttribute( nsPrefix, nsURI, localName, value );
+                        }
+                    }
+                }
+
+                openElements++;
+                break;
+            }
+            default: {
+                break;
+            }
+            }
+            if ( openElements > 0 ) {
+                reader.next();
+            }
+        }
+
+        reader.close();
+        writer.close();
+    }
+
+    void copy( InputStream in, OutputStream out )
+                            throws IOException {
+        try {
+            byte[] buf = new byte[65536];
+            int read;
+            while ( ( read = in.read( buf ) ) != -1 ) {
+                out.write( buf, 0, read );
+            }
+        } finally {
+            try {
+                in.close();
+            } catch ( IOException e ) {
+                LOG.trace( "Stack trace:", e );
+            }
+            try {
+                out.close();
+            } catch ( IOException e ) {
+                LOG.trace( "Stack trace:", e );
+            }
+        }
+    }
+
+    private void writeUnauthorized( HttpServletResponse response, boolean loggedIn )
+                            throws XMLStreamException, IOException {
+        XMLStreamWriter out = outFac.createXMLStreamWriter( response.getOutputStream() );
+        out.writeStartDocument();
+        out.writeStartElement( "SecureProxyResponse" );
+        out.writeStartElement( "Reason" );
+        if ( !loggedIn ) {
+            out.writeCharacters( "Username/Password could not be verified." );
+        } else {
+            out.writeCharacters( "User has no right to access the secured service." );
+        }
+        out.writeEndElement();
+        out.writeEndElement();
+        out.close();
     }
 
 }

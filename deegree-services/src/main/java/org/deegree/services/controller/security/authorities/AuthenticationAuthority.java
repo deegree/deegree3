@@ -52,4 +52,11 @@ public interface AuthenticationAuthority {
      */
     boolean isAuthorized( Credentials creds );
 
+    /**
+     * @param creds
+     * @param address
+     * @return true, if the authority determines the credentials may access the remote service specified by the address
+     */
+    boolean verifyAddress( Credentials creds, String address );
+
 }

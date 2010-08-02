@@ -183,4 +183,18 @@ public class SecurityConfiguration {
         return false;
     }
 
+    /**
+     * @param creds
+     * @param address
+     * @return true, if an authentication authority does
+     */
+    public boolean verifyAddress( Credentials creds, String address ) {
+        for ( AuthenticationAuthority auth : authorities ) {
+            if ( auth.verifyAddress( creds, address ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
