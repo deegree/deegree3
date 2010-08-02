@@ -32,11 +32,15 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
+import org.deegree.gml.GMLVersion;
+
 /**
- * The <code></code> class TODO add class documentation here.
+ * Encapsulates BLOB mapping parameters for a {@link FeatureTypeMapping}.
+ * 
+ * @see FeatureTypeMapping
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -45,4 +49,73 @@ package org.deegree.feature.persistence.mapping;
  */
 public class BlobMapping {
 
+    private final String table;
+
+    private final GMLVersion storageFormat;
+
+    /**
+     * Creates a new {@link BlobMapping} instance.
+     * 
+     * @param table
+     *            the name of the table that stores the BLOBs, must not be <code>null</code>
+     * @param storageFormat
+     *            the format used for the BLOBs, must not be <code>null</code>
+     */
+    public BlobMapping( String table, GMLVersion storageFormat ) {
+        this.table = table;
+        this.storageFormat = storageFormat;
+    }
+
+    /**
+     * Returns the name of the table that stores the BLOBs.
+     * 
+     * @return the name of the table that stores the BLOBs, never <code>null</code>
+     */
+    public String getTable() {
+        return table;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public GMLVersion getStorageFormat() {
+        return storageFormat;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getGMLIdColumn() {
+        return "gml_id";
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getDataColumn() {
+        return "gml_data";
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getBBoxColumn() {
+        return "gml_bbox";
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getTypeColumn() {
+        return "gml_type";
+    }
+
+    public String getInternalFIDColumn() {
+        return "int_fid";
+    }    
 }

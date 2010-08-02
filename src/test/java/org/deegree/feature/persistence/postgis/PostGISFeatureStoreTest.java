@@ -207,7 +207,7 @@ public class PostGISFeatureStoreTest {
                             FactoryConfigurationError, UnknownCRSException, TransformationException, IOException {
 
         if ( enable ) {
-            ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://hurricane:5432/deegreetest",
+            ConnectionManager.addConnection( "philosopher-db", "jdbc:postgresql://macchiato:5432/deegreetest",
                                              "postgres", "postgres", 1, 10 );
 
             URL configURL = this.getClass().getResource( "philosopher.xml" );

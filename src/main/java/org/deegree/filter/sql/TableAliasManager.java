@@ -56,7 +56,7 @@ public class TableAliasManager {
     /**
      * Creates a new {@link TableAliasManager} instance.
      */
-    TableAliasManager() {
+    public TableAliasManager() {
         rootTableAlias = generateNew();
     }
 

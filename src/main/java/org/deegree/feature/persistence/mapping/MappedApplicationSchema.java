@@ -45,7 +45,7 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 
 /**
- * An {@link ApplicationSchema} augmented with relational mapping information.
+ * An {@link ApplicationSchema} augmented with mapping information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -53,6 +53,10 @@ import org.deegree.feature.types.FeatureType;
  * @version $Revision$, $Date$
  */
 public class MappedApplicationSchema extends ApplicationSchema {
+
+    private final BBoxTableMapping bboxMapping;
+
+    private final BlobMapping blobMapping;
 
     private final Map<QName, FeatureTypeMapping> ftNameToFtMapping = new HashMap<QName, FeatureTypeMapping>();
 
@@ -64,49 +68,74 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * Creates a new {@link MappedApplicationSchema} from the given parameters.
      * 
      * @param fts
-     *            all application feature types (abstract and non-abstract), this must not include any GML base feature
+     *            all application feature types (abstract and non-abstract), this must not include the GML base feature
      *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), must not be
      *            <code>null</code>
      * @param ftToSuperFt
      *            key: feature type A, value: feature type B (A extends B), this must not include any GML base feature
      *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), can be <code>null</code>
      * @param ftMappings
-     *            mapping information for the feature types, must not be <code>null</code> and contain an entry for
-     *            every non-abstract feature type
+     *            relational mapping information for the feature types, can be <code>null</code> (for BLOB-only
+     *            mappings)
      * @param storageSRS
      *            CRS used for storing geometries, must not be <code>null</code>
+     * @param blobMapping
+     *            BLOB mapping parameters, may be <code>null</code> (for RELATIONAL-only mappings)
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
-                                    FeatureTypeMapping[] ftMappings, CRS storageSRS ) {
+                                    FeatureTypeMapping[] ftMappings, CRS storageSRS, BlobMapping blobMapping ) {
+
         super( fts, ftToSuperFt );
         for ( FeatureTypeMapping ftMapping : ftMappings ) {
             ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );
         }
         this.storageSRS = storageSRS;
         this.idAnalyzer = new IdAnalyzer( this );
+
+        // TODO
+        bboxMapping = null;
+        this.blobMapping = null;
     }
 
     /**
-     * Returns all mappings.
+     * Returns all relational feature type mappings.
      * 
-     * @return mappings, never <code>null</code>
+     * @return relational mappings, never <code>null</code>
      */
     public Map<QName, FeatureTypeMapping> getMappings() {
         return ftNameToFtMapping;
     }
 
     /**
-     * Returns the mapping for the specified feature type.
+     * Returns the relational mapping for the specified feature type.
      * 
      * @param ftName
      *            name of the feature type, must not be <code>null</code>
-     * @return the corresponding mapping, may be <code>null</code> (if a feature type was specified that does not belong
-     *         to the schema)
+     * @return the corresponding mapping, may be <code>null</code> (if the feature type does not have a relational
+     *         mapping)
      */
     public FeatureTypeMapping getMapping( QName ftName ) {
         return ftNameToFtMapping.get( ftName );
+    }
+
+    public short getFtId( QName ftName ) {
+        // TODO
+        return 1;
+    }
+
+    public BBoxTableMapping getBboxMapping() {
+        return bboxMapping;
+    }
+
+    /**
+     * Returns the BLOB mapping parameters.
+     * 
+     * @return the BLOB mapping parameters, may be <code>null</code> (for RELATIONAL-only mappings)
+     */
+    public BlobMapping getBlobMapping() {
+        return blobMapping;
     }
 
     /**
@@ -124,7 +153,8 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * @return the name of the lookup table, can be <code>null</code> (no global lookup table, only per feature type)
      */
     public String getIdLookupTable() {
-        return null;
+        // TODO
+        return "GML_OBJECTS";
     }
 
     /**

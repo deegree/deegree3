@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/feature/persistence/postgis/FeatureBuilder.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,25 +39,63 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.deegree.feature.Feature;
+import org.deegree.feature.persistence.FeatureCoder;
+import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds {@link Feature} instances from SQL result sets for the {@link PostGISFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 25480 $, $Date: 2010-07-22 19:36:56 +0200 (Do, 22. Jul 2010) $
  */
-interface FeatureBuilder {
+class FeatureBuilderBlob implements FeatureBuilder{
+
+    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
+
+    private final PostGISFeatureStore fs;
+
+    private final FeatureCoder coder;
+
+    FeatureBuilderBlob( PostGISFeatureStore fs, FeatureCoder coder ) {
+        this.fs = fs;
+        this.coder = coder;
+    }
 
     /**
      * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.
+     * <p>
+     * The first column must be the gml id, the second column must be the data BLOB.
+     * </p>
      * 
      * @param rs
      *            PostGIS result set, must not be <code>null</code>
      * @return created {@link Feature} instance, never <code>null</code>
-     * @throws SQLException 
      * @throws SQLException
      */
-    Feature buildFeature( ResultSet rs ) throws SQLException;
+    @Override
+    public Feature buildFeature( ResultSet rs )
+                            throws SQLException {
+
+        Feature feature = null;
+        try {
+            String gmlId = rs.getString( 1 );
+            feature = (Feature) fs.getCache().get( gmlId );
+            if ( feature == null ) {
+                LOG.debug( "Cache miss. Recreating object '" + gmlId + "' from blob." );
+                feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), fs.getSchema(), fs.getStorageSRS(),
+                                               new FeatureStoreGMLIdResolver( fs ) );
+                fs.getCache().add( feature );
+            } else {
+                LOG.debug( "Cache hit." );
+            }
+        } catch ( Exception e ) {
+            String msg = "Cannot recreate feature from result set: " + e.getMessage();
+            throw new SQLException( msg, e );
+        }
+        return feature;
+    }
 }
