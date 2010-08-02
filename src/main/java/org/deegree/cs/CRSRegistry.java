@@ -97,15 +97,34 @@ public class CRSRegistry {
      */
     public synchronized static CoordinateSystem lookup( String providerName, String name )
                             throws UnknownCRSException {
+        return lookup( providerName, name, false );
+    }
+
+    /**
+     * Creates a CRS from the given name using the given provider, if no CRS was found an UnkownCRSException will be
+     * thrown.
+     * 
+     * @param providerName
+     *            to be used for the creation of the crs.
+     * @param name
+     *            of the crs, e.g. EPSG:31466
+     * @param forceXY
+     *            true if the axis order of the coordinate system should be x/y (EAST/NORTH; WEST/SOUTH); false id the
+     *            defined axis order should be used
+     * @throws UnknownCRSException
+     * @throws UnknownCRSException
+     *             if the crs-name is not known
+     */
+    public static CoordinateSystem lookup( String providerName, String name, boolean forceXY )
+                            throws UnknownCRSException {
         long sT = currentTimeMillis();
         CRSProvider crsProvider = getProvider( providerName );
         long eT = currentTimeMillis() - sT;
         LOG.debug( "Getting provider: " + crsProvider + " took: " + eT + " ms." );
         CoordinateSystem realCRS = null;
         try {
-
             sT = currentTimeMillis();
-            realCRS = crsProvider.getCRSByCode( CRSCodeType.valueOf( name ) );
+            realCRS = crsProvider.getCRSByCode( CRSCodeType.valueOf( name ), forceXY );
             eT = currentTimeMillis() - sT;
             LOG.debug( "Getting crs ( " + name + " )from provider: " + crsProvider + " took: " + eT + " ms." );
         } catch ( CRSConfigurationException e ) {
@@ -232,6 +251,23 @@ public class CRSRegistry {
     public synchronized static CoordinateSystem lookup( String name )
                             throws UnknownCRSException {
         return lookup( null, name );
+    }
+
+    /**
+     * Creates a CRS from the given name, if no CRS was found an UnkownCRSException will be thrown.
+     * 
+     * @param name
+     *            of the crs, e.g. EPSG:4326
+     * @param forceXY
+     *            true if the axis order of the coordinate system should be x/y (EAST/NORTH; WEST/SOUTH); false id the
+     *            defined axis order should be used
+     * @return a CoordinateSystem corresponding to the given name, using the configured provider.
+     * @throws UnknownCRSException
+     *             if the crs-name is not known
+     */
+    public synchronized static CoordinateSystem lookup( String name, boolean forceXY )
+                            throws UnknownCRSException {
+        return lookup( null, name, forceXY );
     }
 
     /**

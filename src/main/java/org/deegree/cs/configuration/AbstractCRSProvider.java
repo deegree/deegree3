@@ -49,9 +49,11 @@ import java.util.Properties;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.components.Axis;
 import org.deegree.cs.configuration.resources.CRSResource;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
@@ -76,8 +78,9 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractCRSProvider.class );
 
-    private static Map<CRSCodeType, CRSIdentifiable> cachedIdentifiables = new HashMap<CRSCodeType, CRSIdentifiable>(
-                                                                                                                      42124 );
+    private static Map<CRSCodeType, CRSIdentifiable> cachedIdentifiables = new HashMap<CRSCodeType, CRSIdentifiable>();
+
+    private static Map<CRSCodeType, CRSIdentifiable> cachedCRSXY = new HashMap<CRSCodeType, CRSIdentifiable>();
 
     private CRSResource<T> resolver;
 
@@ -171,33 +174,33 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
      */
     public CoordinateSystem getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException {
+        return getCRSByCode( id, false );
+    }
 
+    @Override
+    public CoordinateSystem getCRSByCode( CRSCodeType id, boolean forceXY )
+                            throws CRSConfigurationException {
         if ( resolver == null ) {
             throw new CRSConfigurationException( "No resolver initialized, this may not be." );
         }
         CoordinateSystem result = null;
         if ( id != null ) {
-            LOG.debug( "Trying to load crs with id: " + id + " from cache." );
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( cachedIdentifiables.keySet().toString() );
-            }
-            if ( cachedIdentifiables.containsKey( id ) ) {
-                CRSIdentifiable r = cachedIdentifiables.get( id );
-                LOG.debug( "Found CRSIdentifiable: " + r.getCodeAndName() + " from given id: " + id );
-                if ( !( r instanceof CoordinateSystem ) ) {
-                    LOG.error( "Found CRSIdentifiable: " + r.getCodeAndName()
-                               + " but it is not a coordinate system, your db is inconsistent return null." );
-                    r = null;
-                }
-                result = (CoordinateSystem) r;
+            if ( forceXY ) {
+                result = getCRSFromCache( cachedCRSXY, id, result );
             }
             if ( result == null ) {
-                LOG.debug( "No crs with id: " + id + " found in cache." );
-                try {
-                    result = parseCoordinateSystem( resolver.getURIAsType( id.getOriginal() ) );
-                } catch ( IOException e ) {
-                    LOG.debug( e.getLocalizedMessage(), e );
-                    throw new CRSConfigurationException( e );
+                result = getCRSFromCache( cachedIdentifiables, id, result );
+                if ( result == null ) {
+                    LOG.debug( "No crs with id: " + id + " found in cache." );
+                    try {
+                        result = parseCoordinateSystem( resolver.getURIAsType( id.getOriginal() ) );
+                        if ( forceXY ) {
+                            result = createXYCoordinateSystem( result );
+                        }
+                    } catch ( IOException e ) {
+                        LOG.debug( e.getLocalizedMessage(), e );
+                        throw new CRSConfigurationException( e );
+                    }
                 }
             }
         }
@@ -209,16 +212,76 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             /**
              * Adding the used underlying crs's to the cache.
              */
-            addIdToCache( result, false );
-            if ( result.getType() == COMPOUND ) {
-                addIdToCache( ( (CompoundCRS) result ).getUnderlyingCRS(), false );
-                if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
-                    addIdToCache( ( (ProjectedCRS) ( (CompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
-                                  false );
+            if ( forceXY ) {
+                cachedCRSXY.put( id, result );
+                addIdToCache( cachedCRSXY, result, false );
+                if ( result.getType() == COMPOUND ) {
+                    addIdToCache( cachedCRSXY, ( (CompoundCRS) result ).getUnderlyingCRS(), false );
+                    if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
+                        addIdToCache(
+                                      cachedCRSXY,
+                                      ( (ProjectedCRS) ( (CompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
+                                      false );
+                    }
+                } else if ( result.getType() == PROJECTED ) {
+                    addIdToCache( ( (ProjectedCRS) result ).getGeographicCRS(), false );
                 }
-            } else if ( result.getType() == PROJECTED ) {
-                addIdToCache( ( (ProjectedCRS) result ).getGeographicCRS(), false );
+            } else {
+                addIdToCache( result, false );
+                if ( result.getType() == COMPOUND ) {
+                    addIdToCache( ( (CompoundCRS) result ).getUnderlyingCRS(), false );
+                    if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
+                        addIdToCache(
+                                      ( (ProjectedCRS) ( (CompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
+                                      false );
+                    }
+                } else if ( result.getType() == PROJECTED ) {
+                    addIdToCache( ( (ProjectedCRS) result ).getGeographicCRS(), false );
+                }
             }
+        }
+        return result;
+    }
+
+    private CoordinateSystem createXYCoordinateSystem( CoordinateSystem result ) {
+        switch ( result.getType() ) {
+        case GEOGRAPHIC:
+            return new GeographicCRS( ( (GeographicCRS) result ).getGeodeticDatum(),
+                                      forceXYAxisOrder( result.getAxis() ), new CRSIdentifiable( result ) );
+        case COMPOUND:
+            CompoundCRS comp = (CompoundCRS) result;
+            return new CompoundCRS( comp.getHeightAxis(), createXYCoordinateSystem( comp.getUnderlyingCRS() ),
+                                    comp.getDefaultHeight(), new CRSIdentifiable( comp ) );
+        }
+        return result;
+    }
+
+    private Axis[] forceXYAxisOrder( Axis[] axis ) {
+        if ( axis != null && axis.length == 2
+             && ( axis[0].getOrientation() == Axis.AO_NORTH || axis[0].getOrientation() == Axis.AO_SOUTH ) ) {
+            Axis[] xyAxis = new Axis[2];
+            xyAxis[0] = axis[1];
+            xyAxis[1] = axis[0];
+            return xyAxis;
+        }
+        return axis;
+    }
+
+    private CoordinateSystem getCRSFromCache( Map<CRSCodeType, CRSIdentifiable> cache, CRSCodeType id,
+                                              CoordinateSystem result ) {
+        LOG.debug( "Trying to load crs with id: " + id + " from cache." );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( cachedIdentifiables.keySet().toString() );
+        }
+        if ( cache.containsKey( id ) ) {
+            CRSIdentifiable r = cache.get( id );
+            LOG.debug( "Found CRSIdentifiable: " + r.getCodeAndName() + " from given id: " + id );
+            if ( !( r instanceof CoordinateSystem ) ) {
+                LOG.error( "Found CRSIdentifiable: " + r.getCodeAndName()
+                           + " but it is not a coordinate system, your db is inconsistent return null." );
+                r = null;
+            }
+            result = (CoordinateSystem) r;
         }
         return result;
     }
@@ -461,20 +524,25 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
      * @return the identifiable
      */
     public synchronized <V extends CRSIdentifiable> V addIdToCache( V identifiable, boolean update ) {
+        return addIdToCache( cachedIdentifiables, identifiable, update );
+    }
+
+    private synchronized <V extends CRSIdentifiable> V addIdToCache( Map<CRSCodeType, CRSIdentifiable> cache,
+                                                                     V identifiable, boolean update ) {
         if ( identifiable == null ) {
             return null;
         }
         for ( CRSCodeType idString : identifiable.getCodes() ) {
             // if ( idString != null && !"".equals( idString.trim() ) ) {
             if ( idString != null ) {
-                if ( cachedIdentifiables.containsKey( idString ) && cachedIdentifiables.get( idString ) != null ) {
+                if ( cache.containsKey( idString ) && cache.get( idString ) != null ) {
                     if ( update ) {
                         LOG.debug( "Updating cache with new identifiable: " + idString );
-                        cachedIdentifiables.put( idString, identifiable );
+                        cache.put( idString, identifiable );
                     }
                 } else {
                     LOG.debug( "Adding new identifiable to cache: " + idString );
-                    cachedIdentifiables.put( idString, identifiable );
+                    cache.put( idString, identifiable );
                 }
             } else {
                 LOG.debug( "Not adding the null string id to the cache of identifiable: " + identifiable.getCode() );

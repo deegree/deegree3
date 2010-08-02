@@ -1193,14 +1193,14 @@
       <crs:AreaOfUse>-180.0,-90.0,180.0,90.0</crs:AreaOfUse>
       <crs:AreaOfUse>World.</crs:AreaOfUse>
       <crs:Axis>
-        <crs:Name>longitude</crs:Name>
-        <crs:Units>degree</crs:Units>
-        <crs:AxisOrientation>east</crs:AxisOrientation>
-      </crs:Axis>
-      <crs:Axis>
         <crs:Name>latitude</crs:Name>
         <crs:Units>degree</crs:Units>
         <crs:AxisOrientation>north</crs:AxisOrientation>
+      </crs:Axis>
+      <crs:Axis>
+        <crs:Name>longitude</crs:Name>
+        <crs:Units>degree</crs:Units>
+        <crs:AxisOrientation>east</crs:AxisOrientation>
       </crs:Axis>
       <crs:UsedDatum>epsg:6326</crs:UsedDatum>
     </crs:GeographicCRS>
