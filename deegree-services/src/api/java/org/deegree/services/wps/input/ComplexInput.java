@@ -39,11 +39,8 @@ package org.deegree.services.wps.input;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import org.apache.axiom.om.OMElement;
 
 /**
  * A complex data structure {@link ProcessletInput} parameter, i.e. an object encoded in XML or a raw binary stream.
@@ -58,21 +55,21 @@ public interface ComplexInput extends ProcessletInput {
     /**
      * Returns the mime type of the input.
      * 
-     * @return the mime type of the input, may be null (if not specified in the parameter definition)
+     * @return the mime type of the input, may be <code>null</code>
      */
     public String getMimeType();
 
     /**
      * Returns the encoding information supplied with the input.
      * 
-     * @return the encoding information supplied with the input, may be null
+     * @return the encoding information supplied with the input, may be <code>null</code>
      */
     public String getEncoding();
 
     /**
      * Returns the schema URL supplied with the input.
      * 
-     * @return the schema URL supplied with the input, may be null
+     * @return the schema URL supplied with the input, may be <code>null</code>
      */
     public String getSchema();
 
@@ -80,13 +77,12 @@ public interface ComplexInput extends ProcessletInput {
      * Returns an {@link InputStream} for accessing the complex value as a raw stream of bytes (usually for binary
      * input).
      * <p>
-     * NOTE: Never use this method if the input parameter is encoded in XML -- use {@link #getValueAsXMLStream()} or
-     * {@link #getValueAsElement()} instead. Otherwise erroneous behaviour has to be expected (if the input value is
-     * given embedded in the execute request document).
+     * NOTE: Never use this method if the input parameter is encoded in XML -- use {@link #getValueAsXMLStream()}
+     * instead. Otherwise erroneous behaviour has to be expected (if the input value is given embedded in the execute
+     * request document).
      * </p>
      * 
      * @see #getValueAsXMLStream()
-     * @see #getValueAsElement()
      * @return the input value as a raw stream of bytes
      * @throws IOException
      *             if accessing the value fails
@@ -100,28 +96,14 @@ public interface ComplexInput extends ProcessletInput {
      * NOTE: Never use this method if the input parameter is a binary value -- use {@link #getValueAsBinaryStream()}
      * instead.
      * </p>
-     * The returned stream will point at the next event after the first call to {@link XMLStreamReader#next()}, which is
-     * normally the {@link XMLStreamConstants#START_DOCUMENT} event.
+     * The returned stream will point at the first START_ELEMENT event of the data.
      * 
-     * @return the input value as an XML event stream
+     * @return the input value as an XML event stream, current event is START_ELEMENT (the root element of the data
+     *         object)
      * @throws IOException
      *             if accessing the value fails
      * @throws XMLStreamException
      */
     public XMLStreamReader getValueAsXMLStream()
                             throws IOException, XMLStreamException;
-
-    /**
-     * Returns an {@link OMElement} for accessing the complex value as an XML element node.
-     * <p>
-     * NOTE: Never use this method if the input parameter is a binary value -- use {@link #getValueAsBinaryStream()}
-     * instead.
-     * </p>
-     * 
-     * @return the input value as an XML element node
-     * @throws IOException
-     *             if accessing the value fails
-     */
-    public OMElement getValueAsElement()
-                            throws IOException;
 }

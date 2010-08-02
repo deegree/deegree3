@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.wps.output;
 
@@ -55,18 +55,18 @@ import org.deegree.services.wps.input.ComplexInput;
  * provides a storage for this complex data structure.</li>
  * </ul>
  * </p>
- *
+ * 
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public interface ProcessletOutput {
 
     /**
      * Returns the identifier or name of the output parameter as defined in the process description.
-     *
+     * 
      * @return the identifier of the output parameter
      */
     public CodeType getIdentifier();
@@ -74,7 +74,7 @@ public interface ProcessletOutput {
     /**
      * Returns the title that has been supplied with the request of the output parameter, normally available for display
      * to a human.
-     *
+     * 
      * @return the title provided with the output, may be null
      */
     public LanguageString getSubmittedTitle();
@@ -82,7 +82,7 @@ public interface ProcessletOutput {
     /**
      * Returns the narrative description that has been supplied with the request of the output parameter, normally
      * available for display to a human.
-     *
+     * 
      * @return the abstract provided with the output, may be null
      */
     public LanguageString getSubmittedAbstract();
@@ -94,14 +94,14 @@ public interface ProcessletOutput {
      * or may not do so. However, for complex output parameters that are not requested, it is advised to omit them for
      * more efficient execution of the {@link Processlet}.
      * </p>
-     *
+     * 
      * @return true, if the {@link Processlet} must set the value of this parameter (in this execution), false otherwise
      */
     public boolean isRequested();
 
     /**
      * Sets the parameter title in the response sent to the client.
-     *
+     * 
      * @param title
      *            the parameter title in the response sent to the client
      */
@@ -109,7 +109,7 @@ public interface ProcessletOutput {
 
     /**
      * Sets the parameter abstract in the response sent to the client.
-     *
+     * 
      * @param summary
      *            the parameter abstract in the response sent to the client
      */
