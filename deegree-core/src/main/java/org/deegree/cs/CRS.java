@@ -81,7 +81,11 @@ public class CRS implements Serializable {
      */
     private transient CoordinateSystem crs;
 
-    private double[] areaOfUse;
+    /**
+     * Flag indicating, if the axis order should be swapped to x/y (EAST/NORTH; WEST/SOUTH) or the defined axis order is
+     * used
+     */
+    private boolean forceXY;
 
     /**
      * Creates a new {@link CRS} instance with a coordinate reference system name.
@@ -94,6 +98,22 @@ public class CRS implements Serializable {
     }
 
     /**
+     * Creates a new {@link CRS} instance with a coordinate reference system name.
+     * 
+     * @param crsName
+     *            name of the crs (identification string) or null
+     * @param forceXY
+     *            true if the axis order of the coordinate system should be x/y (EAST/NORTH; WEST/SOUTH); false id the
+     *            defined axis order should be taken
+     */
+    public CRS( String crsName, boolean forceXY ) {
+        this( crsName );
+        this.forceXY = forceXY;
+    }
+
+    /**
+     * Creates a new {@link CRS} instance with the given coordinate system.
+     * 
      * @param crs
      */
     public CRS( CoordinateSystem crs ) {
@@ -133,7 +153,7 @@ public class CRS implements Serializable {
     public CoordinateSystem getWrappedCRS()
                             throws UnknownCRSException {
         if ( crs == null && crsName != null ) {
-            crs = CRSRegistry.lookup( crsName );
+            crs = CRSRegistry.lookup( crsName, forceXY );
         }
         return crs;
     }
@@ -212,4 +232,5 @@ public class CRS implements Serializable {
     public String toString() {
         return "{name=" + crsName + ", resolved=" + ( crs != null ) + "}";
     }
+
 }

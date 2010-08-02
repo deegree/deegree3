@@ -47,7 +47,9 @@ import org.deegree.cs.transformations.Transformation;
 /**
  * The <code>CRSProvider</code> will allow the support for different crs-definitions formats within the crs package. All
  * implementation should consider the fact that the deegree-crs package will assume all incoming and outgoing
- * latitude/longitude coordinates in <u>radians</u>.
+ * latitude/longitude coordinates in <u>radians</u>. Dependent on the forceXY flag it is possible to set the axis order
+ * to x/y (EAST/NORTH; WEST/SOUTH). If this flag is true and the defined axis order is not x/y, the axis order will be
+ * swapped. By default the defined axis order will be used.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -104,6 +106,21 @@ public interface CRSProvider {
      *             returned.
      */
     public CoordinateSystem getCRSByCode( CRSCodeType id )
+                            throws CRSConfigurationException;
+
+    /**
+     * @param id
+     *            string representation of the CoordinateSystem
+     * @param forceXY
+     *            true if the axis order of the coordinate system should be x/y (EAST/NORTH; WEST/SOUTH); false if the
+     *            defined axis order should be used
+     * @return the identified CRS or <code>null</code> if no such CRS was found.
+     * @throws CRSConfigurationException
+     *             if the implementation was confronted by an exception and could not deliver the requested crs. This
+     *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should be
+     *             returned.
+     */
+    public CoordinateSystem getCRSByCode( CRSCodeType id, boolean forceXY )
                             throws CRSConfigurationException;
 
     /**
