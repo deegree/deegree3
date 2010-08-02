@@ -454,7 +454,7 @@ public class Java2DRenderer implements Renderer {
     Double fromCurve( Curve curve ) {
         Double line = new Double();
 
-        Points points = curve.getControlPoints();
+        Points points = curve.getAsLineString().getControlPoints();
         Iterator<Point> iter = points.iterator();
         Point p = iter.next();
         double x = p.get0(), y = p.get1();
