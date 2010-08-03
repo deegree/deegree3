@@ -307,8 +307,7 @@ public class SecureProxy extends HttpServlet {
                     String nsPrefix = reader.getAttributePrefix( i );
                     String value = reader.getAttributeValue( i );
                     String nsURI = reader.getAttributeNamespace( i );
-                    if ( openElements == 1 && ( localName.equals( "user" ) || localName.equals( "password" ) ) ) {
-                        System.out.println( "skipping " + localName );
+                    if ( openElements == 0 && ( localName.equals( "user" ) || localName.equals( "password" ) ) ) {
                         continue;
                     }
 
