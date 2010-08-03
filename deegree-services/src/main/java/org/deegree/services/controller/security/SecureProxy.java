@@ -288,10 +288,11 @@ public class SecureProxy extends HttpServlet {
                 break;
             }
             case START_ELEMENT: {
+                String elementName = reader.getLocalName();
                 if ( reader.getNamespaceURI() == null || reader.getPrefix() == null ) {
-                    writer.writeStartElement( reader.getLocalName() );
+                    writer.writeStartElement( elementName );
                 } else {
-                    writer.writeStartElement( reader.getPrefix(), reader.getLocalName(), reader.getNamespaceURI() );
+                    writer.writeStartElement( reader.getPrefix(), elementName, reader.getNamespaceURI() );
                 }
                 // copy all namespace bindings
                 for ( int i = 0; i < reader.getNamespaceCount(); i++ ) {
@@ -318,6 +319,12 @@ public class SecureProxy extends HttpServlet {
                             String link = value.replace( ":80", "" ); // again, normalization would be nice
                             if ( link.startsWith( proxiedUrl ) ) {
                                 link = link.replace( proxiedUrl, serverUrl );
+                                // next two to work around buggy servers with broken endpoints such as a misconfigured
+                                // XtraServer or deegree 2
+                            } else if ( elementName.equals( "Get" ) && link.endsWith( "?" ) ) {
+                                link = serverUrl + "?";
+                            } else if ( elementName.equals( "Post" ) ) {
+                                link = serverUrl;
                             }
                             writer.writeAttribute( nsPrefix, nsURI, localName, link );
                         } else {
