@@ -203,8 +203,8 @@ public class ShapeFeatureStore implements FeatureStore {
                     }
                 }
             } else {
-                LOG.debug( "No crs configured, and no .prj found, assuming EPSG:4326." );
-                crs = new CRS( "EPSG:4326" );
+                LOG.debug( "No crs configured, and no .prj found, assuming CRS:84 (WGS84 in x/y axis order)." );
+                crs = new CRS( "CRS:84" );
             }
         }
 
@@ -260,9 +260,9 @@ public class ShapeFeatureStore implements FeatureStore {
             } catch ( UnknownCRSException e2 ) {
                 LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", shpName,
                           e2.getLocalizedMessage() );
-                LOG.warn( "The file also does not contain a valid EPSG code, assuming EPSG:4326." );
+                LOG.warn( "The file also does not contain a valid EPSG code, assuming CRS:84 (WGS84 with x/y axis order)." );
                 LOG.trace( "Stack trace of failed WKT parsing:", e2 );
-                crs = new CRS( "EPSG:4326" );
+                crs = new CRS( "CRS:84" );
             }
         } catch ( IOException e1 ) {
             LOG.debug( "Stack trace:", e1 );
