@@ -57,6 +57,7 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
+import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
@@ -103,7 +104,8 @@ class OracleApplicationSchemaBuilder {
         FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
                                                                                     new FeatureTypeMapping[builder.ftNameToMapping.size()] );
-        return new MappedApplicationSchema( fts, null, ftMappings, storageSRS );
+        BlobMapping blobMapping = null;
+        return new MappedApplicationSchema( fts, null, ftMappings, storageSRS, blobMapping );
     }
 
     private OracleApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema )
