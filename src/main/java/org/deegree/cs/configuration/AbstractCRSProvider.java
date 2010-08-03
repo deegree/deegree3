@@ -194,7 +194,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                     LOG.debug( "No crs with id: " + id + " found in cache." );
                     try {
                         result = parseCoordinateSystem( resolver.getURIAsType( id.getOriginal() ) );
-                        if ( forceXY ) {
+                        if ( forceXY && result != null ) {
                             result = createXYCoordinateSystem( result );
                         }
                     } catch ( IOException e ) {
