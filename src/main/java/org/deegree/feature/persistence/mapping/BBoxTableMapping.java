@@ -10,14 +10,14 @@ package org.deegree.feature.persistence.mapping;
 public class BBoxTableMapping {
     
     public String getTable () {
-        return "FT_BBOX";
+        return "feature_types";
     }
     
     public String getFTNameColumn () {
-        return "ft_qname";
+        return "qname";
     }
 
     public String getBBoxColumn () {
-        return "ft_bbox";
+        return "bbox";
     }        
 }

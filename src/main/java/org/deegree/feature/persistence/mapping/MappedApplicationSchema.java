@@ -35,17 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
+import static org.deegree.feature.persistence.FeatureCodec.Compression.NONE;
+import static org.deegree.gml.GMLVersion.GML_32;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.cs.CRS;
+import org.deegree.feature.persistence.FeatureCodec;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * An {@link ApplicationSchema} augmented with mapping information.
+ * An {@link ApplicationSchema} augmented with relational / BLOB mapping information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -54,9 +62,17 @@ import org.deegree.feature.types.FeatureType;
  */
 public class MappedApplicationSchema extends ApplicationSchema {
 
+    private static final Logger LOG = LoggerFactory.getLogger( MappedApplicationSchema.class );
+
     private final BBoxTableMapping bboxMapping;
 
     private final BlobMapping blobMapping;
+
+    // key: id, value: (non-abstract) feature type name
+    private final Map<Short, QName> ftIdToName = new TreeMap<Short, QName>();
+
+    // key: (non-abstract) feature type name, value: id
+    private final Map<QName, Short> ftNameToId = new HashMap<QName, Short>();
 
     private final Map<QName, FeatureTypeMapping> ftNameToFtMapping = new HashMap<QName, FeatureTypeMapping>();
 
@@ -94,9 +110,24 @@ public class MappedApplicationSchema extends ApplicationSchema {
         this.storageSRS = storageSRS;
         this.idAnalyzer = new IdAnalyzer( this );
 
+        // sort by QName first
+        SortedMap<String, QName> ftNames = new TreeMap<String, QName>();
+        for ( FeatureType ft : fts ) {
+            if ( !ft.isAbstract() ) {
+                ftNames.put( ft.getName().toString(), ft.getName() );
+            }
+        }
+        short ftId = 0;
+        for ( String ftName : ftNames.keySet() ) {
+            QName qName = ftNames.get( ftName );
+            LOG.info( "Feature type [{}]:'{}'", ftId, qName );
+            ftNameToId.put( qName, ftId );
+            ftIdToName.put( ftId++, qName );
+        }
+
         // TODO
         bboxMapping = null;
-        this.blobMapping = null;
+        this.blobMapping = new BlobMapping( "gml_objects", new FeatureCodec( GML_32, NONE ) );
     }
 
     /**
@@ -120,9 +151,27 @@ public class MappedApplicationSchema extends ApplicationSchema {
         return ftNameToFtMapping.get( ftName );
     }
 
+    /**
+     * Returns the id of the specified (non-abstract) feature type.
+     * 
+     * @param ftName
+     *            name of the feature type, must denote a non-abstract feature type that's part of the schema and not
+     *            <code>null</code>
+     * @return id of the feature type
+     */
     public short getFtId( QName ftName ) {
-        // TODO
-        return 1;
+        return ftNameToId.get( ftName );
+    }
+
+    /**
+     * Returns the name of the (non-abstract) feature type with the given id.
+     * 
+     * @param ftId
+     *            id of the feature type
+     * @return name of the feature type, denotes a non-abstract feature type that's part of the schema
+     */
+    public QName getFtName( short ftId ) {
+        return ftIdToName.get( ftId );
     }
 
     public BBoxTableMapping getBboxMapping() {

@@ -691,6 +691,10 @@ public class PostGISFeatureStore implements FeatureStore {
             if ( blobMapping != null ) {
                 sql.append( blobTableAlias );
                 sql.append( '.' );
+                sql.append( schema.getBlobMapping().getGMLIdColumn() );
+                sql.append( ',' );
+                sql.append( blobTableAlias );
+                sql.append( '.' );
                 sql.append( schema.getBlobMapping().getDataColumn() );
             } else {
                 sql.append( ftTableAlias );
@@ -753,6 +757,8 @@ public class PostGISFeatureStore implements FeatureStore {
                 sql.append( blobTableAlias );
                 sql.append( " LEFT OUTER JOIN " );
                 sql.append( ftMapping.getFtTable() );
+                sql.append( " AS " );
+                sql.append( ftTableAlias );
                 sql.append( " ON " );
                 sql.append( blobTableAlias );
                 sql.append( "." );
@@ -812,8 +818,10 @@ public class PostGISFeatureStore implements FeatureStore {
                 sql.append( wb.getOrderBy().getSQL() );
             }
 
-            LOG.debug( "Preparing SELECT: " + sql );
+            LOG.debug( "SQL: {}", sql );
+            long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
+            LOG.info( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             int i = 1;
             if ( blobMapping != null ) {
@@ -834,7 +842,9 @@ public class PostGISFeatureStore implements FeatureStore {
                 }
             }
 
+            begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
+            LOG.info( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             FeatureBuilder builder = null;
             if ( blobMapping != null ) {
