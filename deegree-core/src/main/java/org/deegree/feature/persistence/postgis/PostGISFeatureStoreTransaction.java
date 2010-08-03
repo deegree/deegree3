@@ -60,6 +60,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
+import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.Filter;
@@ -90,7 +91,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreTransaction.class );
 
-    private final PostGISFeatureStore store;
+    private final PostGISFeatureStore fs;
 
     private final Connection conn;
 
@@ -107,8 +108,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     /**
      * Creates a new {@link PostGISFeatureStoreTransaction} instance.
      * 
-     * NOTE: This method is only supposed to be invoked by the {@link PostGISFeatureStore}.
-     * 
      * @param store
      *            invoking feature store instance, never <code>null</code>
      * @param conn
@@ -116,7 +115,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
      *            <code>autocommit</code> set to <code>false</code>
      */
     PostGISFeatureStoreTransaction( PostGISFeatureStore store, Connection conn ) {
-        this.store = store;
+        this.fs = store;
         this.conn = conn;
     }
 
@@ -132,13 +131,13 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             LOG.debug( e.getMessage(), e.getNextException() );
             throw new FeatureStoreException( "Unable to commit SQL transaction: " + e.getMessage() );
         } finally {
-            store.releaseTransaction( this );
+            fs.releaseTransaction( this );
         }
     }
 
     @Override
     public FeatureStore getStore() {
-        return store;
+        return fs;
     }
 
     /**
@@ -167,7 +166,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         int deleted = 0;
         PreparedStatement stmt = null;
         try {
-            stmt = conn.prepareStatement( "DELETE FROM " + store.qualifyTableName( "gml_objects" ) + " WHERE gml_id=?" );
+            stmt = conn.prepareStatement( "DELETE FROM " + fs.qualifyTableName( "gml_objects" ) + " WHERE gml_id=?" );
             for ( String id : filter.getMatchingIds() ) {
                 stmt.setString( 1, id );
                 stmt.addBatch();
@@ -257,20 +256,37 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         long begin = System.currentTimeMillis();
 
         String fid = null;
+        BlobMapping blobMapping = fs.getSchema().getBlobMapping();
         try {
-            String sql = "INSERT INTO " + store.qualifyTableName( "gml_objects" )
-                         + " (gml_id,gml_description,ft_type,binary_object,gml_bounded_by) VALUES(?,?,?,?,?)";
-            PreparedStatement gmlObjectsInsertStmt = conn.prepareStatement( sql );
+            PreparedStatement blobInsertStmt = null;
+            if ( blobMapping != null ) {
+                StringBuilder sql = new StringBuilder( "INSERT INTO " );
+                sql.append( blobMapping.getTable() );
+                sql.append( " (" );
+                sql.append( blobMapping.getGMLIdColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getTypeColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getDataColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getBBoxColumn() );
+                sql.append( ") VALUES(?,?,?,?)" );
+                blobInsertStmt = conn.prepareStatement( sql.toString() );
+            }
             for ( Feature feature : features ) {
                 fid = feature.getId();
-                int internalId = insertFeature( gmlObjectsInsertStmt, feature );
-                FeatureTypeMapping mapping = store.getMapping( feature.getName() );
-                if ( mapping != null ) {
-                    insertFeatureRelational( internalId, feature, mapping );
+                int internalId = -1;
+                if ( blobInsertStmt != null ) {
+                    internalId = insertFeatureBlob( blobInsertStmt, feature );
+                }
+                FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
+                if ( ftMapping != null ) {
+                    insertFeatureRelational( internalId, feature, ftMapping );
                 }
             }
-            // stmt.executeBatch();
-            gmlObjectsInsertStmt.close();
+            if ( blobInsertStmt != null ) {
+                blobInsertStmt.close();
+            }
         } catch ( SQLException e ) {
             String msg = "Error inserting feature '" + fid + "':" + e.getMessage();
             LOG.debug( msg, e );
@@ -287,7 +303,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     /**
-     * Inserts the given feature into table <code>gml_objects</code> and returns the primary key.
+     * Inserts the given feature into BLOB table and returns the generated primary key.
      * 
      * @param stmt
      * @param feature
@@ -295,29 +311,28 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
      * @throws SQLException
      * @throws FeatureStoreException
      */
-    private int insertFeature( PreparedStatement stmt, Feature feature )
+    private int insertFeatureBlob( PreparedStatement stmt, Feature feature )
                             throws SQLException, FeatureStoreException {
 
-        if ( store.getSchema().getFeatureType( feature.getName() ) == null ) {
+        if ( fs.getSchema().getFeatureType( feature.getName() ) == null ) {
             throw new FeatureStoreException( "Cannot insert feature '" + feature.getName()
-                                             + "': feature is not served by this feature store." );
+                                             + "': feature type is not served by this feature store." );
         }
-        CRS storageCRS = store.getStorageSRS();
+        CRS storageCRS = fs.getStorageSRS();
 
         stmt.setString( 1, feature.getId() );
-        stmt.setString( 2, "TODO: gml_description" );
-        stmt.setShort( 3, store.getFtId( feature.getName() ) );
+        stmt.setShort( 2, fs.getFtId( feature.getName() ) );
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            FeatureCodec codec = store.getSchema().getBlobMapping().getCodec();
+            FeatureCodec codec = fs.getSchema().getBlobMapping().getCodec();
             codec.encode( feature, bos, storageCRS );
         } catch ( Exception e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e.getMessage() );
             throw new SQLException( msg, e );
         }
-        stmt.setBytes( 4, bos.toByteArray() );
+        stmt.setBytes( 3, bos.toByteArray() );
         // System.out.println( "Wrote feature blob (" + bos.toByteArray().length + " bytes)" );
         Envelope bbox = feature.getEnvelope();
         if ( bbox != null ) {
@@ -328,7 +343,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 throw new SQLException( e.getMessage(), e );
             }
         }
-        stmt.setObject( 5, store.toPGPolygon( bbox, -1 ) );
+        stmt.setObject( 4, fs.toPGPolygon( bbox, -1 ) );
         // stmt.addBatch();
         stmt.execute();
 
@@ -336,8 +351,15 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         PreparedStatement idSelect = null;
         ResultSet rs = null;
         try {
-            idSelect = conn.prepareStatement( "SELECT id FROM " + store.qualifyTableName( "gml_objects" )
-                                              + " WHERE gml_id=?" );
+            BlobMapping blobMapping = fs.getSchema().getBlobMapping();
+            StringBuilder sql = new StringBuilder( "SELECT " );
+            sql.append( blobMapping.getInternalFIDColumn() );
+            sql.append( " FROM " );
+            sql.append( blobMapping.getTable() );
+            sql.append( " WHERE " );
+            sql.append( blobMapping.getGMLIdColumn() );
+            sql.append( "=?" );
+            idSelect = conn.prepareStatement( sql.toString() );
             idSelect.setString( 1, feature.getId() );
             rs = idSelect.executeQuery();
             rs.next();
@@ -367,7 +389,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         String tableName = ftMapping.getFtTable();
 
         // build SQL string
-        StringBuilder sql = new StringBuilder( "INSERT INTO " + store.qualifyTableName( tableName ) + "(id" );
+        StringBuilder sql = new StringBuilder( "INSERT INTO " + fs.qualifyTableName( tableName ) + "(id" );
         for ( String column : columnsToValues.keySet() ) {
             sql.append( ',' );
             sql.append( column );
@@ -410,32 +432,32 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FilterEvaluationException {
         LinkedHashMap<String, Object> columnsToValues = new LinkedHashMap<String, Object>();
 
-//        for ( Property prop : feature.getProperties() ) {
-//            PropertyMappingType propMapping = ftMapping.getPropertyHints( prop.getName() );
-//            String dbColumn = null;
-//            if ( propMapping != null ) {
-//                if ( propMapping instanceof SimplePropertyMappingType ) {
-//                    SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) propMapping;
-//                    dbColumn = simplePropMapping.getDBColumn().getName();
-//                } else if ( propMapping instanceof GeometryPropertyMappingType ) {
-//                    GeometryPropertyMappingType geoPropMapping = (GeometryPropertyMappingType) propMapping;
-//                    dbColumn = geoPropMapping.getGeometryDBColumn().getName();
-//                } else {
-//                    String msg = "Relational mapping of " + propMapping.getClass().getName()
-//                                 + " is not implemented yet.";
-//                    throw new UnsupportedOperationException( msg );
-//                }
-//
-//                Object value = prop.getValue();
-//
-//                if ( value instanceof Geometry ) {
-//                    value = store.getCompatibleGeometry( ( (Geometry) value ), store.storageSRS );
-//                }
-//                LOG.debug( "Property '" + prop.getName() + "', colum: " + dbColumn );
-//
-//                columnsToValues.put( dbColumn, value );
-//            }
-//        }
+        // for ( Property prop : feature.getProperties() ) {
+        // PropertyMappingType propMapping = ftMapping.getPropertyHints( prop.getName() );
+        // String dbColumn = null;
+        // if ( propMapping != null ) {
+        // if ( propMapping instanceof SimplePropertyMappingType ) {
+        // SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) propMapping;
+        // dbColumn = simplePropMapping.getDBColumn().getName();
+        // } else if ( propMapping instanceof GeometryPropertyMappingType ) {
+        // GeometryPropertyMappingType geoPropMapping = (GeometryPropertyMappingType) propMapping;
+        // dbColumn = geoPropMapping.getGeometryDBColumn().getName();
+        // } else {
+        // String msg = "Relational mapping of " + propMapping.getClass().getName()
+        // + " is not implemented yet.";
+        // throw new UnsupportedOperationException( msg );
+        // }
+        //
+        // Object value = prop.getValue();
+        //
+        // if ( value instanceof Geometry ) {
+        // value = store.getCompatibleGeometry( ( (Geometry) value ), store.storageSRS );
+        // }
+        // LOG.debug( "Property '" + prop.getName() + "', colum: " + dbColumn );
+        //
+        // columnsToValues.put( dbColumn, value );
+        // }
+        // }
         return columnsToValues;
     }
 
@@ -462,8 +484,10 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             for ( Property property : feature.getProperties() ) {
                 Object propertyValue = property.getValue();
                 if ( propertyValue instanceof Feature ) {
-                    if ( !( propertyValue instanceof FeatureReference ) && !features.contains( propertyValue ) ) {
-                        findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
+                    if ( !( propertyValue instanceof FeatureReference ) ) {
+                        if ( !features.contains( propertyValue ) ) {
+                            findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
+                        }
                     } else if ( ( (FeatureReference) propertyValue ).isLocal()
                                 && !( features.contains( ( (FeatureReference) propertyValue ).getReferencedObject() ) ) ) {
                         findFeaturesAndGeometries( ( (FeatureReference) propertyValue ).getReferencedObject(),
@@ -502,13 +526,13 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( "Unable to rollback SQL transaction: " + e.getMessage() );
         } finally {
-            store.releaseTransaction( this );
+            fs.releaseTransaction( this );
         }
     }
 
     public void prepareRollbackAndRelease()
                             throws FeatureStoreException {
         LOG.debug( "Preparing rollback of transaction." );
-        store.releaseTransaction( this );
+        fs.releaseTransaction( this );
     }
 }

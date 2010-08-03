@@ -67,6 +67,7 @@ import org.deegree.tools.feature.gml.GMLSchemaAnalyzer;
 import org.deegree.tools.feature.gml.GMLSchemaComparator;
 import org.deegree.tools.feature.gml.MappingShortener;
 import org.deegree.tools.feature.gml.SchemaAnalyzer;
+import org.deegree.tools.feature.persistence.FeatureStoreLoader;
 import org.deegree.tools.record.importhandling.WPSImporter;
 import org.deegree.tools.rendering.InteractiveWPVS;
 import org.deegree.tools.rendering.dem.builder.DEMDatasetGenerator;
@@ -106,6 +107,7 @@ public class ToolBox {
                                       new ToolInfo( DEMDatasetGenerator.class ),
                                       new ToolInfo( DEMRasterFilterer.class ), new ToolInfo( DataManager.class ),
                                       new ToolInfo( EPSGDBSynchronizer.class ),
+                                      new ToolInfo( FeatureStoreLoader.class ),
                                       new ToolInfo( GMLSchemaAnalyzer.class ), new ToolInfo( InteractiveWPVS.class ),
                                       new ToolInfo( MappingShortener.class ),
                                       new ToolInfo( ModelGeneralizor.class ),

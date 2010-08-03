@@ -89,7 +89,7 @@ public class BlobMapping {
      * @return
      */
     public String getGMLIdColumn() {
-        return "gml_id";
+        return "GML_ID";
     }
 
     /**
@@ -97,7 +97,7 @@ public class BlobMapping {
      * @return
      */
     public String getDataColumn() {
-        return "gml_data";
+        return "BINARY_OBJECT";
     }
 
     /**
@@ -105,7 +105,7 @@ public class BlobMapping {
      * @return
      */
     public String getBBoxColumn() {
-        return "gml_bbox";
+        return "GML_BOUNDED_BY";
     }
 
     /**
@@ -113,10 +113,10 @@ public class BlobMapping {
      * @return
      */
     public String getTypeColumn() {
-        return "gml_type";
+        return "FT_TYPE";
     }
 
     public String getInternalFIDColumn() {
-        return "int_fid";
+        return "ID";
     }
 }
