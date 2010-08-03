@@ -1,5 +1,5 @@
 <SimpleObservationStore xmlns="http://www.deegree.org/datasource/observation/simplesql" configVersion="0.5.0" 
-schemaLocation="http://www.deegree.org/datasource/observation/simplesql file:/home/ionita/workspace/deegree-core/src/main/xsd/datasource/0.5.0/observation/simplesql.xsd">
+schemaLocation="http://www.deegree.org/datasource/observation/simplesql http://schemas.deegree.org/datasource/0.5.0/observation/simplesql.xsd">
   <JDBCConnId>utah-climate-db</JDBCConnId>
   <Table>utah_climate_2004</Table>
   <Column type="timestamp" name="obs_time" />

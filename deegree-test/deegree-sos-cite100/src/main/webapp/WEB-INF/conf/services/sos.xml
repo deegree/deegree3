@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deegreeSOS configVersion="0.5.0" xmlns="http://www.deegree.org/services/sos" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/services/sos file:/home/ionita/workspace/deegree-services/src/main/xsd/sos/0.5.0/sos_configuration.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/sos http://schemas.deegree.org/sos/0.5.0/sos_configuration.xsd">
   <ServiceConfiguration>
     <Offering>
       <name>utah_climate</name>
