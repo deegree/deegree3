@@ -43,6 +43,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -57,6 +59,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
+import org.deegree.commons.utils.io.RollbackPrintWriter;
 import org.slf4j.Logger;
 
 /**
@@ -85,7 +88,7 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
         super.init( env );
         outFile = env.getOptions().get( "log4j.outputfile" );
         String w = env.getOptions().get( "width" );
-        width = w == null ? 80 : parseInt( w );
+        width = w == null ? 120 : parseInt( w );
         if ( outFile == null ) {
             outFile = System.getProperty( "java.io.tmpdir" ) + "/log4j.snippet";
             LOG.info( "Outputting log4j snippet to '{}'.", outFile );
@@ -93,7 +96,7 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
     }
 
     // breaks the lines at max width
-    private String format( String str ) {
+    String format( String str ) {
         StringBuilder res = new StringBuilder();
         outer: while ( str.length() > ( width - 3 ) ) {
             int len = 3;
@@ -126,119 +129,78 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
         return res.toString();
     }
 
+    private void find( Element e, Tree root ) {
+        LoggingNotes notes = e.getAnnotation( LoggingNotes.class );
+        PackageLoggingNotes pnotes = e.getAnnotation( PackageLoggingNotes.class );
+        // the #toString apparently yields the qname, is there another way?
+        String qname = e.toString();
+
+        if ( notes != null || pnotes != null ) {
+            root.insert( qname, pnotes, notes );
+        }
+
+        for ( Element e2 : e.getEnclosedElements() ) {
+            find( e2, root );
+        }
+    }
+
+    void block( String text, RollbackPrintWriter out, boolean big ) {
+        if ( big ) {
+            out.print( "# " );
+            for ( int i = 0; i < width - 2; ++i ) {
+                out.print( "=" );
+            }
+            out.println();
+        }
+        int odd = text.length() % 2;
+        int len = ( width - text.length() - 4 ) / 2;
+        out.print( "# " );
+        for ( int i = 0; i < len; ++i ) {
+            out.print( "=" );
+        }
+        out.print( " " + text + " " );
+        for ( int i = 0; i < len + odd; ++i ) {
+            out.print( "=" );
+        }
+        out.println();
+        if ( big ) {
+            out.print( "# " );
+            for ( int i = 0; i < width - 2; ++i ) {
+                out.print( "=" );
+            }
+            out.println();
+        }
+        out.println();
+    }
+
     @Override
     public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv ) {
         try {
-            PrintWriter out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( outFile, true ), "UTF-8" ) );
+            PrintWriter pw = new PrintWriter( new OutputStreamWriter( new FileOutputStream( outFile, true ), "UTF-8" ) );
+            RollbackPrintWriter out = new RollbackPrintWriter( pw );
 
-            // the #toString apparently yields the qname, is there another way?
-            TreeMap<String, Element> sorted = new TreeMap<String, Element>();
-            for ( Element e : roundEnv.getElementsAnnotatedWith( PackageLoggingNotes.class ) ) {
-                sorted.put( e.toString(), e );
+            Tree tree = new Tree();
+
+            for ( Element e : roundEnv.getRootElements() ) {
+                find( e, tree );
             }
 
-            for ( Element e : roundEnv.getElementsAnnotatedWith( LoggingNotes.class ) ) {
-                sorted.put( e.toString(), e );
+            if ( tree.children.isEmpty() ) {
+                return true;
             }
 
-            for ( Entry<String, Element> e : sorted.entrySet() ) {
-                LoggingNotes notes = e.getValue().getAnnotation( LoggingNotes.class );
-
-                if ( notes == null ) {
-                    PackageLoggingNotes pnotes = e.getValue().getAnnotation( PackageLoggingNotes.class );
-                    String title = pnotes.title();
-
-                    boolean isSubsystem = e.getKey().replaceAll( "[^\\.]", "" ).length() == 2;
-
-                    if ( !title.isEmpty() ) {
-                        if ( isSubsystem ) {
-                            out.print( "# " );
-                            for ( int i = 0; i < width - 2; ++i ) {
-                                out.print( "=" );
-                            }
-                            out.println();
-                        }
-
-                        int odd = title.length() % 2;
-                        int len = ( width - title.length() - 4 ) / 2;
-                        out.print( "# " );
-                        for ( int i = 0; i < len; ++i ) {
-                            out.print( "=" );
-                        }
-                        out.print( " " + title + " " );
-                        for ( int i = 0; i < len + odd; ++i ) {
-                            out.print( "=" );
-                        }
-                        out.println();
-
-                        if ( isSubsystem ) {
-                            out.print( "# " );
-                            for ( int i = 0; i < width - 2; ++i ) {
-                                out.print( "=" );
-                            }
-                            out.println();
-                        }
-
-                        out.println();
-                    }
-
-                    String qname = e.getKey();
-
-                    if ( !pnotes.error().isEmpty() ) {
-                        out.println( format( pnotes.error() ) );
-                        out.println( "#log4j.logger." + qname + " = ERROR" );
-                        out.println();
-                    }
-                    if ( !pnotes.warn().isEmpty() ) {
-                        out.println( format( pnotes.warn() ) );
-                        out.println( "#log4j.logger." + qname + " = WARN" );
-                        out.println();
-                    }
-                    if ( !pnotes.info().isEmpty() ) {
-                        out.println( format( pnotes.info() ) );
-                        out.println( "#log4j.logger." + qname + " = INFO" );
-                        out.println();
-                    }
-                    if ( !pnotes.debug().isEmpty() ) {
-                        out.println( format( pnotes.debug() ) );
-                        out.println( "#log4j.logger." + qname + " = DEBUG" );
-                        out.println();
-                    }
-                    if ( !pnotes.trace().isEmpty() ) {
-                        out.println( format( pnotes.trace() ) );
-                        out.println( "#log4j.logger." + qname + " = TRACE" );
-                        out.println();
-                    }
-                } else {
-                    String qname = e.getKey();
-
-                    if ( !notes.error().isEmpty() ) {
-                        out.println( format( notes.error() ) );
-                        out.println( "#log4j.logger." + qname + " = ERROR" );
-                        out.println();
-                    }
-                    if ( !notes.warn().isEmpty() ) {
-                        out.println( format( notes.warn() ) );
-                        out.println( "#log4j.logger." + qname + " = WARN" );
-                        out.println();
-                    }
-                    if ( !notes.info().isEmpty() ) {
-                        out.println( format( notes.info() ) );
-                        out.println( "#log4j.logger." + qname + " = INFO" );
-                        out.println();
-                    }
-                    if ( !notes.debug().isEmpty() ) {
-                        out.println( format( notes.debug() ) );
-                        out.println( "#log4j.logger." + qname + " = DEBUG" );
-                        out.println();
-                    }
-                    if ( !notes.trace().isEmpty() ) {
-                        out.println( format( notes.trace() ) );
-                        out.println( "#log4j.logger." + qname + " = TRACE" );
-                        out.println();
-                    }
-                }
-            }
+            // first run for errors, warnings, info
+            block( "Errors, warnings and informational messages", out, true );
+            out.flush();
+            tree.print( out, "", true, true, true, false, false );
+            // now get the debugs
+            block( "Debugging messages, useful for in-depth debugging of e.g. service setups", out, true );
+            out.flush();
+            tree.print( out, "", false, false, false, true, false );
+            // now for the hardcore devs
+            block( "Tracing messages, for developers only", out, true );
+            out.flush();
+            tree.print( out, "", false, false, false, false, true );
 
             out.close();
             return true;
@@ -249,4 +211,116 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
         }
         return false;
     }
+
+    class Tree {
+        String segment;
+
+        PackageLoggingNotes pnotes;
+
+        LoggingNotes notes;
+
+        TreeMap<String, Tree> children = new TreeMap<String, Tree>();
+
+        void insert( String qname, PackageLoggingNotes pnotes, LoggingNotes notes ) {
+            LinkedList<String> pkgs = new LinkedList<String>( Arrays.asList( qname.split( "\\." ) ) );
+            Tree node = this;
+            while ( true ) {
+                String next = pkgs.poll();
+                Tree nextNode = node.children.get( next );
+                if ( nextNode == null ) {
+                    nextNode = new Tree();
+                    nextNode.segment = next;
+                    node.children.put( next, nextNode );
+                }
+                node = nextNode;
+                if ( pkgs.isEmpty() ) {
+                    node.notes = notes;
+                    node.pnotes = pnotes;
+                    break;
+                }
+            }
+        }
+
+        void print( RollbackPrintWriter out, String qname, boolean error, boolean warn, boolean info, boolean debug,
+                    boolean trace ) {
+            if ( notes != null ) {
+                if ( !notes.error().isEmpty() && error ) {
+                    out.println( format( notes.error() ) );
+                    out.println( "#log4j.logger." + qname + " = ERROR" );
+                    out.println();
+                    out.flush();
+                }
+                if ( !notes.warn().isEmpty() && warn ) {
+                    out.println( format( notes.warn() ) );
+                    out.println( "#log4j.logger." + qname + " = WARN" );
+                    out.println();
+                    out.flush();
+                }
+                if ( !notes.info().isEmpty() && info ) {
+                    out.println( format( notes.info() ) );
+                    out.println( "#log4j.logger." + qname + " = INFO" );
+                    out.println();
+                    out.flush();
+                }
+                if ( !notes.debug().isEmpty() && debug ) {
+                    out.println( format( notes.debug() ) );
+                    out.println( "#log4j.logger." + qname + " = DEBUG" );
+                    out.println();
+                    out.flush();
+                }
+                if ( !notes.trace().isEmpty() && trace ) {
+                    out.println( format( notes.trace() ) );
+                    out.println( "#log4j.logger." + qname + " = TRACE" );
+                    out.println();
+                    out.flush();
+                }
+            }
+            if ( pnotes != null ) {
+                String title = pnotes.title();
+
+                boolean isSubsystem = qname.replaceAll( "[^\\.]", "" ).length() == 2;
+
+                if ( !title.isEmpty() ) {
+                    block( title, out, isSubsystem );
+                }
+
+                if ( !pnotes.error().isEmpty() && error ) {
+                    out.println( format( pnotes.error() ) );
+                    out.println( "#log4j.logger." + qname + " = ERROR" );
+                    out.println();
+                    out.flush();
+                }
+                if ( !pnotes.warn().isEmpty() && warn ) {
+                    out.println( format( pnotes.warn() ) );
+                    out.println( "#log4j.logger." + qname + " = WARN" );
+                    out.println();
+                    out.flush();
+                }
+                if ( !pnotes.info().isEmpty() && info ) {
+                    out.println( format( pnotes.info() ) );
+                    out.println( "#log4j.logger." + qname + " = INFO" );
+                    out.println();
+                    out.flush();
+                }
+                if ( !pnotes.debug().isEmpty() && debug ) {
+                    out.println( format( pnotes.debug() ) );
+                    out.println( "#log4j.logger." + qname + " = DEBUG" );
+                    out.println();
+                    out.flush();
+                }
+                if ( !pnotes.trace().isEmpty() && trace ) {
+                    out.println( format( pnotes.trace() ) );
+                    out.println( "#log4j.logger." + qname + " = TRACE" );
+                    out.println();
+                    out.flush();
+                }
+            }
+            for ( Entry<String, Tree> entry : children.entrySet() ) {
+                entry.getValue().print( out, qname + ( qname.isEmpty() ? "" : "." ) + entry.getKey(), error, warn,
+                                        info, debug, trace );
+            }
+            out.rollback();
+        }
+    }
+
 }
