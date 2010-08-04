@@ -122,8 +122,10 @@ public class ObservationStoreManager {
 
     /**
      * @param url
+     * @throws ObservationDatastoreException
      */
-    private static ObservationDatastore create( URL url ) {
+    private static ObservationDatastore create( URL url )
+                            throws ObservationDatastoreException {
         XMLAdapter adapter = new XMLAdapter( url );
         ObservationStoreXMLAdapter storeAdapter = new ObservationStoreXMLAdapter();
         storeAdapter.setRootElement( adapter.getRootElement() );
@@ -150,7 +152,6 @@ public class ObservationStoreManager {
 
     /**
      * @param contStore
-     * @return
      */
     private static DatastoreConfiguration getContStoreConfig( ContinuousObservationStore contStore ) {
         String jdbcId = contStore.getJDBCConnId();
@@ -183,7 +184,6 @@ public class ObservationStoreManager {
 
     /**
      * @param simpleStore
-     * @return
      */
     private static DatastoreConfiguration getSimpleStoreConfig( SimpleObservationStore simpleStore ) {
         String jdbcId = simpleStore.getJDBCConnId();
