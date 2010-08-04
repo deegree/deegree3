@@ -63,6 +63,11 @@ public class CommonNamespaces {
      * The OGCNS namespace is currently bound to: "http://www.opengis.net/ogc"
      */
     public static final String OGCNS = "http://www.opengis.net/ogc";
+    
+    /**
+     * The OWS_11_NS namespace is currently bound to: "http://www.opengis.net/ows/1.1"
+     */
+    public static final String OWS_11_NS = "http://www.opengis.net/ows/1.1";
 
     /**
      * The XLNNS namespace is currently bound to: "http://www.w3.org/1999/xlink"
