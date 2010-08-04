@@ -68,6 +68,20 @@
               </sources>
             </configuration>
           </execution>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>target/log4j.properties</file>
+                  <type>properties</type>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
