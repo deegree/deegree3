@@ -36,6 +36,8 @@
 
 package org.deegree.commons.utils;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -64,6 +66,8 @@ import org.slf4j.Logger;
  * @version $Revision: $, $Date: $
  */
 public final class ProxyUtils {
+
+    private static final Logger LOG = getLogger( ProxyUtils.class );
 
     private static final String PROXY_HOST = "proxyHost";
 
@@ -101,9 +105,17 @@ public final class ProxyUtils {
      * Sets/augments the VM's proxy configuration.
      * 
      * @param proxyConfigFile
+     * @throws IllegalArgumentException
      */
     public synchronized static void setupProxyParameters( File proxyConfigFile )
                             throws IllegalArgumentException {
+        if ( !proxyConfigFile.exists() ) {
+            LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
+            return;
+        }
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Proxy configuration." );
+        LOG.info( "--------------------------------------------------------------------------------" );
         try {
             String contextName = "org.deegree.commons.proxy.jaxb";
             JAXBContext jc = JAXBContext.newInstance( contextName );
@@ -116,6 +128,8 @@ public final class ProxyUtils {
             String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
             throw new IllegalArgumentException( msg, e );
         }
+        logProxyConfiguration( LOG );
+        LOG.info( "" );
     }
 
     /**

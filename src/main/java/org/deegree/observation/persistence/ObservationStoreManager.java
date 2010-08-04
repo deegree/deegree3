@@ -69,7 +69,18 @@ public class ObservationStoreManager {
 
     private static Map<String, ObservationDatastore> idToOds = Collections.synchronizedMap( new HashMap<String, ObservationDatastore>() );
 
+    /**
+     * @param osDir
+     */
     public static void init( File osDir ) {
+        if ( !osDir.exists() ) {
+            LOG.info( "No 'datasources/observation' directory -- skipping initialization of observation stores." );
+            return;
+        }
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up observation stores." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
         File[] osConfigFiles = osDir.listFiles( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
@@ -88,6 +99,7 @@ public class ObservationStoreManager {
                 LOG.error( "Error creating feature store: " + e.getMessage(), e );
             }
         }
+        LOG.info( "" );
     }
 
     /**
@@ -110,11 +122,8 @@ public class ObservationStoreManager {
 
     /**
      * @param url
-     * @return
-     * @throws SOServiceException
      */
-    private static ObservationDatastore create( URL url )
-                            throws ObservationDatastoreException {
+    private static ObservationDatastore create( URL url ) {
         XMLAdapter adapter = new XMLAdapter( url );
         ObservationStoreXMLAdapter storeAdapter = new ObservationStoreXMLAdapter();
         storeAdapter.setRootElement( adapter.getRootElement() );
@@ -205,6 +214,11 @@ public class ObservationStoreManager {
         return dsConf;
     }
 
+    /**
+     * @param datastoreId
+     * @return a new store
+     * @throws ObservationDatastoreException
+     */
     public static ObservationDatastore getDatastoreById( String datastoreId )
                             throws ObservationDatastoreException {
         if ( idToOds.containsKey( datastoreId ) ) {
@@ -214,6 +228,10 @@ public class ObservationStoreManager {
                                                  + " is not registered in the ObservationStoreManager" );
     }
 
+    /**
+     * @param datastoreId
+     * @return true, if it does
+     */
     public static boolean containsDatastore( String datastoreId ) {
         return idToOds.containsKey( datastoreId );
     }

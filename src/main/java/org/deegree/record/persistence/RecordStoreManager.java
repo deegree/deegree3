@@ -98,7 +98,6 @@ public class RecordStoreManager {
      *             if the creation fails, e.g. due to a configuration error
      * 
      */
-    @SuppressWarnings("unchecked")
     public static synchronized RecordStore create( URL configURL )
                             throws RecordStoreException {
 
@@ -110,7 +109,7 @@ public class RecordStoreManager {
         } catch ( JAXBException e ) {
             e.printStackTrace();
         }
-        return new ISORecordStore(config );
+        return new ISORecordStore( config );
     }
 
     private static void registerAndInit( RecordStore rs, String id )
@@ -132,6 +131,13 @@ public class RecordStoreManager {
      * @param rsDir
      */
     public static void init( File rsDir ) {
+        if ( !rsDir.exists() ) {
+            LOG.info( "No 'datasources/record' directory -- skipping initialization of record stores." );
+            return;
+        }
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up record stores." );
+        LOG.info( "--------------------------------------------------------------------------------" );
         File[] rsConfigFiles = rsDir.listFiles( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
@@ -151,5 +157,6 @@ public class RecordStoreManager {
                 LOG.error( "Error initializing feature store: " + e.getMessage(), e );
             }
         }
+        LOG.info( "" );
     }
 }

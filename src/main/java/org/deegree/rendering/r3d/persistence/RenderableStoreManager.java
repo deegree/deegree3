@@ -99,14 +99,13 @@ public class RenderableStoreManager {
      *            containing renderable manager configurations
      */
     public static void init( File configLocation ) {
-        if ( configLocation == null ) {
-            LOG.warn( "The RenderableStore config location may not be null." );
+        if(!configLocation.exists()){
+            LOG.info( "No 'datasources/renderable' directory -- skipping initialization of renderable stores." );
             return;
         }
-        if ( !configLocation.exists() ) {
-            LOG.warn( "The given RenderableStore config location does not exist: " + configLocation.getAbsolutePath() );
-            return;
-        }
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up renderable stores." );
+        LOG.info( "--------------------------------------------------------------------------------" );
         File[] rsConfigFiles = null;
         if ( configLocation.isFile() ) {
             String ext = FileUtils.getFileExtension( configLocation );
@@ -150,6 +149,7 @@ public class RenderableStoreManager {
                 }
             }
         }
+        LOG.info( "" );
     }
 
     /**

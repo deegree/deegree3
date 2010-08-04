@@ -71,7 +71,9 @@ public class CoverageBuilderManager {
 
     private static Map<String, CoverageBuilder> nsToBuilder = new ConcurrentHashMap<String, CoverageBuilder>();
 
-    private static Map<String, AbstractCoverage> idToCov = Collections.synchronizedMap( new HashMap<String, AbstractCoverage>() );
+    private Map<String, AbstractCoverage> idToCov = Collections.synchronizedMap( new HashMap<String, AbstractCoverage>() );
+
+    private File coverageConfigLocation;
 
     /**
      * Load all available {@link CoverageBuilder}s
@@ -97,12 +99,25 @@ public class CoverageBuilderManager {
     }
 
     /**
-     * Initializes the {@link CoverageBuilderManager} by loading all coverage configurations from the given directory.
-     * 
      * @param coverageConfigLocation
-     *            containing coverage configurations
      */
-    public static void init( File coverageConfigLocation ) {
+    public CoverageBuilderManager( File coverageConfigLocation ) {
+        this.coverageConfigLocation = coverageConfigLocation;
+    }
+
+    /**
+     * Initializes the {@link CoverageBuilderManager} by loading all coverage configurations from the given directory
+     * (given while constructing).
+     * 
+     */
+    public void init() {
+        if ( coverageConfigLocation == null || !coverageConfigLocation.exists() ) {
+            LOG.info( "No 'datasources/coverage' directory -- skipping initialization of coverage stores." );
+            return;
+        }
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up coverages from '{}'", coverageConfigLocation );
+        LOG.info( "--------------------------------------------------------------------------------" );
         if ( coverageConfigLocation == null ) {
             LOG.warn( "The coverage config location may not be null." );
             return;
@@ -153,6 +168,7 @@ public class CoverageBuilderManager {
                 }
             }
         }
+        LOG.info( "" );
     }
 
     /**
@@ -162,7 +178,7 @@ public class CoverageBuilderManager {
      *            identifier of the coverage instance
      * @return the corresponding {@link AbstractCoverage} instance or null if no such instance has been created
      */
-    public static AbstractCoverage get( String id ) {
+    public AbstractCoverage get( String id ) {
         return idToCov.get( id );
     }
 
@@ -171,7 +187,7 @@ public class CoverageBuilderManager {
      * 
      * @return the {@link AbstractCoverage}s instance, may be empty but never <code>null</code>
      */
-    public static Collection<AbstractCoverage> getAll() {
+    public Collection<AbstractCoverage> getAll() {
         return idToCov.values();
     }
 
