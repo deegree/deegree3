@@ -455,7 +455,7 @@ public class RTree<T> extends SpatialIndex<T> {
             LOG.error( "The tree is empty. Nothing to remove." );
             return false;
         }
-        ArrayEncapsRemove[] trace = findLeafWithValue( object, root );
+        TraceCell[] trace = findLeafWithValue( object, root );
         if ( trace != null ) {
             removeFromArray( trace[0].node, trace[0].index );
             removedEntries = new ArrayList<Entry<T>>();
@@ -514,7 +514,7 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param removed
      *            boolean, indicates whether the child node has been deleted (having < smallm entries) or not
      */
-    private void condenseTree( ArrayEncapsRemove[] trace, int traceIndex, boolean removed ) {
+    private void condenseTree( TraceCell[] trace, int traceIndex, boolean removed ) {
         if ( traceIndex < trace.length ) {
             int entryIndex = trace[traceIndex].index;
             Entry<T>[] entries = trace[traceIndex].node;
@@ -572,18 +572,17 @@ public class RTree<T> extends SpatialIndex<T> {
     }
 
     /**
-     * Returns an array of {@ArrayEncapsRemove} i.e. that contains a pairs of (node, index of the
-     * entry in the node)
+     * Returns an array of {@TraceCell} i.e. that contains a pairs of (node, index of the entry in the node)
      * 
      * @param object
      * @param entries
      */
-    private ArrayEncapsRemove[] findLeafWithValue( T object, Entry<T>[] entries ) {
+    private TraceCell[] findLeafWithValue( T object, Entry<T>[] entries ) {
         if ( entries[0].next == null ) {
             // leaf node, try to find object in one of the entries
             for ( int i = 0; i < entries.length; i++ ) {
                 if ( entries[i] != null && entries[i].entryValue.equals( object ) ) {
-                    return new ArrayEncapsRemove[] { new ArrayEncapsRemove( entries, i ) };
+                    return new TraceCell[] { new TraceCell( entries, i ) };
                 }
             }
             return null;
@@ -592,12 +591,12 @@ public class RTree<T> extends SpatialIndex<T> {
         // non-leaf nodes, continue depth-first search
         for ( int i = 0; i < entries.length; i++ ) {
             if ( entries[i] != null ) {
-                ArrayEncapsRemove[] furtherTrace = findLeafWithValue( object, entries[i].next );
+                TraceCell[] furtherTrace = findLeafWithValue( object, entries[i].next );
                 if ( furtherTrace != null ) {
                     // add this node to the trace
-                    ArrayEncapsRemove[] updatedResult = new ArrayEncapsRemove[furtherTrace.length + 1];
+                    TraceCell[] updatedResult = new TraceCell[furtherTrace.length + 1];
                     System.arraycopy( furtherTrace, 0, updatedResult, 0, furtherTrace.length );
-                    updatedResult[furtherTrace.length] = new ArrayEncapsRemove( entries, i );
+                    updatedResult[furtherTrace.length] = new TraceCell( entries, i );
                     return updatedResult;
                 }
             }
@@ -692,11 +691,10 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param parent
      */
     private void insertNode( float[] insertBox, T object, Entry<T>[] entries ) {
-
         List<TraceCell> trace = new ArrayList<TraceCell>();
         Entry<T>[] leafNode = chooseLeaf( insertBox, entries, trace );
 
-        Entry<T> newEntry = new Entry();
+        Entry<T> newEntry = new Entry<T>();
         newEntry.bbox = insertBox;
         newEntry.entryValue = object;
         newEntry.next = null;
@@ -712,7 +710,8 @@ public class RTree<T> extends SpatialIndex<T> {
         if ( leafNode[bigM] != null ) {
             int splitIndex = split( leafNode, insertBox, object );
 
-            Entry<T>[] addedNode = new Entry[bigM + 1];
+            @SuppressWarnings( { "unchecked", "cast" })
+            Entry<T>[] addedNode = (Entry<T>[]) new Entry[bigM + 1];
             Arrays.fill( addedNode, null );
             System.arraycopy( leafNode, splitIndex + 1, addedNode, 0, bigM - splitIndex );
             Arrays.fill( leafNode, splitIndex + 1, bigM + 1, null );
@@ -723,17 +722,6 @@ public class RTree<T> extends SpatialIndex<T> {
 
         } else {
             adjustTree( leafNode, null, trace, trace.size() - 1 );
-        }
-    }
-
-    class TraceCell {
-        Entry<T>[] node;
-
-        int index;
-
-        TraceCell( Entry<T>[] node, int index ) {
-            this.node = node;
-            this.index = index;
         }
     }
 
@@ -1229,8 +1217,8 @@ public class RTree<T> extends SpatialIndex<T> {
     }
 
     /**
-     * The <code>ArrayEncapsRemove</code> class encapsulates a pair of (entries array, index in this array). Its use is
-     * in recording the trace of entries in nodes, from leaf to root, in the context of removal operation. It has been
+     * The <code>TraceCell</code> class encapsulates a pair of (entries array, index in this array). Its use is in
+     * recording the trace of entries in nodes, from leaf to root, in the context of removal operation. It has been
      * preferred to using a Pair for clarity of syntax reasons.
      * 
      * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -1240,12 +1228,12 @@ public class RTree<T> extends SpatialIndex<T> {
      * @version $Revision$, $Date$
      * 
      */
-    class ArrayEncapsRemove<T> {
+    class TraceCell<T> {
         Entry<T>[] node;
 
         int index;
 
-        public ArrayEncapsRemove( Entry<T>[] node, int index ) {
+        public TraceCell( Entry<T>[] node, int index ) {
             this.node = node;
             this.index = index;
         }
