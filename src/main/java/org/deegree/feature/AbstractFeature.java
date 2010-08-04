@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,6 +58,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StandardGMLFeatureProps;
 import org.deegree.gml.props.GMLStdProps;
 import org.jaxen.JaxenException;
+import org.jaxen.NamespaceContext;
 import org.jaxen.XPath;
 
 /**
@@ -86,7 +90,21 @@ public abstract class AbstractFeature implements Feature {
 
         // no. activate the full xpath machinery
         XPath xpath = new FeatureXPath( propName.getPropertyName(), this, version );
-        xpath.setNamespaceContext( propName.getNsContext() );
+        final NamespaceContext origNsContext = xpath.getNamespaceContext();
+
+        // rebuilding the namespace context and omitting the default namespace
+        // needed for 1.1.0 CITE compliance (xpath function not found)
+        NamespaceContext nsContext = new NamespaceContext() {
+            @Override
+            public String translateNamespacePrefixToUri( String prefix ) {
+                if ( DEFAULT_NS_PREFIX.equals( prefix ) ) {
+                    return NULL_NS_URI;
+                }
+                return origNsContext.translateNamespacePrefixToUri( prefix );
+            }
+        };
+
+        xpath.setNamespaceContext( nsContext );
         List<?> selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature>( null, this, version ) );
 
         TypedObjectNode[] resultValues = new TypedObjectNode[selectedNodes.size()];

@@ -36,6 +36,8 @@
 
 package org.deegree.commons.xml;
 
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -57,6 +59,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -1320,9 +1323,14 @@ public class XMLAdapter {
                 break;
             }
             case START_ELEMENT: {
-                if ( inStream.getNamespaceURI() == null || inStream.getPrefix() == null ) {
+                if ( inStream.getNamespaceURI() == NULL_NS_URI || inStream.getPrefix() == DEFAULT_NS_PREFIX ) {
                     writer.writeStartElement( inStream.getLocalName() );
                 } else {
+                    if ( writer.getNamespaceContext().getPrefix( inStream.getPrefix() ) == XMLConstants.NULL_NS_URI ) {
+                        // TODO handle special cases for prefix binding, see
+                        // http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/javax/xml/namespace/NamespaceContext.html#getNamespaceURI(java.lang.String)
+                        writer.setPrefix( inStream.getPrefix(), inStream.getNamespaceURI() );
+                    }
                     writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
                 }
                 // copy all namespace bindings
