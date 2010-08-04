@@ -189,6 +189,18 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                 return true;
             }
 
+            out.println( "# by default, only log to stdout" );
+            out.println( "log4j.rootLogger=INFO, stdout" );
+            out.println( "log4j.appender.stdout=org.apache.log4j.ConsoleAppender" );
+            out.println( "log4j.appender.stdout.layout=org.apache.log4j.PatternLayout" );
+            out.println( "log4j.appender.stdout.layout.ConversionPattern=[%d{HH:mm:ss}] %5p: [%c{1}] %m%n" );
+            out.println();
+            out.println( "# The log level for all classes that are not configured below." );
+            out.println( "log4j.logger.org.deegree=INFO" );
+            out.println();
+            out.println( "# automatically generated output follows" );
+            out.println();
+
             // first run for errors, warnings, info
             block( "Errors, warnings and informational messages", out, true );
             out.flush();
