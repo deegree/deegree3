@@ -72,6 +72,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.SunInfo;
@@ -79,11 +80,8 @@ import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
-import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
-import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.rendering.r3d.opengl.JOGLUtils;
 import org.deegree.rendering.r3d.opengl.display.LODAnalyzer;
@@ -96,7 +94,6 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
-import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.wpvs.WPVSController;
 import org.deegree.services.controller.wpvs.getview.GetView;
@@ -147,6 +144,8 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
     private final static double zNear = 1.0;
 
     private final static double zFar = 100000.0;
+
+    private static DeegreeWorkspace workspace;
 
     private final GLU glu = new GLU();
 
@@ -234,7 +233,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         lodAnalyzerFrame.setSize( 600, 600 );
         lodAnalyzerFrame.setLocationByPlatform( true );
 
-        this.perspectiveViewService = new PerspectiveViewService( configAdapter, sc );
+        this.perspectiveViewService = new PerspectiveViewService( configAdapter, sc, workspace );
 
         this.demRenderer = this.perspectiveViewService.getDefaultDEMRenderer();
         DEMDataset dDW = this.perspectiveViewService.getDEMDatasets();
@@ -309,11 +308,6 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         }
     }
 
-    /**
-     * @param perspectiveViewService
-     * @throws IOException
-     * 
-     */
     private void initModels() {
         if ( this.perspectiveViewService.getAllRenderableRenderers() != null
              && !this.perspectiveViewService.getAllRenderableRenderers().isEmpty() ) {
@@ -397,9 +391,6 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
     }
 
-    /**
-     * @param gl
-     */
     private void renderCopyright() {
         Texture copyImage = TexturePool.getTexture( glRenderContext, copyrightID );
         if ( copyImage != null ) {
@@ -417,9 +408,6 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         }
     }
 
-    /**
-     * @param gl
-     */
     private void setBackground() {
         Texture skyImage = TexturePool.getTexture( glRenderContext, skyImageID );
         if ( skyImage != null ) {
@@ -430,8 +418,6 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
     /**
      * Draw a 2d quad width given width height and location, and use given texture.
      * 
-     * @param gl
-     *            to render to
      * @param x
      * @param y
      * @param quadWidth
@@ -950,17 +936,15 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             baseDir = p2;
 
         }
-        initJDBCConnections( baseDir );
+
+        workspace = new DeegreeWorkspace( baseDir );
 
         File dsDir = new File( baseDir, "/datasources/" );
         if ( !dsDir.exists() ) {
             throw new FileNotFoundException( "The expected datasource location " + dsDir.getAbsolutePath()
                                              + ", does not exists, please supply a valid configuration directory." );
         }
-        initFeatureStores( dsDir );
-        initBatchedMTStores( dsDir );
-        initCoverages( dsDir );
-        initRenderableStores( dsDir );
+        workspace.initAll();
 
         if ( wpvsConfig == null ) {
             wpvsConfig = new File( baseDir, "services/wpvs.xml" );
@@ -987,79 +971,6 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             params = gv.getViewParameters();
         }
         return new InteractiveWPVS( controllerConf, sc, params, zScale );
-    }
-
-    private static void initFeatureStores( File baseDir ) {
-
-        File fsDir = new File( baseDir, "/feature" );
-
-        if ( fsDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up feature stores." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            FeatureStoreManager.init( fsDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No '" + baseDir.getAbsolutePath()
-                       + "/feature' directory -- skipping initialization of feature stores." );
-        }
-    }
-
-    private static void initCoverages( File baseDir ) {
-        File coverageDir = new File( baseDir, "/coverage" );
-        if ( coverageDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up coverages." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            CoverageBuilderManager.init( coverageDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No '" + baseDir.getAbsolutePath()
-                       + "/coverage' directory -- skipping initialization of coverages." );
-        }
-    }
-
-    private static void initRenderableStores( File baseDir ) {
-        File renderableDir = new File( baseDir, "/renderable" );
-        if ( renderableDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up renderable stores." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            RenderableStoreManager.init( renderableDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No '" + baseDir.getAbsolutePath()
-                       + "/renderable' directory -- skipping initialization of renderable stores." );
-        }
-    }
-
-    private static void initBatchedMTStores( File baseDir ) {
-        File batchedMTDir = new File( baseDir, "/batchedmt" );
-        if ( batchedMTDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up BatchedMT stores." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            BatchedMTStoreManager.init( batchedMTDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No '" + baseDir.getAbsolutePath()
-                       + "/batchedmt' directory -- skipping initialization of BatchedMT stores." );
-        }
-
-    }
-
-    private static void initJDBCConnections( File baseDir ) {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up JDBC connection pools." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-
-        File jdbcDir = new File( baseDir, "/jdbc" );
-        if ( jdbcDir.exists() ) {
-            ConnectionManager.init( jdbcDir );
-        } else {
-            LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
-        }
-        LOG.info( "" );
     }
 
     private ViewParams getViewParams( TerrainRenderingManager demRenderer ) {
@@ -1321,7 +1232,6 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
     /**
      * @param request
-     * @return
      */
     private static Map<String, String> parseRequest( String request ) {
 

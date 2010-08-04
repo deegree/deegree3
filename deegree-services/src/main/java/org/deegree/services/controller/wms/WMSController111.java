@@ -40,7 +40,6 @@ import static org.deegree.services.controller.ows.OWSException.INVALID_SRS;
 import static org.deegree.services.i18n.Messages.get;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.xml.stream.XMLStreamException;
@@ -66,17 +65,6 @@ import org.deegree.services.wms.MapService;
  * @version $Revision$, $Date$
  */
 public class WMSController111 extends WMSControllerBase {
-
-    protected final static HashMap<String, String> CRSMAPPINGS = new HashMap<String, String>();
-
-    static {
-        CRSMAPPINGS.put( "EPSG:4326", "CRS:84" );
-        CRSMAPPINGS.put( "EPSG:31466", "EPSG:31462" );
-        CRSMAPPINGS.put( "EPSG:31467", "EPSG:31463" );
-        // TODO check back with TMC
-//        CRSMAPPINGS.put( "EPSG:31468", "EPSG:31464" );
-        CRSMAPPINGS.put( "EPSG:31469", "EPSG:31465" );
-    }
 
     /**
      * 
@@ -117,8 +105,7 @@ public class WMSController111 extends WMSControllerBase {
 
             return Utils.getAutoCRS( id, lon0, lat0 );
         }
-        String other = CRSMAPPINGS.get( crs );
-        return new CRS( other == null ? crs : other );
+        return new CRS( crs, true );
     }
 
     @Override

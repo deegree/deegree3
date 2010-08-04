@@ -40,7 +40,6 @@ import static org.deegree.services.controller.ows.OWSException.INVALID_CRS;
 import static org.deegree.services.i18n.Messages.get;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.xml.stream.XMLStreamException;
@@ -69,16 +68,6 @@ import org.deegree.services.wms.MapService;
  */
 public class WMSController130 extends WMSControllerBase {
 
-    protected final static HashMap<String, String> CRSMAPPINGS = new HashMap<String, String>();
-
-    static {
-        CRSMAPPINGS.put( "EPSG:4326", "urn:ogc:def:crs:EPSG::4326" );
-        CRSMAPPINGS.put( "EPSG:31466", "urn:ogc:def:crs:EPSG::31466" );
-        CRSMAPPINGS.put( "EPSG:31467", "urn:ogc:def:crs:EPSG::31467" );
-        CRSMAPPINGS.put( "EPSG:31468", "urn:ogc:def:crs:EPSG::31468" );
-        CRSMAPPINGS.put( "EPSG:31469", "urn:ogc:def:crs:EPSG::31469" );
-    }
-
     /**
      * 
      */
@@ -105,8 +94,7 @@ public class WMSController130 extends WMSControllerBase {
      * @return a new CRS
      */
     public static CRS getCRS( String crs ) {
-        String other = CRSMAPPINGS.get( crs );
-        return new CRS( other == null ? crs : other );
+        return new CRS( crs );
     }
 
     /**
@@ -126,9 +114,7 @@ public class WMSController130 extends WMSControllerBase {
             return new GeometryFactory().createEnvelope( factor * bbox[0], factor * bbox[1], factor * bbox[2],
                                                          factor * bbox[3], Utils.getAutoCRS( id, lon0, lat0 ) );
         }
-        String other = CRSMAPPINGS.get( crs );
-        return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], new CRS( other == null ? crs
-                                                                                                               : other ) );
+        return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], new CRS( crs ) );
     }
 
     @Override

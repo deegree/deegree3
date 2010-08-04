@@ -92,10 +92,16 @@ public class ConnectionManager {
      * @param jdbcDir
      */
     public static void init( File jdbcDir ) {
+        if ( !jdbcDir.exists() ) {
+            LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
+            return;
+        }
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up JDBC connection pools." );
+        LOG.info( "--------------------------------------------------------------------------------" );
         File[] fsConfigFiles = jdbcDir.listFiles( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
-                // TODO Auto-generated method stub
                 return name.toLowerCase().endsWith( ".xml" );
             }
         } );
@@ -110,6 +116,7 @@ public class ConnectionManager {
                 LOG.error( "Error initializing JDBC connection pool: " + e.getMessage(), e );
             }
         }
+        LOG.info( "" );
     }
 
     /**

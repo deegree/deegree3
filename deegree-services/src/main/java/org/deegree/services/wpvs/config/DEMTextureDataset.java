@@ -47,6 +47,7 @@ import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.AbstractCoverage;
@@ -93,6 +94,8 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
 
     private final int maxTexturesInGPU;
 
+    private final DeegreeWorkspace workspace;
+    
     /**
      * 
      * @param textureByteBufferPool
@@ -100,13 +103,15 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      *            the number of textures in gpu cache
      * @param maxCachedTextureTiles
      *            the number of texture tiles in cache.
+     * @param workspace the workspace to be used to load data
      */
     public DEMTextureDataset( DirectByteBufferPool textureByteBufferPool, int maxTexturesInGPU,
-                              int maxCachedTextureTiles ) {
+                              int maxCachedTextureTiles, DeegreeWorkspace workspace ) {
         // super( sceneEnvelope, translationToLocalCRS, configAdapter );
         this.textureByteBufferPool = textureByteBufferPool;
         this.maxTexturesInGPU = maxTexturesInGPU;
         this.maxCachedTextureTiles = maxCachedTextureTiles;
+        this.workspace = workspace;
     }
 
     @Override
@@ -262,7 +267,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
      * @param tileProviders
      */
     private Envelope fillFromCoverage( String coverageStoreId, List<TextureTileProvider> tileProviders ) {
-        AbstractCoverage coverage = CoverageBuilderManager.get( coverageStoreId );
+        AbstractCoverage coverage = workspace.getCoverageBuilderManager().get( coverageStoreId );
         if ( coverage == null ) {
             LOG.warn( "The coverage builder with id: " + coverageStoreId
                       + " could not create a coverage, ignoring dataset." );

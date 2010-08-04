@@ -47,6 +47,7 @@ import java.util.List;
 
 import javax.media.opengl.GLPbuffer;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.deegree.commons.xml.XMLAdapter;
@@ -148,6 +149,8 @@ public class PerspectiveViewService {
 
     private double latitudeOfScene;
 
+    private DeegreeWorkspace workspace;
+
     /**
      * Creates a new {@link PerspectiveViewService} from the given parameters.
      * 
@@ -155,9 +158,12 @@ public class PerspectiveViewService {
      *            needed for the resolving of any relative urls in the configuration documents
      * @param sc
      *            the service configuration created with jaxb
+     * @param workspace
+     *            the workspace used to load data
      * @throws ServiceInitException
      */
-    public PerspectiveViewService( XMLAdapter configAdapter, ServiceConfiguration sc ) throws ServiceInitException {
+    public PerspectiveViewService( XMLAdapter configAdapter, ServiceConfiguration sc, DeegreeWorkspace workspace )
+                            throws ServiceInitException {
         DatasetDefinitions dsd = sc.getDatasetDefinitions();
         serviceConfiguration = sc;
         this.nearClippingPlane = ( sc.getNearClippingPlane() == null ) ? 0.1 : sc.getNearClippingPlane();
@@ -169,6 +175,7 @@ public class PerspectiveViewService {
         this.maxRequestHeight = pBufferPool.getMaxHeight();
         this.maxTextureSize = pBufferPool.getMaxTextureSize();
         this.resultImageSize = maxRequestHeight * maxRequestWidth * 3;
+        this.workspace = workspace;
         resultImagePool = new DirectByteBufferPool(
                                                     resultImageSize
                                                                             * ( sc.getNumberOfResultImageBuffers() == null ? 25
@@ -344,7 +351,7 @@ public class PerspectiveViewService {
         textureByteBufferPool = new DirectByteBufferPool( dTM * 1024 * 1024, "texture coordinates buffer pool." );
         int tIG = sc.getTexturesInGPUMem() == null ? 300 : sc.getTexturesInGPUMem();
         int cTT = sc.getCachedTextureTiles() == null ? 400 : sc.getCachedTextureTiles();
-        textureDatasets = new DEMTextureDataset( textureByteBufferPool, cTT, tIG );
+        textureDatasets = new DEMTextureDataset( textureByteBufferPool, cTT, tIG, workspace );
         sceneEnvelope = textureDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                     configAdapter, dsd );
 

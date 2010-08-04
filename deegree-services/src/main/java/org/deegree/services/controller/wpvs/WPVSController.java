@@ -38,6 +38,7 @@ package org.deegree.services.controller.wpvs;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.protocol.wpvs.WPVSConstants.VERSION_040;
 import static org.deegree.protocol.wpvs.WPVSConstants.WPVS_NS;
+import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -150,7 +151,7 @@ public class WPVSController extends AbstractOGCServiceController {
         try {
             publishedInformation = parsePublishedInformation( nsContext, controllerConf );
             ServiceConfiguration sc = parseServerConfiguration( nsContext, controllerConf );
-            service = new PerspectiveViewService( controllerConf, sc );
+            service = new PerspectiveViewService( controllerConf, sc, getServiceWorkspace() );
         } catch ( JAXBException e ) {
             e.printStackTrace();
             throw new ControllerInitException( e.getMessage(), e );

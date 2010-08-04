@@ -37,9 +37,9 @@ package org.deegree.services.controller.security;
 
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.DTD;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.utils.ProxyUtils.setupProxyParameters;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.post;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
@@ -70,7 +70,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
@@ -99,10 +99,25 @@ public class SecureProxy extends HttpServlet {
 
     private SecurityConfiguration securityConfiguration;
 
+    private DeegreeWorkspace workspace;
+
     @Override
     public void init( ServletConfig config )
                             throws ServletException {
         super.init( config );
+
+        try {
+            File workspaceDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
+            workspace = new DeegreeWorkspace( workspaceDir );
+        } catch ( MalformedURLException e ) {
+            String msg = "Secure Proxy was NOT started, since the configuration could not be loaded.";
+            LOG.error( msg );
+            throw new ServletException( msg );
+        } catch ( URISyntaxException e ) {
+            String msg = "Secure Proxy was NOT started, since the configuration could not be loaded.";
+            LOG.error( msg );
+            throw new ServletException( msg );
+        }
 
         @SuppressWarnings("unchecked")
         Enumeration<String> e = config.getInitParameterNames();
@@ -121,45 +136,16 @@ public class SecureProxy extends HttpServlet {
         // working around unwanted deegree 2 ant artefacts... an URL normalization would be nice
         proxiedUrl = proxiedUrl.replace( ":80", "" );
 
-        File jdbcDir = null;
-        try {
-            jdbcDir = new File( resolveFileLocation( "WEB-INF/conf/jdbc", getServletContext() ).toURI() );
-        } catch ( MalformedURLException ex ) {
-            LOG.info( "JDBC connection directory could not be resolved: '{}'", ex.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", ex );
-        } catch ( URISyntaxException ex ) {
-            LOG.info( "JDBC connection directory could not be resolved: '{}'", ex.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", ex );
-        }
-        if ( jdbcDir != null && jdbcDir.exists() ) {
-            ConnectionManager.init( jdbcDir );
-        } else {
-            LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
-        }
+        workspace.initAll();
 
-        securityConfiguration = new SecurityConfiguration( getServletContext() );
+        securityConfiguration = new SecurityConfiguration( workspace );
+        securityConfiguration.init();
         credentialsProvider = securityConfiguration.getCredentialsProvider();
         if ( credentialsProvider == null ) {
             String msg = "You need to provide an WEB-INF/conf/services/security/security.xml which defines at least one credentials provider.";
             LOG.info( "Secure Proxy was NOT started:" );
             LOG.info( msg );
             throw new ServletException( msg );
-        }
-
-        File proxyUrl = null;
-        try {
-            proxyUrl = new File( resolveFileLocation( "WEB-INF/conf/proxy.xml", getServletContext() ).toURI() );
-            if ( proxyUrl.exists() ) {
-                setupProxyParameters( proxyUrl );
-            } else {
-                LOG.info( "No proxy configuration found." );
-            }
-        } catch ( MalformedURLException ex ) {
-            LOG.info( "No proxy configuration found: '{}'", ex.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", ex );
-        } catch ( URISyntaxException ex ) {
-            LOG.info( "No proxy configuration found: '{}'", ex.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", ex );
         }
 
         LOG.info( "deegree 3 secure proxy initialized." );
@@ -278,6 +264,11 @@ public class SecureProxy extends HttpServlet {
                 writer.writeCData( reader.getText() );
                 break;
             }
+            case DTD:
+                writer.writeDTD( reader.getText() );
+                firstRun = true;
+                reader.next();
+                break;
             case CHARACTERS: {
                 writer.writeCharacters( reader.getTextCharacters(), reader.getTextStart(), reader.getTextLength() );
                 break;

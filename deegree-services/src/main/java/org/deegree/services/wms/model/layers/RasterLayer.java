@@ -42,6 +42,7 @@ import static org.deegree.coverage.rangeset.RangeSetBuilder.createBandRangeSetFr
 import static org.deegree.coverage.rangeset.ValueType.Void;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOR;
+import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
@@ -58,7 +59,6 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.filter.raster.RasterFilter;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -132,7 +132,7 @@ public class RasterLayer extends Layer {
      */
     public RasterLayer( AbstractLayerType lay, Layer parent ) {
         super( lay, parent );
-        AbstractCoverage cov = CoverageBuilderManager.get( lay.getCoverageStoreId() );
+        AbstractCoverage cov = getServiceWorkspace().getCoverageBuilderManager().get( lay.getCoverageStoreId() );
         this.raster = (AbstractRaster) ( cov instanceof AbstractRaster ? cov : null );
         this.multiraster = (MultiResolutionRaster) ( cov instanceof MultiResolutionRaster ? cov : null );
 

@@ -92,19 +92,15 @@ public class BatchedMTStoreManager {
     }
 
     /**
-     * Initializes the {@link BatchedMTStoreManager} by loading all {@link BatchedMTStore} configurations from the
-     * given directory.
+     * Initializes the {@link BatchedMTStoreManager} by loading all {@link BatchedMTStore} configurations from the given
+     * directory.
      * 
      * @param configLocation
      *            containing BatchedMT manager configurations
      */
     public static void init( File configLocation ) {
-        if ( configLocation == null ) {
-            LOG.warn( "The BatchedMTStore config location may not be null." );
-            return;
-        }
         if ( !configLocation.exists() ) {
-            LOG.warn( "The given BatchedMTStore config location does not exist: " + configLocation.getAbsolutePath() );
+            LOG.info( "No 'datasources/batchedmt' directory -- skipping initialization of batchedmt stores." );
             return;
         }
         File[] rsConfigFiles = null;

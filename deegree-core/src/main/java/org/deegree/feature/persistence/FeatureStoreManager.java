@@ -103,6 +103,13 @@ public class FeatureStoreManager {
      * @param fsDir
      */
     public static void init( File fsDir ) {
+        if ( !fsDir.exists() ) {
+            LOG.info( "No 'datasources/feature' directory -- skipping initialization of feature stores." );
+            return;
+        }
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up feature stores." );
+        LOG.info( "--------------------------------------------------------------------------------" );
 
         File[] fsConfigFiles = fsDir.listFiles( new FilenameFilter() {
             @Override
@@ -122,6 +129,7 @@ public class FeatureStoreManager {
                 LOG.error( "Error creating feature store: " + e.getMessage(), e );
             }
         }
+        LOG.info( "" );
     }
 
     /**
@@ -192,7 +200,7 @@ public class FeatureStoreManager {
                 String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
                 throw new FeatureStoreException( msg );
             }
-            fs.init();            
+            fs.init();
             LOG.info( "Registering global feature store with id '" + id + "', type: '" + fs.getClass().getName() + "'" );
             idToFs.put( id, fs );
         }

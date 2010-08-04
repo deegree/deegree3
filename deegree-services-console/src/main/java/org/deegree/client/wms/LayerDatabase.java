@@ -38,6 +38,7 @@ package org.deegree.client.wms;
 import static java.lang.Boolean.FALSE;
 import static java.util.Collections.sort;
 import static org.deegree.commons.jdbc.Util.findSrid;
+import static org.deegree.services.controller.OGCFrontController.getServiceConfiguration;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
@@ -57,7 +58,6 @@ import lombok.Setter;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.LayerDatabaseHelper;
 import org.deegree.commons.jdbc.Util;
-import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.wms.WMSController;
 import org.deegree.services.wms.dynamic.LayerUpdater;
 import org.deegree.services.wms.dynamic.PostGISUpdater;
@@ -162,7 +162,7 @@ public class LayerDatabase implements Serializable {
             selectedConnection = connections.getFirst();
             fetchTables( null );
         }
-        WMSController controller = (WMSController) OGCFrontController.getServiceController( WMSController.class );
+        WMSController controller = (WMSController) getServiceConfiguration().getServiceController( WMSController.class );
         doesHaveWmsConnection = FALSE;
         doesHaveMultipleWmsConnections = FALSE;
         if ( controller != null ) {

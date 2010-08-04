@@ -35,8 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.security;
 
-import static org.deegree.services.controller.OGCFrontController.DEFAULT_CONFIG_PATH;
-import static org.deegree.services.controller.OGCFrontController.resolveFileLocation;
+import static java.io.File.separator;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -44,13 +43,10 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ServiceLoader;
 
-import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -58,6 +54,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.deegree.services.controller.CredentialsProviderManager;
@@ -76,13 +73,13 @@ public class SecurityConfiguration {
 
     private static final Logger LOG = getLogger( SecurityConfiguration.class );
 
-    private static final String DEFAULT_SECURITY_PATH = DEFAULT_CONFIG_PATH + "/services/security/security.xml";
-
     private static HashMap<String, AuthenticationAuthorityProvider> authenticationAuthorityProviders = new HashMap<String, AuthenticationAuthorityProvider>();
 
     private CredentialsProvider providers;
 
     private ArrayList<AuthenticationAuthority> authorities = new ArrayList<AuthenticationAuthority>();
+
+    private DeegreeWorkspace workspace;
 
     static {
         ServiceLoader<AuthenticationAuthorityProvider> loader = ServiceLoader.load( AuthenticationAuthorityProvider.class );
@@ -92,74 +89,72 @@ public class SecurityConfiguration {
     }
 
     /**
-     * @param context
+     * @param workspace
      */
-    public SecurityConfiguration( ServletContext context ) {
-        URL securityURL = null;
-        try {
-            securityURL = resolveFileLocation( DEFAULT_SECURITY_PATH, context );
-        } catch ( MalformedURLException e ) {
-            LOG.debug( "Could not resolve the location of security.xml: '{}'", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        if ( securityURL == null ) {
+    public SecurityConfiguration( DeegreeWorkspace workspace ) {
+        this.workspace = workspace;
+    }
+
+    /**
+     * 
+     */
+    public void init() {
+        File securityFile = new File( workspace.getLocation(), "services" + separator + "security" + separator
+                                                               + "security.xml" );
+        if ( !securityFile.exists() ) {
             LOG.debug( "No security.xml found." );
-        } else {
-            String contextName = "org.deegree.services.jaxb.security";
-            try {
-                JAXBContext jc = JAXBContext.newInstance( contextName );
-                Unmarshaller unmarshaller = jc.createUnmarshaller();
-                org.deegree.services.jaxb.security.SecurityConfiguration config;
-                config = (org.deegree.services.jaxb.security.SecurityConfiguration) unmarshaller.unmarshal( securityURL );
-                if ( config.getCredentialsProvider() != null ) {
-                    providers = CredentialsProviderManager.create( config.getCredentialsProvider() );
-                }
-            } catch ( JAXBException e ) {
-                LOG.debug( "Could not load security.xml: '{}'", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
+            return;
         }
 
+        String contextName = "org.deegree.services.jaxb.security";
         try {
-            securityURL = resolveFileLocation( DEFAULT_CONFIG_PATH + "/services/security/authorities/", context );
-            File authorities = new File( securityURL.toURI() );
-            XMLInputFactory fac = XMLInputFactory.newInstance();
-            if ( authorities.exists() && authorities.isDirectory() ) {
-                for ( File f : authorities.listFiles( new FileFilter() {
-                    public boolean accept( File f ) {
-                        return f.toString().toLowerCase().endsWith( ".xml" );
+            JAXBContext jc = JAXBContext.newInstance( contextName );
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            org.deegree.services.jaxb.security.SecurityConfiguration config;
+            config = (org.deegree.services.jaxb.security.SecurityConfiguration) unmarshaller.unmarshal( securityFile );
+            if ( config.getCredentialsProvider() != null ) {
+                providers = CredentialsProviderManager.create( config.getCredentialsProvider() );
+            }
+        } catch ( JAXBException e ) {
+            LOG.debug( "Could not load security.xml: '{}'", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
+
+        File authorities = new File( workspace.getLocation(), "services" + separator + "security" + separator
+                                                              + "authorities" );
+        XMLInputFactory fac = XMLInputFactory.newInstance();
+        if ( authorities.exists() && authorities.isDirectory() ) {
+            for ( File f : authorities.listFiles( new FileFilter() {
+                public boolean accept( File f ) {
+                    return f.toString().toLowerCase().endsWith( ".xml" );
+                }
+            } ) ) {
+                try {
+                    XMLStreamReader in = fac.createXMLStreamReader( new FileInputStream( f ) );
+                    in.next();
+                    String ns = in.getNamespaceURI();
+                    if ( ns == null ) {
+                        LOG.info( "The namespace in '{}' was not set, skipping file.", f );
+                        continue;
                     }
-                } ) ) {
-                    try {
-                        XMLStreamReader in = fac.createXMLStreamReader( new FileInputStream( f ) );
-                        in.next();
-                        String ns = in.getNamespaceURI();
-                        if ( ns == null ) {
-                            LOG.info( "The namespace in '{}' was not set, skipping file.", f );
-                            continue;
-                        }
-                        AuthenticationAuthorityProvider prov = authenticationAuthorityProviders.get( ns );
-                        if ( prov == null ) {
-                            LOG.info( "No authentication authority provider for"
-                                      + " namepace '{}', in file '{}', skipping.", ns, f );
-                            continue;
-                        }
-                        this.authorities.add( prov.getAuthenticationAuthority( f.toURI().toURL() ) );
-                    } catch ( FileNotFoundException e ) {
-                        LOG.debug( "File '{}' could not be found?!?", f );
-                        LOG.trace( "Stack trace:", e );
-                    } catch ( XMLStreamException e ) {
-                        LOG.debug( "File '{}' could not be parsed as XML, skipping.", f );
-                        LOG.trace( "Stack trace:", e );
+                    AuthenticationAuthorityProvider prov = authenticationAuthorityProviders.get( ns );
+                    if ( prov == null ) {
+                        LOG.info( "No authentication authority provider for"
+                                  + " namepace '{}', in file '{}', skipping.", ns, f );
+                        continue;
                     }
+                    this.authorities.add( prov.getAuthenticationAuthority( f.toURI().toURL() ) );
+                } catch ( FileNotFoundException e ) {
+                    LOG.debug( "File '{}' could not be found?!?", f );
+                    LOG.trace( "Stack trace:", e );
+                } catch ( XMLStreamException e ) {
+                    LOG.debug( "File '{}' could not be parsed as XML, skipping.", f );
+                    LOG.trace( "Stack trace:", e );
+                } catch ( MalformedURLException e ) {
+                    LOG.debug( "File '{}' could not be found?!?", f );
+                    LOG.trace( "Stack trace:", e );
                 }
             }
-        } catch ( MalformedURLException e ) {
-            LOG.debug( "Could not resolve the location of the authorities directory: '{}'", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( URISyntaxException e ) {
-            LOG.debug( "Could not resolve the location of the authorities directory: '{}'", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
         }
     }
 

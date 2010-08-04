@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
+import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -49,7 +51,6 @@ import java.util.Set;
 
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.coverage.AbstractCoverage;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -155,7 +156,7 @@ public class WCServiceBuilder {
     private WCSCoverage extractCoverage( Coverage coverage )
                             throws ServiceInitException {
         String id = coverage.getCoverageStoreId();
-        AbstractCoverage cov = CoverageBuilderManager.get( id );
+        AbstractCoverage cov = getServiceWorkspace().getCoverageBuilderManager().get( id );
         if ( cov == null ) {
             throw new ServiceInitException( "No coverage store with id '" + id + "' is known." );
         }

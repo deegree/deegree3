@@ -67,7 +67,7 @@ public class ApplicationBean {
         for ( DeegreeModuleInfo info : DeegreeModuleInfo.getRegisteredModules() ) {
             moduleInfos.add( info.toString() );
         }
-        for ( String key : OGCFrontController.getServiceControllers().keySet() ) {
+        for ( String key : OGCFrontController.getServiceConfiguration().getServiceControllers().keySet() ) {
             nameToController.add( key );
         }
     }

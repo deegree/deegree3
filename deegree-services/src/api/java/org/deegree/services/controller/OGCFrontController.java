@@ -36,7 +36,6 @@
 package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
-import static java.lang.Class.forName;
 
 import java.beans.Introspector;
 import java.io.BufferedInputStream;
@@ -46,19 +45,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -70,10 +65,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
@@ -90,11 +81,10 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
-import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.log.LoggingNotes;
@@ -102,13 +92,7 @@ import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.cs.configuration.CRSConfiguration;
-import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.observation.persistence.ObservationStoreManager;
-import org.deegree.record.persistence.RecordStoreManager;
-import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
-import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -117,14 +101,9 @@ import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
-import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.jaxb.main.AllowedServices;
-import org.deegree.services.jaxb.main.ConfiguredServicesType;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.FrontControllerOptionsType;
-import org.deegree.services.jaxb.main.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,37 +148,20 @@ public class OGCFrontController extends HttpServlet {
 
     private static final long serialVersionUID = -1379869403008798932L;
 
-    private static final Version SUPPORTED_CONFIG_VERSION = Version.parseVersion( "0.6.0" );
-
     /** used to decode (already URL-decoded) query strings */
     private static final String DEFAULT_ENCODING = "UTF-8";
 
-    private static DeegreeServicesMetadataType serviceConfig;
-
     private static DeegreeServiceControllerType mainConfig;
-
-    /**
-     * Default configuration path.
-     */
-    public static final String DEFAULT_CONFIG_PATH = "WEB-INF/conf";
-
-    private static final String DEFAULT_SERVICE_METADATA_PATH = DEFAULT_CONFIG_PATH + "/services/metadata.xml";
-
-    private static final String DEFAULT_SERVICE_MAIN_PATH = DEFAULT_CONFIG_PATH + "/services/main.xml";
-
-    // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
-    private static final Map<AllowedServices, AbstractOGCServiceController> serviceNameToController = new HashMap<AllowedServices, AbstractOGCServiceController>();
-
-    // maps service namespaces (e.g. 'http://www.opengis.net/wms', 'http://www.opengis.net/wfs', ...) to the
-    // responsible subcontrollers
-    private static final Map<String, AbstractOGCServiceController> serviceNSToController = new HashMap<String, AbstractOGCServiceController>();
-
-    // maps request names (e.g. 'GetMap', 'DescribeFeatureType') to the responsible subcontrollers
-    private static final Map<String, AbstractOGCServiceController> requestNameToController = new HashMap<String, AbstractOGCServiceController>();
 
     private static final String defaultTMPDir = System.getProperty( "java.io.tmpdir" );
 
     private static final InheritableThreadLocal<RequestContext> CONTEXT = new InheritableThreadLocal<RequestContext>();
+
+    private SecurityConfiguration securityConfiguration;
+
+    private static WebServicesConfiguration serviceConfiguration;
+
+    private static DeegreeWorkspace workspace;
 
     /**
      * Returns the {@link RequestContext} associated with the calling thread.
@@ -216,6 +178,20 @@ public class OGCFrontController extends HttpServlet {
         RequestContext context = CONTEXT.get();
         LOG.debug( "Retrieving RequestContext for current thread " + Thread.currentThread() + ": " + context );
         return context;
+    }
+
+    /**
+     * @return the service workspace
+     */
+    public static DeegreeWorkspace getServiceWorkspace() {
+        return workspace;
+    }
+
+    /**
+     * @return the service configuration
+     */
+    public static WebServicesConfiguration getServiceConfiguration() {
+        return serviceConfiguration;
     }
 
     /**
@@ -259,10 +235,6 @@ public class OGCFrontController extends HttpServlet {
         }
         return url;
     }
-
-    private RequestLogger requestLogger;
-
-    private SecurityConfiguration securityConfiguration;
 
     /**
      * Handles HTTP GET requests.
@@ -322,7 +294,7 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 // for GET requests, there is no standard way for defining the used encoding
                 Map<String, String> normalizedKVPParams = KVPUtils.getNormalizedKVPMap( request.getQueryString(),
-                                                                               DEFAULT_ENCODING );
+                                                                                        DEFAULT_ENCODING );
                 LOG.debug( "parameter map: " + normalizedKVPParams );
                 dispatchKVPRequest( normalizedKVPParams, request, response, multiParts, entryTime );
             }
@@ -391,7 +363,7 @@ public class OGCFrontController extends HttpServlet {
             if ( multiParts == null ) {
                 // TODO log multiparts requests
                 FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
-                if ( !isKVP && requestLogger != null ) {
+                if ( !isKVP && serviceConfiguration.getRequestLogger() != null ) {
                     String dir = opts.getRequestLogging().getOutputDirectory();
                     File file;
                     if ( dir == null ) {
@@ -407,7 +379,8 @@ public class OGCFrontController extends HttpServlet {
                     Boolean conf = opts.getRequestLogging().isOnlySuccessful();
                     boolean onlySuccessful = conf != null && conf;
                     response = logging = new LoggingHttpResponseWrapper( response, file, onlySuccessful, entryTime,
-                                                                         null, requestLogger ); // TODO obtain/set
+                                                                         null, serviceConfiguration.getRequestLogger() ); // TODO
+                    // obtain/set
                     // credentials somewhere
                 }
             }
@@ -476,51 +449,6 @@ public class OGCFrontController extends HttpServlet {
                    + ( System.currentTimeMillis() - entryTime ) + " ms." );
     }
 
-    private static RequestLogger instantiateRequestLogger(
-                                                           org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging.RequestLogger conf ) {
-        if ( conf != null ) {
-            String cls = conf.getClazz();
-            try {
-                Object o = conf.getConfiguration();
-                if ( o == null ) {
-                    return (RequestLogger) forName( cls ).newInstance();
-                }
-                return (RequestLogger) forName( cls ).getDeclaredConstructor( Object.class ).newInstance( o );
-            } catch ( ClassNotFoundException e ) {
-                LOG.info( "The request logger class '{}' could not be found on the classpath.", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( ClassCastException e ) {
-                LOG.info( "The request logger class '{}' does not implement the RequestLogger interface.", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( InstantiationException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (needs a default constructor without arguments if no configuration is given).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( IllegalAccessException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (default constructor needs to be accessible if no configuration is given).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( IllegalArgumentException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (constructor needs to take an object argument if configuration is given).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( java.lang.SecurityException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (JVM does have insufficient rights to instantiate the class).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( InvocationTargetException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (constructor call threw an exception).", cls );
-                LOG.trace( "Stack trace:", e );
-            } catch ( NoSuchMethodException e ) {
-                LOG.info( "The request logger class '{}' could not be instantiated"
-                          + " (constructor needs to take an object argument if configuration is given).", cls );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-        return new StandardRequestLogger();
-    }
-
     private String readPostBodyAsString( InputStream is )
                             throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -557,7 +485,8 @@ public class OGCFrontController extends HttpServlet {
             // Parse the request
             result = upload.parseRequest( request );
             LOG.debug( "The multipart request contains: " + result.size() + " items." );
-            if ( requestLogger != null ) { // TODO, this is not actually something of the request logger, what is
+            if ( serviceConfiguration.getRequestLogger() != null ) { // TODO, this is not actually something of the
+                // request logger, what is
                 // actually logged here?
                 for ( FileItem item : result ) {
                     LOG.debug( item.toString() );
@@ -606,11 +535,12 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
 
-            if ( requestLogger != null ) {
+            if ( serviceConfiguration.getRequestLogger() != null ) {
                 Boolean conf = opts.getRequestLogging().isOnlySuccessful();
                 boolean onlySuccessful = conf != null && conf;
                 response = logging = new LoggingHttpResponseWrapper( response, requestWrapper.getQueryString(),
-                                                                     onlySuccessful, entryTime, cred, requestLogger );
+                                                                     onlySuccessful, entryTime, cred,
+                                                                     serviceConfiguration.getRequestLogger() );
             }
 
             AbstractOGCServiceController subController = null;
@@ -621,7 +551,7 @@ public class OGCFrontController extends HttpServlet {
             if ( service != null ) {
 
                 try {
-                    subController = determineResponsibleControllerByServiceName( service );
+                    subController = serviceConfiguration.determineResponsibleControllerByServiceName( service );
                 } catch ( IllegalArgumentException e ) {
                     // I know that the SOS tests test for the appropriate service exception here, so sending a OWS
                     // commons
@@ -634,7 +564,7 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 // dispatch according to REQUEST-parameter
                 if ( request != null ) {
-                    subController = determineResponsibleControllerByRequestName( request );
+                    subController = serviceConfiguration.determineResponsibleControllerByRequestName( request );
                 }
             }
 
@@ -721,7 +651,7 @@ public class OGCFrontController extends HttpServlet {
             // String sessionId = xmlStream.getAttributeValue( XMLConstants.NULL_NS_URI, "sessionId" );
 
             String ns = xmlStream.getNamespaceURI();
-            AbstractOGCServiceController subcontroller = determineResponsibleControllerByNS( ns );
+            AbstractOGCServiceController subcontroller = serviceConfiguration.determineResponsibleControllerByNS( ns );
             if ( subcontroller != null ) {
                 LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
@@ -826,7 +756,7 @@ public class OGCFrontController extends HttpServlet {
             // }
             // }
 
-            AbstractOGCServiceController subcontroller = determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
+            AbstractOGCServiceController subcontroller = serviceConfiguration.determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
             if ( subcontroller != null ) {
                 LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
                 HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
@@ -867,84 +797,14 @@ public class OGCFrontController extends HttpServlet {
                && "Envelope".equals( localName );
     }
 
-    /**
-     * Determines the {@link AbstractOGCServiceController} that is responsible for handling requests to a certain
-     * service type, e.g. WMS, WFS.
-     * 
-     * @param serviceType
-     *            service type code, e.g. "WMS" or "WFS"
-     * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
-     */
-    private AbstractOGCServiceController determineResponsibleControllerByServiceName( String serviceType ) {
-        AllowedServices service = AllowedServices.fromValue( serviceType );
-        if ( service == null ) {
-            return null;
-        }
-        return serviceNameToController.get( service );
-    }
-
-    /**
-     * Determines the {@link AbstractOGCServiceController} that is responsible for handling requests with a certain
-     * name, e.g. GetMap, GetFeature.
-     * 
-     * @param requestName
-     *            request name, e.g. "GetMap" or "GetFeature"
-     * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
-     */
-    private AbstractOGCServiceController determineResponsibleControllerByRequestName( String requestName ) {
-        return requestNameToController.get( requestName );
-    }
-
-    /**
-     * Determines the {@link AbstractOGCServiceController} that is responsible for handling requests to a certain
-     * service type, e.g. WMS, WFS.
-     * 
-     * @param ns
-     *            service type code, e.g. "WMS" or "WFS"
-     * @return responsible <code>SecuredSubController</code> or null, if no responsible controller was found
-     */
-    private AbstractOGCServiceController determineResponsibleControllerByNS( String ns ) {
-        return serviceNSToController.get( ns );
-    }
-
-    /**
-     * Return all active service controllers.
-     * 
-     * @return the instance of the requested service used by OGCFrontController, or null if the service is not
-     *         registered.
-     */
-    public static Map<String, AbstractOGCServiceController> getServiceControllers() {
-        Map<String, AbstractOGCServiceController> nameToController = new HashMap<String, AbstractOGCServiceController>();
-        for ( AllowedServices serviceName : serviceNameToController.keySet() ) {
-            nameToController.put( serviceName.value(), serviceNameToController.get( serviceName ) );
-        }
-        return nameToController;
-    }
-
-    /**
-     * Returns the service controller instance based on the class of the service controller.
-     * 
-     * @param c
-     *            class of the requested service controller, e.g. <code>WPSController.getClass()</code>
-     * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
-     *         is active
-     */
-    public static AbstractOGCServiceController getServiceController( Class<? extends AbstractOGCServiceController> c ) {
-        AbstractOGCServiceController result = null;
-        for ( AbstractOGCServiceController it : serviceNSToController.values() ) {
-            if ( c == it.getClass() ) {
-                result = it;
-                break;
-            }
-        }
-        return result;
-    }
-
     @Override
     public void init( ServletConfig config )
                             throws ServletException {
         try {
             super.init( config );
+
+            File workspaceDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
+            workspace = new DeegreeWorkspace( workspaceDir );
 
             LOG.info( "--------------------------------------------------------------------------------" );
             DeegreeAALogoUtils.logInfo( LOG );
@@ -974,17 +834,12 @@ public class OGCFrontController extends HttpServlet {
             // TempFileManager.init( config.getServletContext().getContextPath() );
             // LOG.info( "" );
 
-            initProxyConfig();
-            initJDBCConnections();
-            initFeatureStores();
-            initObservationStores();
-            initCoverages();
-            initRecordStores();
-            initRenderableStores();
-            initBatchedMTStores();
-            initWebServices();
-            initRequestLogger();
-            initSecurity();
+            workspace.initAll();
+            serviceConfiguration = new WebServicesConfiguration( workspace );
+            serviceConfiguration.init();
+            // TODO somehow eliminate the need for this stupid static field
+            mainConfig = serviceConfiguration.getMainConfiguration();
+            securityConfiguration = new SecurityConfiguration( workspace );
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -997,330 +852,11 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    private void initSecurity() {
-        securityConfiguration = new SecurityConfiguration( getServletContext() );
-    }
-
-    private void initProxyConfig() {
-
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Proxy configuration." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-
-        File proxyConfigFile = null;
-        try {
-            proxyConfigFile = new File(
-                                        resolveFileLocation( DEFAULT_CONFIG_PATH + "/proxy.xml", getServletContext() ).toURI() );
-        } catch ( MalformedURLException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-
-        if ( proxyConfigFile != null && proxyConfigFile.exists() ) {
-            try {
-                ProxyUtils.setupProxyParameters( proxyConfigFile );
-            } catch ( IllegalArgumentException e ) {
-                LOG.warn( "Unable to apply proxy configuration from file: " + proxyConfigFile + ": " + e.getMessage() );
-            }
-        } else {
-            LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
-        }
-        ProxyUtils.logProxyConfiguration( LOG );
-        LOG.info( "" );
-    }
-
-    private void initWebServices()
-                            throws ServletException {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Starting webservices." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "" );
-
-        URL resolvedMetadataURL = null;
-        try {
-            resolvedMetadataURL = resolveFileLocation( DEFAULT_SERVICE_METADATA_PATH, getServletContext() );
-        } catch ( MalformedURLException e ) {
-            throw new ServletException( "Resolving of parameter 'ServicesConfiguration' failed: "
-                                        + e.getLocalizedMessage(), e );
-        }
-        if ( resolvedMetadataURL == null ) {
-            throw new ServletException( "Resolving service configuration url failed!" );
-        }
-        URL resolvedMainURL = null;
-        try {
-            resolvedMainURL = resolveFileLocation( DEFAULT_SERVICE_MAIN_PATH, getServletContext() );
-        } catch ( MalformedURLException e ) {
-            throw new ServletException( "Resolving of main.xml failed: " + e.getLocalizedMessage(), e );
-        }
-        if ( resolvedMainURL == null ) {
-            throw new ServletException( "Resolving service configuration url for main.xml failed!" );
-        }
-
-        unmarshallConfiguration( resolvedMetadataURL, resolvedMainURL );
-
-        Version configVersion = Version.parseVersion( serviceConfig.getConfigVersion() );
-        if ( !configVersion.equals( SUPPORTED_CONFIG_VERSION ) ) {
-            String msg = "The service metadata file '" + resolvedMetadataURL + " uses configuration format version "
-                         + serviceConfig.getConfigVersion() + ", but this deegree version only supports version "
-                         + SUPPORTED_CONFIG_VERSION + ". Information on resolving this issue can be found at "
-                         + "'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. ";
-            LOG.debug( "********************************************************************************" );
-            LOG.error( msg );
-            LOG.debug( "********************************************************************************" );
-            throw new ServletException( msg );
-        }
-
-        ConfiguredServicesType servicesConfigured = mainConfig.getConfiguredServices();
-        List<ServiceType> services = null;
-        if ( servicesConfigured != null ) {
-            services = servicesConfigured.getService();
-            if ( services != null && services.size() > 0 ) {
-                LOG.info( "The file: " + resolvedMetadataURL );
-                LOG.info( "Provided following services:" );
-                for ( ServiceType s : services ) {
-                    URL configLocation = null;
-                    try {
-                        configLocation = new URL( resolvedMetadataURL, s.getConfigurationLocation() );
-                    } catch ( MalformedURLException e ) {
-                        LOG.error( e.getMessage(), e );
-                        return;
-                    }
-                    s.setConfigurationLocation( configLocation.toExternalForm() );
-
-                    LOG.info( " - " + s.getServiceName() );
-                }
-                LOG.info( "ATTENTION - Skipping the loading of all services in conf/ which are not listed above." );
-            }
-        }
-        if ( services == null || services.size() == 0 ) {
-            LOG.info( "No service elements were supplied in the file: '" + resolvedMainURL
-                      + "' -- trying to use the default loading mechanism." );
-            try {
-                services = loadServicesFromDefaultLocation();
-            } catch ( MalformedURLException e ) {
-                throw new ServletException( "Error loading service configurations: " + e.getMessage() );
-            }
-        }
-        if ( services.size() == 0 ) {
-            throw new ServletException(
-                                        "No deegree web services could be loaded (manually or automatically) please take a look at your configuration file: "
-                                                                + resolvedMainURL
-                                                                + " and or your WEB-INF/conf directory." );
-        }
-
-        for ( ServiceType configuredService : services ) {
-            AbstractOGCServiceController serviceController = instantiateServiceController( configuredService );
-            if ( serviceController != null ) {
-                registerSubController( configuredService, serviceController );
-            }
-        }
-        LOG.info( "" );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Webservices started." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-    }
-
-    private void initRequestLogger() {
-        FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
-        if ( opts != null && opts.getRequestLogging() != null ) {
-            org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging.RequestLogger logger = opts.getRequestLogging().getRequestLogger();
-            requestLogger = instantiateRequestLogger( logger );
-        }
-    }
-
-    private void initFeatureStores() {
-
-        File fsDir = null;
-        try {
-            fsDir = new File(
-                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/feature", getServletContext() ).toURI() );
-        } catch ( MalformedURLException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        if ( fsDir != null && fsDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up feature stores." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            FeatureStoreManager.init( fsDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No 'datasources/feature' directory -- skipping initialization of feature stores." );
-        }
-
-    }
-
-    private void initObservationStores() {
-        File osDir = null;
-        try {
-            osDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/observation",
-                                                   getServletContext() ).toURI() );
-        } catch ( MalformedURLException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        if ( osDir != null && osDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up observation stores." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            ObservationStoreManager.init( osDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No 'datasources/observation' directory -- skipping initialization of observation stores." );
-        }
-    }
-
-    private void initCoverages() {
-        File coverageDir = null;
-        try {
-            coverageDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/coverage",
-                                                         getServletContext() ).toURI() );
-        } catch ( MalformedURLException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        if ( coverageDir != null && coverageDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up coverages." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            CoverageBuilderManager.init( coverageDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No 'datasources/coverage' directory -- skipping initialization of coverages." );
-        }
-    }
-
-    private void initRenderableStores() {
-        File renderableDir = null;
-        try {
-            renderableDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/renderable",
-                                                           getServletContext() ).toURI() );
-        } catch ( MalformedURLException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        if ( renderableDir != null && renderableDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up renderable stores." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            RenderableStoreManager.init( renderableDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No 'datasources/renderable' directory -- skipping initialization of renderable stores." );
-        }
-    }
-
-    private void initBatchedMTStores() {
-        File batchedMTDir = null;
-        try {
-            batchedMTDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/batchedmt",
-                                                          getServletContext() ).toURI() );
-        } catch ( MalformedURLException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        if ( batchedMTDir != null && batchedMTDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up BatchedMT stores." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            BatchedMTStoreManager.init( batchedMTDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No 'datasources/batchedmt' directory -- skipping initialization of BatchedMT stores." );
-        }
-    }
-
-    private void initRecordStores() {
-        File rsDir = null;
-        try {
-            rsDir = new File(
-                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/record", getServletContext() ).toURI() );
-        } catch ( MalformedURLException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        if ( rsDir != null && rsDir.exists() ) {
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up record stores." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            RecordStoreManager.init( rsDir );
-            LOG.info( "" );
-        } else {
-            LOG.debug( "No 'datasources/record' directory -- skipping initialization of record stores." );
-        }
-    }
-
-    private void initJDBCConnections() {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up JDBC connection pools." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-
-        File jdbcDir = null;
-        try {
-            jdbcDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/jdbc", getServletContext() ).toURI() );
-        } catch ( MalformedURLException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        if ( jdbcDir != null && jdbcDir.exists() ) {
-            ConnectionManager.init( jdbcDir );
-        } else {
-            LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
-        }
-        LOG.info( "" );
-    }
-
     @Override
     public void destroy() {
         super.destroy();
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Shutting down deegree in context '" + getServletContext().getServletContextName() + "'..." );
-        for ( AllowedServices serviceName : serviceNameToController.keySet() ) {
-            AbstractOGCServiceController subcontroller = serviceNameToController.get( serviceName );
-            LOG.info( "Shutting down '" + serviceName + "'." );
-            try {
-                subcontroller.destroy();
-            } catch ( Exception e ) {
-                String msg = "Error destroying subcontroller '" + subcontroller.getClass().getName() + "': "
-                             + e.getMessage();
-                LOG.error( msg, e );
-            }
-        }
-        LOG.info( "deegree OGC webservices shut down." );
-        ConnectionManager.destroy();
-        LOG.info( "--------------------------------------------------------------------------------" );
+        serviceConfiguration.destroy( getServletContext().getServletContextName() );
         plugClassLoaderLeaks();
-    }
-
-    private void registerSubController( ServiceType configuredService, AbstractOGCServiceController serviceController ) {
-
-        // associate service name (abbreviation) with controller instance
-        LOG.debug( "Service name '" + configuredService.getServiceName() + "' -> '"
-                   + serviceController.getClass().getSimpleName() + "'" );
-        serviceNameToController.put( configuredService.getServiceName(), serviceController );
-
-        // associate request types with controller instance
-        for ( String request : serviceController.getHandledRequests() ) {
-            // skip GetCapabilities requests
-            if ( !( "GetCapabilities".equals( request ) ) ) {
-                LOG.debug( "Request type '" + request + "' -> '" + serviceController.getClass().getSimpleName() + "'" );
-                requestNameToController.put( request, serviceController );
-            }
-        }
-
-        // associate namespaces with controller instance
-        for ( String ns : serviceController.getHandledNamespaces() ) {
-            LOG.debug( "Namespace '" + ns + "' -> '" + serviceController.getClass().getSimpleName() + "'" );
-            serviceNSToController.put( ns, serviceController );
-        }
     }
 
     /**
@@ -1364,170 +900,6 @@ public class OGCFrontController extends HttpServlet {
 
         // just clear the configurations for now, it does not hurt
         CRSConfiguration.DEFINED_CONFIGURATIONS.clear();
-    }
-
-    /**
-     * Creates an instance of a sub controller which is valid for the given configured Service, by applying following
-     * conventions:
-     * <ul>
-     * <li>The sub controller must extend {@link AbstractOGCServiceController}</li>
-     * <li>The package of the controller is the package of this class.[SERVICE_ABBREV_lower_case]</li>
-     * <li>The name of the controller must be [SERVICE_NAME_ABBREV]Controller</li>
-     * <li>The controller must have a constructor with a String parameter</li>
-     * </ul>
-     * If all above conditions are met, the instantiated controller will be returned else <code>null</code>
-     * 
-     * @param configuredService
-     * @return the instantiated secured sub controller or <code>null</code> if an error occurred.
-     */
-    @SuppressWarnings("unchecked")
-    private AbstractOGCServiceController instantiateServiceController( ServiceType configuredService ) {
-        AbstractOGCServiceController subController = null;
-        if ( configuredService == null ) {
-            return subController;
-        }
-
-        final String serviceName = configuredService.getServiceName().name();
-        final String packageName = OGCFrontController.class.getPackage().getName();
-
-        // something like org.deegree.services.controller.wfs.WFSController
-        String controller = packageName + "." + serviceName.toLowerCase() + "." + serviceName + "Controller";
-
-        LOG.info( "" );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Starting " + serviceName + "." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Configuration file: '" + configuredService.getConfigurationLocation() + "'" );
-        if ( configuredService.getControllerClass() != null ) {
-            LOG.info( "Using custom controller class '{}'.", configuredService.getControllerClass() );
-            controller = configuredService.getControllerClass();
-        }
-        try {
-            long time = System.currentTimeMillis();
-            Class<AbstractOGCServiceController> subControllerClass = (Class<AbstractOGCServiceController>) Class.forName(
-                                                                                                                          controller,
-                                                                                                                          false,
-                                                                                                                          OGCFrontController.class.getClassLoader() );
-            subController = subControllerClass.newInstance();
-            XMLAdapter controllerConf = new XMLAdapter( new URL( configuredService.getConfigurationLocation() ) );
-            subController.init( controllerConf, serviceConfig, mainConfig );
-            LOG.info( "" );
-            // round to exactly two decimals, I think their should be a java method for this though
-            double startupTime = Math.round( ( ( System.currentTimeMillis() - time ) * 0.1 ) ) * 0.01;
-            LOG.info( serviceName + " startup successful (took: " + startupTime + " seconds)" );
-        } catch ( Exception e ) {
-            LOG.error( "Initializing " + serviceName + " failed: " + e.getMessage(), e );
-            LOG.info( "" );
-            LOG.info( serviceName + " startup failed." );
-            subController = null;
-        }
-        return subController;
-    }
-
-    /**
-     * Iterates over all directories in the conf/ directory and returns the service/configuration mappings as a list.
-     * This default service loading mechanism implies the following directory structure:
-     * <ul>
-     * <li>conf/</li>
-     * <li>conf/[SERVICE_NAME]/ (upper-case abbreviation of a deegree web service, please take a look at
-     * {@link AllowedServices})</li>
-     * <li>conf/[SERVICE_NAME]/[SERVICE_NAME]_configuration.xml</li>
-     * </ul>
-     * If all conditions are met the service type is added to resulting list. If none of the underlying directories meet
-     * above criteria, an empty list will be returned.
-     * 
-     * @return the list of services found in the conf directory. Or an empty list if the above conditions are not met
-     *         for any directory in the conf directory.
-     * @throws MalformedURLException
-     */
-    private List<ServiceType> loadServicesFromDefaultLocation()
-                            throws MalformedURLException {
-        File serviceConfigDir = null;
-        try {
-            serviceConfigDir = new File(
-                                         resolveFileLocation( DEFAULT_CONFIG_PATH + "/services", getServletContext() ).toURI() );
-        } catch ( MalformedURLException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( URISyntaxException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        List<ServiceType> loadedServices = new ArrayList<ServiceType>();
-        if ( serviceConfigDir == null || !serviceConfigDir.isDirectory() ) {
-            LOG.error( "Could not read from the default service configuration directory (" + DEFAULT_CONFIG_PATH
-                       + ") because it is not a directory." );
-            return loadedServices;
-
-        }
-        LOG.info( "Using default directory: " + serviceConfigDir.getAbsolutePath()
-                  + " to scan for webservice configurations." );
-        File[] files = serviceConfigDir.listFiles();
-        if ( files == null || files.length == 0 ) {
-            LOG.error( "No files found in default configuration directory, hence no services to load." );
-            return loadedServices;
-        }
-        for ( File f : files ) {
-            if ( !f.isDirectory() ) {
-                String fileName = f.getName();
-                if ( fileName != null && !"".equals( fileName.trim() ) ) {
-                    String serviceName = fileName.trim().toUpperCase();
-                    // to avoid the ugly warning we can afford this extra s(hack)
-                    if ( serviceName.equals( ".SVN" ) || !serviceName.endsWith( ".XML" )
-                         || serviceName.equals( "METADATA.XML" ) || serviceName.equals( "MAIN.XML" ) ) {
-                        continue;
-                    }
-                    serviceName = serviceName.substring( 0, fileName.length() - 4 );
-
-                    AllowedServices as;
-                    try {
-                        as = AllowedServices.fromValue( serviceName );
-                    } catch ( IllegalArgumentException ex ) {
-                        LOG.warn( "File '" + fileName + "' in the configuration directory "
-                                  + "is not a valid deegree webservice, so skipping it." );
-                        continue;
-                    }
-                    LOG.debug( "Trying to create a frontcontroller for service: " + fileName
-                               + " found in the configuration directory." );
-                    ServiceType configuredService = new ServiceType();
-                    configuredService.setConfigurationLocation( f.toURI().toURL().toString() );
-                    configuredService.setServiceName( as );
-                    loadedServices.add( configuredService );
-                }
-            }
-
-        }
-
-        return loadedServices;
-    }
-
-    /**
-     * Unmarshalls the configuration file with a little help from jaxb.
-     * 
-     * @param resolvedConfigURL
-     *            pointing to the configuration file.
-     * @throws ServletException
-     */
-    private synchronized void unmarshallConfiguration( URL resolvedConfigURL, URL resolvedMainURL )
-                            throws ServletException {
-        if ( serviceConfig == null ) {
-            try {
-                String contextName = "org.deegree.services.jaxb.main";
-                JAXBContext jc = JAXBContext.newInstance( contextName );
-                Unmarshaller unmarshaller = jc.createUnmarshaller();
-                serviceConfig = (DeegreeServicesMetadataType) ( (JAXBElement<?>) unmarshaller.unmarshal( resolvedConfigURL ) ).getValue();
-                try {
-                    mainConfig = (DeegreeServiceControllerType) ( (JAXBElement<?>) unmarshaller.unmarshal( resolvedMainURL ) ).getValue();
-                } catch ( JAXBException e ) {
-                    mainConfig = new DeegreeServiceControllerType();
-                    LOG.info( "main.xml could not be loaded. Proceeding with defaults." );
-                    LOG.debug( "Error was: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            } catch ( JAXBException e ) {
-                String msg = "Could not unmarshall frontcontroller configuration: " + e.getMessage();
-                LOG.error( msg, e );
-                throw new ServletException( msg, e );
-            }
-        }
     }
 
     /**
@@ -1595,7 +967,7 @@ public class OGCFrontController extends HttpServlet {
     private void sendException( OWSException e, HttpServletResponse res, Version requestVersion )
                             throws ServletException {
 
-        Collection<AbstractOGCServiceController> values = serviceNameToController.values();
+        Collection<AbstractOGCServiceController> values = serviceConfiguration.getServiceControllers().values();
         if ( values.size() > 0 ) {
             // use exception serializer / mime type from first registered controller (fair chance that this will be
             // correct)
@@ -1609,4 +981,5 @@ public class OGCFrontController extends HttpServlet {
                                                         new OWSException110XMLAdapter(), e, res );
         }
     }
+
 }
