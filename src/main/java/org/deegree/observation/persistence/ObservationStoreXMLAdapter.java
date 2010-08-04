@@ -41,6 +41,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore;
 import org.deegree.observation.persistence.simplesql.jaxb.SimpleObservationStore;
 
 /**
@@ -55,7 +56,7 @@ import org.deegree.observation.persistence.simplesql.jaxb.SimpleObservationStore
  */
 public class ObservationStoreXMLAdapter extends XMLAdapter {
 
-    public SimpleObservationStore parse()
+    public SimpleObservationStore parseSimple()
                             throws XMLProcessingException {
         SimpleObservationStore simpleStore = null;
         try {
@@ -66,6 +67,19 @@ public class ObservationStoreXMLAdapter extends XMLAdapter {
             throw new XMLProcessingException( e.getMessage(), e );
         }
         return simpleStore;
+    }
+
+    public ContinuousObservationStore parseContinuous()
+                            throws XMLProcessingException {
+        ContinuousObservationStore contStore = null;
+        try {
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.observation.persistence.contsql.jaxb" );
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            contStore = (ContinuousObservationStore) unmarshaller.unmarshal( rootElement.getXMLStreamReaderWithoutCaching() );
+        } catch ( JAXBException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        }
+        return contStore;
     }
 
 }
