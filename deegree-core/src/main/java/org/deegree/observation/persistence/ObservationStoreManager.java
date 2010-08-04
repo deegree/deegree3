@@ -43,11 +43,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.feature.i18n.Messages;
+import org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore;
 import org.deegree.observation.persistence.simplesql.jaxb.ColumnType;
 import org.deegree.observation.persistence.simplesql.jaxb.OptionType;
 import org.deegree.observation.persistence.simplesql.jaxb.SimpleObservationStore;
@@ -118,18 +116,67 @@ public class ObservationStoreManager {
     private static ObservationDatastore create( URL url )
                             throws ObservationDatastoreException {
         XMLAdapter adapter = new XMLAdapter( url );
-        NamespaceContext nsContext = new NamespaceContext();
-        nsContext.addNamespace( "sql", "http://www.deegree.org/datasource/observation/simplesql" );
-        // TODO add the namespaces for the types of data stores
-
-        OMElement rootElement = adapter.getElement( adapter.getRootElement(), new XPath( "/sql:SimpleObservationStore",
-                                                                                         nsContext ) );
         ObservationStoreXMLAdapter storeAdapter = new ObservationStoreXMLAdapter();
-        storeAdapter.setRootElement( rootElement );
+        storeAdapter.setRootElement( adapter.getRootElement() );
         storeAdapter.setSystemId( adapter.getSystemId() );
 
-        SimpleObservationStore simpleStore = storeAdapter.parse();
+        ObservationDatastore datastore = null;
+        if ( "SimpleObservationStore".equals( adapter.getRootElement().getQName().getLocalPart() ) ) {
+            SimpleObservationStore simpleStore = storeAdapter.parseSimple();
+            DatastoreConfiguration dsConf = getSimpleStoreConfig( simpleStore );
+            datastore = new SimpleObservationDatastore( dsConf );
 
+        } else if ( "ContinuousObservationStore".equals( adapter.getRootElement().getQName().getLocalPart() ) ) {
+            ContinuousObservationStore contStore = storeAdapter.parseContinuous();
+            DatastoreConfiguration dsConf = getContStoreConfig( contStore );
+            datastore = new ContinuousObservationDatastore( dsConf );
+
+        } else if ( "BinarySQLObservationStore".equals( adapter.getRootElement().getQName().getLocalPart() ) ) {
+            // TODO
+            throw new UnsupportedOperationException(
+                                                     "Unfortunately, Binary Observation stores are not supported at the moment." );
+        }
+        return datastore;
+    }
+
+    /**
+     * @param contStore
+     * @return
+     */
+    private static DatastoreConfiguration getContStoreConfig( ContinuousObservationStore contStore ) {
+        String jdbcId = contStore.getJDBCConnId();
+        String tableName = contStore.getTable();
+
+        DatastoreConfiguration dsConf = new DatastoreConfiguration( jdbcId, tableName );
+        List<org.deegree.observation.persistence.contsql.jaxb.ColumnType> columns = contStore.getColumn();
+        for ( org.deegree.observation.persistence.contsql.jaxb.ColumnType col : columns ) {
+            dsConf.addToColumnMap( col.getType(), col.getName() );
+        }
+
+        List<org.deegree.observation.persistence.contsql.jaxb.OptionType> optionTypes = contStore.getOption();
+        for ( org.deegree.observation.persistence.contsql.jaxb.OptionType opt : optionTypes ) {
+            dsConf.addToGenOptionsMap( opt.getName(), opt.getValue() );
+        }
+
+        List<org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore.Property> properties = contStore.getProperty();
+        for ( org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore.Property propType : properties ) {
+            org.deegree.observation.model.Property prop = new org.deegree.observation.model.Property(
+                                                                                                      propType.getHref(),
+                                                                                                      propType.getColumn().getName() );
+            for ( org.deegree.observation.persistence.contsql.jaxb.OptionType propOpType : propType.getOption() ) {
+                prop.addToOption( propOpType.getName(), propOpType.getValue() );
+            }
+            dsConf.addToColumnMap( propType.getHref(), propType.getColumn().getName() );
+            dsConf.addToProperties( prop );
+        }
+        return dsConf;
+    }
+
+    /**
+     * @param simpleStore
+     * @return
+     */
+    private static DatastoreConfiguration getSimpleStoreConfig( SimpleObservationStore simpleStore ) {
         String jdbcId = simpleStore.getJDBCConnId();
         String tableName = simpleStore.getTable();
 
@@ -147,16 +194,15 @@ public class ObservationStoreManager {
         List<Property> properties = simpleStore.getProperty();
         for ( Property propType : properties ) {
             org.deegree.observation.model.Property prop = new org.deegree.observation.model.Property(
-                                                                                                        propType.getHref(),
-                                                                                                        propType.getColumn().getName() );
+                                                                                                      propType.getHref(),
+                                                                                                      propType.getColumn().getName() );
             for ( OptionType propOpType : propType.getOption() ) {
                 prop.addToOption( propOpType.getName(), propOpType.getValue() );
             }
             dsConf.addToColumnMap( propType.getHref(), propType.getColumn().getName() );
             dsConf.addToProperties( prop );
         }
-
-        return new SimpleObservationDatastore( dsConf );
+        return dsConf;
     }
 
     public static ObservationDatastore getDatastoreById( String datastoreId )
