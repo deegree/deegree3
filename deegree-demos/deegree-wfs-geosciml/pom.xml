@@ -4,13 +4,13 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wfs-geosciml</artifactId>
   <packaging>war</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0-pre7</version>
   <name>deegree WFS GeoSciML demo</name>
   <url>http://www.deegree.org</url>
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-demos</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0-pre7</version>
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-pre7</version>
       <exclusions>
         <exclusion>
           <groupId>org.mortbay.jetty</groupId>
