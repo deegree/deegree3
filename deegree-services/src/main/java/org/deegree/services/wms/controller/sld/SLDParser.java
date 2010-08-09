@@ -33,14 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wms.sld;
+package org.deegree.services.wms.controller.sld;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.skipElement;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.services.controller.wms.ops.GetMap.parseDimensionValues;
 import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.wms.controller.ops.GetMap.parseDimensionValues;
 import static org.deegree.services.wms.model.Dimension.parseTyped;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -59,8 +59,8 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.controller.wms.ops.GetMap;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.model.layers.Layer;
 import org.slf4j.Logger;
 

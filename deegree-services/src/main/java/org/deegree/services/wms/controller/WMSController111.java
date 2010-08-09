@@ -34,9 +34,9 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wms;
+package org.deegree.services.wms.controller;
 
-import static org.deegree.services.controller.ows.OWSException.INVALID_CRS;
+import static org.deegree.services.controller.ows.OWSException.INVALID_SRS;
 import static org.deegree.services.i18n.Messages.get;
 
 import java.io.IOException;
@@ -46,75 +46,66 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.cs.CRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOGCServiceController;
-import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
+import org.deegree.services.controller.ows.NamespacelessOWSExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wms.capabilities.Capabilities130XMLAdapter;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.capabilities.Capabilities111XMLAdapter;
 
 /**
- * <code>WMSController130</code>
+ * <code>WMSController111</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class WMSController130 extends WMSControllerBase {
+public class WMSController111 extends WMSControllerBase {
 
     /**
      * 
      */
-    public WMSController130() {
-        EXCEPTION_DEFAULT = "XML";
-        EXCEPTION_BLANK = "BLANK";
-        EXCEPTION_INIMAGE = "INIMAGE";
+    public WMSController111() {
+        EXCEPTION_DEFAULT = "application/vnd.ogc.se_xml";
+        EXCEPTION_BLANK = "application/vnd.ogc.se_blank";
+        EXCEPTION_INIMAGE = "application/vnd.ogc.se_inimage";
 
-        EXCEPTIONS = new OGCExceptionXMLAdapter();
+        EXCEPTIONS = new NamespacelessOWSExceptionXMLAdapter();
+
+        EXCEPTION_MIME = EXCEPTION_DEFAULT;
     }
 
     public void sendException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-        AbstractOGCServiceController.sendException( "text/xml", "UTF-8", null, 200, EXCEPTIONS, ex, response );
+        AbstractOGCServiceController.sendException( "application/vnd.ogc.se_xml", "UTF-8", null, 200, EXCEPTIONS, ex,
+                                                    response );
     }
 
     public void throwSRSException( String name )
                             throws OWSException {
-        throw new OWSException( get( "WMS.INVALID_SRS", name ), INVALID_CRS );
+        throw new OWSException( get( "WMS.INVALID_SRS", name ), INVALID_SRS );
     }
 
     /**
      * @param crs
-     * @return a new CRS
+     * @return the auto crs as defined in WMS 1.1.1 spec Annex E
      */
     public static CRS getCRS( String crs ) {
-        return new CRS( crs );
-    }
-
-    /**
-     * @param crs
-     * @param bbox
-     * @return a new CRS
-     */
-    public static Envelope getCRSAndEnvelope( String crs, double[] bbox ) {
-        if ( crs.startsWith( "AUTO2:" ) ) {
+        if ( crs.startsWith( "AUTO:" ) ) {
             String[] cs = crs.split( ":" )[1].split( "," );
             int id = Integer.parseInt( cs[0] );
             // this is not supported
-            double factor = Double.parseDouble( cs[1] );
+            // int units = Integer.parseInt( cs[1] );
             double lon0 = Double.parseDouble( cs[2] );
             double lat0 = Double.parseDouble( cs[3] );
 
-            return new GeometryFactory().createEnvelope( factor * bbox[0], factor * bbox[1], factor * bbox[2],
-                                                         factor * bbox[3], Utils.getAutoCRS( id, lon0, lat0 ) );
+            return Utils.getAutoCRS( id, lon0, lat0 );
         }
-        return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], new CRS( crs ) );
+        return new CRS( crs, true );
     }
 
     @Override
@@ -122,10 +113,10 @@ public class WMSController130 extends WMSControllerBase {
                                 ServiceIdentificationType identification, ServiceProviderType provider,
                                 WMSController controller )
                             throws IOException {
-        response.setContentType( "text/xml" );
+        response.setContentType( "application/vnd.ogc.wms_xml" );
         try {
             XMLStreamWriter xmlWriter = response.getXMLWriter();
-            new Capabilities130XMLAdapter( identification, provider, getUrl, postUrl, service, controller ).export( xmlWriter );
+            new Capabilities111XMLAdapter( identification, provider, getUrl, postUrl, service, controller ).export( xmlWriter );
         } catch ( XMLStreamException e ) {
             throw new IOException( e );
         }

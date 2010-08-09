@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms;
 
-import static org.deegree.services.controller.wms.sld.SLDParser.getStyles;
+import static org.deegree.services.wms.controller.sld.SLDParser.getStyles;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;

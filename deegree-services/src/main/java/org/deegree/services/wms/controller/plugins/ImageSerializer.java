@@ -33,26 +33,25 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wms.plugins;
+package org.deegree.services.wms.controller.plugins;
 
+import java.awt.image.BufferedImage;
 import java.io.OutputStream;
 
-import org.deegree.feature.FeatureCollection;
-
 /**
- * <code>FeatureInfoSerializer</code>
+ * <code>ImageSerializer</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface FeatureInfoSerializer {
+public interface ImageSerializer {
 
     /**
-     * @param col
-     * @param outputStream
+     * @param img
+     * @param out
      */
-    void serialize( FeatureCollection col, OutputStream outputStream );
+    void serialize( BufferedImage img, OutputStream out );
 
 }

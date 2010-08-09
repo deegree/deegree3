@@ -43,9 +43,9 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.services.controller.wms.ops.GetFeatureInfo;
-import org.deegree.services.controller.wms.ops.GetMap;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
+import org.deegree.services.wms.controller.ops.GetFeatureInfo;
+import org.deegree.services.wms.controller.ops.GetMap;
 
 /**
  * <code>EmptyLayer</code>

@@ -77,14 +77,14 @@ import org.deegree.rendering.r2d.TextRenderer;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.TextStyling;
-import org.deegree.services.controller.wms.ops.GetFeatureInfo;
-import org.deegree.services.controller.wms.ops.GetMap;
 import org.deegree.services.jaxb.main.LanguageStringType;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.jaxb.wms.BoundingBoxType;
 import org.deegree.services.jaxb.wms.DimensionType;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
+import org.deegree.services.wms.controller.ops.GetFeatureInfo;
+import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.model.Dimension;
 import org.slf4j.Logger;
 

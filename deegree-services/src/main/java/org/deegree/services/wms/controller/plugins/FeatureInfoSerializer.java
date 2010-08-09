@@ -33,38 +33,26 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wms.security;
+package org.deegree.services.wms.controller.plugins;
 
-import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.services.controller.Credentials;
-import org.deegree.services.controller.wms.ops.GetFeatureInfo;
-import org.deegree.services.controller.wms.ops.GetFeatureInfoSchema;
-import org.deegree.services.controller.wms.ops.GetLegendGraphic;
-import org.deegree.services.controller.wms.ops.GetMap;
+import java.io.OutputStream;
+
+import org.deegree.feature.FeatureCollection;
 
 /**
- * TODO add class documentation here
+ * <code>FeatureInfoSerializer</code>
  * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface WMSSecurityManager {
+public interface FeatureInfoSerializer {
 
-    GetMap preprocess( GetMap getMap, Credentials creds )
-                            throws SecurityException;
-
-    GetFeatureInfo preprocess( GetFeatureInfo gfi, Credentials creds )
-                            throws SecurityException;
-
-    GetCapabilities preprocess( GetCapabilities getCapas, Credentials creds )
-                            throws SecurityException;
-
-    GetLegendGraphic preprocess( GetLegendGraphic glg, Credentials creds )
-                            throws SecurityException;
-
-    GetFeatureInfoSchema preprocess( GetFeatureInfoSchema getFeatureInfoSchema, Credentials creds )
-                            throws SecurityException;
+    /**
+     * @param col
+     * @param outputStream
+     */
+    void serialize( FeatureCollection col, OutputStream outputStream );
 
 }

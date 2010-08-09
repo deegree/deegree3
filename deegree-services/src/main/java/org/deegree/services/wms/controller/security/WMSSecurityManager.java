@@ -33,25 +33,38 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wms.plugins;
+package org.deegree.services.wms.controller.security;
 
-import java.awt.image.BufferedImage;
-import java.io.OutputStream;
+import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.services.controller.Credentials;
+import org.deegree.services.wms.controller.ops.GetFeatureInfo;
+import org.deegree.services.wms.controller.ops.GetFeatureInfoSchema;
+import org.deegree.services.wms.controller.ops.GetLegendGraphic;
+import org.deegree.services.wms.controller.ops.GetMap;
 
 /**
- * <code>ImageSerializer</code>
+ * TODO add class documentation here
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface ImageSerializer {
+public interface WMSSecurityManager {
 
-    /**
-     * @param img
-     * @param out
-     */
-    void serialize( BufferedImage img, OutputStream out );
+    GetMap preprocess( GetMap getMap, Credentials creds )
+                            throws SecurityException;
+
+    GetFeatureInfo preprocess( GetFeatureInfo gfi, Credentials creds )
+                            throws SecurityException;
+
+    GetCapabilities preprocess( GetCapabilities getCapas, Credentials creds )
+                            throws SecurityException;
+
+    GetLegendGraphic preprocess( GetLegendGraphic glg, Credentials creds )
+                            throws SecurityException;
+
+    GetFeatureInfoSchema preprocess( GetFeatureInfoSchema getFeatureInfoSchema, Credentials creds )
+                            throws SecurityException;
 
 }

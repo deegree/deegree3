@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wms.ops;
+package org.deegree.services.wms.controller.ops;
 
 import java.util.Map;
 

@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wms.capabilities;
+package org.deegree.services.wms.controller.capabilities;
 
 import static java.lang.Double.MAX_VALUE;
 import static java.lang.Double.MIN_VALUE;
@@ -65,7 +65,6 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.services.controller.wms.WMSController;
 import org.deegree.services.jaxb.main.AddressType;
 import org.deegree.services.jaxb.main.KeywordsType;
 import org.deegree.services.jaxb.main.LanguageStringType;
@@ -73,6 +72,7 @@ import org.deegree.services.jaxb.main.ServiceContactType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.model.Dimension;
 import org.deegree.services.wms.model.layers.Layer;
 import org.slf4j.Logger;

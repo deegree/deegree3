@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wms.ops;
+package org.deegree.services.wms.controller.ops;
 
 import static java.awt.Color.decode;
 import static java.awt.Color.white;
@@ -52,11 +52,11 @@ import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER
 import static org.deegree.services.controller.ows.OWSException.LAYER_NOT_DEFINED;
 import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.services.controller.ows.OWSException.STYLE_NOT_DEFINED;
-import static org.deegree.services.controller.wms.ops.GetMap.Antialias.BOTH;
-import static org.deegree.services.controller.wms.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.services.controller.wms.ops.GetMap.Quality.NORMAL;
-import static org.deegree.services.controller.wms.sld.SLDParser.parse;
 import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.wms.controller.ops.GetMap.Antialias.BOTH;
+import static org.deegree.services.wms.controller.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.services.wms.controller.ops.GetMap.Quality.NORMAL;
+import static org.deegree.services.wms.controller.sld.SLDParser.parse;
 import static org.deegree.services.wms.model.Dimension.parseTyped;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -100,10 +100,10 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.controller.wms.WMSController111;
-import org.deegree.services.controller.wms.WMSController130;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.StyleRegistry;
+import org.deegree.services.wms.controller.WMSController111;
+import org.deegree.services.wms.controller.WMSController130;
 import org.deegree.services.wms.model.layers.Layer;
 import org.slf4j.Logger;
 

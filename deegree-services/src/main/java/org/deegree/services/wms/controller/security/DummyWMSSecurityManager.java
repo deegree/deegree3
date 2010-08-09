@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wms.security;
+package org.deegree.services.wms.controller.security;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -48,10 +48,10 @@ import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.services.authentication.InvalidCredentialsException;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.Credentials;
-import org.deegree.services.controller.wms.ops.GetFeatureInfo;
-import org.deegree.services.controller.wms.ops.GetFeatureInfoSchema;
-import org.deegree.services.controller.wms.ops.GetLegendGraphic;
-import org.deegree.services.controller.wms.ops.GetMap;
+import org.deegree.services.wms.controller.ops.GetFeatureInfo;
+import org.deegree.services.wms.controller.ops.GetFeatureInfoSchema;
+import org.deegree.services.wms.controller.ops.GetLegendGraphic;
+import org.deegree.services.wms.controller.ops.GetMap;
 import org.slf4j.Logger;
 
 /**

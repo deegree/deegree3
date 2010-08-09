@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wms;
+package org.deegree.services.wms.controller;
 
 import static java.util.Collections.singletonList;
 import static javax.imageio.ImageIO.write;
@@ -110,14 +110,6 @@ import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wms.ops.GetFeatureInfo;
-import org.deegree.services.controller.wms.ops.GetFeatureInfoSchema;
-import org.deegree.services.controller.wms.ops.GetLegendGraphic;
-import org.deegree.services.controller.wms.ops.GetMap;
-import org.deegree.services.controller.wms.plugins.FeatureInfoSerializer;
-import org.deegree.services.controller.wms.plugins.ImageSerializer;
-import org.deegree.services.controller.wms.security.DummyWMSSecurityManager;
-import org.deegree.services.controller.wms.security.WMSSecurityManager;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
@@ -130,6 +122,14 @@ import org.deegree.services.jaxb.wms.PublishedInformation.SupportedVersions;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
+import org.deegree.services.wms.controller.ops.GetFeatureInfo;
+import org.deegree.services.wms.controller.ops.GetFeatureInfoSchema;
+import org.deegree.services.wms.controller.ops.GetLegendGraphic;
+import org.deegree.services.wms.controller.ops.GetMap;
+import org.deegree.services.wms.controller.plugins.FeatureInfoSerializer;
+import org.deegree.services.wms.controller.plugins.ImageSerializer;
+import org.deegree.services.wms.controller.security.DummyWMSSecurityManager;
+import org.deegree.services.wms.controller.security.WMSSecurityManager;
 import org.slf4j.Logger;
 
 /**

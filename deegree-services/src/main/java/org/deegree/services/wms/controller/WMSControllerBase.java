@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wms;
+package org.deegree.services.wms.controller;
 
 import static java.awt.Color.black;
 import static java.awt.Color.decode;
@@ -63,10 +63,10 @@ import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wms.WMSController.Controller;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.WMSController.Controller;
 
 /**
  * <code>WMSControllerBase</code>

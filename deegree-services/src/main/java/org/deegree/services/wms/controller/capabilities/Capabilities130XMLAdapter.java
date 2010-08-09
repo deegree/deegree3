@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wms.capabilities;
+package org.deegree.services.wms.controller.capabilities;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
@@ -69,8 +69,6 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.services.controller.wms.WMSController;
-import org.deegree.services.controller.wms.WMSController130;
 import org.deegree.services.jaxb.main.AddressType;
 import org.deegree.services.jaxb.main.KeywordsType;
 import org.deegree.services.jaxb.main.LanguageStringType;
@@ -78,6 +76,8 @@ import org.deegree.services.jaxb.main.ServiceContactType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.WMSController;
+import org.deegree.services.wms.controller.WMSController130;
 import org.deegree.services.wms.model.Dimension;
 import org.deegree.services.wms.model.layers.Layer;
 import org.slf4j.Logger;

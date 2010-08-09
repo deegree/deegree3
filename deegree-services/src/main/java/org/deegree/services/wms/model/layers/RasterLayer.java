@@ -91,15 +91,15 @@ import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.styling.Styling;
-import org.deegree.services.controller.wms.ops.GetFeatureInfo;
-import org.deegree.services.controller.wms.ops.GetMap;
-import org.deegree.services.controller.wms.ops.GetMap.Interpolation;
 import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wcs.WCServiceException;
 import org.deegree.services.wcs.coverages.CoverageTransform;
 import org.deegree.services.wcs.model.Grid;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
+import org.deegree.services.wms.controller.ops.GetFeatureInfo;
+import org.deegree.services.wms.controller.ops.GetMap;
+import org.deegree.services.wms.controller.ops.GetMap.Interpolation;
 import org.deegree.services.wms.model.Dimension;
 import org.slf4j.Logger;
 

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wms.ops;
+package org.deegree.services.wms.controller.ops;
 
 import static java.lang.Integer.parseInt;
 import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;

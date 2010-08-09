@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wms.ops;
+package org.deegree.services.wms.controller.ops;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
@@ -45,8 +45,8 @@ import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER
 import static org.deegree.services.controller.ows.OWSException.INVALID_POINT;
 import static org.deegree.services.controller.ows.OWSException.LAYER_NOT_DEFINED;
 import static org.deegree.services.controller.ows.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.services.controller.wms.ops.GetMap.parseDimensionValues;
 import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.wms.controller.ops.GetMap.parseDimensionValues;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
@@ -61,9 +61,9 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.controller.wms.WMSController111;
-import org.deegree.services.controller.wms.WMSController130;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.WMSController111;
+import org.deegree.services.wms.controller.WMSController130;
 import org.deegree.services.wms.model.layers.Layer;
 import org.slf4j.Logger;
 
