@@ -54,15 +54,22 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.services.controller.sos.SOSController;
 import org.deegree.services.controller.utils.StandardRequestLogger;
+import org.deegree.services.controller.wcs.WCSController;
+import org.deegree.services.controller.wfs.WFSController;
+import org.deegree.services.controller.wpvs.WPVSController;
+import org.deegree.services.csw.CSWController;
 import org.deegree.services.jaxb.main.AllowedServices;
 import org.deegree.services.jaxb.main.ConfiguredServicesType;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.FrontControllerOptionsType;
 import org.deegree.services.jaxb.main.ServiceType;
+import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wps.WPSController;
 import org.slf4j.Logger;
 
@@ -299,13 +306,22 @@ public class WebServicesConfiguration {
 
         final String serviceName = configuredService.getServiceName().name();
 
-        // something like org.deegree.services.controller.wfs.WFSController
         // TODO outfactor this (maybe use a Map or proper SPI for plugging service implementations?)
-        String controller = "org.deegree.services." + serviceName.toLowerCase() + "." + serviceName + "Controller";
-        if ( "WPS".equals( serviceName ) ) {
+        String controller = null;
+        if ( "CSW".equals( serviceName ) ) {
+            controller = CSWController.class.getName();
+        } else if ( "SOS".equals( serviceName ) ) {
+            controller = SOSController.class.getName();
+        } else if ( "WCS".equals( serviceName ) ) {
+            controller = WCSController.class.getName();
+        } else if ( "WFS".equals( serviceName ) ) {
+            controller = WFSController.class.getName();
+        } else if ( "WMS".equals( serviceName ) ) {
+            controller = WMSController.class.getName();
+        } else if ( "WPS".equals( serviceName ) ) {
             controller = WPSController.class.getName();
-        } else {
-            controller = "org.deegree.services." + serviceName.toLowerCase() + "." + serviceName + "Controller";
+        } else if ( "WPVS".equals( serviceName ) ) {
+            controller = WPVSController.class.getName();
         }
 
         LOG.info( "" );
@@ -454,7 +470,7 @@ public class WebServicesConfiguration {
             }
         }
         LOG.info( "deegree OGC webservices shut down." );
-        workspace.destroyAll();
+        ConnectionManager.destroy();
         LOG.info( "--------------------------------------------------------------------------------" );
     }
 
