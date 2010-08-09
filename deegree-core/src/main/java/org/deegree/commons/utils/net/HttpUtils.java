@@ -38,6 +38,7 @@ package org.deegree.commons.utils.net;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.System.getProperty;
+import static java.net.URLEncoder.encode;
 import static java.util.Arrays.asList;
 import static javax.imageio.ImageIO.read;
 import static org.deegree.commons.utils.ArrayUtils.join;
@@ -218,7 +219,7 @@ public class HttpUtils {
         }
         LinkedList<String> list = new LinkedList<String>();
         for ( String k : map.keySet() ) {
-            list.add( k + "=" + map.get( k ) );
+            list.add( encode( k, "UTF-8" ) + "=" + encode( map.get( k ), "UTF-8" ) );
         }
         url += join( "&", list );
         return retrieve( worker, url );
