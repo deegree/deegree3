@@ -41,6 +41,7 @@
         </executions>
         <configuration>
           <schemaFiles>security/0.6.0/security.xsd,webservices/0.6.0/services.xsd,csw/0.5.0/csw_configuration.xsd,sos/0.5.0/sos_configuration.xsd,wfs/0.5.0/wfs_configuration.xsd,wps/0.5.0/wps_configuration.xsd,wms/0.5.0/wms_configuration.xsd,wcs/0.5.0/wcs_configuration.xsd,wpvs/0.5.0/wpvs_configuration.xsd</schemaFiles>
+          <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
         </configuration>
       </plugin>
       <plugin>
