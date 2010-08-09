@@ -37,6 +37,7 @@ package org.deegree.services.controller.security;
 
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.COMMENT;
 import static javax.xml.stream.XMLStreamConstants.DTD;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -260,6 +261,13 @@ public class SecureProxy extends HttpServlet {
             int eventType = reader.getEventType();
 
             switch ( eventType ) {
+            case COMMENT:
+                writer.writeComment( reader.getText() );
+                if ( openElements == 0 ) {
+                    firstRun = true;
+                    reader.next();
+                }
+                break;
             case CDATA: {
                 writer.writeCData( reader.getText() );
                 break;
