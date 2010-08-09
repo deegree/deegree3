@@ -58,7 +58,7 @@ import lombok.Setter;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.LayerDatabaseHelper;
 import org.deegree.commons.jdbc.Util;
-import org.deegree.services.controller.wms.WMSController;
+import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.dynamic.LayerUpdater;
 import org.deegree.services.wms.dynamic.PostGISUpdater;
 import org.ol4jsf.component.map.Map;
