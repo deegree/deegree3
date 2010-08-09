@@ -77,7 +77,7 @@ public class DeegreeWorkspace {
 
     /**
      * @param workspaceName
-     * @return the workspace instance
+     * @return the workspace instance, or null, if the target directory does not exist
      */
     public static synchronized DeegreeWorkspace getInstance( String workspaceName ) {
         DeegreeWorkspace space = WORKSPACES.get( workspaceName );
@@ -85,8 +85,32 @@ public class DeegreeWorkspace {
             return space;
         }
         space = new DeegreeWorkspace( workspaceName );
+        // for now, ignore workspaces that do not exist
+        if ( !space.getLocation().exists() ) {
+            return null;
+        }
         WORKSPACES.put( workspaceName, space );
         return space;
+    }
+
+    /**
+     * @param dir
+     * @return the workspace instance specified in the DEEGREE_WORKSPACE environment variable, or the one found in the
+     *         specified directory, if the workspace from DEEGREE_WORKSPACE does not exist.
+     */
+    public static synchronized DeegreeWorkspace getInstance( File dir ) {
+        String ws = System.getenv( "DEEGREE_WORKSPACE" );
+        if ( ws == null ) {
+            return new DeegreeWorkspace( dir );
+        }
+        DeegreeWorkspace workspace;
+        LOG.info( "DEEGREE_WORKSPACE = '{}'", ws );
+        workspace = DeegreeWorkspace.getInstance( ws );
+        if ( workspace == null ) {
+            LOG.info( "'{}' does not exist, using default directory.", ws );
+            workspace = new DeegreeWorkspace( dir );
+        }
+        return workspace;
     }
 
     private File dir;
@@ -134,6 +158,15 @@ public class DeegreeWorkspace {
         RecordStoreManager.init( new File( dir, "datasources" + separator + "record" ) );
         RenderableStoreManager.init( new File( dir, "datasources" + separator + "renderable" ) );
         BatchedMTStoreManager.init( new File( dir, "datasources" + separator + "batchedmt" ) );
+    }
+
+    /**
+     * Unloads all resources associated with this context, as well as ALL STATIC ones.
+     */
+    public void destroyAll() {
+        ConnectionManager.destroy();
+        // the rest seems not to need this
+        // TODO: set dir to null?
     }
 
 }
