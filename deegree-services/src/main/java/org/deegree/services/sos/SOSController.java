@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.sos;
+package org.deegree.services.sos;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
@@ -117,19 +117,15 @@ import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
-import org.deegree.services.controller.sos.capabilities.Capabilities100XMLAdapter;
-import org.deegree.services.controller.sos.capabilities.Capabilities100XMLAdapter.Sections;
-import org.deegree.services.controller.sos.getobservation.Observation100XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.sos.PublishedInformation;
-import org.deegree.services.sos.SOSBuilder;
-import org.deegree.services.sos.SOSConfigurationException;
-import org.deegree.services.sos.SOService;
-import org.deegree.services.sos.ServiceConfigurationXMLAdapter;
+import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter;
+import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter.Sections;
+import org.deegree.services.sos.getobservation.Observation100XMLAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

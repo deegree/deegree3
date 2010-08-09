@@ -33,10 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.sos.getobservation;
+package org.deegree.services.sos.getobservation;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.services.controller.sos.getobservation.EventTime100XMLExporter.exportOMSamplingTime;
+import static org.deegree.services.sos.getobservation.EventTime100XMLExporter.exportOMSamplingTime;
 
 import java.util.List;
 import java.util.UUID;

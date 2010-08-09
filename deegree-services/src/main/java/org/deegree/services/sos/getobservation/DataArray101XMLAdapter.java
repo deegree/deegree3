@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.sos.getobservation;
+package org.deegree.services.sos.getobservation;
 
 import java.util.List;
 

@@ -33,11 +33,10 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.sos;
+package org.deegree.services.sos;
 
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.sos.SOServiceException;
 
 /**
  * This class can apdapt general SOServiceExceptions to OGC specific exceptions.

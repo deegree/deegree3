@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.sos.capabilities;
+package org.deegree.services.sos.capabilities;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 

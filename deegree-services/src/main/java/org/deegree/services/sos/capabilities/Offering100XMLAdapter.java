@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.sos.capabilities;
+package org.deegree.services.sos.capabilities;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -45,7 +45,7 @@ import org.deegree.observation.model.Procedure;
 import org.deegree.observation.model.Property;
 import org.deegree.observation.persistence.ObservationDatastore;
 import org.deegree.observation.persistence.SimpleObservationDatastore;
-import org.deegree.services.controller.sos.getobservation.EventTime100XMLExporter;
+import org.deegree.services.sos.getobservation.EventTime100XMLExporter;
 
 /**
  * This is an xml adapter for ObservationOffering elements after the SOS 1.0.0 spec.
