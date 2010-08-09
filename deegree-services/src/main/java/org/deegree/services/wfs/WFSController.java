@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wfs;
+package org.deegree.services.wfs;
 
 import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
 import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
@@ -124,7 +124,6 @@ import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.PublishedInformation;
-import org.deegree.services.wfs.WFService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

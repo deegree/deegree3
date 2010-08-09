@@ -53,7 +53,6 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.services.controller.wfs.WFSController;
 import org.deegree.services.jaxb.wfs.ServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

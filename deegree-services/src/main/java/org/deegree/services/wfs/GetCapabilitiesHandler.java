@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wfs;
+package org.deegree.services.wfs;
 
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
@@ -76,7 +76,6 @@ import org.deegree.services.jaxb.main.DCPType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
-import org.deegree.services.wfs.WFService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

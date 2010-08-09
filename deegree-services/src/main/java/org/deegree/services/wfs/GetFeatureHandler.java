@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wfs;
+package org.deegree.services.wfs;
 
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -99,7 +99,6 @@ import org.deegree.protocol.wfs.lockfeature.LockOperation;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
-import org.deegree.services.wfs.WFService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

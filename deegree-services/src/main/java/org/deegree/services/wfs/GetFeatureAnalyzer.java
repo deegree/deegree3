@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wfs;
+package org.deegree.services.wfs;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.gml.GMLVersion.GML_31;
@@ -77,7 +77,6 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.wfs.WFService;
 import org.jaxen.NamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
