@@ -35,14 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
-import java.io.File;
 import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.wps.ProcessManager;
 import org.deegree.services.wps.ProcessManagerProvider;
@@ -50,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default {@link ProcessManagerProvider} implementation.
+ * {@link ProcessManagerProvider} for the {@link DefaultProcessManager}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -58,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class DefaultProcessManagerProvider implements ProcessManagerProvider {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger( DefaultProcessManagerProvider.class );
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/services/wps";
@@ -74,24 +72,25 @@ public class DefaultProcessManagerProvider implements ProcessManagerProvider {
         ProcessManager manager = null;
 
         LOG.info( "Loading process definition from file '" + configURL + "'." );
-//
+        //
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             ProcessDefinition processDef = (ProcessDefinition) unmarshaller.unmarshal( configURL );
 //            checkConfigVersion( definitionFile, processDef.getConfigVersion() );
-//            processDefinitions.add( processDef );
-//
-//            String wsdlFile = definitionFile.substring( 0, definitionFile.lastIndexOf( ".xml" ) ) + ".wsdl";
-//            LOG.debug( "Checking for process WSDL file: '" + wsdlFile + "'" );
-//            File f = new File( processesDir, wsdlFile );
-//            if ( f.exists() ) {
-//                CodeType processId = new CodeType( processDef.getIdentifier().getValue(),
-//                                                   processDef.getIdentifier().getCodeSpace() );
-//                LOG.info( "Found process WSDL file." );
-//                processIdToWSDL.put( processId, f );
-//            }
-            manager = new DefaultProcessManager (processDef);
+
+            // processDefinitions.add( processDef );
+            //
+            // String wsdlFile = definitionFile.substring( 0, definitionFile.lastIndexOf( ".xml" ) ) + ".wsdl";
+            // LOG.debug( "Checking for process WSDL file: '" + wsdlFile + "'" );
+            // File f = new File( processesDir, wsdlFile );
+            // if ( f.exists() ) {
+            // CodeType processId = new CodeType( processDef.getIdentifier().getValue(),
+            // processDef.getIdentifier().getCodeSpace() );
+            // LOG.info( "Found process WSDL file." );
+            // processIdToWSDL.put( processId, f );
+            // }
+            manager = new DefaultProcessManager( processDef );
         } catch ( JAXBException e ) {
             e.printStackTrace();
         }

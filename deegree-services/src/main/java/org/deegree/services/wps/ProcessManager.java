@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps;
 
-import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.tom.ows.CodeType;

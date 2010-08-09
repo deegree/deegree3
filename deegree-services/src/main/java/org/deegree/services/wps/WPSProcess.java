@@ -38,7 +38,7 @@ package org.deegree.services.wps;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 
 /**
- * Encapsulates all components that are needed by the {@link WPService} to offer a process.
+ * Encapsulates the components that are needed by the {@link WPService} to offer a process.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

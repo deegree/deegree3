@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Basic {@link ProcessManager} that allows to serve hand-written processes with hand-written process descriptions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -67,6 +67,9 @@ public class DefaultProcessManager implements ProcessManager {
 
     private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
 
+    /**
+     * @param processDef
+     */
     DefaultProcessManager( ProcessDefinition processDef ) {
         processDefs = Collections.singletonList( processDef );
     }

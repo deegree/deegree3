@@ -59,7 +59,7 @@ public interface ProcessManagerProvider {
      * 
      * @param configURL
      *            location of the configuration document, must not be <code>null</code>
-     * @return new process manager instance, configured, not initialized yet
+     * @return new process manager instance, configured, but not initialized yet
      */
     public ProcessManager createManager( URL configURL );
 }

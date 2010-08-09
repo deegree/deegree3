@@ -67,11 +67,11 @@ public class WPService {
 
     private static final Logger LOG = LoggerFactory.getLogger( WPService.class );
 
-    private List<ProcessManager> managers = new ArrayList<ProcessManager>();
-
     private static ServiceLoader<ProcessManagerProvider> providerLoader = ServiceLoader.load( ProcessManagerProvider.class );
 
     private static Map<String, ProcessManagerProvider> nsToProvider = null;
+
+    private List<ProcessManager> managers = new ArrayList<ProcessManager>();
 
     /**
      * Creates a new {@link WPService} instance with the given configuration.
