@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps.describeprocess;
+package org.deegree.services.wps.describeprocess;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wps;
+package org.deegree.services.wps;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

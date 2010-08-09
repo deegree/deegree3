@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps.execute;
+package org.deegree.services.wps.execute;
 
 import java.util.HashMap;
 import java.util.Map;

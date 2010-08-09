@@ -34,16 +34,32 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps.execute;
+package org.deegree.services.wps.execute;
+
 
 /**
- * Encapsulates the requirements for the format of a {@link ExecuteRequest} response.
+ * Indicates that a single output parameter shall be returned directly as raw data without an encapsulating WPS response
+ * document.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  *
  * @version $Revision: $, $Date: $
  */
-public interface ResponseForm {
+public class RawDataOutput implements ResponseForm {
 
+    private RequestedOutput output;
+
+    /**
+     * Creates a new {@link RawDataOutput} instance.
+     *
+     * @param output
+     */
+    RawDataOutput( RequestedOutput output ) {
+        this.output = output;
+    }
+
+    public RequestedOutput getRequestedOutput () {
+        return output;
+    }
 }

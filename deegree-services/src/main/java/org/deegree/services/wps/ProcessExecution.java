@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps;
+package org.deegree.services.wps;
 
 import java.net.URL;
 import java.util.Date;
@@ -43,14 +43,13 @@ import java.util.List;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.controller.wps.execute.ExecuteRequest;
-import org.deegree.services.controller.wps.execute.ExecuteResponse;
-import org.deegree.services.controller.wps.execute.RequestedOutput;
-import org.deegree.services.controller.wps.storage.StorageLocation;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.WPSProcess;
+import org.deegree.services.wps.execute.ExecuteRequest;
+import org.deegree.services.wps.execute.ExecuteResponse;
+import org.deegree.services.wps.execute.RequestedOutput;
+import org.deegree.services.wps.storage.StorageLocation;
 
 /**
  * Encapsulates the status of a {@link WPSProcess} execution.

@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wps.storage;
+package org.deegree.services.wps.storage;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

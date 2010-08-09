@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps;
+package org.deegree.services.wps;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -60,16 +60,6 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wps.ProcessExecution.ExecutionState;
-import org.deegree.services.controller.wps.execute.ExecuteRequest;
-import org.deegree.services.controller.wps.execute.ExecuteResponse;
-import org.deegree.services.controller.wps.execute.ExecuteResponseXMLAdapter;
-import org.deegree.services.controller.wps.execute.RawDataOutput;
-import org.deegree.services.controller.wps.execute.RequestedOutput;
-import org.deegree.services.controller.wps.execute.ResponseDocument;
-import org.deegree.services.controller.wps.storage.ResponseDocumentStorage;
-import org.deegree.services.controller.wps.storage.StorageLocation;
-import org.deegree.services.controller.wps.storage.StorageManager;
 import org.deegree.services.jaxb.wps.BoundingBoxOutputDefinition;
 import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
 import org.deegree.services.jaxb.wps.LiteralOutputDefinition;
@@ -79,11 +69,20 @@ import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.WPSProcess;
+import org.deegree.services.wps.ProcessExecution.ExecutionState;
+import org.deegree.services.wps.execute.ExecuteRequest;
+import org.deegree.services.wps.execute.ExecuteResponse;
+import org.deegree.services.wps.execute.ExecuteResponseXMLAdapter;
+import org.deegree.services.wps.execute.RawDataOutput;
+import org.deegree.services.wps.execute.RequestedOutput;
+import org.deegree.services.wps.execute.ResponseDocument;
 import org.deegree.services.wps.output.BoundingBoxOutputImpl;
 import org.deegree.services.wps.output.ComplexOutputImpl;
 import org.deegree.services.wps.output.LiteralOutputImpl;
 import org.deegree.services.wps.output.ProcessletOutput;
+import org.deegree.services.wps.storage.ResponseDocumentStorage;
+import org.deegree.services.wps.storage.StorageLocation;
+import org.deegree.services.wps.storage.StorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

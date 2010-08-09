@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps.execute;
+package org.deegree.services.wps.execute;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,12 +53,12 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
-import org.deegree.services.controller.wps.ProcessExecution;
-import org.deegree.services.controller.wps.ProcessExecution.ExecutionState;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
+import org.deegree.services.wps.ProcessExecution;
 import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.ProcessExecution.ExecutionState;
 import org.deegree.services.wps.input.BoundingBoxInput;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.EmbeddedComplexInput;

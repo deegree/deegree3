@@ -34,16 +34,16 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps.execute;
+package org.deegree.services.wps.execute;
 
 import java.net.URL;
 import java.util.List;
 
-import org.deegree.services.controller.wps.ProcessExecution;
-import org.deegree.services.controller.wps.storage.StorageLocation;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.services.wps.ProcessExecution;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.storage.StorageLocation;
 
 /**
  *

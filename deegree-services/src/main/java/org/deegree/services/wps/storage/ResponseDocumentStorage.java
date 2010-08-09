@@ -34,32 +34,30 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps.execute;
+package org.deegree.services.wps.storage;
 
+import java.io.File;
+
+import org.deegree.services.controller.OGCFrontController;
 
 /**
- * Indicates that a single output parameter shall be returned directly as raw data without an encapsulating WPS response
- * document.
+ * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  *
  * @version $Revision: $, $Date: $
  */
-public class RawDataOutput implements ResponseForm {
+public class ResponseDocumentStorage extends StorageLocation {
 
-    private RequestedOutput output;
-
-    /**
-     * Creates a new {@link RawDataOutput} instance.
-     *
-     * @param output
-     */
-    RawDataOutput( RequestedOutput output ) {
-        this.output = output;
+    ResponseDocumentStorage( File resourceFile, String id ) {
+        super( resourceFile, id, "text/xml" );
     }
 
-    public RequestedOutput getRequestedOutput () {
-        return output;
+    @Override
+    public String getWebURL() {
+        String url = OGCFrontController.getHttpGetURL()
+                     + "service=WPS&version=1.0.0&request=GetResponseDocument&identifier=" + id;
+        return url;
     }
 }

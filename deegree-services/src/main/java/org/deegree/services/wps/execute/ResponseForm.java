@@ -34,30 +34,16 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps.storage;
-
-import java.io.File;
-
-import org.deegree.services.controller.OGCFrontController;
+package org.deegree.services.wps.execute;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Encapsulates the requirements for the format of a {@link ExecuteRequest} response.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  *
  * @version $Revision: $, $Date: $
  */
-public class ResponseDocumentStorage extends StorageLocation {
+public interface ResponseForm {
 
-    ResponseDocumentStorage( File resourceFile, String id ) {
-        super( resourceFile, id, "text/xml" );
-    }
-
-    @Override
-    public String getWebURL() {
-        String url = OGCFrontController.getHttpGetURL()
-                     + "service=WPS&version=1.0.0&request=GetResponseDocument&identifier=" + id;
-        return url;
-    }
 }

@@ -64,6 +64,7 @@ import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.FrontControllerOptionsType;
 import org.deegree.services.jaxb.main.ServiceType;
+import org.deegree.services.wps.WPSController;
 import org.slf4j.Logger;
 
 /**
@@ -301,7 +302,13 @@ public class WebServicesConfiguration {
         final String packageName = OGCFrontController.class.getPackage().getName();
 
         // something like org.deegree.services.controller.wfs.WFSController
-        String controller = packageName + "." + serviceName.toLowerCase() + "." + serviceName + "Controller";
+        // TODO outfactor this (maybe use a Map or proper SPI for plugging service implementations?)
+        String controller = "org.deegree.services." + serviceName.toLowerCase() + "." + serviceName + "Controller";
+        if ( "WPS".equals( serviceName ) ) {
+            controller = WPSController.class.getName();
+        } else {
+            controller = "org.deegree.services." + serviceName.toLowerCase() + "." + serviceName + "Controller";
+        }
 
         LOG.info( "" );
         LOG.info( "--------------------------------------------------------------------------------" );

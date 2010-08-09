@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps;
+package org.deegree.services.wps;
 
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
@@ -93,23 +93,21 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wps.capabilities.CapabilitiesXMLAdapter;
-import org.deegree.services.controller.wps.describeprocess.DescribeProcessResponseXMLAdapter;
-import org.deegree.services.controller.wps.execute.ExecuteRequest;
-import org.deegree.services.controller.wps.execute.ExecuteRequestKVPAdapter;
-import org.deegree.services.controller.wps.execute.ExecuteRequestXMLAdapter;
-import org.deegree.services.controller.wps.execute.ResponseDocument;
-import org.deegree.services.controller.wps.storage.OutputStorage;
-import org.deegree.services.controller.wps.storage.ResponseDocumentStorage;
-import org.deegree.services.controller.wps.storage.StorageManager;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.PublishedInformation;
 import org.deegree.services.jaxb.wps.ServiceConfiguration;
-import org.deegree.services.wps.WPSProcess;
-import org.deegree.services.wps.WPService;
+import org.deegree.services.wps.capabilities.CapabilitiesXMLAdapter;
+import org.deegree.services.wps.describeprocess.DescribeProcessResponseXMLAdapter;
+import org.deegree.services.wps.execute.ExecuteRequest;
+import org.deegree.services.wps.execute.ExecuteRequestKVPAdapter;
+import org.deegree.services.wps.execute.ExecuteRequestXMLAdapter;
+import org.deegree.services.wps.execute.ResponseDocument;
+import org.deegree.services.wps.storage.OutputStorage;
+import org.deegree.services.wps.storage.ResponseDocumentStorage;
+import org.deegree.services.wps.storage.StorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

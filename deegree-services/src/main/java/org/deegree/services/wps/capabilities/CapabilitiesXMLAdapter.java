@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wps.capabilities;
+package org.deegree.services.wps.capabilities;
 
 import java.util.LinkedList;
 import java.util.List;
