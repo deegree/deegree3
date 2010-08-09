@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wcs.getcoverage;
+package org.deegree.services.wcs.getcoverage;
 
 import static org.deegree.commons.utils.kvp.KVPUtils.getDefault;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wcs.capabilities;
+package org.deegree.services.wcs.capabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.services.controller.wcs.WCSRequest100XMLAdapter;
+import org.deegree.services.wcs.WCSRequest100XMLAdapter;
 
 /**
  * This is an xml adapter for GetCapabilities requests after the WCS 1.0.0 spec. *

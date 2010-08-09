@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wcs;
+package org.deegree.services.wcs;
 
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
@@ -85,27 +85,23 @@ import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wcs.capabilities.Capabilities100XMLAdapter;
-import org.deegree.services.controller.wcs.capabilities.GetCapabilities100XMLAdapter;
-import org.deegree.services.controller.wcs.capabilities.Capabilities100XMLAdapter.Sections;
-import org.deegree.services.controller.wcs.describecoverage.CoverageDescription100XMLAdapter;
-import org.deegree.services.controller.wcs.describecoverage.DescribeCoverage;
-import org.deegree.services.controller.wcs.describecoverage.DescribeCoverage100KVPAdapter;
-import org.deegree.services.controller.wcs.describecoverage.DescribeCoverage100XMLAdapter;
-import org.deegree.services.controller.wcs.getcoverage.GetCoverage;
-import org.deegree.services.controller.wcs.getcoverage.GetCoverage100KVPAdapter;
-import org.deegree.services.controller.wcs.getcoverage.GetCoverage100XMLAdapter;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wcs.PublishedInformation;
 import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
-import org.deegree.services.wcs.ServiceConfigurationXMLAdapter;
-import org.deegree.services.wcs.WCService;
-import org.deegree.services.wcs.WCServiceBuilder;
-import org.deegree.services.wcs.WCServiceException;
+import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter;
+import org.deegree.services.wcs.capabilities.GetCapabilities100XMLAdapter;
+import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.wcs.coverages.WCSCoverage;
+import org.deegree.services.wcs.describecoverage.CoverageDescription100XMLAdapter;
+import org.deegree.services.wcs.describecoverage.DescribeCoverage;
+import org.deegree.services.wcs.describecoverage.DescribeCoverage100KVPAdapter;
+import org.deegree.services.wcs.describecoverage.DescribeCoverage100XMLAdapter;
+import org.deegree.services.wcs.getcoverage.GetCoverage;
+import org.deegree.services.wcs.getcoverage.GetCoverage100KVPAdapter;
+import org.deegree.services.wcs.getcoverage.GetCoverage100XMLAdapter;
 import org.deegree.services.wcs.model.CoverageOptions;
 import org.deegree.services.wcs.model.CoverageResult;
 import org.slf4j.Logger;

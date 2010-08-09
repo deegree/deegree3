@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wcs.getcoverage;
+package org.deegree.services.wcs.getcoverage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.protocol.wcs.WCSConstants;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.controller.wcs.WCSRequest100XMLAdapter;
+import org.deegree.services.wcs.WCSRequest100XMLAdapter;
 import org.deegree.services.wcs.model.Grid;
 
 /**

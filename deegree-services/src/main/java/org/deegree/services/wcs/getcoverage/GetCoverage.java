@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wcs.getcoverage;
+package org.deegree.services.wcs.getcoverage;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.coverage.rangeset.RangeSet;

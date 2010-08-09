@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,49 +32,34 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wcs.describecoverage;
+ ----------------------------------------------------------------------------*/
+package org.deegree.services.wcs.describecoverage;
 
 import java.util.List;
+import java.util.Map;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.kvp.KVPUtils;
 
 /**
- *
- *
+ * This is a kvp adapter for WCS 1.0.0 DescribeCoverage requests.
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
-public class DescribeCoverage {
-
-    private final Version version;
-
-    private final List<String> coverages;
+public class DescribeCoverage100KVPAdapter {
 
     /**
-     * @param version
-     * @param coverages
+     * @param kvp
+     * @return a DescribeCoverage object with all requested coverages
      */
-    protected DescribeCoverage( Version version, List<String> coverages ) {
-        this.version = version;
-        this.coverages = coverages;
-    }
+    public static DescribeCoverage parse( Map<String, String> kvp ) {
+        List<String> coverages = KVPUtils.splitAll( kvp, "COVERAGE" );
 
-    /**
-     * @return all requested coverages
-     */
-    public List<String> getCoverages() {
-        return coverages;
+        String version = KVPUtils.getDefault( kvp, "VERSION", "1.0.0" );
+        return new DescribeCoverage( Version.parseVersion( version ), coverages );
     }
-
-    /**
-     * @return the request version
-     */
-    public Version getVersion() {
-        return version;
-    }
-
 }

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wcs.describecoverage;
+package org.deegree.services.wcs.describecoverage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.controller.wcs.WCSRequest100XMLAdapter;
+import org.deegree.services.wcs.WCSRequest100XMLAdapter;
 
 /**
  * This is an xml adapter for DescribeCoverage requests after the WCS 1.0.0 spec.

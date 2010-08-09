@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.controller.wcs.capabilities;
+package org.deegree.services.wcs.capabilities;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
@@ -50,7 +50,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.services.controller.wcs.describecoverage.CoverageDescription100XMLAdapter;
 import org.deegree.services.jaxb.main.AddressType;
 import org.deegree.services.jaxb.main.CodeType;
 import org.deegree.services.jaxb.main.DCPType;
@@ -63,6 +62,7 @@ import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage;
 import org.deegree.services.wcs.coverages.WCSCoverage;
+import org.deegree.services.wcs.describecoverage.CoverageDescription100XMLAdapter;
 
 /**
  * 
