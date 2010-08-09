@@ -216,7 +216,7 @@ public class RenderHelper {
         // correct non-square shapes
         double w = box.getWidth();
         double h = box.getHeight();
-        
+
         if ( w < h ) {
             t.translate( -( w - h ) / 2, 0 );
         } else {
@@ -229,9 +229,9 @@ public class RenderHelper {
         if ( translate ) {
             t.translate( x, y );
         }
-        
+
         box = shape.getBounds2D();
-        
+
         t.rotate( toRadians( rotation ), box.getCenterX(), box.getCenterY() );
 
         return t.createTransformedShape( shape );
@@ -320,7 +320,9 @@ public class RenderHelper {
             GeneralPath shape = new GeneralPath();
             while ( ( node = walker.nextGraphicsNode() ) != null ) {
                 AffineTransform t2 = (AffineTransform) t.clone();
-                t2.concatenate( node.getTransform() );
+                if ( node.getTransform() != null ) {
+                    t2.concatenate( node.getTransform() );
+                }
                 node.setTransform( t2 );
                 shape.append( node.getOutline(), false );
             }
