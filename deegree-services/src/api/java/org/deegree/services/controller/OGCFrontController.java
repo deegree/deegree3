@@ -848,7 +848,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "Stack trace:", e );
         } catch ( Exception e ) {
             LOG.error( "Initialization failed!" );
-            LOG.error( "An unexpected error was caught:", e );
+            LOG.trace( "An unexpected error was caught, stack trace:", e );
         }
     }
 

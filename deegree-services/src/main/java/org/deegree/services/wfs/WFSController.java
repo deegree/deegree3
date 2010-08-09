@@ -207,9 +207,12 @@ public class WFSController extends AbstractOGCServiceController {
             LOG.trace( "Stack trace:", e );
             throw new ControllerInitException( "Error parsing WFS configuration: " + e.getMessage(), e );
         } catch ( JAXBException e ) {
-            LOG.error( "Could not load WFS configuration: '{}'", e.getMessage() );
+            LOG.error( "Could not load WFS configuration: '{}'", e.getLinkedException().getMessage() );
             LOG.trace( "Stack trace:", e );
-            throw new ControllerInitException( "Error parsing WFS configuration: " + e.getMessage(), e );
+            // whyever they use the linked exception here...
+            // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
+            throw new ControllerInitException( "Error parsing WFS configuration: "
+                                               + e.getLinkedException().getMessage(), e );
         }
 
         PublishedInformation pi = jaxbConfig.getPublishedInformation();

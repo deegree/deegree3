@@ -182,6 +182,7 @@ public class WMSController extends AbstractOGCServiceController {
                                                    Class<T> clazz ) {
         try {
             // generics and reflection don't go well together
+            @SuppressWarnings(value = "unchecked")
             Class<T> c = (Class<T>) Class.forName( className );
             if ( !c.isAssignableFrom( clazz ) ) {
                 LOG.warn( "The serializer class '{}' does not implement the '{}' interface.", className, clazz );
@@ -315,7 +316,9 @@ public class WMSController extends AbstractOGCServiceController {
             LOG.debug( securityLogging );
 
         } catch ( JAXBException e ) {
-            throw new ControllerInitException( e.getMessage(), e );
+            // whyever they use the linked exception here...
+            // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
+            throw new ControllerInitException( e.getLinkedException().getMessage(), e );
         } catch ( MalformedURLException e ) {
             throw new ControllerInitException( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -441,6 +444,7 @@ public class WMSController extends AbstractOGCServiceController {
             }
 
             Symbol s = new TemplatingParser( new TemplatingLexer( in ) ).parse();
+            @SuppressWarnings(value = "unchecked")
             HashMap<String, Object> tmpl = (HashMap) s.value;
             StringBuilder sb = new StringBuilder();
             new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, tmpl, col, fi.returnGeometries() );

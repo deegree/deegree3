@@ -347,7 +347,9 @@ public class WebServicesConfiguration {
             double startupTime = Math.round( ( ( System.currentTimeMillis() - time ) * 0.1 ) ) * 0.01;
             LOG.info( serviceName + " startup successful (took: " + startupTime + " seconds)" );
         } catch ( Exception e ) {
-            LOG.error( "Initializing " + serviceName + " failed: " + e.getMessage(), e );
+            LOG.error( "Initializing {} failed: {}", serviceName, e.getMessage() );
+            LOG.error( "Set the log level to TRACE to get the stack trace." );
+            LOG.trace( "Stack trace:", e );
             LOG.info( "" );
             LOG.info( serviceName + " startup failed." );
             subController = null;
