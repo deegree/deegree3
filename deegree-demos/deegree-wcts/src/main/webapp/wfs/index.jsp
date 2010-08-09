@@ -38,7 +38,7 @@
 <%@ page import="org.deegree.commons.utils.DeegreeAALogoUtils"%>
 <%@ page import="org.deegree.commons.version.DeegreeModuleInfo"%>
 <%@ page import="org.deegree.services.controller.*"%>
-<%@ page import="org.deegree.services.controller.wfs.WFSController"%>
+<%@ page import="org.deegree.services.wfs.WFSController"%>
 <%@ page import="org.deegree.services.wfs.*"%>
 <%@page import="org.deegree.feature.persistence.*"%>
 <%@page import="org.deegree.feature.types.ApplicationSchema"%>
@@ -51,7 +51,7 @@
         if (ft.isAbstract()) {
             out.println (indent + "- <i>" + ft.getName().getLocalPart() + " (abstract)</i><br/>");        
         } else {
-            Query query = new Query( ft.getName(), null, null, false, 0);
+            Query query = new Query( ft.getName(), null, null, -1, -1, -1 );
             int numInstances = -1;
             try {
                 numInstances = store.queryHits(query);
@@ -86,7 +86,7 @@ deegree 3 WFS configuration<br/>
 ---------------------------<br/><br/>
 Protocol information<br/><br/>
 <%
-  WFSController controller = (WFSController) OGCFrontController.getServiceController(WFSController.class);
+  WFSController controller = (WFSController) OGCFrontController.getServiceConfiguration().getServiceController(WFSController.class);
   out.println (" - active versions: " + controller.getOfferedVersionsString());  
 %>
 <br/><br/><br/>Configured feature stores<br/><br/>
