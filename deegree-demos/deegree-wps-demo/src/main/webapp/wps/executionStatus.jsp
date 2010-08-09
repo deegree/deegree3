@@ -36,7 +36,7 @@
 --%>
 <%@page import="org.deegree.commons.version.*"%>
 <%@page import="org.deegree.services.controller.OGCFrontController"%>
-<%@page import="org.deegree.services.wps.WPSController"%>
+<%@page import="org.deegree.services.wps.WPService"%>
 <%@page import="org.deegree.services.wps.ProcessExecution"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="java.util.Collection"%>
@@ -56,7 +56,7 @@ deegree 3 WPS process status
 <br />
 <br />
 <%
-    WPSController controller = (WPSController) OGCFrontController.getServiceController( WPSController.class );
+    WPService controller = (WPService) OGCFrontController.getServiceController( WPService.class );
     Collection<ProcessExecution> allProcesses = controller.getExecutionManager().getAllProcesses();
     if ( allProcesses.size() > 0 ) {
 %>

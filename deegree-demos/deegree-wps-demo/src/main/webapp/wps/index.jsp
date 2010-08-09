@@ -39,7 +39,7 @@
 <%@ page import="org.deegree.commons.version.DeegreeModuleInfo"%>
 <%@ page import="org.deegree.services.controller.*"%>
 <%@ page import="org.deegree.services.wps.*"%>
-<%@page import="org.deegree.services.wps.WPSController"%>
+<%@page import="org.deegree.services.wps.WPService"%>
 <%@page import="org.deegree.services.jaxb.wps.ProcessDefinition"%><html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -56,7 +56,7 @@ Protocol information
 <br />
 <br />
 <%
-    WPSController controller = (WPSController) OGCFrontController.getServiceController( WPSController.class );
+    WPService controller = (WPService) OGCFrontController.getServiceController( WPService.class );
     out.println( " - active versions: " + controller.getOfferedVersionsString() );
 %>
 <br />
@@ -66,9 +66,9 @@ Available processes
 <br />
 <br />
 <%
-    WPService service = controller.getService();
+    ProcessManager manager = controller.getProcessManager();
     int i = 0;
-    for ( WPSProcess process : service.getProcesses().values() ) {
+    for ( WPSProcess process : manager.getProcesses().values() ) {
         out.println( "- " + process.getDescription().getIdentifier().getValue().toString() + "<br/>" );
     }
 %>
