@@ -59,7 +59,6 @@ import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
@@ -196,17 +195,20 @@ public class WFSController extends AbstractOGCServiceController {
         serviceId = serviceMetadata.getServiceIdentification();
         serviceProvider = serviceMetadata.getServiceProvider();
 
-        // unmarshall ServiceConfiguration and PublishedInformation
+        // unmarshal ServiceConfiguration and PublishedInformation
         DeegreeWFS jaxbConfig = null;
         try {
-            Unmarshaller u = JAXBContext.newInstance( "org.deegree.services.jaxb.wfs" ).createUnmarshaller();
+            Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.wfs",
+                                              "/META-INF/schemas/wms/0.5.0/wfs_configuration.xsd" );
             // turn the application schema location into an absolute URL
             jaxbConfig = (DeegreeWFS) u.unmarshal( controllerConf.getRootElement().getXMLStreamReaderWithoutCaching() );
         } catch ( XMLParsingException e ) {
-            LOG.error( e.getMessage(), e );
+            LOG.error( "Could not load WFS configuration: '{}'", e.getMessage() );
+            LOG.trace( "Stack trace:", e );
             throw new ControllerInitException( "Error parsing WFS configuration: " + e.getMessage(), e );
         } catch ( JAXBException e ) {
-            LOG.error( e.getMessage(), e );
+            LOG.error( "Could not load WFS configuration: '{}'", e.getMessage() );
+            LOG.trace( "Stack trace:", e );
             throw new ControllerInitException( "Error parsing WFS configuration: " + e.getMessage(), e );
         }
 
