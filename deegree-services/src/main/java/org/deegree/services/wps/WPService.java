@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-services/src/main/java/org/deegree/services/wps/WPService.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -127,9 +127,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:padberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 25786 $, $Date: 2010-08-09 19:55:41 +0200 (Mo, 09 Aug 2010) $
  */
 public class WPService extends AbstractOGCServiceController {
 
@@ -387,7 +387,7 @@ public class WPService extends AbstractOGCServiceController {
      * 
      * @return the underlying {@link ProcessManager}, never <code>null</code>
      */
-    public ProcessManager getService() {
+    public ProcessManager getProcessManager() {
         return service;
     }
 
