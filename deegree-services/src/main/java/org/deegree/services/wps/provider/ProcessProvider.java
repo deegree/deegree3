@@ -33,27 +33,27 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.manager;
+package org.deegree.services.wps.provider;
 
 import java.util.Map;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.wps.WPSProcess;
-import org.deegree.services.wps.WPService;
+import org.deegree.services.wps.ProcessManager;
 
 /**
- * Implementations are responsible for making {@link WPSProcess} instances available to the {@link WPService}.
+ * Implementations are responsible for making {@link WPSProcess} instances available to the {@link ProcessManager}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface ProcessManager {
+public interface ProcessProvider {
 
     /**
-     * Called by the container to indicate that this {@link ProcessManager} instance is being placed into service.
+     * Called by the container to indicate that this {@link ProcessProvider} instance is being placed into service.
      * 
      * @throws ServiceInitException
      */
@@ -61,7 +61,7 @@ public interface ProcessManager {
                             throws ServiceInitException;
 
     /**
-     * Called by the container to indicate that this {@link ProcessManager} instance is being taken out of service.
+     * Called by the container to indicate that this {@link ProcessProvider} instance is being taken out of service.
      */
     public void destroy();
 

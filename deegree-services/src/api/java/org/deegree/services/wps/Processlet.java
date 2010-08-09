@@ -107,7 +107,7 @@ package org.deegree.services.wps;
 public interface Processlet {
 
     /**
-     * Called by the {@link WPService} to perform the execution of this {@link Processlet}.
+     * Called by the {@link ProcessManager} to perform the execution of this {@link Processlet}.
      * <p>
      * The typical workflow is:
      * <ol>
@@ -134,12 +134,12 @@ public interface Processlet {
                             throws ProcessletException;
 
     /**
-     * Called by the {@link WPService} to indicate to a {@link Processlet} that it is being placed into service.
+     * Called by the {@link ProcessManager} to indicate to a {@link Processlet} that it is being placed into service.
      */
     public void init();
 
     /**
-     * Called by the {@link WPService} to indicate to a {@link Processlet} that it is being taken out of service.
+     * Called by the {@link ProcessManager} to indicate to a {@link Processlet} that it is being taken out of service.
      * <p>
      * This method gives the {@link Processlet} an opportunity to clean up any resources that are being held (for
      * example, memory, file handles, threads) and make sure that any persistent state is synchronized with the

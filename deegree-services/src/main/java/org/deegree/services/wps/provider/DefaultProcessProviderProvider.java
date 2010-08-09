@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.manager;
+package org.deegree.services.wps.provider;
 
 import java.net.URL;
 
@@ -46,16 +46,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ProcessManagerProvider} for the {@link DefaultProcessManager}.
+ * {@link ProcessProviderProvider} for the {@link DefaultProcessProvider}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DefaultProcessManagerProvider implements ProcessManagerProvider {
+public class DefaultProcessProviderProvider implements ProcessProviderProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DefaultProcessManagerProvider.class );
+    private static final Logger LOG = LoggerFactory.getLogger( DefaultProcessProviderProvider.class );
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/services/wps";
 
@@ -65,9 +65,9 @@ public class DefaultProcessManagerProvider implements ProcessManagerProvider {
     }
 
     @Override
-    public ProcessManager createManager( URL configURL ) {
+    public ProcessProvider createProvider( URL configURL ) {
 
-        ProcessManager manager = null;
+        ProcessProvider manager = null;
 
         LOG.info( "Loading process definition from file '" + configURL + "'." );
         //
@@ -88,7 +88,7 @@ public class DefaultProcessManagerProvider implements ProcessManagerProvider {
             // LOG.info( "Found process WSDL file." );
             // processIdToWSDL.put( processId, f );
             // }
-            manager = new DefaultProcessManager( processDef );
+            manager = new DefaultProcessProvider( processDef );
         } catch ( JAXBException e ) {
             e.printStackTrace();
         }

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.manager;
+package org.deegree.services.wps.provider;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,16 +51,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Basic {@link ProcessManager} that allows to serve hand-written processes with hand-written process descriptions.
+ * Basic {@link ProcessProvider} that allows to serve hand-written processes with hand-written process descriptions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DefaultProcessManager implements ProcessManager {
+public class DefaultProcessProvider implements ProcessProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DefaultProcessManager.class );
+    private static final Logger LOG = LoggerFactory.getLogger( DefaultProcessProvider.class );
 
     private final Collection<ProcessDefinition> processDefs;
 
@@ -69,7 +69,7 @@ public class DefaultProcessManager implements ProcessManager {
     /**
      * @param processDef
      */
-    DefaultProcessManager( ProcessDefinition processDef ) {
+    DefaultProcessProvider( ProcessDefinition processDef ) {
         processDefs = Collections.singletonList( processDef );
     }
 

@@ -45,13 +45,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.wps.WPService;
+import org.deegree.services.wps.ProcessManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates a storage location and it's URL for storing a response document or an output parameter of the
- * {@link WPService} as a web-accessible resource.
+ * {@link ProcessManager} as a web-accessible resource.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $

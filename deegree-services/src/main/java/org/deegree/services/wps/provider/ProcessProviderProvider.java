@@ -33,19 +33,19 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.manager;
+package org.deegree.services.wps.provider;
 
 import java.net.URL;
 
 /**
- * Implementations are responsible for providing {@link ProcessManager} instances.
+ * Implementations are responsible for providing {@link ProcessProvider} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface ProcessManagerProvider {
+public interface ProcessProviderProvider {
 
     /**
      * Returns the namespace for configuration documents that this provider handles.
@@ -55,11 +55,11 @@ public interface ProcessManagerProvider {
     public String getConfigNamespace();
 
     /**
-     * Creates a new {@link ProcessManager} instance from the given configuration document.
+     * Creates a new {@link ProcessProvider} instance from the given configuration document.
      * 
      * @param configURL
      *            location of the configuration document, must not be <code>null</code>
      * @return new process manager instance, configured, but not initialized yet
      */
-    public ProcessManager createManager( URL configURL );
+    public ProcessProvider createProvider( URL configURL );
 }

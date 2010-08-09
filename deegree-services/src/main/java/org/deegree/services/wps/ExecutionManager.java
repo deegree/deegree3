@@ -36,6 +36,8 @@
 
 package org.deegree.services.wps;
 
+import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
@@ -65,10 +67,6 @@ import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
 import org.deegree.services.jaxb.wps.LiteralOutputDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
-import org.deegree.services.wps.Processlet;
-import org.deegree.services.wps.ProcessletException;
-import org.deegree.services.wps.ProcessletInputs;
-import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.ProcessExecution.ExecutionState;
 import org.deegree.services.wps.execute.ExecuteRequest;
 import org.deegree.services.wps.execute.ExecuteResponse;
@@ -87,10 +85,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Responsible for handling <code>Execute</code> requests sent to the {@link WPSController}. Also keeps track of the
- * process executions.
+ * Responsible for handling <code>Execute</code> requests for the {@link WPService}. Also keeps track of the process
+ * executions.
  * 
- * @see WPSController
+ * @see WPService
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:jason.surratt@gmail.com">Jason R. Surratt</a>
@@ -116,15 +114,15 @@ public class ExecutionManager {
     private Map<ResponseDocumentStorage, ProcessExecution> responseDocumentIdToState = new ConcurrentHashMap<ResponseDocumentStorage, ProcessExecution>();
 
     /**
-     * Creates a new {@link ExecutionManager} for a {@link WPSController}.
+     * Creates a new {@link ExecutionManager} for a {@link WPService}.
      * 
      * @param master
-     *            {@link WPSController} that will delegate the processing of execute requests
+     *            {@link WPService} that will delegate the processing of execute requests
      * @param storageManager
      *            used for creating storage locations for web-accessible resources (response documents / process
      *            outputs)
      */
-    ExecutionManager( WPSController master, StorageManager storageManager ) {
+    ExecutionManager( WPService master, StorageManager storageManager ) {
         this.storageManager = storageManager;
         this.exec = Executors.newCachedThreadPool();
     }
@@ -134,10 +132,10 @@ public class ExecutionManager {
      * processList. See {@link ProcessExecution} for a definition of the parameters.
      */
     private ProcessExecution createProcessletExecution( ExecuteRequest request, StorageLocation responseStorage,
-                                                           URL serviceInstance, List<RequestedOutput> outputParams,
-                                                           ProcessletOutputs outputs ) {
+                                                        URL serviceInstance, List<RequestedOutput> outputParams,
+                                                        ProcessletOutputs outputs ) {
         ProcessExecution result = new ProcessExecution( request, responseStorage, serviceInstance, outputParams,
-                                                              outputs );
+                                                        outputs );
         synchronized ( processStateList ) {
             if ( processStateList.size() == MAX_ENTRIES ) {
                 processStateList.poll();
@@ -330,10 +328,14 @@ public class ExecutionManager {
         } catch ( Exception e ) {
             String msg = "Generating ExecuteResponse document failed: " + e.getMessage();
             LOG.error( msg, e );
-            throw new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
+            throw new OWSException( msg, NO_APPLICABLE_CODE );
         }
     }
 
+    /**
+     * @param response
+     * @param location
+     */
     void sendResponseDocument( HttpResponseBuffer response, ResponseDocumentStorage location ) {
 
         ProcessExecution status = responseDocumentIdToState.get( location );
@@ -404,7 +406,7 @@ public class ExecutionManager {
             } catch ( Exception e ) {
                 String msg = "Unable to create sink for complex output parameter: " + e.getMessage();
                 LOG.error( msg, e );
-                throw new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
+                throw new OWSException( msg, NO_APPLICABLE_CODE );
             }
         }
         return processOutput;

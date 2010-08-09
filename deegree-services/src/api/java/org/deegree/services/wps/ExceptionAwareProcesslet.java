@@ -51,10 +51,10 @@ import org.deegree.services.controller.ows.OWSException;
 public interface ExceptionAwareProcesslet extends Processlet {
 
     /**
-     * Called by the {@link WPService} if an exception occurred while parsing and/or validating an incoming request.
+     * Called by the {@link ProcessManager} if an exception occurred while parsing and/or validating an incoming request.
      * <p>
      * Implementations may supply an {@link ExceptionCustomizer} which will create an {@link OWSException} appropriate
-     * for a number of exceptional events. If an implementations wants the {@link WPService} to generate a 'standard'
+     * for a number of exceptional events. If an implementations wants the {@link ProcessManager} to generate a 'standard'
      * exception, <code>null</code> should be returned.
      * 
      * @return an {@link ExceptionCustomizer} or <code>null</code> if the {@link Processlet} prefers standard exception

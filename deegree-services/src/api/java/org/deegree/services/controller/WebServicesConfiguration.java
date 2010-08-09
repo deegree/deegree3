@@ -69,7 +69,7 @@ import org.deegree.services.sos.SOSController;
 import org.deegree.services.wcs.WCSController;
 import org.deegree.services.wfs.WFSController;
 import org.deegree.services.wms.controller.WMSController;
-import org.deegree.services.wps.WPSController;
+import org.deegree.services.wps.WPService;
 import org.deegree.services.wpvs.controller.WPVSController;
 import org.slf4j.Logger;
 
@@ -319,7 +319,7 @@ public class WebServicesConfiguration {
         } else if ( "WMS".equals( serviceName ) ) {
             controller = WMSController.class.getName();
         } else if ( "WPS".equals( serviceName ) ) {
-            controller = WPSController.class.getName();
+            controller = WPService.class.getName();
         } else if ( "WPVS".equals( serviceName ) ) {
             controller = WPVSController.class.getName();
         }

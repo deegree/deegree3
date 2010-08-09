@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,158 +36,580 @@
 
 package org.deegree.services.wps;
 
+import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
+import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
+import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
+
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 
-import javax.xml.stream.XMLInputFactory;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPFactory;
+import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.FileUtils;
+import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.TempFileManager;
+import org.deegree.commons.utils.kvp.KVPUtils;
+import org.deegree.commons.utils.kvp.MissingParameterException;
+import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.XPath;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;
+import org.deegree.protocol.wps.WPSConstants.WPSRequestType;
+import org.deegree.protocol.wps.capabilities.GetCapabilitiesXMLAdapter;
+import org.deegree.protocol.wps.describeprocess.DescribeProcessRequest;
+import org.deegree.protocol.wps.describeprocess.DescribeProcessRequestKVPAdapter;
+import org.deegree.protocol.wps.describeprocess.DescribeProcessRequestXMLAdapter;
+import org.deegree.services.controller.AbstractOGCServiceController;
+import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.exception.ControllerException;
+import org.deegree.services.controller.exception.ControllerInitException;
+import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
+import org.deegree.services.controller.ows.OWSException;
+import org.deegree.services.controller.ows.OWSException110XMLAdapter;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.wps.manager.ProcessManager;
-import org.deegree.services.wps.manager.ProcessManagerProvider;
+import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.services.jaxb.wps.PublishedInformation;
+import org.deegree.services.jaxb.wps.ServiceConfiguration;
+import org.deegree.services.wps.capabilities.CapabilitiesXMLAdapter;
+import org.deegree.services.wps.describeprocess.DescribeProcessResponseXMLAdapter;
+import org.deegree.services.wps.execute.ExecuteRequest;
+import org.deegree.services.wps.execute.ExecuteRequestKVPAdapter;
+import org.deegree.services.wps.execute.ExecuteRequestXMLAdapter;
+import org.deegree.services.wps.execute.ResponseDocument;
+import org.deegree.services.wps.storage.OutputStorage;
+import org.deegree.services.wps.storage.ResponseDocumentStorage;
+import org.deegree.services.wps.storage.StorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Implementation of the WPS (WebProcessingService) server protocol.
+ * <p>
+ * Supported WPS protocol versions:
+ * <ul>
+ * <li>1.0.0</li>
+ * </ul>
+ * </p>
  * 
+ * @see ProcessManager
+ * @see ExecutionManager
  * 
- * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author <a href="mailto:padberg@uni-bonn.de">Alexander Padberg</a>
+ * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class WPService {
+public class WPService extends AbstractOGCServiceController {
 
     private static final Logger LOG = LoggerFactory.getLogger( WPService.class );
 
-    private static ServiceLoader<ProcessManagerProvider> providerLoader = ServiceLoader.load( ProcessManagerProvider.class );
-
-    private static Map<String, ProcessManagerProvider> nsToProvider = null;
-
-    private List<ProcessManager> managers = new ArrayList<ProcessManager>();
-
-    /**
-     * Creates a new {@link WPService} instance with the given configuration.
-     * 
-     * @param processesDir
-     *            directory to be scanned for process provider configuration documents, never <code>null</code>
-     * @throws ServiceInitException
-     */
-    public WPService( File processesDir ) throws ServiceInitException {
-        File[] fsConfigFiles = processesDir.listFiles( new FilenameFilter() {
-            @Override
-            public boolean accept( File dir, String name ) {
-                return name.toLowerCase().endsWith( ".xml" );
-            }
-        } );
-        for ( File fsConfigFile : fsConfigFiles ) {
-            String fileName = fsConfigFile.getName();
-            LOG.info( "Setting up process manager from file '" + fileName + "'..." + "" );
-            try {
-                ProcessManager manager = create( fsConfigFile.toURI().toURL() );
-                manager.init();
-                managers.add( manager );
-            } catch ( Exception e ) {
-                LOG.error( "Error creating process manager: " + e.getMessage(), e );
-            }
+    private static final ImplementationMetadata<WPSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPSRequestType>() {
+        {
+            supportedVersions = new Version[] { VERSION_100 };
+            handledNamespaces = new String[] { WPS_100_NS };
+            handledRequests = WPSRequestType.class;
+            supportedConfigVersions = new Version[] { Version.parseVersion( "0.5.0" ) };
         }
-    }
+    };
 
-    /**
-     * Returns all available {@link ProcessManagerProvider} instances.
-     * 
-     * @return all available providers, keys: config namespace, value: provider instance
-     */
-    static synchronized Map<String, ProcessManagerProvider> getProviders() {
-        if ( nsToProvider == null ) {
-            nsToProvider = new HashMap<String, ProcessManagerProvider>();
-            try {
-                for ( ProcessManagerProvider provider : providerLoader ) {
-                    LOG.debug( "Process manager provider: " + provider + ", namespace: "
-                               + provider.getConfigNamespace() );
-                    if ( nsToProvider.containsKey( provider.getConfigNamespace() ) ) {
-                        LOG.error( "Multiple manager providers for config namespace: '" + provider.getConfigNamespace()
-                                   + "' on classpath -- omitting provider '" + provider.getClass().getName() + "'." );
-                        continue;
-                    }
-                    nsToProvider.put( provider.getConfigNamespace(), provider );
-                }
-            } catch ( Exception e ) {
-                LOG.error( e.getMessage(), e );
-            }
+    private static final CodeType ALL_PROCESSES_IDENTIFIER = new CodeType( "ALL" );
 
-        }
-        return nsToProvider;
-    }
+    private StorageManager storageManager;
 
-    /**
-     * Returns an uninitialized {@link ProcessManager} instance that's created from the specified process manager
-     * configuration document.
-     * 
-     * @param configURL
-     *            URL of the configuration document, must not be <code>null</code>
-     * @return corresponding {@link ProcessManager} instance, not yet initialized, never <code>null</code>
-     * @throws ServiceInitException
-     */
-    public static synchronized ProcessManager create( URL configURL )
-                            throws ServiceInitException {
+    private ProcessManager service;
 
-        String namespace = null;
+    private ServiceConfiguration sc;
+
+    private ExecutionManager executeHandler;
+
+    private File serviceWSDLFile;
+
+    private Map<CodeType, File> processIdToWSDL = new HashMap<CodeType, File>();
+
+    @Override
+    public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
+                      DeegreeServiceControllerType mainConf )
+                            throws ControllerInitException {
+
+        init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
+
+        storageManager = new StorageManager( TempFileManager.getBaseDir() );
+
+        NamespaceContext nsContext = new NamespaceContext();
+        nsContext.addNamespace( "wps", "http://www.deegree.org/services/wps" );
+
+        // Get ServiceConfiguration from configFile
         try {
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
-            StAXParsingHelper.nextElement( xmlReader );
-            namespace = xmlReader.getNamespaceURI();
-        } catch ( Exception e ) {
-            String msg = "Error determining configuration namespace for file '" + configURL + "'.";
-            LOG.error( msg );
-            throw new ServiceInitException( msg );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
+            Unmarshaller u = jc.createUnmarshaller();
+            OMElement serviceConfigurationElement = controllerConf.getRequiredElement(
+                                                                                       controllerConf.getRootElement(),
+                                                                                       new XPath(
+                                                                                                  "wps:ServiceConfiguration",
+                                                                                                  nsContext ) );
+            sc = (ServiceConfiguration) u.unmarshal( serviceConfigurationElement.getXMLStreamReaderWithoutCaching() );
+        } catch ( XMLParsingException e ) {
+            throw new ControllerInitException( "TODO", e );
+        } catch ( JAXBException e ) {
+            throw new ControllerInitException( "TODO", e );
         }
-        LOG.debug( "Config namespace: '" + namespace + "'" );
-        ProcessManagerProvider provider = getProviders().get( namespace );
-        if ( provider == null ) {
-            String msg = "No process manager provider for namespace '" + namespace + "' (file: '" + configURL
-                         + "') registered. Skipping it.";
-            LOG.error( msg );
-            throw new ServiceInitException( msg );
+
+        URL controllerConfURL;
+        try {
+            controllerConfURL = new URL( controllerConf.getSystemId() );
+            File resolvedProcessesDir = FileUtils.getAsFile( new URL( controllerConfURL, sc.getProcessesDirectory() ) );
+            this.service = new ProcessManager( resolvedProcessesDir );
+
+            OMElement piElement = controllerConf.getRequiredElement( controllerConf.getRootElement(),
+                                                                     new XPath( "wps:PublishedInformation", nsContext ) );
+
+            PublishedInformationXMLAdapter piXMLAdapter = new PublishedInformationXMLAdapter();
+            piXMLAdapter.setRootElement( piElement );
+            piXMLAdapter.setSystemId( controllerConf.getSystemId() );
+            PublishedInformation pi = piXMLAdapter.parse();
+            validateAndSetOfferedVersions( pi.getOfferedVersions().getVersion() );
+
+            executeHandler = new ExecutionManager( this, storageManager );
+
+            // WSDL stuff
+            serviceWSDLFile = FileUtils.getAsFile( new URL( controllerConfURL, "service.wsdl" ) );
+        } catch ( MalformedURLException e ) {
+            throw new ControllerInitException( "Problem resolving file resource: " + e.getMessage() );
+        } catch ( ServiceInitException e ) {
+            throw new ControllerInitException( "Problem initializing service: " + e.getMessage() );
         }
-        ProcessManager manager = provider.createManager( configURL );
-        return manager;
     }
 
+    @Override
     public void destroy() {
-        for ( ProcessManager manager : managers ) {
-            manager.destroy();
-        }
+        service.destroy();
     }
 
-    public Map<CodeType, WPSProcess> getProcesses() {
-        Map<CodeType, WPSProcess> processes = new HashMap<CodeType, WPSProcess>();
-        for ( ProcessManager manager : managers ) {
-            Map<CodeType, WPSProcess> managerProcesses = manager.getProcesses();
-            if ( managerProcesses != null ) {
-                processes.putAll( manager.getProcesses() );
+    @Override
+    public void doKVP( Map<String, String> kvpParamsUC, HttpServletRequest request, HttpResponseBuffer response,
+                       List<FileItem> multiParts )
+                            throws ServletException, IOException {
+
+        LOG.trace( "doKVP invoked, version: " + kvpParamsUC.get( "VERSION" ) );
+
+        try {
+            String requestName = KVPUtils.getRequired( kvpParamsUC, "REQUEST" );
+            WPSRequestType requestType = getRequestTypeByName( requestName );
+
+            // check if requested version is supported and offered (except for GetCapabilities)
+            if ( requestType != WPSRequestType.GetCapabilities ) {
+                checkVersion( getVersion( KVPUtils.getRequired( kvpParamsUC, "VERSION" ) ) );
             }
-        }
-        return processes;
-    }
 
-    public WPSProcess getProcess( CodeType id ) {
-        WPSProcess process = null;
-        for ( ProcessManager manager : managers ) {
-            process = manager.getProcess( id );
-            if ( process != null ) {
+            switch ( requestType ) {
+            case GetCapabilities:
+                GetCapabilities getCapabilitiesRequest = GetCapabilitiesKVPParser.parse( kvpParamsUC );
+                doGetCapabilities( getCapabilitiesRequest, response );
+                break;
+            case DescribeProcess:
+                DescribeProcessRequest describeProcessRequest = DescribeProcessRequestKVPAdapter.parse100( kvpParamsUC );
+                doDescribeProcess( describeProcessRequest, response );
+                break;
+            case Execute:
+                ExecuteRequest executeRequest = ExecuteRequestKVPAdapter.parse100( kvpParamsUC, service.getProcesses() );
+                doExecute( executeRequest, response );
+                break;
+            case GetOutput:
+                doGetOutput( kvpParamsUC.get( "IDENTIFIER" ), response );
+                break;
+            case GetResponseDocument:
+                doGetResponseDocument( kvpParamsUC.get( "IDENTIFIER" ), response );
+                break;
+            case GetWPSWSDL:
+                String identifier = kvpParamsUC.get( "IDENTIFIER" );
+                CodeType processId = identifier != null ? new CodeType( identifier ) : null;
+                doGetWSDL( processId, response );
                 break;
             }
+        } catch ( MissingParameterException e ) {
+            sendServiceException( new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE ), response );
+        } catch ( OWSException e ) {
+            sendServiceException( e, response );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( e.getMessage() );
+        } catch ( UnknownCRSException e ) {
+            LOG.debug( e.getMessage() );
         }
-        return process;
+    }
+
+    @Override
+    public void doXML( XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
+                       List<FileItem> multiParts )
+                            throws ServletException, IOException {
+
+        LOG.trace( "doXML invoked" );
+
+        try {
+            XMLAdapter requestDoc = new XMLAdapter( xmlStream );
+            WPSRequestType requestType = getRequestTypeByName( requestDoc.getRootElement().getLocalName() );
+
+            // check if requested version is supported and offered (except for GetCapabilities)
+            Version requestVersion = getVersion( requestDoc.getRootElement().getAttributeValue( new QName( "version" ) ) );
+            if ( requestType != WPSRequestType.GetCapabilities ) {
+                checkVersion( requestVersion );
+            }
+
+            switch ( requestType ) {
+            case GetCapabilities:
+                GetCapabilitiesXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesXMLAdapter();
+                getCapabilitiesAdapter.setRootElement( requestDoc.getRootElement() );
+                getCapabilitiesAdapter.setSystemId( requestDoc.getSystemId() );
+                GetCapabilities getCapabilitiesRequest = getCapabilitiesAdapter.parse100();
+                doGetCapabilities( getCapabilitiesRequest, response );
+                break;
+            case DescribeProcess:
+                DescribeProcessRequestXMLAdapter describeProcessAdapter = new DescribeProcessRequestXMLAdapter();
+                describeProcessAdapter.setRootElement( requestDoc.getRootElement() );
+                describeProcessAdapter.setSystemId( requestDoc.getSystemId() );
+                DescribeProcessRequest describeProcessRequest = describeProcessAdapter.parse100();
+                doDescribeProcess( describeProcessRequest, response );
+                break;
+            case Execute:
+                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcesses() );
+                executeAdapter.setRootElement( requestDoc.getRootElement() );
+                executeAdapter.setSystemId( requestDoc.getSystemId() );
+                ExecuteRequest executeRequest = executeAdapter.parse100();
+                doExecute( executeRequest, response );
+                break;
+            case GetOutput:
+            case GetResponseDocument:
+            case GetWPSWSDL:
+                String msg = "Request type '" + requestType.name() + "' is only support as KVP request.";
+                throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED );
+            }
+        } catch ( OWSException e ) {
+            sendServiceException( e, response );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( e.getMessage() );
+        } catch ( UnknownCRSException e ) {
+            LOG.debug( e.getMessage() );
+        }
+    }
+
+    @Override
+    public void doSOAP( SOAPEnvelope soapDoc, HttpServletRequest request, HttpResponseBuffer response,
+                        List<FileItem> multiParts, SOAPFactory factory )
+                            throws ServletException, IOException {
+
+        LOG.trace( "doSOAP invoked" );
+        OMElement requestElement = soapDoc.getBody().getFirstElement();
+        try {
+            WPSRequestType requestType = getRequestTypeByName( requestElement.getLocalName() );
+
+            // check if requested version is supported and offered (except for GetCapabilities)
+            Version requestVersion = getVersion( requestElement.getAttributeValue( new QName( "version" ) ) );
+            if ( requestType != WPSRequestType.GetCapabilities ) {
+                checkVersion( requestVersion );
+            }
+
+            beginSOAPResponse( response );
+
+            switch ( requestType ) {
+            case GetCapabilities:
+                GetCapabilitiesXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesXMLAdapter();
+                getCapabilitiesAdapter.setRootElement( requestElement );
+                // getCapabilitiesAdapter.setSystemId( soapDoc.getSystemId() );
+                GetCapabilities getCapabilitiesRequest = getCapabilitiesAdapter.parse100();
+                doGetCapabilities( getCapabilitiesRequest, response );
+                break;
+            case DescribeProcess:
+                DescribeProcessRequestXMLAdapter describeProcessAdapter = new DescribeProcessRequestXMLAdapter();
+                describeProcessAdapter.setRootElement( requestElement );
+                // describeProcessAdapter.setSystemId( soapDoc.getSystemId() );
+                DescribeProcessRequest describeProcessRequest = describeProcessAdapter.parse100();
+                doDescribeProcess( describeProcessRequest, response );
+                break;
+            case Execute:
+                ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcesses() );
+                executeAdapter.setRootElement( requestElement );
+                // executeAdapter.setSystemId( soapDoc.getSystemId() );
+                ExecuteRequest executeRequest = executeAdapter.parse100();
+                doExecute( executeRequest, response );
+                break;
+            case GetOutput:
+            case GetResponseDocument:
+            case GetWPSWSDL:
+                String msg = "Request type '" + requestType.name() + "' is only support as KVP request.";
+                throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED );
+            }
+
+            endSOAPResponse( response );
+
+        } catch ( OWSException e ) {
+            sendSOAPException( soapDoc.getHeader(), factory, response, e, null, null, null, request.getServerName(),
+                               request.getCharacterEncoding() );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( e.getMessage(), e );
+        } catch ( UnknownCRSException e ) {
+            LOG.debug( e.getMessage(), e );
+        }
+    }
+
+    /**
+     * Returns the underlying {@link ProcessManager} instance.
+     * 
+     * @return the underlying {@link ProcessManager}, never <code>null</code>
+     */
+    public ProcessManager getService() {
+        return service;
+    }
+
+    /**
+     * Returns the associated {@link ExecutionManager} instance.
+     * 
+     * @return the associated {@link ExecutionManager}, never <code>null</code>
+     */
+    public ExecutionManager getExecutionManager() {
+        return executeHandler;
+    }
+
+    @Override
+    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
+        return new Pair<XMLExceptionSerializer<OWSException>, String>( new OWSException110XMLAdapter(), "text/xml" );
+    }
+
+    private WPSRequestType getRequestTypeByName( String requestName )
+                            throws OWSException {
+        WPSRequestType requestType = null;
+        try {
+            requestType = IMPLEMENTATION_METADATA.getRequestTypeByName( requestName );
+        } catch ( IllegalArgumentException e ) {
+            throw new OWSException( e.getMessage(), OPERATION_NOT_SUPPORTED );
+        }
+        return requestType;
+    }
+
+    private Version getVersion( String versionString )
+                            throws OWSException {
+
+        Version version = null;
+        if ( versionString != null ) {
+            try {
+                version = Version.parseVersion( versionString );
+            } catch ( IllegalArgumentException e ) {
+                throw new OWSException( "Specified request version '" + versionString
+                                        + "' is not a valid OGC version string.", OWSException.INVALID_PARAMETER_VALUE );
+            }
+        }
+        return version;
+    }
+
+    private void doGetCapabilities( GetCapabilities request, HttpResponseBuffer response )
+                            throws OWSException, XMLStreamException, IOException {
+
+        LOG.trace( "doGetCapabilities invoked, request: " + request );
+
+        // generic check if requested version is supported (currently this is only 1.0.0)
+        negotiateVersion( request );
+
+        response.setContentType( "text/xml; charset=UTF-8" );
+        XMLStreamWriter xmlWriter = response.getXMLWriter();
+        String wsdlURL = null;
+        if ( serviceWSDLFile != null ) {
+            wsdlURL = OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetWPSWSDL";
+        }
+        CapabilitiesXMLAdapter.export100( xmlWriter, service.getProcesses(), mainMetadataConf, wsdlURL );
+
+        LOG.trace( "doGetCapabilities finished" );
+    }
+
+    private void doDescribeProcess( DescribeProcessRequest request, HttpResponseBuffer response )
+                            throws OWSException {
+
+        LOG.trace( "doDescribeProcess invoked, request: " + request );
+
+        // check that all requested processes exist (and resolve special value 'ALL')
+        List<WPSProcess> processes = new ArrayList<WPSProcess>();
+        for ( CodeType identifier : request.getIdentifiers() ) {
+            LOG.debug( "Looking up process '" + identifier + "'" );
+            if ( ALL_PROCESSES_IDENTIFIER.equals( identifier ) ) {
+                processes.addAll( service.getProcesses().values() );
+                break;
+            }
+            WPSProcess process = service.getProcess( identifier );
+            if ( process != null ) {
+                processes.add( process );
+            } else {
+                throw new OWSException( "InvalidParameterValue: Identifier\nNo process with id " + identifier
+                                        + " is registered in the WPS.", OWSException.INVALID_PARAMETER_VALUE );
+            }
+        }
+
+        try {
+            response.setContentType( "text/xml; charset=UTF-8" );
+            XMLStreamWriter xmlWriter = response.getXMLWriter();
+
+            Map<ProcessDefinition, String> processDefToWSDLUrl = new HashMap<ProcessDefinition, String>();
+            for ( WPSProcess process : processes ) {
+                ProcessDefinition processDef = process.getDescription();
+                CodeType processId = new CodeType( processDef.getIdentifier().getValue(),
+                                                   processDef.getIdentifier().getCodeSpace() );
+                if ( processIdToWSDL.containsKey( processId ) ) {
+                    String wsdlURL = OGCFrontController.getHttpGetURL()
+                                     + "service=WPS&version=1.0.0&request=GetWPSWSDL&identifier=" + processId.getCode();
+                    processDefToWSDLUrl.put( processDef, wsdlURL );
+                }
+            }
+
+            // TransformCoordinates tc = new TransformCoordinates();
+            // ProcessDescription pd = tc.getClass().getAnnotation( ProcessDescription.class );
+            // List<ProcessDescription> pdA = new LinkedList<ProcessDescription>();
+            // if ( pd != null ) {
+            // pdA.add( pd );
+            // }
+            // TODO what about annotations?
+            DescribeProcessResponseXMLAdapter.export100( xmlWriter, processes, processDefToWSDLUrl, null );
+            xmlWriter.flush();
+        } catch ( XMLStreamException e ) {
+            e.printStackTrace();
+            LOG.error( "Internal error: " + e.getMessage() );
+            throw new OWSException( "Error occured while creating response for DescribeProcess operation",
+                                    ControllerException.NO_APPLICABLE_CODE );
+        } catch ( IOException e ) {
+            throw new OWSException( "Error occured while creating response for DescribeProcess operation",
+                                    ControllerException.NO_APPLICABLE_CODE );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            LOG.error( "Internal error: " + e.getMessage() );
+        }
+
+        LOG.trace( "doDescribeProcess finished" );
+    }
+
+    private void doExecute( ExecuteRequest request, HttpResponseBuffer response )
+                            throws OWSException {
+
+        LOG.trace( "doExecute invoked, request: " + request.toString() );
+        long start = System.currentTimeMillis();
+
+        CodeType processId = request.getProcessId();
+        WPSProcess process = service.getProcess( processId );
+        if ( process == null ) {
+            String msg = "Internal error. Process '" + processId + "' not found.";
+            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE );
+        }
+
+        try {
+            if ( request.getResponseForm() == null || request.getResponseForm() instanceof ResponseDocument ) {
+                executeHandler.handleResponseDocumentOutput( request, response, process );
+            } else {
+                executeHandler.handleRawDataOutput( request, response, process );
+            }
+        } catch ( OWSException e ) {
+            throw e;
+        } catch ( Exception e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
+        }
+
+        long elapsed = System.currentTimeMillis() - start;
+        LOG.debug( "doExecute took " + elapsed + " milliseconds" );
+
+        LOG.trace( "doExecute finished" );
+    }
+
+    private void doGetOutput( String storedOutputId, HttpResponseBuffer response ) {
+
+        LOG.trace( "doGetOutput invoked, requested stored output: " + storedOutputId );
+        OutputStorage resource = storageManager.findOutputStorage( storedOutputId );
+
+        if ( resource == null ) {
+            try {
+                response.sendError( 404, "No stored output with id '" + storedOutputId + "' found." );
+            } catch ( IOException e ) {
+                LOG.debug( "Error sending exception report to client.", e );
+            }
+        } else {
+            resource.sendResource( response );
+        }
+
+        LOG.trace( "doGetOutput finished" );
+    }
+
+    private void doGetResponseDocument( String responseId, HttpResponseBuffer response ) {
+
+        LOG.trace( "doGetResponseDocument invoked, requested stored response document: " + responseId );
+        ResponseDocumentStorage resource = storageManager.findResponseDocumentStorage( responseId );
+        executeHandler.sendResponseDocument( response, resource );
+
+        LOG.trace( "doGetResponseDocument finished" );
+    }
+
+    private void doGetWSDL( CodeType processId, HttpResponseBuffer response ) {
+
+        LOG.trace( "doGetWSDL invoked, requested resource: " + processId );
+
+        File wsdlFile = serviceWSDLFile;
+        if ( processId != null ) {
+            wsdlFile = processIdToWSDL.get( processId );
+        }
+
+        if ( wsdlFile == null || !wsdlFile.exists() ) {
+            try {
+                response.sendError( 404, "WSDL document not available." );
+            } catch ( IOException e ) {
+                LOG.debug( "Error sending exception report to client.", e );
+            }
+        } else {
+            try {
+                response.setContentType( "text/xml" );
+                response.setContentLength( (int) wsdlFile.length() );
+                OutputStream os = response.getOutputStream();
+                InputStream is = new FileInputStream( wsdlFile );
+                byte[] buffer = new byte[4096];
+                int numBytes = -1;
+                while ( ( numBytes = is.read( buffer ) ) != -1 ) {
+                    os.write( buffer, 0, numBytes );
+                }
+                os.flush();
+            } catch ( IOException e ) {
+                LOG.debug( "Error sending WSDL document to client.", e );
+            }
+        }
+
+        LOG.trace( "doGetWSDL finished" );
+    }
+
+    private void sendServiceException( OWSException ex, HttpResponseBuffer response )
+                            throws ServletException {
+        // TODO use correct exception code here (400)
+        sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), ex, response );
     }
 }
