@@ -37,11 +37,11 @@
 <%@page import="org.deegree.commons.version.*"%>
 <%@page import="org.deegree.services.controller.OGCFrontController"%>
 <%@page import="org.deegree.services.controller.wps.WPSController"%>
-<%@page import="org.deegree.services.controller.wps.ProcessletExecution"%>
+<%@page import="org.deegree.services.controller.wps.ProcessExecution"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="org.deegree.services.controller.wps.ProcessletExecution.ExecutionState"%>
+<%@page import="org.deegree.services.controller.wps.ProcessExecution.ExecutionState"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <html>
 <head>
@@ -57,7 +57,7 @@ deegree 3 WPS process status
 <br />
 <%
     WPSController controller = (WPSController) OGCFrontController.getServiceController( WPSController.class );
-    Collection<ProcessletExecution> allProcesses = controller.getExecutionManager().getAllProcesses();
+    Collection<ProcessExecution> allProcesses = controller.getExecutionManager().getAllProcesses();
     if ( allProcesses.size() > 0 ) {
 %>
 <table border="1" cellpadding="3" cellspacing="0">
@@ -72,26 +72,26 @@ deegree 3 WPS process status
   <%
       SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
 
-          for ( ProcessletExecution p : allProcesses ) {
-              String durationStr = "";
-              long duration = -1;
-              if ( p.getFinishTime() > 0 ) {
-                  duration = p.getFinishTime() - p.getStartTime();
-              } else if ( p.getStartTime() > 0 ) {
-                  duration = new java.util.Date().getTime() - p.getStartTime();
-              }
-              if ( duration >= 0 ) {
-                  duration /= 1000;
-                  long seconds = duration % 60;
-                  long minutes = ( duration % 3600 ) / 60;
-                  long hours = duration / 3600;
-                  durationStr = String.format( "%02d:%02d:%02d", hours, minutes, seconds );
-              }
+      for ( ProcessExecution p : allProcesses ) {
+          String durationStr = "";
+          long duration = -1;
+          if ( p.getFinishTime() > 0 ) {
+      duration = p.getFinishTime() - p.getStartTime();
+          } else if ( p.getStartTime() > 0 ) {
+      duration = new java.util.Date().getTime() - p.getStartTime();
+          }
+          if ( duration >= 0 ) {
+      duration /= 1000;
+      long seconds = duration % 60;
+      long minutes = ( duration % 3600 ) / 60;
+      long hours = duration / 3600;
+      durationStr = String.format( "%02d:%02d:%02d", hours, minutes, seconds );
+          }
   %>
   <tr align="center">
     <td><%=p.getProcessId().toString()%></td>
     <td><%=p.getExecutionState().toString()%></td>
-    <td><%=p.getExecutionState() == ProcessletExecution.ExecutionState.SUCCEEDED ? 100
+    <td><%=p.getExecutionState() == ProcessExecution.ExecutionState.SUCCEEDED ? 100
                                                                                                     : p.getPercentCompleted()%>%</td>
     <td><%=df.format( p.getStartTime() )%></td>
     <td><%=p.getFinishTime() > 0 ? df.format( p.getFinishTime() ) : "-"%></td>
