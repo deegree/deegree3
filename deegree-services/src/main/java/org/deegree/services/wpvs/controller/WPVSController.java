@@ -33,7 +33,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wpvs;
+package org.deegree.services.wpvs.controller;
 
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 import static org.deegree.protocol.wpvs.WPVSConstants.VERSION_040;
@@ -80,10 +80,6 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wpvs.capabilities.CapabilitiesXMLAdapter;
-import org.deegree.services.controller.wpvs.getview.GetView;
-import org.deegree.services.controller.wpvs.getview.GetViewKVPAdapter;
-import org.deegree.services.controller.wpvs.getview.GetViewResponseParameters;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.main.DCPType;
 import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
@@ -94,6 +90,10 @@ import org.deegree.services.jaxb.wpvs.PublishedInformation;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wpvs.PerspectiveViewService;
+import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
+import org.deegree.services.wpvs.controller.getview.GetView;
+import org.deegree.services.wpvs.controller.getview.GetViewKVPAdapter;
+import org.deegree.services.wpvs.controller.getview.GetViewResponseParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

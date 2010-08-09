@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wpvs.capabilities;
+package org.deegree.services.wpvs.controller.capabilities;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;

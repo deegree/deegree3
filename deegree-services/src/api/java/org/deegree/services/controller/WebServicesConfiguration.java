@@ -60,7 +60,6 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.controller.sos.SOSController;
 import org.deegree.services.controller.utils.StandardRequestLogger;
 import org.deegree.services.controller.wcs.WCSController;
-import org.deegree.services.controller.wpvs.WPVSController;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.jaxb.main.AllowedServices;
 import org.deegree.services.jaxb.main.ConfiguredServicesType;
@@ -71,6 +70,7 @@ import org.deegree.services.jaxb.main.ServiceType;
 import org.deegree.services.wfs.WFSController;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wps.WPSController;
+import org.deegree.services.wpvs.controller.WPVSController;
 import org.slf4j.Logger;
 
 /**

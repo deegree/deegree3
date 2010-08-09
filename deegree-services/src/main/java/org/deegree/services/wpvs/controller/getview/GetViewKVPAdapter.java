@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wpvs.getview;
+package org.deegree.services.wpvs.controller.getview;
 
 import static org.deegree.commons.utils.kvp.KVPUtils.getBoolean;
 import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;

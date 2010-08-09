@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.services.controller.wpvs.getview;
+package org.deegree.services.wpvs.controller.getview;
 
 /**
  * The <code>GetViewResponseParameters</code> class wraps the response parameters.

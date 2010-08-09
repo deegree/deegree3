@@ -67,7 +67,6 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManage
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.controller.wpvs.getview.GetView;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wpvs.Copyright;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
@@ -81,6 +80,7 @@ import org.deegree.services.wpvs.config.DEMDataset;
 import org.deegree.services.wpvs.config.DEMTextureDataset;
 import org.deegree.services.wpvs.config.Dataset;
 import org.deegree.services.wpvs.config.RenderableDataset;
+import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
 import org.deegree.services.wpvs.rendering.jogl.GLPBufferPool;
 import org.deegree.services.wpvs.rendering.jogl.GetViewRenderer;

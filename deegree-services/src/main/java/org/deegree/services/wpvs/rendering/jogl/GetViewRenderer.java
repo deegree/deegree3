@@ -64,8 +64,8 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
-import org.deegree.services.controller.wpvs.getview.GetView;
 import org.deegree.services.wpvs.PerspectiveViewService;
+import org.deegree.services.wpvs.controller.getview.GetView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
