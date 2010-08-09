@@ -38,6 +38,7 @@ package org.deegree.services.wps;
 
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
+import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -386,7 +387,7 @@ public class WPSController extends AbstractOGCServiceController {
     /**
      * Returns the underlying {@link WPService} instance.
      * 
-     * @return the underlying {@link WPService}
+     * @return the underlying {@link WPService}, never <code>null</code>
      */
     public WPService getService() {
         return service;
@@ -395,10 +396,15 @@ public class WPSController extends AbstractOGCServiceController {
     /**
      * Returns the associated {@link ExecutionManager} instance.
      * 
-     * @return the associated {@link ExecutionManager}
+     * @return the associated {@link ExecutionManager}, never <code>null</code>
      */
     public ExecutionManager getExecutionManager() {
         return executeHandler;
+    }
+
+    @Override
+    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
+        return new Pair<XMLExceptionSerializer<OWSException>, String>( new OWSException110XMLAdapter(), "text/xml" );
     }
 
     private WPSRequestType getRequestTypeByName( String requestName )
@@ -407,7 +413,7 @@ public class WPSController extends AbstractOGCServiceController {
         try {
             requestType = IMPLEMENTATION_METADATA.getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
-            throw new OWSException( e.getMessage(), OWSException.OPERATION_NOT_SUPPORTED );
+            throw new OWSException( e.getMessage(), OPERATION_NOT_SUPPORTED );
         }
         return requestType;
     }
@@ -544,7 +550,7 @@ public class WPSController extends AbstractOGCServiceController {
     private void doGetOutput( String storedOutputId, HttpResponseBuffer response ) {
 
         LOG.trace( "doGetOutput invoked, requested stored output: " + storedOutputId );
-        OutputStorage resource = storageManager.lookupOutputStorage( storedOutputId );
+        OutputStorage resource = storageManager.findOutputStorage( storedOutputId );
 
         if ( resource == null ) {
             try {
@@ -562,7 +568,7 @@ public class WPSController extends AbstractOGCServiceController {
     private void doGetResponseDocument( String responseId, HttpResponseBuffer response ) {
 
         LOG.trace( "doGetResponseDocument invoked, requested stored response document: " + responseId );
-        ResponseDocumentStorage resource = storageManager.getResponseDocumentStorage( responseId );
+        ResponseDocumentStorage resource = storageManager.findResponseDocumentStorage( responseId );
         executeHandler.sendResponseDocument( response, resource );
 
         LOG.trace( "doGetResponseDocument finished" );
@@ -603,16 +609,9 @@ public class WPSController extends AbstractOGCServiceController {
         LOG.trace( "doGetWSDL finished" );
     }
 
-    void sendServiceException( OWSException ex, HttpResponseBuffer response )
+    private void sendServiceException( OWSException ex, HttpResponseBuffer response )
                             throws ServletException {
-
         // TODO use correct exception code here (400)
         sendException( "text/xml", "UTF-8", null, 200, new OWSException110XMLAdapter(), ex, response );
     }
-
-    @Override
-    public Pair<XMLExceptionSerializer<OWSException>, String> getExceptionSerializer( Version requestVersion ) {
-        return new Pair<XMLExceptionSerializer<OWSException>, String>( new OWSException110XMLAdapter(), "text/xml" );
-    }
-
 }

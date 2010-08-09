@@ -297,7 +297,7 @@ public class ExecutionManager {
             LOG.debug( "Store response document as web-accessible resource (asynchronous execution)" );
 
             // allocate a storage location for the final response document
-            responseStorage = storageManager.allocateResponseDocumentStorage();
+            responseStorage = storageManager.newResponseDocumentStorage();
 
             state = createProcessletExecution( request, responseStorage, serviceInstance, outputParams, outputs );
 
@@ -399,7 +399,7 @@ public class ExecutionManager {
                 String requestedEncoding = outputDef.getEncoding();
                 String requestedSchema = outputDef.getSchemaURL();
                 processOutput = new ComplexOutputImpl( (ComplexOutputDefinition) outputType,
-                                                       storageManager.allocateOutputStorage( requestedMimeType ), true,
+                                                       storageManager.newOutputStorage( requestedMimeType ), true,
                                                        requestedMimeType, requestedSchema, requestedEncoding );
             } catch ( Exception e ) {
                 String msg = "Unable to create sink for complex output parameter: " + e.getMessage();
@@ -481,6 +481,7 @@ public class ExecutionManager {
          * This method is only called when the processlet is executed asynchronously, i.e. when the response document
          * should be stored as a web-accessible resource.
          */
+        @SuppressWarnings("synthetic-access")
         @Override
         public void run() {
 

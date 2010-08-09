@@ -51,6 +51,8 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.services.exception.ServiceInitException;
+import org.deegree.services.wps.manager.ProcessManager;
+import org.deegree.services.wps.manager.ProcessManagerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

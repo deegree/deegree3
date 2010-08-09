@@ -39,12 +39,14 @@ package org.deegree.services.wps.storage;
 import java.io.File;
 import java.io.IOException;
 
+import org.deegree.services.wps.ExecutionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides storage locations for response documents and outputs of processes that can be published as web-accessible
- * resources.
+ * Provides storage locations for response documents and outputs of processes.
+ * 
+ * @see ExecutionManager
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -84,7 +86,7 @@ public class StorageManager {
         this.baseDir = baseDir;
     }
 
-    public synchronized OutputStorage allocateOutputStorage( String mimeType )
+    public synchronized OutputStorage newOutputStorage( String mimeType )
                             throws IOException {
         LOG.debug( "Allocating new storage location for publishing output parameter." );
         String outputId = generateOutputId();
@@ -97,7 +99,7 @@ public class StorageManager {
         return new OutputStorage( resourceFile, outputId, mimeType );
     }
 
-    public ResponseDocumentStorage allocateResponseDocumentStorage()
+    public ResponseDocumentStorage newResponseDocumentStorage()
                             throws IOException {
         LOG.debug( "Allocating new storage location for publishing response document." );
         String responseId = generateResponseId();
@@ -110,7 +112,7 @@ public class StorageManager {
         return new ResponseDocumentStorage( resourceFile, responseId );
     }
 
-    public OutputStorage lookupOutputStorage( String outputId ) {
+    public OutputStorage findOutputStorage( String outputId ) {
         OutputStorage output = null;
         File resourceFile = new File( baseDir, OUTPUT_PREFIX + outputId );
         try {
@@ -123,7 +125,7 @@ public class StorageManager {
         return output;
     }
 
-    public ResponseDocumentStorage getResponseDocumentStorage( String responseId ) {
+    public ResponseDocumentStorage findResponseDocumentStorage( String responseId ) {
         File resourceFile = new File( baseDir, RESPONSE_PREFIX + responseId );
         return new ResponseDocumentStorage( resourceFile, responseId );
     }

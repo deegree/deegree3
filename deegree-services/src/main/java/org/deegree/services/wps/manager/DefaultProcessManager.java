@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider;
+package org.deegree.services.wps.manager;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +45,6 @@ import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.wps.ExceptionAwareProcesslet;
 import org.deegree.services.wps.ExceptionCustomizer;
-import org.deegree.services.wps.ProcessManager;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPSProcess;
 import org.slf4j.Logger;
