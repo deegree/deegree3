@@ -33,44 +33,41 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.authentication.soapheader;
+package org.deegree.services.csw.capabilities;
 
-import java.util.List;
-
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.XPath;
-import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParser;
 
 /**
- * Encapsulates the method for parsing a {@Link SoapHeader} XML request via Http-POST.
+ * Encapsulates the method for parsing a XML request via Http-POST. Due to the fact that the GetCapabilities operation
+ * is common OWS specific for all webservices the parsing is delegated to the deegree core module.
+ * 
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: thomas $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class SoapHeaderXMLAdapter extends AbstractCSWRequestXMLAdapter {
+public class GetCapabilitiesVersionXMLAdapter extends GetCapabilitiesXMLParser {
 
-    public SoapHeader parseHeader() {
-
-        OMElement security = getElement( rootElement, new XPath( "*", nsContext ) );
-
-        OMElement usernameToken = getElement( security, new XPath( "*", nsContext ) );
-
-        List<OMElement> usernameTokenList = getElements( usernameToken, new XPath( "*", nsContext ) );
-        String usernameString = "";
-        String passwordString = "";
-        for ( OMElement elem : usernameTokenList ) {
-            String localName = elem.getLocalName();
-            if ( "Username".equals( localName ) ) {
-                usernameString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-            if ( "Password".equals( localName ) ) {
-                passwordString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
+    /**
+     * Parses an incoming XML request via Http-POST
+     * 
+     * @param version
+     *            that is parsed from the request in the GetCapabilities
+     * @return {@link GetCapabilities} request
+     */
+    public GetCapabilities parse( Version version ) {
+        GetCapabilities request = null;
+        if ( version != null ) {
+            // @version present -> treat as CSW [version] request
+            request = new GetCapabilities( version );
+        } else {
+            // else treat as OWS 1.0.0
+            request = parse100();
         }
-
-        return new SoapHeader( usernameString, passwordString );
+        return request;
     }
 
 }

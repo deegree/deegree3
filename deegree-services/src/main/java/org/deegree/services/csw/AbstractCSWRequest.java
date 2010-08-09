@@ -33,44 +33,72 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.authentication.soapheader;
+package org.deegree.services.csw;
 
-import java.util.List;
+import javax.xml.namespace.QName;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.XPath;
-import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.xml.NamespaceContext;
 
 /**
- * Encapsulates the method for parsing a {@Link SoapHeader} XML request via Http-POST.
+ * Abstract base class for the requests of all operations.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: thomas $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class SoapHeaderXMLAdapter extends AbstractCSWRequestXMLAdapter {
+public abstract class AbstractCSWRequest {
 
-    public SoapHeader parseHeader() {
+    private Version version;
 
-        OMElement security = getElement( rootElement, new XPath( "*", nsContext ) );
+    private NamespaceContext namespaces;
 
-        OMElement usernameToken = getElement( security, new XPath( "*", nsContext ) );
+    private QName[] typeNames;
 
-        List<OMElement> usernameTokenList = getElements( usernameToken, new XPath( "*", nsContext ) );
-        String usernameString = "";
-        String passwordString = "";
-        for ( OMElement elem : usernameTokenList ) {
-            String localName = elem.getLocalName();
-            if ( "Username".equals( localName ) ) {
-                usernameString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-            if ( "Password".equals( localName ) ) {
-                passwordString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-        }
+    private String outputFormat;
 
-        return new SoapHeader( usernameString, passwordString );
+    /**
+     * 
+     * 
+     * @param version
+     * @param namespaces
+     * @param typeNames
+     * @param outputFormat
+     */
+    public AbstractCSWRequest( Version version, NamespaceContext namespaces, QName[] typeNames, String outputFormat ) {
+        this.version = version;
+        this.namespaces = namespaces;
+        this.typeNames = typeNames;
+        this.outputFormat = outputFormat;
+    }
+
+    /**
+     * @return the version
+     */
+    public Version getVersion() {
+        return version;
+    }
+
+    /**
+     * @return the namespaces
+     */
+    public NamespaceContext getNamespaces() {
+        return namespaces;
+    }
+
+    /**
+     * @return the typeNames
+     */
+    public QName[] getTypeNames() {
+        return typeNames;
+    }
+
+    /**
+     * @return the outputFormat
+     */
+    public String getOutputFormat() {
+        return outputFormat;
     }
 
 }

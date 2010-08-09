@@ -33,44 +33,42 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.authentication.soapheader;
+package org.deegree.services.csw.transaction;
 
-import java.util.List;
+import java.util.Map;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.XPath;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
 
 /**
- * Encapsulates the method for parsing a {@Link SoapHeader} XML request via Http-POST.
+ * Adapter between KVP encoded <code>Transaction</code> requests and {@link Transaction} objects.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: thomas $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class SoapHeaderXMLAdapter extends AbstractCSWRequestXMLAdapter {
+public class TransactionKVPAdapter extends AbstractCSWRequestXMLAdapter {
 
-    public SoapHeader parseHeader() {
-
-        OMElement security = getElement( rootElement, new XPath( "*", nsContext ) );
-
-        OMElement usernameToken = getElement( security, new XPath( "*", nsContext ) );
-
-        List<OMElement> usernameTokenList = getElements( usernameToken, new XPath( "*", nsContext ) );
-        String usernameString = "";
-        String passwordString = "";
-        for ( OMElement elem : usernameTokenList ) {
-            String localName = elem.getLocalName();
-            if ( "Username".equals( localName ) ) {
-                usernameString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-            if ( "Password".equals( localName ) ) {
-                passwordString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-        }
-
-        return new SoapHeader( usernameString, passwordString );
+    /**
+     * Parses a normalized KVP-map as a CSW {@link Transaction} request. Regarding to CSW specification OGC 07-006r1
+     * there is no KVP support envisioned.
+     * <p>
+     * Supported versions:
+     * <ul>
+     * </ul>
+     * 
+     * @param kvpParams
+     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
+     * @return parsed {@link Transaction} request
+     * @throws MissingParameterException
+     *             if the request version is unsupported
+     * @throws InvalidParameterValueException
+     *             if a parameter contains a syntax error
+     */
+    public static Transaction parse( Map<String, String> kvpParams )
+                            throws MissingParameterException, InvalidParameterValueException {
+        throw new UnsupportedOperationException();
     }
-
 }

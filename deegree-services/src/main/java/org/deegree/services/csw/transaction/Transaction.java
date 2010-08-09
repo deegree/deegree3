@@ -33,44 +33,56 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.authentication.soapheader;
+package org.deegree.services.csw.transaction;
 
 import java.util.List;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.XPath;
-import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.record.publication.TransactionOperation;
+import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
- * Encapsulates the method for parsing a {@Link SoapHeader} XML request via Http-POST.
+ * Represents a <Code>Transaction</Code> request to a CSW.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: thomas $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class SoapHeaderXMLAdapter extends AbstractCSWRequestXMLAdapter {
+public class Transaction extends AbstractCSWRequest {
 
-    public SoapHeader parseHeader() {
+    List<TransactionOperation> operations;
 
-        OMElement security = getElement( rootElement, new XPath( "*", nsContext ) );
+    String requestId;
 
-        OMElement usernameToken = getElement( security, new XPath( "*", nsContext ) );
+    boolean verboseRequest;
 
-        List<OMElement> usernameTokenList = getElements( usernameToken, new XPath( "*", nsContext ) );
-        String usernameString = "";
-        String passwordString = "";
-        for ( OMElement elem : usernameTokenList ) {
-            String localName = elem.getLocalName();
-            if ( "Username".equals( localName ) ) {
-                usernameString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-            if ( "Password".equals( localName ) ) {
-                passwordString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-        }
+    public Transaction( Version version, List<TransactionOperation> operations, String requestId, boolean verboseRequest ) {
+        super( version, null, null, null );
+        this.operations = operations;
+        this.requestId = requestId;
+        this.verboseRequest = verboseRequest;
+    }
 
-        return new SoapHeader( usernameString, passwordString );
+    /**
+     * @return the operations
+     */
+    public List<TransactionOperation> getOperations() {
+        return this.operations;
+    }
+
+    /**
+     * @return the requestId
+     */
+    public String getRequestId() {
+        return requestId;
+    }
+
+    /**
+     * @return the verboseRequest
+     */
+    public boolean isVerboseRequest() {
+        return verboseRequest;
     }
 
 }

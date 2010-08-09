@@ -33,44 +33,52 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.authentication.soapheader;
+package org.deegree.services.csw.describerecord;
 
-import java.util.List;
+import javax.xml.namespace.QName;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.XPath;
-import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
- * Encapsulates the method for parsing a {@Link SoapHeader} XML request via Http-POST.
+ * Represents a <code>DescribeRecord</code> request to a CSW.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: thomas $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class SoapHeaderXMLAdapter extends AbstractCSWRequestXMLAdapter {
+public class DescribeRecord extends AbstractCSWRequest {
 
-    public SoapHeader parseHeader() {
+    private String schemaLanguage;
 
-        OMElement security = getElement( rootElement, new XPath( "*", nsContext ) );
+    /**
+     * Creates a new {@link DescribeRecord} request.
+     * 
+     * @param version
+     *            protocol version, may not be null
+     * @param namespaces
+     * @param typeNames
+     *            requested type names, may be null
+     * @param outputFormat
+     *            requested output format, may be null
+     * @param schemaLanguage
+     *            requested schema language format
+     */
+    protected DescribeRecord( Version version, NamespaceContext namespaces, QName[] typeNames, String outputFormat,
+                              String schemaLanguage ) {
+        super( version, namespaces, typeNames, outputFormat );
+        this.schemaLanguage = schemaLanguage;
+    }
 
-        OMElement usernameToken = getElement( security, new XPath( "*", nsContext ) );
-
-        List<OMElement> usernameTokenList = getElements( usernameToken, new XPath( "*", nsContext ) );
-        String usernameString = "";
-        String passwordString = "";
-        for ( OMElement elem : usernameTokenList ) {
-            String localName = elem.getLocalName();
-            if ( "Username".equals( localName ) ) {
-                usernameString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-            if ( "Password".equals( localName ) ) {
-                passwordString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-        }
-
-        return new SoapHeader( usernameString, passwordString );
+    /**
+     * This is used to specify the schema language. The default value is XMLSCHEMA.
+     * 
+     * @return the schemaLanguage
+     */
+    public String getSchemaLanguage() {
+        return schemaLanguage;
     }
 
 }
