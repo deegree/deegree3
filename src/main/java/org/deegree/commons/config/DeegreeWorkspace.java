@@ -100,9 +100,10 @@ public class DeegreeWorkspace {
      */
     public static synchronized DeegreeWorkspace getInstance( File dir ) {
         String ws = System.getenv( "DEEGREE_WORKSPACE" );
-        if ( ws == null ) {
+        if ( ws == null || ws.trim().isEmpty() ) {
             return new DeegreeWorkspace( dir );
         }
+        ws = ws.trim();
         DeegreeWorkspace workspace;
         LOG.info( "DEEGREE_WORKSPACE = '{}'", ws );
         workspace = DeegreeWorkspace.getInstance( ws );
