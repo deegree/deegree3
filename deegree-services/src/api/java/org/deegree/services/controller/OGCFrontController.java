@@ -195,6 +195,28 @@ public class OGCFrontController extends HttpServlet {
     }
 
     /**
+     * Return all active service controllers.
+     * 
+     * @return the instance of the requested service used by OGCFrontController, or null if the service is not
+     *         registered.
+     */
+    public static Map<String, AbstractOGCServiceController> getServiceControllers() {
+        return serviceConfiguration.getServiceControllers();
+    }
+
+    /**
+     * Returns the service controller instance based on the class of the service controller.
+     * 
+     * @param c
+     *            class of the requested service controller, e.g. <code>WPSController.getClass()</code>
+     * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
+     *         is active
+     */
+    public static AbstractOGCServiceController getServiceController( Class<? extends AbstractOGCServiceController> c ) {
+        return serviceConfiguration.getServiceController(c);
+    }
+    
+    /**
      * Returns the HTTP URL for communicating with the OGCFrontController over the web (for POST requests).
      * <p>
      * NOTE: This method will only return a correct result if the calling thread originated in the
