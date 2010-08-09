@@ -36,12 +36,12 @@
 --%>
 <%@page import="org.deegree.commons.version.*"%>
 <%@page import="org.deegree.services.controller.OGCFrontController"%>
-<%@page import="org.deegree.services.controller.wps.WPSController"%>
-<%@page import="org.deegree.services.controller.wps.ProcessExecution"%>
+<%@page import="org.deegree.services.wps.WPSController"%>
+<%@page import="org.deegree.services.wps.ProcessExecution"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="org.deegree.services.controller.wps.ProcessExecution.ExecutionState"%>
+<%@page import="org.deegree.services.wps.ProcessExecution.ExecutionState"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <html>
 <head>
