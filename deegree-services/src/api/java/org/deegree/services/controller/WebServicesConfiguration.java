@@ -54,7 +54,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.controller.utils.StandardRequestLogger;
@@ -299,7 +298,6 @@ public class WebServicesConfiguration {
         }
 
         final String serviceName = configuredService.getServiceName().name();
-        final String packageName = OGCFrontController.class.getPackage().getName();
 
         // something like org.deegree.services.controller.wfs.WFSController
         // TODO outfactor this (maybe use a Map or proper SPI for plugging service implementations?)
@@ -456,7 +454,7 @@ public class WebServicesConfiguration {
             }
         }
         LOG.info( "deegree OGC webservices shut down." );
-        ConnectionManager.destroy();
+        workspace.destroyAll();
         LOG.info( "--------------------------------------------------------------------------------" );
     }
 

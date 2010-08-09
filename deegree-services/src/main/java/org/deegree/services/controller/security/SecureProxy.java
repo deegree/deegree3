@@ -108,8 +108,8 @@ public class SecureProxy extends HttpServlet {
         super.init( config );
 
         try {
-            File workspaceDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
-            workspace = new DeegreeWorkspace( workspaceDir );
+            workspace = DeegreeWorkspace.getInstance( new File( resolveFileLocation( "WEB-INF/conf",
+                                                                                     getServletContext() ).toURI() ) );
         } catch ( MalformedURLException e ) {
             String msg = "Secure Proxy was NOT started, since the configuration could not be loaded.";
             LOG.error( msg );
@@ -383,6 +383,11 @@ public class SecureProxy extends HttpServlet {
         out.writeEndElement();
         out.writeEndElement();
         out.close();
+    }
+
+    @Override
+    public void destroy() {
+        workspace.destroyAll();
     }
 
 }

@@ -102,7 +102,7 @@ public class SecurityConfiguration {
         File securityFile = new File( workspace.getLocation(), "services" + separator + "security" + separator
                                                                + "security.xml" );
         if ( !securityFile.exists() ) {
-            LOG.debug( "No security.xml found." );
+            LOG.info( "No security.xml found." );
             return;
         }
 
@@ -116,7 +116,7 @@ public class SecurityConfiguration {
                 providers = CredentialsProviderManager.create( config.getCredentialsProvider() );
             }
         } catch ( JAXBException e ) {
-            LOG.debug( "Could not load security.xml: '{}'", e.getLocalizedMessage() );
+            LOG.warn( "Could not load security.xml: '{}'", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }
 

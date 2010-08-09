@@ -803,8 +803,8 @@ public class OGCFrontController extends HttpServlet {
         try {
             super.init( config );
 
-            File workspaceDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
-            workspace = new DeegreeWorkspace( workspaceDir );
+            workspace = DeegreeWorkspace.getInstance( new File( resolveFileLocation( "WEB-INF/conf",
+                                                                                     getServletContext() ).toURI() ) );
 
             LOG.info( "--------------------------------------------------------------------------------" );
             DeegreeAALogoUtils.logInfo( LOG );
