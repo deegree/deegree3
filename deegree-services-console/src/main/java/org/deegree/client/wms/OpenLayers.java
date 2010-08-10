@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.wms;
 
-import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
 import static org.deegree.client.util.FacesUtil.getServerURL;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
@@ -254,7 +253,7 @@ public class OpenLayers implements Serializable {
      * @param evt
      */
     public void timeChanged( ValueChangeEvent evt ) {
-//        from = new Date( max( from.getTime(), extent.getTime() ) );
+        // from = new Date( max( from.getTime(), extent.getTime() ) );
         fromString = formatISO8601Date( from );
         untilString = formatISO8601Date( until );
         System.out.println( fromString + "''''''''''''''''''''''''''''''''''''''''''''''" );

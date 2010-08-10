@@ -36,7 +36,6 @@
 --%>
 <%@ page import="java.util.*"%>
 <%@ page import="org.deegree.services.controller.*"%>
-<%@ page import="org.deegree.services.controller.wfs.WFSController"%>
 <%@ page import="org.deegree.services.wfs.*"%>
 <%@page import="org.deegree.feature.persistence.*"%>
 <%@page import="org.deegree.feature.types.ApplicationSchema"%>
