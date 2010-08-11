@@ -7,11 +7,6 @@
   <version>3.0-SNAPSHOT</version>
   <name>deegree-csw-bkg Webapp</name>
   <url>http://www.deegree.org</url>
-  <parent>
-    <groupId>org.deegree</groupId>
-    <artifactId>deegree-test</artifactId>
-    <version>3.0-SNAPSHOT</version>
-  </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
@@ -90,6 +85,16 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <version>1.0</version>
+        <configuration>
+          <path>/</path>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
   <dependencies>
