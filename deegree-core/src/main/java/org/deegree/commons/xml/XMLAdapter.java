@@ -269,14 +269,7 @@ public class XMLAdapter {
     }
 
     public XMLAdapter( XMLStreamReader xmlStream ) {
-        if ( xmlStream.getEventType() != XMLStreamConstants.START_DOCUMENT ) {
-            setRootElement( new StAXOMBuilder( new XMLStreamReaderDoc( xmlStream ) ).getDocumentElement() );
-        } else {
-            setRootElement( new StAXOMBuilder( xmlStream ).getDocumentElement() );
-        }
-        if ( xmlStream.getLocation() != null && xmlStream.getLocation().getSystemId() != null ) {
-            setSystemId( xmlStream.getLocation().getSystemId() );
-        }
+        load (xmlStream);
     }
 
     /**
@@ -420,6 +413,26 @@ public class XMLAdapter {
             // load( isr, systemId );
         } else {
             throw new NullPointerException( "The stream may not be null." );
+        }
+    }
+
+    /**
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets the
+     * system id to the {@link #DEFAULT_URL}
+     * 
+     * @param resourceStream
+     *            to load the xml from.
+     * @throws XMLProcessingException
+     */
+    public void load( XMLStreamReader xmlStream )
+                            throws XMLProcessingException {
+        if ( xmlStream.getEventType() != XMLStreamConstants.START_DOCUMENT ) {
+            setRootElement( new StAXOMBuilder( new XMLStreamReaderDoc( xmlStream ) ).getDocumentElement() );
+        } else {
+            setRootElement( new StAXOMBuilder( xmlStream ).getDocumentElement() );
+        }
+        if ( xmlStream.getLocation() != null && xmlStream.getLocation().getSystemId() != null ) {
+            setSystemId( xmlStream.getLocation().getSystemId() );
         }
     }
 
