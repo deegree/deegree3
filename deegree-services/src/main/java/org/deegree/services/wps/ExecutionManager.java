@@ -37,6 +37,7 @@
 package org.deegree.services.wps;
 
 import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
+import static org.deegree.services.controller.ows.OWSException.OPTION_NOT_SUPPORTED;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -70,7 +71,7 @@ import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
 import org.deegree.services.wps.ProcessExecution.ExecutionState;
 import org.deegree.services.wps.execute.ExecuteRequest;
 import org.deegree.services.wps.execute.ExecuteResponse;
-import org.deegree.services.wps.execute.ExecuteResponseXMLAdapter;
+import org.deegree.services.wps.execute.ExecuteResponseXMLWriter;
 import org.deegree.services.wps.execute.RawDataOutput;
 import org.deegree.services.wps.execute.RequestedOutput;
 import org.deegree.services.wps.execute.ResponseDocument;
@@ -282,6 +283,10 @@ public class ExecutionManager {
 
         List<ProcessletOutput> out = new ArrayList<ProcessletOutput>( outputParams.size() );
         for ( RequestedOutput outputDef : outputParams ) {
+            if ( !processDef.isStoreSupported() && outputDef.getAsReference() ) {
+                String msg = "Process configuration does not allow to return outputs as references (storeSupported=false).";
+                throw new OWSException( msg, OPTION_NOT_SUPPORTED );
+            }
             out.add( createOutputParameter( outputDef ) );
         }
 
@@ -292,7 +297,7 @@ public class ExecutionManager {
         if ( outputFormat != null && outputFormat.getStoreExecuteResponse() ) {
             // response will be stored as a web-accessible resource, only a dummy response document is directly
             // returned in the HTTP response stream (-> asynchronous process execution)
-            LOG.debug( "Store response document as web-accessible resource (asynchronous execution)" );
+            LOG.debug( "Storing response document as web-accessible resource (asynchronous execution)" );
 
             // allocate a storage location for the final response document
             responseStorage = storageManager.newResponseDocumentStorage();
@@ -323,7 +328,7 @@ public class ExecutionManager {
                                                                outputs, request );
         try {
             XMLStreamWriter writer = response.getXMLWriter();
-            ExecuteResponseXMLAdapter.export100( writer, executeResponse );
+            ExecuteResponseXMLWriter.export100( writer, executeResponse );
             writer.flush();
         } catch ( Exception e ) {
             String msg = "Generating ExecuteResponse document failed: " + e.getMessage();
@@ -359,7 +364,7 @@ public class ExecutionManager {
             response.setContentType( "text/xml; charset=UTF-8" );
             try {
                 XMLStreamWriter writer = response.getXMLWriter();
-                ExecuteResponseXMLAdapter.export100( writer, status.createExecuteResponse() );
+                ExecuteResponseXMLWriter.export100( writer, status.createExecuteResponse() );
                 writer.flush();
             } catch ( Exception e ) {
                 String msg = "Generating ExecuteResponse document failed: " + e.getMessage();
@@ -507,7 +512,7 @@ public class ExecutionManager {
                 XMLStreamWriter writer = factory.createXMLStreamWriter( new OutputStreamWriter(
                                                                                                 responseStorage.getOutputStream(),
                                                                                                 "UTF-8" ) );
-                ExecuteResponseXMLAdapter.export100( writer, executeResponse );
+                ExecuteResponseXMLWriter.export100( writer, executeResponse );
                 writer.flush();
             } catch ( Exception e ) {
                 String msg = "Generating ExecuteResponse document failed: " + e.getMessage();

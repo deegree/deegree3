@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Basic {@link ProcessProvider} that allows to serve hand-written processes with hand-written process descriptions.
+ * {@link ProcessProvider} that allows to serve hand-crafted processes with hand-crafted process descriptions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -98,26 +98,14 @@ public class DefaultProcessProvider implements ProcessProvider {
                              + "Hint: spelling in configuration file might be incorrect.";
                 throw new ServiceInitException( msg, e );
             }
-
-            // InputParameters inputParams = processDefinition.getInputParameters();
-            // if ( inputParams != null ) {
-            // for ( JAXBElement<? extends ProcessletInputDefinition> el : inputParams.getProcessInput() ) {
-            // LOG.info( "- input parameter: " + el.getValue().getIdentifier().getValue() );
-            // }
-            // }
-            //
-            // if ( processDefinition.getOutputParameters() != null ) {
-            // OutputParameters outputParams = processDefinition.getOutputParameters();
-            // for ( JAXBElement<? extends ProcessletOutputDefinition> el : outputParams.getProcessOutput() ) {
-            // LOG.info( "- output parameter: " + el.getValue().getIdentifier().getValue() );
-            // }
-            // }
         }
     }
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
+        for ( WPSProcess process : idToProcess.values() ) {
+            process.getProcesslet().destroy();
+        }
     }
 
     @Override

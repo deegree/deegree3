@@ -84,9 +84,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ExecuteResponseXMLAdapter extends XMLAdapter {
+public class ExecuteResponseXMLWriter extends XMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ExecuteResponseXMLAdapter.class );
+    private static final Logger LOG = LoggerFactory.getLogger( ExecuteResponseXMLWriter.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 
