@@ -52,7 +52,7 @@
             <id>start-jetty</id>
             <phase>pre-integration-test</phase>
             <goals>
-              <goal>run</goal>
+              <goal>run-war</goal>
             </goals>
             <configuration>
               <scanIntervalSeconds>0</scanIntervalSeconds>
@@ -140,6 +140,7 @@
       <artifactId>deegree-services-console</artifactId>
       <version>3.0-SNAPSHOT</version>
       <type>zip</type>
+      <classifier>webapp-template</classifier>
       <scope>compile</scope>
     </dependency>
     <dependency>
