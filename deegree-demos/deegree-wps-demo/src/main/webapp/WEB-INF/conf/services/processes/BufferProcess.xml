@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ProcessDefinition configVersion="0.5.0"
-	processVersion="1.0.0" statusSupported="false"
-	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.5.0/process_definition.xsd">
+<ProcessDefinition configVersion="0.5.0" processVersion="1.0.0" storeSupported="true" statusSupported="false"
+  xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.5.0/process_definition.xsd">
 	<Identifier>Buffer</Identifier>
 	<JavaClass>org.deegree.wps.jts.BufferProcesslet</JavaClass>
 	<Title>Process for creating a buffer around a GML geometry.</Title>
