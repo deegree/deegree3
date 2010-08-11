@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,19 +32,19 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.wps.execute;
 
 import java.util.List;
 
 /**
- * Indicates that the outputs shall be included as part of a WPS response document and defines which parameters actually
- * have to be included.
- *
+ * {@link ResponseForm} that indicates that the outputs shall be included as part of a WPS response document and defines
+ * which parameters actually have to be included.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class ResponseDocument implements ResponseForm {
@@ -59,7 +59,7 @@ public class ResponseDocument implements ResponseForm {
 
     /**
      * Creates a new {@link ResponseDocument} instance.
-     *
+     * 
      * @param outputDefinitions
      * @param storeExecuteResponse
      * @param lineage
@@ -75,7 +75,7 @@ public class ResponseDocument implements ResponseForm {
 
     /**
      * Returns the requirements for the output parameters to be included.
-     *
+     * 
      * @return the requirements for the output parameters
      */
     public List<RequestedOutput> getOutputDefinitions() {
@@ -83,24 +83,27 @@ public class ResponseDocument implements ResponseForm {
     }
 
     /**
-     * Returns whether the output document should be returned directly or stored as a web-accessible resource.
-     *
-     * @return true, if the output document should be stored as a web-accessible resource, false if a direct response is
-     *         requested
+     * Returns whether the output document should be stored as a web-accessible resource (asynchronous execution).
+     * 
+     * @return true, if the output document should be stored as a web-accessible resource, false otherwise
      */
     public boolean getStoreExecuteResponse() {
         return storeExecuteResponse;
     }
 
     /**
-     * @return
+     * Returns whether the execution input parameters shall be included in the response document.
+     * 
+     * @return true, if the execution input parameters shall be included, false otherwise
      */
     public boolean getLineage() {
         return lineage;
     }
 
     /**
-     * @return
+     * Returns whether updated respsonse documents shall be provided.
+     * 
+     * @return true, if updated respsonse documents shall be provided, false otherwise
      */
     public boolean getStatus() {
         return status;

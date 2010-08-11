@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,18 +32,17 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.wps.execute;
-
 
 /**
  * Indicates that a single output parameter shall be returned directly as raw data without an encapsulating WPS response
  * document.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class RawDataOutput implements ResponseForm {
@@ -52,14 +51,20 @@ public class RawDataOutput implements ResponseForm {
 
     /**
      * Creates a new {@link RawDataOutput} instance.
-     *
+     * 
      * @param output
+     *            settings for the output format, must not be <code>null</code>
      */
     RawDataOutput( RequestedOutput output ) {
         this.output = output;
     }
 
-    public RequestedOutput getRequestedOutput () {
+    /**
+     * Returns the settings for the output format.
+     * 
+     * @return the output format setttings, never <code>null</code>
+     */
+    public RequestedOutput getRequestedOutput() {
         return output;
     }
 }

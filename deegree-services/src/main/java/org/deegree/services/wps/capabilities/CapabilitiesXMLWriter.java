@@ -60,7 +60,7 @@ import org.deegree.services.wps.WPSProcess;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
+public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 
@@ -80,8 +80,8 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
 
     private static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
-    private CapabilitiesXMLAdapter() {
-        //
+    private CapabilitiesXMLWriter() {
+        // avoid instantiation
     }
 
     /**
@@ -112,7 +112,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
 
         exportServiceIdentification( writer );
         exportServiceProvider110( writer, serviceMetadata.getServiceProvider() );
-        exportOperationsMetadata( writer, serviceMetadata );
+        exportOperationsMetadata( writer );
 
         exportProcessOfferings( writer, processes );
         exportLanguages( writer );
@@ -194,7 +194,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement(); // ProcessOfferings
     }
 
-    private static void exportOperationsMetadata( XMLStreamWriter writer, DeegreeServicesMetadataType serviceMetadata )
+    private static void exportOperationsMetadata( XMLStreamWriter writer )
                             throws XMLStreamException {
         List<String> operations = new LinkedList<String>();
         operations.add( "GetCapabilities" );

@@ -49,7 +49,7 @@ import org.deegree.commons.tom.ows.CodeType;
  *
  * @version $Revision: 15639 $, $Date: 08.05.2008 13:54:31$
  */
-public class AttributedParameter {
+class AttributedParameter {
 
     private CodeType parameterId;
 
@@ -59,6 +59,11 @@ public class AttributedParameter {
 
     private Map<String, String> attrNamesUCToValues;
 
+    /**
+     * @param parameterId
+     * @param value
+     * @param attrNamesToValues
+     */
     AttributedParameter( CodeType parameterId, String value, Map<String, String> attrNamesToValues ) {
         this.parameterId = parameterId;
         this.value = value;
@@ -70,38 +75,65 @@ public class AttributedParameter {
         }
     }
 
+    /**
+     * @return
+     */
     public CodeType getParameterId() {
         return parameterId;
     }
 
+    /**
+     * @return
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * @return
+     */
     public Map<String, String> getAttributes() {
         return attrNamesToValues;
     }
 
+    /**
+     * @return
+     */
     public String getDataType() {
         return attrNamesUCToValues.get( "DATATYPE" );
     }
 
+    /**
+     * @return
+     */
     public String getUom() {
         return attrNamesUCToValues.get( "UOM" );
     }
 
+    /**
+     * @return
+     */
     public String getMimeType() {
         return attrNamesUCToValues.get( "MIMETYPE" );
     }
 
+    /**
+     * @return
+     */
     public String getEncoding() {
         return attrNamesUCToValues.get( "ENCODING" );
     }
 
+    /**
+     * @return
+     */
     public String getSchema() {
         return attrNamesUCToValues.get( "SCHEMA" );
     }
 
+    /**
+     * @return
+     */
     public String getHref() {
         String href = attrNamesUCToValues.get( "HREF" );
         if (href == null ) {
@@ -124,7 +156,7 @@ public class AttributedParameter {
      * @throws IllegalArgumentException
      *             if the format is invalid
      */
-    public static AttributedParameter valueOf( String s )
+    static AttributedParameter valueOf( String s )
                             throws IllegalArgumentException {
 
         String[] parts = s.split( "@" );

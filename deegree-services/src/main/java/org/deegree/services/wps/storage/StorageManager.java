@@ -44,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides storage locations for response documents and outputs of processes.
+ * Provides storage locations for process response documents and outputs.
  * 
  * @see ExecutionManager
  * 
@@ -112,7 +112,7 @@ public class StorageManager {
         return new ResponseDocumentStorage( resourceFile, responseId );
     }
 
-    public OutputStorage findOutputStorage( String outputId ) {
+    public OutputStorage lookupOutputStorage( String outputId ) {
         OutputStorage output = null;
         File resourceFile = new File( baseDir, OUTPUT_PREFIX + outputId );
         try {
@@ -125,7 +125,7 @@ public class StorageManager {
         return output;
     }
 
-    public ResponseDocumentStorage findResponseDocumentStorage( String responseId ) {
+    public ResponseDocumentStorage lookupResponseDocumentStorage( String responseId ) {
         File resourceFile = new File( baseDir, RESPONSE_PREFIX + responseId );
         return new ResponseDocumentStorage( resourceFile, responseId );
     }

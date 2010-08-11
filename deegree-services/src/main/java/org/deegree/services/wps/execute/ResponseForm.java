@@ -37,7 +37,7 @@
 package org.deegree.services.wps.execute;
 
 /**
- * Encapsulates the requirements for the format of a {@link ExecuteRequest} response.
+ * Encapsulates the requirements for the format of an {@link ExecuteRequest} response.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -45,5 +45,5 @@ package org.deegree.services.wps.execute;
  * @version $Revision: $, $Date: $
  */
 public interface ResponseForm {
-
+    // marker interface
 }

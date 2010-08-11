@@ -46,6 +46,7 @@ import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.storage.StorageLocation;
 
 /**
+ * The response from a process execution.
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
@@ -161,6 +162,9 @@ public class ExecuteResponse {
         return statusLocation;
     }
 
+    /**
+     * @return the request that lead to this response.
+     */
     public ExecuteRequest getRequest () {
         return request;
     }

@@ -36,6 +36,9 @@
 
 package org.deegree.services.wps.execute;
 
+import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
+import static org.deegree.protocol.wps.WPSConstants.WPS_PREFIX;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -93,7 +96,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Parser and validator for incoming WPS <code>Execute</code> XML requests.
  * <p>
- * Besides the general syntax, the following "semantical" aspects are validated during parsing:
+ * Besides the general syntax, the following aspects are validated during parsing:
  * <ul>
  * <li>Process identifier: must refer to a known process <code>p</code></li>
  * <li>Input parameters: each present input parameter must be defined in the definition of <code>p</code></li>
@@ -112,16 +115,12 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( ExecuteRequestXMLAdapter.class );
 
-    private static final String WPS_PREFIX = "wps";
-
-    private static final String WPS_NS = "http://www.opengis.net/wps/1.0.0";
-
     private static NamespaceContext nsContext;
 
     static {
         nsContext = new NamespaceContext( XMLAdapter.nsContext );
         nsContext.addNamespace( OWS_PREFIX, OWS110_NS );
-        nsContext.addNamespace( WPS_PREFIX, WPS_NS );
+        nsContext.addNamespace( WPS_PREFIX, WPS_100_NS );
     }
 
     private Map<CodeType, WPSProcess> idToProcess;
@@ -196,7 +195,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         try {
             inputElements = getRequiredElements( dataInputsElement, new XPath( "wps:Input", nsContext ) );
         } catch ( XMLParsingException e ) {
-            throw eCustomizer.missingParameter( new QName( WPS_NS, "Input" ).toString() );
+            throw eCustomizer.missingParameter( new QName( WPS_100_NS, "Input" ).toString() );
         }
         List<ProcessletInput> inputs = new ArrayList<ProcessletInput>( inputElements.size() );
         for ( OMElement inputElement : inputElements ) {
@@ -251,13 +250,13 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         }
 
         // choice: "wps:Data" or "wps:Reference" element (minOccurs="1", maxOccurs="1")
-        OMElement dataElement = inputElement.getFirstChildWithName( new QName( WPS_NS, "Data" ) );
-        OMElement referenceElement = inputElement.getFirstChildWithName( new QName( WPS_NS, "Reference" ) );
+        OMElement dataElement = inputElement.getFirstChildWithName( new QName( WPS_100_NS, "Data" ) );
+        OMElement referenceElement = inputElement.getFirstChildWithName( new QName( WPS_100_NS, "Reference" ) );
 
         ProcessletInput input = null;
         if ( dataElement != null && referenceElement == null ) {
             OMElement childElement = dataElement.getFirstElement();
-            if ( childElement == null || !WPS_NS.equals( childElement.getNamespace().getNamespaceURI() ) ) {
+            if ( childElement == null || !WPS_100_NS.equals( childElement.getNamespace().getNamespaceURI() ) ) {
                 String allowedInputParam = ( definition instanceof LiteralInputDefinition ) ? wpsElement( "LiteralData" )
                                                                                            : ( definition instanceof ComplexInputDefinition ) ? wpsElement( "ComplexData" )
                                                                                                                                              : wpsElement( "BoundingBoxData" );
@@ -293,7 +292,8 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
                                              eCustomizer );
             } else {
                 String href = referenceElement.getAttributeValue( new QName( XLN_NS, "href" ) );
-                Pair<String, String> kvp = new Pair<String, String>( new QName( WPS_NS, "Reference" ).toString(), href );
+                Pair<String, String> kvp = new Pair<String, String>( new QName( WPS_100_NS, "Reference" ).toString(),
+                                                                     href );
                 throw eCustomizer.inputEvalutationNotSupported( inputId, kvp,
                                                                 "Reference may only be used with complex data." );
 
@@ -306,12 +306,8 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         return input;
     }
 
-    /**
-     * @param string
-     * @return
-     */
     private String wpsElement( String elementName ) {
-        return new QName( WPS_NS, elementName ).toString();
+        return new QName( WPS_100_NS, elementName ).toString();
     }
 
     /**
@@ -403,7 +399,6 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
      * @return corresponding {@link BoundingBoxInput} object
      * @throws OWSException
      *             if the element is not valid
-     * @throws UnknownCRSException
      */
     private BoundingBoxInput parseBoundingBoxData( BoundingBoxInputDefinition definition,
                                                    OMElement boundingBoxDataElement, LanguageString title,
@@ -513,7 +508,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 
         // "wps:Header" elements (minOccurs="0" maxOccurs="unbounded")
         Map<String, String> headers = new HashMap<String, String>();
-        Iterator<?> headerIter = referenceElement.getChildrenWithName( new QName( "Header", WPS_NS ) );
+        Iterator<?> headerIter = referenceElement.getChildrenWithName( new QName( "Header", WPS_100_NS ) );
         while ( headerIter.hasNext() ) {
             OMElement headerElement = (OMElement) headerIter.next();
             // "key" attribute (required)
@@ -540,8 +535,9 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
             inputReference = new InputReference( href, headers );
         } else {
             // POST -> choice: "wps:Body" or "wps:BodyReference" element (minOccurs="1", maxOccurs="1")
-            OMElement bodyElement = referenceElement.getFirstChildWithName( new QName( WPS_NS, "Body" ) );
-            OMElement bodyReferenceElement = referenceElement.getFirstChildWithName( new QName( WPS_NS, "BodyReference" ) );
+            OMElement bodyElement = referenceElement.getFirstChildWithName( new QName( WPS_100_NS, "Body" ) );
+            OMElement bodyReferenceElement = referenceElement.getFirstChildWithName( new QName( WPS_100_NS,
+                                                                                                "BodyReference" ) );
             if ( bodyElement != null && bodyReferenceElement == null ) {
                 inputReference = new InputReference( href, headers, bodyElement );
             } else if ( bodyElement == null && bodyReferenceElement != null ) {
@@ -708,10 +704,6 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
         return matchingFormat;
     }
 
-    /**
-     * @param definition
-     * @return
-     */
     private CodeType getIdentifier( ComplexOutputDefinition definition ) {
         return new CodeType( definition.getIdentifier().getValue(), definition.getIdentifier().getCodeSpace() );
     }
@@ -726,9 +718,10 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
                             throws OWSException {
 
         // choice: "wps:ResponseDocument" or "wps:RawDataOutput" element (minOccurs="1", maxOccurs="1")
-        OMElement responseDocumentElement = responseFormElement.getFirstChildWithName( new QName( WPS_NS,
+        OMElement responseDocumentElement = responseFormElement.getFirstChildWithName( new QName( WPS_100_NS,
                                                                                                   "ResponseDocument" ) );
-        OMElement rawDataOutputElement = responseFormElement.getFirstChildWithName( new QName( WPS_NS, "RawDataOutput" ) );
+        OMElement rawDataOutputElement = responseFormElement.getFirstChildWithName( new QName( WPS_100_NS,
+                                                                                               "RawDataOutput" ) );
 
         ResponseForm responseForm = null;
         if ( responseDocumentElement != null && rawDataOutputElement == null ) {

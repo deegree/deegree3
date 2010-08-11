@@ -36,6 +36,7 @@
 
 package org.deegree.services.wps;
 
+import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
@@ -100,7 +101,7 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.PublishedInformation;
 import org.deegree.services.jaxb.wps.ServiceConfiguration;
-import org.deegree.services.wps.capabilities.CapabilitiesXMLAdapter;
+import org.deegree.services.wps.capabilities.CapabilitiesXMLWriter;
 import org.deegree.services.wps.describeprocess.DescribeProcessResponseXMLAdapter;
 import org.deegree.services.wps.execute.ExecuteRequest;
 import org.deegree.services.wps.execute.ExecuteRequestKVPAdapter;
@@ -113,7 +114,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of the WPS (WebProcessingService) server protocol.
+ * Handles WPS (WebProcessingService) requests.
  * <p>
  * Supported WPS protocol versions:
  * <ul>
@@ -121,6 +122,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * </p>
  * 
+ * @see OGCFrontController
  * @see ProcessManager
  * @see ExecutionManager
  * 
@@ -277,11 +279,10 @@ public class WPService extends AbstractOGCServiceController {
         LOG.trace( "doXML invoked" );
 
         try {
-            XMLAdapter requestDoc = new XMLAdapter( xmlStream );
-            WPSRequestType requestType = getRequestTypeByName( requestDoc.getRootElement().getLocalName() );
+            WPSRequestType requestType = getRequestTypeByName( xmlStream.getLocalName() );
 
             // check if requested version is supported and offered (except for GetCapabilities)
-            Version requestVersion = getVersion( requestDoc.getRootElement().getAttributeValue( new QName( "version" ) ) );
+            Version requestVersion = getVersion( xmlStream.getAttributeValue( null, "version" ) );
             if ( requestType != WPSRequestType.GetCapabilities ) {
                 checkVersion( requestVersion );
             }
@@ -289,22 +290,20 @@ public class WPService extends AbstractOGCServiceController {
             switch ( requestType ) {
             case GetCapabilities:
                 GetCapabilitiesXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesXMLAdapter();
-                getCapabilitiesAdapter.setRootElement( requestDoc.getRootElement() );
-                getCapabilitiesAdapter.setSystemId( requestDoc.getSystemId() );
+                getCapabilitiesAdapter.load( xmlStream );
                 GetCapabilities getCapabilitiesRequest = getCapabilitiesAdapter.parse100();
                 doGetCapabilities( getCapabilitiesRequest, response );
                 break;
             case DescribeProcess:
                 DescribeProcessRequestXMLAdapter describeProcessAdapter = new DescribeProcessRequestXMLAdapter();
-                describeProcessAdapter.setRootElement( requestDoc.getRootElement() );
-                describeProcessAdapter.setSystemId( requestDoc.getSystemId() );
+                describeProcessAdapter.load( xmlStream );
                 DescribeProcessRequest describeProcessRequest = describeProcessAdapter.parse100();
                 doDescribeProcess( describeProcessRequest, response );
                 break;
             case Execute:
+                // TODO switch to StaX-based parsing
                 ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcesses() );
-                executeAdapter.setRootElement( requestDoc.getRootElement() );
-                executeAdapter.setSystemId( requestDoc.getSystemId() );
+                executeAdapter.load( xmlStream );
                 ExecuteRequest executeRequest = executeAdapter.parse100();
                 doExecute( executeRequest, response );
                 break;
@@ -357,6 +356,7 @@ public class WPService extends AbstractOGCServiceController {
                 doDescribeProcess( describeProcessRequest, response );
                 break;
             case Execute:
+                // TODO switch to StaX-based parsing
                 ExecuteRequestXMLAdapter executeAdapter = new ExecuteRequestXMLAdapter( service.getProcesses() );
                 executeAdapter.setRootElement( requestElement );
                 // executeAdapter.setSystemId( soapDoc.getSystemId() );
@@ -445,7 +445,7 @@ public class WPService extends AbstractOGCServiceController {
         if ( serviceWSDLFile != null ) {
             wsdlURL = OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetWPSWSDL";
         }
-        CapabilitiesXMLAdapter.export100( xmlWriter, service.getProcesses(), mainMetadataConf, wsdlURL );
+        CapabilitiesXMLWriter.export100( xmlWriter, service.getProcesses(), mainMetadataConf, wsdlURL );
 
         LOG.trace( "doGetCapabilities finished" );
     }
@@ -548,7 +548,7 @@ public class WPService extends AbstractOGCServiceController {
     private void doGetOutput( String storedOutputId, HttpResponseBuffer response ) {
 
         LOG.trace( "doGetOutput invoked, requested stored output: " + storedOutputId );
-        OutputStorage resource = storageManager.findOutputStorage( storedOutputId );
+        OutputStorage resource = storageManager.lookupOutputStorage( storedOutputId );
 
         if ( resource == null ) {
             try {
@@ -566,7 +566,7 @@ public class WPService extends AbstractOGCServiceController {
     private void doGetResponseDocument( String responseId, HttpResponseBuffer response ) {
 
         LOG.trace( "doGetResponseDocument invoked, requested stored response document: " + responseId );
-        ResponseDocumentStorage resource = storageManager.findResponseDocumentStorage( responseId );
+        ResponseDocumentStorage resource = storageManager.lookupResponseDocumentStorage( responseId );
         executeHandler.sendResponseDocument( response, resource );
 
         LOG.trace( "doGetResponseDocument finished" );

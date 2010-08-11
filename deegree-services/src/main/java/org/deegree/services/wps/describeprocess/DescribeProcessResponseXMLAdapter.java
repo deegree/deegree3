@@ -129,7 +129,7 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
         }
         if ( processAnnotations != null && !processAnnotations.isEmpty() ) {
             for ( ProcessDescription annotation : processAnnotations ) {
-                DescribeProcesFromAnnotation.exportDescription100( writer, annotation );
+                DescribeProcessFromAnnotation.exportDescription100( writer, annotation );
             }
         }
 

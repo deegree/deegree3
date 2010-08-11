@@ -72,9 +72,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class DescribeProcesFromAnnotation extends XMLAdapter {
+public class DescribeProcessFromAnnotation extends XMLAdapter {
 
-    private static Logger LOG = LoggerFactory.getLogger( DescribeProcesFromAnnotation.class );
+    private static Logger LOG = LoggerFactory.getLogger( DescribeProcessFromAnnotation.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 
