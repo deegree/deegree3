@@ -13,7 +13,7 @@
       <xs:element name="ConfiguredServices" type="dgws:ConfiguredServicesType" minOccurs="0" />
       <xs:element name="FrontControllerOptions" type="dgws:FrontControllerOptionsType" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="configVersion" fixed="0.7.0" use="required" />
+    <xs:attribute name="configVersion" fixed="0.6.0" use="required" />
   </xs:complexType>
 
   <xs:complexType name="FrontControllerOptionsType">
