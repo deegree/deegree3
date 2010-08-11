@@ -230,6 +230,10 @@ public class RasterFactory {
     private static RasterReader getRasterReader( File filename, RasterIOOptions options ) {
         for ( RasterIOProvider reader : getRasterIOLoader() ) {
             String format = options.get( RasterIOOptions.OPT_FORMAT );
+            if ( format == null ) {
+                String nm = filename.getName();
+                format = nm.substring( nm.lastIndexOf( '.' ) + 1 );
+            }
             RasterReader possibleReader = reader.getRasterReader( format );
             if ( possibleReader != null && possibleReader.canLoad( filename ) ) {
                 return possibleReader;

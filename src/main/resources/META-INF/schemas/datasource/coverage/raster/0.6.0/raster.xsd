@@ -20,13 +20,12 @@
     <complexType>
       <complexContent>
         <extension base="raster:AbstractRasterType">
-          <attribute name="configVersion" use="required" fixed="0.5.0" />
+          <attribute name="configVersion" use="required" fixed="0.6.0" />
         </extension>
       </complexContent>
     </complexType>
   </element>
 
- 
   <element name="MultiResolutionRaster">
     <annotation>
       <documentation>A multi resolution raster wraps (single) rasters and adds a resolution of each raster.
@@ -37,6 +36,7 @@
     </annotation>
     <complexType>
       <sequence>
+        <element name="StorageCRS" minOccurs="0" type="string" />
         <element name="Resolution" maxOccurs="unbounded">
           <complexType>
             <complexContent>
@@ -47,54 +47,34 @@
           </complexType>
         </element>
       </sequence>
-      <attribute name="crs" type="string" use="optional" />
       <attribute name="originLocation" default="center" type="raster:OriginLocation" />
       <attribute name="readWorldFiles" default="true" type="boolean" />
       <attribute name="nodata" type="decimal" />
-      <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="configVersion" use="required" fixed="0.6.0" />
     </complexType>
   </element>
 
-
-
   <complexType name="AbstractRasterType" abstract="true">
-    <choice minOccurs="0">
-      <element ref="raster:RasterFile" />
-      <element ref="raster:RasterDirectory" />
-      <element name="url" type="string" />
-    </choice>
+    <sequence>
+      <element name="StorageCRS" minOccurs="0" type="string" />
+      <choice minOccurs="0">
+        <element name="RasterFile" type="string" />
+        <element name="RasterDirectory">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="recursive" type="boolean" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <element name="url" type="string" />
+      </choice>
+    </sequence>
     <attribute name="readWorldFiles" default="true" type="boolean" />
-    <attribute name="crs" type="string" use="optional" />
     <attribute name="originLocation" default="center" type="raster:OriginLocation" />
     <attribute name="nodata" type="decimal" />
   </complexType>
-
-  <element name="RasterFile">
-    <complexType>
-      <annotation>
-        <documentation>Define a file to be of a certain raster type.</documentation>
-      </annotation>
-      <simpleContent>
-        <extension base="string">
-          <attribute name="fileType" default="jpg" />
-        </extension>
-      </simpleContent>
-    </complexType>
-  </element>
-
-  <element name="RasterDirectory">
-    <annotation>
-      <documentation>Define the files in a directory to be of a certain raster type.</documentation>
-    </annotation>
-    <complexType>
-      <simpleContent>
-        <extension base="string">
-          <attribute name="recursive" type="boolean" />
-          <attribute name="fileType" default="jpg" type="string" />
-        </extension>
-      </simpleContent>
-    </complexType>
-  </element>
 
   <simpleType name="OriginLocation">
     <restriction base="string">
