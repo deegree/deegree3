@@ -70,8 +70,7 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.jaxb.AbstractRasterType;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
 import org.deegree.coverage.raster.io.jaxb.RasterConfig;
-import org.deegree.coverage.raster.io.jaxb.RasterDirectory;
-import org.deegree.coverage.raster.io.jaxb.RasterFile;
+import org.deegree.coverage.raster.io.jaxb.AbstractRasterType.RasterDirectory;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig.Resolution;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
@@ -204,7 +203,7 @@ public class RasterBuilder implements CoverageBuilder {
      */
     private MultiResolutionRaster fromJAXB( MultiResolutionRasterConfig mrrConfig, XMLAdapter adapter, CRS parentCrs ) {
         if ( mrrConfig != null ) {
-            String defCRS = mrrConfig.getCrs();
+            String defCRS = mrrConfig.getStorageCRS();
             CRS crs = null;
             if ( defCRS != null ) {
                 crs = new CRS( defCRS );
@@ -229,8 +228,8 @@ public class RasterBuilder implements CoverageBuilder {
 
     private RasterIOOptions getOptions( MultiResolutionRasterConfig config, CRS parentCrs ) {
         RasterIOOptions opts = new RasterIOOptions();
-        if ( config.getCrs() != null ) {
-            opts.add( "CRS", config.getCrs() );
+        if ( config.getStorageCRS() != null ) {
+            opts.add( "CRS", config.getStorageCRS() );
         } else {
             opts.add( "CRS", parentCrs.getName() );
         }
@@ -245,7 +244,7 @@ public class RasterBuilder implements CoverageBuilder {
     private AbstractRaster fromJAXB( AbstractRasterType config, XMLAdapter adapter, RasterIOOptions options,
                                      CRS parentCrs ) {
         if ( config != null ) {
-            String defCRS = config.getCrs();
+            String defCRS = config.getStorageCRS();
             CRS crs = null;
             if ( defCRS != null ) {
                 crs = new CRS( defCRS );
@@ -255,7 +254,7 @@ public class RasterBuilder implements CoverageBuilder {
                 crs = parentCrs;
             }
             RasterDirectory directory = config.getRasterDirectory();
-            RasterFile file = config.getRasterFile();
+            String file = config.getRasterFile();
             try {
                 RasterIOOptions rOptions = new RasterIOOptions();
                 rOptions.copyOf( options );
@@ -266,20 +265,18 @@ public class RasterBuilder implements CoverageBuilder {
                 if ( directory != null ) {
                     File rasterFiles = new File( adapter.resolve( directory.getValue() ).toURI() );
                     boolean recursive = directory.isRecursive() == null ? false : directory.isRecursive();
-                    String fp = directory.getFileType();
-                    rOptions.add( RasterIOOptions.OPT_FORMAT, fp );
                     if ( crs != null ) {
                         rOptions.add( RasterIOOptions.CRS, crs.getName() );
                     }
                     return buildTiledRaster( rasterFiles, recursive, rOptions );
                 }
                 if ( file != null ) {
-                    final File loc = new File( adapter.resolve( file.getValue() ).toURI() );
+                    final File loc = new File( adapter.resolve( file ).toURI() );
                     if ( !loc.exists() ) {
                         LOG.warn( "Given raster file location does not exist: " + loc.getAbsolutePath() );
                         return null;
                     }
-                    rOptions.add( RasterIOOptions.OPT_FORMAT, file.getFileType() );
+                    rOptions.add( RasterIOOptions.OPT_FORMAT, file.substring( file.lastIndexOf( '.' ) + 1 ) );
                     AbstractRaster raster = loadRasterFromFile( loc, rOptions );
                     if ( raster != null ) {
                         raster.setCoordinateSystem( crs );
@@ -291,13 +288,13 @@ public class RasterBuilder implements CoverageBuilder {
                     LOG.warn( "Could not resolve the file {}, corresponding data will not be available.",
                               directory.getValue() );
                 } else {
-                    LOG.warn( "Could not resolve the file {}, corresponding data will not be available.",
-                              file.getValue() );
+                    LOG.warn( "Could not resolve the file {}, corresponding data will not be available.", file );
                 }
             } catch ( IOException e ) {
-                LOG.warn( "Could not load the file {}, corresponding data will not be available.", file.getValue() );
+                LOG.warn( "Could not load the file {}, corresponding data will not be available: {}", file,
+                          e.getLocalizedMessage() );
             } catch ( URISyntaxException e ) {
-                LOG.warn( "Could not load the file {}, corresponding data will not be available.", file.getValue() );
+                LOG.warn( "Could not load the file {}, corresponding data will not be available.", file );
             }
         }
         throw new NullPointerException( "The configured raster datasource may not be null." );
@@ -387,8 +384,8 @@ public class RasterBuilder implements CoverageBuilder {
         File indexFile = new File( directory, "deegree-pyramid.idx" );
         if ( !indexFile.exists() || indexFile.lastModified() < directory.lastModified() ) {
             LOG.info( "Scanning for files in directory: {}", directory.getAbsolutePath() );
-            String extension = options.get( RasterIOOptions.OPT_FORMAT );
-            List<File> coverageFiles = FileUtils.findFilesForExtensions( directory, recursive, extension );
+            List<File> coverageFiles = FileUtils.findFilesForExtensions( directory, recursive,
+                                                                         "grid,bin,jpg,jpeg,png,tif,tiff,bmp,gif" );
             TiledRaster raster = null;
             if ( !coverageFiles.isEmpty() ) {
                 if ( LOG.isDebugEnabled() ) {
@@ -396,6 +393,7 @@ public class RasterBuilder implements CoverageBuilder {
                 }
                 RasterIOOptions opts = new RasterIOOptions();
                 opts.copyOf( options );
+
                 String cacheDir = opts.get( RasterIOOptions.LOCAL_RASTER_CACHE_DIR );
                 if ( cacheDir == null ) {
                     String dir = directory.getName();
@@ -407,7 +405,9 @@ public class RasterBuilder implements CoverageBuilder {
                 if ( opts.get( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR ) == null ) {
                     opts.add( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR, "yes" );
                 }
-                String format = opts.get( RasterIOOptions.OPT_FORMAT );
+                String nm = coverageFiles.get( 0 ).getName();
+                String format = nm.substring( nm.lastIndexOf( '.' ) + 1 );
+                opts.add( RasterIOOptions.OPT_FORMAT, format );
                 boolean readSingleBlobTile = false;
                 if ( format != null && ( "grid".equalsIgnoreCase( format ) || "bin".equalsIgnoreCase( format ) ) ) {
                     // the grid file structure can be defined over multiple 'bin' files, which is used in e.g the WPVS.
@@ -440,8 +440,7 @@ public class RasterBuilder implements CoverageBuilder {
                     raster.setCoordinateSystem( domain.getCoordinateSystem() );
                 }
             } else {
-                LOG.warn( "No raster files with extension: {}, found in directory {}", extension,
-                          directory.getAbsolutePath() );
+                LOG.warn( "No raster files found in directory {}", directory.getAbsolutePath() );
             }
             return raster;
         }
