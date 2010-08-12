@@ -33,10 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.model;
+package org.deegree.client.mdeditor.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Comparator;
+
+import org.deegree.commons.utils.StringPair;
 
 /**
  * TODO add class documentation here
@@ -46,34 +47,39 @@ import java.util.Map;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CodeList {
+public class StringPairCompararator implements Comparator<StringPair> {
 
-    private String id;
+    private boolean sortFirst = true;
 
-    private Map<String, String> codes = new HashMap<String, String>();
-
-    public CodeList( String id ) {
-        this.id = id;
+    public StringPairCompararator() {
     }
 
-    public void addCode( String value, String label ) {
-        this.codes.put( value, label );
+    public StringPairCompararator( boolean sortFirst ) {
+        this.sortFirst = sortFirst;
     }
 
-    public void setCodes( Map<String, String> codes ) {
-        this.codes = codes;
+    @Override
+    public int compare( StringPair o1, StringPair o2 ) {
+        String v1 = getCompareValue( o1 );
+        String v2 = getCompareValue( o2 );
+        if ( v1 != null && v2 != null ) {
+            return v1.compareToIgnoreCase( v2 );
+        } else if ( v1 != null && v2 == null ) {
+            return -1;
+        } else if ( v2 != null && v1 == null ) {
+            return 1;
+        }
+        return 0;
     }
 
-    public Map<String, String> getCodes() {
-        return codes;
-    }
-
-    public void setId( String id ) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
+    private String getCompareValue( StringPair sp ) {
+        if ( sp != null ) {
+            if ( sortFirst ) {
+                return sp.first;
+            }
+            return sp.second;
+        }
+        return null;
     }
 
 }

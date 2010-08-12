@@ -7,7 +7,7 @@
     <packaging>war</packaging>
     <version>3.0-SNAPSHOT</version>
     <name>deegree MDEditor</name>
-    <url>http://maven.apache.org</url>
+    <url>http://www.deegree.org</url>
     <repositories>
         <repository>
             <id>ext-releases</id>
@@ -88,7 +88,16 @@
             <version>4.8.1</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.0.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

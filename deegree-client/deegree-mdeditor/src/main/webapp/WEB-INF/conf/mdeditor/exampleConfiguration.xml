@@ -21,23 +21,33 @@
             <help>AllgFormGroup_ref_h</help>
             <bean-name>generateIdBean</bean-name>
         </ReferencedFormElement>
-        <SelectFormElement id="hierarchylevel" visible="true">
+        <InputFormElement id="language" visible="false">
+            <label>InhFormGroup_language_l</label>
+            <help>InhFormGroup_language_h</help>
+            <defaultValue>de</defaultValue>
+            <inputType>text</inputType>
+        </InputFormElement>
+        <InputFormElement id="charSet" visible="false">
+            <label>InhFormGroup_charSet_l</label>
+            <help>InhFormGroup_charSet_h</help>
+            <defaultValue>utf8</defaultValue>
+            <inputType>text</inputType>
+        </InputFormElement>
+        <SelectFormElement id="hierarchylevel">
             <label>AllgFormGroup_hier_l</label>
             <selectType>one</selectType>
             <referenceToCodeList>hierarchylevel</referenceToCodeList>
         </SelectFormElement>
-
-        <!-- TODO: Elternobjekt -->
-        <!--
-            <SelectFormElement id="selectOneK" visible="true"> <label>Eltern-Objekt:</label>
-            <selectType>one</selectType> <referenceToGroup></referenceToGroup> </SelectFormElement>
-        -->
-
+        <ReferencedFormElement id="parent">
+            <label>AllgFormGroup_parent_l</label>
+            <help>AllgFormGroup_parent_h</help>
+            <bean-name>selectParentBean</bean-name>
+        </ReferencedFormElement>
         <SelectFormElement id="contactMD" visible="true">
             <label>AllgFormGroup_contact_l</label>
             <selectType>one</selectType>
             <referenceToGroup>ContactFormGroup</referenceToGroup>
-            <referenceText>Name: ${KtextName}</referenceText>
+            <referenceText>Name: ${KName} Orga.: ${KOrga}</referenceText>
         </SelectFormElement>
     </FormGroup>
 
@@ -69,30 +79,6 @@
             <label>InhFormGroup_origin_l</label>
             <inputType>textarea</inputType>
         </InputFormElement>
-        <!--
-            <InputFormElement id="lenght"> <label>InhFormGroup_lengh_l</label> <inputType>text</inputType> <Validation>
-            <length>10</length> </Validation> </InputFormElement> <InputFormElement id="date"> <label>Datum:</label>
-            <inputType>timestamp</inputType> </InputFormElement> <InputFormElement id="range"> <label>Range:</label>
-            <inputType>int</inputType> <Validation> <minValue>10</minValue> <maxValue>99</maxValue> </Validation>
-            </InputFormElement> <SelectFormElement id="contactData" visible="true"> <label>Zuständige Stelle/Person
-            (Daten):</label> <selectType>one</selectType> <referenceToGroup>ContactFormGroup</referenceToGroup>
-            </SelectFormElement> </FormGroup>
-        -->
-        <!--
-            <InputFormElement id="ganzzahl1"> <label>int größer 23:</label> <inputType>int</inputType> <Validation>
-            <minValue>23</minValue> </Validation> </InputFormElement> <InputFormElement id="ganzzahl2"> <label> int
-            größer 23, kleiner 27:</label> <inputType>int</inputType> <Validation> <minValue>23</minValue>
-            <maxValue>27</maxValue> </Validation> </InputFormElement> <InputFormElement id="ganzzahl3"> <label> int
-            kleiner 27:</label> <inputType>int</inputType> <Validation> <maxValue>27</maxValue> </Validation>
-            </InputFormElement> <InputFormElement id="fließzahl1"> <label>double größer 23:</label>
-            <inputType>double</inputType> <Validation> <minValue>23</minValue> </Validation> </InputFormElement>
-            <InputFormElement id="fließzahl2"> <label>double größer 23, kleiner 27:</label>
-            <inputType>double</inputType> <Validation> <minValue>23</minValue> <maxValue>27</maxValue> </Validation>
-            </InputFormElement> <InputFormElement id="fließzahl3"> <label>double kleiner 27:</label>
-            <inputType>double</inputType> <Validation> <maxValue>27</maxValue> </Validation> </InputFormElement>
-            <InputFormElement id="text"> <label>text max 2:</label> <inputType>text</inputType> <Validation>
-            <length>2</length> </Validation> </InputFormElement>
-        -->
     </FormGroup>
 
     <FormGroup id="SpatialFormGroup">
@@ -112,13 +98,28 @@
             <label>TimeFormGroup_creation_l</label>
             <inputType>timestamp</inputType>
         </InputFormElement>
+        <InputFormElement id="TypeCreation" visible="false">
+            <label>TimeFormGroup_pub_l</label>
+            <defaultValue>creation</defaultValue>
+            <inputType>text</inputType>
+        </InputFormElement>
         <InputFormElement id="publication">
             <label>TimeFormGroup_pub_l</label>
             <inputType>timestamp</inputType>
         </InputFormElement>
+        <InputFormElement id="TypePublication" visible="false">
+            <label>TimeFormGroup_pub_l</label>
+            <defaultValue>publication</defaultValue>
+            <inputType>text</inputType>
+        </InputFormElement>
         <InputFormElement id="modified">
             <label>TimeFormGroup_mod_l</label>
             <inputType>timestamp</inputType>
+        </InputFormElement>
+        <InputFormElement id="TypeModified" visible="false">
+            <label>TimeFormGroup_pub_l</label>
+            <defaultValue>revision</defaultValue>
+            <inputType>text</inputType>
         </InputFormElement>
         <FormGroup id="TimePeriodFormGroup">
             <title>TimeFormGroup_per_t</title>
@@ -133,16 +134,15 @@
         </FormGroup>
     </FormGroup>
 
-
     <FormGroup id="FormatFormGroup" occurence="unbounded">
         <label>FormatFormGroup_l</label>
         <title>FormatFormGroup_t</title>
-        <InputFormElement id="Formatname">
+        <InputFormElement id="FormatName">
             <label>FormatFormGroup_name_l</label>
             <help>FormatFormGroup_name_h</help>
             <inputType>text</inputType>
         </InputFormElement>
-        <InputFormElement id="FormatVersion">
+        <InputFormElement id="FormatVersion" required="true">
             <label>FormatFormGroup_vers_l</label>
             <help>FormatFormGroup_vers_h</help>
             <inputType>text</inputType>

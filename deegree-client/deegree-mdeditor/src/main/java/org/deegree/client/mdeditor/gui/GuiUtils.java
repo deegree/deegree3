@@ -69,6 +69,8 @@ public class GuiUtils {
 
     public static final String GROUPREF_ATT_KEY = "grpReference";
 
+    public static final String CODE_ATT_KEY = "codeListReference";
+
     public static final String ACTION_ATT_KEY = "dgAction";
 
     public static enum ACTION_ATT_VALUES {
@@ -81,6 +83,22 @@ public class GuiUtils {
 
     public static String getUniqueId() {
         return "id_" + UUID.randomUUID();
+    }
+
+    public static String getResourceTextOrKey( FacesContext context, String bundleName, String key, Object... args ) {
+        String text;
+        try {
+            Application app = context.getApplication();
+            ResourceBundle bundle = app.getResourceBundle( context, bundleName );
+            text = bundle.getString( key );
+        } catch ( MissingResourceException e ) {
+            LOG.error( "could not find resource '" + bundleName + "'", e );
+            return key;
+        }
+        if ( args != null ) {
+            text = MessageFormat.format( text, args );
+        }
+        return text;
     }
 
     public static String getResourceText( FacesContext context, String bundleName, String key, Object... args ) {

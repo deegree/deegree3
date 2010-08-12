@@ -43,16 +43,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.component.UISelectItem;
-
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
-import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.io.DataHandler;
 import org.deegree.client.mdeditor.io.DataIOException;
+import org.deegree.client.mdeditor.model.DataGroup;
 import org.deegree.client.mdeditor.model.Dataset;
 import org.deegree.client.mdeditor.model.FormGroup;
-import org.deegree.client.mdeditor.model.DataGroup;
+import org.deegree.commons.utils.StringPair;
 import org.slf4j.Logger;
 
 /**
@@ -87,9 +85,9 @@ public class XMLDataHandler extends DataHandler {
     // private static Map<String, List<DataGroup>> dataGroupCache = new HashMap<String, List<DataGroup>>();
 
     @Override
-    public List<UISelectItem> getSelectItems( String grpId, String referenceLabel )
+    public List<StringPair> getItems( String grpId, String referenceLabel )
                             throws ConfigurationException {
-        List<UISelectItem> items = new ArrayList<UISelectItem>();
+        List<StringPair> items = new ArrayList<StringPair>();
         File f = new File( ConfigurationManager.getConfiguration().getDataDir(), grpId );
         if ( f.exists() && f.isDirectory() ) {
             File[] listFiles = f.listFiles();
@@ -100,11 +98,7 @@ public class XMLDataHandler extends DataHandler {
                     if ( referenceLabel != null ) {
                         label = replaceProperties( referenceLabel, DataReader.readDataGroup( listFiles[i] ) );
                     }
-                    UISelectItem item = new UISelectItem();
-                    item.setId( GuiUtils.getUniqueId() );
-                    item.setItemLabel( label );
-                    item.setItemValue( value );
-                    items.add( item );
+                    items.add( new StringPair( value, label ) );
                 } catch ( Exception e ) {
                     LOG.debug( "Could not read file " + listFiles[i].getAbsolutePath(), e );
                     LOG.error( "Could not read file " + listFiles[i].getAbsolutePath() + ": ", e.getMessage() );

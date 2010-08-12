@@ -35,22 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.creation;
 
-import static org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_KEY;
-import static org.deegree.client.mdeditor.gui.GuiUtils.CONF_ATT_KEY;
-import static org.deegree.client.mdeditor.gui.GuiUtils.DG_ID_PARAM;
-import static org.deegree.client.mdeditor.gui.GuiUtils.FIELDPATH_ATT_KEY;
-import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY;
-import static org.deegree.client.mdeditor.gui.GuiUtils.GROUPREF_ATT_KEY;
-import static org.deegree.client.mdeditor.gui.GuiUtils.IS_GLOBAL_PARAM;
-import static org.deegree.client.mdeditor.gui.GuiUtils.getResourceText;
-import static org.deegree.client.mdeditor.gui.GuiUtils.getUniqueId;
-import static org.deegree.client.mdeditor.model.LAYOUT_TYPE.MENU;
-import static org.deegree.client.mdeditor.model.LAYOUT_TYPE.TAB;
+import static org.deegree.client.mdeditor.gui.GuiUtils.*;
+import static org.deegree.client.mdeditor.model.LAYOUT_TYPE.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -61,7 +50,6 @@ import javax.faces.component.UIInput;
 import javax.faces.component.UIOutput;
 import javax.faces.component.UIParameter;
 import javax.faces.component.UISelectItem;
-import javax.faces.component.UIViewRoot;
 import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlColumn;
 import javax.faces.component.html.HtmlCommandButton;
@@ -80,18 +68,18 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PreRenderComponentEvent;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
-import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.gui.GuiUtils;
 import org.deegree.client.mdeditor.gui.ReferencedElementBean;
 import org.deegree.client.mdeditor.gui.GuiUtils.ACTION_ATT_VALUES;
 import org.deegree.client.mdeditor.gui.components.HtmlInputManyText;
 import org.deegree.client.mdeditor.gui.components.HtmlInputTextItems;
 import org.deegree.client.mdeditor.gui.components.ListGroup;
+import org.deegree.client.mdeditor.gui.listener.CodeListCreator;
 import org.deegree.client.mdeditor.gui.listener.DataGroupListener;
 import org.deegree.client.mdeditor.gui.listener.DataGroupSelectListener;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
-import org.deegree.client.mdeditor.gui.listener.ListPreRenderedListener;
+import org.deegree.client.mdeditor.gui.listener.GroupReferenceListCreator;
 import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
@@ -102,7 +90,6 @@ import org.deegree.client.mdeditor.model.LAYOUT_TYPE;
 import org.deegree.client.mdeditor.model.ReferencedElement;
 import org.deegree.client.mdeditor.model.SELECT_TYPE;
 import org.deegree.client.mdeditor.model.SelectFormField;
-import org.deegree.commons.utils.StringPair;
 
 /**
  * TODO add class documentation here
@@ -113,6 +100,10 @@ import org.deegree.commons.utils.StringPair;
  * @version $Revision: $, $Date: $
  */
 public class FormCreator {
+
+    private static final String MD_RB = "mdLabels";
+
+    private static final String CONF_RB = "confLabels";
 
     public static HtmlPanelGrid createForm( String confId, String grpId, FormConfiguration formConf, boolean global )
                             throws ConfigurationException {
@@ -162,7 +153,7 @@ public class FormCreator {
 
         HtmlOutcomeTargetLink link = new HtmlOutcomeTargetLink();
         link.setId( GuiUtils.getUniqueId() );
-        link.setValueExpression( "value", getLabelVE( fc, formGroup.getLabel() ) );
+        addTextValueVE( fc, link, CONF_RB, formGroup.getLabel() );
 
         link.setOutcome( "emptyForm" );
         UIParameter param = new UIParameter();
@@ -171,6 +162,12 @@ public class FormCreator {
         param.setValue( formGroup.getId() );
         link.getChildren().add( param );
 
+        UIParameter param2 = new UIParameter();
+        param2.setId( GuiUtils.getUniqueId() );
+        param2.setName( "mdForm:emptyForm" );
+        param2.setValue( "submit" );
+        link.getChildren().add( param2 );
+
         String el = "#{editorBean.grpId == '" + formGroup.getId() + "' ? 'menuItemActive' : 'menuItemInactive'}";
         ValueExpression ve = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(), el,
                                                                                                String.class );
@@ -178,9 +175,11 @@ public class FormCreator {
         return link;
     }
 
-    private static ValueExpression getLabelVE( FacesContext fc, String key ) {
-        String el = "#{confLabels['" + key + "']}";
-        return fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(), el, String.class );
+    private static void addTextValueVE( FacesContext fc, UIComponent component, String resourceBundle, String key ) {
+        String el = "#{" + resourceBundle + "['" + key + "']}";
+        ValueExpression ve = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(), el,
+                                                                                               String.class );
+        component.setValueExpression( "value", ve );
     }
 
     private static void addFormGroup( FacesContext fc, String confId, HtmlPanelGrid parentGrid, FormGroup fg,
@@ -194,7 +193,7 @@ public class FormCreator {
 
         // label
         UIOutput title = new UIOutput();
-        title.setValueExpression( "value", getLabelVE( fc, fg.getTitle() ) );
+        addTextValueVE( fc, title, CONF_RB, fg.getTitle() );
         grid.getFacets().put( "header", title );
 
         // createInputPanelGroup();
@@ -240,6 +239,17 @@ public class FormCreator {
         ValueExpression ve = ef.createValueExpression( elContext, el, Object.class );
         dataTable.setValueExpression( "value", ve );
 
+        HtmlColumn colNo = new HtmlColumn();
+        HtmlOutputText number = new HtmlOutputText();
+        // String elNo ="";
+        // ValueExpression veNo = ef.createValueExpression( elContext, elNo, Integer.class );
+        // number.setValueExpression( "value", veNo );
+        colNo.getChildren().add( number );
+        HtmlOutputText headerNo = new HtmlOutputText();
+        addTextValueVE( fc, headerNo, MD_RB, "formGroup_no" );
+        colNo.getFacets().put( "header", headerNo );
+        dataTable.getChildren().add( colNo );
+
         for ( FormElement fe : fg.getFormElements() ) {
             if ( fe instanceof FormField ) {
                 HtmlColumn col = new HtmlColumn();
@@ -251,28 +261,29 @@ public class FormCreator {
                 value.setValueExpression( "value", veValue );
 
                 HtmlOutputText header = new HtmlOutputText();
-                header.setValueExpression( "value", getLabelVE( fc, ( (FormField) fe ).getLabel() ) );
+                addTextValueVE( fc, header, CONF_RB, ( (FormField) fe ).getLabel() );
                 col.getChildren().add( value );
                 col.getFacets().put( "header", header );
                 dataTable.getChildren().add( col );
             }
         }
 
+        HtmlColumn colOptions = new HtmlColumn();
+        HtmlCommandButton selectButton = createSelectButton( fc, fg, isGlobal );
+        colOptions.getChildren().add( selectButton );
+        HtmlOutputText headerOptions = new HtmlOutputText();
+        addTextValueVE( fc, headerOptions, MD_RB, "formGroup_options" );
+        colOptions.getFacets().put( "header", headerOptions );
+
         StringBuilder styleClassSB = new StringBuilder();
+        styleClassSB.append( "dgListNoColumn " );
         for ( int i = 0; i < dataTable.getChildCount(); i++ ) {
             styleClassSB.append( "dgListColumn, " );
         }
-
-        HtmlColumn col = new HtmlColumn();
-        HtmlCommandButton selectButton = createSelectButton( fc, fg, isGlobal );
-        col.getChildren().add( selectButton );
-        HtmlOutputText header = new HtmlOutputText();
-        header.setValue( "Optionen" );
-        col.getFacets().put( "header", header );
         styleClassSB.append( "dgListOptionColumn " );
 
         dataTable.setColumnClasses( styleClassSB.toString() );
-        dataTable.getChildren().add( col );
+        dataTable.getChildren().add( colOptions );
 
         grid.getChildren().add( new HtmlPanelGroup() );
         grid.getChildren().add( dataTable );
@@ -294,7 +305,7 @@ public class FormCreator {
         HtmlCommandButton deleteButton = createButton( fc, grpId, "deleteFormGroup", ACTION_ATT_VALUES.DELETE, false,
                                                        isReferencedGrp );
 
-        String confirmMsg = getResourceText( fc, "mdLabels", "deleteFormGroup_confirmMsg" );
+        String confirmMsg = getResourceText( fc, MD_RB, "deleteFormGroup_confirmMsg" );
         deleteButton.setOnclick( "return fgListConfirmDelete('" + confirmMsg + "')" );
 
         btGrid.getChildren().add( saveButton );
@@ -314,7 +325,7 @@ public class FormCreator {
 
         HtmlCommandButton bt = new HtmlCommandButton();
         bt.setId( getUniqueId() );
-        bt.setValue( getResourceText( fc, "mdLabels", labelKey ) );
+        addTextValueVE( fc, bt, MD_RB, labelKey );
         bt.getAttributes().put( GROUPID_ATT_KEY, grpId );
         bt.getAttributes().put( ACTION_ATT_KEY, action );
 
@@ -390,7 +401,7 @@ public class FormCreator {
 
         // label
         UIOutput newOutput = new UIOutput();
-        newOutput.setValueExpression( "value", getLabelVE( fc, fe.getLabel() ) );
+        addTextValueVE( fc, newOutput, CONF_RB, fe.getLabel() );
         setVisibility( fe.getPath().toString(), newOutput, ef, elContext );
         newOutput.setId( getUniqueId() );
         newOutput.setValueExpression( "styleClass", ef.createValueExpression( elContext, "mdFormLabel", String.class ) );
@@ -405,7 +416,7 @@ public class FormCreator {
         helpLink.setStyleClass( "helpLink" );
         HtmlGraphicImage img = new HtmlGraphicImage();
 
-        img.setTitle( getResourceText( fc, "mdLabels", "helpTooltip" ) );
+        img.setTitle( getResourceText( fc, MD_RB, "helpTooltip" ) );
         img.setValueExpression( "library", ef.createValueExpression( elContext, "deegree/images", String.class ) );
         img.setValueExpression( "name", ef.createValueExpression( elContext, "help.gif", String.class ) );
         helpLink.getChildren().add( img );
@@ -414,7 +425,7 @@ public class FormCreator {
             UIParameter param = new UIParameter();
             param.setId( getUniqueId() );
             param.setName( "mdHelp" );
-            param.setValueExpression( "value", getLabelVE( fc, fe.getHelp() ) );
+            addTextValueVE( fc, param, CONF_RB, fe.getHelp() );
             helpLink.getChildren().add( param );
         }
 
@@ -454,20 +465,22 @@ public class FormCreator {
             if ( SELECT_TYPE.MANY.equals( se.getSelectType() ) ) {
                 input = new HtmlSelectManyListbox();
                 if ( se.getReferenceToCodeList() != null ) {
-                    addCodeListItems( fc, input, se.getReferenceToCodeList() );
+                    input.getAttributes().put( CODE_ATT_KEY, se.getReferenceToCodeList() );
+                    input.subscribeToEvent( PreRenderComponentEvent.class, new CodeListCreator() );
                 } else if ( se.getReferenceToGroup() != null ) {
                     input.getAttributes().put( GROUPREF_ATT_KEY, se.getReferenceToGroup() );
                     input.getAttributes().put( CONF_ATT_KEY, confId );
-                    input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
+                    input.subscribeToEvent( PreRenderComponentEvent.class, new GroupReferenceListCreator() );
                 }
             } else {
                 input = new HtmlSelectOneMenu();
                 if ( se.getReferenceToCodeList() != null ) {
-                    addCodeListItems( fc, input, se.getReferenceToCodeList() );
+                    input.getAttributes().put( CODE_ATT_KEY, se.getReferenceToCodeList() );
+                    input.subscribeToEvent( PreRenderComponentEvent.class, new CodeListCreator() );
                 } else if ( se.getReferenceToGroup() != null ) {
                     input.getAttributes().put( GROUPREF_ATT_KEY, se.getReferenceToGroup() );
                     input.getAttributes().put( CONF_ATT_KEY, confId );
-                    input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
+                    input.subscribeToEvent( PreRenderComponentEvent.class, new GroupReferenceListCreator() );
                 }
             }
         } else if ( fe instanceof ReferencedElement ) {
@@ -476,8 +489,10 @@ public class FormCreator {
                                                                                                                       fc.getELContext(),
                                                                                                                       null,
                                                                                                                       re.getBeanName() );
-            if ( refElemBean.getComponent( re ) != null ) {
-                parentGrid.getChildren().add( refElemBean.getComponent( re ) );
+            if ( refElemBean != null && refElemBean.getComponent( re ) != null ) {
+                UIComponent component = refElemBean.getComponent( re );
+                setVisibility( fe.getPath().toString(), component, ef, elContext );
+                parentGrid.getChildren().add( component );
             }
         }
         if ( input != null ) {
@@ -489,54 +504,25 @@ public class FormCreator {
                 HtmlInputTextItems items = new HtmlInputTextItems();
                 items.setId( getUniqueId() );
                 setValue( fe.getPath().toString(), items, ef, elContext );
-                setFormFieldChangedAjaxBehavior( items, eventName );
                 input.getChildren().add( items );
             } else {
                 setValue( fe.getPath().toString(), input, ef, elContext );
-                setFormFieldChangedAjaxBehavior( input, eventName );
             }
+            setFormFieldChangedAjaxBehavior( input, eventName );
             setVisibility( fe.getPath().toString(), input, ef, elContext );
             setTitle( fe.getPath().toString(), input, ef, elContext );
             parentGrid.getChildren().add( input );
         }
     }
 
-    private static void addCodeListItems( FacesContext fc, UIInput select, String codeListRef )
-                            throws ConfigurationException {
-        Locale locale;
-        Locale defaultLocale = Locale.getDefault();
-        locale = defaultLocale;
-        UIViewRoot root;
-        // See if this FacesContext has a ViewRoot
-        if ( null != ( root = fc.getViewRoot() ) ) {
-            // If so, ask it for its Locale
-            if ( null == ( locale = root.getLocale() ) ) {
-                // If the ViewRoot has no Locale, fall back to the default.
-                locale = defaultLocale;
-            }
-        }
-
-        Map<String, StringPair> codeList = ConfigurationManager.getConfiguration().getCodeListLabels( codeListRef,
-                                                                                                      locale );
-        for ( String value : codeList.keySet() ) {
-            UISelectItem si = new UISelectItem();
-            si.setId( getUniqueId() );
-            si.setItemValue( value );
-            si.setItemLabel( codeList.get( value ).first );
-            si.setItemDescription( codeList.get( value ).second );
-            select.getChildren().add( si );
-        }
-    }
-
     /**
-     * Appends a the listener {@link FormFieldValueChangedListener#} as ajax beahviour to the component. The eventName
-     * of the behavior is set to the passed eventName or to thedefault event name of the component if null. Rendered
-     * attribute is set to ""@none" and the event will execute "@this" element.
+     * Appends a the listener {@link FormFieldValueChangedListener#} for each eventName as ajax behaviour to the
+     * component. Rendered attribute is set to ""@none" and the event will execute "@this" element.
      * 
      * @param component
      *            the component to add the ajax beahviour
-     * @param eventName
-     *            the name of the event to add; if null the default event name of the component will be added
+     * @param eventNames
+     *            the names of the events to add
      */
     public static void setFormFieldChangedAjaxBehavior( UIInput component, String eventName ) {
         AjaxBehavior ajaxInput = new AjaxBehavior();
@@ -617,4 +603,15 @@ public class FormCreator {
         input.setValueExpression( "styleClass", ve );
     }
 
+    public static UISelectItem getNoEntrySelectItem( FacesContext fc ) {
+        UISelectItem noSelection = new UISelectItem();
+        noSelection.setId( GuiUtils.getUniqueId() );
+
+        String el = "#{mdLabels['form_noEntry']}";
+        ValueExpression ve = fc.getApplication().getExpressionFactory().createValueExpression( fc.getELContext(), el,
+                                                                                               String.class );
+        noSelection.setValueExpression( "itemLabel", ve );
+        noSelection.setItemValue( null );
+        return noSelection;
+    }
 }

@@ -113,6 +113,7 @@ public class MappingExporter {
                             Map<String, Object> v = dgs.get( 0 ).getValues();
                             FormField formField = getFormField( formConfiguration, currentElement.getFormFieldPath() );
                             List<String> values = getValuesAsList( v, configuration, formField, currentElement );
+
                             currentIndex = writeMappingElement( writer, currentElement, currentIndex, nextSteps,
                                                                 mapping, configuration, formConfiguration, values );
                         }
@@ -126,7 +127,7 @@ public class MappingExporter {
     }
 
     private static int writeMappingGroup( XMLStreamWriter writer, MappingGroup group, int currentIndex,
-                                          List<NameStep> ntDextSteps, MappingInformation mapping,
+                                          List<NameStep> nextSteps, MappingInformation mapping,
                                           Configuration configuration, FormConfiguration formConfiguration,
                                           Map<String, List<DataGroup>> dgs )
                             throws XMLStreamException, ConfigurationException {
@@ -145,13 +146,15 @@ public class MappingExporter {
                 }
                 for ( DataGroup d : dataGroups ) {
                     Map<String, Object> values = d.getValues();
-                    writeDataGroup( writer, mapping, group.getMappingElements(), values, configuration,
-                                    formConfiguration );
+                    if ( values != null && values.size() > 0 ) {
+                        writeDataGroup( writer, mapping, group.getMappingElements(), values, configuration,
+                                        formConfiguration );
+                    }
                 }
                 for ( int i = 0; i < groupSteps.size() - currentIndex; i++ ) {
                     writer.writeEndElement();
                 }
-
+                return finishStepsUntilNextCommon( writer, groupSteps, nextSteps, currentIndex );
             }
         }
         return currentIndex;
@@ -161,6 +164,8 @@ public class MappingExporter {
                                         List<MappingElement> mappingElements, Map<String, Object> values,
                                         Configuration configuration, FormConfiguration formConfiguration )
                             throws XMLStreamException, ConfigurationException {
+        System.out.println( mappingElements );
+        System.out.println( values );
         Iterator<MappingElement> it = mappingElements.iterator();
         if ( it.hasNext() ) {
             MappingElement currentElement = it.next();
@@ -192,10 +197,14 @@ public class MappingExporter {
                                             Configuration configuration, FormConfiguration formConfiguration,
                                             List<String> values )
                             throws XMLStreamException, ConfigurationException {
+        System.out.println( values );
+        System.out.println( currentIndex );
         if ( values.size() > 0 ) {
             List<NameStep> currentSteps = currentElement.getSchemaPathAsSteps();
+            System.out.println( currentSteps );
             for ( ; currentIndex < currentSteps.size(); currentIndex++ ) {
                 NameStep nameStep = currentSteps.get( currentIndex );
+                System.out.println( nameStep.getLocalName() );
                 // found list of elements
                 if ( "*".equals( nameStep.getLocalName() ) ) {
                     writeList( writer, currentSteps.subList( currentIndex + 1, currentSteps.size() ), values, mapping );
@@ -323,14 +332,12 @@ public class MappingExporter {
 
                     }
                 } else {
-                    if ( o != null ) {
-                        if ( o instanceof List<?> ) {
-                            for ( Object value : (List<?>) o ) {
-                                values.add( value.toString() );
-                            }
-                        } else {
-                            values.add( o.toString() );
+                    if ( o instanceof List<?> ) {
+                        for ( Object value : (List<?>) o ) {
+                            values.add( value.toString() );
                         }
+                    } else {
+                        values.add( o.toString() );
                     }
                 }
             }

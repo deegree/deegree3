@@ -141,9 +141,9 @@ public class Configuration {
         return null;
     }
 
-    public Map<String, StringPair> getCodeListLabels( String id, Locale locale )
+    public List<StringPair> getCodeListLabels( String id, Locale locale )
                             throws ConfigurationException {
-        Map<String, StringPair> codelist = new HashMap<String, StringPair>();
+        List<StringPair> codelist = new ArrayList<StringPair>();
         parseCodeLists();
         for ( Dictionary dict : codeLists ) {
             for ( Definition def : dict ) {
@@ -151,30 +151,29 @@ public class Configuration {
                     Dictionary codeList = (Dictionary) def;
                     for ( Definition code : codeList ) {
                         CodeType[] names = code.getNames();
-                        String cd = null;
+                        String value = null;
                         String label = null;
-                        String description = code.getDescription() != null ? code.getDescription().getString() : null;
                         String labelDef = null;
                         for ( int i = 0; i < names.length; i++ ) {
                             if ( ( CODESPACE_ROOT + ":code" ).equals( names[i].getCodeSpace() ) ) {
-                                cd = names[i].getCode();
+                                value = names[i].getCode();
                             } else if ( names[i].getCodeSpace() == null ) {
                                 labelDef = names[i].getCode();
                             } else if ( ( CODESPACE_ROOT + ":" + locale.getLanguage() ).equals( names[i].getCodeSpace() ) ) {
                                 label = names[i].getCode();
                             }
                         }
-                        if ( cd == null ) {
+                        if ( value == null ) {
                             break;
                         }
                         if ( label == null ) {
                             if ( labelDef != null ) {
                                 label = labelDef;
                             } else {
-                                label = cd;
+                                label = value;
                             }
                         }
-                        codelist.put( cd, new StringPair( label, description ) );
+                        codelist.add( new StringPair( value, label ) );
                     }
                 }
 

@@ -162,7 +162,7 @@ public abstract class FormField implements FormElement {
 
     @Override
     public String toString() {
-        return getPath().toString() + ": " + getValue();
+        return getPath().toString() + ": " + getValue() + isVisibility();
     }
 
     public List<VALIDATION_TYPE> validate() {

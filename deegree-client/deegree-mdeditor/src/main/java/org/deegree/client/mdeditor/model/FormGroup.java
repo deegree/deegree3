@@ -54,7 +54,7 @@ public class FormGroup implements FormElement {
 
     private String title;
 
-//    private boolean referenced = false;
+    // private boolean referenced = false;
 
     private List<FormElement> formElements = new ArrayList<FormElement>();
 
@@ -126,5 +126,10 @@ public class FormGroup implements FormElement {
         for ( FormElement fe : formElements ) {
             fe.reset();
         }
+    }
+
+    @Override
+    public String toString() {
+        return id + " (" + getFormElements() + ")";
     }
 }

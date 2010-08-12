@@ -35,23 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.elements;
 
-import static org.deegree.client.mdeditor.gui.GuiUtils.*;
-
-import java.io.Serializable;
-
-import java.util.ArrayList;
-import java.util.List;
+import static org.deegree.client.mdeditor.gui.GuiUtils.getUniqueId;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.NoneScoped;
 import javax.faces.component.UIComponent;
-import javax.faces.component.behavior.AjaxBehavior;
-import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.context.FacesContext;
+import javax.faces.event.PreRenderComponentEvent;
 
 import org.deegree.client.mdeditor.gui.ReferencedElementBean;
 import org.deegree.client.mdeditor.gui.creation.FormCreator;
@@ -65,14 +59,11 @@ import org.deegree.client.mdeditor.model.ReferencedElement;
  * 
  * @version $Revision: $, $Date: $
  */
-
 @ManagedBean
 @NoneScoped
-public class GenerateIdBean implements ReferencedElementBean, Serializable {
+public class SelectParentBean implements ReferencedElementBean {
 
-    private static final long serialVersionUID = 7045997278465081712L;
-
-    private UIComponent component;
+    private HtmlPanelGroup component;
 
     @Override
     public UIComponent getComponent( ReferencedElement element ) {
@@ -81,30 +72,16 @@ public class GenerateIdBean implements ReferencedElementBean, Serializable {
             ExpressionFactory ef = fc.getApplication().getExpressionFactory();
             ELContext elContext = fc.getELContext();
             component = new HtmlPanelGroup();
-            component.setId( getUniqueId() );
-            HtmlInputText text = new HtmlInputText();
-            String textId = getUniqueId();
-            text.setId( textId );
-            text.setDisabled( true );
+            HtmlSelectOneMenu menu = new HtmlSelectOneMenu();
+            menu.setId( getUniqueId() );
 
-            FormCreator.setValue( element.getPath().toString(), text, ef, elContext );
-            FormCreator.setStyleClass( element.getPath().toString(), text, ef, elContext );
-            FormCreator.setTitle( element.getPath().toString(), text, ef, elContext );
-
-            HtmlCommandButton button = new HtmlCommandButton();
-            button.setId( getUniqueId() );
-            button.setValue( getResourceText( fc, "mdLabels", "generateIdBean_btLabel" ) );
-            button.getAttributes().put( FIELDPATH_ATT_KEY, element.getPath() );
-
-            AjaxBehavior ajaxBt = new AjaxBehavior();
-            List<String> render = new ArrayList<String>();
-            render.add( "emptyForm:" + textId );
-            ajaxBt.setRender( render );
-            ajaxBt.addAjaxBehaviorListener( new GenerateIdListener() );
-            button.addClientBehavior( button.getDefaultEventName(), ajaxBt );
-
-            component.getChildren().add( text );
-            component.getChildren().add( button );
+            FormCreator.setValue( element.getPath().toString(), menu, ef, elContext );
+            FormCreator.setVisibility( element.getPath().toString(), menu, ef, elContext );
+            FormCreator.setStyleClass( element.getPath().toString(), menu, ef, elContext );
+            FormCreator.setTitle( element.getPath().toString(), menu, ef, elContext );
+            FormCreator.setFormFieldChangedAjaxBehavior( menu, null );
+            menu.subscribeToEvent( PreRenderComponentEvent.class, new SelectParentListener() );
+            component.getChildren().add( menu );
         }
         return component;
     }

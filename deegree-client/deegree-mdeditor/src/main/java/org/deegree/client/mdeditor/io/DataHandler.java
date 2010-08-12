@@ -38,13 +38,12 @@ package org.deegree.client.mdeditor.io;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.component.UISelectItem;
-
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.io.xml.XMLDataHandler;
 import org.deegree.client.mdeditor.model.Dataset;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.DataGroup;
+import org.deegree.commons.utils.StringPair;
 
 /**
  * handles all jobs concerning reading and writing form groups
@@ -64,9 +63,7 @@ public abstract class DataHandler {
     }
 
     /**
-     * creates select items out of the data groups of the form group with the given id
-     * 
-     * TODO: is this the best place to create gui elements???
+     * creates a list containing value and label out of the data groups of the form group with the given id
      * 
      * @param grpId
      *            the id of the form group
@@ -74,7 +71,7 @@ public abstract class DataHandler {
      *            the pattern describing the label
      * @return a list of all available data groups with the given id
      */
-    public abstract List<UISelectItem> getSelectItems( String grpId, String referenceLabel )
+    public abstract List<StringPair> getItems( String grpId, String referenceLabel )
                             throws ConfigurationException;
 
     /**

@@ -35,22 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.listener;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import javax.faces.component.UISelectItem;
-import javax.faces.component.html.HtmlSelectOneMenu;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ComponentSystemEvent;
-import javax.faces.event.ComponentSystemEventListener;
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 
 import org.deegree.client.mdeditor.configuration.ConfigurationException;
 import org.deegree.client.mdeditor.configuration.ConfigurationManager;
 import org.deegree.client.mdeditor.gui.GuiUtils;
-import org.deegree.client.mdeditor.io.DataHandler;
-import org.deegree.client.mdeditor.model.FormConfiguration;
-import org.deegree.client.mdeditor.model.FormField;
-import org.deegree.client.mdeditor.model.FormFieldPath;
-import org.deegree.client.mdeditor.model.SelectFormField;
+import org.deegree.commons.utils.StringPair;
 
 /**
  * TODO add class documentation here
@@ -60,41 +56,28 @@ import org.deegree.client.mdeditor.model.SelectFormField;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ListPreRenderedListener implements ComponentSystemEventListener {
+public class CodeListCreator extends SelectItemsCreator {
 
     @Override
-    public void processEvent( ComponentSystemEvent arg0 )
-                            throws AbortProcessingException {
-
-        HtmlSelectOneMenu select = (HtmlSelectOneMenu) arg0.getComponent();
-        String grpReference = (String) select.getAttributes().get( GuiUtils.GROUPREF_ATT_KEY );
-        String confId = (String) select.getAttributes().get( GuiUtils.CONF_ATT_KEY );
-        FormFieldPath path = (FormFieldPath) select.getAttributes().get( GuiUtils.FIELDPATH_ATT_KEY );
-
+    protected List<StringPair> getItems( Map<String, Object> attributes ) {
+        String codeListRef = (String) attributes.get( GuiUtils.CODE_ATT_KEY );
         try {
-            String referenceLabel = null;
-            FormConfiguration configuration = ConfigurationManager.getConfiguration().getConfiguration( confId );
-            FormField formField = configuration.getFormField( path );
-            if ( formField instanceof SelectFormField ) {
-                referenceLabel = ( (SelectFormField) formField ).getReferenceText();
+            Locale locale;
+            Locale defaultLocale = Locale.getDefault();
+            locale = defaultLocale;
+            UIViewRoot root;
+            if ( null != ( root = FacesContext.getCurrentInstance().getViewRoot() ) ) {
+                if ( null == ( locale = root.getLocale() ) ) {
+                    locale = defaultLocale;
+                }
             }
-            List<UISelectItem> selectItems = DataHandler.getInstance().getSelectItems( grpReference, referenceLabel );
 
-            select.getChildren().clear();
-
-            UISelectItem noSelection = new UISelectItem();
-            noSelection.setId( GuiUtils.getUniqueId() );
-            noSelection.setItemLabel( "Kein Eintrag" );
-            noSelection.setItemValue( null );
-
-            select.getChildren().add( noSelection );
-            select.getChildren().addAll( selectItems );
-
+            return ConfigurationManager.getConfiguration().getCodeListLabels( codeListRef, locale );
         } catch ( ConfigurationException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
+        return Collections.emptyList();
     }
 
 }

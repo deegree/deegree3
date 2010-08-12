@@ -46,8 +46,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.CustomScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.component.UIComponent;
 import javax.faces.component.UIForm;
+import javax.faces.component.UIInput;
+import javax.faces.component.html.HtmlForm;
 import javax.faces.component.html.HtmlPanelGrid;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
 
@@ -127,6 +131,7 @@ public class EditorBean {
 
     public void load( ComponentSystemEvent event )
                             throws AbortProcessingException, ConfigurationException {
+        System.out.println( "------------------ LOAD ---------------------" );
         form.getChildren().clear();
         HtmlPanelGrid grid = GuiStore.getForm( confId, grpId );
         form.getChildren().add( grid );
@@ -134,6 +139,38 @@ public class EditorBean {
         Object id = grid.getAttributes().get( GuiUtils.GROUPID_ATT_KEY );
         if ( id != null ) {
             setGrpId( (String) id );
+        }
+    }
+
+    public void submit( ComponentSystemEvent event )
+                            throws AbortProcessingException {
+        System.out.println( "------------------ SUMBMIT ---------------------" );
+        HtmlForm f = (HtmlForm) event.getSource();
+
+        String clientId = f.getClientId();
+
+        // Was our form the one that was submitted? If so, we need to set
+        // the indicator accordingly..
+        Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        for ( String key : requestParameterMap.keySet() ) {
+            System.out.println( key + " : " + requestParameterMap.get( key ) );
+        }
+        System.out.println( requestParameterMap.containsKey( clientId ) );
+        // f.decode( FacesContext.getCurrentInstance() );
+        System.out.println( !f.isSubmitted() );
+        f.processDecodes( FacesContext.getCurrentInstance() );
+        // oldForm.setSubmitted( false );
+        System.out.println( "pd" );
+    }
+
+    public void submitFF( UIComponent component ) {
+        if ( component instanceof UIInput && component.getAttributes().containsKey( GuiUtils.FIELDPATH_ATT_KEY ) ) {
+            System.out.println( ( (UIInput) component ).getSubmittedValue() );
+            System.out.println( ( (UIInput) component ).getValue() );
+        } else if ( component instanceof HtmlPanelGrid ) {
+            for ( UIComponent comp : component.getChildren() ) {
+                submitFF( comp );
+            }
         }
     }
 
@@ -186,7 +223,9 @@ public class EditorBean {
                             throws ConfigurationException {
         FormConfiguration manager = ConfigurationManager.getConfiguration().getConfiguration( confId );
         formGroups = manager.getFormGroups();
+        System.out.println(formGroups);
         formFields = manager.getFormFields();
+        System.out.println(formFields);
     }
 
     /**
@@ -433,7 +472,9 @@ public class EditorBean {
             for ( FormElement fe : fg.getFormElements() ) {
                 if ( fe instanceof FormField ) {
                     FormField ff = (FormField) fe;
-                    values.put( ff.getPath().toString(), ff.getValue() );
+                    if(ff.getValue() != null){
+                        values.put( ff.getPath().toString(), ff.getValue() );
+                    }
                 } else if ( fe instanceof FormGroup ) {
                     values.putAll( getValuesAsMap( (FormGroup) fe ) );
                 }

@@ -35,11 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.configuration;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.deegree.client.mdeditor.util.StringPairCompararator;
 import org.deegree.commons.utils.StringPair;
 import org.junit.Test;
 
@@ -57,45 +59,51 @@ public class CodeListConfigurationParserTest extends TestCase {
     public void testParseCodeListLabels()
                             throws ConfigurationException {
         Locale locale = new Locale( "de" );
-        Map<String, StringPair> codes = ConfigurationManager.getConfiguration().getCodeListLabels( "hierarchylevel",
-                                                                                                   locale );
+        List<StringPair> codes = ConfigurationManager.getConfiguration().getCodeListLabels( "hierarchylevel", locale );
+        Collections.sort( codes, new StringPairCompararator( false ) );
 
         assertNotNull( codes );
         assertEquals( 4, codes.size() );
 
-        assertNotNull( codes.get( "dataset" ) );
-        assertEquals( "Datensatz", codes.get( "dataset" ).first );
-        assertEquals( "Beschreibung Datensatz", codes.get( "dataset" ).second );
+        assertNotNull( codes.get( 0 ).first );
+        assertEquals( "application", codes.get( 0 ).first );
+        assertEquals( "Application", codes.get( 0 ).second );
 
-        assertNotNull( codes.get( "application" ) );
-        assertEquals( "Application", codes.get( "application" ).first );
-        assertEquals( "Beschreibung Application", codes.get( "application" ).second );
+        assertNotNull( codes.get( 1 ).first );
+        assertEquals( "dataset", codes.get( 1 ).first );
+        assertEquals( "Datensatz", codes.get( 1 ).second );
 
-        assertNotNull( codes.get( "test" ) );
-        assertEquals( "test", codes.get( "test" ).first );
-        assertNull( codes.get( "test" ).second );
+        assertNotNull( codes.get( 2 ).first );
+        assertEquals( "dataseries", codes.get( 2 ).first );
+        assertEquals( "Datenserie", codes.get( 2 ).second );
+
+        assertNotNull( codes.get( 3 ).first );
+        assertEquals( "test", codes.get( 3 ).first );
+        assertEquals( "test", codes.get( 3 ).second );
 
         locale = new Locale( "en" );
         codes = ConfigurationManager.getConfiguration().getCodeListLabels( "hierarchylevel", locale );
-
+        Collections.sort( codes, new StringPairCompararator( false ) );
+        System.out.println( codes );
         assertNotNull( codes );
         assertEquals( 4, codes.size() );
 
-        assertNotNull( codes.get( "dataset" ) );
-        assertEquals( "Dataset", codes.get( "dataset" ).first );
-        assertEquals( "Beschreibung Datensatz", codes.get( "dataset" ).second );
+        assertNotNull( codes.get( 0 ).first );
+        assertEquals( "application", codes.get( 0 ).first );
+        assertEquals( "Application", codes.get( 0 ).second );
 
-        assertNotNull( codes.get( "dataseries" ) );
-        assertEquals( "Dataseries", codes.get( "dataseries" ).first );
-        assertEquals( "Beschreibung Datenserie", codes.get( "dataseries" ).second );
+        assertNotNull( codes.get( 1 ).first );
+        assertEquals( "dataseries", codes.get( 1 ).first );
+        assertEquals( "Dataseries", codes.get( 1 ).second );
 
-        assertNotNull( codes.get( "application" ) );
-        assertEquals( "Application", codes.get( "application" ).first );
-        assertEquals( "Beschreibung Application", codes.get( "application" ).second );
+        assertNotNull( codes.get( 2 ).first );
+        assertEquals( "dataset", codes.get( 2 ).first );
+        assertEquals( "Dataset", codes.get( 2 ).second );
 
-        assertNotNull( codes.get( "test" ) );
-        assertEquals( "test", codes.get( "test" ).first );
-        assertNull( codes.get( "test" ).second );
+        assertNotNull( codes.get( 3 ).first );
+        assertEquals( "test", codes.get( 3 ).first );
+        assertEquals( "test", codes.get( 3 ).second );
+
     }
 
     @Test
