@@ -132,7 +132,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private final String jdbcConnId;
 
-    private final CRS storageSRS;
+    private final CRS storageCRS;
 
     private PostGISFeatureStoreTransaction activeTransaction;
 
@@ -158,7 +158,7 @@ public class PostGISFeatureStore implements FeatureStore {
      */
     PostGISFeatureStore( MappedApplicationSchema schema, String jdbcConnId ) {
         this.schema = schema;
-        this.storageSRS = schema.getStorageSRS();
+        this.storageCRS = schema.getStorageCRS();
         this.jdbcConnId = jdbcConnId;
         defaultEnvelope = new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRS.EPSG_4326 );
     }
@@ -260,7 +260,7 @@ public class PostGISFeatureStore implements FeatureStore {
         FeatureType ft = schema.getFeatureType( ftName );
         if ( ft != null ) {
             // TODO bbox caching
-            BBoxTableMapping bboxMapping = schema.getBboxMapping();
+            BBoxTableMapping bboxMapping = schema.getBBoxMapping();
             if ( bboxMapping != null ) {
                 env = getEnvelope( ft.getName(), bboxMapping );
             } else {
@@ -307,9 +307,11 @@ public class PostGISFeatureStore implements FeatureStore {
             rs = stmt.executeQuery( sql.toString() );
             rs.next();
             PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
-            org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB() );
-            org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT() );
-            env = new DefaultEnvelope( null, storageSRS, null, min, max );
+            if ( pgBox != null ) {
+                org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB() );
+                org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT() );
+                env = new DefaultEnvelope( null, storageCRS, null, min, max );
+            }
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
@@ -337,14 +339,17 @@ public class PostGISFeatureStore implements FeatureStore {
             sql.append( bboxMapping.getTable() );
             sql.append( " WHERE " );
             sql.append( bboxMapping.getFTNameColumn() );
-            sql.append( "=" );
+            sql.append( "='" );
             sql.append( ftName.toString() );
+            sql.append( "'" );
             rs = stmt.executeQuery( sql.toString() );
             if ( rs.next() ) {
                 PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
-                org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB() );
-                org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT() );
-                env = new DefaultEnvelope( null, storageSRS, null, min, max );
+                if ( pgBox != null ) {
+                    org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB() );
+                    org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT() );
+                    env = new DefaultEnvelope( null, storageCRS, null, min, max );
+                }
             }
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
@@ -362,7 +367,7 @@ public class PostGISFeatureStore implements FeatureStore {
         if ( p.getDimension() > 2 ) {
             coords[2] = p.getZ();
         }
-        return new DefaultPoint( null, storageSRS, null, coords );
+        return new DefaultPoint( null, storageCRS, null, coords );
     }
 
     @Override
@@ -486,7 +491,7 @@ public class PostGISFeatureStore implements FeatureStore {
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
-                geomOrFeature = new FeatureCodec( GML_32, NONE ).decode( rs.getBinaryStream( 1 ), schema, storageSRS,
+                geomOrFeature = new FeatureCodec( GML_32, NONE ).decode( rs.getBinaryStream( 1 ), schema, storageCRS,
                                                                          new FeatureStoreGMLIdResolver( this ) );
                 cache.add( geomOrFeature );
             }
@@ -507,7 +512,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
     @Override
     public CRS getStorageSRS() {
-        return storageSRS;
+        return storageCRS;
     }
 
     @Override
@@ -665,7 +670,7 @@ public class PostGISFeatureStore implements FeatureStore {
                             throws FeatureStoreException {
 
         LOG.debug( "Performing query by operator filter" );
-
+        
         PostGISWhereBuilder wb = null;
         FeatureResultSet result = null;
         Connection conn = null;
@@ -827,7 +832,7 @@ public class PostGISFeatureStore implements FeatureStore {
             if ( blobMapping != null ) {
                 stmt.setShort( i++, schema.getFtId( ftName ) );
                 if ( query.getPrefilterBBox() != null ) {
-                    Envelope env = (Envelope) getCompatibleGeometry( query.getPrefilterBBox(), storageSRS );
+                    Envelope env = (Envelope) getCompatibleGeometry( query.getPrefilterBBox(), storageCRS );
                     stmt.setObject( i++, toPGPolygon( env, -1 ) );
                 }
             }
@@ -904,7 +909,7 @@ public class PostGISFeatureStore implements FeatureStore {
             stmt = conn.prepareStatement( sql.toString() );
             int firstFtArg = 1;
             if ( looseBBox != null ) {
-                stmt.setObject( 1, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+                stmt.setObject( 1, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageCRS ), -1 ) );
                 firstFtArg++;
             }
             StringBuffer orderString = new StringBuffer();
@@ -1071,7 +1076,7 @@ public class PostGISFeatureStore implements FeatureStore {
      */
     Geometry getCompatibleGeometry( Geometry literal )
                             throws FilterEvaluationException {
-        return getCompatibleGeometry( literal, storageSRS );
+        return getCompatibleGeometry( literal, storageCRS );
     }
 
     /**

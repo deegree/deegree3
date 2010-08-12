@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.query;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_RESOLUTION;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
+import static org.deegree.filter.Filter.Type.OPERATOR_FILTER;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,8 +49,11 @@ import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
+import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
@@ -182,7 +186,8 @@ public class Query {
      * <ul>
      * <li>If a loose bbox is available ({@link QueryHint#HINT_LOOSE_BBOX}), it is returned.</li>
      * <li>If no loose bbox is available, but the {@link Query} contains an {@link OperatorFilter}, it is attempted to
-     * extract an {@link Envelope} from it.</li>
+     * extract an {@link Envelope} from it. Note that the envelope is only used, when the corresponding property name
+     * targets a property of the root feature (and not a property of a subfeature).</li>
      * <li>If neither a loose bbox is available, nor a bbox can be extracted from the filter, <code>null</code> is
      * returned.</li>
      * </ul>
@@ -191,8 +196,41 @@ public class Query {
      * @return an {@link Envelope} suitable for pre-filtering feature candidates, can be <code>null</code>
      */
     public Envelope getPrefilterBBox() {
-        // TODO implement full strategy
-        return (Envelope) getHint( HINT_LOOSE_BBOX );
+        Envelope env = (Envelope) getHint( HINT_LOOSE_BBOX );
+        if ( env == null && filter != null && filter.getType() == OPERATOR_FILTER ) {
+            OperatorFilter of = (OperatorFilter) filter;
+            Operator oper = of.getOperator();
+            env = extractBBox( oper );
+        }
+        return env;
+    }
+
+    // TODO implement full strategy
+    private Envelope extractBBox( Operator oper ) {
+        switch ( oper.getType() ) {
+        case COMPARISON: {
+            return null;
+        }
+        case LOGICAL: {
+            return null;
+        }
+        case SPATIAL: {
+            return extractBBox( (SpatialOperator) oper );
+        }
+        }
+        return null;
+    }
+
+    private Envelope extractBBox( SpatialOperator oper ) {
+        switch ( oper.getSubType() ) {
+        case BBOX: {
+            return ( (BBOX) oper ).getBoundingBox();
+        }
+        default: {
+            // TODO implement full strategy
+            return null;
+        }
+        }
     }
 
     /**

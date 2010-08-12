@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -45,13 +46,20 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
+import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.mapping.MappedApplicationSchema;
+import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
+import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.GMLSchemaFileURL;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.NamespaceHint;
+import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,8 +89,40 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxb" );
             Unmarshaller u = jc.createUnmarshaller();
             PostGISFeatureStoreConfig config = (PostGISFeatureStoreConfig) u.unmarshal( configURL );
-            CRS storageSRS = new CRS( config.getStorageSRS() );
-            MappedApplicationSchema schema = PostGISApplicationSchemaBuilder.build( config.getFeatureType(),
+            CRS storageSRS = new CRS( config.getStorageCRS() );
+
+            ApplicationSchema appSchema = null;
+            if ( !config.getGMLSchemaFileURL().isEmpty() ) {
+                XMLAdapter resolver = new XMLAdapter();
+                resolver.setSystemId( configURL.toString() );
+                try {
+                    String[] schemaURLs = new String[config.getGMLSchemaFileURL().size()];
+                    int i = 0;
+                    GMLVersionType gmlVersionType = null;
+                    for ( GMLSchemaFileURL jaxbSchemaURL : config.getGMLSchemaFileURL() ) {
+                        schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
+                        // TODO what about different versions at the same time?
+                        gmlVersionType = jaxbSchemaURL.getGmlVersion();
+                    }
+
+                    ApplicationSchemaXSDDecoder decoder = null;
+                    if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
+                        File file = new File( new URL( schemaURLs[0] ).toURI() );
+                        decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                                   getHintMap( config.getNamespaceHint() ), file );
+                    } else {
+                        decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                                   getHintMap( config.getNamespaceHint() ), schemaURLs );
+                    }
+                    appSchema = decoder.extractFeatureTypeSchema();
+                } catch ( Exception e ) {
+                    String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+                    LOG.error( msg, e );
+                    throw new FeatureStoreException( msg, e );
+                }
+            }
+
+            MappedApplicationSchema schema = PostGISApplicationSchemaBuilder.build( appSchema, config.getFeatureType(),
                                                                                     config.getJDBCConnId(),
                                                                                     config.getDBSchemaQualifier(),
                                                                                     storageSRS );
