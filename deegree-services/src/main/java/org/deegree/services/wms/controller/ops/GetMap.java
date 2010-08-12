@@ -44,7 +44,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.commons.utils.CollectionUtils.unzip;
+import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.ELSEFILTER;
@@ -502,7 +502,7 @@ public class GetMap {
                 if ( l == null ) {
                     throw new OWSException( get( "WMS.SLD_LAYER_INVALID", name ), "InvalidParameterValue", "layers" );
                 }
-                Pair<ArrayList<Layer>, ArrayList<Style>> p = unzip( l );
+                Pair<ArrayList<Layer>, ArrayList<Style>> p = unzipPair( l );
                 this.layers.addAll( p.first );
                 styles.addAll( p.second );
             }
