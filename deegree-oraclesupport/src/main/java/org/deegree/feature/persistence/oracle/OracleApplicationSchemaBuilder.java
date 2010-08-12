@@ -105,7 +105,7 @@ class OracleApplicationSchemaBuilder {
         FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
                                                                                     new FeatureTypeMapping[builder.ftNameToMapping.size()] );
         BlobMapping blobMapping = null;
-        return new MappedApplicationSchema( fts, null, ftMappings, storageSRS, blobMapping );
+        return new MappedApplicationSchema( fts, null, null, ftMappings, storageSRS, null, blobMapping );
     }
 
     private OracleApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema )

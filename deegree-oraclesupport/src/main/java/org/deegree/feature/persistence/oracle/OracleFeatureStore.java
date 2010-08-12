@@ -121,7 +121,7 @@ public class OracleFeatureStore implements FeatureStore {
 
     private final GeometryTransformer geomTransformer;
 
-    private final CRS storageSRS;
+    private final CRS storageCRS;
 
     private final String connId;
 
@@ -146,11 +146,11 @@ public class OracleFeatureStore implements FeatureStore {
 
         this.schema = schema;
         this.connId = jdbcConnId;
-        this.storageSRS = schema.getStorageSRS();
+        this.storageCRS = schema.getStorageCRS();
 
         // TODO make Oracle SRID configurable
         try {
-            geomTransformer = new GeometryTransformer( storageSRS.getWrappedCRS() );
+            geomTransformer = new GeometryTransformer( storageCRS.getWrappedCRS() );
         } catch ( Exception e ) {
             throw new FeatureStoreException( e.getMessage(), e );
         }
@@ -225,11 +225,11 @@ public class OracleFeatureStore implements FeatureStore {
                         if ( mbr.length == 4 ) {
                             double[] min = new double[] { mbr[0], mbr[1] };
                             double[] max = new double[] { mbr[2], mbr[3] };
-                            bbox = geomFac.createEnvelope( min, max, storageSRS );
+                            bbox = geomFac.createEnvelope( min, max, storageCRS );
                         } else if ( mbr.length == 6 ) {
                             double[] min = new double[] { mbr[0], mbr[1], mbr[2] };
                             double[] max = new double[] { mbr[3], mbr[4], mbr[5] };
-                            bbox = geomFac.createEnvelope( min, max, storageSRS );
+                            bbox = geomFac.createEnvelope( min, max, storageCRS );
                         } else {
                             String msg = "Error while determining bbox for feature type '" + ftName
                                          + "': got an Oracle MBR with length " + mbr.length + ".";
@@ -267,7 +267,7 @@ public class OracleFeatureStore implements FeatureStore {
 
     @Override
     public CRS getStorageSRS() {
-        return storageSRS;
+        return storageCRS;
     }
 
     @Override
@@ -505,7 +505,7 @@ public class OracleFeatureStore implements FeatureStore {
     }
 
     JGeometryAdapter getJGeometryAdapter( QName ftName, QName ptName ) {
-        return new JGeometryAdapter( storageSRS, getSrid( ftName, ptName ) );
+        return new JGeometryAdapter( storageCRS, getSrid( ftName, ptName ) );
     }
 
     GeometryTransformer getGeometryTransformer() {
