@@ -128,16 +128,6 @@ public class CollectionUtils {
      * @return two separate lists
      */
     public static <T, U> Pair<ArrayList<T>, ArrayList<U>> unzipPair( Collection<Pair<T, U>> col ) {
-        return unzip( col );
-    }
-
-    /**
-     * @param <T>
-     * @param <U>
-     * @param col
-     * @return two separate lists
-     */
-    public static <T, U> Pair<ArrayList<T>, ArrayList<U>> unzip( Collection<Pair<T, U>> col ) {
         ArrayList<T> list1 = new ArrayList<T>( col.size() );
         ArrayList<U> list2 = new ArrayList<U>( col.size() );
         for ( Pair<T, U> pair : col ) {
