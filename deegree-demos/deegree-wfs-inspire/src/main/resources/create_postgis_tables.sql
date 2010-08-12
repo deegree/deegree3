@@ -2,6 +2,7 @@ CREATE TABLE feature_types (
     id smallint PRIMARY KEY,
     qname text NOT NULL
 );
+
 COMMENT ON TABLE feature_types IS 'Ids and bboxes of concrete feature types';
 
 SELECT ADDGEOMETRYCOLUMN('public', 'feature_types','bbox','4326','GEOMETRY',2);
