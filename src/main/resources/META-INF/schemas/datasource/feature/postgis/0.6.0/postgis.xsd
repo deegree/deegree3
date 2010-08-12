@@ -27,7 +27,7 @@
             <attribute name="namespaceURI" type="string" use="required" />
           </complexType>
         </element>
-        <element name="StorageSRS" type="string" />
+        <element name="StorageCRS" type="string" />
         <element name="JDBCConnId" type="string" />
         <element name="DBSchemaQualifier" type="string" minOccurs="0" />
         <element name="GMLSchemaFileURL" minOccurs="0" maxOccurs="unbounded">
