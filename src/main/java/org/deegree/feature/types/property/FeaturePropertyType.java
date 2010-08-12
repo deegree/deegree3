@@ -98,10 +98,11 @@ public class FeaturePropertyType extends AbstractPropertyType {
                       + "' to null -- repairing definition by clearing value feature type name as well." );
             valueFtName = null;
         }
-        if ( this.valueFt != null ) {
-            String msg = "Internal error. Reference to feature type '" + valueFtName + "' has already been resolved.";
-            throw new IllegalArgumentException( msg );
-        }
+        // TODO (reenable?)
+//        if ( this.valueFt != null ) {
+//            String msg = "Internal error. Reference to feature type '" + valueFtName + "' has already been resolved.";
+//            throw new IllegalArgumentException( msg );
+//        }
         this.valueFt = valueFt;
     }
 

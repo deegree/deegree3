@@ -60,6 +60,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.FeatureCodec;
+import org.deegree.feature.persistence.mapping.BBoxTableMapping;
 import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
@@ -72,6 +73,7 @@ import org.deegree.feature.persistence.postgis.jaxb.FeaturePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxb.SimplePropertyDecl;
+import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -91,7 +93,7 @@ import org.slf4j.LoggerFactory;
  */
 class PostGISApplicationSchemaBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MappedApplicationSchema.class );
+    private static final Logger LOG = LoggerFactory.getLogger( PostGISApplicationSchemaBuilder.class );
 
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
@@ -99,17 +101,46 @@ class PostGISApplicationSchemaBuilder {
 
     private DatabaseMetaData md;
 
-    static MappedApplicationSchema build( List<FeatureTypeDecl> ftDecls, String jdbcConnId, String dbSchema,
-                                          CRS storageSRS )
+    /**
+     * Creates a new {@link MappedApplicationSchema}.
+     * 
+     * @param appSchema
+     *            application schema, can be <code>null</code> (for relational only mappings)
+     * @param ftDecls
+     *            feature type declarations, can be <code>null</code> (for BLOB-only mappings)
+     * @param jdbcConnId
+     *            identifier of the JDBC connection, must not be <code>null</code>
+     * @param dbSchema
+     *            PostgreSQL database schema, can be <code>null</code>
+     * @param storageCRS
+     *            CRS used for storing geometries, must not be <code>null</code>
+     * @return mapped application schema, never <code>null</code>
+     * @throws SQLException
+     */
+    static MappedApplicationSchema build( ApplicationSchema appSchema, List<FeatureTypeDecl> ftDecls,
+                                          String jdbcConnId, String dbSchema, CRS storageCRS )
                             throws SQLException {
-        PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema );
-        FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-        FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                    new FeatureTypeMapping[builder.ftNameToMapping.size()] );
 
-        // TODO make this configurable
-        BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new FeatureCodec( GML_32, NONE ) );
-        return new MappedApplicationSchema( fts, null, ftMappings, storageSRS, blobMapping );
+        MappedApplicationSchema mappedSchema = null;
+
+        // TODO hybrid mapping
+
+        if ( appSchema != null ) {
+            BBoxTableMapping bboxMapping = new BBoxTableMapping();
+            BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new FeatureCodec( GML_32, NONE ) );
+            mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
+                                                        appSchema.getXSModel(), null, storageCRS, bboxMapping,
+                                                        blobMapping );
+        } else {
+            PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
+                                                                                           dbSchema );
+            FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
+                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+            mappedSchema = new MappedApplicationSchema( fts, null, null, ftMappings, storageCRS, null, null );
+        }
+
+        return mappedSchema;
     }
 
     private PostGISApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema )

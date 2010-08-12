@@ -39,7 +39,13 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,6 +143,8 @@ public class ApplicationSchemaXSDDecoder {
     private final String gmlNs;
 
     /**
+     * Creates a new {@link ApplicationSchemaXSDDecoder} from the given schema URL(s).
+     * 
      * @param gmlVersion
      * @param namespaceHints
      *            optional hints (key: prefix, value: namespaces) for generating 'nice' qualified feature type and
@@ -179,6 +187,51 @@ public class ApplicationSchemaXSDDecoder {
             QName ftName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
             geometryNameToGeometryElement.put( ftName, elementDecl );
         }
+    }
+
+    /**
+     * Creates a new {@link ApplicationSchemaXSDDecoder} from the given schema file (which may be a directory).
+     * 
+     * @param gmlVersion
+     * @param namespaceHints
+     * @param schemaFile
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws MalformedURLException
+     * @throws UnsupportedEncodingException 
+     */
+    public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, File schemaFile )
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, MalformedURLException, UnsupportedEncodingException {
+        this( gmlVersion, namespaceHints, getSchemaURLs( schemaFile ) );
+    }
+
+    private static String[] getSchemaURLs( File schemaFile )
+                            throws MalformedURLException, UnsupportedEncodingException {
+
+        List<String> schemaUrls = new ArrayList<String>();
+
+        if ( !schemaFile.exists() ) {
+            throw new IllegalArgumentException( "File/directory '" + schemaFile + "' does not exist." );
+        }
+        if ( schemaFile.isDirectory() ) {
+            String[] inputFiles = schemaFile.list( new FilenameFilter() {
+                @Override
+                public boolean accept( File dir, String name ) {
+                    return name.toLowerCase().endsWith( ".xsd" );
+                }
+            } );
+            for ( String file : inputFiles ) {
+                schemaUrls.add( new URL( schemaFile.toURI().toURL(), URLEncoder.encode( file, "UTF-8" ) ).toExternalForm() );
+            }
+        } else if ( schemaFile.isFile() ) {
+            schemaUrls.add( schemaFile.toURI().toURL().toExternalForm() );
+        } else {
+            throw new IllegalArgumentException( "'" + schemaFile + "' is neither a file nor a directory." );
+        }
+        return schemaUrls.toArray( new String[schemaUrls.size()] );
     }
 
     public ApplicationSchema extractFeatureTypeSchema() {

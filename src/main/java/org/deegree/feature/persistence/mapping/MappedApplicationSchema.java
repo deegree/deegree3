@@ -35,9 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
-import static org.deegree.feature.persistence.FeatureCodec.Compression.NONE;
-import static org.deegree.gml.GMLVersion.GML_32;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -46,14 +43,14 @@ import java.util.TreeMap;
 import javax.xml.namespace.QName;
 
 import org.deegree.cs.CRS;
-import org.deegree.feature.persistence.FeatureCodec;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An {@link ApplicationSchema} augmented with relational / BLOB mapping information.
+ * An {@link ApplicationSchema} augmented with relational and or BLOB mapping information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -76,7 +73,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
 
     private final Map<QName, FeatureTypeMapping> ftNameToFtMapping = new HashMap<QName, FeatureTypeMapping>();
 
-    private final CRS storageSRS;
+    private final CRS storageCRS;
 
     private final IdAnalyzer idAnalyzer;
 
@@ -90,24 +87,31 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * @param ftToSuperFt
      *            key: feature type A, value: feature type B (A extends B), this must not include any GML base feature
      *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), can be <code>null</code>
+     * @param xsModel
+     *            the underlying XML schema, may be <code>null</code>
      * @param ftMappings
      *            relational mapping information for the feature types, can be <code>null</code> (for BLOB-only
      *            mappings)
      * @param storageSRS
      *            CRS used for storing geometries, must not be <code>null</code>
+     * @param bboxMapping
+     *            BBOX mapping parameters, may be <code>null</code> (for RELATIONAL-only mappings)
      * @param blobMapping
      *            BLOB mapping parameters, may be <code>null</code> (for RELATIONAL-only mappings)
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
-                                    FeatureTypeMapping[] ftMappings, CRS storageSRS, BlobMapping blobMapping ) {
+                                    GMLSchemaAnalyzer xsModel, FeatureTypeMapping[] ftMappings, CRS storageSRS,
+                                    BBoxTableMapping bboxMapping, BlobMapping blobMapping ) {
 
-        super( fts, ftToSuperFt );
-        for ( FeatureTypeMapping ftMapping : ftMappings ) {
-            ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );
+        super( fts, ftToSuperFt, xsModel );
+        if ( ftMappings != null ) {
+            for ( FeatureTypeMapping ftMapping : ftMappings ) {
+                ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );
+            }
         }
-        this.storageSRS = storageSRS;
+        this.storageCRS = storageSRS;
         this.idAnalyzer = new IdAnalyzer( this );
 
         // sort by QName first
@@ -125,9 +129,8 @@ public class MappedApplicationSchema extends ApplicationSchema {
             ftIdToName.put( ftId++, qName );
         }
 
-        // TODO
-        bboxMapping = null;
-        this.blobMapping = new BlobMapping( "gml_objects", new FeatureCodec( GML_32, NONE ) );
+        this.bboxMapping = bboxMapping;
+        this.blobMapping = blobMapping;
     }
 
     /**
@@ -174,7 +177,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
         return ftIdToName.get( ftId );
     }
 
-    public BBoxTableMapping getBboxMapping() {
+    public BBoxTableMapping getBBoxMapping() {
         return bboxMapping;
     }
 
@@ -188,12 +191,12 @@ public class MappedApplicationSchema extends ApplicationSchema {
     }
 
     /**
-     * Returns the SRS used for storing geometries in the backend.
+     * Returns the CRS used for storing geometries in the backend.
      * 
-     * @return the storage SRS, never <code>null</code>
+     * @return the storage CRS, never <code>null</code>
      */
-    public CRS getStorageSRS() {
-        return storageSRS;
+    public CRS getStorageCRS() {
+        return storageCRS;
     }
 
     /**

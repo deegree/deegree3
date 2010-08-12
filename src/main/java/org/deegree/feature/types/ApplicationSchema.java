@@ -361,4 +361,8 @@ public class ApplicationSchema {
         }
         return propDecls.subList( firstNewIdx, propDecls.size() );
     }
+    
+    public Map<FeatureType,FeatureType> getFtToSuperFt () {
+        return ftToSuperFt;
+    }
 }
