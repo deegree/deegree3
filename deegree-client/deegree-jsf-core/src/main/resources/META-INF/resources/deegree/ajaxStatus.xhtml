@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+<head><title>A status component</title></head>
+<body>
+
+	<composite:interface>
+	  <composite:attribute name="text" default="Loading"/>
+	  <composite:attribute name="style"/>
+	  <composite:attribute name="styleClass" default="ajaxStatus"/>
+	</composite:interface>
+
+	<composite:implementation>
+	  <h:outputStylesheet library="deegree" name="css/composite.css"/>
+	  <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+	  <h:outputScript name="javascript/ajaxStatus.js" library="deegree" target="head"/>
+	  <script type="text/javascript">
+	    registerAjaxStatus('#{cc.clientId}:msg');
+	  </script>
+	  <div id="#{cc.clientId}:msg" class="#{cc.attrs.styleClass}" style="display: none;#{cc.attrs.style}">
+	    #{cc.attrs.text}
+	  </div>
+	</composite:implementation>
+
+</body>
+</html>
