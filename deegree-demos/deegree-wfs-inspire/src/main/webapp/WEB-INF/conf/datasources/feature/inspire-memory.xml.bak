@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<MemoryFeatureStore configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<MemoryFeatureStore configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/memory"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/0.5.0/feature/memory.xsd">
-  <NamespaceHint prefix="ad" namespaceURI="urn:x-inspire:specification:gmlas:Addresses:3.0" />
-  <NamespaceHint prefix="au" namespaceURI="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0" />
-  <NamespaceHint prefix="base" namespaceURI="urn:x-inspire:specification:gmlas:BaseTypes:3.2" />
-  <NamespaceHint prefix="bui" namespaceURI="urn:x-inspire:specification:gmlas:Buildings:0.0" />
-  <NamespaceHint prefix="cp" namespaceURI="urn:x-inspire:specification:gmlas:CadastralParcels:3.0" />
-  <NamespaceHint prefix="gn" namespaceURI="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" />
-  <NamespaceHint prefix="net" namespaceURI="urn:x-inspire:specification:gmlas:Network:3.2" />
-  <NamespaceHint prefix="tn" namespaceURI="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0" />  
-  <NamespaceHint prefix="tn-a" namespaceURI="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0" />
+
   <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/Addresses.xsd</GMLSchemaFileURL>
   <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/AdministrativeUnits.xsd</GMLSchemaFileURL>
   <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/AirTransportNetwork.xsd</GMLSchemaFileURL>
