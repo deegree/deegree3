@@ -49,7 +49,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
@@ -101,14 +100,6 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
     private static final String WPS_PREFIX = "wps";
 
     private static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
-
-    private static NamespaceContext nsContext;
-
-    static {
-        nsContext = new NamespaceContext( XMLAdapter.nsContext );
-        nsContext.addNamespace( OWS_PREFIX, OWS_NS );
-        nsContext.addNamespace( WPS_PREFIX, WPS_NS );
-    }
 
     /**
      * Exports an {@link ExecuteResponse} object as a WPS 1.0.0 ExecuteResponse document.
