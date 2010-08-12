@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MemoryFeatureStore configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/0.5.0/feature/memory.xsd">
+  <NamespaceHint prefix="ad" namespaceURI="urn:x-inspire:specification:gmlas:Addresses:3.0" />
+  <NamespaceHint prefix="au" namespaceURI="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0" />
+  <NamespaceHint prefix="base" namespaceURI="urn:x-inspire:specification:gmlas:BaseTypes:3.2" />
+  <NamespaceHint prefix="bui" namespaceURI="urn:x-inspire:specification:gmlas:Buildings:0.0" />
+  <NamespaceHint prefix="cp" namespaceURI="urn:x-inspire:specification:gmlas:CadastralParcels:3.0" />
+  <NamespaceHint prefix="gn" namespaceURI="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" />
+  <NamespaceHint prefix="net" namespaceURI="urn:x-inspire:specification:gmlas:Network:3.2" />
+  <NamespaceHint prefix="tn" namespaceURI="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0" />  
+  <NamespaceHint prefix="tn-a" namespaceURI="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0" />
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/Addresses.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/AdministrativeUnits.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/AirTransportNetwork.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/BaseTypes.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/BiogeographicalRegions.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/Buildings.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/CableTransportNetwork.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/CadastralParcels.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/CommonTransportElements.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/EnergyResources.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/Gazetteer.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/GeographicalNames.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/Geology.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/HabitatsAndBiotopes.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/HydroBase.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/HydroNetwork.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/HydroPhysicalWaters.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/HydroReporting.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/LandCover.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/NaturalRiskZones.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/Network.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/ProtectedSites.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/ProtectedSitesFull.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/ProtectedSitesNatura2000.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/RailwayTransportNetwork.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/RoadTransportNetwork.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/SeaRegions.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/SpeciesDistribution.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/StatisticalUnits.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/UtilityAndGovernmentalServices.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/WaterFrameworkDirective.xsd</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/WaterTransportNetwork.xsd</GMLSchemaFileURL>
+  <GMLFeatureCollectionFileURL gmlVersion="GML_32">../../../data/addresses.xml</GMLFeatureCollectionFileURL>
+  <GMLFeatureCollectionFileURL gmlVersion="GML_32">../../../data/cadastralparcels-northholland.xml</GMLFeatureCollectionFileURL>
+</MemoryFeatureStore>
