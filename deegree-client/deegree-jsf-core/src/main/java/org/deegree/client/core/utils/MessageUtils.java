@@ -69,18 +69,44 @@ public class MessageUtils {
      * @return the formated text, or <code>?key?<code>, if the resource bundle or key does not exist
      */
     public static String getResourceText( String bundleName, String key, Object... args ) {
-        try {
-            FacesContext context = FacesContext.getCurrentInstance();
-            ResourceBundle userBundle = context.getApplication().getResourceBundle( context, bundleName );
-            String text = userBundle.getString( key );
-            if ( args != null ) {
-                return MessageFormat.format( text, args );
+        FacesContext context = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = null;
+        String msg = null;
+        if ( bundleName != null ) {
+            bundle = context.getApplication().getResourceBundle( context, bundleName );
+            try {
+                msg = bundle.getString( key );
+            } catch ( Exception e ) {
+                // nothing to do - try to get from deegree bundle
             }
-            return text;
-        } catch ( MissingResourceException e ) {
-            // LOG.error( "could not find resource '" + bundleName + "'", e );
+        }
+
+        if ( msg == null ) {
+            try {
+                Locale locale = context.getViewRoot().getLocale();
+                bundle = ResourceBundle.getBundle( DEEGREE_RESOURCE_BUNDLE, locale );
+                msg = bundle.getString( key );
+            } catch ( MissingResourceException e ) {
+                // nothing to do - try to get from jsf bundle
+            }
+        }
+
+        if ( msg == null ) {
+            try {
+                Locale locale = context.getViewRoot().getLocale();
+                bundle = ResourceBundle.getBundle( JSF_BUNDLE_BASENAME, locale );
+                msg = bundle.getString( key );
+            } catch ( MissingResourceException e ) {
+                // nothing to do - set key as summary
+            }
+        }
+
+        if ( msg == null ) {
             return "?" + key + "?";
         }
+
+        msg = MessageFormat.format( msg, args );
+        return msg;
     }
 
     /**
@@ -100,7 +126,6 @@ public class MessageUtils {
     public static FacesMessage getFacesMessage( String bundleName, FacesMessage.Severity severity, String key,
                                                 Object... args ) {
         FacesContext context = FacesContext.getCurrentInstance();
-        Locale locale = context.getViewRoot().getLocale();
         ResourceBundle bundle = null;
         String msgSummary = null;
         String msgDetail = null;
@@ -115,6 +140,7 @@ public class MessageUtils {
 
         if ( msgSummary == null ) {
             try {
+                Locale locale = context.getViewRoot().getLocale();
                 bundle = ResourceBundle.getBundle( DEEGREE_RESOURCE_BUNDLE, locale );
                 msgSummary = bundle.getString( key );
             } catch ( MissingResourceException e ) {
@@ -124,6 +150,7 @@ public class MessageUtils {
 
         if ( msgSummary == null ) {
             try {
+                Locale locale = context.getViewRoot().getLocale();
                 bundle = ResourceBundle.getBundle( JSF_BUNDLE_BASENAME, locale );
                 msgSummary = bundle.getString( key );
             } catch ( MissingResourceException e ) {
