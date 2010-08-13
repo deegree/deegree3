@@ -102,7 +102,7 @@ class PostGISApplicationSchemaBuilder {
     private DatabaseMetaData md;
 
     /**
-     * Creates a new {@link MappedApplicationSchema}.
+     * Creates a new {@link MappedApplicationSchema} instance.
      * 
      * @param appSchema
      *            application schema, can be <code>null</code> (for relational only mappings)
