@@ -45,9 +45,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -93,6 +93,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final PostGISFeatureStore fs;
 
+    private final TransactionManager taManager;
+
     private final Connection conn;
 
     private static GeometryTransformer ftBBoxTransformer;
@@ -110,12 +112,14 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
      * 
      * @param store
      *            invoking feature store instance, never <code>null</code>
+     * @param taManager
      * @param conn
      *            JDBC connection associated with the transaction, never <code>null</code> and has
      *            <code>autocommit</code> set to <code>false</code>
      */
-    PostGISFeatureStoreTransaction( PostGISFeatureStore store, Connection conn ) {
+    PostGISFeatureStoreTransaction( PostGISFeatureStore store, TransactionManager taManager, Connection conn ) {
         this.fs = store;
+        this.taManager = taManager;
         this.conn = conn;
     }
 
@@ -131,7 +135,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             LOG.debug( e.getMessage(), e.getNextException() );
             throw new FeatureStoreException( "Unable to commit SQL transaction: " + e.getMessage() );
         } finally {
-            fs.releaseTransaction( this );
+            taManager.releaseTransaction( this );
         }
     }
 
@@ -526,13 +530,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( "Unable to rollback SQL transaction: " + e.getMessage() );
         } finally {
-            fs.releaseTransaction( this );
+            taManager.releaseTransaction( this );
         }
-    }
-
-    public void prepareRollbackAndRelease()
-                            throws FeatureStoreException {
-        LOG.debug( "Preparing rollback of transaction." );
-        fs.releaseTransaction( this );
     }
 }

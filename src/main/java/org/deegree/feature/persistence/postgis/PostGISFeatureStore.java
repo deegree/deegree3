@@ -54,7 +54,6 @@ import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
-import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureCodec;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -95,7 +94,6 @@ import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -126,27 +124,21 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private final MappedApplicationSchema schema;
 
-    private final FeatureStoreGMLIdResolver resolver = new FeatureStoreGMLIdResolver( this );
+    private final LockManager lockManager;
 
-    private final Envelope defaultEnvelope;
+    private final TransactionManager taManager;
+
+    private final FeatureStoreGMLIdResolver resolver = new FeatureStoreGMLIdResolver( this );
 
     private final String jdbcConnId;
 
     private final CRS storageCRS;
-
-    private PostGISFeatureStoreTransaction activeTransaction;
-
-    private Thread transactionHolder;
-
-    private LockManager lockManager;
 
     // TODO make this configurable
     private FeatureStoreCache cache = new SimpleFeatureStoreCache( 10000 );
 
     // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
     private boolean useLegacyPredicates;
-
-    private boolean hasLookupTable;
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
@@ -160,7 +152,8 @@ public class PostGISFeatureStore implements FeatureStore {
         this.schema = schema;
         this.storageCRS = schema.getStorageCRS();
         this.jdbcConnId = jdbcConnId;
-        defaultEnvelope = new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRS.EPSG_4326 );
+        lockManager = null;
+        taManager = new TransactionManager( this, jdbcConnId );
     }
 
     /**
@@ -174,78 +167,10 @@ public class PostGISFeatureStore implements FeatureStore {
         return schema.getMapping( ftName );
     }
 
-    /**
-     * @param conn
-     * @return a new transaction
-     * @throws FeatureStoreException
-     */
-    public PostGISFeatureStoreTransaction acquireTransaction( Connection conn )
-                            throws FeatureStoreException {
-
-        while ( this.activeTransaction != null ) {
-            Thread holder = this.transactionHolder;
-            // check if transaction holder variable has (just) been cleared or if the other thread
-            // has been killed (avoid deadlocks)
-            if ( holder == null || !holder.isAlive() ) {
-                this.activeTransaction = null;
-                this.transactionHolder = null;
-                break;
-            }
-
-            try {
-                // wait until the transaction holder wakes us, but not longer than 5000
-                // milliseconds (as the transaction holder may very rarely get killed without
-                // signalling us)
-                wait( 5000 );
-            } catch ( InterruptedException e ) {
-                // nothing to do
-            }
-        }
-
-        try {
-            conn.setAutoCommit( false );
-            this.activeTransaction = new PostGISFeatureStoreTransaction( this, conn );
-        } catch ( SQLException e ) {
-            throw new FeatureStoreException( "Unable to disable auto commit on JDBC connection for transaction: "
-                                             + e.getMessage(), e );
-        }
-        this.transactionHolder = Thread.currentThread();
-        return this.activeTransaction;
-    }
-
     @Override
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
-
-        while ( this.activeTransaction != null ) {
-            Thread holder = this.transactionHolder;
-            // check if transaction holder variable has (just) been cleared or if the other thread
-            // has been killed (avoid deadlocks)
-            if ( holder == null || !holder.isAlive() ) {
-                this.activeTransaction = null;
-                this.transactionHolder = null;
-                break;
-            }
-
-            try {
-                // wait until the transaction holder wakes us, but not longer than 5000
-                // milliseconds (as the transaction holder may very rarely get killed without
-                // signalling us)
-                wait( 5000 );
-            } catch ( InterruptedException e ) {
-                // nothing to do
-            }
-        }
-
-        try {
-            Connection conn = ConnectionManager.getConnection( jdbcConnId );
-            conn.setAutoCommit( false );
-            this.activeTransaction = new PostGISFeatureStoreTransaction( this, conn );
-        } catch ( SQLException e ) {
-            throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
-        }
-        this.transactionHolder = Thread.currentThread();
-        return this.activeTransaction;
+        return taManager.acquireTransaction();
     }
 
     @Override
@@ -670,7 +595,7 @@ public class PostGISFeatureStore implements FeatureStore {
                             throws FeatureStoreException {
 
         LOG.debug( "Performing query by operator filter" );
-        
+
         PostGISWhereBuilder wb = null;
         FeatureResultSet result = null;
         Connection conn = null;
@@ -1105,36 +1030,6 @@ public class PostGISFeatureStore implements FeatureStore {
             }
         }
         return transformedLiteral;
-    }
-
-    /**
-     * Returns the transaction to the datastore. This makes the transaction available to other clients again (via
-     * {@link #acquireTransaction()}.
-     * <p>
-     * The transaction should be terminated, i.e. commit() or rollback() must have been called before.
-     * 
-     * @param ta
-     *            the PostGISFeatureStoreTransaction to be returned
-     * @throws FeatureStoreException
-     */
-    void releaseTransaction( PostGISFeatureStoreTransaction ta )
-                            throws FeatureStoreException {
-        if ( ta.getStore() != this ) {
-            String msg = Messages.getMessage( "TA_NOT_OWNER" );
-            throw new FeatureStoreException( msg );
-        }
-        if ( ta != this.activeTransaction ) {
-            String msg = Messages.getMessage( "TA_NOT_ACTIVE" );
-            throw new FeatureStoreException( msg );
-        }
-        this.activeTransaction = null;
-        this.transactionHolder = null;
-        // notifyAll();
-        try {
-            ta.getConnection().close();
-        } catch ( SQLException e ) {
-            throw new FeatureStoreException( "Error closing connection: " + e.getMessage() );
-        }
     }
 
     short getFtId( QName ftName ) {
