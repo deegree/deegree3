@@ -60,18 +60,7 @@ public class UploadedFile implements Serializable {
 
     private String absolutePath;
 
-    /**
-     * @param fileItem
-     *            the file item to wrap
-     * @param url
-     *            the web accessible url of the file
-     * @param absolutePath
-     *            the absolute path of the file
-     */
-    public UploadedFile( FileItem fileItem, URL url, String absolutePath ) {
-        this.fileItem = fileItem;
-        this.url = url;
-        this.absolutePath = absolutePath;
+    public UploadedFile() {
     }
 
     /**
@@ -114,6 +103,19 @@ public class UploadedFile implements Serializable {
 
     @Override
     public String toString() {
-        return fileItem.getName();
+        return "" + fileItem;
     }
+
+    public void setFileItem( FileItem fileItem ) {
+        this.fileItem = fileItem;
+    }
+
+    public void setUrl( URL url ) {
+        this.url = url;
+    }
+
+    public void setAbsolutePath( String absolutePath ) {
+        this.absolutePath = absolutePath;
+    }
+
 }

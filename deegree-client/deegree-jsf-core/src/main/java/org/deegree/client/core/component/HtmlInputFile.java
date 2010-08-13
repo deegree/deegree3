@@ -35,9 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.component;
 
+import javax.faces.application.FacesMessage;
+
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.behavior.ClientBehaviorHolder;
+import javax.faces.context.FacesContext;
+
+import org.deegree.client.core.model.UploadedFile;
+import org.deegree.client.core.utils.MessageUtils;
 
 /**
  * 
@@ -49,13 +55,13 @@ import javax.faces.component.behavior.ClientBehaviorHolder;
  * 
  * @version $Revision: $, $Date: $
  */
-@FacesComponent(value="HtmlInputFile")
+@FacesComponent(value = "HtmlInputFile")
 public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
 
     private String styleClass;
-    
+
     private String target;
-    
+
     public HtmlInputFile() {
         setRendererType( "org.deegree.InputFile" );
     }
@@ -75,6 +81,37 @@ public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
     public String getTarget() {
         return target;
     }
-    
 
+    @Override
+    protected void validateValue( FacesContext context, Object value ) {
+        if ( !isValid() ) {
+            return;
+        }
+        if ( isRequired() && isUploadedFileEmpty( value ) ) {
+            FacesMessage message = MessageUtils.getFacesMessage(
+                                                                 null,
+                                                                 FacesMessage.SEVERITY_ERROR,
+                                                                 "org.deegree.client.core.component.HtmlInputFile.REQUIRED",
+                                                                 getClientId() );
+            context.addMessage( getClientId( context ), message );
+
+            setValid( false );
+            return;
+        }
+
+    }
+
+    private boolean isUploadedFileEmpty( Object value ) {
+        if ( value == null ) {
+            return true;
+        }
+        if ( !( value instanceof UploadedFile ) ) {
+            return true;
+        }
+        UploadedFile uploadedFile = (UploadedFile) value;
+        if ( uploadedFile.getFileItem() == null ) {
+            return true;
+        }
+        return false;
+    }
 }

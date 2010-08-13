@@ -46,6 +46,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.faces.convert.ConverterException;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 import javax.servlet.ServletContext;
@@ -99,18 +100,20 @@ public class InputFileRenderer extends Renderer {
         FileItem item = (FileItem) request.getAttribute( clientId );
 
         HtmlInputFile fileComponent = (HtmlInputFile) component;
+        UploadedFile uploadedFile = new UploadedFile();
         if ( item != null ) {
             String target = fileComponent.getTarget();
             try {
                 URL url = getUrl( request, target, item.getName() );
                 ServletContext sc = (ServletContext) external.getContext();
-                String absFileName = getAbsolutePath( sc, target, item.getName() );
+                String absPath = getAbsolutePath( sc, target, item.getName() );
                 if ( target != null ) {
-                    File file = new File( absFileName );
+                    File file = new File( absPath );
                     item.write( file );
-                    fileComponent.setSubmittedValue( new UploadedFile( item, url, absFileName ) );
+                    uploadedFile.setFileItem( item );
+                    uploadedFile.setUrl( url );
+                    uploadedFile.setAbsolutePath( absPath );
                 }
-                fileComponent.setValid( true );
             } catch ( MalformedURLException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -119,6 +122,7 @@ public class InputFileRenderer extends Renderer {
                 e.printStackTrace();
             }
         }
+        fileComponent.setSubmittedValue( uploadedFile );
 
     }
 
@@ -145,6 +149,12 @@ public class InputFileRenderer extends Renderer {
         }
         return new URL( request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath()
                                                                                                + target + fileName );
+    }
+
+    @Override
+    public Object getConvertedValue( FacesContext context, UIComponent component, Object submittedValue )
+                            throws ConverterException {
+        return submittedValue;
     }
 
 }
