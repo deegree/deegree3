@@ -86,7 +86,7 @@ public class FormConfigurationParserTest extends TestCase {
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 3 );
+        assertTrue( formGroups.size() == 4 );
 
         assertEquals( "FormGroup3", formGroups.get( 0 ).getId() );
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
@@ -96,7 +96,7 @@ public class FormConfigurationParserTest extends TestCase {
 
         FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
         assertTrue( formElement instanceof FormGroup );
-        assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
+        assertEquals( 5, ( (FormGroup) formElement ).getFormElements().size() );
     }
 
     @Test
@@ -106,7 +106,7 @@ public class FormConfigurationParserTest extends TestCase {
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 3 );
+        assertTrue( formGroups.size() == 4 );
 
         assertEquals( "FormGroup3", formGroups.get( 0 ).getId() );
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
@@ -127,7 +127,7 @@ public class FormConfigurationParserTest extends TestCase {
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 3 );
+        assertTrue( formGroups.size() == 4 );
 
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
         assertEquals( 3, formGroups.get( 1 ).getFormElements().size() );
@@ -148,7 +148,7 @@ public class FormConfigurationParserTest extends TestCase {
 
         FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
         assertTrue( formElement instanceof FormGroup );
-        assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
+        assertEquals( 5, ( (FormGroup) formElement ).getFormElements().size() );
 
         FormElement select = ( (FormGroup) formElement ).getFormElements().get( 3 );
         assertTrue( select instanceof SelectFormField );
@@ -186,7 +186,7 @@ public class FormConfigurationParserTest extends TestCase {
         List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 3 );
+        assertTrue( formGroups.size() == 4 );
 
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
         assertTrue( formGroups.get( 1 ).getOccurence() < 1 );

@@ -74,13 +74,13 @@ public class MappingParserTest extends TestCase {
 
         List<MappingElement> me = mapping.getMappingElements();
         assertNotNull( me );
-        assertEquals( 6, me.size() );
+        assertEquals( 12, me.size() );
 
         assertEquals( "FormGroup3/text5", me.get( 0 ).getFormFieldPath() );
         assertEquals( "gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", me.get( 0 ).getSchemaPath() );
 
-        assertTrue( me.get( 5 ) instanceof MappingGroup );
-        MappingGroup mg = (MappingGroup) me.get( 5 );
+        assertTrue( me.get( 11 ) instanceof MappingGroup );
+        MappingGroup mg = (MappingGroup) me.get( 11 );
         assertEquals( "SimpleUnboundedFormGroup", mg.getFormFieldPath() );
         assertEquals(
                       "gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor",

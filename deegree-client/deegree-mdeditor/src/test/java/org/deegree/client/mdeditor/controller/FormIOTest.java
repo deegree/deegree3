@@ -118,7 +118,7 @@ public class FormIOTest extends TestCase {
         dgs.add( dg3 );
 
         dataGroups.put( formGroup.getId(), dgs );
-
+        
         try {
             // write
             DataHandler.getInstance().writeDataset( "testWriting", formGroups, dataGroups );
@@ -127,7 +127,7 @@ public class FormIOTest extends TestCase {
             Dataset dataset = DataHandler.getInstance().getDataset( "testWriting" );
 
             Map<String, Object> values = dataset.getValues();
-            assertEquals( formGroups.size(), values.size() );
+            assertEquals( 3, values.size() );
 
             assertTrue( values.containsKey( p1 ) );
             assertTrue( values.containsKey( p2 ) );
