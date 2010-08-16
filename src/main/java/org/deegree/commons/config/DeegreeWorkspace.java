@@ -66,6 +66,9 @@ public class DeegreeWorkspace {
 
     static {
         WORKSPACES.put( "default", new DeegreeWorkspace( "default" ) );
+
+        // Getting Rid Of Derby.Log
+        System.setProperty( "derby.stream.error.field", "org.deegree.commons.utils.io.Utils.DEV_NULL" );
     }
 
     /**
