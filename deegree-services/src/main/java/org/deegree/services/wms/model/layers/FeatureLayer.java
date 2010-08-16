@@ -204,7 +204,9 @@ public class FeatureLayer extends Layer {
 
     @Override
     public void close() {
-        datastore.destroy();
+        if ( datastore != null ) {
+            datastore.destroy();
+        }
     }
 
     /**
