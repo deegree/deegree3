@@ -60,6 +60,18 @@ public class WPSProcess {
      *            description of the process (e.g. parameter types, metadata), must not be <code>null</code>
      * @param processlet
      *            process code, must not be <code>null</code>
+     */
+    public WPSProcess( ProcessDefinition description, Processlet processlet ) {
+        this( description, processlet, null );
+    }
+
+    /**
+     * Creates a new {@link WPSProcess} instance with {@link ExceptionCustomizer}.
+     * 
+     * @param description
+     *            description of the process (e.g. parameter types, metadata), must not be <code>null</code>
+     * @param processlet
+     *            process code, must not be <code>null</code>
      * @param exceptionCustomizer
      *            exception customizer, can be <code>null</code> (use default exception generation)
      */
