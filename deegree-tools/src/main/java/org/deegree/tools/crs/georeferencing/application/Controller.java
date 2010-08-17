@@ -156,6 +156,8 @@ public class Controller {
 
     private TransformationType transformationType;
 
+    private TransformationMethod transform;
+
     private ParameterStore store;
 
     private NavigationPanel optionNavPanel;
@@ -204,6 +206,20 @@ public class Controller {
 
         // init the footPanel and the mouseinteraction of it
         initFootprintScene();
+
+        // init the transformation method
+        transform = null;
+        if ( transformationType == null ) {
+            order = 1;
+            for ( JCheckBox box : view.getCheckbox().getList() ) {
+                if ( ( box ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
+                    transformationType = TransformationType.PolynomialFirstOrder;
+                    view.activateTransformationCheckbox( box );
+                    break;
+                }
+            }
+
+        }
 
         isHorizontalRef = false;
 
@@ -332,8 +348,6 @@ public class Controller {
             if ( source instanceof JTextField ) {
                 JTextField tF = (JTextField) source;
                 if ( tF.getName().startsWith( GRViewerGUI.JTEXTFIELD_COORDINATE_JUMPER ) ) {
-                    System.out.println( "[Controller] put something in the textfield: " + tF.getText() );
-
                     try {
                         textFieldModel.setTextInput( tF.getText() );
                         if ( sceneValues.getTransformedBounds() != null ) {
@@ -366,7 +380,6 @@ public class Controller {
             }
             if ( source instanceof JButton ) {
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
-                    System.out.println( "you clicked on delete selected" );
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
 
                     for ( int tableRow : tableRows ) {
@@ -404,23 +417,16 @@ public class Controller {
                 }
 
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
-                    System.out.println( "you clicked on delete all" );
                     removeAllFromMappedPoints();
 
                 }
                 if ( ( (JButton) source ).getText().startsWith( NavigationBarPanel.COMPUTE_BUTTON_NAME ) ) {
-                    System.out.println( "you clicked on computation" );
-
                     // swap the tempPoints into the map now
                     if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
                         setValues();
                     }
-                    System.out.println( sourceCRS + " " + targetCRS );
-                    TransformationMethod transform = null;
-                    if ( transformationType == null ) {
-                        transformationType = TransformationType.PolynomialFirstOrder;
-                        order = 1;
-                    }
+                    // System.out.println( sourceCRS + " " + targetCRS );
+
                     switch ( transformationType ) {
 
                     case PolynomialFirstOrder:

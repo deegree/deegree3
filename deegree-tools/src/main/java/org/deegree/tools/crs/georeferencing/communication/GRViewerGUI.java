@@ -131,6 +131,8 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
         checkbox = new CheckBoxList( sArray );
         menuTransformation.add( checkbox );
+        // //workaround, the first element
+        // this.activateTransformationCheckbox( checkbox.getList().get( 0 ) );
         menuEdit.add( editMenuItem );
 
         this.getRootPane().setJMenuBar( menuBar );
@@ -260,6 +262,11 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         this.checkbox.selectThisCheckbox( selectedCheckbox );
         this.menuTransformation.getPopupMenu().setVisible( false );
         this.menuTransformation.setSelected( false );
+
+    }
+
+    public CheckBoxList getCheckbox() {
+        return checkbox;
     }
 
 }
