@@ -51,16 +51,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ProcessProvider} that allows to serve hand-crafted processes with hand-crafted process descriptions.
+ * {@link ProcessProvider} for hand-crafted Java processes with hand-crafted process descriptions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DefaultProcessProvider implements ProcessProvider {
+public class JavaProcessProvider implements ProcessProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DefaultProcessProvider.class );
+    private static final Logger LOG = LoggerFactory.getLogger( JavaProcessProvider.class );
 
     private final Collection<ProcessDefinition> processDefs;
 
@@ -69,7 +69,7 @@ public class DefaultProcessProvider implements ProcessProvider {
     /**
      * @param processDef
      */
-    DefaultProcessProvider( ProcessDefinition processDef ) {
+    JavaProcessProvider( ProcessDefinition processDef ) {
         processDefs = Collections.singletonList( processDef );
     }
 

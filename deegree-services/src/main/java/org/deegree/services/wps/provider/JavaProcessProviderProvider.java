@@ -46,16 +46,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ProcessProviderProvider} for the {@link DefaultProcessProvider}.
+ * {@link ProcessProviderProvider} for the {@link JavaProcessProvider}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DefaultProcessProviderProvider implements ProcessProviderProvider {
+public class JavaProcessProviderProvider implements ProcessProviderProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DefaultProcessProviderProvider.class );
+    private static final Logger LOG = LoggerFactory.getLogger( JavaProcessProviderProvider.class );
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/services/wps";
 
@@ -88,7 +88,7 @@ public class DefaultProcessProviderProvider implements ProcessProviderProvider {
             // LOG.info( "Found process WSDL file." );
             // processIdToWSDL.put( processId, f );
             // }
-            manager = new DefaultProcessProvider( processDef );
+            manager = new JavaProcessProvider( processDef );
         } catch ( JAXBException e ) {
             e.printStackTrace();
         }
