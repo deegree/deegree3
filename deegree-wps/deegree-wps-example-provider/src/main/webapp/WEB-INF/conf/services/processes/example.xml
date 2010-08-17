@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ExampleProvider xmlns="http://www.deegree.org/services/wps/example">
-  <!-- nothing in here, as the example provider requires no configuration -->
+  <Process id="process42">42</Process>
+  <Process id="processHelloWorld">Hello World!</Process>
+  <Process id="processYeahYeahYeah">Yeah, yeah, yeah!</Process>
 </ExampleProvider>

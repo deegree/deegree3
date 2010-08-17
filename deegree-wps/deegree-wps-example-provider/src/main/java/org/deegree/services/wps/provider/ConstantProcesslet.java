@@ -35,44 +35,46 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.services.wps.Processlet;
+import org.deegree.services.wps.ProcessletException;
+import org.deegree.services.wps.ProcessletExecutionInfo;
+import org.deegree.services.wps.ProcessletInputs;
+import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.output.LiteralOutput;
 
 /**
- * {@link ProcessProviderProvider} for the {@link ExampleProcessProvider}.
+ * 
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ExampleProcessProviderProvider implements ProcessProviderProvider {
+class ConstantProcesslet implements Processlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ExampleProcessProviderProvider.class );
+    private String returnValue;
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/services/wps/example";
-
-    @Override
-    public String getConfigNamespace() {
-        return CONFIG_NAMESPACE;
+    /**
+     * @param returnValue
+     */
+    ConstantProcesslet( String returnValue ) {
+        this.returnValue = returnValue;
     }
 
     @Override
-    public ProcessProvider createProvider( URL configURL ) {
+    public void destroy() {
+        // nothing to do
+    }
 
-        LOG.info( "Configuring example process provider using file '" + configURL + "'." );
+    @Override
+    public void init() {
+        // nothing to do
+    }
 
-        Map<String, String> processIdToReturnValue = new HashMap<String, String>();
-        processIdToReturnValue.put( "hello", "HelloWorld" );
-        
-
-        return new ExampleProcessProvider( processIdToReturnValue );
+    @Override
+    public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
+                            throws ProcessletException {
+        LiteralOutput literalOutput = (LiteralOutput) out.getParameter( "LiteralOutput" );
+        literalOutput.setValue( returnValue );
     }
 }

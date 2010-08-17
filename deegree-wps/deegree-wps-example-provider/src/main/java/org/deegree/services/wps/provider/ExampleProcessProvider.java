@@ -37,12 +37,18 @@ package org.deegree.services.wps.provider;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.exception.ServiceInitException;
+import org.deegree.services.jaxb.wps.LanguageStringType;
+import org.deegree.services.jaxb.wps.LiteralOutputDefinition;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.WPSProcess;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Example {@link ProcessProvider} implementation for learning purposes.
@@ -54,19 +60,75 @@ import org.slf4j.LoggerFactory;
  */
 public class ExampleProcessProvider implements ProcessProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ExampleProcessProvider.class );
-
     private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
 
+    /**
+     * @param processIdToReturnValue
+     */
+    ExampleProcessProvider( Map<String, String> processIdToReturnValue ) {
+        for ( Entry<String, String> entry : processIdToReturnValue.entrySet() ) {
+            String processId = entry.getKey();
+            String returnValue = entry.getValue();
+            WPSProcess process = createProcess( processId, returnValue );
+            idToProcess.put( new CodeType( processId ), process );
+        }
+    }
+
+    private WPSProcess createProcess( String processId, String returnValue ) {
+
+        // create Processlet instance dynamically
+        ConstantProcesslet processlet = new ConstantProcesslet( returnValue );
+
+        // create process definition dynamically
+        ProcessDefinition definition = createProcessDefinition( processId, returnValue );
+
+        // build WPSProcess from processlet and process definition
+        return new WPSProcess( definition, processlet );
+    }
+
+    private ProcessDefinition createProcessDefinition( String processId, String returnValue ) {
+
+        ProcessDefinition definition = new ProcessDefinition();
+        org.deegree.services.jaxb.wps.CodeType id = new org.deegree.services.jaxb.wps.CodeType();
+        id.setValue( processId );
+        definition.setIdentifier( id );
+        definition.setConfigVersion( "0.0.1" );
+        definition.setStatusSupported( false );
+        definition.setStoreSupported( false );
+        
+        LanguageStringType title = new LanguageStringType();
+        title.setValue( "Process with no input parameter that returns the constant value '" + returnValue + "'" );
+        definition.setTitle( title );
+        OutputParameters outputs = new OutputParameters();
+        LiteralOutputDefinition literalOutput = new LiteralOutputDefinition();
+        id = new org.deegree.services.jaxb.wps.CodeType();
+        id.setValue( "LiteralOutput" );
+        literalOutput.setIdentifier( id );
+        title = new LanguageStringType();
+        title.setValue( "This output always contains the constant value '" + returnValue + "'" );
+        literalOutput.setIdentifier( id );
+        JAXBElement<LiteralOutputDefinition> outputEl = new JAXBElement<LiteralOutputDefinition>(
+                                                                                                  new QName( "", "" ),
+                                                                                                  LiteralOutputDefinition.class,
+                                                                                                  literalOutput );
+        outputs.getProcessOutput().add( outputEl );
+        definition.setOutputParameters( outputs );
+        return definition;
+    }
 
     @Override
     public void init()
                             throws ServiceInitException {
+        for ( WPSProcess process : idToProcess.values() ) {
+            process.getProcesslet().init();
+        }
     }
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
+        for ( WPSProcess process : idToProcess.values() ) {
+            process.getProcesslet().destroy();
+        }
     }
 
     @Override
