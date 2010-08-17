@@ -99,13 +99,11 @@ public class PointTableFrame extends JFrame implements GUIConstants {
 
     private JPanel rightNorthPanel = new JPanel( new BorderLayout() );
 
-    private JPanel rightCenterPanel = new JPanel( new BorderLayout() );
+    private JPanel rightCenterPanel = new JPanel();
 
-    private JPanel rightCenterWest = new JPanel();
-
-    private JPanel rightCenterCenter = new JPanel();
-
-    private JPanel rightCenterEast = new JPanel();
+    // private JPanel rightCenterWest = new JPanel();
+    //
+    // private JPanel rightCenterCenter = new JPanel();
 
     private JPanel rightSouthPanel = new JPanel( new FlowLayout() );
 
@@ -134,20 +132,23 @@ public class PointTableFrame extends JFrame implements GUIConstants {
         label.setFont( new Font( "Helvetica", Font.BOLD, 16 ) );
         rightUpperPanel.add( label );
 
-        Label rightLowerDummy = new Label( " " );
-        rightLowerDummy.setFont( new Font( "Helvetica", Font.BOLD, 20 ) );
-        rightNorthPanel.add( rightLowerDummy );
+        // Label rightLowerDummy = new Label( " " );
+        // rightLowerDummy.setFont( new Font( "Helvetica", Font.BOLD, 40 ) );
+        // rightNorthPanel.add( rightLowerDummy );
+
+        // Label rightLowerWestDummy = new Label( "    " );
+        // rightLowerWestDummy.setFont( new Font( "Helvetica", Font.BOLD, 40 ) );
+        // rightCenterWest.add( rightLowerWestDummy );
 
         String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
         checkbox = new CheckBoxList( sArray );
 
-        rightCenterPanel.add( rightCenterWest, BorderLayout.WEST );
-        rightCenterPanel.add( rightCenterCenter, BorderLayout.CENTER );
-        rightCenterPanel.add( rightCenterEast, BorderLayout.EAST );
+        // rightCenterPanel.add( rightCenterWest, BorderLayout.WEST );
+        // rightCenterPanel.add( rightCenterCenter, BorderLayout.CENTER );
 
-        // rightCenterCenter.setBorder( BorderFactory.createLineBorder( Color.black ) );
+        rightCenterPanel.setBorder( BorderFactory.createLineBorder( Color.black ) );
 
-        rightCenterCenter.add( checkbox, BorderLayout.CENTER );
+        rightCenterPanel.add( checkbox, BorderLayout.CENTER );
         rightSouthPanel.add( computeTransform );
 
         rightLowerPanel.add( rightNorthPanel, BorderLayout.NORTH );
@@ -164,6 +165,7 @@ public class PointTableFrame extends JFrame implements GUIConstants {
         setVisible( true );
         toFront();
         setAlwaysOnTop( true );
+        pack();
     }
 
     public void addHorizontalRefListener( ActionListener c ) {

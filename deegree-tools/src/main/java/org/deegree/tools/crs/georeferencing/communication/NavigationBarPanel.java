@@ -37,7 +37,10 @@ package org.deegree.tools.crs.georeferencing.communication;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.net.URL;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -58,12 +61,21 @@ public class NavigationBarPanel extends JPanel {
 
     private JCheckBox checkBox1 = new JCheckBox( HORIZONTAL_REFERENCING );
 
+    private static final URL i = NavigationBarPanel.class.getResource( "../icons/pan.png" );
+
+    private ImageIcon iconPan;
+
     /**
      * Creates a new instance of <Code>NavigationBarPanel</Code>.
      */
     public NavigationBarPanel() {
         this.setName( NAVIGATIONBAR_PANEL_NAME );
         this.setLayout( new FlowLayout( 10 ) );
+
+        iconPan = new ImageIcon( i );
+        JButton l = new JButton( iconPan );
+
+        this.add( l );
         this.add( checkBox1 );
 
         this.repaint();
