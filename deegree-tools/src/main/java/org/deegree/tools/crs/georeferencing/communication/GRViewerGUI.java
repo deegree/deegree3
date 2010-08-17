@@ -47,7 +47,6 @@ import java.awt.image.BufferedImage;
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -108,7 +107,7 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         setupPanelFootprint( gbl );
         setupOpenGL( gbl, false );
         setupNavigationBar( gbl );
-        setupPointTable( gbl );
+        // setupPointTable( gbl );
         this.pack();
     }
 
@@ -121,18 +120,16 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         menuBar = new JMenuBar();
         menuFile = new JMenu( MENU_FILE );
         menuEdit = new JMenu( MENU_EDIT );
-        menuTransformation = new JMenu( MENU_TRANSFORMATION );
+        // menuTransformation = new JMenu( MENU_TRANSFORMATION );
 
         menuBar.add( menuFile );
         menuBar.add( menuEdit );
-        menuBar.add( menuTransformation );
+        // menuBar.add( menuTransformation );
 
         editMenuItem = new JMenuItem( MENUITEM_EDIT_OPTIONS );
-        String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
-        checkbox = new CheckBoxList( sArray );
-        menuTransformation.add( checkbox );
-        // //workaround, the first element
-        // this.activateTransformationCheckbox( checkbox.getList().get( 0 ) );
+        // String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
+        // checkbox = new CheckBoxList( sArray );
+        // menuTransformation.add( checkbox );
         menuEdit.add( editMenuItem );
 
         this.getRootPane().setJMenuBar( menuBar );
@@ -190,14 +187,14 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
                                           GridBagConstraints.LINE_END, .5, 1 );
     }
 
-    private void setupPointTable( GridBagLayout gbl ) {
-        pointTablePanel = new PointTableFrame();
-
-        // pointTablePanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
-        // pointTablePanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
-
-        // GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, pointTablePanel, 1, 2, 2, 1, .5, .5 );
-    }
+    // private void setupPointTable( GridBagLayout gbl ) {
+    // pointTablePanel = new PointTableFrame();
+    //
+    // // pointTablePanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+    // // pointTablePanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
+    //
+    // // GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, pointTablePanel, 1, 2, 2, 1, .5, .5 );
+    // }
 
     /**
      * not used at the moment
@@ -212,7 +209,7 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
      * @param e
      */
     public void addMenuItemListener( ActionListener e ) {
-        checkbox.addCheckboxListener( e );
+        // checkbox.addCheckboxListener( e );
         coordinateJumper.addActionListener( e );
         editMenuItem.addActionListener( e );
 
@@ -244,29 +241,29 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         return navigationPanel;
     }
 
-    public PointTableFrame getPointTablePanel() {
-        return pointTablePanel;
-    }
+    // public PointTableFrame getPointTablePanel() {
+    // return pointTablePanel;
+    // }
 
     public OpenGLEventHandler getOpenGLEventListener() {
         return openGLEventListener;
     }
 
-    /**
-     * Sets everything that is needed to handle userinteraction with the checkboxes in the transformationMenu.
-     * 
-     * @param selectedCheckbox
-     *            the checkbox that has been selected by the user.
-     */
-    public void activateTransformationCheckbox( JCheckBox selectedCheckbox ) {
-        this.checkbox.selectThisCheckbox( selectedCheckbox );
-        this.menuTransformation.getPopupMenu().setVisible( false );
-        this.menuTransformation.setSelected( false );
-
-    }
-
-    public CheckBoxList getCheckbox() {
-        return checkbox;
-    }
+    // /**
+    // * Sets everything that is needed to handle userinteraction with the checkboxes in the transformationMenu.
+    // *
+    // * @param selectedCheckbox
+    // * the checkbox that has been selected by the user.
+    // */
+    // public void activateTransformationCheckbox( JCheckBox selectedCheckbox ) {
+    // this.checkbox.selectThisCheckbox( selectedCheckbox );
+    // this.menuTransformation.getPopupMenu().setVisible( false );
+    // this.menuTransformation.setSelected( false );
+    //
+    // }
+    //
+    // public CheckBoxList getCheckbox() {
+    // return checkbox;
+    // }
 
 }

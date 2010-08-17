@@ -183,7 +183,7 @@ public class Controller {
         this.footPanel = view.getFootprintPanel();
         this.navPanel = view.getNavigationPanel();
         this.footPrint = new Footprint( sceneValues, geom );
-        this.tablePanel = view.getPointTablePanel();
+
         this.start = false;
         this.glHandler = view.getOpenGLEventListener();
         this.store = store;
@@ -199,8 +199,6 @@ public class Controller {
         navPanel.addHorizontalRefListener( new ButtonListener() );
         view.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
 
-        tablePanel.addHorizontalRefListener( new ButtonListener() );
-
         // init the scenePanel and the mouseinteraction of it
         initGeoReferencingScene();
 
@@ -208,13 +206,16 @@ public class Controller {
         initFootprintScene();
 
         // init the transformation method
+        this.tablePanel = new PointTableFrame();
+        this.tablePanel.addListeners( new ButtonListener() );
+        this.tablePanel.addHorizontalRefListener( new ButtonListener() );
         transform = null;
         if ( transformationType == null ) {
             order = 1;
-            for ( JCheckBox box : view.getCheckbox().getList() ) {
+            for ( JCheckBox box : tablePanel.getCheckbox().getList() ) {
                 if ( ( box ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
                     transformationType = TransformationType.PolynomialFirstOrder;
-                    view.activateTransformationCheckbox( box );
+                    tablePanel.activateTransformationCheckbox( box );
                     break;
                 }
             }
@@ -336,12 +337,12 @@ public class Controller {
                 if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
 
                     transformationType = TransformationType.PolynomialFirstOrder;
-                    view.activateTransformationCheckbox( selectedCheckbox );
+                    tablePanel.activateTransformationCheckbox( selectedCheckbox );
                 }
                 if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_HELMERT ) ) {
 
                     transformationType = TransformationType.Helmert_4;
-                    view.activateTransformationCheckbox( selectedCheckbox );
+                    tablePanel.activateTransformationCheckbox( selectedCheckbox );
                 }
 
             }
@@ -420,7 +421,7 @@ public class Controller {
                     removeAllFromMappedPoints();
 
                 }
-                if ( ( (JButton) source ).getText().startsWith( NavigationBarPanel.COMPUTE_BUTTON_NAME ) ) {
+                if ( ( (JButton) source ).getText().startsWith( PointTableFrame.COMPUTE_BUTTON_NAME ) ) {
                     // swap the tempPoints into the map now
                     if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
                         setValues();

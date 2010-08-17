@@ -38,7 +38,6 @@ package org.deegree.tools.crs.georeferencing.communication;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -57,11 +56,7 @@ public class NavigationBarPanel extends JPanel {
 
     public final static String NAVIGATIONBAR_PANEL_NAME = "NavigationBarPanel";
 
-    public final static String COMPUTE_BUTTON_NAME = "Compute Transformation";
-
     private JCheckBox checkBox1 = new JCheckBox( HORIZONTAL_REFERENCING );
-
-    private JButton computeTransform = new JButton( COMPUTE_BUTTON_NAME );
 
     /**
      * Creates a new instance of <Code>NavigationBarPanel</Code>.
@@ -70,7 +65,7 @@ public class NavigationBarPanel extends JPanel {
         this.setName( NAVIGATIONBAR_PANEL_NAME );
         this.setLayout( new FlowLayout( 10 ) );
         this.add( checkBox1 );
-        this.add( computeTransform );
+
         this.repaint();
     }
 
@@ -81,7 +76,6 @@ public class NavigationBarPanel extends JPanel {
      */
     public void addHorizontalRefListener( ActionListener c ) {
         checkBox1.addActionListener( c );
-        computeTransform.addActionListener( c );
 
     }
 
