@@ -334,7 +334,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
             if ( jtsMultiLineString.getNumGeometries() > 0 ) {
                 List<LineString> members = new ArrayList<LineString>( jtsMultiLineString.getNumGeometries() );
                 for ( int i = 0; i < jtsMultiLineString.getNumGeometries(); i++ ) {
-                    members.add( (LineString) createFromJTS( jtsMultiLineString.getGeometryN( i ) ) );
+                    Curve curve = (Curve) createFromJTS( jtsMultiLineString.getGeometryN( i ) );
+                    members.add( curve.getAsLineString() );
                 }
                 geom = new DefaultMultiLineString( id, crs, pm, members );
             }
