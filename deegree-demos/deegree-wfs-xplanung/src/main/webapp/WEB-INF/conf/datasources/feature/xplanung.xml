@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MemoryFeatureStore configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/memory"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/0.5.0/feature/memory.xsd">
+  <GMLSchemaFileURL gmlVersion="GML_32">schemas/xplan4.0/XPlanGML_Regionalplanung_NDS_ADE.xsd</GMLSchemaFileURL>
+  <GMLFeatureCollectionFileURL gmlVersion="GML_32">../../../data/LA22.gml</GMLFeatureCollectionFileURL>
+</MemoryFeatureStore>
