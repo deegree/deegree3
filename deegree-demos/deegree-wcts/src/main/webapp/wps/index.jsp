@@ -39,8 +39,9 @@
 <%@ page import="org.deegree.commons.version.DeegreeModuleInfo"%>
 <%@ page import="org.deegree.services.controller.*"%>
 <%@ page import="org.deegree.services.wps.*"%>
-<%@page import="org.deegree.services.controller.wps.WPSController"%>
-<%@page import="org.deegree.services.jaxb.wps.ProcessDefinition"%><html>
+<%@page import="org.deegree.services.wps.WPService"%>
+<%@page import="org.deegree.services.jaxb.wps.ProcessDefinition"%>
+<html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>deegree 3 WPS</title>
@@ -51,15 +52,14 @@ deegree 3 WPS configuration<br/>
 ---------------------------<br/><br/>
 Protocol information<br/><br/>
 <%
-  WPSController controller = (WPSController) OGCFrontController.getServiceController(WPSController.class);
-  out.println (" - active versions: " + controller.getOfferedVersionsString());  
+  WPService service = (WPService) OGCFrontController.getServiceController(WPService.class);
+  out.println (" - active versions: " + service.getOfferedVersionsString());  
 %>
 <br/><br/><br/>Available processes<br/><br/>
 <%
-  WPService service = controller.getService();
   int i = 0;
-  for (ProcessDefinition processDefinition : service.getAllProcessDefinitions()) {
-      out.println ( "- " + processDefinition.getIdentifier().getValue().toString() + "<br/>");
+  for (WPSProcess processDefinition : service.getProcessManager().getProcesses().values()) {
+      out.println ( "- " + processDefinition.getDescription().getIdentifier().getValue().toString() + "<br/>");
   }
 %>
     <br/><br/>[<a href="executionStatus.jsp">See execution log/status</a>]
