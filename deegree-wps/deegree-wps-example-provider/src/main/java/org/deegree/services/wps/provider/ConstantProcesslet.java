@@ -43,7 +43,7 @@ import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.output.LiteralOutput;
 
 /**
- * 
+ * Parametrizable {@link Processlet} used by the {@link ExampleProcessProvider}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -55,7 +55,11 @@ class ConstantProcesslet implements Processlet {
     private String returnValue;
 
     /**
+     * Creates a new {@link ConstantProcesslet} instance that will always return the given value in the
+     * {@link #process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)} method.
+     * 
      * @param returnValue
+     *            value to be returned by the execution
      */
     ConstantProcesslet( String returnValue ) {
         this.returnValue = returnValue;

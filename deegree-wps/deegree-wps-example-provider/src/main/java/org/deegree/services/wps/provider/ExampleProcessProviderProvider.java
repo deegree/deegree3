@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
 import org.slf4j.Logger;
@@ -70,8 +71,23 @@ public class ExampleProcessProviderProvider implements ProcessProviderProvider {
         LOG.info( "Configuring example process provider using file '" + configURL + "'." );
 
         Map<String, String> processIdToReturnValue = new HashMap<String, String>();
-        processIdToReturnValue.put( "hello", "HelloWorld" );
-        
+
+        try {
+            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
+            while ( xmlStream.getEventType() != XMLStreamConstants.END_DOCUMENT ) {
+                if ( xmlStream.isStartElement() && "Process".equals( xmlStream.getLocalName() ) ) {
+                    String processId = xmlStream.getAttributeValue( null, "id" );
+                    String returnValue = xmlStream.getElementText();
+                    processIdToReturnValue.put( processId, returnValue );
+                } else {
+                    xmlStream.next();
+                }
+            }
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            throw new RuntimeException( "Error parsing example process provider configuration '" + configURL + "': "
+                                        + e.getMessage() );
+        }
 
         return new ExampleProcessProvider( processIdToReturnValue );
     }

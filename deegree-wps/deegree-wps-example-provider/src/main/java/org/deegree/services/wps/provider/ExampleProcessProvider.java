@@ -51,7 +51,7 @@ import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.WPSProcess;
 
 /**
- * Example {@link ProcessProvider} implementation for learning purposes.
+ * Example {@link ProcessProvider} implementation for process provider tutorial.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -80,33 +80,36 @@ public class ExampleProcessProvider implements ProcessProvider {
         ConstantProcesslet processlet = new ConstantProcesslet( returnValue );
 
         // create process definition dynamically
-        ProcessDefinition definition = createProcessDefinition( processId, returnValue );
+        ProcessDefinition definition = createProcessDefinition( processId  );
 
         // build WPSProcess from processlet and process definition
         return new WPSProcess( definition, processlet );
     }
 
-    private ProcessDefinition createProcessDefinition( String processId, String returnValue ) {
+    private ProcessDefinition createProcessDefinition( String processId  ) {
 
         ProcessDefinition definition = new ProcessDefinition();
+
         org.deegree.services.jaxb.wps.CodeType id = new org.deegree.services.jaxb.wps.CodeType();
         id.setValue( processId );
         definition.setIdentifier( id );
-        definition.setConfigVersion( "0.0.1" );
+        definition.setProcessVersion( "0.0.1" );
         definition.setStatusSupported( false );
         definition.setStoreSupported( false );
-        
+
         LanguageStringType title = new LanguageStringType();
-        title.setValue( "Process with no input parameter that returns the constant value '" + returnValue + "'" );
+        title.setValue( processId + " process" );
         definition.setTitle( title );
         OutputParameters outputs = new OutputParameters();
         LiteralOutputDefinition literalOutput = new LiteralOutputDefinition();
         id = new org.deegree.services.jaxb.wps.CodeType();
         id.setValue( "LiteralOutput" );
         literalOutput.setIdentifier( id );
+
         title = new LanguageStringType();
-        title.setValue( "This output always contains the constant value '" + returnValue + "'" );
-        literalOutput.setIdentifier( id );
+        title.setValue( "Constant" );
+        literalOutput.setTitle( title );
+        
         JAXBElement<LiteralOutputDefinition> outputEl = new JAXBElement<LiteralOutputDefinition>(
                                                                                                   new QName( "", "" ),
                                                                                                   LiteralOutputDefinition.class,
