@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wfs:GetFeature version="1.1.0" xmlns:xplan3="http://www.xplanung.de/xplangml/3/0"
+<wfs:GetFeature version="1.1.0" xmlns:xplan4="http://www.xplanung.de/xplangml/4/0"
   xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc"
   xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/wfs
 http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
-  <wfs:Query typeName="xplan3:BP_BaugebietsTeilFlaeche">
+  <wfs:Query typeName="xplan4:BP_BaugebietsTeilFlaeche">
     <ogc:Filter>
       <ogc:Or>
         <ogc:And>
           <ogc:BBOX>
-            <ogc:PropertyName>xplan3:position</ogc:PropertyName>
+            <ogc:PropertyName>xplan4:position</ogc:PropertyName>
             <gml:Envelope srsName="EPSG:25833">
               <gml:lowerCorner>169994.0 5958619.0</gml:lowerCorner>
               <gml:upperCorner>171000.0 5959000.0</gml:upperCorner>
             </gml:Envelope>
           </ogc:BBOX>
           <ogc:PropertyIsEqualTo>
-            <ogc:PropertyName>xplan3:besondereArtDerBaulichenNutzung</ogc:PropertyName>
+            <ogc:PropertyName>xplan4:besondereArtDerBaulichenNutzung</ogc:PropertyName>
             <ogc:Literal>1200</ogc:Literal>
           </ogc:PropertyIsEqualTo>
         </ogc:And>
         <ogc:PropertyIsEqualTo>
-          <ogc:PropertyName>xplan3:flaechenschluss</ogc:PropertyName>
+          <ogc:PropertyName>xplan4:flaechenschluss</ogc:PropertyName>
           <ogc:Literal>false</ogc:Literal>
         </ogc:PropertyIsEqualTo>
       </ogc:Or>
