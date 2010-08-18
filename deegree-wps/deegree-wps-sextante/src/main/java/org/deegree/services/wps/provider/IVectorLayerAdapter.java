@@ -157,13 +157,11 @@ public class IVectorLayerAdapter {
 
                     // AbstractDefaultGeometry geom = (AbstractDefaultGeometry) dfd[0].getValue();
                     // FeatureImpl fSextante = new FeatureImpl( geom.getJTSGeometry(), null );
-
+                    //
                     Property[] props = f.getProperties();
                     for ( int i = 0; i < props.length; i++ ) {
                         if ( props[i] instanceof SimplePropertyType ) {
-                            
-                            
-                            
+
                             LOG.info( "       " + props[i].getName().getLocalPart() + "(" + props[i].getValue() + ")" );
                         }
                     }
