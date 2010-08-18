@@ -41,8 +41,8 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 
@@ -69,11 +69,11 @@ public abstract class AbstractNavigationBarPanel extends JPanel {
 
     protected static final Dimension DIM = new Dimension( 20, 20 );
 
-    protected JButton buttonPan;
+    protected JToggleButton buttonPan;
 
-    protected JButton buttonZoomIn;
+    protected JToggleButton buttonZoomIn;
 
-    protected JButton buttonZoomOut;
+    protected JToggleButton buttonZoomOut;
 
     public AbstractNavigationBarPanel() {
         this.setLayout( new FlowLayout( 10 ) );
@@ -82,11 +82,11 @@ public abstract class AbstractNavigationBarPanel extends JPanel {
         ImageIcon iconZoomIn = new ImageIcon( ZOOM_IN );
         ImageIcon iconZoomOut = new ImageIcon( ZOOM_OUT );
 
-        buttonPan = new JButton( iconPan );
+        buttonPan = new JToggleButton( iconPan );
         buttonPan.setName( GUIConstants.JBUTTON_PAN );
-        buttonZoomIn = new JButton( iconZoomIn );
+        buttonZoomIn = new JToggleButton( iconZoomIn );
         buttonZoomIn.setName( GUIConstants.JBUTTON_ZOOM_IN );
-        buttonZoomOut = new JButton( iconZoomOut );
+        buttonZoomOut = new JToggleButton( iconZoomOut );
         buttonZoomOut.setName( GUIConstants.JBUTTON_ZOOM_OUT );
 
         buttonPan.setPreferredSize( DIM );
@@ -105,11 +105,23 @@ public abstract class AbstractNavigationBarPanel extends JPanel {
      * 
      * @param c
      */
-    public void addCoordListener( ActionListener c ) {
+    public void addAbstractCoordListener( ActionListener c ) {
         buttonPan.addActionListener( c );
         buttonZoomIn.addActionListener( c );
         buttonZoomOut.addActionListener( c );
 
+    }
+
+    public JToggleButton getButtonPan() {
+        return buttonPan;
+    }
+
+    public JToggleButton getButtonZoomIn() {
+        return buttonZoomIn;
+    }
+
+    public JToggleButton getButtonZoomOut() {
+        return buttonZoomOut;
     }
 
 }

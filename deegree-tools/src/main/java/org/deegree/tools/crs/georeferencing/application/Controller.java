@@ -48,6 +48,7 @@ import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -55,7 +56,10 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JToggleButton;
 import javax.swing.JTree;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -87,6 +91,7 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.option.OptionDi
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.SettingsPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.ViewPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
+import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelFootprint;
 import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelGeoref;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
@@ -126,7 +131,9 @@ public class Controller {
 
     private BuildingFootprintPanel footPanel;
 
-    private NavigationBarPanelGeoref navPanel;
+    private NavigationBarPanelGeoref navPanelGeoref;
+
+    private NavigationBarPanelFootprint navPanelFoot;
 
     private PointTableFrame tablePanel;
 
@@ -144,7 +151,9 @@ public class Controller {
 
     private Point2d changePoint;
 
-    private boolean isHorizontalRef, start, isControlDown;
+    private boolean isHorizontalRef, start, isControlDown, isLocked, selected;
+
+    // private boolean isZoomIn, isZoomOut
 
     private GeometryFactory geom;
 
@@ -174,6 +183,11 @@ public class Controller {
 
     private GenericSettingsPanel optionSettingPanel;
 
+    private JToggleButton buttonPanGeoref, buttonPanFoot, buttonZoomInGeoref, buttonZoominFoot, buttonZoomoutGeoref,
+                            buttonZoomoutFoot, buttonCoord;
+
+    private ButtonModel buttonModel;
+
     public Controller( GRViewerGUI view, Scene2D model, ParameterStore store ) {
 
         geom = new GeometryFactory();
@@ -183,10 +197,12 @@ public class Controller {
         this.model = model;
         this.panel = view.getScenePanel2D();
         this.footPanel = view.getFootprintPanel();
-        this.navPanel = view.getNavigationPanel();
+        this.navPanelGeoref = view.getNavigationPanelGeoref();
+        this.navPanelFoot = view.getNaviPanelFoot();
         this.footPrint = new Footprint( sceneValues, geom );
 
         this.start = false;
+        this.isLocked = false;
         this.glHandler = view.getOpenGLEventListener();
         this.store = store;
         this.textFieldModel = new TextFieldModel();
@@ -197,6 +213,7 @@ public class Controller {
 
         model.init( options, sceneValues );
         view.addListeners( new ButtonListener() );
+        // view.addChangeListener( new ChangeActionListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
 
         // init the scenePanel and the mouseinteraction of it
@@ -204,6 +221,8 @@ public class Controller {
 
         // init the footPanel and the mouseinteraction of it
         initFootprintScene();
+
+        initToggleButtons();
 
         // init the transformation method
         this.tablePanel = new PointTableFrame();
@@ -222,7 +241,66 @@ public class Controller {
 
         }
 
+        isHorizontalRef = true;
+
+    }
+
+    private void initToggleButtons() {
+        buttonPanGeoref = view.getNavigationPanelGeoref().getButtonPan();
+        buttonPanFoot = view.getNaviPanelFoot().getButtonPan();
+        buttonZoomInGeoref = view.getNavigationPanelGeoref().getButtonZoomIn();
+        buttonZoominFoot = view.getNaviPanelFoot().getButtonZoomIn();
+        buttonZoomoutGeoref = view.getNavigationPanelGeoref().getButtonZoomOut();
+        buttonZoomoutFoot = view.getNaviPanelFoot().getButtonZoomOut();
+        buttonCoord = view.getNavigationPanelGeoref().getButtonZoomCoord();
+    }
+
+    private void selectGeorefToggleButton( JToggleButton t ) {
+
+        if ( t.isSelected() == true ) {
+            if ( t == buttonPanGeoref ) {
+                buttonPanGeoref.setSelected( false );
+            } else if ( t == buttonZoomInGeoref ) {
+                buttonZoomInGeoref.setSelected( false );
+            } else if ( t == buttonZoomoutGeoref ) {
+                buttonZoomoutGeoref.setSelected( false );
+            } else if ( t == buttonCoord ) {
+                buttonCoord.setSelected( false );
+            }
+        } else {
+
+            buttonPanGeoref.setSelected( false );
+            buttonZoomInGeoref.setSelected( false );
+            buttonZoomoutGeoref.setSelected( false );
+            buttonCoord.setSelected( false );
+            isHorizontalRef = false;
+            if ( t == buttonPanGeoref ) {
+                buttonPanGeoref.setSelected( true );
+            } else if ( t == buttonZoomInGeoref ) {
+                buttonZoomInGeoref.setSelected( true );
+            } else if ( t == buttonZoomoutGeoref ) {
+                buttonZoomoutGeoref.setSelected( true );
+            } else if ( t == buttonCoord ) {
+                buttonCoord.setSelected( true );
+            }
+        }
+    }
+
+    private void selectFootprintToggleButton( JToggleButton t ) {
+        buttonPanFoot.setSelected( false );
+        buttonZoominFoot.setSelected( false );
+        buttonZoomoutFoot.setSelected( false );
         isHorizontalRef = false;
+        if ( t == buttonPanFoot ) {
+            buttonPanFoot.setSelected( true );
+
+        } else if ( t == buttonZoominFoot ) {
+            buttonZoominFoot.setSelected( true );
+
+        } else if ( t == buttonZoomoutFoot ) {
+            buttonZoomoutFoot.setSelected( true );
+
+        }
 
     }
 
@@ -347,16 +425,84 @@ public class Controller {
 
             }
 
-            if ( source instanceof JButton ) {
+            if ( source instanceof JToggleButton ) {
+                JToggleButton tb = (JToggleButton) source;
+                buttonModel = tb.getModel();
+                selected = buttonModel.isSelected();
+                if ( tb.getName().startsWith( GUIConstants.JBUTTON_PAN ) ) {
 
-                if ( ( (JButton) source ).getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
+                    if ( tb == buttonPanGeoref ) {
+                        selectGeorefToggleButton( tb );
+                    } else {
+                        selectFootprintToggleButton( tb );
+                    }
 
-                    jumperDialog = new CoordinateJumperDialog();
-                    jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
-                    jumperDialog.addListeners( new ButtonListener() );
-                    jumperDialog.setVisible( true );
-
+                    // if ( selected == true && isLocked == false ) {
+                    // isLocked = true;
+                    // isHorizontalRef = false;
+                    //
+                    // } else if ( selected == true && isLocked == true ) {
+                    // buttonModel.setSelected( false );
+                    // } else if ( selected == false ) {
+                    // isLocked = false;
+                    // isHorizontalRef = true;
+                    // }
                 }
+                if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
+                    if ( selected == true && isLocked == false ) {
+                        isLocked = true;
+                        isHorizontalRef = false;
+                        jumperDialog = new CoordinateJumperDialog();
+                        jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
+                        jumperDialog.addListeners( new ButtonListener() );
+                        jumperDialog.setVisible( true );
+                    } else if ( selected == true && isLocked == true ) {
+                        buttonModel.setSelected( false );
+                    } else if ( selected == false ) {
+                        isLocked = false;
+                        isHorizontalRef = true;
+                    }
+                }
+                if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_IN ) ) {
+
+                    if ( tb == buttonZoomInGeoref ) {
+                        selectGeorefToggleButton( tb );
+                    } else {
+                        selectFootprintToggleButton( tb );
+                    }
+
+                    // if ( selected == true && isLocked == false ) {
+                    // isLocked = true;
+                    // isHorizontalRef = false;
+                    //
+                    // } else if ( selected == true && isLocked == true ) {
+                    // buttonModel.setSelected( false );
+                    // } else if ( selected == false ) {
+                    // isLocked = false;
+                    // isHorizontalRef = true;
+                    // }
+                }
+                if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_OUT ) ) {
+
+                    if ( tb == buttonZoomoutGeoref ) {
+                        selectGeorefToggleButton( tb );
+                    } else {
+                        selectFootprintToggleButton( tb );
+                    }
+                    // if ( selected == true && isLocked == false ) {
+                    // isLocked = true;
+                    // isHorizontalRef = false;
+                    //
+                    // } else if ( selected == true && isLocked == true ) {
+                    // buttonModel.setSelected( false );
+                    // } else if ( selected == false ) {
+                    // isLocked = false;
+                    // isHorizontalRef = true;
+                    // }
+                }
+            }
+
+            if ( source instanceof JButton ) {
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
 
@@ -431,7 +577,6 @@ public class Controller {
                     reset();
                 }
                 if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
-                    // System.out.println( "i'm affected" );
                     if ( optionDialog != null && optionDialog.isVisible() == true ) {
                         dialogModel.transferOldToNew();
                         AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize().first;
@@ -440,6 +585,11 @@ public class Controller {
                         optionDialog.setVisible( false );
                     } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
                         jumperDialog.setVisible( false );
+                        isLocked = false;
+                        selected = false;
+                        buttonModel.setSelected( false );
+                        isHorizontalRef = true;
+
                     }
 
                 }
@@ -453,8 +603,7 @@ public class Controller {
                                 if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
                                      && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects() != null ) {
                                     // here you have to check about the input for the custom textfield. Keylistener for
-                                    // the
-                                    // textfield while typing in is problematic because you can workaround with
+                                    // the textfield while typing in is problematic because you can workaround with
                                     // copy&paste...so this should be the way to go.
 
                                     String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
@@ -499,6 +648,10 @@ public class Controller {
 
                                 }
                                 jumperDialog.setVisible( false );
+                                isLocked = false;
+                                selected = false;
+                                buttonModel.setSelected( false );
+                                isHorizontalRef = true;
                                 panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                                 panel.updatePoints( sceneValues );
                                 panel.repaint();
@@ -569,6 +722,53 @@ public class Controller {
             }
 
         }
+    }
+
+    class ChangeActionListener implements ChangeListener {
+        @Override
+        public void stateChanged( ChangeEvent changeEvent ) {
+            // AbstractButton abstractButton = (AbstractButton) changeEvent.getSource();
+            // ButtonModel buttonModel = abstractButton.getModel();
+            // boolean armed = buttonModel.isArmed();
+            // boolean pressed = buttonModel.isPressed();
+            // boolean selected = buttonModel.isSelected();
+            // if ( abstractButton.getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
+            //
+            // if ( pressed == true ) {
+            // isHorizontalRef = false;
+            // jumperDialog = new CoordinateJumperDialog();
+            // jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
+            // jumperDialog.addListeners( new ButtonListener() );
+            // jumperDialog.setVisible( true );
+            // buttonModel.setSelected( true );
+            // } else {
+            // isHorizontalRef = true;
+            // if ( jumperDialog != null ) {
+            // jumperDialog.setVisible( false );
+            // }
+            // buttonModel.setSelected( false );
+            // }
+            //
+            // }
+            // if ( abstractButton.getName().startsWith( GUIConstants.JBUTTON_PAN ) ) {
+            // System.out.println( "[Controller] jtogglebutton PAN " + buttonPan.getModel().isSelected() );
+            // if ( buttonPan.getModel().isSelected() == true ) {
+            // buttonPan.setSelected( false );
+            // isHorizontalRef = true;
+            // System.out.println( "[Controller] jtogglebutton PAN true" );
+            // } else {
+            // buttonPan.setSelected( true );
+            // isHorizontalRef = false;
+            // System.out.println( "[Controller] jtogglebutton PAN false" );
+            // }
+            // // System.out.println( "[Controller] jtogglebutton PAN" );
+            // }
+            // // AbstractButton abstractButton = (AbstractButton) changeEvent.getSource();
+            // // ButtonModel buttonModel = abstractButton.getModel();
+            //
+            // System.out.println( "Changed: Armed: " + armed + "/Pressed: " + pressed + "/Selected: " + selected );
+        }
+
     }
 
     /**

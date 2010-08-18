@@ -101,10 +101,6 @@ public class PointTableFrame extends JFrame implements GUIConstants {
 
     private JPanel rightCenterPanel = new JPanel();
 
-    // private JPanel rightCenterWest = new JPanel();
-    //
-    // private JPanel rightCenterCenter = new JPanel();
-
     private JPanel rightSouthPanel = new JPanel( new FlowLayout() );
 
     private JScrollPane tableScrollPane = new JScrollPane();
@@ -132,13 +128,9 @@ public class PointTableFrame extends JFrame implements GUIConstants {
         label.setFont( new Font( "Helvetica", Font.BOLD, 16 ) );
         rightUpperPanel.add( label );
 
-        // Label rightLowerDummy = new Label( " " );
-        // rightLowerDummy.setFont( new Font( "Helvetica", Font.BOLD, 40 ) );
-        // rightNorthPanel.add( rightLowerDummy );
-
-        // Label rightLowerWestDummy = new Label( "    " );
-        // rightLowerWestDummy.setFont( new Font( "Helvetica", Font.BOLD, 40 ) );
-        // rightCenterWest.add( rightLowerWestDummy );
+        computeTransform.setName( COMPUTE_BUTTON_NAME );
+        deleteSingleButton.setName( BUTTON_DELETE_SELECTED );
+        deleteAllButton.setName( BUTTON_DELETE_ALL );
 
         String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
         checkbox = new CheckBoxList( sArray );
