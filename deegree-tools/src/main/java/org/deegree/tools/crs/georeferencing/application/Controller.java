@@ -58,8 +58,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.JTree;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -701,53 +699,6 @@ public class Controller {
             }
 
         }
-    }
-
-    class ChangeActionListener implements ChangeListener {
-        @Override
-        public void stateChanged( ChangeEvent changeEvent ) {
-            // AbstractButton abstractButton = (AbstractButton) changeEvent.getSource();
-            // ButtonModel buttonModel = abstractButton.getModel();
-            // boolean armed = buttonModel.isArmed();
-            // boolean pressed = buttonModel.isPressed();
-            // boolean selected = buttonModel.isSelected();
-            // if ( abstractButton.getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
-            //
-            // if ( pressed == true ) {
-            // isHorizontalRef = false;
-            // jumperDialog = new CoordinateJumperDialog();
-            // jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
-            // jumperDialog.addListeners( new ButtonListener() );
-            // jumperDialog.setVisible( true );
-            // buttonModel.setSelected( true );
-            // } else {
-            // isHorizontalRef = true;
-            // if ( jumperDialog != null ) {
-            // jumperDialog.setVisible( false );
-            // }
-            // buttonModel.setSelected( false );
-            // }
-            //
-            // }
-            // if ( abstractButton.getName().startsWith( GUIConstants.JBUTTON_PAN ) ) {
-            // System.out.println( "[Controller] jtogglebutton PAN " + buttonPan.getModel().isSelected() );
-            // if ( buttonPan.getModel().isSelected() == true ) {
-            // buttonPan.setSelected( false );
-            // isHorizontalRef = true;
-            // System.out.println( "[Controller] jtogglebutton PAN true" );
-            // } else {
-            // buttonPan.setSelected( true );
-            // isHorizontalRef = false;
-            // System.out.println( "[Controller] jtogglebutton PAN false" );
-            // }
-            // // System.out.println( "[Controller] jtogglebutton PAN" );
-            // }
-            // // AbstractButton abstractButton = (AbstractButton) changeEvent.getSource();
-            // // ButtonModel buttonModel = abstractButton.getModel();
-            //
-            // System.out.println( "Changed: Armed: " + armed + "/Pressed: " + pressed + "/Selected: " + selected );
-        }
-
     }
 
     /**
