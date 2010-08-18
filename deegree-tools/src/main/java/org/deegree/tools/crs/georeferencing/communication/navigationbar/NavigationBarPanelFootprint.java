@@ -33,62 +33,20 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication;
-
-import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
-import java.net.URL;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
+package org.deegree.tools.crs.georeferencing.communication.navigationbar;
 
 /**
- * 
- * The NavigationBar above all the components.
+ * Concrete class for navigationBar for footprints.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class NavigationBarPanel extends JPanel {
+public class NavigationBarPanelFootprint extends AbstractNavigationBarPanel {
 
-    public final static String HORIZONTAL_REFERENCING = "Horizontal Referencing";
-
-    public final static String NAVIGATIONBAR_PANEL_NAME = "NavigationBarPanel";
-
-    private JCheckBox checkBox1 = new JCheckBox( HORIZONTAL_REFERENCING );
-
-    private static final URL i = NavigationBarPanel.class.getResource( "../icons/pan.png" );
-
-    private ImageIcon iconPan;
-
-    /**
-     * Creates a new instance of <Code>NavigationBarPanel</Code>.
-     */
-    public NavigationBarPanel() {
-        this.setName( NAVIGATIONBAR_PANEL_NAME );
-        this.setLayout( new FlowLayout( 10 ) );
-
-        iconPan = new ImageIcon( i );
-        JButton l = new JButton( iconPan );
-
-        this.add( l );
-        this.add( checkBox1 );
-
-        this.repaint();
-    }
-
-    /**
-     * Adds the ActionListener to the AbstractButtonsthat should be affected.
-     * 
-     * @param c
-     */
-    public void addHorizontalRefListener( ActionListener c ) {
-        checkBox1.addActionListener( c );
-
+    public NavigationBarPanelFootprint() {
+        super();
     }
 
 }

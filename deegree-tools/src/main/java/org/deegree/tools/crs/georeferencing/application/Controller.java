@@ -79,7 +79,6 @@ import org.deegree.tools.crs.georeferencing.communication.AbstractPanel2D;
 import org.deegree.tools.crs.georeferencing.communication.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
-import org.deegree.tools.crs.georeferencing.communication.NavigationBarPanel;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
@@ -91,6 +90,7 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.OptionDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.SettingsPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ViewPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.GenericSettingsPanel.PanelType;
+import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelGeoref;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
@@ -126,7 +126,7 @@ public class Controller {
 
     private BuildingFootprintPanel footPanel;
 
-    private NavigationBarPanel navPanel;
+    private NavigationBarPanelGeoref navPanel;
 
     private PointTableFrame tablePanel;
 
@@ -196,8 +196,8 @@ public class Controller {
         model.init( options, sceneValues );
         view.addMenuItemListener( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
-        navPanel.addHorizontalRefListener( new ButtonListener() );
-        view.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
+        // navPanel.addHorizontalRefListener( new ButtonListener() );
+        // view.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
 
         // init the scenePanel and the mouseinteraction of it
         initGeoReferencingScene();
@@ -316,7 +316,7 @@ public class Controller {
             Object source = e.getSource();
             if ( source instanceof JCheckBox ) {
                 JCheckBox selectedCheckbox = (JCheckBox) source;
-                if ( ( selectedCheckbox ).getText().startsWith( NavigationBarPanel.HORIZONTAL_REFERENCING ) ) {
+                if ( ( selectedCheckbox ).getText().startsWith( NavigationBarPanelGeoref.HORIZONTAL_REFERENCING ) ) {
                     if ( isHorizontalRef == false ) {
                         isHorizontalRef = true;
                     } else {

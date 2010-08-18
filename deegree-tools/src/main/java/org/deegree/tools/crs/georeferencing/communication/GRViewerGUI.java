@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -51,10 +52,12 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JTextField;
+import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
+import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelFootprint;
+import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelGeoref;
 
 /**
  * The <Code>GRViewerGUI</Code> class provides the client to view georeferencing tools/windows.
@@ -72,7 +75,11 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
 
     private Scene2DPanel scenePanel2D;
 
-    private NavigationBarPanel navigationPanel;
+    // private JPanel navigationPanel;
+
+    private JPanel panelWest;
+
+    private JPanel panelEast;
 
     private OpenGLEventHandler openGLEventListener;
 
@@ -80,7 +87,11 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
 
     private JMenuItem editMenuItem;
 
-    private JTextField coordinateJumper;
+    // private JTextField coordinateJumper;
+
+    private NavigationBarPanelGeoref naviPanelGeoref;
+
+    private NavigationBarPanelFootprint naviPanelFoot;
 
     public GRViewerGUI() {
         super( WINDOW_TITLE );
@@ -100,7 +111,6 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         setup2DScene( gbl );
         setupPanelFootprint( gbl );
         setupOpenGL( gbl, false );
-        setupNavigationBar( gbl );
         this.pack();
     }
 
@@ -123,35 +133,32 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         this.getRootPane().setJMenuBar( menuBar );
     }
 
-    private void setupNavigationBar( GridBagLayout gbl ) {
-        navigationPanel = new NavigationBarPanel();
-        navigationPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
-        navigationPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
-
-        coordinateJumper = new JTextField( 15 );
-        coordinateJumper.setName( JTEXTFIELD_COORDINATE_JUMPER );
-        navigationPanel.add( coordinateJumper );
-
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, navigationPanel, 0, 0, 3, 1, .15, .15 );
-    }
-
     private void setup2DScene( GridBagLayout gbl ) {
+        panelWest = new JPanel( new BorderLayout() );
         scenePanel2D = new Scene2DPanel();
+        naviPanelGeoref = new NavigationBarPanelGeoref();
         scenePanel2D.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         scenePanel2D.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, scenePanel2D, 0, 1, 2, 2, 1.0, 1.0 );
+        panelWest.add( naviPanelGeoref, BorderLayout.NORTH );
+        panelWest.add( scenePanel2D, BorderLayout.CENTER );
+
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, panelWest, 0, 1, 2, 2, 1.0, 1.0 );
 
     }
 
     private void setupPanelFootprint( GridBagLayout gbl ) {
-
+        panelEast = new JPanel( new BorderLayout() );
         footprintPanel = new BuildingFootprintPanel();
+        naviPanelFoot = new NavigationBarPanelFootprint();
         footprintPanel.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
         footprintPanel.setBackground( Color.white );
         footprintPanel.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, footprintPanel, 2, 1, 1, 1,
+        panelEast.add( naviPanelFoot, BorderLayout.NORTH );
+        panelEast.add( footprintPanel, BorderLayout.CENTER );
+
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, panelEast, 2, 1, 1, 1,
                                           footprintPanel.getInsets(), GridBagConstraints.LINE_END, .5, 1 );
 
     }
@@ -188,7 +195,7 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
      * @param e
      */
     public void addMenuItemListener( ActionListener e ) {
-        coordinateJumper.addActionListener( e );
+        // coordinateJumper.addActionListener( e );
         editMenuItem.addActionListener( e );
 
     }
@@ -211,12 +218,12 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
 
     }
 
-    public JTextField getCoordinateJumper() {
-        return coordinateJumper;
-    }
+    // public JTextField getCoordinateJumper() {
+    // return coordinateJumper;
+    // }
 
-    public NavigationBarPanel getNavigationPanel() {
-        return navigationPanel;
+    public NavigationBarPanelGeoref getNavigationPanel() {
+        return naviPanelGeoref;
     }
 
     public OpenGLEventHandler getOpenGLEventListener() {
