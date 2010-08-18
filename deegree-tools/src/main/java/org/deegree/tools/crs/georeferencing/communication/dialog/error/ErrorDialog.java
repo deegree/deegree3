@@ -33,46 +33,49 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication.dialog;
+package org.deegree.tools.crs.georeferencing.communication.dialog.error;
 
-import java.awt.LayoutManager;
+import java.awt.Component;
 
-import javax.swing.JPanel;
-import javax.swing.JTree;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 /**
- * Outsourced panel for navigation to keep modularization.
+ * Custom class to provide the functionality to show errors. <br>
+ * TODO implement an own ErrorDialog because this one hears just on the parentFrame but should hear on its near standing
+ * parent which can be a Dialog as well
+ * 
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class NavigationPanel extends JPanel {
+public class ErrorDialog extends JDialog {
 
-    public final static String NAME = "NavigationPanel";
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-    public final static String TREE_NAME = "tree";
+    /**
+     * Creates a new instance of {@code Dialog} to show error messages.
+     * 
+     * @param com
+     *            the parent component of this error message.
+     * @param messageType
+     *            one of the types specified by the Java API
+     * @param messageText
+     *            the customized message that should be shown.
+     */
+    public ErrorDialog( Component com, int messageType, String messageText ) {
 
-    private JTree tree;
+        switch ( messageType ) {
 
-    public NavigationPanel( LayoutManager layout, DefaultMutableTreeNode root ) {
-        super( layout );
-        tree = new JTree( root );
-        tree.setName( TREE_NAME );
-        tree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
-        this.add( tree );
-    }
+        case JDialog.ERROR:
+            JOptionPane.showMessageDialog( com, messageText, "Error", JOptionPane.ERROR_MESSAGE );
+        }
 
-    public JTree getTree() {
-        return tree;
-    }
-
-    public void addTreeListener( TreeSelectionListener e ) {
-        tree.addTreeSelectionListener( e );
     }
 
 }

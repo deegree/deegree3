@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication.dialog;
+package org.deegree.tools.crs.georeferencing.communication.dialog.option;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -46,6 +46,8 @@ import javax.swing.JDialog;
 import javax.swing.JSplitPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
 
 /**
  * Custom class to provide the functionality to show option dialogs.

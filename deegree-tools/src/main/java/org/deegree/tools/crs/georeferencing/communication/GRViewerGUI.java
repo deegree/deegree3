@@ -77,8 +77,6 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
 
     private Scene2DPanel scenePanel2D;
 
-    // private JPanel navigationPanel;
-
     private JPanel panelWest;
 
     private JPanel panelEast;

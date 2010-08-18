@@ -33,49 +33,47 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication.dialog;
+package org.deegree.tools.crs.georeferencing.communication.dialog.option;
 
-import java.awt.Component;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
- * Custom class to provide the functionality to show errors. <br>
- * TODO implement an own ErrorDialog because this one hears just on the parentFrame but should hear on its near standing
- * parent which can be a Dialog as well
- * 
+ * Outsourced panel for setting attributes to keep modularization.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ErrorDialog extends JDialog {
+public class SettingsPanel extends JPanel {
+
+    private JPanel currentPanel;
 
     /**
      * 
+     * @return the currentPanel that is displayed.
      */
-    private static final long serialVersionUID = 1L;
+    public JPanel getCurrentPanel() {
+        return currentPanel;
+    }
 
     /**
-     * Creates a new instance of {@code Dialog} to show error messages.
+     * Sets the Panel that should be displayed.
      * 
-     * @param com
-     *            the parent component of this error message.
-     * @param messageType
-     *            one of the types specified by the Java API
-     * @param messageText
-     *            the customized message that should be shown.
+     * @param currentPanel
+     *            , not <Code>null</Code>.
      */
-    public ErrorDialog( Component com, int messageType, String messageText ) {
+    public void setCurrentPanel( JPanel currentPanel ) {
+        this.currentPanel = currentPanel;
+        this.removeAll();
+        this.add( currentPanel );
+    }
 
-        switch ( messageType ) {
-
-        case JDialog.ERROR:
-            JOptionPane.showMessageDialog( com, messageText, "Error", JOptionPane.ERROR_MESSAGE );
-        }
-
+    /**
+     * Removes all the components in this panel.
+     */
+    public void reset() {
+        this.removeAll();
     }
 
 }

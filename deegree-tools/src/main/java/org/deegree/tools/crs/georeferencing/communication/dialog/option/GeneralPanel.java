@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication.dialog;
+package org.deegree.tools.crs.georeferencing.communication.dialog.option;
 
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -43,6 +43,8 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+
+import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
 
 /**
  * <Code>GeneralPanel</Code>.

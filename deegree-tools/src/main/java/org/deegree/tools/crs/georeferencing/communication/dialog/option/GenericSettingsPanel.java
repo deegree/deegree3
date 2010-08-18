@@ -33,47 +33,40 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication.dialog;
+package org.deegree.tools.crs.georeferencing.communication.dialog.option;
 
 import javax.swing.JPanel;
 
 /**
- * Outsourced panel for setting attributes to keep modularization.
+ * Abstract base class for all panelTypes for setting attributes of the program.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class SettingsPanel extends JPanel {
-
-    private JPanel currentPanel;
+public abstract class GenericSettingsPanel extends JPanel {
 
     /**
      * 
-     * @return the currentPanel that is displayed.
-     */
-    public JPanel getCurrentPanel() {
-        return currentPanel;
-    }
-
-    /**
-     * Sets the Panel that should be displayed.
+     * The paneltypes that are provided.
      * 
-     * @param currentPanel
-     *            , not <Code>null</Code>.
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
      */
-    public void setCurrentPanel( JPanel currentPanel ) {
-        this.currentPanel = currentPanel;
-        this.removeAll();
-        this.add( currentPanel );
+    public enum PanelType {
+
+        GeneralPanel,
+
+        ViewPanel
+
     }
 
     /**
-     * Removes all the components in this panel.
+     * 
+     * @return the type of the specific panel.
      */
-    public void reset() {
-        this.removeAll();
-    }
-
+    public abstract PanelType getType();
 }

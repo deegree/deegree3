@@ -33,40 +33,46 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication.dialog;
+package org.deegree.tools.crs.georeferencing.communication.dialog.option;
+
+import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
- * Abstract base class for all panelTypes for setting attributes of the program.
+ * Outsourced panel for navigation to keep modularization.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class GenericSettingsPanel extends JPanel {
+public class NavigationPanel extends JPanel {
 
-    /**
-     * 
-     * The paneltypes that are provided.
-     * 
-     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public enum PanelType {
+    public final static String NAME = "NavigationPanel";
 
-        GeneralPanel,
+    public final static String TREE_NAME = "tree";
 
-        ViewPanel
+    private JTree tree;
 
+    public NavigationPanel( LayoutManager layout, DefaultMutableTreeNode root ) {
+        super( layout );
+        tree = new JTree( root );
+        tree.setName( TREE_NAME );
+        tree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
+        this.add( tree );
     }
 
-    /**
-     * 
-     * @return the type of the specific panel.
-     */
-    public abstract PanelType getType();
+    public JTree getTree() {
+        return tree;
+    }
+
+    public void addTreeListener( TreeSelectionListener e ) {
+        tree.addTreeSelectionListener( e );
+    }
+
 }
