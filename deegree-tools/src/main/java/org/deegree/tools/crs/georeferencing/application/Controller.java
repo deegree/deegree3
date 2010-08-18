@@ -151,15 +151,13 @@ public class Controller {
 
     private Point2d changePoint;
 
-    private boolean isHorizontalRef, start, isControlDown, isLocked, selected;
+    private boolean isHorizontalRef, start, isControlDown, selected;
 
     // private boolean isZoomIn, isZoomOut
 
     private GeometryFactory geom;
 
-    private CRS sourceCRS;
-
-    private CRS targetCRS;
+    private CRS sourceCRS, targetCRS;
 
     private List<Pair<Point4Values, Point4Values>> mappedPoints;
 
@@ -202,7 +200,7 @@ public class Controller {
         this.footPrint = new Footprint( sceneValues, geom );
 
         this.start = false;
-        this.isLocked = false;
+
         this.glHandler = view.getOpenGLEventListener();
         this.store = store;
         this.textFieldModel = new TextFieldModel();
@@ -245,6 +243,9 @@ public class Controller {
 
     }
 
+    /**
+     * Initializes the navigation buttons that are registered for each map.
+     */
     private void initToggleButtons() {
         buttonPanGeoref = view.getNavigationPanelGeoref().getButtonPan();
         buttonPanFoot = view.getNaviPanelFoot().getButtonPan();
@@ -255,37 +256,53 @@ public class Controller {
         buttonCoord = view.getNavigationPanelGeoref().getButtonZoomCoord();
     }
 
+    /**
+     * Selects one navigation button and deselects the other so that the focus is just on this one button. The
+     * georeferencing for the georeferenced map will be turned off in this case. <br>
+     * If the button is selected already, that will be deselected and there is a horizontal referencing possible again.
+     * 
+     * @param t
+     *            the toggleButton that should be selected/deselected, not <Code>null</Code>.
+     */
     private void selectGeorefToggleButton( JToggleButton t ) {
-
-        if ( t.isSelected() == true ) {
-            if ( t == buttonPanGeoref ) {
-                buttonPanGeoref.setSelected( false );
-            } else if ( t == buttonZoomInGeoref ) {
-                buttonZoomInGeoref.setSelected( false );
-            } else if ( t == buttonZoomoutGeoref ) {
-                buttonZoomoutGeoref.setSelected( false );
-            } else if ( t == buttonCoord ) {
-                buttonCoord.setSelected( false );
-            }
+        boolean checkSelected = false;
+        buttonModel = t.getModel();
+        selected = buttonModel.isSelected();
+        if ( selected == false ) {
+            isHorizontalRef = true;
         } else {
-
+            checkSelected = true;
             buttonPanGeoref.setSelected( false );
             buttonZoomInGeoref.setSelected( false );
             buttonZoomoutGeoref.setSelected( false );
             buttonCoord.setSelected( false );
             isHorizontalRef = false;
-            if ( t == buttonPanGeoref ) {
-                buttonPanGeoref.setSelected( true );
-            } else if ( t == buttonZoomInGeoref ) {
-                buttonZoomInGeoref.setSelected( true );
-            } else if ( t == buttonZoomoutGeoref ) {
-                buttonZoomoutGeoref.setSelected( true );
-            } else if ( t == buttonCoord ) {
-                buttonCoord.setSelected( true );
+        }
+        if ( t == buttonPanGeoref ) {
+            buttonPanGeoref.setSelected( checkSelected );
+        } else if ( t == buttonZoomInGeoref ) {
+            buttonZoomInGeoref.setSelected( checkSelected );
+        } else if ( t == buttonZoomoutGeoref ) {
+            buttonZoomoutGeoref.setSelected( checkSelected );
+        } else if ( t == buttonCoord ) {
+            buttonCoord.setSelected( checkSelected );
+            if ( checkSelected == true ) {
+                jumperDialog = new CoordinateJumperDialog();
+                jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
+                jumperDialog.addListeners( new ButtonListener() );
+                jumperDialog.setVisible( true );
             }
         }
     }
 
+    /**
+     * Selects one navigation button and deselects the other so that the focus is just on this one button. The
+     * georeferencing for the footprint view will be turned off in this case. <br>
+     * If the button is selected already, that will be deselected and there is a horizontal referencing possible again.
+     * 
+     * @param t
+     *            the toggleButton that should be selected/deselected, not <Code>null</Code>.
+     */
     private void selectFootprintToggleButton( JToggleButton t ) {
         buttonPanFoot.setSelected( false );
         buttonZoominFoot.setSelected( false );
@@ -427,78 +444,41 @@ public class Controller {
 
             if ( source instanceof JToggleButton ) {
                 JToggleButton tb = (JToggleButton) source;
-                buttonModel = tb.getModel();
-                selected = buttonModel.isSelected();
+
                 if ( tb.getName().startsWith( GUIConstants.JBUTTON_PAN ) ) {
 
                     if ( tb == buttonPanGeoref ) {
                         selectGeorefToggleButton( tb );
+                        // TODO zoom functionality should be deactivated
                     } else {
                         selectFootprintToggleButton( tb );
                     }
-
-                    // if ( selected == true && isLocked == false ) {
-                    // isLocked = true;
-                    // isHorizontalRef = false;
-                    //
-                    // } else if ( selected == true && isLocked == true ) {
-                    // buttonModel.setSelected( false );
-                    // } else if ( selected == false ) {
-                    // isLocked = false;
-                    // isHorizontalRef = true;
-                    // }
                 }
                 if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
-                    if ( selected == true && isLocked == false ) {
-                        isLocked = true;
-                        isHorizontalRef = false;
-                        jumperDialog = new CoordinateJumperDialog();
-                        jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
-                        jumperDialog.addListeners( new ButtonListener() );
-                        jumperDialog.setVisible( true );
-                    } else if ( selected == true && isLocked == true ) {
-                        buttonModel.setSelected( false );
-                    } else if ( selected == false ) {
-                        isLocked = false;
-                        isHorizontalRef = true;
+
+                    if ( tb == buttonCoord ) {
+                        selectGeorefToggleButton( tb );
+                    } else {
+                        selectFootprintToggleButton( tb );
                     }
                 }
                 if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_IN ) ) {
 
                     if ( tb == buttonZoomInGeoref ) {
                         selectGeorefToggleButton( tb );
+                        // TODO pan should be deactivated
                     } else {
                         selectFootprintToggleButton( tb );
                     }
-
-                    // if ( selected == true && isLocked == false ) {
-                    // isLocked = true;
-                    // isHorizontalRef = false;
-                    //
-                    // } else if ( selected == true && isLocked == true ) {
-                    // buttonModel.setSelected( false );
-                    // } else if ( selected == false ) {
-                    // isLocked = false;
-                    // isHorizontalRef = true;
-                    // }
                 }
                 if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_OUT ) ) {
 
                     if ( tb == buttonZoomoutGeoref ) {
                         selectGeorefToggleButton( tb );
+                        // TODO pan functionality should be deactivated
                     } else {
                         selectFootprintToggleButton( tb );
                     }
-                    // if ( selected == true && isLocked == false ) {
-                    // isLocked = true;
-                    // isHorizontalRef = false;
-                    //
-                    // } else if ( selected == true && isLocked == true ) {
-                    // buttonModel.setSelected( false );
-                    // } else if ( selected == false ) {
-                    // isLocked = false;
-                    // isHorizontalRef = true;
-                    // }
                 }
             }
 
@@ -585,7 +565,7 @@ public class Controller {
                         optionDialog.setVisible( false );
                     } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
                         jumperDialog.setVisible( false );
-                        isLocked = false;
+
                         selected = false;
                         buttonModel.setSelected( false );
                         isHorizontalRef = true;
@@ -648,7 +628,6 @@ public class Controller {
 
                                 }
                                 jumperDialog.setVisible( false );
-                                isLocked = false;
                                 selected = false;
                                 buttonModel.setSelected( false );
                                 isHorizontalRef = true;
