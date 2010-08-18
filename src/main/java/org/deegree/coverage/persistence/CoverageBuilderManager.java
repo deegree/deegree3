@@ -38,6 +38,7 @@ package org.deegree.coverage.persistence;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -210,9 +211,11 @@ public class CoverageBuilderManager {
 
         String namespace = null;
         try {
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
+            InputStream is = configURL.openStream();
+            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
             StAXParsingHelper.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
+            is.close();
         } catch ( Exception e ) {
             String msg = "Error determining configuration namespace for file '" + configURL + "'";
             LOG.error( msg );

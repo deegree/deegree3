@@ -84,7 +84,7 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
 
-            String srs = config.getStorageSRS();
+            String srs = config.getStorageCRS();
             CRS crs = null;
             if ( srs != null ) {
                 // rb: if it is null, the shape feature store will try to read the prj files.
@@ -120,7 +120,9 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
             }
 
             // TODO make cache configurable
-            fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getNamespace(), null );
+            Boolean genIdx = config.isGenerateAlphanumericIndexes();
+            fs = new ShapeFeatureStore( shapeFileName, crs, cs, config.getNamespace(), config.getFeatureTypeName(),
+                                        genIdx == null || genIdx, null );
 
         } catch ( JAXBException e ) {
             String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();

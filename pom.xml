@@ -36,7 +36,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>datasource/coverage/raster/0.6.0/raster.xsd,datasource/0.5.0/coverage/wms.xsd,datasource/0.5.0/observation/simplesql.xsd,datasource/0.5.0/observation/contsql.xsd,datasource/0.5.0/feature/memory.xsd,datasource/feature/postgis/0.6.0/postgis.xsd,datasource/0.5.0/feature/shape.xsd,datasource/0.5.0/feature/simplesql.xsd,datasource/0.5.0/record/iso19115.xsd,jdbc/0.5.0/jdbc.xsd,proxy/0.5.0/proxy.xsd,datasource/0.5.0/renderable/file.xsd,datasource/0.5.0/renderable/sql.xsd,datasource/0.5.0/batchedmt/file.xsd</schemaFiles>
+          <schemaFiles>datasource/coverage/raster/0.6.0/raster.xsd,datasource/0.5.0/coverage/wms.xsd,datasource/0.5.0/observation/simplesql.xsd,datasource/0.5.0/observation/contsql.xsd,datasource/0.5.0/feature/memory.xsd,datasource/feature/postgis/0.6.0/postgis.xsd,datasource/feature/shape/0.6.0/shape.xsd,datasource/0.5.0/feature/simplesql.xsd,datasource/0.5.0/record/iso19115.xsd,jdbc/0.5.0/jdbc.xsd,proxy/0.5.0/proxy.xsd,datasource/0.5.0/renderable/file.xsd,datasource/0.5.0/renderable/sql.xsd,datasource/0.5.0/batchedmt/file.xsd</schemaFiles>
           <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
         </configuration>
       </plugin>
@@ -421,5 +421,12 @@
       <version>1.0-2</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.2.140</version>
+    </dependency>
+
   </dependencies>
 </project>

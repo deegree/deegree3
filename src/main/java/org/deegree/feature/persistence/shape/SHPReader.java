@@ -49,6 +49,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -323,10 +324,13 @@ public class SHPReader {
 
     /**
      * @param bbox
+     * @param ids
+     *            if not null, the resulting list will only contain record numbers which are also contained in this set.
+     *            If null, all matching records are returned.
      * @return the list of matching record ids
      * @throws IOException
      */
-    public List<Pair<Integer, Long>> query( Envelope bbox )
+    public List<Pair<Integer, Long>> query( Envelope bbox, HashSet<Integer> ids )
                             throws IOException {
 
         LOG.debug( "Querying shp with bbox {}", bbox );
@@ -344,9 +348,15 @@ public class SHPReader {
                 LOG.error( "PLEASE NOTE THIS: This should not happen any more, and is a bug! Please report this along with the data!" );
                 recordNumStartsWith0 = true;
             }
+
             if ( !recordNumStartsWith0 ) {
                 num -= 1;
             }
+
+            if ( ids != null && !ids.contains( num ) ) {
+                continue;
+            }
+
             recNums.add( new Pair<Integer, Long>( num, ptr ) );
         }
 

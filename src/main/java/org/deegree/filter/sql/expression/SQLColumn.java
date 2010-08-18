@@ -93,7 +93,7 @@ public class SQLColumn implements SQLExpression {
 
     @Override
     public String toString() {
-        return table + "." + column;
+        return table == null ? column : ( table + "." + column );
     }
 
     @SuppressWarnings("unchecked")
@@ -104,8 +104,10 @@ public class SQLColumn implements SQLExpression {
 
     @Override
     public StringBuilder getSQL() {
-        StringBuilder sb = new StringBuilder( table );
-        sb.append( "." );
+        StringBuilder sb = new StringBuilder();
+        if ( table != null ) {
+            sb.append( table ).append( "." );
+        }
         sb.append( column );
         return sb;
     }

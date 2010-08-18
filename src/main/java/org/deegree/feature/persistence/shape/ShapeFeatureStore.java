@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
+import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
@@ -53,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -91,7 +93,9 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -140,6 +144,12 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private final FeatureStoreCache cache;
 
+    private DBFIndex dbfIndex;
+
+    private QName featureTypeName;
+
+    private boolean generateAlphanumericIndexes;
+
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
      * 
@@ -151,14 +161,22 @@ public class ShapeFeatureStore implements FeatureStore {
      *            encoding used in the dbf file, can be <code>null</code> (encoding guess mode)
      * @param namespace
      *            namespace to be used for the feature type, must not be <code>null</code>
+     * @param featureTypeName
+     *            if null, the shape file base name will be used
+     * @param generateAlphanumericIndexes
+     *            whether to copy the dbf into a h2 database for indexing
      * @param cache
      *            used for caching retrieved feature instances, can be <code>null</code> (will create a default cache)
      */
-    public ShapeFeatureStore( String shpName, CRS crs, Charset encoding, String namespace, FeatureStoreCache cache ) {
+    public ShapeFeatureStore( String shpName, CRS crs, Charset encoding, String namespace, String featureTypeName,
+                              boolean generateAlphanumericIndexes, FeatureStoreCache cache ) {
         this.shpName = shpName;
         this.crs = crs;
         this.encoding = encoding;
         this.namespace = namespace;
+        featureTypeName = featureTypeName == null ? new File( shpName ).getName() : featureTypeName;
+        this.featureTypeName = new QName( namespace, featureTypeName );
+        this.generateAlphanumericIndexes = generateAlphanumericIndexes;
         if ( cache != null ) {
             this.cache = cache;
         } else {
@@ -236,15 +254,19 @@ public class ShapeFeatureStore implements FeatureStore {
         }
 
         try {
-            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding,
-                                 new QName( namespace, new File( shpName ).getName() ), namespace );
+            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, featureTypeName, namespace );
+
+            if ( generateAlphanumericIndexes ) {
+                // set up index
+                dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes() );
+            }
+
             ft = dbf.getFeatureType();
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", shpName );
             GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry" ), 0, 1,
                                                                       GEOMETRY, DIM_2_OR_3, false, null, BOTH );
-            ft = new GenericFeatureType( new QName( namespace, new File( shpName ).getName() ),
-                                         Collections.<PropertyType> singletonList( geomProp ), false );
+            ft = new GenericFeatureType( featureTypeName, Collections.<PropertyType> singletonList( geomProp ), false );
         }
         schema = new ApplicationSchema( new FeatureType[] { ft }, null );
     }
@@ -319,7 +341,7 @@ public class ShapeFeatureStore implements FeatureStore {
      * @param shapeReader
      * @throws IOException
      */
-    private Pair<RTree<Long>, Boolean> createIndex( SHPReader shapeReader )
+    private static Pair<RTree<Long>, Boolean> createIndex( SHPReader shapeReader )
                             throws IOException {
         Envelope env = shapeReader.getEnvelope();
         // use 128 values per rect.
@@ -349,6 +371,10 @@ public class ShapeFeatureStore implements FeatureStore {
                     LOG.debug( "Re-opening the dbf file {}", shpName );
                     dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding,
                                          new QName( namespace, shpName ), namespace );
+                    if ( generateAlphanumericIndexes ) {
+                        // set up index
+                        dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes() );
+                    }
                     ft = dbf.getFeatureType();
                     schema = new ApplicationSchema( new FeatureType[] { ft }, null );
                     dbfLastModified = dbfFile.lastModified();
@@ -403,11 +429,19 @@ public class ShapeFeatureStore implements FeatureStore {
             return null;
         }
 
-        List<Pair<Integer, Long>> recNumsAndPos;
+        List<Pair<Integer, Long>> recNumsAndPos = new LinkedList<Pair<Integer, Long>>();
         Envelope bbox = getTransformedEnvelope( query.getPrefilterBBox() );
+
+        Filter filter = query.getFilter();
+
+        boolean queryIndex = filter == null || !generateAlphanumericIndexes;
+        Pair<Filter, SortProperty[]> p = queryIndex ? null : dbfIndex.query( recNumsAndPos, filter,
+                                                                             query.getSortProperties() );
+
         try {
-            recNumsAndPos = shp.query( bbox );
-            LOG.debug( "{} records matching after BBOX pre-filtering", recNumsAndPos.size() );
+            HashSet<Integer> recNums = new HashSet<Integer>( unzipPair( recNumsAndPos ).first );
+            recNumsAndPos = shp.query( bbox, filter == null || p == null ? null : recNums );
+            LOG.debug( "{} records matching after BBOX filtering", recNumsAndPos.size() );
         } catch ( IOException e ) {
             LOG.debug( "Stack trace", e );
             throw new FeatureStoreException( e );
@@ -415,14 +449,14 @@ public class ShapeFeatureStore implements FeatureStore {
 
         FeatureResultSet rs = new IteratorResultSet( new FeatureIterator( recNumsAndPos.iterator() ) );
 
-        if ( query.getFilter() != null ) {
+        if ( p != null && p.first != null ) {
             LOG.debug( "Applying in-memory filtering." );
-            rs = new FilteredFeatureResultSet( rs, query.getFilter() );
+            rs = new FilteredFeatureResultSet( rs, p.first );
         }
 
-        if ( query.getSortProperties() != null && query.getSortProperties().length > 0 ) {
+        if ( p != null && p.second != null && p.second.length > 0 ) {
             LOG.debug( "Applying in-memory sorting." );
-            rs = new MemoryFeatureResultSet( Features.sortFc( rs.toCollection(), query.getSortProperties() ) );
+            rs = new MemoryFeatureResultSet( Features.sortFc( rs.toCollection(), p.second ) );
         }
 
         return rs;
