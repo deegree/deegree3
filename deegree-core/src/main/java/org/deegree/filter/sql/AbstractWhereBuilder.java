@@ -285,11 +285,15 @@ public abstract class AbstractWhereBuilder {
         case PROPERTY_IS_BETWEEN: {
             PropertyIsBetween propIsBetween = (PropertyIsBetween) op;
             SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+            builder.add( "(" );
             builder.add( toProtoSQL( propIsBetween.getLowerBoundary() ) );
-            builder.add( " >= " );
+            builder.add( " <= " );
+            builder.add( toProtoSQL( propIsBetween.getExpression() ) );
+            builder.add(" AND ");
             builder.add( toProtoSQL( propIsBetween.getExpression() ) );
             builder.add( " <= " );
             builder.add( toProtoSQL( propIsBetween.getUpperBoundary() ) );
+            builder.add( ")" );
             sqlOper = builder.toOperation();
             break;
         }
@@ -493,8 +497,9 @@ public abstract class AbstractWhereBuilder {
             break;
         }
         case FUNCTION: {
-            LOG.warn( "Translating of functions into SQL-WHERE constraints is not implemented." );
-            return null;
+            String msg = "Translating of functions into SQL-WHERE constraints is not implemented.";
+            LOG.warn( msg );
+            throw new UnmappableException( msg );
         }
         case LITERAL: {
             sql = toProtoSQL( (Literal<?>) expr );
@@ -544,7 +549,7 @@ public abstract class AbstractWhereBuilder {
     protected SQLExpression toProtoSQL( Literal<?> literal )
                             throws UnmappableException, FilterEvaluationException {
         int javaType = -1;
-        Date date = null;
+        Date date;
         try {
             date = DateUtils.parseISO8601Date( literal.getValue().toString() );
 

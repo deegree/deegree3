@@ -700,7 +700,7 @@ public class GetMap {
     public Filter getFilterForLayer( String name, Filter filter, Style style ) {
         Filter sldFilter = null;
         outer: if ( style != null ) {
-            LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = style.getRules();
+            LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = style.filter( getScale() ).getRules();
             for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : rules ) {
                 if ( p.first == null ) {
                     sldFilter = null;

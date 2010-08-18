@@ -399,14 +399,15 @@ public class DBFReader {
         return featureType;
     }
 
-    // private final int getBEInt( ByteBuffer buffer ) {
-    // buffer.order( BIG_ENDIAN );
-    // int result = buffer.getInt();
-    // buffer.order( LITTLE_ENDIAN );
-    // return result;
-    // }
-
     private final void skipBytes( ByteBuffer buffer, int bytes ) {
         buffer.position( buffer.position() + bytes );
     }
+
+    /**
+     * @return the total number of records in this dbf
+     */
+    public int size() {
+        return noOfRecords;
+    }
+
 }

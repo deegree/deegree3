@@ -21,12 +21,14 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="StorageSRS" type="string" minOccurs="0" />
+        <element name="StorageCRS" type="string" minOccurs="0" />
         <element name="Namespace" type="string" minOccurs="0" />
+        <element name="FeatureTypeName" type="string" minOccurs="0" />
         <element name="File" type="string" />
-        <element name="Encoding" type="string" minOccurs="0"/>
+        <element name="Encoding" type="string" minOccurs="0" />
+        <element name="GenerateAlphanumericIndexes" type="boolean" minOccurs="0" default="true" />
       </sequence>
-      <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="configVersion" use="required" fixed="0.6.0" />
     </complexType>
   </element>
 </schema>

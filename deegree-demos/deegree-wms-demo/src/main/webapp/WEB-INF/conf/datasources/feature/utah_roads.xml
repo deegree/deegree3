@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ShapeFeatureStore configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/shape"
+<ShapeFeatureStore configVersion="0.6.0" xmlns="http://www.deegree.org/datasource/feature/shape"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape http://schemas.deegree.org/datasource/0.5.0/feature/shape.xsd">
-  <StorageSRS>EPSG:26912</StorageSRS>
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape http://schemas.deegree.org/datasource/feature/shape/0.6.0/shape.xsd">
+  <StorageCRS>EPSG:26912</StorageCRS>
   <Namespace>http://www.deegree.org/app</Namespace>
   <File>../../../data/utah/vector/SGID100_RoadsDLG100</File>
 </ShapeFeatureStore>

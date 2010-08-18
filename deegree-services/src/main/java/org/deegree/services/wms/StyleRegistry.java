@@ -265,12 +265,13 @@ public class StyleRegistry extends TimerTask {
                     }
                 }
                 XMLInputFactory fac = XMLInputFactory.newInstance();
-                XMLStreamReader in = fac.createXMLStreamReader( file.toURI().toURL().toString(),
-                                                                new FileInputStream( file ) );
+                FileInputStream is = new FileInputStream( file );
+                XMLStreamReader in = fac.createXMLStreamReader( file.toURI().toURL().toString(), is );
                 Pair<LinkedList<Filter>, LinkedList<Style>> parsedStyles = getStyles( in, namedLayer, map );
                 for ( Style s : parsedStyles.second ) {
                     put( layerName, s, false );
                 }
+                is.close();
             } catch ( MalformedURLException e ) {
                 LOG.trace( "Stack trace", e );
                 LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
@@ -284,6 +285,10 @@ public class StyleRegistry extends TimerTask {
             } catch ( URISyntaxException e ) {
                 LOG.trace( "Stack trace", e );
                 LOG.info( "Style file '{}' for layer '{}' could not be resolved.", sty.getFile(), layerName );
+            } catch ( IOException e ) {
+                LOG.trace( "Stack trace", e );
+                LOG.info( "Style file '{}' for layer '{}' could not be closed: '{}'.",
+                          new Object[] { sty.getFile(), layerName, e.getLocalizedMessage() } );
             }
         }
     }

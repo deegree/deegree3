@@ -153,7 +153,7 @@ public class FeatureLayer extends Layer {
                             IOException {
         super( name, title, parent );
         // TODO what about the charset here?
-        datastore = new ShapeFeatureStore( file, null, null, null, null );
+        datastore = new ShapeFeatureStore( file, null, null, null, null, true, null );
         try {
             datastore.init();
         } catch ( FeatureStoreException e ) {
