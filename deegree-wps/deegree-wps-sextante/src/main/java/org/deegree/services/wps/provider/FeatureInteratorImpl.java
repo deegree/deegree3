@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: http://svn.wald.intevation.org/svn/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -32,38 +32,54 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
-import java.net.URL;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import es.unex.sextante.dataObjects.IFeature;
+import es.unex.sextante.dataObjects.IFeatureIterator;
+import es.unex.sextante.exceptions.IteratorException;
 
 /**
- * {@link ProcessProviderProvider} for the {@link SextanteProcessProvider}.
+ * TODO add class documentation here
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
+ * @author last edited by: $Author: pabel $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class SextanteProcessProviderProvider implements ProcessProviderProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( SextanteProcessProviderProvider.class );
-
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/services/wps/sextante";
-
+public class FeatureInteratorImpl implements IFeatureIterator {
+    
+    private Iterator<IFeature> it;
+    
+    public FeatureInteratorImpl(Iterator<IFeature> it){
+        this.it = it;
+    }
+    
     @Override
-    public String getConfigNamespace() {
-        return CONFIG_NAMESPACE;
+    public void close() {
+        it = null;
     }
 
     @Override
-    public ProcessProvider createProvider( URL configURL ) {
+    public boolean hasNext() {
+        return it.hasNext();
+    }
 
-        LOG.info( "Configuring Sextante process provider using file '" + configURL + "'." );
+    @Override
+    public IFeature next() throws IteratorException {
+    
+        IFeature f = null;
         
-        return new SextanteProcessProvider();
+        try {
+            f = it.next();
+            
+        } catch (NoSuchElementException e) {
+            throw new IteratorException("No features in the layer!");
+        }
+
+        return f;
     }
+
 }

@@ -61,7 +61,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services</artifactId>
+      <artifactId>deegree-wpsclient_branch</artifactId>
       <version>3.0-SNAPSHOT</version>
     </dependency>    
   </dependencies>
