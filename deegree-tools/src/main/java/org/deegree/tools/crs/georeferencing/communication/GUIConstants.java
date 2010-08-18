@@ -78,4 +78,15 @@ public interface GUIConstants {
      */
     public final static String JTEXTFIELD_COORDINATE_JUMPER = "CoordinateJumper";
 
+    /*
+     * JButton
+     */
+    public final static String JBUTTON_PAN = "Pan";
+
+    public final static String JBUTTON_ZOOM_IN = "Zoom in";
+
+    public final static String JBUTTON_ZOOM_OUT = "Zoom out";
+
+    public final static String JBUTTON_ZOOM_COORD = "Zoom coord";
+
 }

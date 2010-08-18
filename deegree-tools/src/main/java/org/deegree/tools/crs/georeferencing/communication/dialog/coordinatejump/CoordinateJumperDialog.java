@@ -33,64 +33,69 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication.navigationbar;
+package org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import java.net.URL;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JTextField;
 
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
+import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
 
 /**
- * 
- * The NavigationBar above all the components.
+ * Dialog for jumping to a specific coordinate. It is set to modal == true to disable any other userInteraction.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
+public class CoordinateJumperDialog extends JDialog implements GUIConstants {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public final static String HORIZONTAL_REFERENCING = "Horizontal Referencing";
+    private JTextField coordinateJumper;
 
-    public final static String NAVIGATIONBAR_PANEL_NAME_GEOREF = "NavigationBarPanelGeoref";
+    private ButtonPanel buttons;
 
-    private static final URL ZOOM_BY_COORD = NavigationBarPanelGeoref.class.getResource( "../../icons/zoombycoord.png" );
+    public CoordinateJumperDialog() {
+        this.setLayout( new BorderLayout() );
+        this.setPreferredSize( new Dimension( 200, 100 ) );
+        this.setBounds( 100, 100, 200, 100 );
+        this.setModal( true );
+        this.setResizable( false );
+        buttons = new ButtonPanel();
 
-    private JButton buttonZoomCoord;
-
-    /**
-     * Creates a new instance of <Code>NavigationBarPanel</Code>.
-     */
-    public NavigationBarPanelGeoref() {
-        super();
-        this.setName( NAVIGATIONBAR_PANEL_NAME_GEOREF );
-
-        ImageIcon iconZoomCoord = new ImageIcon( ZOOM_BY_COORD );
-
-        buttonZoomCoord = new JButton( iconZoomCoord );
-        buttonZoomCoord.setName( GUIConstants.JBUTTON_ZOOM_COORD );
-        buttonZoomCoord.setPreferredSize( DIM );
-
-        this.add( buttonZoomCoord );
+        coordinateJumper = new JTextField( 15 );
+        coordinateJumper.setName( JTEXTFIELD_COORDINATE_JUMPER );
+        this.add( coordinateJumper, BorderLayout.CENTER );
+        this.add( buttons, BorderLayout.SOUTH );
+        this.pack();
 
     }
 
+    public JTextField getCoordinateJumper() {
+        return coordinateJumper;
+    }
+
+    public ButtonPanel getButtons() {
+        return buttons;
+    }
+
     /**
-     * Adds the ActionListener to the AbstractButtonsthat should be affected.
+     * Adds the actionListener to the visible components to interact with the user.
      * 
-     * @param c
+     * @param e
      */
-    public void addCoordListener( ActionListener c ) {
-        buttonZoomCoord.addActionListener( c );
+    public void addListeners( ActionListener e ) {
+        coordinateJumper.addActionListener( e );
+        buttons.addListeners( e );
 
     }
 

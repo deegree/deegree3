@@ -87,7 +87,7 @@ public class ButtonPanel extends JPanel {
      * 
      * @param e
      */
-    public void addActionButtonListener( ActionListener e ) {
+    public void addListeners( ActionListener e ) {
         buttonOK.addActionListener( e );
         buttonCancel.addActionListener( e );
     }

@@ -87,8 +87,6 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
 
     private JMenuItem editMenuItem;
 
-    // private JTextField coordinateJumper;
-
     private NavigationBarPanelGeoref naviPanelGeoref;
 
     private NavigationBarPanelFootprint naviPanelFoot;
@@ -194,8 +192,8 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
      * 
      * @param e
      */
-    public void addMenuItemListener( ActionListener e ) {
-        // coordinateJumper.addActionListener( e );
+    public void addListeners( ActionListener e ) {
+        naviPanelGeoref.addCoordListener( e );
         editMenuItem.addActionListener( e );
 
     }
@@ -217,10 +215,6 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         this.addComponentListener( c );
 
     }
-
-    // public JTextField getCoordinateJumper() {
-    // return coordinateJumper;
-    // }
 
     public NavigationBarPanelGeoref getNavigationPanel() {
         return naviPanelGeoref;

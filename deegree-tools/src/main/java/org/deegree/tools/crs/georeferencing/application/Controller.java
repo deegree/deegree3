@@ -55,7 +55,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -79,6 +78,7 @@ import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.error.ErrorDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel;
@@ -168,7 +168,9 @@ public class Controller {
 
     private SettingsPanel optionSettPanel;
 
-    private OptionDialog dialog;
+    private OptionDialog optionDialog;
+
+    private CoordinateJumperDialog jumperDialog;
 
     private GenericSettingsPanel optionSettingPanel;
 
@@ -194,10 +196,8 @@ public class Controller {
         this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
 
         model.init( options, sceneValues );
-        view.addMenuItemListener( new ButtonListener() );
+        view.addListeners( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
-        // navPanel.addHorizontalRefListener( new ButtonListener() );
-        // view.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
 
         // init the scenePanel and the mouseinteraction of it
         initGeoReferencingScene();
@@ -346,40 +346,17 @@ public class Controller {
                 }
 
             }
-            if ( source instanceof JTextField ) {
-                JTextField tF = (JTextField) source;
-                if ( tF.getName().startsWith( GRViewerGUI.JTEXTFIELD_COORDINATE_JUMPER ) ) {
-                    try {
-                        textFieldModel.setTextInput( tF.getText() );
-                        if ( sceneValues.getTransformedBounds() != null ) {
-                            System.out.println( textFieldModel.toString() );
-                            if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
 
-                                sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                              textFieldModel.getyCoordiante(),
-                                                                              textFieldModel.getSpanX(),
-                                                                              textFieldModel.getSpanY(),
-                                                                              PointType.GeoreferencedPoint );
+            if ( source instanceof JButton ) {
 
-                            } else {
-                                sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                              textFieldModel.getyCoordiante(),
-                                                                              PointType.GeoreferencedPoint );
+                if ( ( (JButton) source ).getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
 
-                            }
-                            panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-                            panel.updatePoints( sceneValues );
-                            panel.repaint();
-                        }
-                    } catch ( NumberException e1 ) {
-
-                        new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
-                    }
+                    jumperDialog = new CoordinateJumperDialog();
+                    jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
+                    jumperDialog.addListeners( new ButtonListener() );
+                    jumperDialog.setVisible( true );
 
                 }
-
-            }
-            if ( source instanceof JButton ) {
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
 
@@ -454,43 +431,83 @@ public class Controller {
                     reset();
                 }
                 if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
-                    dialogModel.transferOldToNew();
-                    AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize().first;
-                    panel.repaint();
-                    footPanel.repaint();
-                    dialog.setVisible( false );
-                }
-                if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_OK ) ) {
-                    boolean isRunIntoTrouble = false;
-                    if ( optionSettingPanel != null ) {
-
-                        if ( optionSettingPanel instanceof ViewPanel ) {
-                            // if the custom radiobutton is selected and there is something inside the textField
-                            if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
-                                 && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects() != null ) {
-                                // here you have to check about the input for the custom textfield. Keylistener for the
-                                // textfield while typing in is problematic because you can workaround with
-                                // copy&paste...so this should be the way to go.
-
-                                String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
-                                if ( AbstractTextfieldModel.validateInt( textInput ) ) {
-                                    dialogModel.setTextFieldKeyString( textInput );
-                                    dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString().second ) );
-                                    isRunIntoTrouble = false;
-                                } else {
-                                    new ErrorDialog( dialog, JDialog.ERROR, "Insert numbers only into the textField!" );
-                                    isRunIntoTrouble = true;
-                                }
-
-                            }
-                        }
-                    }
-                    if ( isRunIntoTrouble == false ) {
-                        dialogModel.transferNewToOld();
+                    // System.out.println( "i'm affected" );
+                    if ( optionDialog != null && optionDialog.isVisible() == true ) {
+                        dialogModel.transferOldToNew();
                         AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize().first;
                         panel.repaint();
                         footPanel.repaint();
-                        dialog.setVisible( false );
+                        optionDialog.setVisible( false );
+                    } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
+                        jumperDialog.setVisible( false );
+                    }
+
+                }
+                if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_OK ) ) {
+                    if ( optionDialog != null && optionDialog.isVisible() == true ) {
+                        boolean isRunIntoTrouble = false;
+                        if ( optionSettingPanel != null ) {
+
+                            if ( optionSettingPanel instanceof ViewPanel ) {
+                                // if the custom radiobutton is selected and there is something inside the textField
+                                if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" )
+                                     && ( (ViewPanel) optionSettingPanel ).getRadioCustom().getSelectedObjects() != null ) {
+                                    // here you have to check about the input for the custom textfield. Keylistener for
+                                    // the
+                                    // textfield while typing in is problematic because you can workaround with
+                                    // copy&paste...so this should be the way to go.
+
+                                    String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
+                                    if ( AbstractTextfieldModel.validateInt( textInput ) ) {
+                                        dialogModel.setTextFieldKeyString( textInput );
+                                        dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString().second ) );
+                                        isRunIntoTrouble = false;
+                                    } else {
+                                        new ErrorDialog( optionDialog, JDialog.ERROR,
+                                                         "Insert numbers only into the textField!" );
+                                        isRunIntoTrouble = true;
+                                    }
+
+                                }
+                            }
+                        }
+                        if ( isRunIntoTrouble == false ) {
+                            dialogModel.transferNewToOld();
+                            AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize().first;
+                            panel.repaint();
+                            footPanel.repaint();
+                            optionDialog.setVisible( false );
+                        }
+                    } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
+
+                        try {
+                            textFieldModel.setTextInput( jumperDialog.getCoordinateJumper().getText() );
+                            if ( sceneValues.getTransformedBounds() != null ) {
+                                System.out.println( textFieldModel.toString() );
+                                if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
+
+                                    sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                                  textFieldModel.getyCoordiante(),
+                                                                                  textFieldModel.getSpanX(),
+                                                                                  textFieldModel.getSpanY(),
+                                                                                  PointType.GeoreferencedPoint );
+
+                                } else {
+                                    sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                                  textFieldModel.getyCoordiante(),
+                                                                                  PointType.GeoreferencedPoint );
+
+                                }
+                                jumperDialog.setVisible( false );
+                                panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                                panel.updatePoints( sceneValues );
+                                panel.repaint();
+
+                            }
+                        } catch ( NumberException e1 ) {
+
+                            new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
+                        }
                     }
                 }
             }
@@ -500,15 +517,15 @@ public class Controller {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
 
                     dialogModel.createNodes( root );
-                    dialog = new OptionDialog( view, root );
-                    dialog.getButtonPanel().addActionButtonListener( new ButtonListener() );
-                    optionNavPanel = dialog.getNavigationPanel();
-                    optionSettPanel = dialog.getSettingsPanel();
+                    optionDialog = new OptionDialog( view, root );
+                    optionDialog.getButtonPanel().addListeners( new ButtonListener() );
+                    optionNavPanel = optionDialog.getNavigationPanel();
+                    optionSettPanel = optionDialog.getSettingsPanel();
 
                     // add the listener to the navigation panel
                     optionNavPanel.addTreeListener( new NavigationTreeSelectionListener() );
 
-                    dialog.setVisible( true );
+                    optionDialog.setVisible( true );
 
                 }
 
@@ -543,7 +560,7 @@ public class Controller {
                             i = Integer.parseInt( dialogModel.getTextFieldKeyString().second );
                             dialogModel.setSelectionPointSize( i );
                         } catch ( NumberFormatException ex ) {
-                            new ErrorDialog( dialog, JDialog.ERROR, "This is not a number" );
+                            new ErrorDialog( optionDialog, JDialog.ERROR, "This is not a number" );
                         }
 
                     }
@@ -599,11 +616,11 @@ public class Controller {
                         break;
                     }
                     optionSettPanel.setCurrentPanel( optionSettingPanel );
-                    dialog.setSettingsPanel( optionSettPanel );
+                    optionDialog.setSettingsPanel( optionSettPanel );
 
                 } else {
                     optionSettPanel.reset();
-                    dialog.reset();
+                    optionDialog.reset();
                 }
 
             }

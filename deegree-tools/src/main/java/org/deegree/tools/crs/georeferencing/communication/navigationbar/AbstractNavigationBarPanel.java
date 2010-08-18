@@ -37,11 +37,14 @@ package org.deegree.tools.crs.georeferencing.communication.navigationbar;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 
 /**
  * Abstract base class for all <Code>NavigationBarPanel</Code>s.
@@ -80,8 +83,11 @@ public abstract class AbstractNavigationBarPanel extends JPanel {
         ImageIcon iconZoomOut = new ImageIcon( ZOOM_OUT );
 
         buttonPan = new JButton( iconPan );
+        buttonPan.setName( GUIConstants.JBUTTON_PAN );
         buttonZoomIn = new JButton( iconZoomIn );
+        buttonZoomIn.setName( GUIConstants.JBUTTON_ZOOM_IN );
         buttonZoomOut = new JButton( iconZoomOut );
+        buttonZoomOut.setName( GUIConstants.JBUTTON_ZOOM_OUT );
 
         buttonPan.setPreferredSize( DIM );
         buttonZoomIn.setPreferredSize( DIM );
@@ -92,6 +98,18 @@ public abstract class AbstractNavigationBarPanel extends JPanel {
         this.add( buttonPan );
 
         this.repaint();
+    }
+
+    /**
+     * Adds the ActionListener to the AbstractButtons that should be affected.
+     * 
+     * @param c
+     */
+    public void addCoordListener( ActionListener c ) {
+        buttonPan.addActionListener( c );
+        buttonZoomIn.addActionListener( c );
+        buttonZoomOut.addActionListener( c );
+
     }
 
 }
