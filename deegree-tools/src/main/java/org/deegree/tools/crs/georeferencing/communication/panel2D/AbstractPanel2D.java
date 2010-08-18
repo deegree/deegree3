@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication;
+package org.deegree.tools.crs.georeferencing.communication.panel2D;
 
 import java.awt.Rectangle;
 import java.awt.event.FocusListener;

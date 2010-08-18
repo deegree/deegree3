@@ -58,6 +58,8 @@ import javax.swing.border.BevelBorder;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelFootprint;
 import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelGeoref;
+import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
+import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
 
 /**
  * The <Code>GRViewerGUI</Code> class provides the client to view georeferencing tools/windows.
