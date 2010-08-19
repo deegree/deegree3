@@ -176,6 +176,10 @@ public class MappedApplicationSchema extends ApplicationSchema {
     public QName getFtName( short ftId ) {
         return ftIdToName.get( ftId );
     }
+    
+    public short getFts () {
+        return (short) ftIdToName.size();
+    }
 
     public BBoxTableMapping getBBoxMapping() {
         return bboxMapping;
