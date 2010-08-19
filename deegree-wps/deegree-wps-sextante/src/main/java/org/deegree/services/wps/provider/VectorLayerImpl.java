@@ -89,7 +89,7 @@ public class VectorLayerImpl extends AbstractVectorLayer {
      * No attributes are provided for the geometries.
      */
     public VectorLayerImpl() {
-        this( "VectorLayer", "EPSG:4326", null );
+        this( null, null );
     }
 
     /**
@@ -120,6 +120,14 @@ public class VectorLayerImpl extends AbstractVectorLayer {
         m_CRS = crs;
         m_Fields = fields;
 
+        if ( name == null ) {
+            m_Name = "VectorLayer";
+        }
+
+        if ( crs == null ) {
+            m_CRS = "EPSG:4326";
+        }
+
         if ( fields == null ) {
             m_Fields = new Field[] {};
         }
@@ -139,6 +147,7 @@ public class VectorLayerImpl extends AbstractVectorLayer {
             m_Features.add( new FeatureImpl( geom, values ) );
 
         } else { // attribute count not correct
+            LOG.error( "addFeature(): Values are not correct." );
             throw new ArrayIndexOutOfBoundsException();
         }
 

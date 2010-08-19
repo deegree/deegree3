@@ -220,10 +220,14 @@ public class SextanteProcessProvider implements ProcessProvider {
 
         // initialize algorithms
         initializeAlgorithms();
+
     }
 
     @Override
     public void destroy() {
+        for ( WPSProcess process : idToProcess.values() ) {
+            process.getProcesslet().destroy();
+        }
     }
 
     @Override
@@ -254,6 +258,7 @@ public class SextanteProcessProvider implements ProcessProvider {
 
             // create processlet
             Processlet processlet = new SextanteProcesslet( alg );
+            processlet.init();
 
             // create ExceptionCustomizer
             ExceptionCustomizer customizer = null;
@@ -262,7 +267,7 @@ public class SextanteProcessProvider implements ProcessProvider {
             }
 
             // create process definition
-            ProcessDefinition def = getProcessDefinition( alg );
+            ProcessDefinition def = createProcessDefinition( alg );
 
             // create process
             WPSProcess process = new WPSProcess( def, processlet, customizer );
@@ -283,7 +288,7 @@ public class SextanteProcessProvider implements ProcessProvider {
      *            - SEXTANTE-Algorithm
      * @return
      */
-    private ProcessDefinition getProcessDefinition( GeoAlgorithm alg ) {
+    private ProcessDefinition createProcessDefinition( GeoAlgorithm alg ) {
 
         // ProcessDefinition
         ProcessDefinition processDefinition = new ProcessDefinition();
