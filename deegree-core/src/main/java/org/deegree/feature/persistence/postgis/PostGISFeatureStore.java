@@ -78,6 +78,7 @@ import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.query.Query.QueryHint;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -118,7 +119,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class PostGISFeatureStore implements FeatureStore {
+public class PostGISFeatureStore implements SQLFeatureStore {
 
     static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
 
@@ -524,7 +525,17 @@ public class PostGISFeatureStore implements FeatureStore {
                 String msg = "Feature type '" + ftName + "' is not served by this feature store.";
                 throw new FeatureStoreException( msg );
             }
-            result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter );
+            Connection conn = null;
+            try {
+                conn = ConnectionManager.getConnection( jdbcConnId );
+                result = queryByOperatorFilter( conn, query, ftName, (OperatorFilter) filter );
+            } catch ( SQLException e ) {
+                throw new FeatureStoreException( e.getMessage(), e );
+            } finally {
+                if ( conn != null ) {
+                    close( conn );
+                }
+            }
         } else {
             // must be an id filter based query
             if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
@@ -591,14 +602,21 @@ public class PostGISFeatureStore implements FeatureStore {
         return result;
     }
 
-    private FeatureResultSet queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
+    /**
+     * @param conn
+     * @param query
+     * @param ftName
+     * @param filter
+     * @return
+     * @throws FeatureStoreException
+     */
+    FeatureResultSet queryByOperatorFilter( Connection conn, Query query, QName ftName, OperatorFilter filter )
                             throws FeatureStoreException {
 
         LOG.debug( "Performing query by operator filter" );
 
         PostGISWhereBuilder wb = null;
         FeatureResultSet result = null;
-        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
@@ -784,7 +802,7 @@ public class PostGISFeatureStore implements FeatureStore {
             }
             result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            close( rs, stmt, null, LOG );
             String msg = "Error performing query by operator filter: " + e.getMessage();
             LOG.info( msg, e );
             throw new FeatureStoreException( msg, e );
@@ -990,6 +1008,11 @@ public class PostGISFeatureStore implements FeatureStore {
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO
         return query( queries ).toCollection().size();
+    }
+
+    @Override
+    public String[] getDDL() {
+        return new PostGISDDLCreator( schema ).getDDL();
     }
 
     /**

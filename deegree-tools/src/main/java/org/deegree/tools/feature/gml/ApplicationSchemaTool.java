@@ -35,26 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.feature.gml;
 
+import static org.deegree.gml.GMLVersion.GML_32;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.cli.Option;
@@ -65,12 +68,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.CustomPropertyType;
-import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.tools.CommandUtils;
@@ -179,18 +177,19 @@ public class ApplicationSchemaTool {
             }
         } );
         for ( FeatureType ft : fts ) {
-//            ftNameToHints.put( ft.getName(), getFtHints( schema, ft, rules ) );
+            // ftNameToHints.put( ft.getName(), getFtHints( schema, ft, rules ) );
         }
 
-//        PostGISApplicationSchema postgisSchema = new PostGISApplicationSchema( schema, getGlobalHints( schema ),
-//                                                                               ftNameToHints );
-//        ApplicationSchemaDecl jaxbSchema = JAXBApplicationSchemaAdapter.toJAXB( postgisSchema );
-//        JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
-//        Marshaller m = jc.createMarshaller();
-//        m.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
-//        m.setProperty( Marshaller.JAXB_SCHEMA_LOCATION,
-//                       "http://www.deegree.org/feature/featuretype http://schemas.deegree.org/feature/0.5.0/postgis_appschema.xsd" );
-//        m.marshal( jaxbSchema, System.out );
+        // PostGISApplicationSchema postgisSchema = new PostGISApplicationSchema( schema, getGlobalHints( schema ),
+        // ftNameToHints );
+        // ApplicationSchemaDecl jaxbSchema = JAXBApplicationSchemaAdapter.toJAXB( postgisSchema );
+        // JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
+        // Marshaller m = jc.createMarshaller();
+        // m.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+        // m.setProperty( Marshaller.JAXB_SCHEMA_LOCATION,
+        // "http://www.deegree.org/feature/featuretype http://schemas.deegree.org/feature/0.5.0/postgis_appschema.xsd"
+        // );
+        // m.marshal( jaxbSchema, System.out );
     }
 
     private static String shortenName( String s, LinkedHashMap<String, String> rules ) {
@@ -203,106 +202,106 @@ public class ApplicationSchemaTool {
         return shortened;
     }
 
-//    private static FeatureTypeMapping getFtHints( ApplicationSchema schema, FeatureType ft,
-//                                                  LinkedHashMap<String, String> rules ) {
-//
-//        String featureTable = shortenName( ft.getName().getLocalPart().toLowerCase(), rules );
-//        FeatureTypeMappingHints ftHints = new FeatureTypeMappingHints();
-//        ftHints.setDBTable( featureTable );
-//        ftHints.setGMLDefaultProps( true );
-//        Map<QName, PropertyMappingType> propNameToHint = new HashMap<QName, PropertyMappingType>();
-//        int multiPropId = 0;
-//        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-//            String propName = shortenName( pt.getName().getLocalPart().toLowerCase(), rules );
-//            String qPropName = featureTable + "_multi" + multiPropId;
-//            try {
-//                propNameToHint.put( pt.getName(), getPropertyHints( featureTable, pt, rules, propName, qPropName ) );
-//            } catch ( RuntimeException e ) {
-//                System.err.println( "Omitting property " + pt.getName() + " (class)" + pt.getClass() + "..." );
-//            }
-//            if ( pt.getMaxOccurs() != 1 ) {
-//                multiPropId++;
-//            }
-//        }
-//        return new FeatureTypeMapping( ftHints, propNameToHint );
-//    }
+    // private static FeatureTypeMapping getFtHints( ApplicationSchema schema, FeatureType ft,
+    // LinkedHashMap<String, String> rules ) {
+    //
+    // String featureTable = shortenName( ft.getName().getLocalPart().toLowerCase(), rules );
+    // FeatureTypeMappingHints ftHints = new FeatureTypeMappingHints();
+    // ftHints.setDBTable( featureTable );
+    // ftHints.setGMLDefaultProps( true );
+    // Map<QName, PropertyMappingType> propNameToHint = new HashMap<QName, PropertyMappingType>();
+    // int multiPropId = 0;
+    // for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+    // String propName = shortenName( pt.getName().getLocalPart().toLowerCase(), rules );
+    // String qPropName = featureTable + "_multi" + multiPropId;
+    // try {
+    // propNameToHint.put( pt.getName(), getPropertyHints( featureTable, pt, rules, propName, qPropName ) );
+    // } catch ( RuntimeException e ) {
+    // System.err.println( "Omitting property " + pt.getName() + " (class)" + pt.getClass() + "..." );
+    // }
+    // if ( pt.getMaxOccurs() != 1 ) {
+    // multiPropId++;
+    // }
+    // }
+    // return new FeatureTypeMapping( ftHints, propNameToHint );
+    // }
 
-//    private static PropertyMappingType getPropertyHints( String featureTable, PropertyType pt,
-//                                                         LinkedHashMap<String, String> rules, String propName,
-//                                                         String qPropName ) {
-//
-//        PropertyMappingType hints = null;
-//        if ( pt instanceof SimplePropertyType ) {
-//            hints = new SimplePropertyMappingType();
-//            String postgisType = getPostGISType( ( (SimplePropertyType) pt ).getPrimitiveType() );
-//            if ( pt.getMaxOccurs() != 1 ) {
-//                PropertyTable propTable = new PropertyTable();
-//                propTable.setTable( qPropName );
-//                propTable.setColumn( "value" );
-//                propTable.setSqlType( postgisType );
-//                ( (SimplePropertyMappingType) hints ).setPropertyTable( propTable );
-//            } else {
-//                DBColumn dbColumn = new DBColumn();
-//                dbColumn.setName( propName );
-//                dbColumn.setSqlType( postgisType );
-//                ( (SimplePropertyMappingType) hints ).setDBColumn( dbColumn );
-//            }
-//        } else if ( pt instanceof GeometryPropertyType ) {
-//            hints = new GeometryPropertyMappingType();
-//            // TODO
-//            String postgisType = "GEOMETRY";
-//            if ( pt.getMaxOccurs() != 1 ) {
-//                GeometryPropertyTable propTable = new GeometryPropertyTable();
-//                propTable.setTable( qPropName );
-//                propTable.setColumn( "value" );
-//                // TODO
-//                propTable.setDimension( new BigInteger( "2" ) );
-//                // TODO
-//                propTable.setSrid( new BigInteger( "31466" ) );
-//                propTable.setSqlType( postgisType );
-//                ( (GeometryPropertyMappingType) hints ).setGeometryPropertyTable( propTable );
-//            } else {
-//                GeometryDBColumn dbColumn = new GeometryDBColumn();
-//                dbColumn.setName( propName );
-//                dbColumn.setSqlType( postgisType );
-//                // TODO
-//                dbColumn.setDimension( new BigInteger( "2" ) );
-//                // TODO
-//                dbColumn.setSrid( new BigInteger( "31466" ) );
-//                ( (GeometryPropertyMappingType) hints ).setGeometryDBColumn( dbColumn );
-//            }
-//        } else if ( pt instanceof FeaturePropertyType ) {
-//            hints = new FeaturePropertyMappingType();
-//            if ( pt.getMaxOccurs() != 1 ) {
-//                FeatureJoinTable propTable = new FeatureJoinTable();
-//                propTable.setTable( qPropName );
-//                ( (FeaturePropertyMappingType) hints ).setFeatureJoinTable( propTable );
-//            } else {
-//                DBColumn dbColumn = new DBColumn();
-//                // TODO
-//                dbColumn.setName( propName );
-//                dbColumn.setSqlType( "integer" );
-//                ( (FeaturePropertyMappingType) hints ).setDBColumn( dbColumn );
-//            }
-//        } else if ( pt instanceof MeasurePropertyType ) {
-//            hints = new MeasurePropertyMappingType();
-//            if ( pt.getMaxOccurs() != 1 ) {
-//                PropertyTable propTable = new PropertyTable();
-//                propTable.setTable( qPropName );
-//                propTable.setColumn( "value" );
-//                ( (MeasurePropertyMappingType) hints ).setPropertyTable( propTable );
-//            } else {
-//                DBColumn dbColumn = new DBColumn();
-//                dbColumn.setName( propName );
-//                dbColumn.setSqlType( "double precision" );
-//                ( (MeasurePropertyMappingType) hints ).setDBColumn( dbColumn );
-//            }
-//        } else if ( pt instanceof CustomPropertyType ) {
-//            hints = new CustomPropertyMappingType();
-//            ( (CustomPropertyMappingType) hints ).setXsdType( ( (CustomPropertyType) pt ).getXSDValueType() );
-//        }
-//        return hints;
-//    }
+    // private static PropertyMappingType getPropertyHints( String featureTable, PropertyType pt,
+    // LinkedHashMap<String, String> rules, String propName,
+    // String qPropName ) {
+    //
+    // PropertyMappingType hints = null;
+    // if ( pt instanceof SimplePropertyType ) {
+    // hints = new SimplePropertyMappingType();
+    // String postgisType = getPostGISType( ( (SimplePropertyType) pt ).getPrimitiveType() );
+    // if ( pt.getMaxOccurs() != 1 ) {
+    // PropertyTable propTable = new PropertyTable();
+    // propTable.setTable( qPropName );
+    // propTable.setColumn( "value" );
+    // propTable.setSqlType( postgisType );
+    // ( (SimplePropertyMappingType) hints ).setPropertyTable( propTable );
+    // } else {
+    // DBColumn dbColumn = new DBColumn();
+    // dbColumn.setName( propName );
+    // dbColumn.setSqlType( postgisType );
+    // ( (SimplePropertyMappingType) hints ).setDBColumn( dbColumn );
+    // }
+    // } else if ( pt instanceof GeometryPropertyType ) {
+    // hints = new GeometryPropertyMappingType();
+    // // TODO
+    // String postgisType = "GEOMETRY";
+    // if ( pt.getMaxOccurs() != 1 ) {
+    // GeometryPropertyTable propTable = new GeometryPropertyTable();
+    // propTable.setTable( qPropName );
+    // propTable.setColumn( "value" );
+    // // TODO
+    // propTable.setDimension( new BigInteger( "2" ) );
+    // // TODO
+    // propTable.setSrid( new BigInteger( "31466" ) );
+    // propTable.setSqlType( postgisType );
+    // ( (GeometryPropertyMappingType) hints ).setGeometryPropertyTable( propTable );
+    // } else {
+    // GeometryDBColumn dbColumn = new GeometryDBColumn();
+    // dbColumn.setName( propName );
+    // dbColumn.setSqlType( postgisType );
+    // // TODO
+    // dbColumn.setDimension( new BigInteger( "2" ) );
+    // // TODO
+    // dbColumn.setSrid( new BigInteger( "31466" ) );
+    // ( (GeometryPropertyMappingType) hints ).setGeometryDBColumn( dbColumn );
+    // }
+    // } else if ( pt instanceof FeaturePropertyType ) {
+    // hints = new FeaturePropertyMappingType();
+    // if ( pt.getMaxOccurs() != 1 ) {
+    // FeatureJoinTable propTable = new FeatureJoinTable();
+    // propTable.setTable( qPropName );
+    // ( (FeaturePropertyMappingType) hints ).setFeatureJoinTable( propTable );
+    // } else {
+    // DBColumn dbColumn = new DBColumn();
+    // // TODO
+    // dbColumn.setName( propName );
+    // dbColumn.setSqlType( "integer" );
+    // ( (FeaturePropertyMappingType) hints ).setDBColumn( dbColumn );
+    // }
+    // } else if ( pt instanceof MeasurePropertyType ) {
+    // hints = new MeasurePropertyMappingType();
+    // if ( pt.getMaxOccurs() != 1 ) {
+    // PropertyTable propTable = new PropertyTable();
+    // propTable.setTable( qPropName );
+    // propTable.setColumn( "value" );
+    // ( (MeasurePropertyMappingType) hints ).setPropertyTable( propTable );
+    // } else {
+    // DBColumn dbColumn = new DBColumn();
+    // dbColumn.setName( propName );
+    // dbColumn.setSqlType( "double precision" );
+    // ( (MeasurePropertyMappingType) hints ).setDBColumn( dbColumn );
+    // }
+    // } else if ( pt instanceof CustomPropertyType ) {
+    // hints = new CustomPropertyMappingType();
+    // ( (CustomPropertyMappingType) hints ).setXsdType( ( (CustomPropertyType) pt ).getXSDValueType() );
+    // }
+    // return hints;
+    // }
 
     private static String getPostGISType( PrimitiveType primitiveType ) {
         String postgisType = null;
@@ -343,12 +342,12 @@ public class ApplicationSchemaTool {
         return postgisType;
     }
 
-//    private static GlobalMappingHints getGlobalHints( ApplicationSchema schema ) {
-//        GlobalMappingHints hints = new GlobalMappingHints();
-//        hints.setUseObjectLookupTable( true );
-//        hints.setJDBCConnId( "conn1" );
-//        return hints;
-//    }
+    // private static GlobalMappingHints getGlobalHints( ApplicationSchema schema ) {
+    // GlobalMappingHints hints = new GlobalMappingHints();
+    // hints.setUseObjectLookupTable( true );
+    // hints.setJDBCConnId( "conn1" );
+    // return hints;
+    // }
 
     private static void mapToOracle( InputFormat inputFormat, String inputFileName ) {
         System.out.println( "Not implemented yet." );
@@ -361,10 +360,64 @@ public class ApplicationSchemaTool {
             System.out.println( "Not implemented yet." );
             break;
         case deegree_postgis:
-//            PostGISApplicationSchema postgisSchema = loadPostGISSchema( inputFileName );
-//            postgisSchema.writeCreateScript( dbSchema, new PrintWriter( System.out ) );
-//            System.out.flush();
+            // PostGISApplicationSchema postgisSchema = loadPostGISSchema( inputFileName );
+            // postgisSchema.writeCreateScript( dbSchema, new PrintWriter( System.out ) );
+            // System.out.flush();
             break;
+        case gml32: {
+            try {
+                List<String> inputURLs = new ArrayList<String>();
+                File inputFile = new File( inputFileName );
+                if ( !inputFile.exists() ) {
+                    throw new IllegalArgumentException( "Specified schema (directory) does not exist." );
+                }
+                if ( inputFile.isDirectory() ) {
+                    System.out.println( "Specified input file is a directory -- scanning for .xsd files." );
+                    String[] inputFiles = inputFile.list( new FilenameFilter() {
+                        @Override
+                        public boolean accept( File dir, String name ) {
+                            return name.toLowerCase().endsWith( ".xsd" );
+                        }
+                    } );
+                    for ( String file : inputFiles ) {
+                        System.out.println( "Adding '" + file + "'" );
+                        inputURLs.add( new URL( inputFile.toURI().toURL(), URLEncoder.encode( file, "UTF-8" ) ).toExternalForm() );
+                    }
+                } else {
+                    inputURLs.add( inputFile.toURI().toURL().toExternalForm() );
+                }
+
+                ApplicationSchemaXSDDecoder xsdDecoder = new ApplicationSchemaXSDDecoder(
+                                                                                          GML_32,
+                                                                                          null,
+                                                                                          inputURLs.toArray( new String[inputURLs.size()] ) );
+                ApplicationSchema schema = xsdDecoder.extractFeatureTypeSchema();
+
+                System.out.println( "- Total feature types: " + schema.getFeatureTypes().length );
+                System.out.println( "- Non-abstract feature types: "
+                                    + schema.getFeatureTypes( null, true, false ).size() );
+                System.out.println( "- Non-abstract feature types w/o collections: "
+                                    + schema.getFeatureTypes( null, false, false ).size() );
+
+                SortedSet<FeatureType> sortedFts = new TreeSet<FeatureType>( new Comparator<FeatureType>() {
+                    @Override
+                    public int compare( FeatureType ft1, FeatureType ft2 ) {
+                        return ft1.getName().toString().compareTo( ft2.getName().toString() );
+                    }
+                } );
+                sortedFts.addAll( schema.getFeatureTypes( null, false, false ) );
+                int i = 0;
+                for ( FeatureType ft : sortedFts ) {
+                    System.out.println( "INSERT INTO feature_types (id,qname) VALUES (" + i + ",'" + ft.getName()
+                                        + "');" );
+                    i++;
+                }
+
+                break;
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+        }
         default: {
             System.out.println( "Action " + Action.create_ddl + " is only supported for "
                                 + InputFormat.deegree_postgis.name() + " and " + InputFormat.deegree_oracle.name()
@@ -384,7 +437,7 @@ public class ApplicationSchemaTool {
         case deegree_oracle:
             break;
         case deegree_postgis: {
-//            schema = loadPostGISSchema( inputFileName ).getSchema();
+            // schema = loadPostGISSchema( inputFileName ).getSchema();
             break;
         }
         case deegree_shape:
@@ -415,14 +468,14 @@ public class ApplicationSchemaTool {
         return schema;
     }
 
-//    private static PostGISApplicationSchema loadPostGISSchema( String inputFileName )
-//                            throws JAXBException {
-//        JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
-//        Unmarshaller u = jc.createUnmarshaller();
-//        ApplicationSchemaDecl jaxbAppSchema = (ApplicationSchemaDecl) u.unmarshal( new File( inputFileName ) );
-//        PostGISApplicationSchema mappedSchema = JAXBApplicationSchemaAdapter.toInternal( jaxbAppSchema );
-//        return mappedSchema;
-//    }
+    // private static PostGISApplicationSchema loadPostGISSchema( String inputFileName )
+    // throws JAXBException {
+    // JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
+    // Unmarshaller u = jc.createUnmarshaller();
+    // ApplicationSchemaDecl jaxbAppSchema = (ApplicationSchemaDecl) u.unmarshal( new File( inputFileName ) );
+    // PostGISApplicationSchema mappedSchema = JAXBApplicationSchemaAdapter.toInternal( jaxbAppSchema );
+    // return mappedSchema;
+    // }
 
     private static void printFtHierarchy( ApplicationSchema schema, Set<String> ftNames, Set<String> propNames ) {
         int concrete = 0;
