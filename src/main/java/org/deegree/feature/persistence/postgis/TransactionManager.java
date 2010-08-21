@@ -105,7 +105,7 @@ class TransactionManager {
         return this.activeTransaction;
     }
 
-    public FeatureStoreTransaction acquireTransaction()
+    public synchronized FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
 
         while ( this.activeTransaction != null ) {
@@ -118,13 +118,15 @@ class TransactionManager {
                 break;
             }
 
-            try {
-                // wait until the transaction holder wakes us, but not longer than 5000
-                // milliseconds (as the transaction holder may very rarely get killed without
-                // signalling us)
-                wait( 5000 );
-            } catch ( InterruptedException e ) {
-                // nothing to do
+            synchronized ( this ) {
+                try {
+                    // wait until the transaction holder wakes us, but not longer than 5000
+                    // milliseconds (as the transaction holder may very rarely get killed without
+                    // signalling us)
+                    wait( 5000 );
+                } catch ( InterruptedException e ) {
+                    // nothing to do
+                }
             }
         }
 
@@ -152,10 +154,6 @@ class TransactionManager {
     void releaseTransaction( PostGISFeatureStoreTransaction ta )
                             throws FeatureStoreException {
 
-        if ( ta.getStore() != this ) {
-            String msg = Messages.getMessage( "TA_NOT_OWNER" );
-            throw new FeatureStoreException( msg );
-        }
         if ( ta != this.activeTransaction ) {
             String msg = Messages.getMessage( "TA_NOT_ACTIVE" );
             throw new FeatureStoreException( msg );

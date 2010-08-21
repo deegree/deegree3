@@ -36,8 +36,6 @@
 package org.deegree.feature.persistence.postgis;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.deegree.feature.persistence.FeatureCodec.Compression.NONE;
-import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,7 +52,7 @@ import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
-import org.deegree.feature.persistence.FeatureCodec;
+import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
@@ -417,8 +415,9 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
-                geomOrFeature = new FeatureCodec( GML_32, NONE ).decode( rs.getBinaryStream( 1 ), schema, storageCRS,
-                                                                         new FeatureStoreGMLIdResolver( this ) );
+                BlobCodec codec = blobMapping.getCodec();
+                geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), schema, storageCRS,
+                                              new FeatureStoreGMLIdResolver( this ) );
                 cache.add( geomOrFeature );
             }
         } catch ( Exception e ) {
@@ -574,7 +573,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
                                     + " A, temp_ids B WHERE A.gml_id=b.fid" );
 
-            FeatureBuilder builder = new FeatureBuilderBlob( this, new FeatureCodec( GML_32, NONE ) );
+            FeatureBuilder builder = new FeatureBuilderBlob( this, schema.getBlobMapping().getCodec() );
             result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );

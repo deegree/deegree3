@@ -153,6 +153,11 @@
       <version>1.2.9-deegreeversion</version>
     </dependency>
     <dependency>
+      <groupId>com.sun.xml.fastinfoset</groupId>
+      <artifactId>FastInfoset</artifactId>
+      <version>1.2.7</version>
+    </dependency>   
+    <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
       <version>3.2</version>
