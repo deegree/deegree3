@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.mapping;
 
-import org.deegree.feature.persistence.FeatureCodec;
+import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.gml.GMLVersion;
 
 /**
@@ -52,7 +52,7 @@ public class BlobMapping {
 
     private final String table;
 
-    private final FeatureCodec codec;
+    private final BlobCodec codec;
 
     /**
      * Creates a new {@link BlobMapping} instance.
@@ -62,7 +62,7 @@ public class BlobMapping {
      * @param codec
      *            the decoder / encoder used for the BLOBs, must not be <code>null</code>
      */
-    public BlobMapping( String table, FeatureCodec codec ) {
+    public BlobMapping( String table, BlobCodec codec ) {
         this.table = table;
         this.codec = codec;
     }
@@ -80,7 +80,7 @@ public class BlobMapping {
      * 
      * @return
      */
-    public FeatureCodec getCodec() {
+    public BlobCodec getCodec() {
         return codec;
     }
 

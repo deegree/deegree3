@@ -55,7 +55,7 @@ import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.persistence.FeatureCodec;
+import org.deegree.feature.persistence.BlobCodec;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -329,15 +329,16 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            FeatureCodec codec = fs.getSchema().getBlobMapping().getCodec();
+            BlobCodec codec = fs.getSchema().getBlobMapping().getCodec();
             codec.encode( feature, bos, storageCRS );
         } catch ( Exception e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e.getMessage() );
             throw new SQLException( msg, e );
         }
-        stmt.setBytes( 3, bos.toByteArray() );
-        // System.out.println( "Wrote feature blob (" + bos.toByteArray().length + " bytes)" );
+        byte [] bytes = bos.toByteArray();
+        stmt.setBytes( 3, bytes );
+        LOG.debug( "Feature blob size: " + bytes.length );
         Envelope bbox = feature.getEnvelope();
         if ( bbox != null ) {
             try {

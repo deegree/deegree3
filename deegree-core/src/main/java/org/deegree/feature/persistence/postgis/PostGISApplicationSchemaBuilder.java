@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
-import static org.deegree.feature.persistence.FeatureCodec.Compression.NONE;
+import static org.deegree.feature.persistence.BlobCodec.Compression.NONE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
@@ -59,7 +59,8 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
-import org.deegree.feature.persistence.FeatureCodec;
+import org.deegree.feature.persistence.BlobCodec;
+import org.deegree.feature.persistence.BlobCodec.Compression;
 import org.deegree.feature.persistence.mapping.BBoxTableMapping;
 import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.DBField;
@@ -127,7 +128,7 @@ class PostGISApplicationSchemaBuilder {
 
         if ( appSchema != null ) {
             BBoxTableMapping bboxMapping = new BBoxTableMapping();
-            BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new FeatureCodec( GML_32, NONE ) );
+            BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new BlobCodec( GML_32, NONE ) );
             mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
                                                         appSchema.getXSModel(), null, storageCRS, bboxMapping,
                                                         blobMapping );
@@ -135,8 +136,7 @@ class PostGISApplicationSchemaBuilder {
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
                                                                                            dbSchema );
             FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
-            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
-                                                                                        new FeatureTypeMapping[builder.ftNameToMapping.size()] );
+            FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
             mappedSchema = new MappedApplicationSchema( fts, null, null, ftMappings, storageCRS, null, null );
         }
 
