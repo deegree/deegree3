@@ -200,9 +200,9 @@ public class FeatureStoreManager {
                 String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
                 throw new FeatureStoreException( msg );
             }
-            fs.init();
             LOG.info( "Registering global feature store with id '" + id + "', type: '" + fs.getClass().getName() + "'" );
-            idToFs.put( id, fs );
+            idToFs.put( id, fs );            
+            fs.init();
         }
     }
 }
