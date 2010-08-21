@@ -52,10 +52,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -65,7 +65,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
@@ -360,9 +363,20 @@ public class ApplicationSchemaTool {
             System.out.println( "Not implemented yet." );
             break;
         case deegree_postgis:
-            // PostGISApplicationSchema postgisSchema = loadPostGISSchema( inputFileName );
-            // postgisSchema.writeCreateScript( dbSchema, new PrintWriter( System.out ) );
-            // System.out.flush();
+            try {
+                URL configURL = new File (inputFileName).toURI().toURL();
+                PostGISFeatureStore fs = (PostGISFeatureStore) FeatureStoreManager.create( configURL );
+                String [] sql = fs.getDDL();
+                for ( String string : sql ) {
+                    System.out.println (string + ";");
+                }
+            } catch ( MalformedURLException e1 ) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } catch ( FeatureStoreException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             break;
         case gml32: {
             try {
