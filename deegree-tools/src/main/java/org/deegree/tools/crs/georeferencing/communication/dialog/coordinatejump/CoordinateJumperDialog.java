@@ -53,7 +53,7 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
  * 
  * @version $Revision$, $Date$
  */
-public class CoordinateJumperDialog extends JDialog implements GUIConstants {
+public class CoordinateJumperDialog extends JDialog {
 
     /**
      * 
@@ -73,7 +73,7 @@ public class CoordinateJumperDialog extends JDialog implements GUIConstants {
         buttons = new ButtonPanel();
 
         coordinateJumper = new JTextField( 15 );
-        coordinateJumper.setName( JTEXTFIELD_COORDINATE_JUMPER );
+        coordinateJumper.setName( GUIConstants.JTEXTFIELD_COORDINATE_JUMPER );
         this.add( coordinateJumper, BorderLayout.CENTER );
         this.add( buttons, BorderLayout.SOUTH );
         this.pack();

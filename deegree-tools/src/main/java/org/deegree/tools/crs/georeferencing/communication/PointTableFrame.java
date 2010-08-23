@@ -63,7 +63,7 @@ import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
  * 
  * @version $Revision$, $Date$
  */
-public class PointTableFrame extends JFrame implements GUIConstants {
+public class PointTableFrame extends JFrame {
 
     public final static String BUTTON_DELETE_SELECTED = "Delete selected";
 
@@ -132,7 +132,7 @@ public class PointTableFrame extends JFrame implements GUIConstants {
         deleteSingleButton.setName( BUTTON_DELETE_SELECTED );
         deleteAllButton.setName( BUTTON_DELETE_ALL );
 
-        String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
+        String[] sArray = new String[] { GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST, GUIConstants.MENUITEM_TRANS_HELMERT };
         checkbox = new CheckBoxList( sArray );
 
         // rightCenterPanel.add( rightCenterWest, BorderLayout.WEST );

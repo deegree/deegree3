@@ -643,7 +643,7 @@ public class Controller {
             }
             if ( source instanceof JMenuItem ) {
 
-                if ( ( (JMenuItem) source ).getText().startsWith( GRViewerGUI.MENUITEM_EDIT_OPTIONS ) ) {
+                if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_EDIT_OPTIONS ) ) {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
 
                     dialogModel.createNodes( root );

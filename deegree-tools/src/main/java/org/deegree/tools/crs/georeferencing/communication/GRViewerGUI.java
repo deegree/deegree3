@@ -69,7 +69,7 @@ import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
  * 
  * @version $Revision$, $Date$
  */
-public class GRViewerGUI extends JFrame implements GUIConstants {
+public class GRViewerGUI extends JFrame {
 
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
@@ -92,7 +92,7 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
     private NavigationBarPanelFootprint naviPanelFoot;
 
     public GRViewerGUI() {
-        super( WINDOW_TITLE );
+        super( GUIConstants.WINDOW_TITLE );
 
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 
@@ -119,13 +119,13 @@ public class GRViewerGUI extends JFrame implements GUIConstants {
         JMenu menuEdit;
 
         menuBar = new JMenuBar();
-        menuFile = new JMenu( MENU_FILE );
-        menuEdit = new JMenu( MENU_EDIT );
+        menuFile = new JMenu( GUIConstants.MENU_FILE );
+        menuEdit = new JMenu( GUIConstants.MENU_EDIT );
 
         menuBar.add( menuFile );
         menuBar.add( menuEdit );
 
-        editMenuItem = new JMenuItem( MENUITEM_EDIT_OPTIONS );
+        editMenuItem = new JMenuItem( GUIConstants.MENUITEM_EDIT_OPTIONS );
         menuEdit.add( editMenuItem );
 
         this.getRootPane().setJMenuBar( menuBar );

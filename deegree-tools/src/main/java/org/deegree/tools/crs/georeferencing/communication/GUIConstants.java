@@ -43,50 +43,54 @@ package org.deegree.tools.crs.georeferencing.communication;
  * 
  * @version $Revision$, $Date$
  */
-public interface GUIConstants {
+public class GUIConstants {
 
-    public final static String WINDOW_TITLE = " deegree3 Georeferencing Client ";
+    private GUIConstants() {
+
+    }
+
+    public static final String WINDOW_TITLE = " deegree3 Georeferencing Client ";
 
     /*
      * JMenu
      */
-    public final static String MENU_EDIT = "Edit";
+    public static final String MENU_EDIT = "Edit";
 
-    public final static String MENU_FILE = "File";
+    public static final String MENU_FILE = "File";
 
-    public final static String MENU_TRANSFORMATION = "Transformation";
+    public static final String MENU_TRANSFORMATION = "Transformation";
 
     /*
      * JMenuItem
      */
-    public final static String MENUITEM_GETMAP = "Import 2D Map";
+    public static final String MENUITEM_GETMAP = "Import 2D Map";
 
-    public final static String MENUITEM_GET_3DOBJECT = "Import 3D Object";
+    public static final String MENUITEM_GET_3DOBJECT = "Import 3D Object";
 
-    public final static String MENUITEM_TRANS_POLYNOM_FIRST = "Polynomial 1";
+    public static final String MENUITEM_TRANS_POLYNOM_FIRST = "Polynomial 1";
 
-    public final static String MENUITEM_TRANS_POLYNOM_SECOND = "Polynomial 2";
+    public static final String MENUITEM_TRANS_POLYNOM_SECOND = "Polynomial 2";
 
-    public final static String MENUITEM_TRANS_POLYNOM_THIRD = "Polynomial 3";
+    public static final String MENUITEM_TRANS_POLYNOM_THIRD = "Polynomial 3";
 
-    public final static String MENUITEM_TRANS_HELMERT = "Helmert";
+    public static final String MENUITEM_TRANS_HELMERT = "Helmert";
 
-    public final static String MENUITEM_EDIT_OPTIONS = "Options";
+    public static final String MENUITEM_EDIT_OPTIONS = "Options";
 
     /*
      * JTextField
      */
-    public final static String JTEXTFIELD_COORDINATE_JUMPER = "CoordinateJumper";
+    public static final String JTEXTFIELD_COORDINATE_JUMPER = "CoordinateJumper";
 
     /*
      * JButton
      */
-    public final static String JBUTTON_PAN = "Pan";
+    public static final String JBUTTON_PAN = "Pan";
 
-    public final static String JBUTTON_ZOOM_IN = "Zoom in";
+    public static final String JBUTTON_ZOOM_IN = "Zoom in";
 
-    public final static String JBUTTON_ZOOM_OUT = "Zoom out";
+    public static final String JBUTTON_ZOOM_OUT = "Zoom out";
 
-    public final static String JBUTTON_ZOOM_COORD = "Zoom coord";
+    public static final String JBUTTON_ZOOM_COORD = "Zoom coord";
 
 }

@@ -81,6 +81,7 @@ public class CheckBoxList extends JPanel {
         list = new ArrayList<JCheckBox>();
         for ( int i = 0; i < length; i++ ) {
             JCheckBox checkbox = new JCheckBox( checkboxNames[i] );
+            checkbox.setName( checkboxNames[i] );
             this.add( checkbox, Component.LEFT_ALIGNMENT );
             list.add( checkbox );
         }
