@@ -24,8 +24,17 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-services</artifactId>
+      <artifactId>deegree-services-console</artifactId>
       <version>3.0-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-console</artifactId>
+      <version>3.0-SNAPSHOT</version>
+      <type>zip</type>
+      <classifier>webapp-template</classifier>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -51,6 +60,27 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+          <execution>
+            <id>unpack-dependencies-zip</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <classifier>webapp-template</classifier>
+              <type>zip</type>
+              <includeGroupIds>org.deegree</includeGroupIds>
+              <includeArtifactIds>deegree-services-console</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>      
     </plugins>
   </build>
 </project>
