@@ -6,7 +6,7 @@
   <packaging>war</packaging>
   <version>3.0-SNAPSHOT</version>
   <name>deegree 3 WPS Demo</name>
-  <url>http://maven.apache.org</url>
+  <url>http://maven.apache.org</url>  
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-demos</artifactId>
@@ -37,9 +37,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache</groupId>
-      <artifactId>apache-tomcat</artifactId>
-      <version>6.0.29</version>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tomcat</artifactId>
+      <version>3.0-SNAPSHOT</version>
       <type>zip</type>
       <scope>compile</scope>
     </dependency>
@@ -94,9 +94,9 @@
             </goals>
             <configuration>
               <type>zip</type>
-              <includeGroupIds>org.apache</includeGroupIds>
-              <includeArtifactIds>apache-tomcat</includeArtifactIds>
-              <outputDirectory>target/tomcat</outputDirectory>
+              <includeGroupIds>org.deegree</includeGroupIds>
+              <includeArtifactIds>deegree-tomcat</includeArtifactIds>
+              <outputDirectory>target</outputDirectory>
             </configuration>
           </execution>
         </executions>

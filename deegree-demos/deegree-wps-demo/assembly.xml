@@ -9,25 +9,26 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>target/tomcat/apache-tomcat-6.0.29</directory>
+      <directory>target/deegree-tomcat</directory>
       <outputDirectory>/${project.build.finalName}</outputDirectory>
       <excludes>
+        <exclude>*.sh</exclude>
         <exclude>bin/*.sh</exclude>
+        <exclude>webapps/ROOT/**</exclude>
       </excludes>
     </fileSet>
     <fileSet>
-      <directory>target/tomcat/apache-tomcat-6.0.29/bin</directory>
+      <directory>target/deegree-tomcat</directory>
       <includes>
         <include>*.sh</include>
+        <include>bin/*.sh</include>
       </includes>
       <fileMode>0775</fileMode>
-      <outputDirectory>/${project.build.finalName}/bin</outputDirectory>
+      <outputDirectory>/${project.build.finalName}</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/${project.build.finalName}</directory>
+      <outputDirectory>/${project.build.finalName}/webapps/ROOT</outputDirectory>
     </fileSet>
   </fileSets>
-  <files>
-    <file>
-      <source>target/deegree-wps-demo.war</source>
-      <destName>/${project.build.finalName}/webapps/ROOT.war</destName>
-    </file>
-  </files>
 </assembly>
