@@ -7,7 +7,7 @@
   <h:outputStylesheet name="styles.css" />
 </h:head>
 <h:body>
-  <pre>
+ <pre>
 	<h:outputText value="#{applicationBean.logo}" />
   </pre>
   ...has been successfully installed on this server.
@@ -15,7 +15,7 @@
   <br />
   <br />Version information<br />
   <br />
-  <ui:repeat items="#{applicationBean.moduleInfos}" var="moduleInfo">
+  <ui:repeat value="#{applicationBean.moduleInfos}" var="moduleInfo">
     - <h:outputText value="#{moduleInfo}" />
     <br />
   </ui:repeat>
