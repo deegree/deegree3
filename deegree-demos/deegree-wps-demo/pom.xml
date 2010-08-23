@@ -37,6 +37,13 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache</groupId>
+      <artifactId>apache-tomcat</artifactId>
+      <version>6.0.29</version>
+      <type>zip</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
@@ -79,8 +86,42 @@
               <outputDirectory>src/main/webapp</outputDirectory>
             </configuration>
           </execution>
+          <execution>
+            <id>package-tomcat</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <type>zip</type>
+              <includeGroupIds>org.apache</includeGroupIds>
+              <includeArtifactIds>apache-tomcat</includeArtifactIds>
+              <outputDirectory>target/tomcat</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
-      </plugin>      
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-5</version>
+        <configuration>
+          <descriptors>
+            <descriptor>assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>assemble-tomcat</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
