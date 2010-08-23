@@ -281,13 +281,14 @@ public class Scene2DValues {
             rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
             break;
         case FootprintPoint:
-            double minXF = xCoord;
-            double minYF = yCoord;
-            double maxYF = minYF - spanY;
-            double maxXF = minXF + spanX;
-
-            transformProportionFootprint( geom.createEnvelope( minXF, maxYF, maxXF, minYF,
-                                                               envelopeFootprint.getCoordinateSystem() ) );
+            halfSpanXWorld = spanX / 2;
+            halfSpanYWorld = spanY / 2;
+            double minXF = xCoord - halfSpanXWorld;
+            double minYF = yCoord - halfSpanYWorld;
+            double maxYF = yCoord + halfSpanYWorld;
+            double maxXF = xCoord + halfSpanXWorld;
+            Envelope e = geom.createEnvelope( minXF, minYF, maxXF, maxYF, envelopeFootprint.getCoordinateSystem() );
+            transformProportionFootprint( e );
             break;
         }
     }
@@ -589,22 +590,41 @@ public class Scene2DValues {
         double rW = w / wE;
         double rH = h / hE;
 
-        if ( rW < rH ) {
-            double minX = env.getMin().get0();
-            double minY = env.getMin().get1();
-            double newHeight = minY - ( env.getSpan0() * h / w );
+        double minX = env.getMin().get0();
+        double minY = env.getMin().get1();
 
+        if ( ratioEnv < 1 ) {
+
+            double newHeight = minY + ( wE * h / w );
             this.envelopeFootprint = geom.createEnvelope( minX, minY, minX + env.getSpan0(), newHeight,
                                                           env.getCoordinateSystem() );
-        } else if ( rW > rH ) {
-            double minX = env.getMin().get0();
-            double minY = env.getMin().get1();
-            double newWidth = minX + ( env.getSpan1() * w / h );
+            System.out.println( "[Scene2DValues] newHeight " + env );
+        } else if ( ratioEnv > 1 ) {
 
+            double newWidth = minX + ( hE * w / h );
             this.envelopeFootprint = geom.createEnvelope( minX, minY, newWidth, minY + env.getSpan1(),
                                                           env.getCoordinateSystem() );
-
+            System.out.println( "[Scene2DValues] newWidth " + env );
         }
+
+        // if ( rW < rH ) {
+        // double minX = env.getMin().get0();
+        // double minY = env.getMin().get1();
+        // double newHeight = minY + ( env.getSpan0() * h / w );
+        //
+        // this.envelopeFootprint = geom.createEnvelope( minX, minY, minX + env.getSpan0(), newHeight,
+        // env.getCoordinateSystem() );
+        // System.out.println( "[Scene2DValues] newHeight " + env );
+        // } else if ( rW > rH ) {
+        // double minX = env.getMin().get0();
+        // double minY = env.getMin().get1();
+        // double newWidth = minX + ( env.getSpan1() * w / h );
+        //
+        // this.envelopeFootprint = geom.createEnvelope( minX, minY, newWidth, minY + env.getSpan1(),
+        // env.getCoordinateSystem() );
+        // System.out.println( "[Scene2DValues] newWidth " + env );
+        //
+        // }
         // TODO what if equals?
         System.out.println( "[Scene2DValues] after " + dimensionFootprint + " " + envelopeFootprint );
 
