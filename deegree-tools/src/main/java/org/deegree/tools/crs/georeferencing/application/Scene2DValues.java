@@ -69,6 +69,8 @@ public class Scene2DValues {
 
     private Rectangle dimensionGeoreference;
 
+    private Rectangle dimensionFootprint;
+
     /**
      * new width and new height
      */
@@ -85,8 +87,6 @@ public class Scene2DValues {
     private RasterIOOptions options;
 
     private CRS crs;
-
-    private Rectangle dimensionFootprint;
 
     private Envelope envelopeFootprint;
 
@@ -166,6 +166,9 @@ public class Scene2DValues {
                 double spanX = this.subRaster.getEnvelope().getSpan0();
                 double spanY = this.subRaster.getEnvelope().getSpan1();
 
+                // if(){
+                //                    
+                // }
                 // determine the percentage of the requested point
                 double percentX = ( dimension.getX() / dimensionGeoreference.width ) * spanX;
                 double percentY = ( dimension.getY() / dimensionGeoreference.height ) * spanY;
@@ -274,10 +277,17 @@ public class Scene2DValues {
             double maxY = yCoord + halfSpanYWorld;
             Envelope enve = geom.createEnvelope( minX, minY, maxX, maxY, crs );
             this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
+            System.out.println( "[Scene2DValues] subRaster: " + subRaster );
             rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
             break;
         case FootprintPoint:
-            // TODO
+            double minXF = xCoord;
+            double minYF = yCoord;
+            double maxYF = minYF - spanY;
+            double maxXF = minXF + spanX;
+
+            transformProportionFootprint( geom.createEnvelope( minXF, maxYF, maxXF, minYF,
+                                                               envelopeFootprint.getCoordinateSystem() ) );
             break;
         }
     }
@@ -467,6 +477,7 @@ public class Scene2DValues {
         case FootprintPoint:
             center = (FootprintPoint) getWorldPoint( mousePosition );
             this.envelopeFootprint = createZoomedEnv( envelopeFootprint, newSize, center );
+            System.out.println( "[Scene2DValues] envZoomed " + envelopeFootprint );
             break;
         }
     }
@@ -564,6 +575,37 @@ public class Scene2DValues {
             dimensionFootprint.width = new Double( dimensionFootprint.width * ratioEnv / ratio ).intValue();
 
         }
+        System.out.println( "[Scene2DValues] after " + dimensionFootprint + " " + envelopeFootprint );
+
+    }
+
+    private void transformProportionFootprint( Envelope env ) {
+        double wE = env.getSpan0();
+        double hE = env.getSpan1();
+        double w = dimensionFootprint.width;
+        double h = dimensionFootprint.height;
+        double ratioEnv = wE / hE;
+        double ratio = w / h;
+        double rW = w / wE;
+        double rH = h / hE;
+
+        if ( rW < rH ) {
+            double minX = env.getMin().get0();
+            double minY = env.getMin().get1();
+            double newHeight = minY - ( env.getSpan0() * h / w );
+
+            this.envelopeFootprint = geom.createEnvelope( minX, minY, minX + env.getSpan0(), newHeight,
+                                                          env.getCoordinateSystem() );
+        } else if ( rW > rH ) {
+            double minX = env.getMin().get0();
+            double minY = env.getMin().get1();
+            double newWidth = minX + ( env.getSpan1() * w / h );
+
+            this.envelopeFootprint = geom.createEnvelope( minX, minY, newWidth, minY + env.getSpan1(),
+                                                          env.getCoordinateSystem() );
+
+        }
+        // TODO what if equals?
         System.out.println( "[Scene2DValues] after " + dimensionFootprint + " " + envelopeFootprint );
 
     }

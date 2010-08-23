@@ -149,9 +149,11 @@ public class Controller {
 
     private Point2d changePoint;
 
-    private boolean isHorizontalRef, start, isControlDown, selected;
+    private boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref, selectedFoot;
 
-    // private boolean isZoomIn, isZoomOut
+    private boolean isZoomInGeoref, isZoomInFoot, isZoomOutGeoref, isZoomOutFoot;
+
+    private double resizing;
 
     private GeometryFactory geom;
 
@@ -198,6 +200,7 @@ public class Controller {
         this.footPrint = new Footprint( sceneValues, geom );
 
         this.start = false;
+        this.resizing = .05;
 
         this.glHandler = view.getOpenGLEventListener();
         this.store = store;
@@ -237,7 +240,8 @@ public class Controller {
 
         }
 
-        isHorizontalRef = true;
+        isHorizontalRefGeoref = true;
+        isHorizontalRefFoot = true;
 
     }
 
@@ -265,16 +269,16 @@ public class Controller {
     private void selectGeorefToggleButton( JToggleButton t ) {
         boolean checkSelected = false;
         buttonModel = t.getModel();
-        selected = buttonModel.isSelected();
-        if ( selected == false ) {
-            isHorizontalRef = true;
+        selectedGeoref = buttonModel.isSelected();
+        if ( selectedGeoref == false ) {
+            isHorizontalRefGeoref = true;
         } else {
             checkSelected = true;
             buttonPanGeoref.setSelected( false );
             buttonZoomInGeoref.setSelected( false );
             buttonZoomoutGeoref.setSelected( false );
             buttonCoord.setSelected( false );
-            isHorizontalRef = false;
+            isHorizontalRefGeoref = false;
         }
         if ( t == buttonPanGeoref ) {
             buttonPanGeoref.setSelected( checkSelected );
@@ -302,18 +306,27 @@ public class Controller {
      *            the toggleButton that should be selected/deselected, not <Code>null</Code>.
      */
     private void selectFootprintToggleButton( JToggleButton t ) {
-        buttonPanFoot.setSelected( false );
-        buttonZoominFoot.setSelected( false );
-        buttonZoomoutFoot.setSelected( false );
-        isHorizontalRef = false;
+
+        boolean checkSelected = false;
+        buttonModel = t.getModel();
+        selectedFoot = buttonModel.isSelected();
+        if ( selectedFoot == false ) {
+            isHorizontalRefFoot = true;
+        } else {
+            checkSelected = true;
+            buttonPanFoot.setSelected( false );
+            buttonZoominFoot.setSelected( false );
+            buttonZoomoutFoot.setSelected( false );
+            isHorizontalRefFoot = false;
+        }
         if ( t == buttonPanFoot ) {
-            buttonPanFoot.setSelected( true );
+            buttonPanFoot.setSelected( checkSelected );
 
         } else if ( t == buttonZoominFoot ) {
-            buttonZoominFoot.setSelected( true );
+            buttonZoominFoot.setSelected( checkSelected );
 
         } else if ( t == buttonZoomoutFoot ) {
-            buttonZoomoutFoot.setSelected( true );
+            buttonZoomoutFoot.setSelected( checkSelected );
 
         }
 
@@ -409,13 +422,13 @@ public class Controller {
             Object source = e.getSource();
             if ( source instanceof JCheckBox ) {
                 JCheckBox selectedCheckbox = (JCheckBox) source;
-                if ( ( selectedCheckbox ).getText().startsWith( NavigationBarPanelGeoref.HORIZONTAL_REFERENCING ) ) {
-                    if ( isHorizontalRef == false ) {
-                        isHorizontalRef = true;
-                    } else {
-                        isHorizontalRef = false;
-                    }
-                }
+                // if ( ( selectedCheckbox ).getText().startsWith( NavigationBarPanelGeoref.HORIZONTAL_REFERENCING ) ) {
+                // if ( isHorizontalRef == false ) {
+                // isHorizontalRef = true;
+                // } else {
+                // isHorizontalRef = false;
+                // }
+                // }
                 if ( ( selectedCheckbox ).getText().startsWith( GeneralPanel.SNAPPING_TEXT ) ) {
 
                     boolean isSnappingOn = false;
@@ -447,9 +460,12 @@ public class Controller {
 
                     if ( tb == buttonPanGeoref ) {
                         selectGeorefToggleButton( tb );
-                        // TODO zoom functionality should be deactivated
+                        isZoomInGeoref = false;
+                        isZoomOutGeoref = false;
                     } else {
                         selectFootprintToggleButton( tb );
+                        isZoomInFoot = false;
+                        isZoomOutFoot = false;
                     }
                 }
                 if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
@@ -464,18 +480,24 @@ public class Controller {
 
                     if ( tb == buttonZoomInGeoref ) {
                         selectGeorefToggleButton( tb );
-                        // TODO pan should be deactivated
+                        isZoomInGeoref = true;
+                        isZoomOutGeoref = false;
                     } else {
                         selectFootprintToggleButton( tb );
+                        isZoomInFoot = true;
+                        isZoomOutFoot = false;
                     }
                 }
                 if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_OUT ) ) {
 
                     if ( tb == buttonZoomoutGeoref ) {
                         selectGeorefToggleButton( tb );
-                        // TODO pan functionality should be deactivated
+                        isZoomInGeoref = false;
+                        isZoomOutGeoref = true;
                     } else {
                         selectFootprintToggleButton( tb );
+                        isZoomInFoot = true;
+                        isZoomOutFoot = false;
                     }
                 }
             }
@@ -564,9 +586,9 @@ public class Controller {
                     } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
                         jumperDialog.setVisible( false );
 
-                        selected = false;
+                        selectedGeoref = false;
                         buttonModel.setSelected( false );
-                        isHorizontalRef = true;
+                        isHorizontalRefGeoref = true;
 
                     }
 
@@ -626,9 +648,9 @@ public class Controller {
 
                                 }
                                 jumperDialog.setVisible( false );
-                                selected = false;
+                                selectedGeoref = false;
                                 buttonModel.setSelected( false );
-                                isHorizontalRef = true;
+                                isHorizontalRefGeoref = true;
                                 panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                                 panel.updatePoints( sceneValues );
                                 panel.repaint();
@@ -896,15 +918,15 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                     mouseGeoRef.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
                     isControlDown = m.isControlDown();
-                    if ( isControlDown ) {
-                        System.out.println( "[Controller] down" );
-                    }
+                    isZoomInGeoref = buttonZoomInGeoref.isSelected();
+                    isZoomOutGeoref = buttonZoomoutGeoref.isSelected();
+
                 }
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     mouseFootprint.setPointMousePressed( new Point2d( m.getX(), m.getY() ) );
-                    if ( isControlDown ) {
-                        System.out.println( "[Controller] down" );
-                    }
+                    isControlDown = m.isControlDown();
+                    isZoomInFoot = buttonZoominFoot.isSelected();
+                    isZoomOutFoot = buttonZoomoutFoot.isSelected();
                 }
             }
 
@@ -916,7 +938,7 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    if ( isControlDown ) {
+                    if ( isControlDown || isZoomInGeoref || isZoomOutGeoref ) {
                         Point2d pointPressed = new Point2d( mouseGeoRef.getPointMousePressed().getX(),
                                                             mouseGeoRef.getPointMousePressed().getY() );
                         Point2d pointReleased = new Point2d( m.getX(), m.getY() );
@@ -929,14 +951,28 @@ public class Controller {
                             minPoint = pointReleased;
                             maxPoint = pointPressed;
                         }
-                        Rectangle r = new Rectangle(
-                                                     new Double( minPoint.getX() ).intValue(),
-                                                     new Double( minPoint.getY() ).intValue(),
-                                                     Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
-                                                     Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
-                        GeoReferencedPoint center = new GeoReferencedPoint( r.getCenterX(), r.getCenterY() );
-                        GeoReferencedPoint dimension = new GeoReferencedPoint( r.getWidth(), r.getHeight() );
-                        sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
+
+                        if ( isZoomInGeoref ) {
+                            if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
+                                sceneValues.computeZoomedEnvelope( true, resizing,
+                                                                   new GeoReferencedPoint( minPoint.getX(),
+                                                                                           minPoint.getY() ) );
+                            } else {
+                                Rectangle r = new Rectangle(
+                                                             new Double( minPoint.getX() ).intValue(),
+                                                             new Double( minPoint.getY() ).intValue(),
+                                                             Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
+                                                             Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
+                                GeoReferencedPoint center = new GeoReferencedPoint( r.getCenterX(), r.getCenterY() );
+                                GeoReferencedPoint dimension = new GeoReferencedPoint( r.getWidth(), r.getHeight() );
+                                sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
+                            }
+                        } else if ( isZoomOutGeoref ) {
+                            sceneValues.computeZoomedEnvelope(
+                                                               false,
+                                                               resizing,
+                                                               new GeoReferencedPoint( maxPoint.getX(), maxPoint.getY() ) );
+                        }
 
                         panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                         panel.updatePoints( sceneValues );
@@ -944,7 +980,7 @@ public class Controller {
                         panel.repaint();
 
                     }
-                    if ( isHorizontalRef == true ) {
+                    if ( isHorizontalRefGeoref == true ) {
                         if ( start == false ) {
                             start = true;
                             footPanel.setFocus( false );
@@ -967,6 +1003,7 @@ public class Controller {
                         tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
 
                     } else {
+                        // just pan
                         mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
                                                                               ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
                                                                               ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
@@ -982,7 +1019,7 @@ public class Controller {
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
 
-                    if ( isControlDown ) {
+                    if ( isControlDown || isZoomInFoot || isZoomOutFoot ) {
                         Point2d pointPressed = new Point2d( mouseFootprint.getPointMousePressed().getX(),
                                                             mouseFootprint.getPointMousePressed().getY() );
                         Point2d pointReleased = new Point2d( m.getX(), m.getY() );
@@ -995,23 +1032,33 @@ public class Controller {
                             minPoint = pointReleased;
                             maxPoint = pointPressed;
                         }
-                        Rectangle r = new Rectangle(
-                                                     new Double( minPoint.getX() ).intValue(),
-                                                     new Double( minPoint.getY() ).intValue(),
-                                                     Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
-                                                     Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
-                        // System.out.println( "[Controller]" + r );
-                        FootprintPoint center = new FootprintPoint( r.getCenterX(), r.getCenterY() );
-                        FootprintPoint dimension = new FootprintPoint( r.getWidth(), r.getHeight() );
-                        sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
 
+                        if ( isZoomInFoot ) {
+                            if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
+                                sceneValues.computeZoomedEnvelope( true, resizing, new FootprintPoint( minPoint.getX(),
+                                                                                                       minPoint.getY() ) );
+                            } else {
+                                Rectangle r = new Rectangle(
+                                                             new Double( minPoint.getX() ).intValue(),
+                                                             new Double( minPoint.getY() ).intValue(),
+                                                             Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
+                                                             Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
+                                // System.out.println( "[Controller]" + r );
+                                FootprintPoint center = new FootprintPoint( r.getCenterX(), r.getCenterY() );
+                                FootprintPoint dimension = new FootprintPoint( r.getWidth(), r.getHeight() );
+                                sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
+                            }
+                        } else if ( isZoomOutFoot ) {
+                            sceneValues.computeZoomedEnvelope( false, resizing, new FootprintPoint( maxPoint.getX(),
+                                                                                                    maxPoint.getY() ) );
+                        }
                         // footPanel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                         footPanel.setZoomRect( null );
                         footPanel.updatePoints( sceneValues );
                         footPanel.repaint();
 
                     }
-                    if ( isHorizontalRef == true ) {
+                    if ( isHorizontalRefFoot == true ) {
 
                         if ( start == false ) {
                             start = true;
@@ -1120,7 +1167,7 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    if ( m.isControlDown() ) {
+                    if ( m.isControlDown() || isZoomInGeoref ) {
                         int x = new Double( mouseGeoRef.getPointMousePressed().getX() ).intValue();
                         int y = new Double( mouseGeoRef.getPointMousePressed().getY() ).intValue();
                         int width = new Double( m.getX() - mouseGeoRef.getPointMousePressed().getX() ).intValue();
@@ -1132,7 +1179,7 @@ public class Controller {
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
-                    if ( m.isControlDown() ) {
+                    if ( m.isControlDown() || isZoomInFoot ) {
                         int x = new Double( mouseFootprint.getPointMousePressed().getX() ).intValue();
                         int y = new Double( mouseFootprint.getPointMousePressed().getY() ).intValue();
                         int width = new Double( m.getX() - mouseFootprint.getPointMousePressed().getX() ).intValue();
@@ -1183,8 +1230,6 @@ public class Controller {
     class Scene2DMouseWheelListener implements MouseWheelListener {
         private boolean zoomIn = false;
 
-        private float resizing;
-
         private AbstractGRPoint mouseOver;
 
         @Override
@@ -1196,7 +1241,7 @@ public class Controller {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                     mouseOver = mouseGeoRef.getMouseMoved();
-                    resizing = .05f;
+                    // resizing = .05f;
                     if ( m.getWheelRotation() < 0 ) {
                         zoomIn = true;
                     } else {
@@ -1210,7 +1255,7 @@ public class Controller {
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
 
-                    resizing = .1f;
+                    // resizing = .1f;
                     mouseOver = mouseFootprint.getMouseMoved();
                     if ( m.getWheelRotation() < 0 ) {
                         zoomIn = true;
