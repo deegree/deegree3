@@ -21,4 +21,11 @@
             <component-type>HtmlInputBBox</component-type>
         </component>
     </tag>
+    <tag>
+        <tag-name>inputMultiple</tag-name>
+        <component>
+            <component-type>HtmlInputMultiple</component-type>
+        </component>
+    </tag>
+
 </facelet-taglib>

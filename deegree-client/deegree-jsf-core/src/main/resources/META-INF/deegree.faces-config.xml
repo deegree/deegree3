@@ -19,4 +19,9 @@
         <component-class>org.deegree.client.core.component.HtmlInputBBox</component-class>
     </component>
     
+    <component>
+        <component-type>HtmlInputMultiple</component-type>
+        <component-class>org.deegree.client.core.component.HtmlInputMultiple</component-class>
+    </component>
+    
 </faces-config>
