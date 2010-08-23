@@ -35,17 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.kvp;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.slf4j.Logger;
 
 /**
  * This class contains convenience methods for working with key-value pair maps (e.g. from OGC KVP requests).
@@ -57,6 +63,8 @@ import java.util.Map;
  * @version $Revision$, $Date$
  */
 public class KVPUtils {
+
+    private static final Logger LOG = getLogger( KVPUtils.class );
 
     /**
      * Returns the value of the key. Throws an exception if the kvp map doesn't contain the key.
@@ -71,7 +79,7 @@ public class KVPUtils {
     public static String getRequired( Map<String, String> param, String key )
                             throws MissingParameterException {
         String value = param.get( key );
-        if ( value == null || value.length() == 0) {
+        if ( value == null || value.length() == 0 ) {
             throw new MissingParameterException( "Required parameter '" + key + "' is missing.", key );
         }
         return value;
@@ -294,7 +302,7 @@ public class KVPUtils {
      */
     public static Map<String, String> getNormalizedKVPMap( String queryString, String encoding )
                             throws UnsupportedEncodingException {
-    
+
         // guesses the encoding from the occurrence of the UTF-8 multi byte sequence marker
         // FF sends UTF-8 when locale setting is UTF-8, and ISO if locale setting is ISO
         // IE sends always ISO (?, CP1252 for Win95/98 series?)
@@ -303,9 +311,9 @@ public class KVPUtils {
         if ( encoding == null ) {
             encoding = queryString.toUpperCase().indexOf( "%C3" ) != -1 ? "UTF-8" : "ISO-8859-1";
         }
-    
+
         Map<String, List<String>> keyToValueList = new HashMap<String, List<String>>();
-    
+
         for ( String pair : queryString.split( "&" ) ) {
             // ignore empty key-values (prevents NPEs later)
             if ( pair.length() == 0 || !pair.contains( "=" ) ) {
@@ -329,7 +337,7 @@ public class KVPUtils {
             values.add( value );
             keyToValueList.put( key, values );
         }
-    
+
         Map<String, String[]> keyToValueArray = new HashMap<String, String[]>();
         for ( String key : keyToValueList.keySet() ) {
             List<String> valueList = keyToValueList.get( key );
@@ -337,7 +345,7 @@ public class KVPUtils {
             valueList.toArray( valueArray );
             keyToValueArray.put( key, valueArray );
         }
-    
+
         Map<String, String> kvpParamsUC = new HashMap<String, String>();
         for ( String key : keyToValueArray.keySet() ) {
             String[] values = keyToValueArray.get( key );
@@ -348,4 +356,28 @@ public class KVPUtils {
         }
         return kvpParamsUC;
     }
+
+    /**
+     * @param map
+     * @return an UTF-8 URL encoded query string from the kvps in the map
+     */
+    public static String toQueryString( Map<String, String> map ) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            boolean first = true;
+            for ( Entry<String, String> e : map.entrySet() ) {
+                if ( first ) {
+                    first = false;
+                } else {
+                    sb.append( "&" );
+                }
+                sb.append( URLEncoder.encode( e.getKey(), "UTF-8" ) ).append( "=" );
+                sb.append( URLEncoder.encode( e.getValue(), "UTF-8" ) );
+            }
+        } catch ( UnsupportedEncodingException e1 ) {
+            LOG.trace( "Stack trace:", e1 );
+        }
+        return sb.toString();
+    }
+
 }
