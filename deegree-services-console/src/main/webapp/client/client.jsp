@@ -95,7 +95,7 @@
                                                      + "] = new Array ();" );
                                         Arrays.sort( requests );
                                         for ( int l = 0; l < requests.length; l++ ) {
-                                            String requestUrl = "requests/" + serviceType + "/" + profile + "/"
+                                            String requestUrl = "/requests/" + serviceType + "/" + profile + "/"
                                                                 + requestType + "/xml/" + requests[l];
                                             // for each request example
                                             out.println( "              requests[" + i + "][" + j + "][" + k + "][" + l
