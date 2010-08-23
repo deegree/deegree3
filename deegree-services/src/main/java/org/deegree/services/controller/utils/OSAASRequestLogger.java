@@ -35,9 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.utils;
 
+import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.RequestLogger;
@@ -81,13 +88,89 @@ public class OSAASRequestLogger implements RequestLogger {
     }
 
     public void logKVP( String queryString, long startTime, long endTime, Credentials creds ) {
-
-        System.out.println( "kvp" );
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection( connid );
+            stmt = conn.prepareStatement( "insert into " + table + "(wfsidintern,wfsidextern,username,starttime"
+                                          + ",endtime,requestformat,rawrequest) values (?,?,?,?,?,?,?)" );
+            stmt.setString( 1, "" );
+            stmt.setString( 2, "" );
+            stmt.setString( 3, creds.getUser() );
+            stmt.setTimestamp( 4, new Timestamp( startTime ) );
+            stmt.setTimestamp( 5, new Timestamp( endTime ) );
+            stmt.setInt( 6, 2 );
+            stmt.setBytes( 7, queryString.getBytes() ); // it's url encoded anyway
+            LOG.debug( "Logging KVP request with statement:" );
+            LOG.debug( "{}", conn );
+            stmt.executeUpdate();
+        } catch ( SQLException e ) {
+            e.printStackTrace();
+            LOG.debug( "Could not log KVP request: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } finally {
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( conn != null ) {
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
     }
 
     public void logXML( File logFile, long startTime, long endTime, Credentials creds ) {
-        logFile.delete();
-        System.out.println( "xmls" );
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        FileInputStream is = null;
+        try {
+            conn = getConnection( connid );
+            stmt = conn.prepareStatement( "insert into " + table + "(wfsidintern,wfsidextern,username,starttime"
+                                          + ",endtime,requestformat,rawrequest) values (?,?,?,?,?,?,?)" );
+            stmt.setString( 1, "" );
+            stmt.setString( 2, "" );
+            stmt.setString( 3, creds.getUser() );
+            stmt.setTimestamp( 4, new Timestamp( startTime ) );
+            stmt.setTimestamp( 5, new Timestamp( endTime ) );
+            stmt.setInt( 6, 1 );
+            is = new FileInputStream( logFile );
+            // the methods taking a long or not taking the length at all are not implemented in postgres drivers!
+            stmt.setBinaryStream( 7, is, (int) logFile.length() );
+            LOG.debug( "Logging XML request with statement:" );
+            LOG.debug( "{}", conn );
+            stmt.executeUpdate();
+
+            logFile.delete();
+        } catch ( SQLException e ) {
+            e.printStackTrace();
+            LOG.debug( "Could not log XML request: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } catch ( FileNotFoundException e ) {
+            LOG.debug( "XML log file '{}' could not be found: {}", logFile, e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } finally {
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( conn != null ) {
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
     }
 
 }

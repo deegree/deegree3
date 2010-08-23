@@ -65,6 +65,7 @@ import org.deegree.services.jaxb.main.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.FrontControllerOptionsType;
 import org.deegree.services.jaxb.main.ServiceType;
+import org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging;
 import org.deegree.services.sos.SOSController;
 import org.deegree.services.wcs.WCSController;
 import org.deegree.services.wfs.WFSController;
@@ -103,6 +104,8 @@ public class WebServicesConfiguration {
     private DeegreeServiceControllerType mainConfig;
 
     private RequestLogger requestLogger;
+
+    private boolean logOnlySuccessful;
 
     /**
      * @param workspace
@@ -198,9 +201,7 @@ public class WebServicesConfiguration {
             }
         }
         if ( services.size() == 0 ) {
-            throw new ServletException(
-                                        "No deegree web services could be loaded (manually or automatically) please take a look at your configuration file: "
-                                                                + main + " and or your WEB-INF/conf directory." );
+            LOG.info( "No deegree web services have been loaded." );
         }
 
         for ( ServiceType configuredService : services ) {
@@ -485,9 +486,11 @@ public class WebServicesConfiguration {
 
     private void initRequestLogger() {
         FrontControllerOptionsType opts = mainConfig.getFrontControllerOptions();
-        if ( opts != null && opts.getRequestLogging() != null ) {
-            org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging.RequestLogger logger = opts.getRequestLogging().getRequestLogger();
+        RequestLogging requestLogging = opts == null ? null : opts.getRequestLogging();
+        if ( requestLogging != null ) {
+            org.deegree.services.jaxb.main.FrontControllerOptionsType.RequestLogging.RequestLogger logger = requestLogging.getRequestLogger();
             requestLogger = instantiateRequestLogger( logger );
+            this.logOnlySuccessful = requestLogging.isOnlySuccessful() != null && requestLogging.isOnlySuccessful();
         }
     }
 
@@ -541,6 +544,13 @@ public class WebServicesConfiguration {
      */
     public RequestLogger getRequestLogger() {
         return requestLogger;
+    }
+
+    /**
+     * @return true, if the option was set in the logging configuration
+     */
+    public boolean logOnlySuccessful() {
+        return logOnlySuccessful;
     }
 
 }

@@ -35,12 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.security;
 
+import static java.io.File.createTempFile;
+import static java.lang.System.currentTimeMillis;
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.COMMENT;
 import static javax.xml.stream.XMLStreamConstants.DTD;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.utils.kvp.KVPUtils.toQueryString;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.post;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
@@ -48,6 +51,7 @@ import static org.deegree.services.controller.OGCFrontController.resolveFileLoca
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -72,9 +76,12 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
+import org.deegree.services.controller.RequestLogger;
+import org.deegree.services.controller.WebServicesConfiguration;
 import org.slf4j.Logger;
 
 /**
@@ -98,9 +105,13 @@ public class SecureProxy extends HttpServlet {
 
     XMLOutputFactory outFac = XMLOutputFactory.newInstance();
 
+    private WebServicesConfiguration serviceConfig;
+
     private SecurityConfiguration securityConfiguration;
 
     private DeegreeWorkspace workspace;
+
+    private RequestLogger requestLogger;
 
     @Override
     public void init( ServletConfig config )
@@ -149,14 +160,26 @@ public class SecureProxy extends HttpServlet {
             throw new ServletException( msg );
         }
 
+        serviceConfig = new WebServicesConfiguration( workspace );
+        serviceConfig.init();
+        requestLogger = serviceConfig.getRequestLogger();
+
         LOG.info( "deegree 3 secure proxy initialized." );
     }
 
     @Override
     protected void doPost( final HttpServletRequest request, final HttpServletResponse response ) {
+        long startTime = currentTimeMillis();
+
         try {
-            final XMLStreamReader reader = inFac.createXMLStreamReader( request.getInputStream(),
-                                                                        request.getCharacterEncoding() );
+            File tmpFile = createTempFile( "deegree", "request.xml" );
+
+            InputStream tmp = request.getInputStream();
+            if ( tmpFile != null ) {
+                tmp = new LoggingInputStream( tmp, new FileOutputStream( tmpFile ) );
+            }
+
+            final XMLStreamReader reader = inFac.createXMLStreamReader( tmp, request.getCharacterEncoding() );
             reader.next();
             Credentials creds = credentialsProvider.doXML( reader, request, response );
             boolean loggedIn = securityConfiguration.checkCredentials( creds );
@@ -202,7 +225,15 @@ public class SecureProxy extends HttpServlet {
                 OutputStream out = response.getOutputStream();
                 XMLStreamReader responseReader = inFac.createXMLStreamReader( in );
                 responseReader.next();
-                copyXML( responseReader, outFac.createXMLStreamWriter( out ), requestURL );
+                boolean successful = copyXML( responseReader, outFac.createXMLStreamWriter( out ), requestURL )
+                                     || !serviceConfig.logOnlySuccessful();
+                if ( requestLogger != null && successful ) {
+                    requestLogger.logXML( tmpFile, startTime, System.currentTimeMillis(), creds );
+                } else {
+                    if ( tmpFile != null ) {
+                        tmpFile.delete();
+                    }
+                }
             } else {
                 writeUnauthorized( response, loggedIn );
             }
@@ -219,6 +250,7 @@ public class SecureProxy extends HttpServlet {
 
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) {
+        long startTime = currentTimeMillis();
         try {
             Map<String, String> normalizedKVPParams = KVPUtils.getNormalizedKVPMap( request.getQueryString(), null );
             Credentials creds = credentialsProvider.doKVP( normalizedKVPParams, request, response );
@@ -229,12 +261,20 @@ public class SecureProxy extends HttpServlet {
                 normalizedKVPParams.remove( "PASSWORD" );
                 InputStream in = retrieve( STREAM, proxiedUrl, normalizedKVPParams );
                 OutputStream out = response.getOutputStream();
+                boolean successful = false;
                 if ( normalizedKVPParams.get( "REQUEST" ).equalsIgnoreCase( "GetCapabilities" ) ) {
                     XMLStreamReader reader = inFac.createXMLStreamReader( in );
                     reader.next();
-                    copyXML( reader, outFac.createXMLStreamWriter( out ), request.getRequestURL().toString() );
+                    successful = copyXML( reader, outFac.createXMLStreamWriter( out ),
+                                          request.getRequestURL().toString() );
                 } else {
+                    // TODO determine from content type if it was successful, for WFS this should not be a problem
                     copy( in, out );
+                }
+                successful = successful || !serviceConfig.logOnlySuccessful();
+                if ( requestLogger != null && successful ) {
+                    requestLogger.logKVP( toQueryString( normalizedKVPParams ), startTime, System.currentTimeMillis(),
+                                          creds );
                 }
             } else {
                 writeUnauthorized( response, loggedIn );
@@ -250,9 +290,10 @@ public class SecureProxy extends HttpServlet {
         }
     }
 
-    void copyXML( XMLStreamReader reader, XMLStreamWriter writer, String serverUrl )
+    boolean copyXML( XMLStreamReader reader, XMLStreamWriter writer, String serverUrl )
                             throws XMLStreamException {
-        writer.writeStartDocument();
+
+        boolean wasSuccessful = false;
 
         int openElements = 0;
         boolean firstRun = true;
@@ -288,6 +329,9 @@ public class SecureProxy extends HttpServlet {
             }
             case START_ELEMENT: {
                 String elementName = reader.getLocalName();
+                if ( openElements == 0 ) {
+                    wasSuccessful = elementName.indexOf( "Exception" ) == -1;
+                }
                 if ( reader.getNamespaceURI() == null || reader.getPrefix() == null ) {
                     writer.writeStartElement( elementName );
                 } else {
@@ -345,6 +389,8 @@ public class SecureProxy extends HttpServlet {
 
         reader.close();
         writer.close();
+
+        return wasSuccessful;
     }
 
     void copy( InputStream in, OutputStream out )
