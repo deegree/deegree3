@@ -76,7 +76,7 @@
               <type>zip</type>
               <includeGroupIds>org.deegree</includeGroupIds>
               <includeArtifactIds>deegree-services-console</includeArtifactIds>
-              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+              <outputDirectory>src/main/webapp</outputDirectory>
             </configuration>
           </execution>
         </executions>
