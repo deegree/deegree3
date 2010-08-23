@@ -70,8 +70,12 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
 
     private Credentials creds;
 
+    private String address;
+
     /**
      * If XML request should possibly be logged.
+     * 
+     * @param address
      * 
      * @param response
      * @param requestLog
@@ -80,9 +84,10 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
      * @param creds
      * @param logger
      */
-    public LoggingHttpResponseWrapper( HttpServletResponse response, File requestLog, boolean successfulOnly,
-                                       long entryTime, Credentials creds, RequestLogger logger ) {
+    public LoggingHttpResponseWrapper( String address, HttpServletResponse response, File requestLog,
+                                       boolean successfulOnly, long entryTime, Credentials creds, RequestLogger logger ) {
         super( response );
+        this.address = address;
         this.requestLog = requestLog;
         this.successfulOnly = successfulOnly;
         this.entryTime = entryTime;
@@ -136,11 +141,11 @@ public class LoggingHttpResponseWrapper extends HttpServletResponseWrapper {
         logged = true;
         if ( !exceptionSent || !successfulOnly ) {
             if ( kvp != null ) {
-                logger.logKVP( kvp, entryTime, currentTimeMillis(), creds );
+                logger.logKVP( address, kvp, entryTime, currentTimeMillis(), creds );
             }
         }
         if ( exceptionSent && successfulOnly && requestLog != null ) {
-            logger.logXML( requestLog, entryTime, currentTimeMillis(), creds );
+            logger.logXML( address, requestLog, entryTime, currentTimeMillis(), creds );
         }
     }
 

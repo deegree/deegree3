@@ -172,7 +172,19 @@ public class SecureProxy extends HttpServlet {
         long startTime = currentTimeMillis();
 
         try {
-            File tmpFile = createTempFile( "deegree", "request.xml" );
+            File tmpFile = null;
+            if ( serviceConfig.getRequestLogger() != null ) {
+                String dir = serviceConfig.getMainConfiguration().getFrontControllerOptions().getRequestLogging().getOutputDirectory();
+                if ( dir == null ) {
+                    tmpFile = createTempFile( "request", ".body" );
+                } else {
+                    File directory = new File( dir );
+                    if ( !directory.exists() ) {
+                        directory.mkdirs();
+                    }
+                    tmpFile = createTempFile( "request", ".body", directory );
+                }
+            }
 
             InputStream tmp = request.getInputStream();
             if ( tmpFile != null ) {
@@ -228,7 +240,8 @@ public class SecureProxy extends HttpServlet {
                 boolean successful = copyXML( responseReader, outFac.createXMLStreamWriter( out ), requestURL )
                                      || !serviceConfig.logOnlySuccessful();
                 if ( requestLogger != null && successful ) {
-                    requestLogger.logXML( tmpFile, startTime, System.currentTimeMillis(), creds );
+                    requestLogger.logXML( proxiedUrl + "?" + request.getRequestURL(), tmpFile, startTime,
+                                          System.currentTimeMillis(), creds );
                 } else {
                     if ( tmpFile != null ) {
                         tmpFile.delete();
@@ -273,7 +286,8 @@ public class SecureProxy extends HttpServlet {
                 }
                 successful = successful || !serviceConfig.logOnlySuccessful();
                 if ( requestLogger != null && successful ) {
-                    requestLogger.logKVP( toQueryString( normalizedKVPParams ), startTime, System.currentTimeMillis(),
+                    requestLogger.logKVP( proxiedUrl + "?" + request.getRequestURL(),
+                                          toQueryString( normalizedKVPParams ), startTime, System.currentTimeMillis(),
                                           creds );
                 }
             } else {

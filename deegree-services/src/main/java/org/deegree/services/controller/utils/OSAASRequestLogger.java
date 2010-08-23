@@ -87,15 +87,16 @@ public class OSAASRequestLogger implements RequestLogger {
         table = tableElem.item( 0 ).getTextContent();
     }
 
-    public void logKVP( String queryString, long startTime, long endTime, Credentials creds ) {
+    public void logKVP( String address, String queryString, long startTime, long endTime, Credentials creds ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
             conn = getConnection( connid );
             stmt = conn.prepareStatement( "insert into " + table + "(wfsidintern,wfsidextern,username,starttime"
                                           + ",endtime,requestformat,rawrequest) values (?,?,?,?,?,?,?)" );
-            stmt.setString( 1, "" );
-            stmt.setString( 2, "" );
+            String[] ss = address.split( "\\?" );
+            stmt.setString( 1, ss[0] );
+            stmt.setString( 2, ss[1] );
             stmt.setString( 3, creds.getUser() );
             stmt.setTimestamp( 4, new Timestamp( startTime ) );
             stmt.setTimestamp( 5, new Timestamp( endTime ) );
@@ -126,7 +127,7 @@ public class OSAASRequestLogger implements RequestLogger {
         }
     }
 
-    public void logXML( File logFile, long startTime, long endTime, Credentials creds ) {
+    public void logXML( String address, File logFile, long startTime, long endTime, Credentials creds ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         FileInputStream is = null;
@@ -134,8 +135,9 @@ public class OSAASRequestLogger implements RequestLogger {
             conn = getConnection( connid );
             stmt = conn.prepareStatement( "insert into " + table + "(wfsidintern,wfsidextern,username,starttime"
                                           + ",endtime,requestformat,rawrequest) values (?,?,?,?,?,?,?)" );
-            stmt.setString( 1, "" );
-            stmt.setString( 2, "" );
+            String[] ss = address.split( "\\?" );
+            stmt.setString( 1, ss[0] );
+            stmt.setString( 2, ss[1] );
             stmt.setString( 3, creds.getUser() );
             stmt.setTimestamp( 4, new Timestamp( startTime ) );
             stmt.setTimestamp( 5, new Timestamp( endTime ) );

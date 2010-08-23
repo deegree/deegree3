@@ -213,9 +213,9 @@ public class OGCFrontController extends HttpServlet {
      *         is active
      */
     public static AbstractOGCServiceController getServiceController( Class<? extends AbstractOGCServiceController> c ) {
-        return serviceConfiguration.getServiceController(c);
+        return serviceConfiguration.getServiceController( c );
     }
-    
+
     /**
      * Returns the HTTP URL for communicating with the OGCFrontController over the web (for POST requests).
      * <p>
@@ -400,10 +400,10 @@ public class OGCFrontController extends HttpServlet {
                     is = new LoggingInputStream( is, new FileOutputStream( file ) );
                     Boolean conf = opts.getRequestLogging().isOnlySuccessful();
                     boolean onlySuccessful = conf != null && conf;
-                    response = logging = new LoggingHttpResponseWrapper( response, file, onlySuccessful, entryTime,
-                                                                         null, serviceConfiguration.getRequestLogger() ); // TODO
-                    // obtain/set
-                    // credentials somewhere
+                    response = logging = new LoggingHttpResponseWrapper( request.getRequestURL().toString(), response,
+                                                                         file, onlySuccessful, entryTime, null,
+                                                                         serviceConfiguration.getRequestLogger() );
+                    // TODO obtain/set credentials somewhere
                 }
             }
 

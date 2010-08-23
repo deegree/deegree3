@@ -51,11 +51,12 @@ import org.deegree.services.controller.RequestLogger;
  */
 public class StandardRequestLogger implements RequestLogger {
 
-    public void logKVP( String queryString, long startTime, long endTime, Credentials creds ) {
+    public void logKVP( String address, String queryString, long startTime, long endTime, Credentials creds ) {
+        // store address as well?
         incomingKVP( queryString, startTime );
     }
 
-    public void logXML( File logFile, long startTime, long endTime, Credentials creds ) {
+    public void logXML( String address, File logFile, long startTime, long endTime, Credentials creds ) {
         logFile.delete();
     }
 
