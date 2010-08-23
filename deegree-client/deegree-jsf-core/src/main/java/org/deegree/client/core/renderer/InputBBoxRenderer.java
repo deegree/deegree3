@@ -164,34 +164,57 @@ public class InputBBoxRenderer extends MenuRenderer {
 
     private void encodeCoordFields( ResponseWriter writer, HtmlInputBBox bbox, String clientId )
                             throws IOException {
-
+        BBox value = bbox.getValue();
+        // min X
+        double minx = 0;
+        if ( value != null && value.getLower() != null && value.getLower().length > 0 ) {
+            minx = value.getLower()[0];
+        }
         String minxLabel = bbox.getMinxLabel();
         if ( minxLabel == null ) {
             minxLabel = MessageUtils.getResourceText( null,
                                                       "org.deegree.client.core.renderer.InputBBoxRenderer.MINXLABEL" );
         }
-        addFieldRow( writer, clientId + ":" + MINX_ID_SUFFIX, minxLabel );
+        addFieldRow( writer, clientId + ":" + MINX_ID_SUFFIX, minxLabel, minx );
+
+        // min y
+        double minY = 0;
+        if ( value != null && value.getLower() != null && value.getLower().length > 1 ) {
+            minY = value.getLower()[1];
+        }
         String minyLabel = bbox.getMinyLabel();
         if ( minyLabel == null ) {
             minyLabel = MessageUtils.getResourceText( null,
                                                       "org.deegree.client.core.renderer.InputBBoxRenderer.MINYLABEL" );
         }
-        addFieldRow( writer, clientId + ":" + MINY_ID_SUFFIX, minyLabel );
+        addFieldRow( writer, clientId + ":" + MINY_ID_SUFFIX, minyLabel, minY );
+
+        // max x
+        double maxx = 0;
+        if ( value != null && value.getUpper() != null && value.getUpper().length > 0 ) {
+            maxx = value.getLower()[0];
+        }
         String maxxLabel = bbox.getMaxxLabel();
         if ( maxxLabel == null ) {
             maxxLabel = MessageUtils.getResourceText( null,
                                                       "org.deegree.client.core.renderer.InputBBoxRenderer.MAXXLABEL" );
         }
-        addFieldRow( writer, clientId + ":" + MAXX_ID_SUFFIX, maxxLabel );
+        addFieldRow( writer, clientId + ":" + MAXX_ID_SUFFIX, maxxLabel, maxx );
+
+        // max y
+        double maxy = 0;
+        if ( value != null && value.getUpper() != null && value.getUpper().length > 1 ) {
+            maxy = value.getLower()[1];
+        }
         String maxyLabel = bbox.getMaxxLabel();
         if ( maxyLabel == null ) {
             maxyLabel = MessageUtils.getResourceText( null,
                                                       "org.deegree.client.core.renderer.InputBBoxRenderer.MAXYLABEL" );
         }
-        addFieldRow( writer, clientId + ":" + MAXY_ID_SUFFIX, maxyLabel );
+        addFieldRow( writer, clientId + ":" + MAXY_ID_SUFFIX, maxyLabel, maxy );
     }
 
-    private void addFieldRow( ResponseWriter writer, String id, String label )
+    private void addFieldRow( ResponseWriter writer, String id, String label, double value )
                             throws IOException {
         writer.startElement( "tr", null );
 
@@ -204,9 +227,19 @@ public class InputBBoxRenderer extends MenuRenderer {
         writer.writeAttribute( "id", id, "id" );
         writer.writeAttribute( "name", id, "id" );
         writer.writeAttribute( "type", "text", "text" );
+        writer.writeAttribute( "value", value, "value" );
         writer.endElement( "input" );
 
         writer.endElement( "td" );
         writer.endElement( "tr" );
+    }
+
+    @Override
+    protected Object getCurrentSelectedValues( UIComponent component ) {
+        BBox bbox = ( (HtmlInputBBox) component ).getValue();
+        if ( bbox != null && bbox.getCrs() == null ) {
+            return new Object[] { bbox.getCrs() };
+        }
+        return null;
     }
 }

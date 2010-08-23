@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.component;
 
+import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UISelectOne;
@@ -127,6 +128,18 @@ public class HtmlInputBBox extends UISelectOne {
 
     public int getCrsSize() {
         return crsSize;
+    }
+
+    @Override
+    public BBox getValue() {
+        Object value = super.getValue();
+        if ( value == null ) {
+            return null;
+        }
+        if ( !( value instanceof BBox ) ) {
+            throw new FacesException( "value of HtmlInputBBox must be a org.deegree.client.core.model.BBox" );
+        }
+        return (BBox) super.getValue();
     }
 
     @Override
