@@ -39,6 +39,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.cs.CRS;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
@@ -148,7 +149,8 @@ public class SextanteProcesslet implements Processlet {
             gmlVersion = GMLVersion.GML_31;
         else if ( schema.equals( "http://schemas.opengis.net/gml/3.2.1/geometryComplexes.xsd" ) )
             gmlVersion = GMLVersion.GML_32;
-
+        else if ( schema.equals( "http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" ) )
+            gmlVersion = GMLVersion.GML_31;
         return gmlVersion;
     }
 
@@ -222,11 +224,17 @@ public class SextanteProcesslet implements Processlet {
         // input object
         ComplexInput gmlInput = (ComplexInput) in.getParameter( param.getParameterName() );
 
-        // input geometry
-        Geometry geometry = readGeometry( gmlInput );
-
         // create vector layer
-        IVectorLayer layer = IVectorLayerAdapter.createVectorLayer( geometry );
+        IVectorLayer layer;
+
+        // input
+        if ( gmlInput.getSchema().equals( "http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" ) ) {
+            FeatureCollection coll = readFeatureCollection( gmlInput );
+            layer = IVectorLayerAdapter.createVectorLayer( coll );
+        } else {
+            Geometry geometry = readGeometry( gmlInput );
+            layer = IVectorLayerAdapter.createVectorLayer( geometry );
+        }
 
         // set vector layer
         param.setParameterValue( layer );
@@ -419,6 +427,30 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
+     * Reads the feature collection from input (GML).
+     * 
+     * @param gmlInput
+     *            - input data
+     * @return feature collection
+     * @throws ProcessletException
+     */
+    private FeatureCollection readFeatureCollection( ComplexInput gmlInput )
+                            throws ProcessletException {
+        try {
+            String gmlSchema = gmlInput.getSchema();
+
+            XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( getGMLVersion( gmlSchema ), xmlReader );
+
+            return gmlReader.readFeatureCollection();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            throw new ProcessletException( "Error parsing parameter " + gmlInput.getIdentifier() + ": "
+                                           + e.getMessage() );
+        }
+    }
+
+    /**
      * Writes the output data (all supported types).
      * 
      * @param alg
@@ -549,6 +581,30 @@ public class SextanteProcesslet implements Processlet {
         } catch ( Exception e ) {
             throw new ProcessletException( "Error exporting geometry: " + e.getMessage() );
         }
+    }
 
+    /**
+     * Writes a feature collection.
+     * 
+     * @param gmlOutput
+     *            - output channel
+     * @param coll
+     *            - feature collection
+     * @throws ProcessletException
+     */
+    private void writeFeatureCollection( ComplexOutput gmlOutput, FeatureCollection coll )
+                            throws ProcessletException {
+        try {
+
+            String gmlSchema = gmlOutput.getRequestedSchema();
+            XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(),
+                                                                    "http://www.opengis.net/gml " + gmlSchema );
+            sw.setPrefix( "gml", GMLNS );
+            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( getGMLVersion( gmlSchema ), sw );
+            gmlWriter.write( coll );
+
+        } catch ( Exception e ) {
+            throw new ProcessletException( "Error exporting geometry: " + e.getMessage() );
+        }
     }
 }

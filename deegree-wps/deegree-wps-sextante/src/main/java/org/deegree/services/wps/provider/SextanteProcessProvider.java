@@ -216,7 +216,7 @@ public class SextanteProcessProvider implements ProcessProvider {
         complexFormatTypeFeatureCollection = new ComplexFormatType();
         complexFormatTypeFeatureCollection.setEncoding( "UTF-8" );
         complexFormatTypeFeatureCollection.setMimeType( "text/xml" );
-        complexFormatTypeFeatureCollection.setSchema( "" );
+        complexFormatTypeFeatureCollection.setSchema( "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" );
 
         // initialize algorithms
         initializeAlgorithms();
