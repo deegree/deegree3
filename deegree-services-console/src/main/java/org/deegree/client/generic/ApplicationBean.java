@@ -36,19 +36,22 @@
 package org.deegree.client.generic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.version.DeegreeModuleInfo;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.services.controller.OGCFrontController;
 
 /**
- * An application scoped bean, containing all informations about the apllication.
+ * Encapsulates informations about the status of the deegree web services.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -56,7 +59,7 @@ import org.deegree.services.controller.OGCFrontController;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@ApplicationScoped
+@RequestScoped
 public class ApplicationBean {
 
     private String logo = DeegreeAALogoUtils.getAsString();
@@ -90,12 +93,23 @@ public class ApplicationBean {
         return OGCFrontController.getServiceWorkspace().getLocation().getAbsolutePath();
     }
 
+    public List<Connection> getConnections() {
+        List<Connection> connections = new ArrayList<Connection>();
+        for ( String connId : ConnectionManager.getConnectionIds() ) {
+            connections.add( new Connection( connId ) );
+        }
+        return connections;
+    }
+
+    public Collection<String> getFeatureStores() {
+        return FeatureStoreManager.getFeatureStoreIds();
+    }
+
     public void reloadConfig( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
         try {
             OGCFrontController.getInstance().reload();
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

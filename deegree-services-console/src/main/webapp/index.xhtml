@@ -19,22 +19,58 @@
   </ui:repeat>
   <h:panelGroup id="configuration">
     <h:form id="requestForm">
+      <br />    
+      <br />Workspace [<h:commandLink value="Reload" style="text-align: right;">
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+      </h:commandLink>]
       <br />
-      <br />Configuration [<h:commandLink id="sendBt" value="Reload" style="text-align: right;">
+      <br />      
+      - Directory: <h:outputText value="#{applicationBean.workspaceDirectory}" />
+      <br />
+
+      <br />
+      <br />JDBC connection pools [<h:commandLink value="Reload" style="text-align: right;">
         <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
       </h:commandLink>]
       <br />
       <br />
-  - Workspace: '<h:outputText value="#{applicationBean.workspaceDirectory}" />'<br />
-  - JDBC connection pools: TODO<br />
-  - Feature stores: TODO<br />
-  - Coverage stores: TODO<br />
-  - Web services:<br />
+	  <ui:repeat value="#{applicationBean.connections}" var="connection">
+	    - <h:outputText value="#{connection.id}" />: <h:outputText value="#{connection.status}" />
+	    <br />
+	  </ui:repeat>      
+
+      <br />
+      <br />Feature stores [<h:commandLink value="Reload" style="text-align: right;">
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+      </h:commandLink>]
+      <br />
+      <br />
+	  <ui:repeat value="#{applicationBean.featureStores}" var="featureStore">
+	    - <h:outputText value="#{featureStore}" />
+	    <br />
+	  </ui:repeat>      
+      
+      <br />
+      <br />Web services [<h:commandLink value="Reload" style="text-align: right;">
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+      </h:commandLink>]
+      <br />
+      <br />
       <ui:repeat value="#{applicationBean.nameToController}" var="ntc">
-    &nbsp;&nbsp;- <h:outputText value="#{ntc}" />
+        - <h:outputText value="#{ntc}" />
         <h:outputText value="&#160;" />
-        <h:outputLink rendered="#{ntc == 'WPS'}" value="#{fn:toLowerCase(ntc)}/index.jsf">details</h:outputLink>
-        <h:outputLink rendered="#{ntc == 'WMS'}" value="#{fn:toLowerCase(ntc)}/index.jsf">details</h:outputLink>
+        <h:panelGroup rendered="#{ntc == 'WFS'}">
+          [<h:outputLink value="#{fn:toLowerCase(ntc)}/index.jsp">Details</h:outputLink>]
+          [<h:outputLink value="client/client.html">Send requests</h:outputLink>]
+        </h:panelGroup>
+        <h:panelGroup rendered="#{ntc == 'WPS'}">
+          [<h:outputLink value="#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
+          [<h:outputLink value="client/client.html">Send requests</h:outputLink>]
+        </h:panelGroup>
+        <h:panelGroup rendered="#{ntc == 'WMS'}">
+          [<h:outputLink value="#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
+          [<h:outputLink value="client/client.html">Send requests</h:outputLink>]
+        </h:panelGroup>        
         <br />
       </ui:repeat>
     </h:form>
@@ -48,8 +84,6 @@
   <br />
     - Average: <h:outputText value="#{statisticBean.averageResponseTime}" /> ms<br />
     - Maximum: <h:outputText value="#{statisticBean.maximumResponseTime}" /> ms<br />
-  <br />  
-  [<h:outputLink id="clientLink" value="client/client.html">Send requests</h:outputLink>]
-
+  <br />    
 </h:body>
 </html>

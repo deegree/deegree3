@@ -70,6 +70,10 @@ public class FeatureStoreManager {
 
     private static Map<String, FeatureStore> idToFs = Collections.synchronizedMap( new HashMap<String, FeatureStore>() );
 
+    public static Collection<String> getFeatureStoreIds () {
+        return idToFs.keySet();
+    }
+    
     /**
      * Returns all available {@link FeatureStore} providers.
      * 
