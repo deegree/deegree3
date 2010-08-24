@@ -36,56 +36,74 @@
 package org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import javax.swing.JDialog;
-import javax.swing.JTextField;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
+import javax.vecmath.Point2d;
 
-import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
 
 /**
- * Dialog for jumping to a specific coordinate. It is set to modal == true to disable any other userInteraction.
+ * Dialog for jumping to a specific coordinate. <li>It is modal, so there is no other user interaction possible.</li>
+ * <li>It is set to the center of the parent component.</li>
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class CoordinateJumperDialog extends JDialog {
+public class CoordinateJumperSpinnerDialog extends JDialog {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    private JTextField coordinateJumper;
+    private static final Dimension DIM = new Dimension( 200, 100 );
 
     private ButtonPanel buttons;
 
-    public CoordinateJumperDialog() {
+    private SpinnerModel spinnerModelX;
+
+    private SpinnerModel spinnerModelY;
+
+    private SpinnerModel spinnerModelSpan;
+
+    private JSpinner xCenter;
+
+    private JSpinner yCenter;
+
+    private JSpinner span;
+
+    private Point2d centerPoint;
+
+    private double spanValue;
+
+    public CoordinateJumperSpinnerDialog( Component parent ) {
         this.setLayout( new BorderLayout() );
-        this.setPreferredSize( new Dimension( 200, 100 ) );
-        this.setBounds( 100, 100, 200, 100 );
+        this.setPreferredSize( new Dimension( 200, 200 ) );
+        this.setBounds( new Double( parent.getBounds().getCenterX() - ( DIM.getWidth() / 2 ) ).intValue(),
+                        new Double( parent.getBounds().getCenterY() - ( DIM.getHeight() / 2 ) ).intValue(),
+                        new Double( DIM.getWidth() ).intValue(), new Double( DIM.getHeight() ).intValue() );
         this.setModal( true );
         this.setResizable( false );
         buttons = new ButtonPanel();
 
-        coordinateJumper = new JTextField( 15 );
-        coordinateJumper.setName( GUIConstants.JTEXTFIELD_COORDINATE_JUMPER );
-        this.add( coordinateJumper, BorderLayout.CENTER );
+        spinnerModelX = new SpinnerNumberModel( centerPoint.getX(), 0.00, 1.0, 0.01 );
+        spinnerModelY = new SpinnerNumberModel( centerPoint.getY(), 0.00, 1.0, 0.01 );
+        spinnerModelSpan = new SpinnerNumberModel( spanValue, 0.00, 1.0, 0.01 );
+
+        JPanel panel = new JPanel();
+
+        this.add( panel, BorderLayout.CENTER );
         this.add( buttons, BorderLayout.SOUTH );
         this.pack();
-
-    }
-
-    public JTextField getCoordinateJumper() {
-        return coordinateJumper;
-    }
-
-    public ButtonPanel getButtons() {
-        return buttons;
     }
 
     /**
@@ -94,9 +112,13 @@ public class CoordinateJumperDialog extends JDialog {
      * @param e
      */
     public void addListeners( ActionListener e ) {
-        coordinateJumper.addActionListener( e );
+        // coordinateJumper.addActionListener( e );
         buttons.addListeners( e );
 
+    }
+
+    public ButtonPanel getButtons() {
+        return buttons;
     }
 
 }
