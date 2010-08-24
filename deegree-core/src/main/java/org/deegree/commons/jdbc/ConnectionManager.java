@@ -74,6 +74,9 @@ public class ConnectionManager {
 
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
+    // TODO find a better solution then this static connection
+    private static ConnectionPool derbyConn;
+
     static {
         String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
         LOG.info( "Using '" + lockDb + "' for derby lock database." );
@@ -83,15 +86,20 @@ public class ConnectionManager {
         } catch ( Exception e ) {
             LOG.error( "Error loading derby JDBC driver: " + e.getMessage(), e );
         }
-        addConnection( "LOCK_DB", "jdbc:derby:" + lockDb + ";create=true", null, null, 0, 10 );
+        derbyConn = getConnection( "LOCK_DB", "jdbc:derby:" + lockDb + ";create=true", null, null, 0, 10 );
+        idToPools.put( "LOCK_DB", derbyConn );
     }
-
+    
+    
     /**
      * Initializes the {@link ConnectionManager} by loading all JDBC pool configurations from the given directory.
      * 
      * @param jdbcDir
      */
     public static void init( File jdbcDir ) {
+       
+        idToPools.put( "LOCK_DB", derbyConn );
+
         if ( !jdbcDir.exists() ) {
             LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
             return;
@@ -128,6 +136,14 @@ public class ConnectionManager {
         } catch ( SQLException e ) {
             LOG.debug( "Exception caught shutting down derby databases: " + e.getMessage(), e );
         }
+        for ( ConnectionPool pool : idToPools.values() ) {
+            try {
+                pool.destroy();
+            } catch ( Exception e ) {
+                LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
+            }
+        }
+        idToPools.clear();
     }
 
     /**
@@ -221,5 +237,32 @@ public class ConnectionManager {
      */
     public static Set<String> getConnectionIds() {
         return idToPools.keySet();
+    }
+
+    /**
+     * Adds a connection pool as specified in the parameters.
+     * 
+     * @param connId
+     * @param url
+     * @param user
+     * @param password
+     * @param poolMinSize
+     * @param poolMaxSize
+     */
+    private static ConnectionPool getConnection( String connId, String url, String user, String password, int poolMinSize,
+                                      int poolMaxSize ) {
+    
+        ConnectionPool pool = null;
+        synchronized ( ConnectionManager.class ) {
+            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
+                                            poolMaxSize ) );
+            if ( idToPools.containsKey( connId ) ) {
+                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
+            }
+            // TODO check callers for read only flag
+            pool = new ConnectionPool( connId, url, user, password, false, poolMinSize, poolMaxSize );
+            
+        }
+        return pool;
     }
 }

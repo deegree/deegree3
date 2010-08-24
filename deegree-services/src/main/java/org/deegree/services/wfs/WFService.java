@@ -130,17 +130,6 @@ public class WFService {
     }
 
     /**
-     * 
-     */
-    public void destroy() {
-        // TODO use manager to clear feature stores?
-        // for ( FeatureStore fs : schemaToStore.values() ) {
-        // LOG.debug( "Shutting down feature store: " + fs );
-        // fs.destroy();
-        // }
-    }
-
-    /**
      * Returns the qualified names of all served {@link FeatureType}s.
      * 
      * @return the qualified names, never <code>null</code>

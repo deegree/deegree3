@@ -455,12 +455,11 @@ public class WebServicesConfiguration {
     }
 
     /**
-     * @param context
-     *            the context name (used for logging)
+     * 
      */
-    public void destroy( String context ) {
+    public void destroy() {
         LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Shutting down deegree in context '{}'...", context );
+        LOG.info( "Shutting down deegree web services in context..." );
         for ( AllowedServices serviceName : serviceNameToController.keySet() ) {
             AbstractOGCServiceController subcontroller = serviceNameToController.get( serviceName );
             LOG.info( "Shutting down '" + serviceName + "'." );
@@ -473,7 +472,6 @@ public class WebServicesConfiguration {
             }
         }
         LOG.info( "deegree OGC webservices shut down." );
-        ConnectionManager.destroy();
         LOG.info( "--------------------------------------------------------------------------------" );
     }
 

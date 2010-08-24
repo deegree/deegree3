@@ -7,9 +7,7 @@
   <h:outputStylesheet name="styles.css" />
 </h:head>
 <h:body>
- <pre>
-	<h:outputText value="#{applicationBean.logo}" />
-  </pre>
+  <pre><h:outputText value="#{applicationBean.logo}" /></pre>
   ...has been successfully installed on this server.
   <br />
   <br />
@@ -19,16 +17,28 @@
     - <h:outputText value="#{moduleInfo}" />
     <br />
   </ui:repeat>
-  <br />
-  <br />Active services<br />
-  <br />
-  <ui:repeat value="#{applicationBean.nameToController}" var="ntc">
-    - <h:outputText value="#{ntc}" />
-    <h:outputText value="&#160;" />
-    <h:outputLink rendered="#{ntc == 'WPS'}" value="#{fn:toLowerCase(ntc)}/index.jsp">details</h:outputLink>
-    <h:outputLink rendered="#{ntc == 'WMS'}" value="#{fn:toLowerCase(ntc)}/index.jsf">details</h:outputLink>
-    <br />
-  </ui:repeat>
+  <h:panelGroup id="configuration">
+    <h:form id="requestForm">
+      <br />
+      <br />Configuration [<h:commandLink id="sendBt" value="Reload" style="text-align: right;">
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+      </h:commandLink>]
+      <br />
+      <br />
+  - Workspace: '<h:outputText value="#{applicationBean.workspaceDirectory}" />'<br />
+  - JDBC connection pools: TODO<br />
+  - Feature stores: TODO<br />
+  - Coverage stores: TODO<br />
+  - Web services:<br />
+      <ui:repeat value="#{applicationBean.nameToController}" var="ntc">
+    &nbsp;&nbsp;- <h:outputText value="#{ntc}" />
+        <h:outputText value="&#160;" />
+        <h:outputLink rendered="#{ntc == 'WPS'}" value="#{fn:toLowerCase(ntc)}/index.jsf">details</h:outputLink>
+        <h:outputLink rendered="#{ntc == 'WMS'}" value="#{fn:toLowerCase(ntc)}/index.jsf">details</h:outputLink>
+        <br />
+      </ui:repeat>
+    </h:form>
+  </h:panelGroup>
   <br />
   <br />Request statistics<br />
   <br />
@@ -38,7 +48,8 @@
   <br />
     - Average: <h:outputText value="#{statisticBean.averageResponseTime}" /> ms<br />
     - Maximum: <h:outputText value="#{statisticBean.maximumResponseTime}" /> ms<br />
-  <br />
+  <br />  
   [<h:outputLink id="clientLink" value="client/client.html">Send requests</h:outputLink>]
+
 </h:body>
 </html>

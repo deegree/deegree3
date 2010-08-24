@@ -13,14 +13,14 @@ deegree 3 WPS configuration<br />
   <br />
   Protocol information<br />
   <br />
-  <h:outputText value="#{wPSBean.version}" />
+  - active versions: <h:outputText value="#{wPSBean.version}" />
   <br />
   <br />
   <br />Available processes<br />
   <br />
   <ui:repeat value="#{wPSBean.processIds}" var="processId">
     - <h:outputText value="#{processId}" />
-    <br/>
+    <br />
   </ui:repeat>
   <br />
   [<a href="executionStatus.jsf">See execution log/status</a>]

@@ -40,6 +40,8 @@ import java.util.List;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.AjaxBehaviorEvent;
 
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.version.DeegreeModuleInfo;
@@ -82,5 +84,19 @@ public class ApplicationBean {
 
     public List<String> getNameToController() {
         return nameToController;
+    }
+
+    public String getWorkspaceDirectory() {
+        return OGCFrontController.getServiceWorkspace().getLocation().getAbsolutePath();
+    }
+
+    public void reloadConfig( AjaxBehaviorEvent event )
+                            throws AbortProcessingException {
+        try {
+            OGCFrontController.getInstance().reload();
+        } catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

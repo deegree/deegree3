@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.sql.Driver;
@@ -151,17 +152,35 @@ public class OGCFrontController extends HttpServlet {
     /** used to decode (already URL-decoded) query strings */
     private static final String DEFAULT_ENCODING = "UTF-8";
 
-    private static DeegreeServiceControllerType mainConfig;
-
     private static final String defaultTMPDir = System.getProperty( "java.io.tmpdir" );
 
-    private static final InheritableThreadLocal<RequestContext> CONTEXT = new InheritableThreadLocal<RequestContext>();
+    private static OGCFrontController instance;
+
+    private String workspaceName;
+
+    private DeegreeServiceControllerType mainConfig;
+
+    private final InheritableThreadLocal<RequestContext> CONTEXT = new InheritableThreadLocal<RequestContext>();
 
     private SecurityConfiguration securityConfiguration;
 
-    private static WebServicesConfiguration serviceConfiguration;
+    private WebServicesConfiguration serviceConfiguration;
 
-    private static DeegreeWorkspace workspace;
+    private DeegreeWorkspace workspace;
+
+    /**
+     * Returns the only instance of this class.
+     * 
+     * @return the only instance of this class, never <code>null</code>
+     * @throws RuntimeException
+     *             if {@link #init()} has not been called
+     */
+    public static synchronized OGCFrontController getInstance() {
+        if ( instance == null ) {
+            throw new RuntimeException( "OGCFrontController has not been initialized yet." );
+        }
+        return instance;
+    }
 
     /**
      * Returns the {@link RequestContext} associated with the calling thread.
@@ -175,7 +194,7 @@ public class OGCFrontController extends HttpServlet {
      * @return the {@link RequestContext} associated with the calling thread
      */
     public static RequestContext getContext() {
-        RequestContext context = CONTEXT.get();
+        RequestContext context = instance.CONTEXT.get();
         LOG.debug( "Retrieving RequestContext for current thread " + Thread.currentThread() + ": " + context );
         return context;
     }
@@ -184,14 +203,14 @@ public class OGCFrontController extends HttpServlet {
      * @return the service workspace
      */
     public static DeegreeWorkspace getServiceWorkspace() {
-        return workspace;
+        return instance.workspace;
     }
 
     /**
      * @return the service configuration
      */
     public static WebServicesConfiguration getServiceConfiguration() {
-        return serviceConfiguration;
+        return instance.serviceConfiguration;
     }
 
     /**
@@ -201,7 +220,7 @@ public class OGCFrontController extends HttpServlet {
      *         registered.
      */
     public static Map<String, AbstractOGCServiceController> getServiceControllers() {
-        return serviceConfiguration.getServiceControllers();
+        return instance.serviceConfiguration.getServiceControllers();
     }
 
     /**
@@ -213,7 +232,7 @@ public class OGCFrontController extends HttpServlet {
      *         is active
      */
     public static AbstractOGCServiceController getServiceController( Class<? extends AbstractOGCServiceController> c ) {
-        return serviceConfiguration.getServiceController( c );
+        return instance.serviceConfiguration.getServiceController( c );
     }
 
     /**
@@ -229,8 +248,8 @@ public class OGCFrontController extends HttpServlet {
      */
     public static String getHttpPostURL() {
         String url = null;
-        if ( mainConfig.getDCP() != null && mainConfig.getDCP().getHTTPPost() != null ) {
-            url = mainConfig.getDCP().getHTTPPost();
+        if ( instance.mainConfig.getDCP() != null && instance.mainConfig.getDCP().getHTTPPost() != null ) {
+            url = instance.mainConfig.getDCP().getHTTPPost();
         } else {
             url = getContext().getRequestedBaseURL();
         }
@@ -250,8 +269,8 @@ public class OGCFrontController extends HttpServlet {
      */
     public static String getHttpGetURL() {
         String url = null;
-        if ( mainConfig.getDCP() != null && mainConfig.getDCP().getHTTPGet() != null ) {
-            url = mainConfig.getDCP().getHTTPGet();
+        if ( instance.mainConfig.getDCP() != null && instance.mainConfig.getDCP().getHTTPGet() != null ) {
+            url = instance.mainConfig.getDCP().getHTTPGet();
         } else {
             url = getContext().getRequestedBaseURL() + "?";
         }
@@ -822,12 +841,15 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void init( ServletConfig config )
                             throws ServletException {
+        instance = this;
         try {
             super.init( config );
-
-            workspace = DeegreeWorkspace.getInstance( new File( resolveFileLocation( "WEB-INF/conf",
-                                                                                     getServletContext() ).toURI() ) );
-
+            workspaceName = config.getInitParameter( "workspace" );
+            if ( workspaceName != null ) {
+                workspaceName = workspaceName.trim();
+                LOG.info( "Workspace name: " + workspaceName );
+            }
+            workspace = getWorkspace();
             LOG.info( "--------------------------------------------------------------------------------" );
             DeegreeAALogoUtils.logInfo( LOG );
             LOG.info( "--------------------------------------------------------------------------------" );
@@ -874,10 +896,54 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
+    /**
+     * Re-initializes the whole workspace, effectively reloading the whole configuration.
+     * 
+     * @throws ServletException
+     * @throws URISyntaxException
+     * @throws MalformedURLException
+     */
+    public void reload()
+                            throws ServletException, MalformedURLException, URISyntaxException {
+
+        serviceConfiguration.destroy();
+
+        workspace.destroyAll();
+        workspace = getWorkspace();
+        workspace.initAll();
+
+        serviceConfiguration = new WebServicesConfiguration( workspace );
+        serviceConfiguration.init();
+        // TODO somehow eliminate the need for this stupid static field
+        mainConfig = serviceConfiguration.getMainConfiguration();
+        securityConfiguration = new SecurityConfiguration( workspace );
+    }
+
+    private DeegreeWorkspace getWorkspace()
+                            throws MalformedURLException, URISyntaxException {
+
+        DeegreeWorkspace workspace = null;
+        if ( workspaceName != null ) {
+            workspace = DeegreeWorkspace.getInstance( workspaceName );
+        } else {
+            workspace = DeegreeWorkspace.getDefaultInstance();
+        }
+
+        if ( !workspace.getLocation().exists() ) {
+            LOG.info( "Local workspace '{}' does not exist.", workspace.getLocation() );
+            File workspaceDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
+            workspace = DeegreeWorkspace.getInstance( workspaceDir );
+            LOG.info( "Using webapp workspace at '{}'.", workspace.getLocation() );
+        } else {
+            LOG.info( "Using local workspace at '{}'.", workspace.getLocation() );
+        }
+        return workspace;
+    }
+
     @Override
     public void destroy() {
         super.destroy();
-        serviceConfiguration.destroy( getServletContext().getServletContextName() );
+        serviceConfiguration.destroy();
         plugClassLoaderLeaks();
     }
 

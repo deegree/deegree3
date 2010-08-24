@@ -259,7 +259,6 @@ public class WFSController extends AbstractOGCServiceController {
     @Override
     public void destroy() {
         LOG.debug( "destroy" );
-        service.destroy();
     }
 
     /**

@@ -41,8 +41,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
@@ -66,7 +64,7 @@ class ConnectionPool {
 
     private final String id;
 
-    private final DataSource ds;
+    private final PoolingDataSource ds;
 
     private final GenericObjectPool pool;
 
@@ -96,7 +94,7 @@ class ConnectionPool {
         // needed, so users can retrieve the underlying connection from pooled
         // connections, e.g. to access the
         // LargeObjectManager from a PGConnection
-        ( (PoolingDataSource) ds ).setAccessToUnderlyingConnectionAllowed( true );
+        ds.setAccessToUnderlyingConnectionAllowed( true );
     }
 
     /**
@@ -110,5 +108,13 @@ class ConnectionPool {
         LOG.debug( "For connection id '{}': active connections: {}, idle connections: {}",
                    new Object[] { id, pool.getNumActive(), pool.getNumIdle() } );
         return ds.getConnection();
+    }
+
+    /**
+     * @throws Exception
+     */
+    void destroy()
+                            throws Exception {
+        pool.close();
     }
 }

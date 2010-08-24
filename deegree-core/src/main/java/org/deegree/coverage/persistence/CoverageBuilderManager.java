@@ -232,4 +232,11 @@ public class CoverageBuilderManager {
         return builder.buildCoverage( configURL );
     }
 
+    /**
+     * 
+     */
+    public void destroy () {
+        idToCov.clear();
+    }
+
 }
