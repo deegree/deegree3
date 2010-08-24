@@ -220,7 +220,7 @@ public class Scene2DImplWMS implements Scene2D {
         // subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
         // sceneValues.setSubRaster( subRaster );
         // rasterData = subRaster.getRasterData();
-        // System.out.println( "subRaster: " + subRaster );
+        // System.out.println( "[Scene2DImplWMS] raster simple gotten: " + raster );
         return generatedImage = generateMap( raster.getEnvelope() );
 
     }

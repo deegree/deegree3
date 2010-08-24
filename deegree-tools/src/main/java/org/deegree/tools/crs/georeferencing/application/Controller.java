@@ -153,7 +153,7 @@ public class Controller {
 
     private boolean isZoomInGeoref, isZoomInFoot, isZoomOutGeoref, isZoomOutFoot;
 
-    private double resizing;
+    // private double resizing;
 
     private GeometryFactory geom;
 
@@ -200,13 +200,14 @@ public class Controller {
         this.footPrint = new Footprint( sceneValues, geom );
 
         this.start = false;
-        this.resizing = .05;
+        // this.resizing = .25;
 
         this.glHandler = view.getOpenGLEventListener();
         this.store = store;
         this.textFieldModel = new TextFieldModel();
         this.dialogModel = new OptionDialogModel();
         AbstractPanel2D.selectedPointSize = this.dialogModel.getSelectionPointSize().first;
+        AbstractPanel2D.zoomValue = this.dialogModel.getResizeValue().first;
 
         this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
 
@@ -422,13 +423,6 @@ public class Controller {
             Object source = e.getSource();
             if ( source instanceof JCheckBox ) {
                 JCheckBox selectedCheckbox = (JCheckBox) source;
-                // if ( ( selectedCheckbox ).getText().startsWith( NavigationBarPanelGeoref.HORIZONTAL_REFERENCING ) ) {
-                // if ( isHorizontalRef == false ) {
-                // isHorizontalRef = true;
-                // } else {
-                // isHorizontalRef = false;
-                // }
-                // }
                 if ( ( selectedCheckbox ).getText().startsWith( GeneralPanel.SNAPPING_TEXT ) ) {
 
                     boolean isSnappingOn = false;
@@ -619,6 +613,13 @@ public class Controller {
 
                                 }
                             }
+                            if ( optionSettingPanel instanceof GeneralPanel ) {
+                                String p = ( (GeneralPanel) optionSettingPanel ).getTextField(
+                                                                                               ( (GeneralPanel) optionSettingPanel ).getZoomValue() ).getText();
+                                String p1 = p.replace( ',', '.' );
+                                dialogModel.setResizeValue( new Double( p1 ).doubleValue() );
+                                isRunIntoTrouble = false;
+                            }
                         }
                         if ( isRunIntoTrouble == false ) {
                             dialogModel.transferNewToOld();
@@ -759,6 +760,7 @@ public class Controller {
                         optionSettingPanel = new GeneralPanel( optionSettPanel );
                         ( (GeneralPanel) optionSettingPanel ).addCheckboxListener( new ButtonListener() );
                         ( (GeneralPanel) optionSettingPanel ).setSnappingOnOff( dialogModel.getSnappingOnOff().second );
+                        ( (GeneralPanel) optionSettingPanel ).setInitialZoomValue( dialogModel.getResizeValue().second );
                         break;
                     case ViewPanel:
                         optionSettingPanel = new ViewPanel();
@@ -954,7 +956,7 @@ public class Controller {
 
                         if ( isZoomInGeoref ) {
                             if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
-                                sceneValues.computeZoomedEnvelope( true, resizing,
+                                sceneValues.computeZoomedEnvelope( true, dialogModel.getResizeValue().second,
                                                                    new GeoReferencedPoint( minPoint.getX(),
                                                                                            minPoint.getY() ) );
                             } else {
@@ -964,13 +966,20 @@ public class Controller {
                                                              Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
                                                              Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
                                 GeoReferencedPoint center = new GeoReferencedPoint( r.getCenterX(), r.getCenterY() );
-                                GeoReferencedPoint dimension = new GeoReferencedPoint( r.getWidth(), r.getHeight() );
+                                GeoReferencedPoint dimension = new GeoReferencedPoint(
+                                                                                       Math.abs( new Double(
+                                                                                                             maxPoint.getX()
+                                                                                                                                     - minPoint.getX() ).intValue() ),
+                                                                                       Math.abs( new Double(
+                                                                                                             maxPoint.getY()
+                                                                                                                                     - minPoint.getY() ).intValue() ) );
                                 sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
+                                // sceneValues.computeAbsoluteEnvelope( GeoreferencedPoint, r );
                             }
                         } else if ( isZoomOutGeoref ) {
                             sceneValues.computeZoomedEnvelope(
                                                                false,
-                                                               resizing,
+                                                               dialogModel.getResizeValue().second,
                                                                new GeoReferencedPoint( maxPoint.getX(), maxPoint.getY() ) );
                         }
 
@@ -979,41 +988,42 @@ public class Controller {
                         panel.setZoomRect( null );
                         panel.repaint();
 
-                    }
-                    if ( isHorizontalRefGeoref == true ) {
-                        if ( start == false ) {
-                            start = true;
-                            footPanel.setFocus( false );
-                            panel.setFocus( true );
-                        }
-                        if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
-                             && panel.getFocus() == true ) {
-                            setValues();
-                        }
-                        if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
-                             && panel.getFocus() == true ) {
-                            tablePanel.addRow();
-                        }
-
-                        double x = m.getX();
-                        double y = m.getY();
-                        GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
-                        GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
-                        panel.setLastAbstractPoint( geoReferencedPoint, g );
-                        tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
-
                     } else {
-                        // just pan
-                        mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
-                                                                              ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
-                                                                              ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
+                        if ( isHorizontalRefGeoref == true ) {
+                            if ( start == false ) {
+                                start = true;
+                                footPanel.setFocus( false );
+                                panel.setFocus( true );
+                            }
+                            if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
+                                 && panel.getFocus() == true ) {
+                                setValues();
+                            }
+                            if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
+                                 && panel.getFocus() == true ) {
+                                tablePanel.addRow();
+                            }
 
-                        sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
-                        panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-                        panel.updatePoints( sceneValues );
+                            double x = m.getX();
+                            double y = m.getY();
+                            GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
+                            GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
+                            panel.setLastAbstractPoint( geoReferencedPoint, g );
+                            tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
+
+                        } else {
+                            // just pan
+                            mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
+                                                                                  ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
+                                                                                  ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
+
+                            sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
+                            panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                            panel.updatePoints( sceneValues );
+                        }
+
+                        panel.repaint();
                     }
-
-                    panel.repaint();
 
                 }
                 // footprintPanel
@@ -1035,69 +1045,71 @@ public class Controller {
 
                         if ( isZoomInFoot ) {
                             if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
-                                sceneValues.computeZoomedEnvelope( true, resizing, new FootprintPoint( minPoint.getX(),
-                                                                                                       minPoint.getY() ) );
+                                sceneValues.computeZoomedEnvelope(
+                                                                   true,
+                                                                   dialogModel.getResizeValue().second,
+                                                                   new FootprintPoint( minPoint.getX(), minPoint.getY() ) );
                             } else {
                                 Rectangle r = new Rectangle(
                                                              new Double( minPoint.getX() ).intValue(),
                                                              new Double( minPoint.getY() ).intValue(),
                                                              Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
                                                              Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
-                                // System.out.println( "[Controller]" + r );
                                 FootprintPoint center = new FootprintPoint( r.getCenterX(), r.getCenterY() );
                                 FootprintPoint dimension = new FootprintPoint( r.getWidth(), r.getHeight() );
                                 sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
+                                // sceneValues.computeAbsoluteEnvelope( FootprintPoint, r );
                             }
                         } else if ( isZoomOutFoot ) {
-                            sceneValues.computeZoomedEnvelope( false, resizing, new FootprintPoint( maxPoint.getX(),
-                                                                                                    maxPoint.getY() ) );
+                            sceneValues.computeZoomedEnvelope( false, dialogModel.getResizeValue().second,
+                                                               new FootprintPoint( maxPoint.getX(), maxPoint.getY() ) );
                         }
-                        // footPanel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                         footPanel.setZoomRect( null );
                         footPanel.updatePoints( sceneValues );
                         footPanel.repaint();
 
-                    }
-                    if ( isHorizontalRefFoot == true ) {
-
-                        if ( start == false ) {
-                            start = true;
-                            footPanel.setFocus( true );
-                            panel.setFocus( false );
-                        }
-                        if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
-                             && footPanel.getFocus() == true ) {
-                            setValues();
-                        }
-                        if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
-                             && footPanel.getFocus() == true ) {
-                            tablePanel.addRow();
-                        }
-                        double x = m.getX();
-                        double y = m.getY();
-                        Pair<AbstractGRPoint, FootprintPoint> point = null;
-                        if ( dialogModel.getSnappingOnOff().first ) {
-                            point = footPanel.getClosestPoint( new FootprintPoint( x, y ) );
-                        } else {
-                            point = new Pair<AbstractGRPoint, FootprintPoint>(
-                                                                               new FootprintPoint( x, y ),
-                                                                               (FootprintPoint) sceneValues.getWorldPoint( new FootprintPoint(
-                                                                                                                                               x,
-                                                                                                                                               y ) ) );
-                        }
-
-                        footPanel.setLastAbstractPoint( point.first, point.second );
-                        tablePanel.setCoords( footPanel.getLastAbstractPoint().getWorldCoords() );
-
                     } else {
-                        mouseFootprint.setMouseChanging( new FootprintPoint(
-                                                                             ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
-                                                                             ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
+                        if ( isHorizontalRefFoot == true ) {
 
-                        sceneValues.moveEnvelope( mouseFootprint.getMouseChanging() );
-                        footPanel.updatePoints( sceneValues );
+                            if ( start == false ) {
+                                start = true;
+                                footPanel.setFocus( true );
+                                panel.setFocus( false );
+                            }
+                            if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
+                                 && footPanel.getFocus() == true ) {
+                                setValues();
+                            }
+                            if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
+                                 && footPanel.getFocus() == true ) {
+                                tablePanel.addRow();
+                            }
+                            double x = m.getX();
+                            double y = m.getY();
+                            Pair<AbstractGRPoint, FootprintPoint> point = null;
+                            if ( dialogModel.getSnappingOnOff().first ) {
+                                point = footPanel.getClosestPoint( new FootprintPoint( x, y ) );
+                            } else {
+                                point = new Pair<AbstractGRPoint, FootprintPoint>(
+                                                                                   new FootprintPoint( x, y ),
+                                                                                   (FootprintPoint) sceneValues.getWorldPoint( new FootprintPoint(
+                                                                                                                                                   x,
+                                                                                                                                                   y ) ) );
+                            }
+
+                            footPanel.setLastAbstractPoint( point.first, point.second );
+                            tablePanel.setCoords( footPanel.getLastAbstractPoint().getWorldCoords() );
+
+                        } else {
+                            mouseFootprint.setMouseChanging( new FootprintPoint(
+                                                                                 ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
+                                                                                 ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
+
+                            sceneValues.moveEnvelope( mouseFootprint.getMouseChanging() );
+                            footPanel.updatePoints( sceneValues );
+                        }
+                        footPanel.repaint();
                     }
-                    footPanel.repaint();
 
                 }
             }
@@ -1247,7 +1259,7 @@ public class Controller {
                     } else {
                         zoomIn = false;
                     }
-                    sceneValues.computeZoomedEnvelope( zoomIn, resizing, mouseOver );
+                    sceneValues.computeZoomedEnvelope( zoomIn, dialogModel.getResizeValue().second, mouseOver );
                     panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
                     panel.updatePoints( sceneValues );
                     panel.repaint();
@@ -1262,7 +1274,7 @@ public class Controller {
                     } else {
                         zoomIn = false;
                     }
-                    sceneValues.computeZoomedEnvelope( zoomIn, resizing, mouseOver );
+                    sceneValues.computeZoomedEnvelope( zoomIn, dialogModel.getResizeValue().second, mouseOver );
                     footPanel.updatePoints( sceneValues );
                     footPanel.repaint();
                 }

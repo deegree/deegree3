@@ -73,6 +73,8 @@ public abstract class AbstractPanel2D extends JPanel {
 
     public static int selectedPointSize;
 
+    public static double zoomValue;
+
     public void addScene2DMouseListener( MouseListener m ) {
 
         this.addMouseListener( m );

@@ -36,15 +36,21 @@
 package org.deegree.tools.crs.georeferencing.communication.dialog.option;
 
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 
 /**
  * <Code>GeneralPanel</Code>.
@@ -62,6 +68,8 @@ public class GeneralPanel extends GenericSettingsPanel {
 
     public static final String ZOOM = "zoom";
 
+    public static final String ZOOM_TEXT = "ZoomValue";
+
     private static final int SH = 100;
 
     private static final int ZH = 100;
@@ -72,7 +80,13 @@ public class GeneralPanel extends GenericSettingsPanel {
 
     private JCheckBox snappingOnOff;
 
-    private JCheckBox zoomValue;
+    private JSpinner zoomValue;
+
+    private SpinnerModel zoomModel;
+
+    private double initialZoomValue;
+
+    private JFormattedTextField ftfZoom;
 
     /**
      * Creates a new instance of <Code>GeneralPanel</Code>.
@@ -92,11 +106,22 @@ public class GeneralPanel extends GenericSettingsPanel {
         snappingOnOff.setName( SNAPPING );
 
         zoom = new JPanel();
+        zoom.setLayout( new FlowLayout() );
+        JLabel labelText = new JLabel( ZOOM_TEXT );
+
+        zoomModel = new SpinnerNumberModel( initialZoomValue, 0.00, 1.0, 0.01 );
         zoom.setBorder( BorderFactory.createTitledBorder( "zoom" ) );
         zoom.setBounds( new Rectangle( parent.getBounds().width, ZH ) );
-        zoomValue = new JCheckBox( "zoomValue" );
+        zoomValue = new JSpinner( zoomModel );
         zoom.add( zoomValue );
+        ftfZoom = getTextField( zoomValue );
+        if ( ftfZoom != null ) {
+            ftfZoom.setColumns( 5 );
+            ftfZoom.setHorizontalAlignment( JTextField.RIGHT );
+        }
         zoom.setName( ZOOM );
+        zoom.add( labelText );
+        zoom.add( zoomValue );
 
         this.add( snapping, this );
         this.add( zoom, this );
@@ -142,10 +167,32 @@ public class GeneralPanel extends GenericSettingsPanel {
         this.snappingOnOff.setSelected( setSnapping );
     }
 
+    public void setInitialZoomValue( double initialZoomValue ) {
+        this.initialZoomValue = initialZoomValue;
+        this.zoomModel.setValue( initialZoomValue );
+    }
+
+    public JSpinner getZoomValue() {
+        return zoomValue;
+    }
+
     @Override
     public PanelType getType() {
 
         return PanelType.GeneralPanel;
+    }
+
+    /**
+     * 
+     * @param spinner
+     * @return the textfield that is used by the jSpinner.
+     */
+    public JFormattedTextField getTextField( JSpinner spinner ) {
+        JComponent editor = spinner.getEditor();
+        if ( editor instanceof JSpinner.DefaultEditor ) {
+            return ( (JSpinner.DefaultEditor) editor ).getTextField();
+        }
+        return null;
     }
 
 }

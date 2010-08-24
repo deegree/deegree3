@@ -68,6 +68,8 @@ public class OptionDialogModel {
      */
     private Pair<String, String> textFieldKeyString;
 
+    private Pair<Double, Double> resizeValue;
+
     /**
      * Creates a new instance of <Code>OptionDialogPanel</Code>.
      */
@@ -75,6 +77,7 @@ public class OptionDialogModel {
         this.snappingOnOff = new Pair<Boolean, Boolean>( false, false );
         this.selectionPointSize = new Pair<Integer, Integer>( 5, 5 );
         this.textFieldKeyString = new Pair<String, String>( "", "" );
+        this.resizeValue = new Pair<Double, Double>( .25, .25 );
 
     }
 
@@ -157,8 +160,28 @@ public class OptionDialogModel {
     }
 
     /**
-     * Handles the transfer of the newValue to the oldValue. <br>
-     * When there is a commit like ok.
+     * 
+     * @return the double value of the resizeValue.
+     */
+    public Pair<Double, Double> getResizeValue() {
+        return resizeValue;
+    }
+
+    /**
+     * Sets the second parameter of the Pair.
+     * 
+     * @param resizeValue
+     *            , not <Code>null</Code>.
+     */
+    public void setResizeValue( double resizeValue ) {
+        if ( this.resizeValue != null ) {
+            this.resizeValue.second = resizeValue;
+        }
+    }
+
+    /**
+     * Handles the transfer of the newValue(second) to the oldValue(first). <br>
+     * Whether there is a commit like ok.
      */
     public void transferNewToOld() {
         if ( snappingOnOff != null ) {
@@ -170,10 +193,13 @@ public class OptionDialogModel {
         if ( textFieldKeyString != null ) {
             textFieldKeyString.first = textFieldKeyString.second;
         }
+        if ( resizeValue != null ) {
+            resizeValue.first = resizeValue.second;
+        }
     }
 
     /**
-     * Handles the transfer of the oldValue to the newValue.<br>
+     * Handles the transfer of the oldValue(first) to the newValue(second).<br>
      * If there is a reject like cancel.
      */
     public void transferOldToNew() {
@@ -185,6 +211,9 @@ public class OptionDialogModel {
         }
         if ( textFieldKeyString != null ) {
             textFieldKeyString.second = textFieldKeyString.first;
+        }
+        if ( resizeValue != null ) {
+            resizeValue.second = resizeValue.first;
         }
     }
 

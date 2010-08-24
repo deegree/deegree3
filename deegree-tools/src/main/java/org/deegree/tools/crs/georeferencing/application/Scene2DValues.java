@@ -484,6 +484,76 @@ public class Scene2DValues {
     }
 
     /**
+     * Computes the zoomed envelope with a absoulte startposition and a specified width and height.
+     * 
+     * @param type
+     *            the type of the specified point, not be <Code>null</Code>
+     * @param rect
+     *            the rectangle that is requested, not be <Code>null</Code>
+     */
+    public void computeAbsoluteEnvelope( PointType type, Rectangle rect ) {
+
+        double w = dimensionGeoreference.getWidth();
+        double h = dimensionGeoreference.getHeight();
+        double wR = rect.getWidth();
+        double hR = rect.getHeight();
+        double minX = rect.getMinX();
+        double minY = rect.getMinY();
+        double ratioRect = wR / hR;
+
+        double newHeight = -1;
+        double newWidth = -1;
+        AbstractGRPoint minP = null;
+        AbstractGRPoint dim = null;
+
+        if ( ratioRect < 1 ) {
+
+            newHeight = ( wR * h / w );
+
+        } else if ( ratioRect > 1 ) {
+            newWidth = ( hR * w / h );
+
+        }
+
+        switch ( type ) {
+        case GeoreferencedPoint:
+            Envelope env = null;
+            minP = getWorldPoint( new GeoReferencedPoint( minX, minY ) );
+
+            if ( newHeight != -1 ) {
+
+                dim = getWorldDimension( new GeoReferencedPoint( wR, newHeight ) );
+
+            } else if ( newWidth != -1 ) {
+                dim = getWorldDimension( new GeoReferencedPoint( newWidth, hR ) );
+
+            }
+            env = geom.createEnvelope( minP.getX(), minP.getY() - dim.getY(), minP.getX() + dim.getX(), minP.getY(),
+                                       this.subRaster.getCoordinateSystem() );
+            if ( env != null ) {
+                this.subRaster = raster.getAsSimpleRaster().getSubRaster( env );
+            } else {
+                throw new IllegalArgumentException( "No envelope could be created. " );
+            }
+            break;
+        case FootprintPoint:
+            minP = getWorldPoint( new FootprintPoint( minX, minY ) );
+            if ( newHeight != -1 ) {
+                dim = getWorldDimension( new FootprintPoint( wR, newHeight ) );
+
+            } else if ( newWidth != -1 ) {
+                dim = getWorldDimension( new FootprintPoint( newWidth, hR ) );
+            } else {
+                throw new IllegalArgumentException( "No envelope could be created. " );
+            }
+            this.envelopeFootprint = geom.createEnvelope( minP.getX(), minP.getY() - dim.getY(), minP.getX()
+                                                                                                 + dim.getX(),
+                                                          minP.getY(), this.subRaster.getCoordinateSystem() );
+            break;
+        }
+    }
+
+    /**
      * Creates the envelope for zoom.
      * 
      * @param env
