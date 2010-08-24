@@ -5,7 +5,7 @@
   <artifactId>deegree-sos-demo</artifactId>
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>deegree-sos-demo Maven Webapp</name>
+  <name>deegree 3 SOS demo</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -48,6 +48,6 @@
         </configuration>
       </plugin>
     </plugins>
-    <finalName>deegree-sos-demo</finalName>
+    <finalName>deegree 3 SOS demo</finalName>
   </build>
 </project>
