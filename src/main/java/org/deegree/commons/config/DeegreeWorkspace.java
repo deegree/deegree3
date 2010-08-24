@@ -168,9 +168,8 @@ public class DeegreeWorkspace {
      * Unloads all resources associated with this context, as well as ALL STATIC ones.
      */
     public void destroyAll() {
+        getCoverageBuilderManager().destroy();
+        FeatureStoreManager.destroy();
         ConnectionManager.destroy();
-        // the rest seems not to need this
-        // TODO: set dir to null?
     }
-
 }

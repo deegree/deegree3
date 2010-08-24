@@ -205,4 +205,14 @@ public class FeatureStoreManager {
             fs.init();
         }
     }
+    
+    /**
+     * 
+     */
+    public static void destroy () {
+        for ( FeatureStore fs : idToFs.values() ) {
+            fs.destroy();
+        }
+        idToFs.clear();
+    }
 }
