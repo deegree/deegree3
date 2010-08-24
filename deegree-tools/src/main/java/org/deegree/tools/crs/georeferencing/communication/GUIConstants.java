@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
+import java.awt.Dimension;
+
 /**
  * Constants used to control the gui elements.
  * 
@@ -92,5 +94,12 @@ public class GUIConstants {
     public static final String JBUTTON_ZOOM_OUT = "Zoom out";
 
     public static final String JBUTTON_ZOOM_COORD = "Zoom coord";
+
+    public static final String COMPUTE_BUTTON_TEXT = "Compute";
+
+    /*
+     * Bounds
+     */
+    public static final Dimension DIM_COMPUTATION_PANEL = new Dimension( 160, 100 );
 
 }

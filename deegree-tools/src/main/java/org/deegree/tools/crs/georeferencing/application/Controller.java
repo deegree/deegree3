@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_HELMERT;
+
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -80,7 +82,7 @@ import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
-import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperDialog;
+import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperTextfieldDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.error.ErrorDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel;
@@ -89,8 +91,6 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.option.OptionDi
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.SettingsPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.ViewPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
-import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelFootprint;
-import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelGeoref;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
@@ -128,10 +128,6 @@ public class Controller {
     private Scene2DValues sceneValues;
 
     private BuildingFootprintPanel footPanel;
-
-    private NavigationBarPanelGeoref navPanelGeoref;
-
-    private NavigationBarPanelFootprint navPanelFoot;
 
     private PointTableFrame tablePanel;
 
@@ -177,7 +173,7 @@ public class Controller {
 
     private OptionDialog optionDialog;
 
-    private CoordinateJumperDialog jumperDialog;
+    private CoordinateJumperTextfieldDialog jumperDialog;
 
     private GenericSettingsPanel optionSettingPanel;
 
@@ -195,12 +191,9 @@ public class Controller {
         this.model = model;
         this.panel = view.getScenePanel2D();
         this.footPanel = view.getFootprintPanel();
-        this.navPanelGeoref = view.getNavigationPanelGeoref();
-        this.navPanelFoot = view.getNaviPanelFoot();
         this.footPrint = new Footprint( sceneValues, geom );
 
         this.start = false;
-        // this.resizing = .25;
 
         this.glHandler = view.getOpenGLEventListener();
         this.store = store;
@@ -226,15 +219,15 @@ public class Controller {
 
         // init the transformation method
         this.tablePanel = new PointTableFrame();
-        this.tablePanel.addListeners( new ButtonListener() );
-        this.tablePanel.addHorizontalRefListener( new ButtonListener() );
+        // this.tablePanel.addListeners( new ButtonListener() );
+        // this.tablePanel.addHorizontalRefListener( new ButtonListener() );
         transform = null;
         if ( transformationType == null ) {
             order = 1;
-            for ( JCheckBox box : tablePanel.getCheckbox().getList() ) {
-                if ( ( box ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
-                    transformationType = TransformationType.PolynomialFirstOrder;
-                    tablePanel.activateTransformationCheckbox( box );
+            for ( JCheckBox box : view.getCheckbox().getList() ) {
+                if ( ( box ).getText().startsWith( MENUITEM_TRANS_HELMERT ) ) {
+                    transformationType = TransformationType.Helmert_4;
+                    view.activateTransformationCheckbox( box );
                     break;
                 }
             }
@@ -290,7 +283,7 @@ public class Controller {
         } else if ( t == buttonCoord ) {
             buttonCoord.setSelected( checkSelected );
             if ( checkSelected == true ) {
-                jumperDialog = new CoordinateJumperDialog();
+                jumperDialog = new CoordinateJumperTextfieldDialog( view );
                 jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
                 jumperDialog.addListeners( new ButtonListener() );
                 jumperDialog.setVisible( true );
@@ -437,12 +430,12 @@ public class Controller {
                 if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
 
                     transformationType = TransformationType.PolynomialFirstOrder;
-                    tablePanel.activateTransformationCheckbox( selectedCheckbox );
+                    view.activateTransformationCheckbox( selectedCheckbox );
                 }
                 if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_HELMERT ) ) {
 
                     transformationType = TransformationType.Helmert_4;
-                    tablePanel.activateTransformationCheckbox( selectedCheckbox );
+                    view.activateTransformationCheckbox( selectedCheckbox );
                 }
 
             }
@@ -538,11 +531,14 @@ public class Controller {
                     removeAllFromMappedPoints();
 
                 }
-                if ( ( (JButton) source ).getText().startsWith( PointTableFrame.COMPUTE_BUTTON_NAME ) ) {
+                if ( ( (JButton) source ).getText().startsWith( GUIConstants.COMPUTE_BUTTON_TEXT ) ) {
                     // swap the tempPoints into the map now
                     if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
                         setValues();
                     }
+
+                    view.getMenuTransformation().setSelected( false );
+                    view.getMenuTransformation().getPopupMenu().setVisible( false );
                     // System.out.println( sourceCRS + " " + targetCRS );
 
                     switch ( transformationType ) {

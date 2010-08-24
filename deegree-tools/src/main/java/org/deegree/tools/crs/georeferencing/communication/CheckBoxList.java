@@ -35,14 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -86,7 +84,7 @@ public class CheckBoxList extends JPanel {
             list.add( checkbox );
         }
 
-        this.setBorder( BorderFactory.createLineBorder( Color.black ) );
+        // this.setBorder( BorderFactory.createLineBorder( Color.black ) );
         this.setPreferredSize( dim );
         this.setVisible( true );
 

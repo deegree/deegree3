@@ -35,6 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication;
 
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_EDIT_OPTIONS;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_HELMERT;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENU_EDIT;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENU_FILE;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENU_TRANSFORMATION;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -48,6 +55,8 @@ import java.awt.image.BufferedImage;
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -75,6 +84,8 @@ public class GRViewerGUI extends JFrame {
 
     private final static Dimension FRAME_DIMENSION = new Dimension( 900, 600 );
 
+    private JButton computeTransform = new JButton( GUIConstants.COMPUTE_BUTTON_TEXT );
+
     private Scene2DPanel scenePanel2D;
 
     private JPanel panelWest;
@@ -90,6 +101,10 @@ public class GRViewerGUI extends JFrame {
     private NavigationBarPanelGeoref naviPanelGeoref;
 
     private NavigationBarPanelFootprint naviPanelFoot;
+
+    private JMenu menuTransformation;
+
+    private CheckBoxList checkbox;
 
     public GRViewerGUI() {
         super( GUIConstants.WINDOW_TITLE );
@@ -119,13 +134,28 @@ public class GRViewerGUI extends JFrame {
         JMenu menuEdit;
 
         menuBar = new JMenuBar();
-        menuFile = new JMenu( GUIConstants.MENU_FILE );
-        menuEdit = new JMenu( GUIConstants.MENU_EDIT );
+        menuFile = new JMenu( MENU_FILE );
+        menuEdit = new JMenu( MENU_EDIT );
+        menuTransformation = new JMenu( MENU_TRANSFORMATION );
 
         menuBar.add( menuFile );
         menuBar.add( menuEdit );
+        menuBar.add( menuTransformation );
 
-        editMenuItem = new JMenuItem( GUIConstants.MENUITEM_EDIT_OPTIONS );
+        JPanel panel = new JPanel();
+        panel.setLayout( new BorderLayout() );
+        panel.setPreferredSize( GUIConstants.DIM_COMPUTATION_PANEL );
+
+        computeTransform.setName( GUIConstants.COMPUTE_BUTTON_TEXT );
+        String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
+        checkbox = new CheckBoxList( sArray );
+        panel.add( checkbox, BorderLayout.CENTER );
+        panel.add( computeTransform, BorderLayout.SOUTH );
+
+        // menuTransformation.add( checkbox );
+        // menuTransformation.add( computeTransform );
+        menuTransformation.add( panel );
+        editMenuItem = new JMenuItem( MENUITEM_EDIT_OPTIONS );
         menuEdit.add( editMenuItem );
 
         this.getRootPane().setJMenuBar( menuBar );
@@ -197,6 +227,8 @@ public class GRViewerGUI extends JFrame {
         naviPanelGeoref.addAbstractCoordListener( e );
         naviPanelFoot.addAbstractCoordListener( e );
         editMenuItem.addActionListener( e );
+        checkbox.addCheckboxListener( e );
+        computeTransform.addActionListener( e );
 
     }
 
@@ -228,6 +260,27 @@ public class GRViewerGUI extends JFrame {
 
     public OpenGLEventHandler getOpenGLEventListener() {
         return openGLEventListener;
+    }
+
+    /**
+     * Sets everything that is needed to handle userinteraction with the checkboxes in the transformationMenu.
+     * 
+     * @param selectedCheckbox
+     *            the checkbox that has been selected by the user.
+     */
+    public void activateTransformationCheckbox( JCheckBox selectedCheckbox ) {
+        this.checkbox.selectThisCheckbox( selectedCheckbox );
+
+        this.menuTransformation.setVisible( true );
+        this.menuTransformation.setSelected( false );
+    }
+
+    public CheckBoxList getCheckbox() {
+        return checkbox;
+    }
+
+    public JMenu getMenuTransformation() {
+        return menuTransformation;
     }
 
 }
