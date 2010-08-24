@@ -105,8 +105,8 @@ import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
-import org.deegree.tools.crs.georeferencing.model.textfield.AbstractTextfieldModel;
-import org.deegree.tools.crs.georeferencing.model.textfield.TextFieldModel;
+import org.deegree.tools.crs.georeferencing.model.textfield.AbstractCoordinateJumperModel;
+import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
 import org.deegree.tools.rendering.viewer.File3dImporter;
 
 /**
@@ -135,7 +135,7 @@ public class Controller {
 
     private Footprint footPrint;
 
-    private TextFieldModel textFieldModel;
+    private CoordinateJumperModel textFieldModel;
 
     private OpenGLEventHandler glHandler;
 
@@ -148,8 +148,6 @@ public class Controller {
     private boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref, selectedFoot;
 
     private boolean isZoomInGeoref, isZoomInFoot, isZoomOutGeoref, isZoomOutFoot;
-
-    // private double resizing;
 
     private GeometryFactory geom;
 
@@ -197,7 +195,7 @@ public class Controller {
 
         this.glHandler = view.getOpenGLEventListener();
         this.store = store;
-        this.textFieldModel = new TextFieldModel();
+        this.textFieldModel = new CoordinateJumperModel();
         this.dialogModel = new OptionDialogModel();
         AbstractPanel2D.selectedPointSize = this.dialogModel.getSelectionPointSize().first;
         AbstractPanel2D.zoomValue = this.dialogModel.getResizeValue().first;
@@ -336,7 +334,7 @@ public class Controller {
         // footPanel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
         // footPanel.addScene2DFocusListener( new Scene2DFocusListener() );
 
-        sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
+        // sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
         mouseFootprint = new FootprintMouseModel();
 
         List<WorldRenderableObject> rese = File3dImporter.open( view, store.getFilename() );
@@ -597,7 +595,7 @@ public class Controller {
                                     // copy&paste...so this should be the way to go.
 
                                     String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
-                                    if ( AbstractTextfieldModel.validateInt( textInput ) ) {
+                                    if ( AbstractCoordinateJumperModel.validateInt( textInput ) ) {
                                         dialogModel.setTextFieldKeyString( textInput );
                                         dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString().second ) );
                                         isRunIntoTrouble = false;
@@ -1325,12 +1323,12 @@ public class Controller {
     }
 
     /**
-     * Initializes the computing and the painting of the georeferenced map.
+     * Initializes the computing and the painting of the maps.
      */
     private void init() {
 
         sceneValues.setImageDimension( new Rectangle( panel.getBounds().width, panel.getBounds().height ) );
-        sceneValues.setDimenstionFootpanel( new Rectangle( footPanel.getBounds().width, footPanel.getBounds().height ) );
+        sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width, footPanel.getBounds().height ) );
         panel.setImageDimension( sceneValues.getImageDimension() );
         footPanel.updatePoints( sceneValues );
         // TODO make a modularization in Scene2DValues because there is a strict sequence in this case. If there is the

@@ -368,7 +368,7 @@ public class Scene2DValues {
         this.dimensionGeoreference = imageDimension;
     }
 
-    public void setDimenstionFootpanel( Rectangle dimension ) {
+    public void setDimensionFootpanel( Rectangle dimension ) {
 
         this.dimensionFootprint = dimension;
         if ( envelopeFootprint != null ) {
