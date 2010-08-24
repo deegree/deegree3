@@ -135,7 +135,7 @@ import org.slf4j.LoggerFactory;
  * <pre>
  * Note: The SOS 1.0.0 specification doesn't define KVP requests. It is an acknowledged flaw in the spec. Regardless of
  * that, some other SOS implemented KVP requests. The deegree SOS follows the KVP requests format of the following implementations.
- *  - http://www.oostethys.org/overview/best-practices/copy_of_best-practices-sos/
+ *  - http://www.oostethys.org/best-practices/best-practices-get    
  *  - http://mapserver.gis.umn.edu/docs/howto/sos_server/#getcapabilities-request
  * </pre>
  * 
