@@ -43,7 +43,7 @@ package org.deegree.tools.crs.georeferencing.model.textfield;
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractTextfieldModel {
+public abstract class AbstractCoordinateJumperModel {
 
     private final static String validateInteger = "[0-9]*";
 

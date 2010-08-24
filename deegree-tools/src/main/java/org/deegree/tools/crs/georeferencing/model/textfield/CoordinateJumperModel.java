@@ -42,14 +42,14 @@ import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.exceptions.NumberMissmatch;
 
 /**
- * Model that holds the relevant information for textfields.
+ * Model that holds the relevant information for jumping to coordinates.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class TextFieldModel extends AbstractTextfieldModel {
+public class CoordinateJumperModel extends AbstractCoordinateJumperModel {
 
     private double xCoordinate;
 
@@ -63,7 +63,10 @@ public class TextFieldModel extends AbstractTextfieldModel {
 
     private String textInput;
 
-    public TextFieldModel() {
+    /**
+     * Creates a new instance of <Code>CoordinateJumperModel</Code>.
+     */
+    public CoordinateJumperModel() {
 
     }
 
@@ -143,6 +146,10 @@ public class TextFieldModel extends AbstractTextfieldModel {
         return xCoordinate;
     }
 
+    public void setxCoordinate( double xCoordinate ) {
+        this.xCoordinate = xCoordinate;
+    }
+
     /**
      * The second parameter of the string.
      * 
@@ -150,6 +157,10 @@ public class TextFieldModel extends AbstractTextfieldModel {
      */
     public double getyCoordiante() {
         return yCoordiante;
+    }
+
+    public void setyCoordiante( double yCoordiante ) {
+        this.yCoordiante = yCoordiante;
     }
 
     /**
@@ -161,6 +172,10 @@ public class TextFieldModel extends AbstractTextfieldModel {
         return spanX;
     }
 
+    public void setSpanX( double spanX ) {
+        this.spanX = spanX;
+    }
+
     /**
      * The optional fourth parameter of the string to get the height.
      * 
@@ -168,6 +183,10 @@ public class TextFieldModel extends AbstractTextfieldModel {
      */
     public double getSpanY() {
         return spanY;
+    }
+
+    public void setSpanY( double spanY ) {
+        this.spanY = spanY;
     }
 
     /**
