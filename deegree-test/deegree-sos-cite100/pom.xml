@@ -55,7 +55,7 @@
                                         </webAppConfig>
                                         <scanIntervalSeconds>10</scanIntervalSeconds>
                                         <stopKey>foo</stopKey>
-                                        <stopPort>9992</stopPort>
+                                        <stopPort>9998</stopPort>
                                 </configuration>
                                 <executions>
                                         <execution>
