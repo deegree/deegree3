@@ -27,5 +27,38 @@
             <component-type>HtmlInputMultiple</component-type>
         </component>
     </tag>
+    <tag>
+        <tag-name>outputXML</tag-name>
+        <component>
+            <component-type>HtmlOutputXML</component-type>
+        </component>
+        <description>Renders a string value xml indented and colored, if possible. 
+                     If enabled the value will be stored in file, which can be downloaded 
+                     by the user by a link.</description>
+        <attribute>
+            <name>downloadable</name>
+            <description>True, if a file containig the value eshould be stored and a link for download should be rendered. Default is false.</description>
+        </attribute>
+        <attribute>
+            <name>downloadLabel</name>
+            <description>The Label for the link.</description>
+        </attribute>
+        <attribute>
+            <name>downloadDir</name>
+            <description>The directory, where the created files should be stored. The directory must exist!</description>
+        </attribute>
+        <attribute>
+            <name>minutesUntilDelete</name>
+            <description>Time in minutes a created file should be stored. If &lt;= 0 the file will never be stored automatically.</description>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <description>The value rendered in this attribute. If xml, the value will be rendered indented and colored.</description>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <description>Space-separated list of CSS style class(es) to be applied when this element is rendered. This value must be passed through as the "class" attribute on generated markup.</description>
+        </attribute>
+    </tag>
 
 </facelet-taglib>

@@ -1,0 +1,24 @@
+.outputXML {
+	font-family: sans-serif;
+	font-size: medium;
+}
+
+.outputXML .tag {
+	color: #800000;
+}
+
+.outputXML .comment {
+	color: 808080;
+}
+
+.outputXML .attributeName {
+	color: #ff0000;
+}
+
+.outputXML .text {
+	color: black;
+}
+
+.outputXML .sign {
+	color: #0000ff;
+}
