@@ -364,9 +364,17 @@ public class GMLFeatureReader extends XMLAdapter {
         for ( int i = 0; i < schemaUrls.length; i++ ) {
             String schemaUrl = tokens[i * 2 + 1];
             try {
-                schemaUrls[i] = new URL( new URL( xmlStream.getSystemId() ), schemaUrl ).toString();
+                if ( xmlStream.getSystemId() == null ) {
+                    // must be absolute, as SystemId is required for resolving relative URLs
+                    schemaUrls[i] = new URL( schemaUrl ).toString();
+                } else {
+                    schemaUrls[i] = new URL( new URL( xmlStream.getSystemId() ), schemaUrl ).toString();
+                }
             } catch ( MalformedURLException e ) {
-                throw new XMLParsingException( xmlStream, "Error parsing application schema: " + e.getMessage() );
+                throw new XMLParsingException( xmlStream, "Error parsing referenced application schema. Schema URL '"
+                                                          + schemaUrl + "' from xsi:schemaLocation attribute is "
+                                                          + "invalid/cannot be resolved." );
+
             }
         }
 
