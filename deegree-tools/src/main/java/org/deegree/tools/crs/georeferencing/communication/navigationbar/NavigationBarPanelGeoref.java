@@ -37,10 +37,12 @@ package org.deegree.tools.crs.georeferencing.communication.navigationbar;
 
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DIM_NAVIGATION_BUTTONS;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JToggleButton;
 
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
@@ -63,6 +65,8 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
 
     public final static String NAVIGATIONBAR_PANEL_NAME_GEOREF = "NavigationBarPanelGeoref";
 
+    private JButton computeTransform = new JButton( GUIConstants.COMPUTE_BUTTON_TEXT );
+
     private static final URL ZOOM_BY_COORD = NavigationBarPanelGeoref.class.getResource( "../../icons/zoombycoord.png" );
 
     private JToggleButton buttonZoomCoord;
@@ -80,7 +84,10 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
         buttonZoomCoord.setName( GUIConstants.JBUTTON_ZOOM_COORD );
         buttonZoomCoord.setPreferredSize( DIM_NAVIGATION_BUTTONS );
 
+        computeTransform.setName( GUIConstants.COMPUTE_BUTTON_TEXT );
+
         this.add( buttonZoomCoord );
+        this.add( computeTransform, Component.RIGHT_ALIGNMENT );
 
     }
 
@@ -91,6 +98,7 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
      */
     public void addCoordListener( ActionListener c ) {
         buttonZoomCoord.addActionListener( c );
+        computeTransform.addActionListener( c );
 
     }
 

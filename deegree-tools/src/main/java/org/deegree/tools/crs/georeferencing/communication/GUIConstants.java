@@ -79,6 +79,10 @@ public class GUIConstants {
 
     public static final String MENUITEM_EDIT_OPTIONS = "Options";
 
+    public static final String MENUITEM_OPEN_SHAPEFILE = "Open Shapefile";
+
+    public static final String MENUITEM_OPEN_WMS_LAYER = "Open WMS layer";
+
     /*
      * JTextField
      */

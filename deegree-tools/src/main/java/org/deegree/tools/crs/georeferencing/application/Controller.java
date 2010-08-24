@@ -82,7 +82,7 @@ import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
-import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperTextfieldDialog;
+import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperSpinnerDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.error.ErrorDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel;
@@ -97,14 +97,12 @@ import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
-import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.deegree.tools.crs.georeferencing.model.textfield.AbstractCoordinateJumperModel;
 import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
 import org.deegree.tools.rendering.viewer.File3dImporter;
@@ -171,7 +169,7 @@ public class Controller {
 
     private OptionDialog optionDialog;
 
-    private CoordinateJumperTextfieldDialog jumperDialog;
+    private CoordinateJumperSpinnerDialog jumperDialog;
 
     private GenericSettingsPanel optionSettingPanel;
 
@@ -218,7 +216,7 @@ public class Controller {
         // init the transformation method
         this.tablePanel = new PointTableFrame();
         // this.tablePanel.addListeners( new ButtonListener() );
-        // this.tablePanel.addHorizontalRefListener( new ButtonListener() );
+        this.tablePanel.addHorizontalRefListener( new ButtonListener() );
         transform = null;
         if ( transformationType == null ) {
             order = 1;
@@ -281,8 +279,8 @@ public class Controller {
         } else if ( t == buttonCoord ) {
             buttonCoord.setSelected( checkSelected );
             if ( checkSelected == true ) {
-                jumperDialog = new CoordinateJumperTextfieldDialog( view );
-                jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
+                jumperDialog = new CoordinateJumperSpinnerDialog( view );
+                // jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
                 jumperDialog.addListeners( new ButtonListener() );
                 jumperDialog.setVisible( true );
             }
@@ -535,8 +533,8 @@ public class Controller {
                         setValues();
                     }
 
-                    view.getMenuTransformation().setSelected( false );
-                    view.getMenuTransformation().getPopupMenu().setVisible( false );
+                    // view.getMenuTransformation().setSelected( false );
+                    // view.getMenuTransformation().getPopupMenu().setVisible( false );
                     // System.out.println( sourceCRS + " " + targetCRS );
 
                     switch ( transformationType ) {
@@ -624,37 +622,37 @@ public class Controller {
                         }
                     } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
 
-                        try {
-                            textFieldModel.setTextInput( jumperDialog.getCoordinateJumper().getText() );
-                            if ( sceneValues.getTransformedBounds() != null ) {
-                                System.out.println( textFieldModel.toString() );
-                                if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
-
-                                    sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                                  textFieldModel.getyCoordiante(),
-                                                                                  textFieldModel.getSpanX(),
-                                                                                  textFieldModel.getSpanY(),
-                                                                                  PointType.GeoreferencedPoint );
-
-                                } else {
-                                    sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
-                                                                                  textFieldModel.getyCoordiante(),
-                                                                                  PointType.GeoreferencedPoint );
-
-                                }
-                                jumperDialog.setVisible( false );
-                                selectedGeoref = false;
-                                buttonModel.setSelected( false );
-                                isHorizontalRefGeoref = true;
-                                panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-                                panel.updatePoints( sceneValues );
-                                panel.repaint();
-
-                            }
-                        } catch ( NumberException e1 ) {
-
-                            new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
-                        }
+                        // try {
+                        // textFieldModel.setTextInput( jumperDialog.getCoordinateJumper().getText() );
+                        // if ( sceneValues.getTransformedBounds() != null ) {
+                        // System.out.println( textFieldModel.toString() );
+                        // if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
+                        //
+                        // sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
+                        // textFieldModel.getyCoordiante(),
+                        // textFieldModel.getSpanX(),
+                        // textFieldModel.getSpanY(),
+                        // PointType.GeoreferencedPoint );
+                        //
+                        // } else {
+                        // sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
+                        // textFieldModel.getyCoordiante(),
+                        // PointType.GeoreferencedPoint );
+                        //
+                        // }
+                        // jumperDialog.setVisible( false );
+                        // selectedGeoref = false;
+                        // buttonModel.setSelected( false );
+                        // isHorizontalRefGeoref = true;
+                        // panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                        // panel.updatePoints( sceneValues );
+                        // panel.repaint();
+                        //
+                        // }
+                        // } catch ( NumberException e1 ) {
+                        //
+                        // new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
+                        // }
                     }
                 }
             }

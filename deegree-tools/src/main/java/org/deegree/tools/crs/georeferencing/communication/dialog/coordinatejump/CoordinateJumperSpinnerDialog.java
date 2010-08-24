@@ -41,6 +41,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -78,11 +79,11 @@ public class CoordinateJumperSpinnerDialog extends JDialog {
 
     private JSpinner yCenter;
 
-    private JSpinner span;
+    // private JSpinner span;
 
     private Point2d centerPoint;
 
-    private double spanValue;
+    // private double spanValue;
 
     public CoordinateJumperSpinnerDialog( Component parent ) {
         this.setLayout( new BorderLayout() );
@@ -96,11 +97,21 @@ public class CoordinateJumperSpinnerDialog extends JDialog {
         this.setResizable( false );
         buttons = new ButtonPanel();
 
+        if ( centerPoint == null ) {
+            centerPoint = new Point2d( 0, 0 );
+        }
         spinnerModelX = new SpinnerNumberModel( centerPoint.getX(), 0.00, 1.0, 0.01 );
         spinnerModelY = new SpinnerNumberModel( centerPoint.getY(), 0.00, 1.0, 0.01 );
-        spinnerModelSpan = new SpinnerNumberModel( spanValue, 0.00, 1.0, 0.01 );
+        // spinnerModelSpan = new SpinnerNumberModel( spanValue, 0.00, 1.0, 0.01 );
+
+        xCenter = new JSpinner( spinnerModelX );
+        yCenter = new JSpinner( spinnerModelY );
+        // span = new JSpinner(spinnerModelSpan);
 
         JPanel panel = new JPanel();
+        panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
+        panel.add( xCenter, Component.LEFT_ALIGNMENT );
+        panel.add( yCenter, Component.LEFT_ALIGNMENT );
 
         this.add( panel, BorderLayout.CENTER );
         this.add( buttons, BorderLayout.SOUTH );

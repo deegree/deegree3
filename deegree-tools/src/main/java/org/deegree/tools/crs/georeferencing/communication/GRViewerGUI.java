@@ -55,7 +55,6 @@ import java.awt.image.BufferedImage;
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -80,9 +79,12 @@ import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
  */
 public class GRViewerGUI extends JFrame {
 
-    private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-    private JButton computeTransform = new JButton( GUIConstants.COMPUTE_BUTTON_TEXT );
+    private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
     private Scene2DPanel scenePanel2D;
 
@@ -95,6 +97,10 @@ public class GRViewerGUI extends JFrame {
     private BuildingFootprintPanel footprintPanel;
 
     private JMenuItem editMenuItem;
+
+    private JMenuItem openShape;
+
+    private JMenuItem openWMS;
 
     private NavigationBarPanelGeoref naviPanelGeoref;
 
@@ -140,15 +146,22 @@ public class GRViewerGUI extends JFrame {
         menuBar.add( menuEdit );
         menuBar.add( menuTransformation );
 
+        openShape = new JMenuItem( GUIConstants.MENUITEM_OPEN_SHAPEFILE );
+        openShape.setName( GUIConstants.MENUITEM_OPEN_SHAPEFILE );
+        openWMS = new JMenuItem( GUIConstants.MENUITEM_OPEN_WMS_LAYER );
+        openWMS.setName( GUIConstants.MENUITEM_OPEN_WMS_LAYER );
+
+        menuFile.add( openShape );
+        menuFile.add( openWMS );
+
         JPanel panel = new JPanel();
         panel.setLayout( new BorderLayout() );
         panel.setPreferredSize( GUIConstants.DIM_COMPUTATION_PANEL );
 
-        computeTransform.setName( GUIConstants.COMPUTE_BUTTON_TEXT );
         String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
         checkbox = new CheckBoxList( sArray );
         panel.add( checkbox, BorderLayout.CENTER );
-        panel.add( computeTransform, BorderLayout.SOUTH );
+        // panel.add( computeTransform, BorderLayout.SOUTH );
 
         // menuTransformation.add( checkbox );
         // menuTransformation.add( computeTransform );
@@ -226,7 +239,6 @@ public class GRViewerGUI extends JFrame {
         naviPanelFoot.addAbstractCoordListener( e );
         editMenuItem.addActionListener( e );
         checkbox.addCheckboxListener( e );
-        computeTransform.addActionListener( e );
 
     }
 
@@ -268,7 +280,7 @@ public class GRViewerGUI extends JFrame {
      */
     public void activateTransformationCheckbox( JCheckBox selectedCheckbox ) {
         this.checkbox.selectThisCheckbox( selectedCheckbox );
-
+        this.menuTransformation.getPopupMenu().setVisible( false );
         this.menuTransformation.setVisible( true );
         this.menuTransformation.setSelected( false );
     }
