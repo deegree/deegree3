@@ -35,13 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
-import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.namespace.QName;
 
-import junit.framework.Assert;
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -65,13 +63,12 @@ import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.vividsolutions.jts.geom.PrecisionModel;
+
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
@@ -168,23 +165,27 @@ public class IVectorLayerAdapter {
      */
     public static IVectorLayer createVectorLayer( Feature f ) {
 
-        // get crs
-        String crs = createCRS( f );
+        if ( f instanceof FeatureCollection ) {
+            return createVectorLayer( (FeatureCollection) f );
+        } else {
+            // get crs
+            String crs = createCRS( f );
 
-        // create property declarations
-        Field[] propertiyDeclarations = createPropertyDeclarationsForVectorLayer( f.getType() );
+            // create property declarations
+            Field[] propertiyDeclarations = createPropertyDeclarationsForVectorLayer( f.getType() );
 
-        // create properties
-        Object[] properties = createPropertiesForVectorLayerGeometry( f, propertiyDeclarations );
+            // create properties
+            Object[] properties = createPropertiesForVectorLayerGeometry( f, propertiyDeclarations );
 
-        // create geometry
-        com.vividsolutions.jts.geom.Geometry geom = createJTSGeometry( f );
+            // create geometry
+            com.vividsolutions.jts.geom.Geometry geom = createJTSGeometry( f );
 
-        // create vector layer
-        VectorLayerImpl layer = new VectorLayerImpl( "FeatureLayer", crs, propertiyDeclarations );
-        layer.addFeature( new FeatureImpl( geom, properties ) );
+            // create vector layer
+            VectorLayerImpl layer = new VectorLayerImpl( "FeatureLayer", crs, propertiyDeclarations );
+            layer.addFeature( new FeatureImpl( geom, properties ) );
 
-        return layer;
+            return layer;
+        }
     }
 
     /**
@@ -212,30 +213,11 @@ public class IVectorLayerAdapter {
      *            - vector layer
      * @return feature collection
      * @throws IteratorException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
      * @throws IllegalArgumentException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
      */
     public static FeatureCollection createFeatureCollection( IVectorLayer l )
-                            throws IteratorException, IllegalArgumentException, InstantiationException,
-                            IllegalAccessException {
-        return createFeatureCollection( l, null );
-    }
-
-    /**
-     * Creates a org.deegree.feature.FeatureCollection from a vector layer.
-     * 
-     * @param l
-     *            - vector layer
-     * @param ft
-     *            - feature type
-     * @return feature collection
-     * @throws IteratorException
-     * @throws IllegalArgumentException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    public static FeatureCollection createFeatureCollection( IVectorLayer l, FeatureType ft )
                             throws IteratorException, IllegalArgumentException, InstantiationException,
                             IllegalAccessException {
 
@@ -246,39 +228,48 @@ public class IVectorLayerAdapter {
 
         int idCounter = 0;
 
-        if ( ft == null ) {// without feature type
-            while ( it.hasNext() ) {
-                features.add( createFeature( it.next(), "SextanteFeature" + ++idCounter, l ) );
-            }
-        } else {// with feature type
-            while ( it.hasNext() ) {
-                features.add( createFeature( it.next(), "SextanteFeature" + ++idCounter, l, ft ) );
-            }
+        while ( it.hasNext() ) {
+            features.add( createFeature( it.next(), "SextanteFeature" + ++idCounter, l ) );
         }
 
         // create feature collection
-        GenericFeatureCollection coll = new GenericFeatureCollection( "FeatureCollection", features );
+        GenericFeatureCollection coll = new GenericFeatureCollection( "SextanteFeatureCollection", features );
 
         return coll;
     }
 
     /**
-     * Creates a org.deegree.feature.Feature from a IFeature.
+     * Creates a org.deegree.feature.Feature from a IVectorLayer.
      * 
-     * @param f
-     *            - IFeature
-     * @param id
-     *            - feature id
      * @param l
      *            - vector layer
      * @return feature
-     * @throws IllegalAccessException
-     * @throws InstantiationException
+     * @throws IteratorException
      * @throws IllegalArgumentException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
      */
-    private static Feature createFeature( IFeature f, String id, IVectorLayer l )
-                            throws IllegalArgumentException, InstantiationException, IllegalAccessException {
-        return createFeature( f, id, l, null );
+    public static Feature createFeature( IVectorLayer l )
+                            throws IteratorException, IllegalArgumentException, InstantiationException,
+                            IllegalAccessException {
+        // feature
+        Feature f;
+
+        if ( l.getShapesCount() > 1 ) { // more features
+            f = createFeatureCollection( l );
+
+        } else {
+
+            IFeatureIterator it = l.iterator();
+            if ( it.hasNext() ) {// one feature
+                f = createFeature( it.next(), "SextantFeature1", l );
+
+            } else {// no feature
+                f = null;
+            }
+        }
+
+        return f;
     }
 
     /**
@@ -297,71 +288,64 @@ public class IVectorLayerAdapter {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private static Feature createFeature( IFeature f, String id, IVectorLayer l, FeatureType ft )
+    private static Feature createFeature( IFeature f, String id, IVectorLayer l )
                             throws IllegalArgumentException, InstantiationException, IllegalAccessException {
 
+        // feature
         Feature feature;
 
-        if ( ft == null ) {// without feature type
+        // create property declarations
+        LinkedList<PropertyType> propDecls = new LinkedList<PropertyType>();
 
-            // create property declarations
-            LinkedList<PropertyType> propDecls = new LinkedList<PropertyType>();
+        // create simple properties
+        for ( int i = 0; i < l.getFieldCount(); i++ ) {
+            String[] name = l.getFieldName( i ).replace( "{", "" ).split( "}" );
+            if ( name.length >= 2 ) {
+                QName probName = new QName( name[0], name[1] );
 
-            // create simple properties
-            for ( int i = 0; i < l.getFieldCount(); i++ ) {
-                String[] name = l.getFieldName( i ).replace( "{", "" ).split( "}" );
-                if ( name.length >= 2 ) {
-                    QName probName = new QName( name[0], name[1] );
+                SimplePropertyType spt = new SimplePropertyType(
+                                                                 probName,
+                                                                 1,
+                                                                 1,
+                                                                 PrimitiveType.determinePrimitiveType( f.getRecord().getValues()[i] ),
+                                                                 false, new LinkedList<PropertyType>() );
 
-                    SimplePropertyType spt = new SimplePropertyType(
-                                                                     probName,
-                                                                     1,
-                                                                     1,
-                                                                     PrimitiveType.determinePrimitiveType( f.getRecord().getValues()[i] ),
-                                                                     false, new LinkedList<PropertyType>() );
+                propDecls.add( spt );
 
-                    propDecls.add( spt );
-
-                }
             }
-
-            // create simple geometry
-            GeometryPropertyType gpt = new GeometryPropertyType( new QName( "geom" ), 1, 1,
-                                                                 GeometryType.MULTI_GEOMETRY,
-                                                                 CoordinateDimension.DIM_2, false,
-                                                                 new LinkedList<PropertyType>(),
-                                                                 ValueRepresentation.INLINE );
-            propDecls.add( gpt );
-
-            // creatre feature type
-            GenericFeatureType fty = new GenericFeatureType( new QName( "SextanteFeatureType" ), propDecls, false );
-
-            // create properties
-            LinkedList<Property> props = new LinkedList<Property>();
-            Iterator<PropertyType> it = propDecls.iterator();
-            Object[] propObjs = f.getRecord().getValues();
-            for ( int i = 0; i < propObjs.length; i++ ) {
-                if ( it.hasNext() ) {
-                    // GenericProperty gp = new GenericProperty( it.next(), new PrimitiveValue( propObjs[i] ) );
-                    SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), propObjs[i].toString(),
-                                                            PrimitiveType.determinePrimitiveType( propObjs[i] ) );
-                    props.add( sp );
-                }
-            }
-            if ( it.hasNext() ) {
-
-                Geometry geom = createGeometry( f.getGeometry() );
-
-                GenericProperty gp = new GenericProperty( it.next(), geom );
-                props.add( gp );
-            }
-
-            // create feature
-            feature = new GenericFeature( fty, id, props, GMLVersion.GML_31 );
-
-        } else {// with feature type
-            feature = null;
         }
+
+        // create simple geometry
+        GeometryPropertyType gpt = new GeometryPropertyType( new QName( "geom" ), 1, 1, GeometryType.MULTI_GEOMETRY,
+                                                             CoordinateDimension.DIM_2, false,
+                                                             new LinkedList<PropertyType>(), ValueRepresentation.INLINE );
+        propDecls.add( gpt );
+
+        // creatre feature type
+        GenericFeatureType fty = new GenericFeatureType( new QName( "SextanteFeatureType" ), propDecls, false );
+
+        // create properties
+        LinkedList<Property> props = new LinkedList<Property>();
+        Iterator<PropertyType> it = propDecls.iterator();
+        Object[] propObjs = f.getRecord().getValues();
+        for ( int i = 0; i < propObjs.length; i++ ) {
+            if ( it.hasNext() ) {
+                // GenericProperty gp = new GenericProperty( it.next(), new PrimitiveValue( propObjs[i] ) );
+                SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), propObjs[i].toString(),
+                                                        PrimitiveType.determinePrimitiveType( propObjs[i] ) );
+                props.add( sp );
+            }
+        }
+        if ( it.hasNext() ) {
+
+            Geometry geom = createGeometry( f.getGeometry() );
+
+            GenericProperty gp = new GenericProperty( it.next(), geom );
+            props.add( gp );
+        }
+
+        // create feature
+        feature = new GenericFeature( fty, id, props, GMLVersion.GML_31 );
 
         return feature;
     }
@@ -576,6 +560,11 @@ public class IVectorLayerAdapter {
                     // notice only the first
                     if ( properties.length >= 1 ) {
 
+                        if ( properties.length > 1 ) {
+                            LOG.warn( "Multiple occurrence of property {}, using only first one for IVectorLayer.",
+                                      probName );
+                        }
+
                         TypedObjectNode probNode = properties[0].getValue();
 
                         if ( probNode instanceof PrimitiveValue ) {
@@ -599,7 +588,5 @@ public class IVectorLayerAdapter {
 
         return geomProperties;
     }
-
-
 
 }

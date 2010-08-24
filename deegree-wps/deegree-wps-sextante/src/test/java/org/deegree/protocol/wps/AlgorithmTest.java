@@ -40,9 +40,9 @@ public class AlgorithmTest {
 
                 Assert.assertNotNull( client );
 
-                File gmlPoints = new File( WPSClientTest.class.getResource( "GML31_MultiPoint.xml" ).getPath() );
-                File gmlLines = new File( WPSClientTest.class.getResource( "GML31_MultiLineString.xml" ).getPath() );
-                File gmlPolygons = new File( WPSClientTest.class.getResource( "GML31_MultiPolygon.xml" ).getPath() );
+                File gmlPoints = new File( AlgorithmTest.class.getResource( "GML31_MultiPoint.xml" ).getPath() );
+                File gmlLines = new File( AlgorithmTest.class.getResource( "GML31_MultiLineString.xml" ).getPath() );
+                File gmlPolygons = new File( AlgorithmTest.class.getResource( "GML31_MultiPolygon.xml" ).getPath() );
 
                 // Process process = client.getProcess( "centroids", null );
                 // ProcessExecution execution = process.prepareExecution();
