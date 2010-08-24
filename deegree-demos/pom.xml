@@ -18,6 +18,7 @@
     <!--module>deegree-wms-demo</module-->
     <module>deegree-wps-demo</module>
     <module>deegree-csw-demo</module>
+    <module>deegree-sos-demo</module>
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
