@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.navigationbar;
 
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DIM_NAVIGATION_BUTTONS;
+
 import java.awt.event.ActionListener;
 import java.net.URL;
 
@@ -59,8 +61,6 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
      */
     private static final long serialVersionUID = 1L;
 
-    public final static String HORIZONTAL_REFERENCING = "Horizontal Referencing";
-
     public final static String NAVIGATIONBAR_PANEL_NAME_GEOREF = "NavigationBarPanelGeoref";
 
     private static final URL ZOOM_BY_COORD = NavigationBarPanelGeoref.class.getResource( "../../icons/zoombycoord.png" );
@@ -78,7 +78,7 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
 
         buttonZoomCoord = new JToggleButton( iconZoomCoord );
         buttonZoomCoord.setName( GUIConstants.JBUTTON_ZOOM_COORD );
-        buttonZoomCoord.setPreferredSize( DIM );
+        buttonZoomCoord.setPreferredSize( DIM_NAVIGATION_BUTTONS );
 
         this.add( buttonZoomCoord );
 

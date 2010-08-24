@@ -82,8 +82,6 @@ public class GRViewerGUI extends JFrame {
 
     private final static Dimension SUBCOMPONENT_DIMENSION = new Dimension( 1, 1 );
 
-    private final static Dimension FRAME_DIMENSION = new Dimension( 900, 600 );
-
     private JButton computeTransform = new JButton( GUIConstants.COMPUTE_BUTTON_TEXT );
 
     private Scene2DPanel scenePanel2D;
@@ -116,9 +114,9 @@ public class GRViewerGUI extends JFrame {
         gbl.setConstraints( this, gbc );
 
         setLayout( gbl );
-        setMinimumSize( FRAME_DIMENSION );
+        setMinimumSize( GUIConstants.FRAME_DIMENSION );
 
-        setPreferredSize( FRAME_DIMENSION );
+        setPreferredSize( GUIConstants.FRAME_DIMENSION );
 
         setupMenubar();
         setup2DScene( gbl );

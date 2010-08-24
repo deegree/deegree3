@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.dialog.option;
 
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DIALOG_DIMENSION;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -58,8 +60,6 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
  * @version $Revision$, $Date$
  */
 public class OptionDialog extends JDialog {
-
-    private final static Dimension DIALOG_DIMENSION = new Dimension( 500, 300 );
 
     /*
      * PANEL_NAVIGATION_WIDTH

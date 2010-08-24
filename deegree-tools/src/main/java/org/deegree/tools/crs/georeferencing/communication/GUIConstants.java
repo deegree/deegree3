@@ -100,6 +100,15 @@ public class GUIConstants {
     /*
      * Bounds
      */
+    public static final Dimension FRAME_DIMENSION = new Dimension( 900, 600 );
+
     public static final Dimension DIM_COMPUTATION_PANEL = new Dimension( 160, 100 );
 
+    public static final Dimension DIM_CHECKBOXLIST = new Dimension( 200, 100 );
+
+    public static final Dimension DIM_COORDINATEJUMPER = new Dimension( 200, 100 );
+
+    public static final Dimension DIALOG_DIMENSION = new Dimension( 500, 300 );
+
+    public static final Dimension DIM_NAVIGATION_BUTTONS = new Dimension( 20, 20 );
 }

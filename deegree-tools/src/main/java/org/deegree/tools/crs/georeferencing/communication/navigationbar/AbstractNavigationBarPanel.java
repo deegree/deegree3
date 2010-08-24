@@ -35,7 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.navigationbar;
 
-import java.awt.Dimension;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DIM_NAVIGATION_BUTTONS;
+
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -67,8 +68,6 @@ public abstract class AbstractNavigationBarPanel extends JPanel {
 
     protected static final URL ZOOM_OUT = AbstractNavigationBarPanel.class.getResource( "../../icons/zoomout.png" );
 
-    protected static final Dimension DIM = new Dimension( 20, 20 );
-
     protected JToggleButton buttonPan;
 
     protected JToggleButton buttonZoomIn;
@@ -89,9 +88,9 @@ public abstract class AbstractNavigationBarPanel extends JPanel {
         buttonZoomOut = new JToggleButton( iconZoomOut );
         buttonZoomOut.setName( GUIConstants.JBUTTON_ZOOM_OUT );
 
-        buttonPan.setPreferredSize( DIM );
-        buttonZoomIn.setPreferredSize( DIM );
-        buttonZoomOut.setPreferredSize( DIM );
+        buttonPan.setPreferredSize( DIM_NAVIGATION_BUTTONS );
+        buttonZoomIn.setPreferredSize( DIM_NAVIGATION_BUTTONS );
+        buttonZoomOut.setPreferredSize( DIM_NAVIGATION_BUTTONS );
 
         this.add( buttonZoomIn );
         this.add( buttonZoomOut );

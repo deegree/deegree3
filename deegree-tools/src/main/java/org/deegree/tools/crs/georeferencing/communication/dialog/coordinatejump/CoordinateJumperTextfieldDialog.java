@@ -35,9 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump;
 
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DIM_COORDINATEJUMPER;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import javax.swing.JDialog;
@@ -63,8 +64,6 @@ public class CoordinateJumperTextfieldDialog extends JDialog {
      */
     private static final long serialVersionUID = 1L;
 
-    private static final Dimension DIM = new Dimension( 200, 100 );
-
     private JTextField coordinateJumper;
 
     private ButtonPanel buttons;
@@ -72,10 +71,12 @@ public class CoordinateJumperTextfieldDialog extends JDialog {
     public CoordinateJumperTextfieldDialog( Component parent ) {
         this.setLayout( new BorderLayout() );
 
-        this.setPreferredSize( DIM );
-        this.setBounds( new Double( parent.getBounds().getCenterX() - ( DIM.getWidth() / 2 ) ).intValue(),
-                        new Double( parent.getBounds().getCenterY() - ( DIM.getHeight() / 2 ) ).intValue(),
-                        new Double( DIM.getWidth() ).intValue(), new Double( DIM.getHeight() ).intValue() );
+        this.setPreferredSize( DIM_COORDINATEJUMPER );
+        this.setBounds(
+                        new Double( parent.getBounds().getCenterX() - ( DIM_COORDINATEJUMPER.getWidth() / 2 ) ).intValue(),
+                        new Double( parent.getBounds().getCenterY() - ( DIM_COORDINATEJUMPER.getHeight() / 2 ) ).intValue(),
+                        new Double( DIM_COORDINATEJUMPER.getWidth() ).intValue(),
+                        new Double( DIM_COORDINATEJUMPER.getHeight() ).intValue() );
         this.setModal( true );
         this.setResizable( false );
         buttons = new ButtonPanel();

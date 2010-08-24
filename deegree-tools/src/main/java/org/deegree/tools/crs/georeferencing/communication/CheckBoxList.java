@@ -36,7 +36,6 @@
 package org.deegree.tools.crs.georeferencing.communication;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,9 +57,12 @@ import javax.swing.border.EmptyBorder;
  */
 public class CheckBoxList extends JPanel {
 
-    private List<JCheckBox> list;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-    private static Dimension dim = new Dimension( 200, 100 );
+    private List<JCheckBox> list;
 
     protected static Border noFocusBorder = new EmptyBorder( 1, 1, 1, 1 );
 
@@ -85,7 +87,7 @@ public class CheckBoxList extends JPanel {
         }
 
         // this.setBorder( BorderFactory.createLineBorder( Color.black ) );
-        this.setPreferredSize( dim );
+        this.setPreferredSize( GUIConstants.DIM_CHECKBOXLIST );
         this.setVisible( true );
 
     }
