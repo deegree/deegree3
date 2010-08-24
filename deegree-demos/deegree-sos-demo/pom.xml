@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-sos-webclient</artifactId>
+  <artifactId>deegree-sos-demo</artifactId>
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>deegree-sos-webclient Maven Webapp</name>
+  <name>deegree-sos-demo Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -48,6 +48,6 @@
         </configuration>
       </plugin>
     </plugins>
-    <finalName>deegree-sos-webclient</finalName>
+    <finalName>deegree-sos-demo</finalName>
   </build>
 </project>
