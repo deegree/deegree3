@@ -39,7 +39,10 @@ import static java.io.File.separator;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ProxyUtils;
@@ -52,8 +55,11 @@ import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.slf4j.Logger;
 
 /**
+ * Encapsulates a directory for deegree configuration files (a deegree workspace) and provides access to the configured
+ * deegree resources.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:scneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -62,79 +68,121 @@ public class DeegreeWorkspace {
 
     private static final Logger LOG = getLogger( DeegreeWorkspace.class );
 
-    private static final HashMap<String, DeegreeWorkspace> WORKSPACES = new HashMap<String, DeegreeWorkspace>();
+    private static final String DEFAULT_WORKSPACE = "default";
+
+    // environment variable for controlling the workspace directory
+    private static final String VAR_WORKSPACE = "DEEGREE_WORKSPACE";
+
+    // environment variable for controlling the root directory of the workspaces
+    private static final String VAR_WORKSPACE_ROOT = "DEEGREE_WORKSPACE_ROOT";
+
+    private static final Map<String, DeegreeWorkspace> nameToWs = new HashMap<String, DeegreeWorkspace>();
+
+    private static final Map<File, DeegreeWorkspace> wsRootDirToWs = new HashMap<File, DeegreeWorkspace>();
 
     static {
-        WORKSPACES.put( "default", new DeegreeWorkspace( "default" ) );
+        new DeegreeWorkspace( DEFAULT_WORKSPACE );
 
-        // Getting Rid Of Derby.Log
+        // Getting Rid Of Derby.Log, TODO find a better place
         System.setProperty( "derby.stream.error.field", "org.deegree.commons.utils.io.Utils.DEV_NULL" );
     }
 
-    /**
-     * @return the workspace named 'default'.
-     */
-    public static DeegreeWorkspace getDefaultInstance() {
-        return WORKSPACES.get( "default" );
-    }
+    private final String name;
 
-    /**
-     * @param workspaceName
-     * @return the workspace instance, or null, if the target directory does not exist
-     */
-    public static synchronized DeegreeWorkspace getInstance( String workspaceName ) {
-        DeegreeWorkspace space = WORKSPACES.get( workspaceName );
-        if ( space != null ) {
-            return space;
-        }
-        space = new DeegreeWorkspace( workspaceName );
-        // for now, ignore workspaces that do not exist
-        if ( !space.getLocation().exists() ) {
-            return null;
-        }
-        WORKSPACES.put( workspaceName, space );
-        return space;
-    }
-
-    /**
-     * @param dir
-     * @return the workspace instance specified in the DEEGREE_WORKSPACE environment variable, or the one found in the
-     *         specified directory, if the workspace from DEEGREE_WORKSPACE does not exist.
-     */
-    public static synchronized DeegreeWorkspace getInstance( File dir ) {
-        String ws = System.getenv( "DEEGREE_WORKSPACE" );
-        if ( ws == null || ws.trim().isEmpty() ) {
-            return new DeegreeWorkspace( dir );
-        }
-        ws = ws.trim();
-        DeegreeWorkspace workspace;
-        LOG.info( "DEEGREE_WORKSPACE = '{}'", ws );
-        workspace = DeegreeWorkspace.getInstance( ws );
-        if ( workspace == null ) {
-            LOG.info( "'{}' does not exist, using default directory.", ws );
-            workspace = new DeegreeWorkspace( dir );
-        }
-        return workspace;
-    }
-
-    private File dir;
+    private final File dir;
 
     private CoverageBuilderManager coverageBuilderManager;
 
+    private DeegreeWorkspace( File dir ) throws IOException {
+        this.dir = new File( dir.getCanonicalPath() );
+        this.name = "external:" + this.dir.getAbsolutePath();
+        wsRootDirToWs.put( this.dir, this );
+        nameToWs.put( name, this );
+        register();
+        LOG.debug( "Created workspace '{}' at '{}'.", this.name, this.dir );
+    }
+
     private DeegreeWorkspace( String workspaceName ) {
-        dir = new File( System.getProperty( "user.home" ) + separator + ".deegree" + separator + workspaceName );
+        String workspaceDir = System.getProperty( VAR_WORKSPACE );
+        if ( workspaceDir == null || workspaceDir.isEmpty() ) {
+            String workspaceRoot = System.getProperty( VAR_WORKSPACE_ROOT );
+            if ( workspaceRoot == null || workspaceRoot.isEmpty() ) {
+                workspaceRoot = System.getProperty( "user.home" ) + separator + ".deegree";
+            }
+            workspaceDir = separator + workspaceRoot + separator + workspaceName;
+        }
+        dir = new File( workspaceDir );
+        name = workspaceName;
+        register();
+        LOG.debug( "Created workspace '{}' at '{}'.", this.name, this.dir );
+    }
+
+    private void register() {
+        wsRootDirToWs.put( this.dir, this );
+        nameToWs.put( name, this );
     }
 
     /**
-     * @param dir
+     * Returns the default workspace.
+     * 
+     * @return the default workspace, never <code>null</code>
      */
-    public DeegreeWorkspace( File dir ) {
-        this.dir = dir;
-        LOG.info( "Using workspace at '{}'.", dir );
+    public static DeegreeWorkspace getInstance() {
+        return nameToWs.get( DEFAULT_WORKSPACE );
     }
 
     /**
-     * @return the directory corresponding to this workspace
+     * Returns the workspace with the given name.
+     * 
+     * @param workspaceName
+     *            name of the workspace, can be <code>null</code> (implies default workspace)
+     * @return the workspace instance (directory must not necessarily exist), never <code>null</code>
+     */
+    public static synchronized DeegreeWorkspace getInstance( String workspaceName ) {
+        if ( workspaceName == null ) {
+            workspaceName = DEFAULT_WORKSPACE;
+        }
+        DeegreeWorkspace ws = nameToWs.get( workspaceName );
+        if ( ws != null ) {
+            return ws;
+        }
+        return new DeegreeWorkspace( workspaceName );
+    }
+
+    /**
+     * Returns the workspace with the given name (or the workspace for the given directory if the former does not
+     * exist).
+     * 
+     * @param workspaceName
+     *            name of the workspace, can be <code>null</code> (implies default workspace)
+     * @param fallbackDir
+     *            directory to use as workspace if the named workspace does not exist
+     * @return the workspace instance (directory must not necessarily exist), never <code>null</code>
+     * @throws IOException
+     */
+    public static synchronized DeegreeWorkspace getInstance( String workspaceName, File fallbackDir )
+                            throws IOException {
+        DeegreeWorkspace ws = getInstance( workspaceName );
+        if ( !ws.getLocation().exists() ) {
+            ws = wsRootDirToWs.get( fallbackDir.getCanonicalPath() );
+            if ( ws == null ) {
+                ws = new DeegreeWorkspace( fallbackDir );
+            }
+        }
+        return ws;
+    }
+
+    /**
+     * Returns the name of the workspace.
+     * 
+     * @return the name of the workspace, never <code>null</code>
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return the root directory of the workspace (must not necessarily exist)), never <code>null</code>
      */
     public File getLocation() {
         return dir;
@@ -167,7 +215,7 @@ public class DeegreeWorkspace {
     /**
      * Unloads all resources associated with this context, as well as ALL STATIC ones.
      */
-    public void destroyAll() {
+    public synchronized void destroyAll() {
         getCoverageBuilderManager().destroy();
         FeatureStoreManager.destroy();
         ConnectionManager.destroy();
