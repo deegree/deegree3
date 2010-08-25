@@ -32,17 +32,131 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.metadata;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.commons.tom.ows.Version;
 
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schmitz@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
 public class ServiceMetadata {
 
-}
+    private ServiceIdentification serviceIdentificaiton;
 
+    private ServiceProvider serviceProvider;
+
+    private OperationsMetadata operationsMetadata;
+
+    private Version version;
+
+    private String updateSequence;
+
+    private List<Process> processOffering;
+
+    private String defaultLanguage;
+
+    private List<String> supportedLanguages;
+
+    private URL wsdl;
+
+    private String service;
+
+    private String lang;
+
+    public void setServiceIdentification( ServiceIdentification serviceIdentificaiton ) {
+        this.serviceIdentificaiton = serviceIdentificaiton;
+    }
+
+    public ServiceIdentification getServiceIdentification() {
+        return serviceIdentificaiton;
+    }
+
+    public void setServiceProvider( ServiceProvider serviceProvider ) {
+        this.serviceProvider = serviceProvider;
+    }
+
+    public ServiceProvider getServiceProvider() {
+        return serviceProvider;
+    }
+
+    public void setOperationsMetadata( OperationsMetadata operationsMetadata ) {
+        this.operationsMetadata = operationsMetadata;
+    }
+
+    public OperationsMetadata getOperationsMetadata() {
+        return operationsMetadata;
+    }
+
+    public void setVersion( Version version ) {
+        this.version = version;
+    }
+
+    public Version getVersion() {
+        return version;
+    }
+
+    public void setUpdateSequence( String updateSequence ) {
+        this.updateSequence = updateSequence;
+    }
+
+    public String getUpdateSequence() {
+        return updateSequence;
+    }
+
+    public List<Process> getProcessOffering() {
+        if ( processOffering == null ) {
+            processOffering = new ArrayList<Process>();
+        }
+        return processOffering;
+    }
+
+    public void setLanguage( String defaultLanguage ) {
+        this.defaultLanguage = defaultLanguage;
+    }
+
+    public String getDefaultLanguage() {
+        return defaultLanguage;
+    }
+
+    public List<String> getSupportedLanguages() {
+        if ( supportedLanguages == null ) {
+            supportedLanguages = new ArrayList<String>();
+        }
+        return supportedLanguages;
+    }
+
+    public void setWSDL( URL wsdl ) {
+        this.wsdl = wsdl;
+    }
+
+    public URL getWSDL() {
+        return wsdl;
+    }
+
+    public void setService( String service ) {
+        this.service = service;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setLang( String lang ) {
+        this.lang = lang;
+    }
+
+    public String getLang() {
+        return lang;
+    }
+
+}
