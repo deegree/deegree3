@@ -33,64 +33,50 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wps.client;
+package org.deegree.protocol.wps.client.input;
+
+import java.net.URL;
+
+import org.deegree.commons.tom.ows.CodeType;
 
 /**
- * Encapsulates the information of one process offered by a WPS and allows to execute it.
+ * Abstract base class for input parameters provided for a process execution.
  * 
- * @see WPSClient
- * 
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class WPSProcess {
+public abstract class ExecutionInput {
 
-    private String id;
-
-    private String title;
-
-    private String abstr;
+    private CodeType id;
 
     /**
-     * Returns the process identifier.
+     * Creates a new {@link ExecutionInput} instance.
      * 
-     * @return identifier of the process
+     * @param id
+     *            parameter identifier, must not be <code>null</code>
      */
-    public String getId() {
+    protected ExecutionInput( CodeType id ) {
+        this.id = id;
+    }
+
+    /**
+     * Returns the parameter identifier.
+     * 
+     * @return the parameter identifier, never <code>null</code>
+     */
+    public CodeType getId() {
         return id;
     }
 
     /**
-     * Returns the process title.
+     * Returns the web-accessible URL for retrieving the input value.
      * 
-     * @return title of the process
+     * @return web-accessible URL, can be <code>null</code> (not web-acessible)
      */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Returns the process abstract.
-     * 
-     * @return abstract of the process
-     */
-    public String getAbstract() {
-        return abstr;
-    }
-
-    // TODO the tricky part: find a concept for representing input and output parameters?
-
-    public Object execute (Object inputs) {
-        return null;
-    }
-    
-    public Object getInputParamDeclarations() {
-        return null;
-    }
-
-    public Object getOutputParamDeclarations() {
+    public URL getWebAccessibleURL() {
         return null;
     }
 }
