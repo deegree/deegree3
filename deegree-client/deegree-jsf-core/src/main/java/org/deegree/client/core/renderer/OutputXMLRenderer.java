@@ -75,20 +75,28 @@ public class OutputXMLRenderer extends Renderer {
     public void encodeBegin( FacesContext context, UIComponent component )
                             throws IOException {
         HtmlOutputXML xmlComponent = (HtmlOutputXML) component;
-        String clientId = xmlComponent.getClientId();
-        ResponseWriter writer = context.getResponseWriter();
+        if ( xmlComponent.getValue() != null ) {
+            String clientId = xmlComponent.getClientId();
+            ResponseWriter writer = context.getResponseWriter();
 
-        writer.startElement( "div", xmlComponent );
-        writer.writeAttribute( "id", clientId, "clientId" );
-        writer.writeAttribute( "name", clientId, "clientId" );
-        writer.writeAttribute( "class", "outputXML", "styleClass" );
+            writer.startElement( "div", xmlComponent );
+            writer.writeAttribute( "id", clientId, "clientId" );
+            writer.writeAttribute( "name", clientId, "clientId" );
+            writer.writeAttribute( "class", xmlComponent.getStyleClass(), "styleClass" );
 
-        if ( xmlComponent.isDownloadable() ) {
-            encodeDownload( writer, xmlComponent );
+            if ( xmlComponent.isDownloadable() ) {
+                writer.startElement( "div", null );
+                writer.writeAttribute( "class", "downloadArea", null );
+                encodeDownload( writer, xmlComponent );
+                writer.endElement( "div" );
+            }
+
+            writer.startElement( "div", xmlComponent );
+            writer.writeAttribute( "class", "xmlArea", null );
+            encodeXML( writer, xmlComponent.getValue() );
+            writer.endElement( "div" );
+            writer.endElement( "div" );
         }
-
-        encodeXML( writer, xmlComponent.getValue(), xmlComponent );
-        writer.endElement( "div" );
     }
 
     private void encodeDownload( ResponseWriter writer, HtmlOutputXML xmlComponent )
@@ -111,19 +119,17 @@ public class OutputXMLRenderer extends Renderer {
             LOG.warn( "Could not write file for download: " + e.getMessage() );
             return;
         }
-        writer.startElement( "div", null );
-        
+
         writer.write( xmlComponent.getDownloadLabel() );
         writer.startElement( "a", null );
         writer.writeAttribute( "href", webAccessibleUrl.toExternalForm(), null );
         writer.writeAttribute( "target", "_blank", null );
         writer.write( fileName );
         writer.endElement( "a" );
-        writer.endElement( "div" );
 
     }
 
-    private void encodeXML( ResponseWriter writer, String value, HtmlOutputXML xmlComponent )
+    private void encodeXML( ResponseWriter writer, String value )
                             throws IOException {
         try {
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( value ) );
@@ -134,16 +140,16 @@ public class OutputXMLRenderer extends Renderer {
                 switch ( reader.getEventType() ) {
                 case XMLStreamConstants.START_ELEMENT:
                     if ( !lastWasComment ) {
-                        writer.startElement( "br", xmlComponent );
+                        writer.startElement( "br", null );
                         writer.endElement( "br" );
                     }
                     writer.write( getSpaces( depth ) );
-                    writer.startElement( "span", xmlComponent );
+                    writer.startElement( "span", null );
                     writer.writeAttribute( "class", "sign", null );
                     writer.write( "&lt;" );
                     writer.endElement( "span" );
 
-                    writer.startElement( "span", xmlComponent );
+                    writer.startElement( "span", null );
                     writer.writeAttribute( "class", "tag", null );
                     String prefix = reader.getPrefix();
                     writer.write( ( prefix != null && prefix.length() > 0 ? prefix + ":" : "" ) + reader.getLocalName() );
@@ -151,7 +157,7 @@ public class OutputXMLRenderer extends Renderer {
 
                     if ( reader.getAttributeCount() > 0 ) {
                         for ( int i = 0; i < reader.getAttributeCount(); i++ ) {
-                            writer.startElement( "span", xmlComponent );
+                            writer.startElement( "span", null );
                             writer.writeAttribute( "class", "attributeName", null );
                             writer.write( "&#160;" );
                             String attributePrefix = reader.getAttributePrefix( i );
@@ -160,23 +166,23 @@ public class OutputXMLRenderer extends Renderer {
                                           + reader.getAttributeName( i ) );
                             writer.endElement( "span" );
 
-                            writer.startElement( "span", xmlComponent );
+                            writer.startElement( "span", null );
                             writer.writeAttribute( "class", "sign", null );
                             writer.write( "=\"" );
                             writer.endElement( "span" );
 
-                            writer.startElement( "span", xmlComponent );
+                            writer.startElement( "span", null );
                             writer.writeAttribute( "class", "text", null );
                             writer.write( reader.getAttributeValue( i ) );
                             writer.endElement( "span" );
 
-                            writer.startElement( "span", xmlComponent );
+                            writer.startElement( "span", null );
                             writer.writeAttribute( "class", "sign", null );
                             writer.write( "\"" );
                             writer.endElement( "span" );
                         }
                     }
-                    writer.startElement( "span", xmlComponent );
+                    writer.startElement( "span", null );
                     writer.writeAttribute( "class", "sign", null );
                     writer.write( "&gt;" );
                     writer.endElement( "span" );
@@ -185,31 +191,34 @@ public class OutputXMLRenderer extends Renderer {
                     lastWasComment = false;
                     break;
                 case XMLStreamConstants.CHARACTERS:
-                    writer.startElement( "span", xmlComponent );
-                    writer.writeAttribute( "class", "text", null );
-                    writer.write( reader.getText() );
-                    writer.endElement( "span" );
-                    lastWasEndElement = false;
-                    lastWasComment = false;
+                    String text = reader.getText();
+                    if ( text.trim().length() > 0 ) {
+                        writer.startElement( "span", null );
+                        writer.writeAttribute( "class", "text", null );
+                        writer.write( text );
+                        writer.endElement( "span" );
+                        lastWasEndElement = false;
+                        lastWasComment = false;
+                    }
                     break;
                 case XMLStreamConstants.END_ELEMENT:
                     depth--;
                     if ( lastWasEndElement ) {
-                        writer.startElement( "br", xmlComponent );
+                        writer.startElement( "br", null );
                         writer.endElement( "br" );
                         writer.write( getSpaces( depth ) );
                     }
-                    writer.startElement( "span", xmlComponent );
+                    writer.startElement( "span", null );
                     writer.writeAttribute( "class", "sign", null );
                     writer.write( "&lt;/" );
                     writer.endElement( "span" );
 
-                    writer.startElement( "span", xmlComponent );
+                    writer.startElement( "span", null );
                     writer.writeAttribute( "class", "tag", null );
                     writer.write( reader.getLocalName() );
                     writer.endElement( "span" );
 
-                    writer.startElement( "span", xmlComponent );
+                    writer.startElement( "span", null );
                     writer.writeAttribute( "class", "sign", null );
                     writer.write( "&gt;" );
                     writer.endElement( "span" );
@@ -217,7 +226,7 @@ public class OutputXMLRenderer extends Renderer {
                     lastWasComment = false;
                     break;
                 case XMLStreamConstants.COMMENT:
-                    writer.startElement( "div", xmlComponent );
+                    writer.startElement( "div", null );
                     writer.writeAttribute( "class", "comment", null );
                     writer.write( "&lt;/!--" + reader.getText() + "--&gt;" );
                     writer.endElement( "div" );

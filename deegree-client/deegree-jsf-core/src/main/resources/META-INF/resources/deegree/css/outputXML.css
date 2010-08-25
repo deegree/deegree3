@@ -1,24 +1,28 @@
-.outputXML {
+div.outputXML {
 	font-family: sans-serif;
 	font-size: medium;
 }
+div.outputXML > div.xmlArea{
+	border-top: 1px solid black;
+	margin-left: 10px; 
+}
 
-.outputXML .tag {
+div.outputXML .tag {
 	color: #800000;
 }
 
-.outputXML .comment {
+div.outputXML .comment {
 	color: 808080;
 }
 
-.outputXML .attributeName {
+div.outputXML .attributeName {
 	color: #ff0000;
 }
 
-.outputXML .text {
+div.outputXML .text {
 	color: black;
 }
 
-.outputXML .sign {
+div.outputXML .sign {
 	color: #0000ff;
 }

@@ -127,10 +127,10 @@ public class HtmlOutputXML extends UIOutput {
     }
 
     /**
-     * @return A comma seperated list of available styleClasses.
+     * @return A comma seperated list of available styleClasses. Default value is "outputXML".
      */
     public String getStyleClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, "" );
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, "outputXML" );
 
     }
 
