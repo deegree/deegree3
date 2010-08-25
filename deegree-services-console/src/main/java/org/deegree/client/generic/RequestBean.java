@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
-import static org.deegree.commons.utils.CollectionUtils.unzip;
 import static org.deegree.commons.utils.CollectionUtils.unzipPair;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
@@ -49,6 +48,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -72,8 +72,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.httpclient.HttpException;
-import org.deegree.commons.utils.CollectionUtils;
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.slf4j.Logger;
 
@@ -87,20 +85,29 @@ import org.slf4j.Logger;
  */
 @ManagedBean
 @SessionScoped
-public class RequestBean {
+public class RequestBean implements Serializable {
+
+    private static final long serialVersionUID = 293894352421399345L;
 
     private static final Logger LOG = getLogger( RequestBean.class );
 
-    private String url;
-
+    @Getter
+    @Setter
     private String targetUrl;
 
+    @Getter
+    @Setter
     private String selectedService;
 
+    @Getter
+    @Setter
     private String selectedReqProfile;
 
+    @Getter
+    @Setter
     private String selectedRequest;
 
+    @Getter
     private List<String> services;
 
     private List<String> requestProfiles;
@@ -125,7 +132,8 @@ public class RequestBean {
     @Setter
     private String requestFilter;
 
-    private String response = "Select or enter a request above and click the \"SEND\" button. After processing, the service response will be displayed below.";
+    @Getter
+    private String response;
 
     // SERVICE
     // -- PROFILE
@@ -142,12 +150,11 @@ public class RequestBean {
         try {
             url = new URL( ctx.getRequestScheme(), ctx.getRequestServerName(), ctx.getRequestServerPort(),
                            ctx.getRequestContextPath() );
-            this.url = url.toExternalForm() + "/services";
+            this.targetUrl = url.toExternalForm() + "/services";
         } catch ( MalformedURLException e ) {
             LOG.debug( "Constructing the url was a problem..." );
             LOG.trace( "Stack trace:", e );
         }
-        setTargetUrl( this.url );
 
         initRequestMap();
 
@@ -181,7 +188,6 @@ public class RequestBean {
             InputStream is = new ByteArrayInputStream( request.getBytes() );
             try {
                 this.response = HttpUtils.post( HttpUtils.UTF8STRING, targetUrl, is, header );
-
             } catch ( HttpException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -190,10 +196,6 @@ public class RequestBean {
                 e.printStackTrace();
             }
         }
-    }
-
-    public List<String> getServices() {
-        return services;
     }
 
     public List<String> getRequestProfiles() {
@@ -206,33 +208,6 @@ public class RequestBean {
         return requests;
     }
 
-    public void setSelectedService( String selectedService ) {
-        LOG.debug( "selected service: " + selectedService );
-        this.selectedService = selectedService;
-    }
-
-    public String getSelectedService() {
-        return selectedService;
-    }
-
-    public void setSelectedReqProfile( String selectedReqProfile ) {
-        LOG.debug( "selected request profile: " + selectedReqProfile );
-        this.selectedReqProfile = selectedReqProfile;
-    }
-
-    public String getSelectedReqProfile() {
-        return selectedReqProfile;
-    }
-
-    public void setSelectedRequest( String selectedRequest ) {
-        LOG.debug( "selected request: " + selectedRequest );
-        this.selectedRequest = selectedRequest;
-    }
-
-    public String getSelectedRequest() {
-        return selectedRequest;
-    }
-
     public void setRequest( String request ) {
         this.request = request;
     }
@@ -240,18 +215,6 @@ public class RequestBean {
     public String getRequest() {
         loadExample();
         return request;
-    }
-
-    public void setTargetUrl( String targetUrl ) {
-        this.targetUrl = targetUrl;
-    }
-
-    public String getTargetUrl() {
-        return targetUrl;
-    }
-
-    public String getResponse() {
-        return response;
     }
 
     private void initRequestMap() {
