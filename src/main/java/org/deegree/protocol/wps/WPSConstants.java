@@ -81,4 +81,25 @@ public class WPSConstants {
         GetWPSWSDL,
     }
 
+    /**
+     * 
+     * 
+     * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
+     * @author last edited by: $Author: $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum ExecutionState {
+        /***/
+        ACCEPTED,
+        /***/
+        STARTED,
+        /***/
+        PAUSED,
+        /***/
+        SUCCEEDED,
+        /***/
+        FAILED
+    }
+
 }
