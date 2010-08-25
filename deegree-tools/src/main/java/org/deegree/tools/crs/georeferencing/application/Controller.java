@@ -78,6 +78,7 @@ import org.deegree.tools.crs.georeferencing.application.transformation.Helmert4T
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
+import org.deegree.tools.crs.georeferencing.communication.FileChooser;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
@@ -206,10 +207,10 @@ public class Controller {
         view.addHoleWindowListener( new HoleWindowListener() );
 
         // init the scenePanel and the mouseinteraction of it
-        initGeoReferencingScene();
+        // initGeoReferencingScene( null );
 
         // init the footPanel and the mouseinteraction of it
-        initFootprintScene();
+        // initFootprintScene( store.getFilename() );
 
         initToggleButtons();
 
@@ -325,7 +326,7 @@ public class Controller {
     /**
      * Initializes the footprint scene.
      */
-    private void initFootprintScene() {
+    private void initFootprintScene( String filePath ) {
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
         footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
         footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
@@ -335,7 +336,8 @@ public class Controller {
         // sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
         mouseFootprint = new FootprintMouseModel();
 
-        List<WorldRenderableObject> rese = File3dImporter.open( view, store.getFilename() );
+        // List<WorldRenderableObject> rese = File3dImporter.open( view, store.getFilename() );
+        List<WorldRenderableObject> rese = File3dImporter.open( view, filePath );
         sourceCRS = null;
         for ( WorldRenderableObject res : rese ) {
 
@@ -375,6 +377,9 @@ public class Controller {
 
         footPrint.generateFootprints( geometryThatIsTaken );
 
+        sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width, footPanel.getBounds().height ) );
+        footPanel.updatePoints( sceneValues );
+
         footPanel.setPolygonList( footPrint.getWorldCoordinateRingList(), sceneValues );
 
         footPanel.repaint();
@@ -384,15 +389,20 @@ public class Controller {
     /**
      * Initializes the georeferenced scene.
      */
-    private void initGeoReferencingScene() {
-        mouseGeoRef = new GeoReferencedMouseModel();
-        init();
-        targetCRS = sceneValues.getCrs();
-        panel.addScene2DMouseListener( new Scene2DMouseListener() );
-        panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-        panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
-        // panel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
-        // panel.addScene2DFocusListener( new Scene2DFocusListener() );
+    private void initGeoReferencingScene( String filePath ) {
+        if ( filePath == null ) {
+            mouseGeoRef = new GeoReferencedMouseModel();
+            init();
+            targetCRS = sceneValues.getCrs();
+            panel.addScene2DMouseListener( new Scene2DMouseListener() );
+            panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+            panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+            // panel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
+            // panel.addScene2DFocusListener( new Scene2DFocusListener() );
+
+        } else {
+
+        }
 
     }
 
@@ -486,6 +496,7 @@ public class Controller {
             }
 
             if ( source instanceof JButton ) {
+
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
 
@@ -671,6 +682,35 @@ public class Controller {
                     optionNavPanel.addTreeListener( new NavigationTreeSelectionListener() );
 
                     optionDialog.setVisible( true );
+
+                }
+                if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_BUILDING ) ) {
+                    List<String> list = new ArrayList<String>();
+                    list.add( "gml" );
+                    list.add( "xml" );
+                    String desc = "(*.gml, *.xml) GML or CityGML-Files";
+                    Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
+                    List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
+                    supportedOpenFiles.add( supportedFiles );
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
+                    initFootprintScene( fileChooser.getSelectedFilePath() );
+
+                }
+                if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_SHAPEFILE ) ) {
+                    List<String> list = new ArrayList<String>();
+                    list.add( "shp" );
+
+                    String desc = "(*.shp) Esri ShapeFiles";
+                    Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
+                    List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
+                    supportedOpenFiles.add( supportedFiles );
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
+                    initGeoReferencingScene( fileChooser.getSelectedFilePath() );
+
+                }
+                if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_WMS_LAYER ) ) {
+
+                    initGeoReferencingScene( null );
 
                 }
 
@@ -1307,6 +1347,11 @@ public class Controller {
                 if ( model.getGeneratedImage() != null ) {
                     init();
 
+                    sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width,
+                                                                      footPanel.getBounds().height ) );
+                    footPanel.updatePoints( sceneValues );
+                    footPanel.repaint();
+
                 }
             }
 
@@ -1326,15 +1371,18 @@ public class Controller {
     private void init() {
 
         sceneValues.setImageDimension( new Rectangle( panel.getBounds().width, panel.getBounds().height ) );
-        sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width, footPanel.getBounds().height ) );
         panel.setImageDimension( sceneValues.getImageDimension() );
-        footPanel.updatePoints( sceneValues );
+        // sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width, footPanel.getBounds().height )
+        // );
+        // footPanel.updatePoints( sceneValues );
         // TODO make a modularization in Scene2DValues because there is a strict sequence in this case. If there is the
         // update of the points before the new envelope is computed the polygons will be drawn on the wrong position
         panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
         panel.updatePoints( sceneValues );
         panel.repaint();
-        footPanel.repaint();
+
+        // footPanel.repaint();
+
     }
 
     /**

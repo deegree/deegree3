@@ -102,6 +102,8 @@ public class GRViewerGUI extends JFrame {
 
     private JMenuItem openWMS;
 
+    private JMenuItem openBuilding;
+
     private NavigationBarPanelGeoref naviPanelGeoref;
 
     private NavigationBarPanelFootprint naviPanelFoot;
@@ -150,9 +152,12 @@ public class GRViewerGUI extends JFrame {
         openShape.setName( GUIConstants.MENUITEM_OPEN_SHAPEFILE );
         openWMS = new JMenuItem( GUIConstants.MENUITEM_OPEN_WMS_LAYER );
         openWMS.setName( GUIConstants.MENUITEM_OPEN_WMS_LAYER );
+        openBuilding = new JMenuItem( GUIConstants.MENUITEM_OPEN_BUILDING );
+        openBuilding.setName( GUIConstants.MENUITEM_OPEN_BUILDING );
 
         menuFile.add( openShape );
         menuFile.add( openWMS );
+        menuFile.add( openBuilding );
 
         JPanel panel = new JPanel();
         panel.setLayout( new BorderLayout() );
@@ -239,6 +244,9 @@ public class GRViewerGUI extends JFrame {
         naviPanelFoot.addAbstractCoordListener( e );
         editMenuItem.addActionListener( e );
         checkbox.addCheckboxListener( e );
+        openShape.addActionListener( e );
+        openWMS.addActionListener( e );
+        openBuilding.addActionListener( e );
 
     }
 

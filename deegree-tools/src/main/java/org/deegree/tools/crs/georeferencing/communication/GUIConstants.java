@@ -83,6 +83,8 @@ public class GUIConstants {
 
     public static final String MENUITEM_OPEN_WMS_LAYER = "Open WMS layer";
 
+    public static final String MENUITEM_OPEN_BUILDING = "Open Building";
+
     /*
      * JTextField
      */
