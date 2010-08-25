@@ -54,7 +54,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.controller.utils.StandardRequestLogger;
@@ -438,20 +437,24 @@ public class WebServicesConfiguration {
     /**
      * Returns the service controller instance based on the class of the service controller.
      * 
+     * @param <T>
+     * 
      * @param c
      *            class of the requested service controller, e.g. <code>WPSController.getClass()</code>
      * @return the instance of the requested service used by OGCFrontController, or null if no such service controller
      *         is active
      */
-    public AbstractOGCServiceController getServiceController( Class<? extends AbstractOGCServiceController> c ) {
-        AbstractOGCServiceController result = null;
+    public <T extends AbstractOGCServiceController> T getServiceController( Class<T> c ) {
         for ( AbstractOGCServiceController it : serviceNSToController.values() ) {
             if ( c == it.getClass() ) {
-                result = it;
-                break;
+                // somehow just annotating the return expression does not work
+                // even annotations to suppress sucking generics suck
+                @SuppressWarnings(value = "unchecked")
+                T result = (T) it;
+                return result;
             }
         }
-        return result;
+        return null;
     }
 
     /**
