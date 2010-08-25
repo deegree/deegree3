@@ -358,10 +358,11 @@ public class Java2DRenderer implements Renderer {
 
     <T> T transform( T g ) {
         if ( transformer != null ) {
+            CRS crs = null;
             try {
                 if ( g != null ) {
                     // TODO minimize transformations in all other cases as well
-                    CRS crs = ( (Geometry) g ).getCoordinateSystem();
+                    crs = ( (Geometry) g ).getCoordinateSystem();
                     if ( transformer.getWrappedTargetCRS().equals( crs ) ) {
                         return (T) g;
                     }
@@ -369,16 +370,16 @@ public class Java2DRenderer implements Renderer {
                 return (T) transformer.transform( (Geometry) g );
             } catch ( IllegalArgumentException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.",
-                          g.getClass().getSimpleName() );
+                LOG.warn( "Could not transform geometry of type '{}' before rendering, "
+                          + "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs );
             } catch ( TransformationException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.",
-                          g.getClass().getSimpleName() );
+                LOG.warn( "Could not transform geometry of type '{}' before rendering, "
+                          + "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs );
             } catch ( UnknownCRSException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.",
-                          g.getClass().getSimpleName() );
+                LOG.warn( "Could not transform geometry of type '{}' before rendering, "
+                          + "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs );
             }
         }
         return g;
