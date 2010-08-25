@@ -320,7 +320,8 @@ public class GMLFeatureReader extends XMLAdapter {
             if ( property != null ) {
                 // if this is the "gml:boundedBy" property, override active CRS
                 // (see GML spec. (where???))
-                if ( StandardGMLFeatureProps.PT_BOUNDED_BY_GML31.getName().equals( activeDecl.getName() ) ) {
+                if ( StandardGMLFeatureProps.PT_BOUNDED_BY_GML31.getName().equals( activeDecl.getName() )
+                     || StandardGMLFeatureProps.PT_BOUNDED_BY_GML32.getName().equals( activeDecl.getName() ) ) {
                     Envelope bbox = (Envelope) property.getValue();
                     if ( bbox.getCoordinateSystem() != null ) {
                         activeCRS = bbox.getCoordinateSystem();
