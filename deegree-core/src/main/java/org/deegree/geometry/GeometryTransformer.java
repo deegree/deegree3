@@ -167,6 +167,8 @@ public class GeometryTransformer extends Transformer {
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
      * 
+     * @param <T>
+     * 
      * @param geo
      *            to be transformed
      * @return the same geometry in a different crs.
@@ -176,7 +178,7 @@ public class GeometryTransformer extends Transformer {
      *             if the coordinates system of the geometry is <code>null</code>
      * @throws UnknownCRSException
      */
-    public Geometry transform( Geometry geo )
+    public <T extends Geometry> T transform( T geo )
                             throws TransformationException, IllegalArgumentException, UnknownCRSException {
         return transform( geo, null, false, null );
     }
@@ -261,6 +263,8 @@ public class GeometryTransformer extends Transformer {
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
      * 
+     * @param <T>
+     * 
      * @param geom
      *            to be transformed
      * @param sourceCRS
@@ -274,8 +278,8 @@ public class GeometryTransformer extends Transformer {
      * @throws TransformationException
      *             if the transformation between the source and target crs cannot be created.
      */
-    public Geometry transform( Geometry geom, CoordinateSystem sourceCRS, boolean testValidArea,
-                               List<Transformation> toBeUsedTransformations )
+    public <T extends Geometry> T transform( T geom, CoordinateSystem sourceCRS, boolean testValidArea,
+                                             List<Transformation> toBeUsedTransformations )
                             throws IllegalArgumentException, TransformationException {
         Envelope sourceEnv = null;
         CoordinateSystem source = sourceCRS;
@@ -307,7 +311,7 @@ public class GeometryTransformer extends Transformer {
      * @throws IllegalArgumentException
      *             if the coordinates system of the geometry is <code>null</code>
      */
-    private Geometry transform( Geometry geo, Transformation trans, Envelope domainOfValidity )
+    private <T extends Geometry> T transform( T geo, Transformation trans, Envelope domainOfValidity )
                             throws TransformationException, IllegalArgumentException {
         if ( TransformationFactory.isIdentity( trans ) ) {
             return geo;
@@ -319,29 +323,36 @@ public class GeometryTransformer extends Transformer {
                                                      + ")is outside the area of validity of the source CRS." );
             }
         }
-        Geometry transformedGeometry = null;
         GeometryType geometryType = geo.getGeometryType();
         try {
             switch ( geometryType ) {
-            case COMPOSITE_GEOMETRY:
-                transformedGeometry = transform( (CompositeGeometry<?>) geo, trans );
-                break;
-            case ENVELOPE:
-                transformedGeometry = transform( (Envelope) geo, trans );
-                break;
-            case MULTI_GEOMETRY:
-                transformedGeometry = transform( (MultiGeometry<?>) geo, trans, domainOfValidity );
-                break;
-            case PRIMITIVE_GEOMETRY:
-                transformedGeometry = transform( (GeometricPrimitive) geo, trans );
-                break;
+            case COMPOSITE_GEOMETRY: {
+                @SuppressWarnings("unchecked")
+                T transformedGeometry = (T) transform( (CompositeGeometry<?>) geo, trans );
+                return transformedGeometry;
+            }
+            case ENVELOPE: {
+                @SuppressWarnings("unchecked")
+                T transformedGeometry = (T) transform( (Envelope) geo, trans );
+                return transformedGeometry;
+            }
+            case MULTI_GEOMETRY: {
+                @SuppressWarnings("unchecked")
+                T transformedGeometry = (T) transform( (MultiGeometry<?>) geo, trans, domainOfValidity );
+                return transformedGeometry;
+            }
+            case PRIMITIVE_GEOMETRY: {
+                @SuppressWarnings("unchecked")
+                T transformedGeometry = (T) transform( (GeometricPrimitive) geo, trans );
+                return transformedGeometry;
+            }
             }
         } catch ( GeometryException ge ) {
             throw new TransformationException( Messages.getMessage( "CRS_TRANSFORMATION_ERROR",
                                                                     geo.getCoordinateSystem().getName(),
                                                                     getTargetCRS().getCodes(), ge.getMessage() ), ge );
         }
-        return transformedGeometry;
+        return null;
     }
 
     private GeometricPrimitive transform( GeometricPrimitive geom, Transformation trans )
