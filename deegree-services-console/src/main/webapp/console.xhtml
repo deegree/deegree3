@@ -60,16 +60,16 @@
         - <h:outputText value="#{ntc}" />
         <h:outputText value="&#160;" />
         <h:panelGroup rendered="#{ntc == 'WFS'}">
-          [<h:outputLink value="#{fn:toLowerCase(ntc)}/index.jsp">Details</h:outputLink>]
-          [<h:outputLink value="client/client.html">Send requests</h:outputLink>]
+          [<h:outputLink value="console/#{fn:toLowerCase(ntc)}/index.jsp">Details</h:outputLink>]
+          [<h:outputLink value="console/client/client.html">Send requests</h:outputLink>]
         </h:panelGroup>
         <h:panelGroup rendered="#{ntc == 'WPS'}">
-          [<h:outputLink value="#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
-          [<h:outputLink value="client/client.html">Send requests</h:outputLink>]
+          [<h:outputLink value="console/#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
+          [<h:outputLink value="console/client/client.html">Send requests</h:outputLink>]
         </h:panelGroup>
         <h:panelGroup rendered="#{ntc == 'WMS'}">
-          [<h:outputLink value="#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
-          [<h:outputLink value="client/client.html">Send requests</h:outputLink>]
+          [<h:outputLink value="console/#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
+          [<h:outputLink value="console/client/client.html">Send requests</h:outputLink>]
         </h:panelGroup>        
         <br />
       </ui:repeat>
