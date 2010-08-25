@@ -44,8 +44,6 @@ import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.crs.georeferencing.application.Controller;
 import org.deegree.tools.crs.georeferencing.application.ParameterStore;
-import org.deegree.tools.crs.georeferencing.model.Scene2D;
-import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,9 +142,7 @@ public class GRViewer {
 
         GRViewerGUI gui = new GRViewerGUI();
 
-        Scene2D scene2d = new Scene2DImplWMS();
-
-        new Controller( gui, scene2d, store );
+        new Controller( gui, store );
 
         gui.setVisible( true );
 

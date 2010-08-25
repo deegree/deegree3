@@ -66,7 +66,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Ring;
@@ -95,8 +94,12 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericS
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
+import org.deegree.tools.crs.georeferencing.model.BoundingBox;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
+import org.deegree.tools.crs.georeferencing.model.GeorefernceQuality;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
+import org.deegree.tools.crs.georeferencing.model.Scene2DImplShape;
+import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
 import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
@@ -130,7 +133,7 @@ public class Controller {
 
     private PointTableFrame tablePanel;
 
-    private RasterIOOptions options;
+    // private RasterIOOptions options;
 
     private Footprint footPrint;
 
@@ -179,16 +182,15 @@ public class Controller {
 
     private ButtonModel buttonModel;
 
-    public Controller( GRViewerGUI view, Scene2D model, ParameterStore store ) {
+    public Controller( GRViewerGUI view, ParameterStore store ) {
 
         geom = new GeometryFactory();
-        options = new RasterOptions( store ).getOptions();
-        sceneValues = new Scene2DValues( options, geom );
+        // options = new RasterOptions( store ).getOptions();
+        // sceneValues = new Scene2DValues( geom );
         this.view = view;
-        this.model = model;
+        // this.model = model;
         this.panel = view.getScenePanel2D();
         this.footPanel = view.getFootprintPanel();
-        this.footPrint = new Footprint( sceneValues, geom );
 
         this.start = false;
 
@@ -201,7 +203,7 @@ public class Controller {
 
         this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
 
-        model.init( options, sceneValues );
+        // model.init( options, sceneValues );
         view.addListeners( new ButtonListener() );
         // view.addChangeListener( new ChangeActionListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
@@ -327,6 +329,7 @@ public class Controller {
      * Initializes the footprint scene.
      */
     private void initFootprintScene( String filePath ) {
+        this.footPrint = new Footprint( sceneValues, geom );
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
         footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
         footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
@@ -389,21 +392,21 @@ public class Controller {
     /**
      * Initializes the georeferenced scene.
      */
-    private void initGeoReferencingScene( String filePath ) {
+    private void initGeoReferencingScene( String filePath, Scene2D scene2d ) {
+        mouseGeoRef = new GeoReferencedMouseModel();
         if ( filePath == null ) {
-            mouseGeoRef = new GeoReferencedMouseModel();
+
             init();
             targetCRS = sceneValues.getCrs();
-            panel.addScene2DMouseListener( new Scene2DMouseListener() );
-            panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-            panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
-            // panel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
-            // panel.addScene2DFocusListener( new Scene2DFocusListener() );
 
         } else {
-
+            init();
         }
-
+        panel.addScene2DMouseListener( new Scene2DMouseListener() );
+        panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+        panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+        // panel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
+        // panel.addScene2DFocusListener( new Scene2DFocusListener() );
     }
 
     /**
@@ -705,12 +708,22 @@ public class Controller {
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
                     FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
-                    initGeoReferencingScene( fileChooser.getSelectedFilePath() );
+                    model = new Scene2DImplShape();
+                    initGeoReferencingScene( fileChooser.getSelectedFilePath(), model );
 
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_WMS_LAYER ) ) {
-
-                    initGeoReferencingScene( null );
+                    // TODO everthing should come from a dialog
+                    model = new Scene2DImplWMS();
+                    List<String> layerList = new ArrayList<String>();
+                    layerList.add( "cite:BasicPolygons" );
+                    sceneValues = new Scene2DValues( geom, layerList );
+                    sceneValues.setCrs( new CRS( "EPSG:4326" ) );
+                    sceneValues.setQuality( new GeorefernceQuality( 1000, 1000 ) );
+                    sceneValues.setFormat( "image/png" );
+                    sceneValues.setGeoreferenceBBox( new BoundingBox( -2.0, -1.0, 2.0, 6.0 ) );
+                    sceneValues.setGeorefURL( "http://localhost:8080/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
+                    initGeoReferencingScene( null, model );
 
                 }
 
@@ -972,53 +985,56 @@ public class Controller {
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    if ( isControlDown || isZoomInGeoref || isZoomOutGeoref ) {
-                        Point2d pointPressed = new Point2d( mouseGeoRef.getPointMousePressed().getX(),
-                                                            mouseGeoRef.getPointMousePressed().getY() );
-                        Point2d pointReleased = new Point2d( m.getX(), m.getY() );
-                        Point2d minPoint;
-                        Point2d maxPoint;
-                        if ( pointPressed.getX() < pointReleased.getX() ) {
-                            minPoint = pointPressed;
-                            maxPoint = pointReleased;
-                        } else {
-                            minPoint = pointReleased;
-                            maxPoint = pointPressed;
-                        }
-
-                        if ( isZoomInGeoref ) {
-                            if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
-                                sceneValues.computeZoomedEnvelope( true, dialogModel.getResizeValue().second,
-                                                                   new GeoReferencedPoint( minPoint.getX(),
-                                                                                           minPoint.getY() ) );
+                    if ( model != null ) {
+                        if ( isControlDown || isZoomInGeoref || isZoomOutGeoref ) {
+                            Point2d pointPressed = new Point2d( mouseGeoRef.getPointMousePressed().getX(),
+                                                                mouseGeoRef.getPointMousePressed().getY() );
+                            Point2d pointReleased = new Point2d( m.getX(), m.getY() );
+                            Point2d minPoint;
+                            Point2d maxPoint;
+                            if ( pointPressed.getX() < pointReleased.getX() ) {
+                                minPoint = pointPressed;
+                                maxPoint = pointReleased;
                             } else {
-                                Rectangle r = new Rectangle(
-                                                             new Double( minPoint.getX() ).intValue(),
-                                                             new Double( minPoint.getY() ).intValue(),
-                                                             Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
-                                                             Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
-                                GeoReferencedPoint center = new GeoReferencedPoint( r.getCenterX(), r.getCenterY() );
-                                GeoReferencedPoint dimension = new GeoReferencedPoint(
-                                                                                       Math.abs( new Double(
-                                                                                                             maxPoint.getX()
-                                                                                                                                     - minPoint.getX() ).intValue() ),
-                                                                                       Math.abs( new Double(
-                                                                                                             maxPoint.getY()
-                                                                                                                                     - minPoint.getY() ).intValue() ) );
-                                sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
-                                // sceneValues.computeAbsoluteEnvelope( GeoreferencedPoint, r );
+                                minPoint = pointReleased;
+                                maxPoint = pointPressed;
                             }
-                        } else if ( isZoomOutGeoref ) {
-                            sceneValues.computeZoomedEnvelope(
-                                                               false,
-                                                               dialogModel.getResizeValue().second,
-                                                               new GeoReferencedPoint( maxPoint.getX(), maxPoint.getY() ) );
-                        }
 
-                        panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-                        panel.updatePoints( sceneValues );
-                        panel.setZoomRect( null );
-                        panel.repaint();
+                            if ( isZoomInGeoref ) {
+                                if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
+                                    sceneValues.computeZoomedEnvelope( true, dialogModel.getResizeValue().second,
+                                                                       new GeoReferencedPoint( minPoint.getX(),
+                                                                                               minPoint.getY() ) );
+                                } else {
+                                    Rectangle r = new Rectangle(
+                                                                 new Double( minPoint.getX() ).intValue(),
+                                                                 new Double( minPoint.getY() ).intValue(),
+                                                                 Math.abs( new Double( maxPoint.getX()
+                                                                                       - minPoint.getX() ).intValue() ),
+                                                                 Math.abs( new Double( maxPoint.getY()
+                                                                                       - minPoint.getY() ).intValue() ) );
+                                    GeoReferencedPoint center = new GeoReferencedPoint( r.getCenterX(), r.getCenterY() );
+                                    GeoReferencedPoint dimension = new GeoReferencedPoint(
+                                                                                           Math.abs( new Double(
+                                                                                                                 maxPoint.getX()
+                                                                                                                                         - minPoint.getX() ).intValue() ),
+                                                                                           Math.abs( new Double(
+                                                                                                                 maxPoint.getY()
+                                                                                                                                         - minPoint.getY() ).intValue() ) );
+                                    sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
+                                    // sceneValues.computeAbsoluteEnvelope( GeoreferencedPoint, r );
+                                }
+                            } else if ( isZoomOutGeoref ) {
+                                sceneValues.computeZoomedEnvelope( false, dialogModel.getResizeValue().second,
+                                                                   new GeoReferencedPoint( maxPoint.getX(),
+                                                                                           maxPoint.getY() ) );
+                            }
+
+                            panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                            panel.updatePoints( sceneValues );
+                            panel.setZoomRect( null );
+                            panel.repaint();
+                        }
 
                     } else {
                         if ( isHorizontalRefGeoref == true ) {
@@ -1282,19 +1298,22 @@ public class Controller {
             Object source = m.getSource();
 
             if ( source instanceof JPanel ) {
+
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
-                    mouseOver = mouseGeoRef.getMouseMoved();
-                    // resizing = .05f;
-                    if ( m.getWheelRotation() < 0 ) {
-                        zoomIn = true;
-                    } else {
-                        zoomIn = false;
+                    if ( model != null ) {
+                        mouseOver = mouseGeoRef.getMouseMoved();
+                        // resizing = .05f;
+                        if ( m.getWheelRotation() < 0 ) {
+                            zoomIn = true;
+                        } else {
+                            zoomIn = false;
+                        }
+                        sceneValues.computeZoomedEnvelope( zoomIn, dialogModel.getResizeValue().second, mouseOver );
+                        panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
+                        panel.updatePoints( sceneValues );
+                        panel.repaint();
                     }
-                    sceneValues.computeZoomedEnvelope( zoomIn, dialogModel.getResizeValue().second, mouseOver );
-                    panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-                    panel.updatePoints( sceneValues );
-                    panel.repaint();
                 }
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
@@ -1344,13 +1363,15 @@ public class Controller {
             Object source = c.getSource();
 
             if ( source instanceof JFrame ) {
-                if ( model.getGeneratedImage() != null ) {
+                if ( model != null && model.getGeneratedImage() != null ) {
                     init();
 
-                    sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width,
-                                                                      footPanel.getBounds().height ) );
-                    footPanel.updatePoints( sceneValues );
-                    footPanel.repaint();
+                    if ( sceneValues != null ) {
+                        sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width,
+                                                                          footPanel.getBounds().height ) );
+                        footPanel.updatePoints( sceneValues );
+                        footPanel.repaint();
+                    }
 
                 }
             }
@@ -1370,17 +1391,21 @@ public class Controller {
      */
     private void init() {
 
-        sceneValues.setImageDimension( new Rectangle( panel.getBounds().width, panel.getBounds().height ) );
-        panel.setImageDimension( sceneValues.getImageDimension() );
-        // sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width, footPanel.getBounds().height )
-        // );
-        // footPanel.updatePoints( sceneValues );
-        // TODO make a modularization in Scene2DValues because there is a strict sequence in this case. If there is the
-        // update of the points before the new envelope is computed the polygons will be drawn on the wrong position
-        panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
-        panel.updatePoints( sceneValues );
-        panel.repaint();
-
+        if ( model != null ) {
+            model.init( sceneValues );
+            sceneValues.setImageDimension( new Rectangle( panel.getBounds().width, panel.getBounds().height ) );
+            panel.setImageDimension( sceneValues.getImageDimension() );
+            // sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width,
+            // footPanel.getBounds().height )
+            // );
+            // footPanel.updatePoints( sceneValues );
+            // TODO make a modularization in Scene2DValues because there is a strict sequence in this case. If there is
+            // the
+            // update of the points before the new envelope is computed the polygons will be drawn on the wrong position
+            panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
+            panel.updatePoints( sceneValues );
+            panel.repaint();
+        }
         // footPanel.repaint();
 
     }

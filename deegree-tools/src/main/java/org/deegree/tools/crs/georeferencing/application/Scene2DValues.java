@@ -36,16 +36,18 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import java.awt.Rectangle;
+import java.util.List;
 
 import javax.vecmath.Point2d;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.geom.RasterRect;
-import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.tools.crs.georeferencing.model.BoundingBox;
+import org.deegree.tools.crs.georeferencing.model.GeorefernceQuality;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -84,7 +86,7 @@ public class Scene2DValues {
 
     private Point2d minPointPixel;
 
-    private RasterIOOptions options;
+    // private RasterIOOptions options;
 
     private CRS crs;
 
@@ -94,14 +96,25 @@ public class Scene2DValues {
 
     private double ratio;
 
+    private String georefURL;
+
+    private GeorefernceQuality quality;
+
+    private List<String> selectedLayers;
+
+    private BoundingBox georeferenceBBox;
+
+    private String format;
+
     /**
      * Creates a new instance of <Code>Scene2DValues</Code>
      * 
      * @param options
      * @param geom
      */
-    public Scene2DValues( RasterIOOptions options, GeometryFactory geom ) {
-        this.options = options;
+    public Scene2DValues( GeometryFactory geom, List<String> selectedLayres ) {
+        // this.options = options;
+        this.selectedLayers = selectedLayers;
         this.geom = geom;
 
     }
@@ -388,20 +401,19 @@ public class Scene2DValues {
         this.subRaster = subRaster;
     }
 
-    public Point2d generateTransformedBounds() {
-        if ( rasterRect != null ) {
-            return transformProportion( rasterRect );
-        }
-        return null;
+    public Point2d generateTransformedBounds( RasterRect rasterRect ) {
+
+        return transformProportion( rasterRect );
+
     }
 
     public Point2d getTransformedBounds() {
         return this.transformedRasterSpan;
     }
 
-    public RasterIOOptions getOptions() {
-        return options;
-    }
+    // public RasterIOOptions getOptions() {
+    // return options;
+    // }
 
     /**
      * Computes the translation of the envelope for the georeferencing scene or the footprint scene.
@@ -754,6 +766,46 @@ public class Scene2DValues {
 
     public void setEnvelopeFootprint( Envelope createEnvelope ) {
         this.envelopeFootprint = createEnvelope;
+    }
+
+    public String getGeorefURL() {
+        return georefURL;
+    }
+
+    public void setGeorefURL( String url ) {
+        this.georefURL = url;
+
+    }
+
+    public List<String> getSelectedLayers() {
+
+        return this.selectedLayers;
+    }
+
+    public GeorefernceQuality getQuality() {
+        return quality;
+    }
+
+    public void setQuality( GeorefernceQuality quality ) {
+        this.quality = quality;
+    }
+
+    public void setGeoreferenceBBox( BoundingBox bbox ) {
+        this.georeferenceBBox = bbox;
+
+    }
+
+    public BoundingBox getGeoreferenceBBox() {
+        return georeferenceBBox;
+    }
+
+    public void setFormat( String format ) {
+        this.format = format;
+
+    }
+
+    public String getFormat() {
+        return format;
     }
 
 }
