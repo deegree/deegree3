@@ -141,12 +141,7 @@ public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
 
         ProcessDefinition processDef = process.getDescription();
         
-        writer.writeStartElement( "ProcessDescription" );
-        
-        System.out.println (processDef.getProcessVersion());
-        System.out.println ( processDef.isStoreSupported() );
-        System.out.println ( processDef.isStatusSupported() );
-
+        writer.writeStartElement( "ProcessDescription" );     
         writer.writeAttribute( WPS_NS, "processVersion", processDef.getProcessVersion() );
         writer.writeAttribute( "storeSupported", Boolean.toString( processDef.isStoreSupported() ) );
         writer.writeAttribute( "statusSupported", Boolean.toString( processDef.isStatusSupported() ) );
