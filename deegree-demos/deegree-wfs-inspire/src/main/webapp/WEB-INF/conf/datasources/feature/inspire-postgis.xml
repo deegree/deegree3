@@ -13,5 +13,5 @@
   <NamespaceHint prefix="tn-a" namespaceURI="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0" />
   <StorageCRS>EPSG:4258</StorageCRS>
   <JDBCConnId>postgis</JDBCConnId>
-  <GMLSchemaFileURL gmlVersion="GML_32">../../../schemas/inspire/annex1/</GMLSchemaFileURL>
+  <GMLSchemaFileURL gmlVersion="GML_32">schemas/inspire/annex1/</GMLSchemaFileURL>
 </PostGISFeatureStore>
