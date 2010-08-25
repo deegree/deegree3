@@ -51,13 +51,13 @@ import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
+import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
 import org.deegree.services.wps.ProcessExecution;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.ProcessExecution.ExecutionState;
 import org.deegree.services.wps.input.BoundingBoxInput;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.EmbeddedComplexInput;
@@ -639,7 +639,8 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
             writer.writeAttribute( "schema", schema );
         }
 
-        // NOTE: Providing the encoding attribute doesn't make any sense for inline XML output (always defined by the surrounding
+        // NOTE: Providing the encoding attribute doesn't make any sense for inline XML output (always defined by the
+        // surrounding
         // document)
 
         XMLStreamReader reader = output.getStreamReader();
@@ -665,12 +666,12 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
 
         // "wps:ComplexData" element
         writer.writeStartElement( WPS_NS, "ComplexData" );
-        
+
         String mimeType = output.getRequestedMimeType();
         if ( mimeType != null ) {
             writer.writeAttribute( "mimeType", mimeType );
-        }      
-        
+        }
+
         LOG.warn( "TODO Handle other encodings. Using fixed encoding: base64." );
         writer.writeAttribute( "encoding", "base64" );
 

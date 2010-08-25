@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.wps;
 
@@ -42,10 +42,8 @@ import java.util.List;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.services.controller.ows.OWSException;
-import org.deegree.services.wps.Processlet;
-import org.deegree.services.wps.ProcessletExecutionInfo;
-import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.execute.ExecuteRequest;
 import org.deegree.services.wps.execute.ExecuteResponse;
 import org.deegree.services.wps.execute.RequestedOutput;
@@ -53,11 +51,11 @@ import org.deegree.services.wps.storage.StorageLocation;
 
 /**
  * Encapsulates the status of a {@link WPSProcess} execution.
- *
+ * 
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class ProcessExecution implements ProcessletExecutionInfo {
@@ -83,7 +81,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
     private int percentCompleted;
 
     private StorageLocation responseStorage;
-    
+
     private URL serviceInstance;
 
     private List<RequestedOutput> outputParams;
@@ -91,40 +89,19 @@ public class ProcessExecution implements ProcessletExecutionInfo {
     private ProcessletOutputs outputs;
 
     /**
-     *
-     *
-     * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
-     * @author last edited by: $Author: $
-     *
-     * @version $Revision: $, $Date: $
-     */
-    public enum ExecutionState {
-        /***/
-        ACCEPTED,
-        /***/
-        STARTED,
-        /***/
-        PAUSED,
-        /***/
-        SUCCEEDED,
-        /***/
-        FAILED
-    }
-
-    /**
      * Creates a new {@link ProcessExecution} for a {@link Processlet} that has been accepted for execution.
      * <p>
      * Processing state is {@link ExecutionState#ACCEPTED}.
      * </p>
-     *
-     * @param request 
-     * @param responseStorage 
-     * @param serviceInstance 
-     * @param outputParams 
-     * @param outputs 
+     * 
+     * @param request
+     * @param responseStorage
+     * @param serviceInstance
+     * @param outputParams
+     * @param outputs
      */
     public ProcessExecution( ExecuteRequest request, StorageLocation responseStorage, URL serviceInstance,
-                                List<RequestedOutput> outputParams, ProcessletOutputs outputs ) {
+                             List<RequestedOutput> outputParams, ProcessletOutputs outputs ) {
         this.request = request;
         this.responseStorage = responseStorage;
         this.serviceInstance = serviceInstance;
@@ -135,7 +112,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Returns the current processing state.
-     *
+     * 
      * @return the current processing state
      */
     public ExecutionState getExecutionState() {
@@ -145,7 +122,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
     /**
      * Returns the percentage of process that has been completed, where 0 means the process has just started, and 99
      * means the process is almost complete. This value is expected to be accurate to within ten percent.
-     *
+     * 
      * @return the percentCompleted, a number between 0 and 99
      */
     public int getPercentCompleted() {
@@ -154,7 +131,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Returns optional additional human-readable text associated with the acceptance of the process execution.
-     *
+     * 
      * @return optional additional human-readable text, null if it is not available
      */
     public String getAcceptedMessage() {
@@ -163,7 +140,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Returns optional additional human-readable text associated with the starting of the process execution.
-     *
+     * 
      * @return optional additional human-readable text, null if it is not available
      */
     public String getStartMessage() {
@@ -175,7 +152,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Returns the time when the process execution has been started.
-     *
+     * 
      * @return the time when the process execution has been started (in milliseconds) or -1 if the process has not been
      *         started yet
      */
@@ -185,16 +162,17 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Returns the time that the process execution has been finished.
-     *
+     * 
      * @return the time that the process execution has been finished (in milliseconds) or -1 if the process has not been
      *         finished yet
      */
     public long getFinishTime() {
         return finishTime;
     }
-    
+
     /**
      * Returns the "Identifier" for this process.
+     * 
      * @return Returns the CodeType or "Identifier" for this process.
      */
     public CodeType getProcessId() {
@@ -203,7 +181,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Returns optional additional human-readable text associated with the pausing of the process execution.
-     *
+     * 
      * @return optional additional human-readable text, null if it is not available
      */
     public String getPauseMessage() {
@@ -213,11 +191,11 @@ public class ProcessExecution implements ProcessletExecutionInfo {
     /**
      * Returns optional additional human-readable text associated with the successful finishing of the process
      * execution.
-     *
+     * 
      * @return optional additional human-readable text, null if it is not available
      */
     public String getSucceededMessage() {
-        if ( succeededMessage == null && finishTime >= 0) {
+        if ( succeededMessage == null && finishTime >= 0 ) {
             return "Process execution succeeded@" + DateUtils.formatISO8601Date( new Date( finishTime ) );
         }
         return succeededMessage;
@@ -225,7 +203,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Returns the exception that describes the reason for the failure of the process execution.
-     *
+     * 
      * @return the exception that describes the reason for the failure of the process execution.
      */
     public OWSException getFailedException() {
@@ -242,7 +220,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Sets the processing state to {@link ExecutionState#SUCCEEDED}.
-     *
+     * 
      * @param msg
      *            additional human-readable client information, may be null
      */
@@ -254,7 +232,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Sets the processing state to {@link ExecutionState#PAUSED}.
-     *
+     * 
      * @param msg
      *            additional human-readable client information, may be null
      */
@@ -265,7 +243,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Sets the processing state to {@link ExecutionState#FAILED}.
-     *
+     * 
      * @param e
      *            exception that describes the reason for the failure
      */
@@ -276,7 +254,7 @@ public class ProcessExecution implements ProcessletExecutionInfo {
 
     /**
      * Creates an {@link ExecuteResponse} that reflects the current execution state.
-     *
+     * 
      * @return an {@link ExecuteResponse} that reflects the current execution state
      */
     public ExecuteResponse createExecuteResponse() {

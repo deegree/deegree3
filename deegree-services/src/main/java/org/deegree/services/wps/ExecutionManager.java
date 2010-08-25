@@ -59,6 +59,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
@@ -68,7 +69,6 @@ import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
 import org.deegree.services.jaxb.wps.LiteralOutputDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
-import org.deegree.services.wps.ProcessExecution.ExecutionState;
 import org.deegree.services.wps.execute.ExecuteRequest;
 import org.deegree.services.wps.execute.ExecuteResponse;
 import org.deegree.services.wps.execute.ExecuteResponseXMLWriter;
