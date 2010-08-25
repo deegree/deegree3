@@ -57,7 +57,7 @@ import com.sun.faces.util.Util;
  * @version $Revision: $, $Date: $
  */
 @ResourceDependencies( { @ResourceDependency(library = "deegree", name = "css/inputMultiple.css", target = "head"),
-                        @ResourceDependency(name = "js/multipleItems.js", library = "deegree"),
+                        @ResourceDependency(name = "javascript/multipleItems.js", library = "deegree"),
                         @ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces") })
 @FacesComponent(value = "HtmlInputMultiple")
 public class HtmlInputMultiple extends UIInput implements ClientBehaviorHolder {
