@@ -101,7 +101,7 @@
                                             out.println( "              requests[" + i + "][" + j + "][" + k + "][" + l
                                                          + "] = \"" + requests[l] + "\";" );
                                             out.println( "              requestUrls[" + i + "][" + j + "][" + k + "]["
-                                                         + l + "] = \"../" + requestUrl + "\";" );
+                                                         + l + "] = \"../.." + requestUrl + "\";" );
                                         }
                                     }
                                     k += 1;
@@ -212,7 +212,7 @@
         targetURL = requestURL.substring( 0, requestURL.lastIndexOf( '/' ) );
         targetURL = targetURL.substring( 0, targetURL.lastIndexOf( '/' ) + 1 );
     }
-    targetURL += "services";
+    targetURL += "../services";
 %>
         <blockquote>
             <br />
