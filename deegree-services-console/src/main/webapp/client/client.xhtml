@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:dg="http://deegree.org/jsf">
 
 <h:head>
   <title>Generic OGC Web Service Client</title>
@@ -60,7 +60,10 @@
         <h:messages id="sendMgs" errorClass="errorMsg" />
 
         <h:column style="width: 95%; margin-top: 20px; border-top: 1px solid black; padding-top: 20px;">
-          <h:outputText id="result" value="#{requestBean.response}" />
+        	<h:panelGroup id="result" >
+	          <dg:outputXML id="response" value="#{requestBean.response}" downloadable="true" downloadDir="download" minutesUntilDelete="30" rendered="#{requestBean.response != null}"/>
+	          <h:outputText id="hint" value="Select or enter a request above and click the 'SEND' button. After processing, the service response will be displayed below." rendered="#{requestBean.response == null}"/>
+	        </h:panelGroup>
         </h:column>
         <h:column>
           <h:graphicImage id="mapImage" value="#{requestBean.targetUrl}?#{requestBean.kvpRequestSel}"
