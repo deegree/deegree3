@@ -119,13 +119,18 @@ public class SecureProxy extends HttpServlet {
         super.init( config );
 
         try {
-            workspace = DeegreeWorkspace.getInstance( new File( resolveFileLocation( "WEB-INF/conf",
-                                                                                     getServletContext() ).toURI() ) );
+            File fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
+            DeegreeWorkspace ws = DeegreeWorkspace.getInstance( null, fallbackDir );
+            LOG.info( "Using workspace '{}' at '{}'", ws.getName(), ws.getLocation() );
         } catch ( MalformedURLException e ) {
             String msg = "Secure Proxy was NOT started, since the configuration could not be loaded.";
             LOG.error( msg );
             throw new ServletException( msg );
         } catch ( URISyntaxException e ) {
+            String msg = "Secure Proxy was NOT started, since the configuration could not be loaded.";
+            LOG.error( msg );
+            throw new ServletException( msg );
+        } catch ( IOException e ) {
             String msg = "Secure Proxy was NOT started, since the configuration could not be loaded.";
             LOG.error( msg );
             throw new ServletException( msg );

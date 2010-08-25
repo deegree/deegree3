@@ -937,7 +937,8 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
         }
 
-        workspace = new DeegreeWorkspace( baseDir );
+        // TODO adapt to workspace concept 
+        workspace = DeegreeWorkspace.getInstance(null, baseDir);
 
         File dsDir = new File( baseDir, "/datasources/" );
         if ( !dsDir.exists() ) {

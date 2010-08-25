@@ -898,13 +898,12 @@ public class OGCFrontController extends HttpServlet {
 
     /**
      * Re-initializes the whole workspace, effectively reloading the whole configuration.
-     * 
-     * @throws ServletException
-     * @throws URISyntaxException
-     * @throws MalformedURLException
+     *
+     * @throws URISyntaxException 
+     * @throws IOException 
+     * @throws ServletException 
      */
-    public void reload()
-                            throws ServletException, MalformedURLException, URISyntaxException {
+    public void reload() throws IOException, URISyntaxException, ServletException {
 
         serviceConfiguration.destroy();
 
@@ -920,24 +919,11 @@ public class OGCFrontController extends HttpServlet {
     }
 
     private DeegreeWorkspace getWorkspace()
-                            throws MalformedURLException, URISyntaxException {
-
-        DeegreeWorkspace workspace = null;
-        if ( workspaceName != null ) {
-            workspace = DeegreeWorkspace.getInstance( workspaceName );
-        } else {
-            workspace = DeegreeWorkspace.getDefaultInstance();
-        }
-
-        if ( !workspace.getLocation().exists() ) {
-            LOG.info( "Local workspace '{}' does not exist.", workspace.getLocation() );
-            File workspaceDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
-            workspace = DeegreeWorkspace.getInstance( workspaceDir );
-            LOG.info( "Using webapp workspace at '{}'.", workspace.getLocation() );
-        } else {
-            LOG.info( "Using local workspace at '{}'.", workspace.getLocation() );
-        }
-        return workspace;
+                            throws IOException, URISyntaxException {
+        File fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
+        DeegreeWorkspace ws = DeegreeWorkspace.getInstance( workspaceName, fallbackDir );
+        LOG.info( "Using workspace '{}' at '{}'", ws.getName(), ws.getLocation() );
+        return ws;
     }
 
     @Override
