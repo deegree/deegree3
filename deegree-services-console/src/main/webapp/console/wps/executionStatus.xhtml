@@ -26,11 +26,11 @@
       <ui:repeat value="#{processExecutionsBean.executions}" var="execution">
         <tr align="center">
           <td><h:outputText value="#{execution.id}" /></td>
-          <td>execution status</td>
-          <td>bla</td>
-          <td>start time</td>
-          <td>finish time</td>
-          <td>duration</td>
+          <td><h:outputText value="#{execution.state}" /></td>
+          <td><h:outputText value="#{execution.percentage}" /></td>
+          <td><h:outputText value="#{execution.startTime}" /></td>
+          <td><h:outputText value="#{execution.finishTime}" /></td>
+          <td><h:outputText value="#{execution.duration}" /></td>
         </tr>
       </ui:repeat>
     </table>
