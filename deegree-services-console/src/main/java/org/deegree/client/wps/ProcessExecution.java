@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.wps;
 
+import static org.deegree.protocol.wps.WPSConstants.ExecutionState.SUCCEEDED;
+
 import java.text.SimpleDateFormat;
 
 import lombok.Getter;
@@ -87,7 +89,7 @@ public class ProcessExecution {
         }
         this.id = p.getProcessId().toString();
         this.state = p.getExecutionState().toString();
-        if ( p.getExecutionState() != org.deegree.services.wps.ProcessExecution.ExecutionState.SUCCEEDED ) {
+        if ( p.getExecutionState() != SUCCEEDED ) {
             this.percentage = "" + p.getPercentCompleted();
         }
         this.startTime = df.format( p.getStartTime() );

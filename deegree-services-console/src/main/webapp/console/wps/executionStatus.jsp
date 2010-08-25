@@ -1,4 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<%@page import="org.deegree.protocol.wps.WPSConstants.ExecutionState"%>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%-- $HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/deegree3/contrib/deegree-wps/deegree-wps/src/main/webapp/wps/executionStatus.jsp $
  This file is part of deegree, http://deegree.org/
@@ -41,7 +42,6 @@
 <%@page import="java.util.Arrays"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="org.deegree.services.wps.ProcessExecution.ExecutionState"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <html>
 <head>
@@ -91,7 +91,7 @@ deegree 3 WPS process status
 	<tr align="center">
 		<td><%=p.getProcessId().toString()%></td>
 		<td><%=p.getExecutionState().toString()%></td>
-		<td><%=p.getExecutionState() == ProcessExecution.ExecutionState.SUCCEEDED ? 100 : p.getPercentCompleted()%>%</td>
+		<td><%=p.getExecutionState() == ExecutionState.SUCCEEDED ? 100 : p.getPercentCompleted()%>%</td>
 		<td><%=df.format( p.getStartTime() )%></td>
 		<td><%=p.getFinishTime() > 0 ? df.format( p.getFinishTime() ) : "-"%></td>
 		<td><%=durationStr%></td>
