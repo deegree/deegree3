@@ -35,17 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.model;
 
+import static java.lang.Math.max;
+
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.commons.utils.StringUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -53,38 +50,38 @@ import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.Feature;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.query.FeatureResultSet;
+import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.shape.ShapeFeatureStore;
+import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
-import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.protocol.wms.Utils;
+import org.deegree.rendering.r2d.Java2DRenderer;
+import org.deegree.rendering.r2d.Java2DTextRenderer;
+import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 
 /**
- * 
- * Generates a 2D BufferedImage from a WMS request.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Scene2DImplWMS implements Scene2D {
-
-    private static final String RIO_WMS_SYS_ID = "RASTERIO_WMS_SYS_ID";
-
-    private static final String RIO_WMS_MAX_SCALE = "RASTERIO_WMS_MAX_SCALE";
-
-    private static final String RESOLUTION = "RESOLUTION";
-
-    private static final String RIO_WMS_ENABLE_TRANSPARENT = "RASTERIO_WMS_ENABLE_TRANSPARENCY";
+public class Scene2DImplShape implements Scene2D {
 
     private AbstractRaster raster;
 
     private SimpleRaster subRaster;
 
     private Scene2DValues sceneValues;
-
-    private SimpleRaster predictedRaster;
 
     private RasterGeoReference ref;
 
@@ -96,15 +93,11 @@ public class Scene2DImplWMS implements Scene2D {
 
     private SimpleRaster simpleMapRaster;
 
-    private SimpleRaster ra;
-
-    // private RasterIOOptions options;
-
-    private WMSClient111 wmsClient;
+    private RasterIOOptions options;
 
     private CRS srs;
 
-    private List<String> lays;
+    // private List<String> lays;
 
     private String format;
 
@@ -112,65 +105,30 @@ public class Scene2DImplWMS implements Scene2D {
 
     private BufferedImage predictedImage;
 
-    // private double size;
-
     private int imageWidth, imageHeight;
 
-    // private FeatureStore store;
+    private FeatureStore store;
 
     @Override
     public void init( Scene2DValues values ) {
-
-        // this.options = options;
-        URL url = null;
+        this.options = options;
         this.sceneValues = values;
-        RasterIOOptions options = new RasterIOOptions();
-        options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
-        options.add( RIO_WMS_SYS_ID, values.getGeorefURL() );
-        options.add( RIO_WMS_MAX_SCALE, "0.1" );
-        options.add( RESOLUTION, "1.0" );
-        options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
 
-        // options.
-
+        store = new ShapeFeatureStore(
+                                       "/home/thomas/workspace/deegree-test/deegree-wms-cite/src/main/webapp/WEB-INF/data/cite/BasicPolygons.shp",
+                                       null, null, "http://www.deegree.org/app", "MyFeatureType", true, null );
         try {
-            url = new URL( values.getGeorefURL() );
-
-            InputStream in = url.openStream();
-            raster = RasterFactory.loadRasterFromStream( in, options );
-            in.close();
-            ra = raster.getAsSimpleRaster().getSubRaster( values.getGeoreferenceBBox().getleftX(),
-                                                          values.getGeoreferenceBBox().getUpperY(),
-                                                          values.getGeoreferenceBBox().getRightX(),
-                                                          values.getGeoreferenceBBox().getLowerY() );
-            this.sceneValues.setRaster( ra );
-            ref = ra.getRasterReference();
-            // this.sceneValues.setRasterGeoRef( ref );
-            // rasterRect = ref.convertEnvelopeToRasterCRS( ra.getEnvelope() );
-            this.sceneValues.setRasterRect( rasterRect );
-            this.sceneValues.setCrs( raster.getCoordinateSystem() );
-
-        } catch ( IOException e ) {
-            e.printStackTrace();
+            store.init();
+        } catch ( FeatureStoreException e1 ) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
         }
-
-        wmsClient = new WMSClient111( url );
 
         // lays = getLayers( options );
-        // format = options.get( "RASTERIO_WMS_DEFAULT_FORMAT" );
-        // srs = options.getCRS();
-        // imageWidth = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_WIDTH" ) );
-        // imageHeight = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_HEIGHT" ) );
-        lays = values.getSelectedLayers();
-        format = values.getFormat();
-        srs = values.getCrs();
-        if ( values.getQuality().getWidth() != 0 ) {
-            imageWidth = values.getQuality().getWidth();
-            imageHeight = values.getQuality().getHeight();
-        } else {
-            imageWidth = 1000;
-            imageHeight = 1000;
-        }
+        format = options.get( "RASTERIO_WMS_DEFAULT_FORMAT" );
+        srs = options.getCRS();
+        imageWidth = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_WIDTH" ) );
+        imageHeight = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_HEIGHT" ) );
 
     }
 
@@ -187,50 +145,42 @@ public class Scene2DImplWMS implements Scene2D {
      */
     private BufferedImage generateMap( Envelope imageBoundingbox ) {
         BufferedImage i = null;
-        try {
-            i = wmsClient.getMap( lays, imageWidth, imageHeight, imageBoundingbox, srs, format, true, false, -1, false,
-                                  null ).first;
 
-        } catch ( IOException e ) {
+        Graphics2D g = i.createGraphics();
+
+        Java2DRenderer renderer = new Java2DRenderer( g, imageWidth, imageHeight, imageBoundingbox );
+        Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
+
+        ApplicationSchema schema = store.getSchema();
+        Query query = new Query( schema.getFeatureTypes()[0].getName(), imageBoundingbox, null, -1, -1, -1 );
+        double resolution = max( imageBoundingbox.getSpan0() / imageWidth, imageBoundingbox.getSpan1() / imageHeight );
+        try {
+            FeatureResultSet fs = store.query( query );
+            for ( Feature f : fs ) {
+                Layer.render( f, null, renderer, textRenderer, Utils.calcScaleWMS130( imageWidth, imageHeight,
+                                                                                      imageBoundingbox,
+                                                                                      srs.getWrappedCRS() ), resolution );
+            }
+        } catch ( FeatureStoreException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( FilterEvaluationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( UnknownCRSException e ) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        // Graphics2D g = i.createGraphics();
-        //
-        // Java2DRenderer renderer = new Java2DRenderer( g, imageWidth, imageHeight, imageBoundingbox );
-        // Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
-        //
-        // ApplicationSchema schema = store.getSchema();
-        // Query query = new Query( schema.getFeatureTypes()[0].getName(), imageBoundingbox, null, -1, -1, -1 );
-        // double resolution = max( imageBoundingbox.getSpan0() / imageWidth, imageBoundingbox.getSpan1() / imageHeight
-        // );
-        // try {
-        // FeatureResultSet fs = store.query( query );
-        // for ( Feature f : fs ) {
-        // Layer.render( f, null, renderer, textRenderer, Utils.calcScaleWMS130( imageWidth, imageHeight,
-        // imageBoundingbox,
-        // srs.getWrappedCRS() ), resolution );
-        // }
-        // } catch ( FeatureStoreException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch ( FilterEvaluationException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch ( UnknownCRSException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        //
-        // g.dispose();
+        g.dispose();
 
         return i;
     }
 
     @Override
     public BufferedImage generateSubImage( Rectangle bounds ) {
-        Point2d transformedBounds = sceneValues.generateTransformedBounds( ref.convertEnvelopeToRasterCRS( ra.getEnvelope() ) );
-        System.out.println( "[Scene2DImplWMS] transformedBounds: " + transformedBounds );
+        Point2d transformedBounds = sceneValues.generateTransformedBounds( null );
+        System.out.println( "[Scene2DImplShape] transformedBounds: " + transformedBounds );
         if ( sceneValues.getMinPointRaster() == null ) {
             sceneValues.setMinPointRaster( new Point2d( rasterRect.x, rasterRect.y ) );
 
@@ -250,7 +200,7 @@ public class Scene2DImplWMS implements Scene2D {
         subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
         sceneValues.setSubRaster( subRaster );
         rasterData = subRaster.getRasterData();
-        System.out.println( "[Scene2DImplWMS] subRaster: " + subRaster );
+        System.out.println( "[Scene2DImplShape] subRaster: " + subRaster );
         return generatedImage = generateMap( subRaster.getEnvelope() );
 
     }
@@ -317,29 +267,29 @@ public class Scene2DImplWMS implements Scene2D {
         return generatedImage;
     }
 
-    /**
-     * @param options
-     */
-    private List<String> getLayers( RasterIOOptions options ) {
-        List<String> configuredLayers = new LinkedList<String>();
-        String layers = options.get( "RASTERIO_WMS_REQUESTED_LAYERS" );
-        if ( StringUtils.isSet( layers ) ) {
-            String[] layer = layers.split( "," );
-            for ( String l : layer ) {
-
-                configuredLayers.add( l );
-            }
-        }
-        if ( configuredLayers.isEmpty() ) {
-            List<String> namedLayers = this.wmsClient.getNamedLayers();
-            if ( namedLayers != null ) {
-
-                configuredLayers.addAll( namedLayers );
-            }
-        }
-
-        return configuredLayers;
-    }
+    // /**
+    // * @param options
+    // */
+    // private List<String> getLayers( RasterIOOptions options ) {
+    // List<String> configuredLayers = new LinkedList<String>();
+    // String layers = options.get( "RASTERIO_WMS_REQUESTED_LAYERS" );
+    // if ( StringUtils.isSet( layers ) ) {
+    // String[] layer = layers.split( "," );
+    // for ( String l : layer ) {
+    //
+    // configuredLayers.add( l );
+    // }
+    // }
+    // if ( configuredLayers.isEmpty() ) {
+    // List<String> namedLayers = this.wmsClient.getNamedLayers();
+    // if ( namedLayers != null ) {
+    //
+    // configuredLayers.addAll( namedLayers );
+    // }
+    // }
+    //
+    // return configuredLayers;
+    // }
 
     @Override
     public BufferedImage getPredictedImage() {

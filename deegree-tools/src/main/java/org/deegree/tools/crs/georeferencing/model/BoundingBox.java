@@ -35,57 +35,45 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.model;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-
-import javax.vecmath.Point2d;
-
-import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
-
 /**
- * Base interface for the model layer
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface Scene2D {
+public class BoundingBox {
 
-    /**
-     * Returns the requested image.
-     * 
-     * @return
-     */
-    public BufferedImage getGeneratedImage();
+    private double leftX;
 
-    /**
-     * Initializes the image generation from a rasterinput. There will be generated the information that is needed for
-     * every image generation like the {@link RasterGeoReference}.
-     * 
-     * @param options
-     *            for the request, must not be <Code>null</Code>
-     * 
-     */
-    public void init( Scene2DValues values );
+    private double upperY;
 
-    /**
-     * Generates everything that is needed for a subImage, so the subRaster can be generated, as well.
-     * 
-     * @param startPoint
-     *            can be <Code>null</Code>. If not specified the defaultValue of initialisation will be taken.
-     * @param bounds
-     *            of the size of the scene, must not be <Code>null</Code>
-     * @return
-     */
-    public BufferedImage generateSubImage( Rectangle bounds );
+    private double rightX;
 
-    public void generatePredictedImage( Point2d changePoint );
+    private double lowerY;
 
-    public BufferedImage getPredictedImage();
+    public BoundingBox( double upperX, double leftY, double lowerX, double rightY ) {
+        this.leftX = upperX;
+        this.upperY = leftY;
+        this.rightX = lowerX;
+        this.lowerY = rightY;
+    }
 
-    BufferedImage generateSubImageFromRaster( AbstractRaster raster );
+    public double getleftX() {
+        return leftX;
+    }
+
+    public double getUpperY() {
+        return upperY;
+    }
+
+    public double getRightX() {
+        return rightX;
+    }
+
+    public double getLowerY() {
+        return lowerY;
+    }
 
 }
