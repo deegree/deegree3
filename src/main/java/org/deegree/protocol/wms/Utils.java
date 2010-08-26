@@ -36,6 +36,7 @@
 package org.deegree.protocol.wms;
 
 import static java.lang.Math.floor;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
@@ -312,6 +313,16 @@ public class Utils {
         }
 
         return scale;
+    }
+
+    /**
+     * @param env
+     * @param width
+     * @param height
+     * @return max(resx, resy)
+     */
+    public static double calcResolution( Envelope env, int width, int height ) {
+        return max( env.getSpan0() / width, env.getSpan1() / height );
     }
 
 }
