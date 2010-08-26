@@ -102,8 +102,9 @@ public class ParameterStore {
 
             RIGHT_UPPER_Y = inputParametersBBox[i + 3];
         }
-        System.out.println( "[ParameterStore] BBOX: <" + LEFT_LOWER_X + "," + LEFT_LOWER_Y + "," + RIGHT_UPPER_X + ","
-                            + RIGHT_UPPER_Y + ">" );
+        // System.out.println( "[ParameterStore] BBOX: <" + LEFT_LOWER_X + "," + LEFT_LOWER_Y + "," + RIGHT_UPPER_X +
+        // ","
+        // + RIGHT_UPPER_Y + ">" );
 
         String[] inputParametersQOR = null;
         if ( qor != null ) {
@@ -124,7 +125,7 @@ public class ParameterStore {
             QORX = "5000";
             QORY = "5000";
         }
-        System.out.println( "[ParameterStore] QOR: <" + QORX + "," + QORY + ">" );
+        // System.out.println( "[ParameterStore] QOR: <" + QORX + "," + QORY + ">" );
 
     }
 

@@ -84,6 +84,7 @@ import org.deegree.tools.crs.georeferencing.communication.FileChooser;
 import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
+import org.deegree.tools.crs.georeferencing.communication.checkboxlist.CheckboxListTransformation;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperSpinnerDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.error.ErrorDialog;
@@ -99,6 +100,7 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericS
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
+import org.deegree.tools.crs.georeferencing.model.CheckBoxListModel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.Scene2DImplShape;
@@ -191,6 +193,8 @@ public class Controller {
 
     private ButtonModel buttonModel;
 
+    private CheckboxListTransformation checkBoxListTransform;
+
     public Controller( GRViewerGUI view ) {
 
         geom = new GeometryFactory();
@@ -217,13 +221,12 @@ public class Controller {
         // view.addChangeListener( new ChangeActionListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
 
-        // init the scenePanel and the mouseinteraction of it
-        // initGeoReferencingScene( null );
-
-        // init the footPanel and the mouseinteraction of it
-        // initFootprintScene( store.getFilename() );
-
         initToggleButtons();
+
+        // init the Checkboxlist for Transformation
+        checkBoxListTransform = new CheckboxListTransformation( new CheckBoxListModel() );
+        view.addToMenuTransformation( checkBoxListTransform );
+        checkBoxListTransform.addCheckboxListener( new ButtonListener() );
 
         // init the transformation method
         this.tablePanel = new PointTableFrame();
@@ -232,7 +235,7 @@ public class Controller {
         transform = null;
         if ( transformationType == null ) {
             order = 1;
-            for ( JCheckBox box : view.getCheckbox().getList() ) {
+            for ( JCheckBox box : checkBoxListTransform.getList() ) {
                 if ( ( box ).getText().startsWith( MENUITEM_TRANS_HELMERT ) ) {
                     transformationType = TransformationType.Helmert_4;
                     view.activateTransformationCheckbox( box );
@@ -448,6 +451,7 @@ public class Controller {
                 if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
 
                     transformationType = TransformationType.PolynomialFirstOrder;
+
                     view.activateTransformationCheckbox( selectedCheckbox );
                 }
                 if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_HELMERT ) ) {
@@ -704,7 +708,7 @@ public class Controller {
                             double maxX = env.getMax().get0();
                             double maxY = env.getMax().get1();
                             String bbox = minX + " " + minY + " " + maxX + " " + maxY;
-                            System.out.println( "[Controller] bbox " + bbox );
+                            // System.out.println( "[Controller] bbox " + bbox );
                             String qor = new Integer( max( panel.getWidth(), panel.getHeight() ) ).toString();
                             sceneValues.setGeorefURL( mapURL );
                             store = new ParameterStore( mapURL, CRS, format, layers, bbox, qor );

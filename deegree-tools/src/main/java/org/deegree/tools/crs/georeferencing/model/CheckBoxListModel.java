@@ -33,28 +33,22 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication;
+package org.deegree.tools.crs.georeferencing.model;
 
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 
 /**
- * A list of checkboxes where one can only select one item. It's like a group of radiobuttons but with checkboxes
- * instead.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class CheckBoxList extends JPanel {
+public class CheckBoxListModel {
 
     /**
      * 
@@ -63,8 +57,6 @@ public class CheckBoxList extends JPanel {
 
     private List<JCheckBox> list;
 
-    protected static Border noFocusBorder = new EmptyBorder( 1, 1, 1, 1 );
-
     /**
      * Creates a new instance of <Code>CheckBoxList</Code>.
      * 
@@ -72,23 +64,39 @@ public class CheckBoxList extends JPanel {
      *            the names that each checkbox should have. The length of the checkboxNames is the size of the list, not
      *            <Code>null</Code>.
      */
-    public CheckBoxList( String[] checkboxNames ) {
+    public CheckBoxListModel() {
+    }
 
-        this.setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
+    public void addCheckboxs( String[] checkboxNames ) {
         int length = checkboxNames.length;
 
         list = new ArrayList<JCheckBox>();
         for ( int i = 0; i < length; i++ ) {
             JCheckBox checkbox = new JCheckBox( checkboxNames[i] );
             checkbox.setName( checkboxNames[i] );
-            this.add( checkbox, Component.LEFT_ALIGNMENT );
             list.add( checkbox );
         }
+    }
 
-        // this.setBorder( BorderFactory.createLineBorder( Color.black ) );
-        this.setPreferredSize( GUIConstants.DIM_CHECKBOXLIST );
-        this.setVisible( true );
+    /**
+     * Deselects all checkboxes except of the one, that should be selected.
+     * 
+     * @param selectedCheckbox
+     *            the selected checkbox.
+     */
+    public List<JCheckBox> selectThisCheckbox( JCheckBox selectedCheckbox ) {
+        for ( JCheckBox checkbox : list ) {
+            if ( checkbox == selectedCheckbox ) {
+                checkbox.setSelected( true );
+            } else {
+                checkbox.setSelected( false );
+            }
+        }
+        return list;
+    }
 
+    public List<JCheckBox> getList() {
+        return list;
     }
 
 }

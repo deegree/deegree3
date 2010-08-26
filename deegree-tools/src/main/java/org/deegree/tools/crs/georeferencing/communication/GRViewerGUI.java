@@ -36,8 +36,6 @@
 package org.deegree.tools.crs.georeferencing.communication;
 
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_EDIT_OPTIONS;
-import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_HELMERT;
-import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENU_EDIT;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENU_FILE;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENU_TRANSFORMATION;
@@ -64,6 +62,7 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
+import org.deegree.tools.crs.georeferencing.communication.checkboxlist.CheckboxListTransformation;
 import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelFootprint;
 import org.deegree.tools.crs.georeferencing.communication.navigationbar.NavigationBarPanelGeoref;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
@@ -110,7 +109,7 @@ public class GRViewerGUI extends JFrame {
 
     private JMenu menuTransformation;
 
-    private CheckBoxList checkbox;
+    private CheckboxListTransformation list;
 
     public GRViewerGUI() {
         super( GUIConstants.WINDOW_TITLE );
@@ -159,18 +158,14 @@ public class GRViewerGUI extends JFrame {
         menuFile.add( openWMS );
         menuFile.add( openBuilding );
 
-        JPanel panel = new JPanel();
-        panel.setLayout( new BorderLayout() );
-        panel.setPreferredSize( GUIConstants.DIM_COMPUTATION_PANEL );
-
-        String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
-        checkbox = new CheckBoxList( sArray );
-        panel.add( checkbox, BorderLayout.CENTER );
+        //        
+        // checkbox = new CheckBoxList( sArray );
+        // panel.add( checkbox, BorderLayout.CENTER );
         // panel.add( computeTransform, BorderLayout.SOUTH );
 
         // menuTransformation.add( checkbox );
         // menuTransformation.add( computeTransform );
-        menuTransformation.add( panel );
+        // menuTransformation.add( panel );
         editMenuItem = new JMenuItem( MENUITEM_EDIT_OPTIONS );
         menuEdit.add( editMenuItem );
 
@@ -243,7 +238,6 @@ public class GRViewerGUI extends JFrame {
         naviPanelGeoref.addAbstractCoordListener( e );
         naviPanelFoot.addAbstractCoordListener( e );
         editMenuItem.addActionListener( e );
-        checkbox.addCheckboxListener( e );
         openShape.addActionListener( e );
         openWMS.addActionListener( e );
         openBuilding.addActionListener( e );
@@ -287,18 +281,22 @@ public class GRViewerGUI extends JFrame {
      *            the checkbox that has been selected by the user.
      */
     public void activateTransformationCheckbox( JCheckBox selectedCheckbox ) {
-        this.checkbox.selectThisCheckbox( selectedCheckbox );
+        this.list.getModel().selectThisCheckbox( selectedCheckbox );
         this.menuTransformation.getPopupMenu().setVisible( false );
         this.menuTransformation.setVisible( true );
         this.menuTransformation.setSelected( false );
     }
 
-    public CheckBoxList getCheckbox() {
-        return checkbox;
-    }
-
     public JMenu getMenuTransformation() {
         return menuTransformation;
+    }
+
+    public void addToMenuTransformation( CheckboxListTransformation list ) {
+        this.list = list;
+        for ( JCheckBox box : list.getList() ) {
+            this.menuTransformation.add( box );
+        }
+
     }
 
 }

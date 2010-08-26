@@ -33,62 +33,65 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing.communication;
+package org.deegree.tools.crs.georeferencing.communication.checkboxlist;
 
-import java.awt.Component;
-import java.util.ArrayList;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_HELMERT;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST;
+
+import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
+
+import org.deegree.tools.crs.georeferencing.model.CheckBoxListModel;
 
 /**
- * A list of checkboxes where one can only select one item. It's like a group of radiobuttons but with checkboxes
- * instead.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class CheckBoxList extends JPanel {
+public class CheckboxListTransformation {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private final String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT };
 
-    private List<JCheckBox> list;
+    private final CheckBoxListModel model;
 
-    protected static Border noFocusBorder = new EmptyBorder( 1, 1, 1, 1 );
-
-    /**
-     * Creates a new instance of <Code>CheckBoxList</Code>.
-     * 
-     * @param checkboxNames
-     *            the names that each checkbox should have. The length of the checkboxNames is the size of the list, not
-     *            <Code>null</Code>.
-     */
-    public CheckBoxList( String[] checkboxNames ) {
-
-        this.setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
-        int length = checkboxNames.length;
-
-        list = new ArrayList<JCheckBox>();
-        for ( int i = 0; i < length; i++ ) {
-            JCheckBox checkbox = new JCheckBox( checkboxNames[i] );
-            checkbox.setName( checkboxNames[i] );
-            this.add( checkbox, Component.LEFT_ALIGNMENT );
-            list.add( checkbox );
-        }
-
-        // this.setBorder( BorderFactory.createLineBorder( Color.black ) );
-        this.setPreferredSize( GUIConstants.DIM_CHECKBOXLIST );
-        this.setVisible( true );
+    public CheckboxListTransformation( CheckBoxListModel model ) {
+        this.model = model;
+        model.addCheckboxs( sArray );
 
     }
+
+    /**
+     * Adds the ActionListener to all the checkboxes.
+     * 
+     * @param l
+     */
+    public void addCheckboxListener( ActionListener l ) {
+        for ( JCheckBox checkbox : model.getList() ) {
+            checkbox.addActionListener( l );
+        }
+    }
+
+    public List<JCheckBox> getList() {
+        return model.getList();
+    }
+
+    public CheckBoxListModel getModel() {
+        return model;
+    }
+
+    // public JCheckBox getSelectedCheckBox( String name ) {
+    // for ( JCheckBox checkbox : model.getList() ) {
+    // if ( name.equals( checkbox.getName() ) ) {
+    // return checkbox;
+    // }
+    // }
+    //
+    // return null;
+    // }
 
 }
