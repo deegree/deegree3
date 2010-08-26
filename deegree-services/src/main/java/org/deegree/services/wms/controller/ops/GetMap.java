@@ -67,6 +67,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -178,6 +179,26 @@ public class GetMap {
             LOG.trace( "Stack trace:", e );
             LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
         }
+    }
+
+    /**
+     * @param service
+     * @param layers
+     * @param styles
+     * @param width
+     * @param height
+     * @param boundingBox
+     */
+    public GetMap( MapService service, Collection<Layer> layers, Collection<Style> styles, int width, int height,
+                   Envelope boundingBox ) {
+        this.layers.addAll( layers );
+        this.styles.addAll( styles );
+        this.width = width;
+        this.height = height;
+        this.bbox = boundingBox;
+        this.crs = boundingBox.getCoordinateSystem();
+        this.bgcolor = Color.red;
+        handleVSPs( service, new HashMap<String, String>() );
     }
 
     private void parse111( Map<String, String> map, MapService service )
@@ -345,6 +366,10 @@ public class GetMap {
 
         dimensions = parseDimensionValues( map );
 
+        handleVSPs( service, map );
+    }
+
+    private void handleVSPs( MapService service, Map<String, String> map ) {
         handleEnumVSP( Quality.class, quality, NORMAL, map.get( "QUALITY" ), service.getDefaultQualities() );
         handleEnumVSP( Interpolation.class, interpolation, NEARESTNEIGHBOR, map.get( "INTERPOLATION" ),
                        service.getDefaultInterpolations() );

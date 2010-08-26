@@ -694,23 +694,21 @@ public class MapService {
     }
 
     /**
+     * Paints the map on a graphics object.
+     * 
+     * @param g
      * @param gm
-     * @return a rendered image, containing the requested maps
+     * @param warnings
      * @throws InvalidDimensionValue
      * @throws MissingDimensionValue
      */
-    public Pair<BufferedImage, LinkedList<String>> getMapImage( GetMap gm )
+    public void paintMap( Graphics2D g, GetMap gm, LinkedList<String> warnings )
                             throws MissingDimensionValue, InvalidDimensionValue {
-        LinkedList<String> warnings = new LinkedList<String>();
-
         Iterator<Layer> layers = gm.getLayers().iterator();
         Iterator<Style> styles = gm.getStyles().iterator();
         Map<Layer, Quality> qualities = gm.getQuality();
         Map<Layer, Interpolation> interpolations = gm.getInterpolation();
         Map<Layer, Antialias> antialiases = gm.getAntialias();
-
-        BufferedImage img = prepareImage( gm );
-        Graphics2D g = img.createGraphics();
 
         if ( reduce( true, map( gm.getLayers(), CollectionUtils.<Layer> getInstanceofMapper( FeatureLayer.class ) ),
                      AND ) ) {
@@ -780,15 +778,6 @@ public class MapService {
                         rs.close();
                     }
                 }
-
-                g.dispose();
-
-                // 8 bit png color map support copied from deegree 2, to be optimized
-                if ( gm.getFormat().equals( "image/png; mode=8bit" )
-                     || gm.getFormat().equals( "image/png; subtype=8bit" ) || gm.getFormat().equals( "image/gif" ) ) {
-                    img = postprocessPng8bit( img );
-                }
-                return new Pair<BufferedImage, LinkedList<String>>( img, warnings );
             }
 
             LOG.debug( "Not using collected queries." );
@@ -805,6 +794,21 @@ public class MapService {
 
             warnings.addAll( paintLayer( l, s, g, gm ) );
         }
+    }
+
+    /**
+     * @param gm
+     * @return a rendered image, containing the requested maps
+     * @throws InvalidDimensionValue
+     * @throws MissingDimensionValue
+     */
+    public Pair<BufferedImage, LinkedList<String>> getMapImage( GetMap gm )
+                            throws MissingDimensionValue, InvalidDimensionValue {
+        LinkedList<String> warnings = new LinkedList<String>();
+
+        BufferedImage img = prepareImage( gm );
+        Graphics2D g = img.createGraphics();
+        paintMap( g, gm, warnings );
         g.dispose();
 
         // 8 bit png color map support copied from deegree 2, to be optimized
@@ -812,7 +816,6 @@ public class MapService {
              || gm.getFormat().equals( "image/gif" ) ) {
             img = postprocessPng8bit( img );
         }
-
         return new Pair<BufferedImage, LinkedList<String>>( img, warnings );
     }
 
