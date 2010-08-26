@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.metadata;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class Operation {
 
     private List<Domain> constraint;
 
-    private List<Pair<String, String>> metadata;
+    private List<Pair<URL, URL>> metadata;
 
     private String name;
 
@@ -83,9 +84,9 @@ public class Operation {
         return constraint;
     }
 
-    public List<Pair<String, String>> getMetadata() {
+    public List<Pair<URL, URL>> getMetadata() {
         if ( metadata == null ) {
-            metadata = new ArrayList<Pair<String, String>>();
+            metadata = new ArrayList<Pair<URL, URL>>();
         }
         return metadata;
     }

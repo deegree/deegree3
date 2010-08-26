@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.metadata;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -56,7 +54,7 @@ public class Range {
 
     private String spacing;
 
-    private List<String> rangeClosure;
+    private String rangeClosure;
 
     public String getMinimumValue() {
         return minimumValue;
@@ -82,11 +80,12 @@ public class Range {
         this.spacing = value;
     }
 
-    public List<String> getRangeClosure() {
-        if ( rangeClosure == null ) {
-            rangeClosure = new ArrayList<String>();
-        }
-        return this.rangeClosure;
+    public void setRangeClosure( String rangeClosure ) {
+        this.rangeClosure = rangeClosure;
+    }
+
+    public String getRangeClosure() {
+        return rangeClosure;
     }
 
 }

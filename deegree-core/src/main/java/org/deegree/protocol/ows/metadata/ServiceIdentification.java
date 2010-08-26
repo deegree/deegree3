@@ -77,6 +77,10 @@ public class ServiceIdentification {
         this.serviceType = serviceType;
     }
 
+    public CodeType getServiceType() {
+        return serviceType;
+    }
+
     public List<Version> getServiceTypeVersion() {
         if ( serviceTypeVersion == null ) {
             serviceTypeVersion = new ArrayList<Version>();

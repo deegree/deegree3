@@ -61,12 +61,32 @@ public class ServiceContact {
         this.individualName = individualName;
     }
 
+    public String getIndividualName() {
+        return individualName;
+    }
+
     public void setPositionName( String positionName ) {
         this.positionName = positionName;
     }
 
+    public String getPositionName() {
+        return positionName;
+    }
+
+    public void setContactInfo( ContactInfo contactInfo ) {
+        this.contactInfo = contactInfo;
+    }
+
+    public ContactInfo getContactInfo() {
+        return contactInfo;
+    }
+
     public void setRole( CodeType role ) {
         this.role = role;
+    }
+
+    public CodeType getRole() {
+        return role;
     }
 
 }
