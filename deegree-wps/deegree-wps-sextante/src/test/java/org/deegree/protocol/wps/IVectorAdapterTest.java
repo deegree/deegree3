@@ -53,9 +53,24 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.services.wps.provider.IVectorLayerAdapter;
+import org.deegree.services.wps.provider.OutputFactoryImpl;
+import org.deegree.services.wps.provider.VectorLayerImpl;
 import org.junit.Test;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+
+import es.unex.sextante.core.GeoAlgorithm;
+import es.unex.sextante.core.OutputObjectsSet;
+import es.unex.sextante.core.ParametersSet;
+import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.IVectorLayer;
+import es.unex.sextante.exceptions.GeoAlgorithmExecutionException;
+import es.unex.sextante.exceptions.WrongOutputIDException;
+import es.unex.sextante.exceptions.WrongParameterIDException;
+import es.unex.sextante.outputs.Output;
+import es.unex.sextante.outputs.StreamOutputChannel;
+import es.unex.sextante.vectorTools.centroids.CentroidsAlgorithm;
 
 /**
  * Tests the functionality of the IVectorLayerAdapter class.
@@ -364,4 +379,42 @@ public class IVectorAdapterTest {
         }
     }
 
+    // @Test
+    public void simpleAlgorithmExample() {
+        try {
+            // geometry
+            GeometryFactory geomFactory = new GeometryFactory();
+            Coordinate[] coords = new Coordinate[3];
+            coords[0] = new Coordinate( 49, 50 );
+            coords[1] = new Coordinate( 100, 100 );
+            coords[2] = new Coordinate( 150, 149 );
+            com.vividsolutions.jts.geom.Geometry geom = geomFactory.createMultiPoint( coords );
+
+            // initialize SEXTANTE
+            Sextante.initialize();
+
+            // create vector layer with input data
+            IVectorLayer inputLayer = new VectorLayerImpl();
+            inputLayer.addFeature( geom, null );
+
+            // create algorithm
+            GeoAlgorithm alg = new CentroidsAlgorithm();
+
+            // commit input data to algorithm
+            ParametersSet inputParams = alg.getParameters();
+            inputParams.getParameter( CentroidsAlgorithm.LAYER ).setParameterValue( inputLayer );
+
+            // execute algorithm
+            alg.execute( null, new OutputFactoryImpl() );
+
+            // create vector layer with output data
+            OutputObjectsSet outputParams = alg.getOutputObjects();
+            Output output = outputParams.getOutput( CentroidsAlgorithm.RESULT );
+            IVectorLayer outputLayer = (IVectorLayer) output.getOutputObject();
+            
+            
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: http://svn.wald.intevation.org/svn/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,38 +35,43 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
-import java.net.URL;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.gml.GMLVersion;
 
 /**
- * {@link ProcessProviderProvider} for the {@link SextanteProcessProvider}.
+ * TODO add class documentation here
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
+ * @author last edited by: $Author: pabel $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  */
-public class SextanteProcessProviderProvider implements ProcessProviderProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( SextanteProcessProviderProvider.class );
-
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/services/wps/sextante";
-
-    @Override
-    public String getConfigNamespace() {
-        return CONFIG_NAMESPACE;
+public class GMLSchema {
+    public enum GMLSchemaType {
+        GEOMETRY, FEATURE_COLLECTION;
     }
 
-    @Override
-    public ProcessProvider createProvider( URL configURL ) {
+    private GMLSchemaType type;
 
-        LOG.info( "Configuring Sextante process provider using file '" + configURL + "'." );
+    private String schema;
 
-        // TODO extract the configuration from configURL
+    private GMLVersion version;
 
-        // return a SEXTANTE process provider instance with the extracted configuration
-        return new SextanteProcessProvider();
+    public GMLSchema( String schema, GMLVersion version, GMLSchemaType type ) {
+        this.schema = schema;
+        this.version = version;
+        this.type = type;
+        SupportedGMLSchemas.ALL_SCHEMAS.put( this.schema, this );
+    }
+
+    public GMLVersion getGMLVersion() {
+        return version;
+    }
+
+    public String getSchema() {
+        return schema;
+    }
+
+    public GMLSchemaType getGMLSchemaTyp() {
+        return type;
     }
 }

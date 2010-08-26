@@ -55,7 +55,7 @@ public class AlgorithmTest {
                 // ExecutionOutputs response = execution.execute();
                 // Assert.assertNotNull( response );
 
-                GeoAlgorithm[] algs = SextanteProcessProvider.getVectorLayerInAndOutAlgorithms();
+                GeoAlgorithm[] algs = SextanteProcessProvider.getVectorLayerAlgorithms();
 
                 // process all vector algorithms
                 for ( int i = 0; i < algs.length; i++ ) {

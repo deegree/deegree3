@@ -55,6 +55,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.output.ComplexOutput;
+import org.deegree.services.wps.provider.GMLSchema.GMLSchemaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import es.unex.sextante.core.GeoAlgorithm;
@@ -81,7 +82,7 @@ public class SextanteProcesslet implements Processlet {
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( SextanteProcesslet.class );
 
-    // SEXTANTE-Algorithm
+    // SEXTANTE a lgorithm
     private final GeoAlgorithm alg;
 
     SextanteProcesslet( GeoAlgorithm alg ) {
@@ -129,32 +130,6 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Detects the GMLVersion on the base of the schema URL.
-     * 
-     * It should be used for input and output data.
-     * 
-     * @param schema
-     *            - schema URL
-     * @return
-     */
-    private GMLVersion getGMLVersion( String schema ) {
-        GMLVersion gmlVersion = null;
-
-        // TODO CORRECT THE REDUNDANZ
-        if ( schema.equals( "http://schemas.opengis.net/gml/2.1.2/geometry.xsd" ) )
-            gmlVersion = GMLVersion.GML_2;
-        else if ( schema.equals( "http://schemas.opengis.net/gml/3.0.1/base/geometryComplexes.xsd" ) )
-            gmlVersion = GMLVersion.GML_30;
-        else if ( schema.equals( "http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd" ) )
-            gmlVersion = GMLVersion.GML_31;
-        else if ( schema.equals( "http://schemas.opengis.net/gml/3.2.1/geometryComplexes.xsd" ) )
-            gmlVersion = GMLVersion.GML_32;
-        else if ( schema.equals( "http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" ) )
-            gmlVersion = GMLVersion.GML_31;
-        return gmlVersion;
-    }
-
-    /**
      * Passes the input data (all supported types) to the algorithm parameter.
      * 
      * @param alg
@@ -167,7 +142,7 @@ public class SextanteProcesslet implements Processlet {
     private void setInputValues( GeoAlgorithm alg, ProcessletInputs in )
                             throws ProcessletException, ClassNotFoundException {
 
-        SextanteProcessProvider.logAlgorithm( alg );
+        SextanteWPSProcess.logAlgorithm( alg );
 
         // input parameters
         LOG.info( "SET INTPUT PARAMETERS" );
@@ -177,36 +152,38 @@ public class SextanteProcesslet implements Processlet {
         for ( int i = 0; i < paramSet.getNumberOfParameters(); i++ ) {
             Parameter param = paramSet.getParameter( i );
 
-            // TODO CORRECT THE REDUNDANZ
             // set the correct input parameter value
-            if ( param.getParameterTypeName().equals( "Vector Layer" ) )
+            String paramTypeName = param.getParameterTypeName();
+            if ( paramTypeName.equals( SextanteWPSProcess.VECTOR_LAYER_INPUT ) )
                 setVectorLayerInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Numerical Value" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.NUMERICAL_VALUE_INPUT ) )
                 setNumericalValueInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Selection" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.SELECTION_INPUT ) )
                 setSelectionInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Filepath" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.FILEPATH_INPUT ) )
                 setFilepathInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Boolean" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.BOOLEAN_INPUT ) )
                 setBooleanInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "String" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.STRING_INPUT ) )
                 setStringInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Multiple Input" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.MULTIPLE_INPUT_INPUT ) )
                 setMultipleInputInputValue( in, param, alg.getParameters() );
-            else if ( param.getParameterTypeName().equals( "Raster Layer" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.RASTER_LAYER_INPUT ) )
                 setRasterLayerInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Table Field" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.TABLE_FIELD_INPUT ) )
                 setTableFieldInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Point" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.POINT_INPUT ) )
                 setPointInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Band" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.BAND_INPUT ) )
                 setBandInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Table" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.TABLE_INPUT ) )
                 setTableInputValue( in, param );
-            else if ( param.getParameterTypeName().equals( "Fixed Table" ) )
+            else if ( paramTypeName.equals( SextanteWPSProcess.FIXED_TABLE_INPUT ) )
                 setFixedTableInputValue( in, param );
-            else
-                LOG.warn( "InputParameters: \"" + param.getParameterTypeName() + "\" is a unknown input type." );
+            else {
+                LOG.error( "\"" + paramTypeName + "\" is a not supported input parameter type." );
+                // TODO throw exception
+            }
         }
     }
 
@@ -225,19 +202,32 @@ public class SextanteProcesslet implements Processlet {
         ComplexInput gmlInput = (ComplexInput) in.getParameter( param.getParameterName() );
 
         // create vector layer
-        IVectorLayer layer;
+        IVectorLayer layer = null;
 
         // input
-        if ( gmlInput.getSchema().equals( "http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" ) ) {
-            FeatureCollection coll = readFeatureCollection( gmlInput );
-            layer = IVectorLayerAdapter.createVectorLayer( coll );
-        } else {
-            Geometry geometry = readGeometry( gmlInput );
-            layer = IVectorLayerAdapter.createVectorLayer( geometry );
+        GMLSchema schema = SupportedGMLSchemas.getGMLSchema( gmlInput.getSchema() );
+        if ( schema != null ) {
+            if ( schema.getGMLSchemaTyp().equals( GMLSchemaType.FEATURE_COLLECTION ) ) {// feature collection
+                FeatureCollection coll = readFeatureCollection( gmlInput );
+                layer = IVectorLayerAdapter.createVectorLayer( coll );
+
+            } else {
+                if ( schema.getGMLSchemaTyp().equals( GMLSchemaType.GEOMETRY ) ) {// geometry
+                    Geometry geometry = readGeometry( gmlInput );
+                    layer = IVectorLayerAdapter.createVectorLayer( geometry );
+                }
+            }
+
         }
 
-        // set vector layer
-        param.setParameterValue( layer );
+        if ( layer != null ) {
+            // set vector layer
+            param.setParameterValue( layer );
+
+        } else {// unknown input schema
+            LOG.error( "\"" + schema + "\" is a not supported GML schema." );
+            // TODO throw exception
+        }
 
     }
 
@@ -250,7 +240,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setNumericalValueInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using numerical value input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     /**
@@ -262,7 +254,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setSelectionInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using selection input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     /**
@@ -274,7 +268,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setFilepathInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using filepath input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     /**
@@ -298,7 +294,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setStringInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using string input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     /**
@@ -324,7 +322,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setRasterLayerInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using raster layer input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     /**
@@ -336,7 +336,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setTableFieldInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using table field input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     /**
@@ -348,7 +350,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setPointInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using point input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     /**
@@ -360,7 +364,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setBandInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using band input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     /**
@@ -372,7 +378,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setTableInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using table input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     /**
@@ -384,7 +392,9 @@ public class SextanteProcesslet implements Processlet {
      *            - algorithm parameter
      */
     private void setFixedTableInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using fixed table input data is not supported." );
+        LOG.error( "\"" + param.getParameterTypeName()
+                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // TODO implement this input parameter type
     }
 
     private void setOutputParameters( GeoAlgorithm alg )
@@ -416,7 +426,9 @@ public class SextanteProcesslet implements Processlet {
             String gmlSchema = gmlInput.getSchema();
 
             XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( getGMLVersion( gmlSchema ), xmlReader );
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(
+                                                                               SupportedGMLSchemas.getGMLVersion( gmlSchema ),
+                                                                               xmlReader );
 
             return gmlReader.readGeometry();
         } catch ( Exception e ) {
@@ -440,7 +452,10 @@ public class SextanteProcesslet implements Processlet {
             String gmlSchema = gmlInput.getSchema();
 
             XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( getGMLVersion( gmlSchema ), xmlReader );
+
+            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(
+                                                                               SupportedGMLSchemas.getGMLVersion( gmlSchema ),
+                                                                               xmlReader );
 
             return gmlReader.readFeatureCollection();
         } catch ( Exception e ) {
@@ -460,9 +475,13 @@ public class SextanteProcesslet implements Processlet {
      * @throws WrongOutputIDException
      * @throws ProcessletException
      * @throws IteratorException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws IllegalArgumentException
      */
     private void writeResult( GeoAlgorithm alg, ProcessletOutputs out )
-                            throws WrongOutputIDException, ProcessletException, IteratorException {
+                            throws WrongOutputIDException, ProcessletException, IteratorException,
+                            IllegalArgumentException, InstantiationException, IllegalAccessException {
 
         OutputObjectsSet outputs = alg.getOutputObjects();
 
@@ -470,22 +489,24 @@ public class SextanteProcesslet implements Processlet {
         for ( int i = 0; i < outputs.getOutputObjectsCount(); i++ ) {
 
             // output parameter
-            Output result = outputs.getOutput( i );
+            Output param = outputs.getOutput( i );
 
-            // TODO CORRECT THE REDUNDANZ
             // write the correct output type
-            if ( result.getTypeDescription().equals( "vector" ) )
-                writeVectorLayer( result, out );
-            else if ( result.getTypeDescription().equals( "raster" ) )
-                writeRasterLayer( result, out );
-            else if ( result.getTypeDescription().equals( "table" ) )
-                writeTable( result, out );
-            else if ( result.getTypeDescription().equals( "text" ) )
-                writeText( result, out );
-            else if ( result.getTypeDescription().equals( "chart" ) )
-                writeChart( result, out );
-            else
-                LOG.warn( "OutputParameters: \"" + result.getTypeDescription() + "\" is a unknown output type." );
+            String paramTypeDesc = param.getTypeDescription();
+            if ( paramTypeDesc.equals( SextanteWPSProcess.VECTOR_LAYER_OUTPUT ) )
+                writeVectorLayer( param, out );
+            else if ( paramTypeDesc.equals( SextanteWPSProcess.RASTER_LAYER_OUTPUT ) )
+                writeRasterLayer( param, out );
+            else if ( paramTypeDesc.equals( SextanteWPSProcess.TABLE_OUTPUT ) )
+                writeTable( param, out );
+            else if ( paramTypeDesc.equals( SextanteWPSProcess.TEXT_OUTPUT ) )
+                writeText( param, out );
+            else if ( paramTypeDesc.equals( SextanteWPSProcess.CHART_OUTPUT ) )
+                writeChart( param, out );
+            else {
+                LOG.error( "\"" + paramTypeDesc + "\" is a not supported output parameter type." );
+                // TODO throw exception
+            }
         }
 
     }
@@ -499,16 +520,33 @@ public class SextanteProcesslet implements Processlet {
      *            - output channel
      * @throws IteratorException
      * @throws ProcessletException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws IllegalArgumentException
      */
     private void writeVectorLayer( Output obj, ProcessletOutputs out )
-                            throws IteratorException, ProcessletException {
+                            throws IteratorException, ProcessletException, IllegalArgumentException,
+                            InstantiationException, IllegalAccessException {
         // output object
         VectorLayerImpl result = (VectorLayerImpl) obj.getOutputObject();
 
-        // write geometry
-        ComplexOutput centroidOutput = (ComplexOutput) out.getParameter( obj.getName() );
-        Geometry g = IVectorLayerAdapter.createGeometry( result );
-        writeGeometry( centroidOutput, g );
+        ComplexOutput complexOutput = (ComplexOutput) out.getParameter( obj.getName() );
+
+        GMLSchema schema = SupportedGMLSchemas.getGMLSchema( complexOutput.getRequestedSchema() );
+        if ( schema.getGMLSchemaTyp().equals( GMLSchemaType.FEATURE_COLLECTION ) ) {// feature collection
+            FeatureCollection fc = IVectorLayerAdapter.createFeatureCollection( result );
+            writeFeatureCollection( complexOutput, fc );
+
+        } else {
+            if ( schema.getGMLSchemaTyp().equals( GMLSchemaType.GEOMETRY ) ) {// geometry
+                Geometry g = IVectorLayerAdapter.createGeometry( result );
+                writeGeometry( complexOutput, g );
+
+            } else {// unknown schema
+                LOG.error( "\"" + schema + "\" is a not supported GML schema." );
+                // TODO throw exception
+            }
+        }
     }
 
     /**
@@ -520,7 +558,8 @@ public class SextanteProcesslet implements Processlet {
      *            - output channel
      */
     private void writeRasterLayer( Output obj, ProcessletOutputs out ) {
-        LOG.warn( "Writing of raster layer is not supported." );
+        LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
+        // TODO implement this output parameter type
     }
 
     /**
@@ -532,7 +571,8 @@ public class SextanteProcesslet implements Processlet {
      *            - output channel
      */
     private void writeTable( Output obj, ProcessletOutputs out ) {
-        LOG.warn( "Writing of table is not supported." );
+        LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
+        // TODO implement this output parameter type
     }
 
     /**
@@ -544,7 +584,8 @@ public class SextanteProcesslet implements Processlet {
      *            - output channel
      */
     private void writeText( Output obj, ProcessletOutputs out ) {
-        LOG.warn( "Writing of text is not supported." );
+        LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
+        // TODO implement this output parameter type
     }
 
     /**
@@ -556,7 +597,8 @@ public class SextanteProcesslet implements Processlet {
      *            - output channel
      */
     private void writeChart( Output obj, ProcessletOutputs out ) {
-        LOG.warn( "Writing of chart is not supported." );
+        LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
+        // TODO implement this output parameter type
     }
 
     /**
@@ -576,7 +618,9 @@ public class SextanteProcesslet implements Processlet {
             XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(),
                                                                     "http://www.opengis.net/gml " + gmlSchema );
             sw.setPrefix( "gml", GMLNS );
-            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( getGMLVersion( gmlSchema ), sw );
+            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
+                                                                                SupportedGMLSchemas.getGMLVersion( gmlSchema ),
+                                                                                sw );
             gmlWriter.write( geometry );
         } catch ( Exception e ) {
             throw new ProcessletException( "Error exporting geometry: " + e.getMessage() );
@@ -600,7 +644,9 @@ public class SextanteProcesslet implements Processlet {
             XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(),
                                                                     "http://www.opengis.net/gml " + gmlSchema );
             sw.setPrefix( "gml", GMLNS );
-            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( getGMLVersion( gmlSchema ), sw );
+            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
+                                                                                SupportedGMLSchemas.getGMLVersion( gmlSchema ),
+                                                                                sw );
             gmlWriter.write( coll );
 
         } catch ( Exception e ) {
