@@ -170,6 +170,7 @@ public class SecureProxy extends HttpServlet {
         requestLogger = serviceConfig.getRequestLogger();
 
         LOG.info( "deegree 3 secure proxy initialized." );
+        LOG.info( "Secured service is '{}'", proxiedUrl );
     }
 
     @Override
