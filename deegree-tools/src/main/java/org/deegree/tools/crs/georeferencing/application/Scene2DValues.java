@@ -36,6 +36,7 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import java.awt.Rectangle;
+import java.net.URL;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -72,6 +73,8 @@ public class Scene2DValues {
 
     private Point2d convertedPixelToRasterPoint;
 
+    private RasterRect rect;
+
     private double sizeGeoRef;
 
     private Point2d minPointRaster;
@@ -88,7 +91,7 @@ public class Scene2DValues {
 
     private double ratio;
 
-    private String georefURL;
+    private URL georefURL;
 
     private GeorefernceQuality quality;
 
@@ -132,7 +135,6 @@ public class Scene2DValues {
                 double percentY = getWorldDimension( pixelPoint ).getY();
 
                 return new GeoReferencedPoint( getMinX + percentX, getMaxY - percentY );
-
             }
 
         case FootprintPoint:
@@ -173,8 +175,8 @@ public class Scene2DValues {
                 //                    
                 // }
                 // determine the percentage of the requested point
-                double percentX = ( dimension.getX() / dimensionGeoreference.width ) * spanX;
-                double percentY = ( dimension.getY() / dimensionGeoreference.height ) * spanY;
+                double percentX = ( dimension.getX() / rect.width ) * spanX;
+                double percentY = ( dimension.getY() / rect.height ) * spanY;
 
                 return new GeoReferencedPoint( percentX, percentY );
 
@@ -254,6 +256,9 @@ public class Scene2DValues {
 
         double halfSpanXWorld;
         double halfSpanYWorld;
+        Envelope e1 = geom.createEnvelope( xCoord - spanX / 2, yCoord - spanY / 2, xCoord + spanX / 2, yCoord + spanY
+                                                                                                       / 2, null );
+
         switch ( type ) {
         case GeoreferencedPoint:
             if ( spanX != -1 && spanY != -1 ) {
@@ -264,7 +269,7 @@ public class Scene2DValues {
                 } else {
 
                     halfSpanXWorld = spanX / 2;
-                    halfSpanYWorld = halfSpanXWorld * transformedRasterSpan.y / transformedRasterSpan.x;
+                    halfSpanYWorld = halfSpanXWorld * transformedRasterSpan.x / transformedRasterSpan.y;
 
                 }
 
@@ -278,7 +283,8 @@ public class Scene2DValues {
             double minY = yCoord - halfSpanYWorld;
             double maxX = xCoord + halfSpanXWorld;
             double maxY = yCoord + halfSpanYWorld;
-            envelopeGeoref = geom.createEnvelope( minX, minY, maxX, maxY, crs );
+            envelopeGeoref = createZoomedEnv( e1, 1, new GeoReferencedPoint( xCoord, yCoord ) );
+            // envelopeGeoref = geom.createEnvelope( minX, minY, maxX, maxY, crs );
             System.out.println( "[Scene2DValues] subRaster: " + envelopeGeoref );
             break;
         case FootprintPoint:
@@ -592,10 +598,12 @@ public class Scene2DValues {
 
             convertedPixelToRasterPoint = new Point2d( newWidth / w, rect.height * sizeGeoRef / h );
             transformedRasterSpan = new Point2d( newWidth, rect.height * sizeGeoRef );
+
             return transformedRasterSpan;
         } else if ( ratio > 1 ) {
             // if > 1 then do orientation on w
             double newHeight = ( h / w ) * sizeGeoRef * rect.height;
+
             convertedPixelToRasterPoint = new Point2d( rect.width * sizeGeoRef / w, newHeight / h );
             transformedRasterSpan = new Point2d( rect.width * sizeGeoRef, newHeight );
             return transformedRasterSpan;
@@ -715,12 +723,12 @@ public class Scene2DValues {
         this.envelopeFootprint = createEnvelope;
     }
 
-    public String getGeorefURL() {
+    public URL getGeorefURL() {
         return georefURL;
     }
 
-    public void setGeorefURL( String url ) {
-        this.georefURL = url;
+    public void setGeorefURL( URL mapURL ) {
+        this.georefURL = mapURL;
 
     }
 
@@ -765,6 +773,11 @@ public class Scene2DValues {
 
     public Envelope getEnvelopeGeoref() {
         return envelopeGeoref;
+    }
+
+    public void setRasterRect( RasterRect rasterRect ) {
+        this.rect = rasterRect;
+
     }
 
 }

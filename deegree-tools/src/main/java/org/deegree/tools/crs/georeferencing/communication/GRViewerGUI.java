@@ -293,7 +293,7 @@ public class GRViewerGUI extends JFrame {
 
     public void addToMenuTransformation( CheckboxListTransformation list ) {
         this.list = list;
-        for ( JCheckBox box : list.getList() ) {
+        for ( JCheckBox box : list.getModel().getList() ) {
             this.menuTransformation.add( box );
         }
 

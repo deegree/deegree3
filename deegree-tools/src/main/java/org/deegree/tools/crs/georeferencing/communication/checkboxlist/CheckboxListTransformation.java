@@ -39,7 +39,6 @@ import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.ME
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST;
 
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.JCheckBox;
 
@@ -76,22 +75,8 @@ public class CheckboxListTransformation {
         }
     }
 
-    public List<JCheckBox> getList() {
-        return model.getList();
-    }
-
     public CheckBoxListModel getModel() {
         return model;
     }
-
-    // public JCheckBox getSelectedCheckBox( String name ) {
-    // for ( JCheckBox checkbox : model.getList() ) {
-    // if ( name.equals( checkbox.getName() ) ) {
-    // return checkbox;
-    // }
-    // }
-    //
-    // return null;
-    // }
 
 }

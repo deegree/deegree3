@@ -38,7 +38,6 @@ package org.deegree.tools.crs.georeferencing.model;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,16 +45,14 @@ import java.util.List;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.StringUtils;
-import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
-import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.tools.crs.georeferencing.application.ParameterStore;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 
 /**
  * 
@@ -68,27 +65,27 @@ import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
  */
 public class Scene2DImplWMS implements Scene2D {
 
-    private static final String RIO_WMS_SYS_ID = "RASTERIO_WMS_SYS_ID";
+    // private static final String RIO_WMS_SYS_ID = "RASTERIO_WMS_SYS_ID";
+    //
+    // private static final String RIO_WMS_MAX_SCALE = "RASTERIO_WMS_MAX_SCALE";
+    //
+    // private static final String RESOLUTION = "RESOLUTION";
+    //
+    // private static final String RIO_WMS_ENABLE_TRANSPARENT = "RASTERIO_WMS_ENABLE_TRANSPARENCY";
 
-    private static final String RIO_WMS_MAX_SCALE = "RASTERIO_WMS_MAX_SCALE";
+    // private AbstractRaster raster;
 
-    private static final String RESOLUTION = "RESOLUTION";
-
-    private static final String RIO_WMS_ENABLE_TRANSPARENT = "RASTERIO_WMS_ENABLE_TRANSPARENCY";
-
-    private AbstractRaster raster;
-
-    private SimpleRaster subRaster;
+    // private SimpleRaster subRaster;
 
     private Scene2DValues sceneValues;
 
-    private RasterGeoReference ref;
+    // private RasterGeoReference ref;
 
     private RasterRect rasterRect;
 
-    private SimpleRaster simpleMapRaster;
+    // private SimpleRaster simpleMapRaster;
 
-    private SimpleRaster ra;
+    // private SimpleRaster ra;
 
     // private RasterIOOptions options;
 
@@ -98,8 +95,6 @@ public class Scene2DImplWMS implements Scene2D {
 
     private List<String> lays;
 
-    private RasterIOOptions options;
-
     private String format;
 
     private BufferedImage generatedImage;
@@ -108,8 +103,10 @@ public class Scene2DImplWMS implements Scene2D {
 
     private int imageWidth, imageHeight;
 
-    public Scene2DImplWMS( RasterIOOptions options ) {
-        this.options = options;
+    private ParameterStore store;
+
+    public Scene2DImplWMS( ParameterStore store ) {
+        this.store = store;
     }
 
     @Override
@@ -117,33 +114,21 @@ public class Scene2DImplWMS implements Scene2D {
         URL url = null;
         this.sceneValues = values;
 
-        try {
-            url = new URL( options.get( "RASTER_URL" ) );
+        url = this.store.getMapURL();
 
-            InputStream in = url.openStream();
-            raster = RasterFactory.loadRasterFromStream( in, options );
-            in.close();
-            SimpleRaster ra = raster.getAsSimpleRaster().getSubRaster(
-                                                                       Double.parseDouble( options.get( "LEFT_LOWER_X" ) ),
-                                                                       Double.parseDouble( options.get( "LEFT_LOWER_Y" ) ),
-                                                                       Double.parseDouble( options.get( "RIGHT_UPPER_X" ) ),
-                                                                       Double.parseDouble( options.get( "RIGHT_UPPER_Y" ) ) );
-            this.sceneValues.setEnvelopeGeoref( ra.getEnvelope() );
-            ref = ra.getRasterReference();
-            rasterRect = ref.convertEnvelopeToRasterCRS( ra.getEnvelope() );
-            this.sceneValues.setCrs( raster.getCoordinateSystem() );
+        this.sceneValues.setEnvelopeGeoref( store.getBbox() );
 
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
+        this.sceneValues.setCrs( store.getCRS() );
 
         wmsClient = new WMSClient111( url );
 
-        lays = getLayers( options );
-        format = options.get( "RASTERIO_WMS_DEFAULT_FORMAT" );
-        srs = options.getCRS();
-        imageWidth = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_WIDTH" ) );
-        imageHeight = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_HEIGHT" ) );
+        lays = getLayers( store.getLayers() );
+        format = store.getFormat();
+        srs = store.getCRS();
+        imageWidth = store.getQor();
+        imageHeight = store.getQor();
+        rasterRect = new RasterRect( store.getRasterEnvelope() );
+        sceneValues.setRasterRect( rasterRect );
 
     }
 
@@ -186,14 +171,19 @@ public class Scene2DImplWMS implements Scene2D {
         double maxY = min.y + transformedBounds.y;
 
         // transform to get the boundingbox coordinates
-        double[] worldCoordLeftLower = ref.getWorldCoordinate( min.x, maxY );
-        double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, min.y );
+        AbstractGRPoint worldCoordLeftLower = sceneValues.getWorldPoint( new GeoReferencedPoint( min.x, maxY ) );
+        AbstractGRPoint worldCoordRightUpper = sceneValues.getWorldPoint( new GeoReferencedPoint( maxX, min.y ) );
 
-        subRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0], worldCoordLeftLower[1],
-                                                             worldCoordRightUpper[0], worldCoordRightUpper[1] );
-        subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
-        this.sceneValues.setEnvelopeGeoref( subRaster.getEnvelope() );
-        System.out.println( "[Scene2DImplWMS] subRaster: " + subRaster );
+        // subRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0], worldCoordLeftLower[1],
+        // worldCoordRightUpper[0], worldCoordRightUpper[1] );
+        // subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
+        this.sceneValues.setEnvelopeGeoref( sceneValues.getGeom().createEnvelope(
+                                                                                  worldCoordLeftLower.getX(),
+                                                                                  worldCoordLeftLower.getY(),
+                                                                                  worldCoordRightUpper.getX(),
+                                                                                  worldCoordRightUpper.getY(),
+                                                                                  sceneValues.getEnvelopeGeoref().getCoordinateSystem() ) );
+        // System.out.println( "[Scene2DImplWMS] subRaster: " + subRaster );
         return generatedImage = generateMap( sceneValues.getEnvelopeGeoref() );
 
     }
@@ -207,8 +197,8 @@ public class Scene2DImplWMS implements Scene2D {
     @Override
     public void generatePredictedImage( Point2d changePoint ) {
 
-        double minX = changePoint.x * 2 * ref.getResolutionX();
-        double minY = changePoint.y * 2 * ref.getResolutionY();
+        // double minX = changePoint.x * 2 * ref.getResolutionX();
+        // double minY = changePoint.y * 2 * ref.getResolutionY();
         // Point2d predictedBounds = new Point2d( transformedBounds.x * 2, transformedBounds.y * 2 );
         // double maxX = minX + predictedBounds.x;
         // double maxY = minY + predictedBounds.y;
@@ -241,9 +231,9 @@ public class Scene2DImplWMS implements Scene2D {
     /**
      * @param options
      */
-    private List<String> getLayers( RasterIOOptions options ) {
+    private List<String> getLayers( String layers ) {
         List<String> configuredLayers = new LinkedList<String>();
-        String layers = options.get( "RASTERIO_WMS_REQUESTED_LAYERS" );
+        // String layers = options.get( "RASTERIO_WMS_REQUESTED_LAYERS" );
         if ( StringUtils.isSet( layers ) ) {
             String[] layer = layers.split( "," );
             for ( String l : layer ) {

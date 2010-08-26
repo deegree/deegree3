@@ -35,7 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
-import java.util.regex.Pattern;
+import java.awt.Rectangle;
+import java.net.URL;
+
+import org.deegree.cs.CRS;
+import org.deegree.geometry.Envelope;
 
 /**
  * Helper class to store the parameters from the commandLine.
@@ -47,97 +51,39 @@ import java.util.regex.Pattern;
  */
 public class ParameterStore {
 
-    // private final String filename;
+    private final URL mapURL;
 
-    private final String mapURL;
-
-    private final String CRS;
+    private final CRS CRS;
 
     private final String format;
 
     private final String layers;
 
-    private final String bbox;
+    private final Envelope bbox;
 
-    private String LEFT_LOWER_X;
+    private final int qor;
 
-    private String LEFT_LOWER_Y;
-
-    private String RIGHT_UPPER_X;
-
-    private String RIGHT_UPPER_Y;
-
-    /**
-     * Quality of raster in x direction
-     */
-    private String QORX;
-
-    /**
-     * Quality of raster in y direction
-     */
-    private String QORY;
+    private final Rectangle rasterEnvelope;
 
     private final static String separator = "\\p{Space}*[ ;/]\\p{Space}*";
 
-    public ParameterStore( String mapURL, String CRS, String format, String layers, String bbox, String qor ) {
+    public ParameterStore( URL mapURL, CRS CRS, String format, String layers, Envelope bbox, int qor ) {
 
         this.mapURL = mapURL;
         this.CRS = CRS;
         this.format = format;
         this.layers = layers;
         this.bbox = bbox;
-        // this.filename = filename;
-
-        String[] inputParametersBBox = null;
-        Pattern p = Pattern.compile( separator );
-        inputParametersBBox = p.split( bbox );
-
-        for ( int i = 0; i < inputParametersBBox.length; i += 4 ) {
-
-            LEFT_LOWER_X = inputParametersBBox[i];
-
-            LEFT_LOWER_Y = inputParametersBBox[i + 1];
-
-            RIGHT_UPPER_X = inputParametersBBox[i + 2];
-
-            RIGHT_UPPER_Y = inputParametersBBox[i + 3];
-        }
-        // System.out.println( "[ParameterStore] BBOX: <" + LEFT_LOWER_X + "," + LEFT_LOWER_Y + "," + RIGHT_UPPER_X +
-        // ","
-        // + RIGHT_UPPER_Y + ">" );
-
-        String[] inputParametersQOR = null;
-        if ( qor != null ) {
-            inputParametersQOR = p.split( qor );
-            if ( inputParametersQOR.length == 1 ) {
-                QORX = inputParametersQOR[0];
-                QORY = inputParametersQOR[0];
-            } else {
-                for ( int i = 0; i < inputParametersQOR.length; i += 2 ) {
-
-                    QORX = inputParametersQOR[i];
-
-                    QORY = inputParametersQOR[i + 1];
-
-                }
-            }
-        } else {
-            QORX = "5000";
-            QORY = "5000";
-        }
-        // System.out.println( "[ParameterStore] QOR: <" + QORX + "," + QORY + ">" );
+        this.qor = qor;
+        this.rasterEnvelope = new Rectangle( qor, qor );
 
     }
 
-    // public String getFilename() {
-    // return filename;
-    // }
-
-    public String getMapURL() {
+    public URL getMapURL() {
         return mapURL;
     }
 
-    public String getCRS() {
+    public CRS getCRS() {
         return CRS;
     }
 
@@ -149,33 +95,16 @@ public class ParameterStore {
         return layers;
     }
 
-    public String getBbox() {
+    public Envelope getBbox() {
         return bbox;
     }
 
-    public String getLEFT_LOWER_X() {
-        return LEFT_LOWER_X;
+    public int getQor() {
+        return qor;
     }
 
-    public String getLEFT_LOWER_Y() {
-        return LEFT_LOWER_Y;
-    }
-
-    public String getRIGHT_UPPER_X() {
-        return RIGHT_UPPER_X;
-    }
-
-    public String getRIGHT_UPPER_Y() {
-        return RIGHT_UPPER_Y;
-    }
-
-    public String getQORX() {
-
-        return QORX;
-    }
-
-    public String getQORY() {
-        return QORY;
+    public Rectangle getRasterEnvelope() {
+        return rasterEnvelope;
     }
 
 }

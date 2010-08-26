@@ -48,6 +48,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -195,6 +196,12 @@ public class Controller {
 
     private CheckboxListTransformation checkBoxListTransform;
 
+    private CheckBoxListModel modelTransformation;
+
+    private CheckBoxListModel modelFormats;
+
+    private CheckBoxListModel modelCRS;
+
     public Controller( GRViewerGUI view ) {
 
         geom = new GeometryFactory();
@@ -224,7 +231,8 @@ public class Controller {
         initToggleButtons();
 
         // init the Checkboxlist for Transformation
-        checkBoxListTransform = new CheckboxListTransformation( new CheckBoxListModel() );
+        modelTransformation = new CheckBoxListModel();
+        checkBoxListTransform = new CheckboxListTransformation( modelTransformation );
         view.addToMenuTransformation( checkBoxListTransform );
         checkBoxListTransform.addCheckboxListener( new ButtonListener() );
 
@@ -235,7 +243,7 @@ public class Controller {
         transform = null;
         if ( transformationType == null ) {
             order = 1;
-            for ( JCheckBox box : checkBoxListTransform.getList() ) {
+            for ( JCheckBox box : modelTransformation.getList() ) {
                 if ( ( box ).getText().startsWith( MENUITEM_TRANS_HELMERT ) ) {
                     transformationType = TransformationType.Helmert_4;
                     view.activateTransformationCheckbox( box );
@@ -687,33 +695,35 @@ public class Controller {
                         // new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
                         // }
                     } else if ( wmsStartDialog != null && wmsStartDialog.isVisible() == true ) {
-                        String mapURL = wmsStartDialog.getTextField().getText();
+                        String mapURLString = wmsStartDialog.getTextField().getText();
                         wmsStartDialog.setVisible( false );
-                        wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURL );
+                        // modelFormats = new CheckBoxListModel();
+                        // modelCRS = new CheckBoxListModel();
+                        wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURLString );
                         wmsParameter.addListeners( new ButtonListener() );
                         wmsParameter.setVisible( true );
 
                     }
                     if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
 
-                        String mapURL = wmsParameter.getMapURLString();
-                        String CRS = wmsParameter.getCheckBoxSRSAsString().toString();
+                        URL mapURL = wmsParameter.getMapURL();
+                        CRS CRS = wmsParameter.getCheckBoxSRS();
                         String layers = wmsParameter.getCheckBoxListAsString().toString();
                         List<String> layerList = wmsParameter.getCheckBoxListLayer();
                         String format = wmsParameter.getCheckBoxFormatAsString().toString();
                         Envelope env = wmsParameter.getEnvelope( CRS, layerList );
                         if ( env != null ) {
-                            double minX = env.getMin().get0();
-                            double minY = env.getMin().get1();
-                            double maxX = env.getMax().get0();
-                            double maxY = env.getMax().get1();
-                            String bbox = minX + " " + minY + " " + maxX + " " + maxY;
-                            // System.out.println( "[Controller] bbox " + bbox );
-                            String qor = new Integer( max( panel.getWidth(), panel.getHeight() ) ).toString();
+                            // double minX = env.getMin().get0();
+                            // double minY = env.getMin().get1();
+                            // double maxX = env.getMax().get0();
+                            // double maxY = env.getMax().get1();
+                            // String bbox = minX + " " + minY + " " + maxX + " " + maxY;
+                            // System.out.println( "[Controller] env " + env );
+                            int qor = max( panel.getWidth(), panel.getHeight() );
                             sceneValues.setGeorefURL( mapURL );
-                            store = new ParameterStore( mapURL, CRS, format, layers, bbox, qor );
-                            options = new RasterOptions( store ).getOptions();
-                            model = new Scene2DImplWMS( options );
+                            store = new ParameterStore( mapURL, CRS, format, layers, env, qor );
+                            // options = new RasterOptions( store ).getOptions();
+                            model = new Scene2DImplWMS( store );
                             initGeoReferencingScene( model );
                             wmsParameter.setVisible( false );
                         } else {
@@ -1442,18 +1452,10 @@ public class Controller {
             model.init( sceneValues );
             sceneValues.setImageDimension( new Rectangle( panel.getWidth(), panel.getHeight() ) );
             panel.setImageDimension( sceneValues.getImageDimension() );
-            // sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width,
-            // footPanel.getBounds().height )
-            // );
-            // footPanel.updatePoints( sceneValues );
-            // TODO make a modularization in Scene2DValues because there is a strict sequence in this case. If there is
-            // the
-            // update of the points before the new envelope is computed the polygons will be drawn on the wrong position
             panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
             panel.updatePoints( sceneValues );
             panel.repaint();
         }
-        // footPanel.repaint();
 
     }
 

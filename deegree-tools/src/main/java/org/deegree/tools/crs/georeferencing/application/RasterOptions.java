@@ -85,48 +85,48 @@ public class RasterOptions {
     private static final String RESOLUTION = "RESOLUTION";
 
     public RasterOptions( ParameterStore store ) {
-        options = new RasterIOOptions();
-
-        options.add( RasterIOOptions.CRS, store.getCRS() );
-        options.add( RIO_WMS_DEFAULT_FORMAT, store.getFormat() );
-        options.add( RIO_WMS_LAYERS, store.getLayers() );
-        options.add( LEFT_LOWER_X, store.getLEFT_LOWER_X() );
-        options.add( LEFT_LOWER_Y, store.getLEFT_LOWER_Y() );
-        options.add( RIGHT_UPPER_X, store.getRIGHT_UPPER_X() );
-        options.add( RIGHT_UPPER_Y, store.getRIGHT_UPPER_Y() );
-
-        // options.add( RasterIOOptions.CRS, "EPSG:4326" );
-        // options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
-        // options.add( RIO_WMS_LAYERS, "cite:Lakes" );
-        // options.add( LEFT_LOWER_X, "6.0E-4" );
-        // options.add( LEFT_LOWER_Y, "-0.0018" );
-        // options.add( RIGHT_UPPER_X, "0.0031" );
-        // options.add( RIGHT_UPPER_Y, "-1.0E-4" );
-
-        // (minX, minY, maxX, maxY) -> 2568720.0,5629890.0,2568800.0,5629970.0
-        // options.add( RasterIOOptions.CRS, "EPSG:31466" );
-        // options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
-        // options.add( RIO_WMS_LAYERS, "DTK" );
-        // options.add( LEFT_LOWER_X, "2568720.0" );
-        // options.add( LEFT_LOWER_Y, "5629890.0" );
-        // options.add( RIGHT_UPPER_X, "2568800.0" );
-        // options.add( RIGHT_UPPER_Y, "5629970.0" );
-
-        // options.add( RasterIOOptions.CRS, "EPSG:32618" );
-        // options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
-        // options.add( RIO_WMS_LAYERS, "populationgrid" );
-
-        options.add( RESOLUTION, "1.0" );
-        options.add( RASTER_URL, store.getMapURL() );
-        options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
-        options.add( RIO_WMS_SYS_ID, store.getMapURL() );
-        options.add( RIO_WMS_MAX_SCALE, "0.1" );
-
-        // specify the quality
-        options.add( RIO_WMS_MAX_WIDTH, store.getQORX() );
-        options.add( RIO_WMS_MAX_HEIGHT, store.getQORY() );
-        options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
-        // options.add( RIO_WMS_TIMEOUT, "1000" );
+        // options = new RasterIOOptions();
+        //
+        // options.add( RasterIOOptions.CRS, store.getCRS() );
+        // options.add( RIO_WMS_DEFAULT_FORMAT, store.getFormat() );
+        // options.add( RIO_WMS_LAYERS, store.getLayers() );
+        // options.add( LEFT_LOWER_X, store.getLEFT_LOWER_X() );
+        // options.add( LEFT_LOWER_Y, store.getLEFT_LOWER_Y() );
+        // options.add( RIGHT_UPPER_X, store.getRIGHT_UPPER_X() );
+        // options.add( RIGHT_UPPER_Y, store.getRIGHT_UPPER_Y() );
+        //
+        // // options.add( RasterIOOptions.CRS, "EPSG:4326" );
+        // // options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
+        // // options.add( RIO_WMS_LAYERS, "cite:Lakes" );
+        // // options.add( LEFT_LOWER_X, "6.0E-4" );
+        // // options.add( LEFT_LOWER_Y, "-0.0018" );
+        // // options.add( RIGHT_UPPER_X, "0.0031" );
+        // // options.add( RIGHT_UPPER_Y, "-1.0E-4" );
+        //
+        // // (minX, minY, maxX, maxY) -> 2568720.0,5629890.0,2568800.0,5629970.0
+        // // options.add( RasterIOOptions.CRS, "EPSG:31466" );
+        // // options.add( RIO_WMS_DEFAULT_FORMAT, "image/png" );
+        // // options.add( RIO_WMS_LAYERS, "DTK" );
+        // // options.add( LEFT_LOWER_X, "2568720.0" );
+        // // options.add( LEFT_LOWER_Y, "5629890.0" );
+        // // options.add( RIGHT_UPPER_X, "2568800.0" );
+        // // options.add( RIGHT_UPPER_Y, "5629970.0" );
+        //
+        // // options.add( RasterIOOptions.CRS, "EPSG:32618" );
+        // // options.add( RIO_WMS_DEFAULT_FORMAT, "image/jpeg" );
+        // // options.add( RIO_WMS_LAYERS, "populationgrid" );
+        //
+        // options.add( RESOLUTION, "1.0" );
+        // options.add( RASTER_URL, store.getMapURL() );
+        // options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
+        // options.add( RIO_WMS_SYS_ID, store.getMapURL() );
+        // options.add( RIO_WMS_MAX_SCALE, "0.1" );
+        //
+        // // specify the quality
+        // options.add( RIO_WMS_MAX_WIDTH, store.getQORX() );
+        // options.add( RIO_WMS_MAX_HEIGHT, store.getQORY() );
+        // options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
+        // // options.add( RIO_WMS_TIMEOUT, "1000" );
     }
 
     public RasterIOOptions getOptions() {
