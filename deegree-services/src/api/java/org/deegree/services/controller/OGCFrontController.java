@@ -39,9 +39,11 @@ import static java.io.File.createTempFile;
 
 import java.beans.Introspector;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -155,8 +157,6 @@ public class OGCFrontController extends HttpServlet {
     private static final String defaultTMPDir = System.getProperty( "java.io.tmpdir" );
 
     private static OGCFrontController instance;
-
-    private String workspaceName;
 
     private DeegreeServiceControllerType mainConfig;
 
@@ -844,12 +844,6 @@ public class OGCFrontController extends HttpServlet {
         instance = this;
         try {
             super.init( config );
-            workspaceName = config.getInitParameter( "workspace" );
-            if ( workspaceName != null ) {
-                workspaceName = workspaceName.trim();
-                LOG.info( "Workspace name: " + workspaceName );
-            }
-            workspace = getWorkspace();
             LOG.info( "--------------------------------------------------------------------------------" );
             DeegreeAALogoUtils.logInfo( LOG );
             LOG.info( "--------------------------------------------------------------------------------" );
@@ -872,18 +866,8 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "- temp directory    : " + defaultTMPDir );
             LOG.info( "" );
 
-            // LOG.info( "--------------------------------------------------------------------------------" );
-            // LOG.info( "Setting up temporary file storage." );
-            // LOG.info( "--------------------------------------------------------------------------------" );
-            // TempFileManager.init( config.getServletContext().getContextPath() );
-            // LOG.info( "" );
-
-            workspace.initAll();
-            serviceConfiguration = new WebServicesConfiguration( workspace );
-            serviceConfiguration.init();
-            // TODO somehow eliminate the need for this stupid static field
-            mainConfig = serviceConfiguration.getMainConfiguration();
-            securityConfiguration = new SecurityConfiguration( workspace );
+            initWorkspace();
+            initServices();
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -896,21 +880,18 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    /**
-     * Re-initializes the whole workspace, effectively reloading the whole configuration.
-     *
-     * @throws URISyntaxException 
-     * @throws IOException 
-     * @throws ServletException 
-     */
-    public void reload() throws IOException, URISyntaxException, ServletException {
-
-        serviceConfiguration.destroy();
-
-        workspace.destroyAll();
+    private void initWorkspace()
+                            throws IOException, URISyntaxException {
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Initializing workspace" );
+        LOG.info( "--------------------------------------------------------------------------------" );
         workspace = getWorkspace();
         workspace.initAll();
+        LOG.info( "" );
+    }
 
+    private void initServices()
+                            throws ServletException {
         serviceConfiguration = new WebServicesConfiguration( workspace );
         serviceConfiguration.init();
         // TODO somehow eliminate the need for this stupid static field
@@ -918,12 +899,62 @@ public class OGCFrontController extends HttpServlet {
         securityConfiguration = new SecurityConfiguration( workspace );
     }
 
+    private void destroyWorkspace() {
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Destroying workspace" );
+        LOG.info( "--------------------------------------------------------------------------------" );
+        workspace.destroyAll();
+        LOG.info( "" );
+    }
+
+    private void destroyServices() {
+        serviceConfiguration.destroy();
+        mainConfig = null;
+        securityConfiguration = null;
+    }
+
+    /**
+     * Re-initializes the whole workspace, effectively reloading the whole configuration.
+     * 
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void reload()
+                            throws IOException, URISyntaxException, ServletException {
+        destroyServices();
+        destroyWorkspace();
+        initWorkspace();
+        initServices();
+    }
+
     private DeegreeWorkspace getWorkspace()
                             throws IOException, URISyntaxException {
-        File fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
-        DeegreeWorkspace ws = DeegreeWorkspace.getInstance( workspaceName, fallbackDir );
+        String wsName = getWorkspaceName();
+        File fallbackDir = new File( resolveFileLocation( "WEB-INF/workspace", getServletContext() ).toURI() );
+        if ( !fallbackDir.exists() ) {
+            LOG.debug( "Trying old-style workspace directory (WEB-INF/conf)" );
+            fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
+        } else {
+            LOG.debug( "Using old-style workspace directory (WEB-INF/workspace)" );
+        }
+        DeegreeWorkspace ws = DeegreeWorkspace.getInstance( wsName, fallbackDir );
         LOG.info( "Using workspace '{}' at '{}'", ws.getName(), ws.getLocation() );
         return ws;
+    }
+
+    private String getWorkspaceName()
+                            throws URISyntaxException, IOException {
+        String wsName = "default";
+        File wsNameFile = new File( resolveFileLocation( "WEB-INF/workspace_name", getServletContext() ).toURI() );
+        if ( wsNameFile.exists() ) {
+            BufferedReader reader = new BufferedReader( new FileReader( wsNameFile ) );
+            wsName = reader.readLine().trim();
+            LOG.info( "Using workspace name {} (defined in WEB-INF/workspace_name)", wsName, wsNameFile );
+        } else {
+            LOG.info( "Using default workspace (WEB-INF/workspace_name does not exist)", wsNameFile );
+        }
+        return wsName;
     }
 
     @Override

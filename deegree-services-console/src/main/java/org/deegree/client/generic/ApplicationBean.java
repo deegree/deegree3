@@ -89,6 +89,10 @@ public class ApplicationBean {
         return nameToController;
     }
 
+    public String getWorkspaceName () {
+        return OGCFrontController.getServiceWorkspace().getName();
+    }
+    
     public String getWorkspaceDirectory() {
         return OGCFrontController.getServiceWorkspace().getLocation().getAbsolutePath();
     }

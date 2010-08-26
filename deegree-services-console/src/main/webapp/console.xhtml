@@ -29,7 +29,8 @@
         <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
         </h:commandLink>]
       <br />
-      <br />      
+      <br />
+      - Name: <h:outputText value="#{applicationBean.workspaceName}" /><br/>      
       - Directory: <h:outputText value="#{applicationBean.workspaceDirectory}" />
       <br />
 

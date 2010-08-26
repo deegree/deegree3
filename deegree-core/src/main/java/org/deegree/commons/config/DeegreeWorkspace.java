@@ -40,7 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,9 +92,9 @@ public class DeegreeWorkspace {
 
     private CoverageBuilderManager coverageBuilderManager;
 
-    private DeegreeWorkspace( File dir ) throws IOException {
+    private DeegreeWorkspace( String workspaceName, File dir ) throws IOException {
         this.dir = new File( dir.getCanonicalPath() );
-        this.name = "external:" + this.dir.getAbsolutePath();
+        this.name = workspaceName + "(external)";
         wsRootDirToWs.put( this.dir, this );
         nameToWs.put( name, this );
         register();
@@ -166,7 +165,10 @@ public class DeegreeWorkspace {
         if ( !ws.getLocation().exists() ) {
             ws = wsRootDirToWs.get( fallbackDir.getCanonicalPath() );
             if ( ws == null ) {
-                ws = new DeegreeWorkspace( fallbackDir );
+                if ( workspaceName == null ) {
+                    workspaceName = DEFAULT_WORKSPACE;
+                }
+                ws = new DeegreeWorkspace( workspaceName, fallbackDir );
             }
         }
         return ws;
