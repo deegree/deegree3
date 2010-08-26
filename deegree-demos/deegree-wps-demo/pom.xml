@@ -79,8 +79,7 @@
               <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
-              <classifier>webapp-template</classifier>
-              <excludes>**/web.xml</excludes>              
+              <classifier>webapp-template</classifier>         
               <type>zip</type>
               <includeGroupIds>org.deegree</includeGroupIds>
               <includeArtifactIds>deegree-services-console</includeArtifactIds>
