@@ -281,7 +281,9 @@ public class SecureProxy extends HttpServlet {
                 InputStream in = retrieve( STREAM, proxiedUrl, normalizedKVPParams );
                 OutputStream out = response.getOutputStream();
                 boolean successful = false;
-                if ( normalizedKVPParams.get( "REQUEST" ).equalsIgnoreCase( "GetCapabilities" ) ) {
+                String req = normalizedKVPParams.get( "REQUEST" );
+                if ( req.equalsIgnoreCase( "GetCapabilities" ) || req.equalsIgnoreCase( "GetFeature" )
+                     || req.equalsIgnoreCase( "DescribeFeatureType" ) ) {
                     XMLStreamReader reader = inFac.createXMLStreamReader( in );
                     reader.next();
                     successful = copyXML( reader, outFac.createXMLStreamWriter( out ),
