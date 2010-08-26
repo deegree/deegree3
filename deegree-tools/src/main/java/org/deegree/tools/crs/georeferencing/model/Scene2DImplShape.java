@@ -43,13 +43,6 @@ import java.awt.image.BufferedImage;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.data.info.RasterDataInfo;
-import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
-import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -77,29 +70,9 @@ import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
  */
 public class Scene2DImplShape implements Scene2D {
 
-    private AbstractRaster raster;
-
-    private SimpleRaster subRaster;
-
     private Scene2DValues sceneValues;
 
-    private RasterGeoReference ref;
-
-    private RasterDataInfo rasterDataInfo;
-
-    private RasterData rasterData;
-
-    private RasterRect rasterRect;
-
-    private SimpleRaster simpleMapRaster;
-
-    private RasterIOOptions options;
-
     private CRS srs;
-
-    // private List<String> lays;
-
-    private String format;
 
     private BufferedImage generatedImage;
 
@@ -109,26 +82,32 @@ public class Scene2DImplShape implements Scene2D {
 
     private FeatureStore store;
 
+    private Graphics2D g;
+
+    private String filePath;
+
+    private ApplicationSchema schema;
+
+    public Scene2DImplShape( String filePath, Graphics2D g ) {
+        this.filePath = filePath;
+        this.g = g;
+    }
+
     @Override
     public void init( Scene2DValues values ) {
-        this.options = options;
         this.sceneValues = values;
 
-        store = new ShapeFeatureStore(
-                                       "/home/thomas/workspace/deegree-test/deegree-wms-cite/src/main/webapp/WEB-INF/data/cite/BasicPolygons.shp",
-                                       null, null, "http://www.deegree.org/app", "MyFeatureType", true, null );
         try {
+
+            store = new ShapeFeatureStore( filePath, null, null, "http://www.deegree.org/app", "MyFeatureType", true,
+                                           null );
+
             store.init();
+
         } catch ( FeatureStoreException e1 ) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-
-        // lays = getLayers( options );
-        format = options.get( "RASTERIO_WMS_DEFAULT_FORMAT" );
-        srs = options.getCRS();
-        imageWidth = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_WIDTH" ) );
-        imageHeight = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_HEIGHT" ) );
 
     }
 
@@ -144,16 +123,26 @@ public class Scene2DImplShape implements Scene2D {
      * @return
      */
     private BufferedImage generateMap( Envelope imageBoundingbox ) {
-        BufferedImage i = null;
+        BufferedImage i = new BufferedImage( imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB );
 
-        Graphics2D g = i.createGraphics();
+        g = i.createGraphics();
+        schema = store.getSchema();
+        try {
+            if ( imageBoundingbox == null ) {
+                imageBoundingbox = store.getEnvelope( schema.getFeatureTypes()[0].getName() );
+                sceneValues.setEnvelopeGeoref( imageBoundingbox );
+            }
+        } catch ( FeatureStoreException e1 ) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 
         Java2DRenderer renderer = new Java2DRenderer( g, imageWidth, imageHeight, imageBoundingbox );
         Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
-        ApplicationSchema schema = store.getSchema();
         Query query = new Query( schema.getFeatureTypes()[0].getName(), imageBoundingbox, null, -1, -1, -1 );
         double resolution = max( imageBoundingbox.getSpan0() / imageWidth, imageBoundingbox.getSpan1() / imageHeight );
+        srs = store.getStorageSRS();
         try {
             FeatureResultSet fs = store.query( query );
             for ( Feature f : fs ) {
@@ -179,65 +168,24 @@ public class Scene2DImplShape implements Scene2D {
 
     @Override
     public BufferedImage generateSubImage( Rectangle bounds ) {
-        Point2d transformedBounds = sceneValues.generateTransformedBounds( null );
-        System.out.println( "[Scene2DImplShape] transformedBounds: " + transformedBounds );
-        if ( sceneValues.getMinPointRaster() == null ) {
-            sceneValues.setMinPointRaster( new Point2d( rasterRect.x, rasterRect.y ) );
+        imageWidth = new Double( bounds.getWidth() ).intValue();
+        imageHeight = new Double( bounds.getHeight() ).intValue();
 
-        }
-
-        Point2d min = sceneValues.getMinPointRaster();
-
-        double maxX = min.x + transformedBounds.x;
-        double maxY = min.y + transformedBounds.y;
-
-        // transform to get the boundingbox coordinates
-        double[] worldCoordLeftLower = ref.getWorldCoordinate( min.x, maxY );
-        double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, min.y );
-
-        subRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0], worldCoordLeftLower[1],
-                                                             worldCoordRightUpper[0], worldCoordRightUpper[1] );
-        subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
-        sceneValues.setSubRaster( subRaster );
-        rasterData = subRaster.getRasterData();
-        System.out.println( "[Scene2DImplShape] subRaster: " + subRaster );
-        return generatedImage = generateMap( subRaster.getEnvelope() );
+        return generatedImage = generateMap( null );
 
     }
 
     @Override
-    public BufferedImage generateSubImageFromRaster( AbstractRaster raster ) {
-        // Point2d transformedBounds = sceneValues.getTransformedBounds();
-        // System.out.println( "transformedBounds: " + transformedBounds );
-        // if ( sceneValues.getMinPointRaster() == null ) {
-        // sceneValues.setMinPointRaster( new Point2d( rasterRect.x, rasterRect.y ) );
-        //
-        // }
-        //
-        // Point2d min = sceneValues.getMinPointRaster();
-        //
-        // double maxX = min.x + transformedBounds.x;
-        // double maxY = min.y + transformedBounds.y;
-        //
-        // // transform to get the boundingbox coordinates
-        // double[] worldCoordLeftLower = ref.getWorldCoordinate( min.x, maxY );
-        // double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, min.y );
-
-        // subRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0], worldCoordLeftLower[1],
-        // worldCoordRightUpper[0], worldCoordRightUpper[1] );
-        // subRaster.setCoordinateSystem( raster.getCoordinateSystem() );
-        // sceneValues.setSubRaster( subRaster );
-        // rasterData = subRaster.getRasterData();
-        // System.out.println( "[Scene2DImplWMS] raster simple gotten: " + raster );
-        return generatedImage = generateMap( raster.getEnvelope() );
+    public BufferedImage generateSubImageFromRaster( Envelope env ) {
+        return generatedImage = generateMap( env );
 
     }
 
     @Override
     public void generatePredictedImage( Point2d changePoint ) {
 
-        double minX = changePoint.x * 2 * ref.getResolutionX();
-        double minY = changePoint.y * 2 * ref.getResolutionY();
+        // double minX = changePoint.x * 2 * ref.getResolutionX();
+        // double minY = changePoint.y * 2 * ref.getResolutionY();
         // Point2d predictedBounds = new Point2d( transformedBounds.x * 2, transformedBounds.y * 2 );
         // double maxX = minX + predictedBounds.x;
         // double maxY = minY + predictedBounds.y;

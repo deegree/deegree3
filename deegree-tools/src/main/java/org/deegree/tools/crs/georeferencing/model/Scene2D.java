@@ -40,8 +40,8 @@ import java.awt.image.BufferedImage;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.geometry.Envelope;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 
 /**
@@ -86,6 +86,6 @@ public interface Scene2D {
 
     public BufferedImage getPredictedImage();
 
-    BufferedImage generateSubImageFromRaster( AbstractRaster raster );
+    BufferedImage generateSubImageFromRaster( Envelope env );
 
 }

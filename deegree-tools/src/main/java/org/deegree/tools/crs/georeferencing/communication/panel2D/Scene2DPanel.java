@@ -75,6 +75,8 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     private ArrayList<Polygon> polygonListTranslated;
 
+    private Graphics2D g2;
+
     public Scene2DPanel() {
         this.setName( SCENE2D_PANEL_NAME );
         this.selectedPoints = new ArrayList<Point4Values>();
@@ -84,7 +86,7 @@ public class Scene2DPanel extends AbstractPanel2D {
     public void paintComponent( Graphics g ) {
 
         super.paintComponent( g );
-        Graphics2D g2 = (Graphics2D) g;
+        g2 = (Graphics2D) g;
 
         if ( imageToDraw != null ) {
 
@@ -208,6 +210,10 @@ public class Scene2DPanel extends AbstractPanel2D {
 
     public List<Ring> getWorldPolygonList() {
         return worldPolygonList;
+    }
+
+    public Graphics2D getG2() {
+        return g2;
     }
 
 }

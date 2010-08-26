@@ -37,13 +37,9 @@
 package org.deegree.tools.crs.georeferencing.communication;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.crs.georeferencing.application.Controller;
-import org.deegree.tools.crs.georeferencing.application.ParameterStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,83 +62,83 @@ public class GRViewer {
      */
     public static void main( String[] args )
                             throws IOException {
-        if ( args.length == 0 ) {
-            outputHelp();
-        }
-        Map<String, String> params = new HashMap<String, String>( 4 );
-        for ( int i = 0; i < args.length; i++ ) {
-            String arg = args[i];
-            if ( arg != null && !"".equals( arg.trim() ) ) {
-                arg = arg.trim();
-                if ( arg.equalsIgnoreCase( "-?" ) || arg.equalsIgnoreCase( "-h" ) ) {
-                    outputHelp();
-                } else {
-                    if ( i + 1 < args.length ) {
-                        String val = args[++i];
-                        if ( val != null ) {
-                            params.put( arg, val.trim() );
-                        } else {
-                            System.out.println( "Invalid value for parameter: " + arg );
-                        }
-                    } else {
-                        System.out.println( "No value for parameter: " + arg );
-                    }
-                }
-            }
-        }
-        String geoRefSource = params.get( "-geoRefSource" );
-        if ( geoRefSource == null || "".equals( geoRefSource.trim() ) ) {
-            LOG.error( "No source found for the georeferencing map (-geoRefSource parameter)" );
-            System.exit( 1 );
-        }
-        String geoRefCRS = params.get( "-geoRefCRS" );
-        if ( geoRefCRS == null || "".equals( geoRefCRS.trim() ) ) {
-            LOG.error( "No CRS found for the georeferencing map (-geoRefCRS parameter)" );
-            System.exit( 1 );
-        }
-        String geoRefFormat = params.get( "-geoRefFormat" );
-        if ( geoRefFormat == null || "".equals( geoRefFormat.trim() ) ) {
-            LOG.error( "No format found for the georeferencing map (-geoRefFormat parameter)" );
-            System.exit( 1 );
-        }
-        String geoRefLayers = params.get( "-geoRefLayers" );
-        if ( geoRefLayers == null || "".equals( geoRefLayers.trim() ) ) {
-            LOG.error( "No Layers found for the georeferencing map (-geoRefLayers parameter)" );
-            System.exit( 1 );
-        }
-        String geoRefBBox = params.get( "-geoRefBBox" );
-        if ( geoRefBBox == null || "".equals( geoRefBBox.trim() ) ) {
-            LOG.error( "No boundingBox found for the georeferencing map (-geoRefBBox parameter)" );
-            System.exit( 1 );
-        }
-        String qor = params.get( "-qor" );
-        if ( qor == null || "".equals( qor.trim() ) ) {
-            LOG.error( "No quality of raster found for the georeferencing map (-qor parameter)" );
-            System.exit( 1 );
-        }
-
-        String source3d = params.get( "-source3d" );
-        if ( source3d == null || "".equals( source3d.trim() ) ) {
-            LOG.error( "No source for referencing found (-source3d parameter)" );
-            System.exit( 1 );
-        }
-
-        LOG.info( "Checking for JOGL." );
-        JOGLChecker.check();
-        LOG.info( "JOGL check ok." );
-
-        LOG.info( "The resources are:" );
-        LOG.info( "------------------" );
-        LOG.info( "[MAIN] " + geoRefSource + "\n[MAIN] " + geoRefCRS + "\n[MAIN] " + geoRefFormat + "\n[MAIN] "
-                  + geoRefLayers + "\n[MAIN] " + geoRefBBox + "\n[MAIN] " + qor + "\n[MAIN] " + source3d );
-        LOG.info( "------------------" );
-
-        ParameterStore store = new ParameterStore( geoRefSource, geoRefCRS, geoRefFormat, geoRefLayers, geoRefBBox,
-                                                   qor, source3d );
+        // if ( args.length == 0 ) {
+        // outputHelp();
+        // }
+        // Map<String, String> params = new HashMap<String, String>( 4 );
+        // for ( int i = 0; i < args.length; i++ ) {
+        // String arg = args[i];
+        // if ( arg != null && !"".equals( arg.trim() ) ) {
+        // arg = arg.trim();
+        // if ( arg.equalsIgnoreCase( "-?" ) || arg.equalsIgnoreCase( "-h" ) ) {
+        // outputHelp();
+        // } else {
+        // if ( i + 1 < args.length ) {
+        // String val = args[++i];
+        // if ( val != null ) {
+        // params.put( arg, val.trim() );
+        // } else {
+        // System.out.println( "Invalid value for parameter: " + arg );
+        // }
+        // } else {
+        // System.out.println( "No value for parameter: " + arg );
+        // }
+        // }
+        // }
+        // }
+        // String geoRefSource = params.get( "-geoRefSource" );
+        // if ( geoRefSource == null || "".equals( geoRefSource.trim() ) ) {
+        // LOG.error( "No source found for the georeferencing map (-geoRefSource parameter)" );
+        // System.exit( 1 );
+        // }
+        // String geoRefCRS = params.get( "-geoRefCRS" );
+        // if ( geoRefCRS == null || "".equals( geoRefCRS.trim() ) ) {
+        // LOG.error( "No CRS found for the georeferencing map (-geoRefCRS parameter)" );
+        // System.exit( 1 );
+        // }
+        // String geoRefFormat = params.get( "-geoRefFormat" );
+        // if ( geoRefFormat == null || "".equals( geoRefFormat.trim() ) ) {
+        // LOG.error( "No format found for the georeferencing map (-geoRefFormat parameter)" );
+        // System.exit( 1 );
+        // }
+        // String geoRefLayers = params.get( "-geoRefLayers" );
+        // if ( geoRefLayers == null || "".equals( geoRefLayers.trim() ) ) {
+        // LOG.error( "No Layers found for the georeferencing map (-geoRefLayers parameter)" );
+        // System.exit( 1 );
+        // }
+        // String geoRefBBox = params.get( "-geoRefBBox" );
+        // if ( geoRefBBox == null || "".equals( geoRefBBox.trim() ) ) {
+        // LOG.error( "No boundingBox found for the georeferencing map (-geoRefBBox parameter)" );
+        // System.exit( 1 );
+        // }
+        // String qor = params.get( "-qor" );
+        // if ( qor == null || "".equals( qor.trim() ) ) {
+        // LOG.error( "No quality of raster found for the georeferencing map (-qor parameter)" );
+        // System.exit( 1 );
+        // }
+        //
+        // String source3d = params.get( "-source3d" );
+        // if ( source3d == null || "".equals( source3d.trim() ) ) {
+        // LOG.error( "No source for referencing found (-source3d parameter)" );
+        // System.exit( 1 );
+        // }
+        //
+        // LOG.info( "Checking for JOGL." );
+        // JOGLChecker.check();
+        // LOG.info( "JOGL check ok." );
+        //
+        // LOG.info( "The resources are:" );
+        // LOG.info( "------------------" );
+        // LOG.info( "[MAIN] " + geoRefSource + "\n[MAIN] " + geoRefCRS + "\n[MAIN] " + geoRefFormat + "\n[MAIN] "
+        // + geoRefLayers + "\n[MAIN] " + geoRefBBox + "\n[MAIN] " + qor + "\n[MAIN] " + source3d );
+        // LOG.info( "------------------" );
+        //
+        // ParameterStore store = new ParameterStore( geoRefSource, geoRefCRS, geoRefFormat, geoRefLayers, geoRefBBox,
+        // qor, source3d );
 
         GRViewerGUI gui = new GRViewerGUI();
 
-        new Controller( gui, store );
+        new Controller( gui );
 
         gui.setVisible( true );
 

@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
  */
 public class ParameterStore {
 
-    private final String filename;
+    // private final String filename;
 
     private final String mapURL;
 
@@ -79,15 +79,14 @@ public class ParameterStore {
 
     private final static String separator = "\\p{Space}*[ ;/]\\p{Space}*";
 
-    public ParameterStore( String mapURL, String CRS, String format, String layers, String bbox, String qor,
-                           String filename ) {
+    public ParameterStore( String mapURL, String CRS, String format, String layers, String bbox, String qor ) {
 
         this.mapURL = mapURL;
         this.CRS = CRS;
         this.format = format;
         this.layers = layers;
         this.bbox = bbox;
-        this.filename = filename;
+        // this.filename = filename;
 
         String[] inputParametersBBox = null;
         Pattern p = Pattern.compile( separator );
@@ -120,9 +119,9 @@ public class ParameterStore {
 
     }
 
-    public String getFilename() {
-        return filename;
-    }
+    // public String getFilename() {
+    // return filename;
+    // }
 
     public String getMapURL() {
         return mapURL;

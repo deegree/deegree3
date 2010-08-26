@@ -40,8 +40,6 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
@@ -63,12 +61,6 @@ import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointTy
  */
 public class Scene2DValues {
 
-    private AbstractRaster raster;
-
-    private SimpleRaster subRaster;
-
-    private RasterRect rasterRect;
-
     private Rectangle dimensionGeoreference;
 
     private Rectangle dimensionFootprint;
@@ -86,11 +78,11 @@ public class Scene2DValues {
 
     private Point2d minPointPixel;
 
-    // private RasterIOOptions options;
-
     private CRS crs;
 
     private Envelope envelopeFootprint;
+
+    private Envelope envelopeGeoref;
 
     private GeometryFactory geom;
 
@@ -112,9 +104,7 @@ public class Scene2DValues {
      * @param options
      * @param geom
      */
-    public Scene2DValues( GeometryFactory geom, List<String> selectedLayres ) {
-        // this.options = options;
-        this.selectedLayers = selectedLayers;
+    public Scene2DValues( GeometryFactory geom ) {
         this.geom = geom;
 
     }
@@ -131,11 +121,11 @@ public class Scene2DValues {
 
         case GeoreferencedPoint:
 
-            if ( subRaster != null ) {
+            if ( this.envelopeGeoref != null ) {
 
                 // determine the minX and the maxY position of the subRaster-envelope
-                double getMinX = subRaster.getEnvelope().getMin().get0();
-                double getMaxY = subRaster.getEnvelope().getMax().get1();
+                double getMinX = envelopeGeoref.getMin().get0();
+                double getMaxY = envelopeGeoref.getMax().get1();
 
                 // determine the percentage of the requested point
                 double percentX = getWorldDimension( pixelPoint ).getX();
@@ -144,6 +134,7 @@ public class Scene2DValues {
                 return new GeoReferencedPoint( getMinX + percentX, getMaxY - percentY );
 
             }
+
         case FootprintPoint:
 
             // determine the minX and the maxY position of the envelope
@@ -172,12 +163,11 @@ public class Scene2DValues {
         switch ( dimension.getPointType() ) {
 
         case GeoreferencedPoint:
-
-            if ( subRaster != null ) {
+            if ( this.envelopeGeoref != null ) {
 
                 // determine the span of the envelope
-                double spanX = this.subRaster.getEnvelope().getSpan0();
-                double spanY = this.subRaster.getEnvelope().getSpan1();
+                double spanX = this.envelopeGeoref.getSpan0();
+                double spanY = this.envelopeGeoref.getSpan1();
 
                 // if(){
                 //                    
@@ -226,7 +216,7 @@ public class Scene2DValues {
 
         case GeoreferencedPoint:
 
-            percentPoint = computePercentWorld( subRaster.getEnvelope(), abstractGRPoint );
+            percentPoint = computePercentWorld( envelopeGeoref, abstractGRPoint );
 
             pixelPointX = Math.round( (float) ( ( percentPoint.x * dimensionGeoreference.width ) ) );
             pixelPointY = Math.round( (float) ( ( ( 1 - percentPoint.y ) * dimensionGeoreference.height ) ) );
@@ -279,8 +269,8 @@ public class Scene2DValues {
                 }
 
             } else {
-                halfSpanXWorld = this.subRaster.getEnvelope().getSpan0() / 2;
-                halfSpanYWorld = this.subRaster.getEnvelope().getSpan1() / 2;
+                halfSpanXWorld = this.envelopeGeoref.getSpan0() / 2;
+                halfSpanYWorld = this.envelopeGeoref.getSpan1() / 2;
 
             }
 
@@ -288,10 +278,8 @@ public class Scene2DValues {
             double minY = yCoord - halfSpanYWorld;
             double maxX = xCoord + halfSpanXWorld;
             double maxY = yCoord + halfSpanYWorld;
-            Envelope enve = geom.createEnvelope( minX, minY, maxX, maxY, crs );
-            this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
-            System.out.println( "[Scene2DValues] subRaster: " + subRaster );
-            rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
+            envelopeGeoref = geom.createEnvelope( minX, minY, maxX, maxY, crs );
+            System.out.println( "[Scene2DValues] subRaster: " + envelopeGeoref );
             break;
         case FootprintPoint:
             halfSpanXWorld = spanX / 2;
@@ -389,16 +377,8 @@ public class Scene2DValues {
         }
     }
 
-    public void setRaster( AbstractRaster raster ) {
-        this.raster = raster;
-    }
-
-    public SimpleRaster getSubRaster() {
-        return subRaster;
-    }
-
-    public void setSubRaster( SimpleRaster subRaster ) {
-        this.subRaster = subRaster;
+    public void setEnvelopeGeoref( Envelope envelopeGeoref ) {
+        this.envelopeGeoref = envelopeGeoref;
     }
 
     public Point2d generateTransformedBounds( RasterRect rasterRect ) {
@@ -411,10 +391,6 @@ public class Scene2DValues {
         return this.transformedRasterSpan;
     }
 
-    // public RasterIOOptions getOptions() {
-    // return options;
-    // }
-
     /**
      * Computes the translation of the envelope for the georeferencing scene or the footprint scene.
      * 
@@ -426,10 +402,7 @@ public class Scene2DValues {
         switch ( mouseChange.getPointType() ) {
         case GeoreferencedPoint:
             percent = computePercentPixel( dimensionGeoreference, mouseChange );
-
-            this.subRaster = raster.getAsSimpleRaster().getSubRaster(
-                                                                      createTranslatedEnv( subRaster.getEnvelope(),
-                                                                                           percent ) );
+            this.envelopeGeoref = createTranslatedEnv( this.envelopeGeoref, percent );
             break;
         case FootprintPoint:
 
@@ -480,12 +453,9 @@ public class Scene2DValues {
         switch ( mousePosition.getPointType() ) {
         case GeoreferencedPoint:
             center = (GeoReferencedPoint) getWorldPoint( mousePosition );
-            Envelope enve = createZoomedEnv( this.subRaster.getEnvelope(), newSize, center );
-            this.subRaster = raster.getAsSimpleRaster().getSubRaster( enve );
-            System.out.println( "[Scene2DValues] Subrasterzoomed " + subRaster + " SPAN: " + enve.getSpan0() + ", "
-                                + enve.getSpan1() );
-            rasterRect = this.subRaster.getRasterReference().convertEnvelopeToRasterCRS( enve );
-            // transformProportion( rasterRect );
+            envelopeGeoref = createZoomedEnv( this.envelopeGeoref, newSize, center );
+            System.out.println( "[Scene2DValues] Subrasterzoomed " + envelopeGeoref + " SPAN: "
+                                + envelopeGeoref.getSpan0() + ", " + envelopeGeoref.getSpan1() );
             break;
         case FootprintPoint:
             center = (FootprintPoint) getWorldPoint( mousePosition );
@@ -529,38 +499,38 @@ public class Scene2DValues {
 
         switch ( type ) {
         case GeoreferencedPoint:
-            Envelope env = null;
-            minP = getWorldPoint( new GeoReferencedPoint( minX, minY ) );
-
-            if ( newHeight != -1 ) {
-
-                dim = getWorldDimension( new GeoReferencedPoint( wR, newHeight ) );
-
-            } else if ( newWidth != -1 ) {
-                dim = getWorldDimension( new GeoReferencedPoint( newWidth, hR ) );
-
-            }
-            env = geom.createEnvelope( minP.getX(), minP.getY() - dim.getY(), minP.getX() + dim.getX(), minP.getY(),
-                                       this.subRaster.getCoordinateSystem() );
-            if ( env != null ) {
-                this.subRaster = raster.getAsSimpleRaster().getSubRaster( env );
-            } else {
-                throw new IllegalArgumentException( "No envelope could be created. " );
-            }
+            // Envelope env = null;
+            // minP = getWorldPoint( new GeoReferencedPoint( minX, minY ) );
+            //
+            // if ( newHeight != -1 ) {
+            //
+            // dim = getWorldDimension( new GeoReferencedPoint( wR, newHeight ) );
+            //
+            // } else if ( newWidth != -1 ) {
+            // dim = getWorldDimension( new GeoReferencedPoint( newWidth, hR ) );
+            //
+            // }
+            // env = geom.createEnvelope( minP.getX(), minP.getY() - dim.getY(), minP.getX() + dim.getX(), minP.getY(),
+            // this.subRaster.getCoordinateSystem() );
+            // if ( env != null ) {
+            // this.subRaster = raster.getAsSimpleRaster().getSubRaster( env );
+            // } else {
+            // throw new IllegalArgumentException( "No envelope could be created. " );
+            // }
             break;
         case FootprintPoint:
-            minP = getWorldPoint( new FootprintPoint( minX, minY ) );
-            if ( newHeight != -1 ) {
-                dim = getWorldDimension( new FootprintPoint( wR, newHeight ) );
-
-            } else if ( newWidth != -1 ) {
-                dim = getWorldDimension( new FootprintPoint( newWidth, hR ) );
-            } else {
-                throw new IllegalArgumentException( "No envelope could be created. " );
-            }
-            this.envelopeFootprint = geom.createEnvelope( minP.getX(), minP.getY() - dim.getY(), minP.getX()
-                                                                                                 + dim.getX(),
-                                                          minP.getY(), this.subRaster.getCoordinateSystem() );
+            // minP = getWorldPoint( new FootprintPoint( minX, minY ) );
+            // if ( newHeight != -1 ) {
+            // dim = getWorldDimension( new FootprintPoint( wR, newHeight ) );
+            //
+            // } else if ( newWidth != -1 ) {
+            // dim = getWorldDimension( new FootprintPoint( newWidth, hR ) );
+            // } else {
+            // throw new IllegalArgumentException( "No envelope could be created. " );
+            // }
+            // this.envelopeFootprint = geom.createEnvelope( minP.getX(), minP.getY() - dim.getY(), minP.getX()
+            // + dim.getX(),
+            // minP.getY(), this.subRaster.getCoordinateSystem() );
             break;
         }
     }
@@ -689,24 +659,6 @@ public class Scene2DValues {
             System.out.println( "[Scene2DValues] newWidth " + env );
         }
 
-        // if ( rW < rH ) {
-        // double minX = env.getMin().get0();
-        // double minY = env.getMin().get1();
-        // double newHeight = minY + ( env.getSpan0() * h / w );
-        //
-        // this.envelopeFootprint = geom.createEnvelope( minX, minY, minX + env.getSpan0(), newHeight,
-        // env.getCoordinateSystem() );
-        // System.out.println( "[Scene2DValues] newHeight " + env );
-        // } else if ( rW > rH ) {
-        // double minX = env.getMin().get0();
-        // double minY = env.getMin().get1();
-        // double newWidth = minX + ( env.getSpan1() * w / h );
-        //
-        // this.envelopeFootprint = geom.createEnvelope( minX, minY, newWidth, minY + env.getSpan1(),
-        // env.getCoordinateSystem() );
-        // System.out.println( "[Scene2DValues] newWidth " + env );
-        //
-        // }
         // TODO what if equals?
         System.out.println( "[Scene2DValues] after " + dimensionFootprint + " " + envelopeFootprint );
 
@@ -741,11 +693,6 @@ public class Scene2DValues {
 
     public void setMinPointRaster( Point2d min ) {
         this.minPointRaster = min;
-    }
-
-    public void setRasterRect( RasterRect rasterRect ) {
-        this.rasterRect = rasterRect;
-
     }
 
     public Point2d getMinPointPixel() {
@@ -806,6 +753,18 @@ public class Scene2DValues {
 
     public String getFormat() {
         return format;
+    }
+
+    public GeometryFactory getGeom() {
+        return geom;
+    }
+
+    public Envelope getEnvelopeFootprint() {
+        return envelopeFootprint;
+    }
+
+    public Envelope getEnvelopeGeoref() {
+        return envelopeGeoref;
     }
 
 }
