@@ -45,66 +45,26 @@ import org.deegree.services.jaxb.wps.ProcessDefinition;
  * 
  * @version $Revision$, $Date$
  */
-public class WPSProcess {
-
-    private final ProcessDefinition description;
-
-    private final Processlet processlet;
-
-    private final ExceptionCustomizer exceptionCustomizer;
-
-    /**
-     * Creates a new {@link WPSProcess} instance.
-     * 
-     * @param description
-     *            description of the process (e.g. parameter types, metadata), must not be <code>null</code>
-     * @param processlet
-     *            process code, must not be <code>null</code>
-     */
-    public WPSProcess( ProcessDefinition description, Processlet processlet ) {
-        this( description, processlet, null );
-    }
-
-    /**
-     * Creates a new {@link WPSProcess} instance with {@link ExceptionCustomizer}.
-     * 
-     * @param description
-     *            description of the process (e.g. parameter types, metadata), must not be <code>null</code>
-     * @param processlet
-     *            process code, must not be <code>null</code>
-     * @param exceptionCustomizer
-     *            exception customizer, can be <code>null</code> (use default exception generation)
-     */
-    public WPSProcess( ProcessDefinition description, Processlet processlet, ExceptionCustomizer exceptionCustomizer ) {
-        this.description = description;
-        this.processlet = processlet;
-        this.exceptionCustomizer = exceptionCustomizer;
-    }
+public interface WPSProcess {
 
     /**
      * Returns the description (e.g. parameter types, metadata) of the process.
      * 
      * @return the description, never <code>null</code>
      */
-    public ProcessDefinition getDescription() {
-        return description;
-    }
+    public ProcessDefinition getDescription();
 
     /**
      * Returns the {@link Processlet} (process code) instance of the process.
      * 
      * @return the processlet, never <code>null</code>
      */
-    public Processlet getProcesslet() {
-        return processlet;
-    }
+    public Processlet getProcesslet();
 
     /**
      * Returns the exception customizer for the process.
      * 
      * @return exception customizer, can be <code>null</code>
      */
-    public ExceptionCustomizer getExceptionCustomizer() {
-        return exceptionCustomizer;
-    }
+    public ExceptionCustomizer getExceptionCustomizer();
 }

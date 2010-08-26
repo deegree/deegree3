@@ -45,6 +45,7 @@ import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.wps.ExceptionAwareProcesslet;
 import org.deegree.services.wps.ExceptionCustomizer;
+import org.deegree.services.wps.GenericWPSProcess;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPSProcess;
 import org.slf4j.Logger;
@@ -90,7 +91,7 @@ public class JavaProcessProvider implements ProcessProvider {
                 if ( processlet instanceof ExceptionAwareProcesslet ) {
                     customizer = ( (ExceptionAwareProcesslet) processlet ).getExceptionCustomizer();
                 }
-                WPSProcess process = new WPSProcess( processDefinition, processlet, customizer );
+                WPSProcess process = new GenericWPSProcess( processDefinition, processlet, customizer );
                 idToProcess.put( processId, process );
             } catch ( Exception e ) {
                 String msg = "Could not create process instance. Class name ('" + className
