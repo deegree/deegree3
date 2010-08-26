@@ -29,4 +29,9 @@
         <component-class>org.deegree.client.core.component.HtmlOutputXML</component-class>
     </component>
     
+    <component>
+        <component-type>HtmlInputConfigurationXML</component-type>
+        <component-class>org.deegree.client.core.component.HtmlInputConfigurationXML</component-class>
+    </component>
+    
 </faces-config>

@@ -60,5 +60,11 @@
             <description>Space-separated list of CSS style class(es) to be applied when this element is rendered. This value must be passed through as the "class" attribute on generated markup.</description>
         </attribute>
     </tag>
+    <tag>
+        <tag-name>inputConfigurationXML</tag-name>
+        <component>
+            <component-type>HtmlInputConfigurationXML</component-type>
+        </component>
+    </tag>
 
 </facelet-taglib>

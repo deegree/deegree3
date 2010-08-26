@@ -33,14 +33,17 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.core.utils;
+package org.deegree.client.core.renderer;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.UUID;
+import java.io.InputStream;
 
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
+import javax.faces.render.FacesRenderer;
+
+import org.deegree.commons.xml.XMLAdapter;
+
+import com.sun.faces.renderkit.html_basic.TextareaRenderer;
 
 /**
  * TODO add class documentation here
@@ -50,36 +53,27 @@ import javax.servlet.http.HttpServletRequest;
  * 
  * @version $Revision: $, $Date: $
  */
-public class Utils {
+@FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputConfigurationXML")
+public class InputConfigurationXMLRenderer extends TextareaRenderer {
 
-    public static String getAbsolutePath( String target, String fileName ) {
-        if ( target == null ) {
-            target = "";
-        }
-        if ( !target.endsWith( "/" ) ) {
-            target += "/";
-        }
-        return FacesContext.getCurrentInstance().getExternalContext().getRealPath( target + fileName );
-    }
+    @Override
+    protected String getCurrentValue( FacesContext context, UIComponent component ) {
+        // if (component instanceof UIInput) {
+        // Object submittedValue = ((UIInput) component).getSubmittedValue();
+        // if (submittedValue != null) {
+        // // value may not be a String...
+        // return submittedValue.toString();
+        // }
+        // }
 
-    public static URL getWebAccessibleUrl( String target, String fileName )
-                            throws MalformedURLException {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        if ( target == null ) {
-            target = "";
+        String currentValue = null;
+        Object currentObj = getValue( component );
+        System.out.println("getCurrentvalue: " + currentObj);
+        if ( currentObj != null && currentObj instanceof InputStream ) {
+            XMLAdapter adapter = new XMLAdapter( (InputStream) currentObj );
+            currentValue = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + adapter.toString();
         }
-        if ( !target.startsWith( "/" ) ) {
-            target = "/" + target;
-        }
-        if ( !target.endsWith( "/" ) ) {
-            target += "/";
-        }
-        return new URL( request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath()
-                                                                                               + target + fileName );
-    }
-
-    public static String getFileName( String suffix ) {
-        return "file_" + UUID.randomUUID() + ( suffix.startsWith( "." ) ? suffix : "." + suffix );
+        return currentValue;
     }
 
 }
