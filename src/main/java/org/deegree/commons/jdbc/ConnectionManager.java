@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,15 +88,14 @@ public class ConnectionManager {
         derbyConn = getConnection( "LOCK_DB", "jdbc:derby:" + lockDb + ";create=true", null, null, 0, 10 );
         idToPools.put( "LOCK_DB", derbyConn );
     }
-    
-    
+
     /**
      * Initializes the {@link ConnectionManager} by loading all JDBC pool configurations from the given directory.
      * 
      * @param jdbcDir
      */
     public static void init( File jdbcDir ) {
-       
+
         idToPools.put( "LOCK_DB", derbyConn );
 
         if ( !jdbcDir.exists() ) {
@@ -131,16 +129,19 @@ public class ConnectionManager {
      * 
      */
     public static void destroy() {
-        try {
-            DriverManager.getConnection( "jdbc:derby:;shutdown=true" );
-        } catch ( SQLException e ) {
-            LOG.debug( "Exception caught shutting down derby databases: " + e.getMessage(), e );
-        }
-        for ( ConnectionPool pool : idToPools.values() ) {
-            try {
-                pool.destroy();
-            } catch ( Exception e ) {
-                LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
+        // try {
+        // DriverManager.getConnection( "jdbc:derby:;shutdown=true" );
+        // } catch ( SQLException e ) {
+        // LOG.debug( "Exception caught shutting down derby databases: " + e.getMessage(), e );
+        // }
+        // TODO remove the LOCK_DB
+        for ( String id : idToPools.keySet() ) {
+            if ( !id.equals( "LOCK_DB" ) ) {
+                try {
+                    idToPools.get( id ).destroy();
+                } catch ( Exception e ) {
+                    LOG.debug( "Exception caught shutting down connection pool: " + e.getMessage(), e );
+                }
             }
         }
         idToPools.clear();
@@ -249,9 +250,9 @@ public class ConnectionManager {
      * @param poolMinSize
      * @param poolMaxSize
      */
-    private static ConnectionPool getConnection( String connId, String url, String user, String password, int poolMinSize,
-                                      int poolMaxSize ) {
-    
+    private static ConnectionPool getConnection( String connId, String url, String user, String password,
+                                                 int poolMinSize, int poolMaxSize ) {
+
         ConnectionPool pool = null;
         synchronized ( ConnectionManager.class ) {
             LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
@@ -261,7 +262,7 @@ public class ConnectionManager {
             }
             // TODO check callers for read only flag
             pool = new ConnectionPool( connId, url, user, password, false, poolMinSize, poolMaxSize );
-            
+
         }
         return pool;
     }
