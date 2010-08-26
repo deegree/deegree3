@@ -1,11 +1,10 @@
-<?xml version="1.0" ?>
-<deegreeWMS xmlns="http://www.deegree.org/services/wms" configVersion="0.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeWMS xmlns="http://www.deegree.org/services/wms" configVersion="0.5.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd">
   <ServiceConfiguration>
-
     <UnrequestableLayer>
       <Title>GeoSciML Demo WMS</Title>
       <CRS>EPSG:4283 EPSG:4326</CRS>
-      
       <RequestableLayer>
         <Name>MappedFeature</Name>
         <Title>Mapped Features</Title>
@@ -17,7 +16,7 @@
       <RequestableLayer>
         <Name>MappedFeatureLabel</Name>
         <Title>Mapped Features, Labels</Title>
-        <ScaleDenominators max="30000" min="0"/>
+        <ScaleDenominators max="30000" min="0" />
         <FeatureStoreId>geosciml</FeatureStoreId>
         <DirectStyle>
           <File>../styles/MappedFeatureLabel.se</File>
@@ -25,4 +24,4 @@
       </RequestableLayer>
     </UnrequestableLayer>
   </ServiceConfiguration>
-</deegreeWMS>  
+</deegreeWMS>
