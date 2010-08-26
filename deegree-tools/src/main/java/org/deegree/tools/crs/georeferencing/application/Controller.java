@@ -191,8 +191,6 @@ public class Controller {
 
     private ButtonModel buttonModel;
 
-    private String mapURL;
-
     public Controller( GRViewerGUI view ) {
 
         geom = new GeometryFactory();
@@ -607,7 +605,6 @@ public class Controller {
                     } else if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
                         wmsParameter.setVisible( false );
                         wmsStartDialog.setVisible( true );
-                        // wmsStartDialog.setToCenter();
                     }
 
                 }
@@ -686,38 +683,38 @@ public class Controller {
                         // new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
                         // }
                     } else if ( wmsStartDialog != null && wmsStartDialog.isVisible() == true ) {
-                        mapURL = wmsStartDialog.getTextField().getText();
+                        String mapURL = wmsStartDialog.getTextField().getText();
                         wmsStartDialog.setVisible( false );
                         wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURL );
-
-                        // String mapURL =
-                        // "http://localhost:8080/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
-
                         wmsParameter.addListeners( new ButtonListener() );
                         wmsParameter.setVisible( true );
 
                     }
                     if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
 
+                        String mapURL = wmsParameter.getMapURLString();
                         String CRS = wmsParameter.getCheckBoxSRSAsString().toString();
                         String layers = wmsParameter.getCheckBoxListAsString().toString();
                         List<String> layerList = wmsParameter.getCheckBoxListLayer();
                         String format = wmsParameter.getCheckBoxFormatAsString().toString();
-                        Envelope env = wmsParameter.getEnvelope( layerList );
-                        double minX = env.getMin().get0();
-                        double minY = env.getMin().get1();
-                        double maxX = env.getMax().get0();
-                        double maxY = env.getMax().get1();
-                        String bbox = minX + " " + minY + " " + maxX + " " + maxY;
-                        System.out.println( "[Controller] bbox " + bbox );
-                        String qor = new Integer( max( panel.getWidth(), panel.getHeight() ) ).toString();
-                        // verifyWMSStart = false;
-                        sceneValues.setGeorefURL( mapURL );
-                        store = new ParameterStore( mapURL, CRS, format, layers, bbox, qor );
-                        options = new RasterOptions( store ).getOptions();
-                        model = new Scene2DImplWMS( options );
-                        initGeoReferencingScene( model );
-                        wmsParameter.setVisible( false );
+                        Envelope env = wmsParameter.getEnvelope( CRS, layerList );
+                        if ( env != null ) {
+                            double minX = env.getMin().get0();
+                            double minY = env.getMin().get1();
+                            double maxX = env.getMax().get0();
+                            double maxY = env.getMax().get1();
+                            String bbox = minX + " " + minY + " " + maxX + " " + maxY;
+                            System.out.println( "[Controller] bbox " + bbox );
+                            String qor = new Integer( max( panel.getWidth(), panel.getHeight() ) ).toString();
+                            sceneValues.setGeorefURL( mapURL );
+                            store = new ParameterStore( mapURL, CRS, format, layers, bbox, qor );
+                            options = new RasterOptions( store ).getOptions();
+                            model = new Scene2DImplWMS( options );
+                            initGeoReferencingScene( model );
+                            wmsParameter.setVisible( false );
+                        } else {
+                            new ErrorDialog( wmsParameter, JDialog.ERROR, "There is no Envelope for this request. " );
+                        }
 
                     }
                 }

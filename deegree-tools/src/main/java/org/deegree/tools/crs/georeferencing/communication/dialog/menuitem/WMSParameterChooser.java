@@ -77,12 +77,15 @@ public class WMSParameterChooser extends AbstractGRDialog {
 
     private WMSClient111 wmsClient;
 
-    public WMSParameterChooser( Component parent, String urlString ) {
-        super( parent, new Dimension( 300, 600 ) );
+    private String mapURLString;
 
+    public WMSParameterChooser( Component parent, String urlString ) {
+
+        super( parent, new Dimension( 300, 600 ) );
+        this.mapURLString = urlString;
         URL url = null;
         try {
-            url = new URL( urlString );
+            url = new URL( mapURLString );
         } catch ( MalformedURLException e1 ) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -213,8 +216,12 @@ public class WMSParameterChooser extends AbstractGRDialog {
         return s;
     }
 
-    public Envelope getEnvelope( List<String> layerList ) {
-        return wmsClient.getLatLonBoundingBox( layerList );
+    public Envelope getEnvelope( String srs, List<String> layerList ) {
+        return wmsClient.getBoundingBox( srs, layerList );
+    }
+
+    public String getMapURLString() {
+        return mapURLString;
     }
 
 }
