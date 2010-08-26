@@ -63,6 +63,9 @@ public class Address {
     private List<String> electronicMailAddress;
 
     public List<String> getDeliveryPoint() {
+        if ( deliveryPoint == null ) {
+            deliveryPoint = new ArrayList<String>();
+        }
         return deliveryPoint;
     }
 
@@ -70,16 +73,32 @@ public class Address {
         this.city = city;
     }
 
+    public String getCity() {
+        return city;
+    }
+
     public void setAdministrativeArea( String administrativeArea ) {
         this.administrativeArea = administrativeArea;
+    }
+
+    public String getAdministrativeArea() {
+        return administrativeArea;
     }
 
     public void setPostalCode( String postalCode ) {
         this.postalCode = postalCode;
     }
 
+    public String getPostalCode() {
+        return postalCode;
+    }
+
     public void setCountry( String country ) {
         this.country = country;
+    }
+
+    public String getCountry() {
+        return country;
     }
 
     public List<String> getElectronicMailAddress() {

@@ -53,7 +53,7 @@ public class ValuesUnit {
 
     private String referenceSystemName;
 
-    private String referenceSystemURI;
+    private String referenceSystemURL;
 
     public void setUomName( String uomName ) {
         this.uomName = uomName;
@@ -75,8 +75,8 @@ public class ValuesUnit {
         this.referenceSystemName = referenceSystemName;
     }
 
-    public void setReferenceSystemURI( String referenceSystemURI ) {
-        this.referenceSystemURI = referenceSystemURI;
+    public void setReferenceSystemURL( String referenceSystemURI ) {
+        this.referenceSystemURL = referenceSystemURI;
     }
 
 }

@@ -62,7 +62,7 @@ public class Description {
 
     public List<LanguageString> getTitle() {
         if ( title == null ) {
-            return new ArrayList<LanguageString>();
+            title = new ArrayList<LanguageString>();
         }
         return title;
     }

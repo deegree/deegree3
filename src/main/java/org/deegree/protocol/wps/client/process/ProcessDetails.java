@@ -374,7 +374,7 @@ public class ProcessDetails {
                 }
                 String closure = omRange.getAttributeValue( new QName( owsNS, "rangeClosure" ) );
                 if ( closure != null ) {
-                    range.getRangeClosure().add( closure );
+                    range.setRangeClosure( closure );
                 }
                 rangeList.add( range );
             }

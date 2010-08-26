@@ -53,20 +53,20 @@ import org.deegree.commons.utils.Pair;
  */
 public class DCP {
 
-    private List<Pair<URL, Domain>> getURLs;
+    private List<Pair<URL, List<Domain>>> getURLs;
 
-    private List<Pair<URL, Domain>> postURLs;
+    private List<Pair<URL, List<Domain>>> postURLs;
 
-    public List<Pair<URL, Domain>> getGetURLs() {
+    public List<Pair<URL, List<Domain>>> getGetURLs() {
         if ( getURLs == null ) {
-            getURLs = new ArrayList<Pair<URL, Domain>>();
+            getURLs = new ArrayList<Pair<URL, List<Domain>>>();
         }
         return getURLs;
     }
 
-    public List<Pair<URL, Domain>> getPostURLs() {
+    public List<Pair<URL, List<Domain>>> getPostURLs() {
         if ( postURLs == null ) {
-            postURLs = new ArrayList<Pair<URL, Domain>>();
+            postURLs = new ArrayList<Pair<URL, List<Domain>>>();
         }
         return postURLs;
     }

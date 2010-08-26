@@ -63,20 +63,40 @@ public class ContactInfo {
         this.phone = phone;
     }
 
+    public Telephone getPhone() {
+        return phone;
+    }
+
     public void setAddress( Address address ) {
         this.address = address;
+    }
+
+    public Address getAddress() {
+        return address;
     }
 
     public void setOnlineResource( URL onlineResource ) {
         this.onlineResource = onlineResource;
     }
 
+    public URL getOnlineResource() {
+        return onlineResource;
+    }
+
     public void setHoursOfService( String hoursOfService ) {
         this.hoursOfService = hoursOfService;
     }
 
+    public String getHoursOfService() {
+        return hoursOfService;
+    }
+
     public void setContactInstructions( String contactInstructions ) {
         this.contactInstructions = contactInstructions;
+    }
+
+    public String getContactInstruction() {
+        return contactInstructions;
     }
 
 }

@@ -59,11 +59,23 @@ public class ServiceProvider {
         this.providerName = providerName;
     }
 
+    public String getProviderName() {
+        return providerName;
+    }
+
     public void setProviderSite( URL providerSite ) {
         this.providerSite = providerSite;
     }
 
+    public URL getProviderSite() {
+        return providerSite;
+    }
+
     public void setServiceContact( ServiceContact serviceContact ) {
         this.serviceContact = serviceContact;
+    }
+
+    public ServiceContact getServiceContact() {
+        return serviceContact;
     }
 }
