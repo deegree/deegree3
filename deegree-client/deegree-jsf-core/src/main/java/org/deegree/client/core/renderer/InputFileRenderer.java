@@ -92,7 +92,7 @@ public class InputFileRenderer extends Renderer {
 
     @Override
     public void decode( FacesContext context, UIComponent component ) {
-
+        System.out.println("decode input file");
         ExternalContext external = context.getExternalContext();
         HttpServletRequest request = (HttpServletRequest) external.getRequest();
         String clientId = component.getClientId( context );
@@ -123,7 +123,6 @@ public class InputFileRenderer extends Renderer {
             }
         }
         fileComponent.setSubmittedValue( uploadedFile );
-
     }
 
     private String getAbsolutePath( ServletContext servletContext, String target, String fileName ) {

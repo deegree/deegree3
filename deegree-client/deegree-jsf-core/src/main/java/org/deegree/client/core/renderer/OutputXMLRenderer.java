@@ -42,6 +42,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.UUID;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -54,7 +55,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.client.core.component.HtmlOutputXML;
-import org.deegree.client.core.utils.Utils;
+import org.deegree.client.core.utils.FacesUtils;
 import org.slf4j.Logger;
 
 /**
@@ -102,10 +103,10 @@ public class OutputXMLRenderer extends Renderer {
     private void encodeDownload( ResponseWriter writer, HtmlOutputXML xmlComponent )
                             throws IOException {
         String downloadDir = xmlComponent.getDownloadDir();
-        String fileName = Utils.getFileName( "xml" );
-        URL webAccessibleUrl = Utils.getWebAccessibleUrl( downloadDir, fileName );
+        String fileName = "file_" + UUID.randomUUID() + ".xml";
+        URL webAccessibleUrl = FacesUtils.getWebAccessibleUrl( downloadDir, fileName );
         try {
-            File f = new File( Utils.getAbsolutePath( downloadDir, fileName ) );
+            File f = new File( FacesUtils.getAbsolutePath( downloadDir, fileName ) );
             if ( !f.createNewFile() ) {
                 LOG.info( "Could not create file for download" );
                 return;

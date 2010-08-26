@@ -65,6 +65,10 @@
         <component>
             <component-type>HtmlInputConfigurationXML</component-type>
         </component>
+        <attribute>
+            <name>schemaURLS</name>
+            <description>A comma seperated list of schema urls!</description>
+        </attribute>
     </tag>
 
 </facelet-taglib>

@@ -35,19 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.component;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.html.HtmlInputTextarea;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.ConverterException;
 
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.commons.xml.schema.SchemaValidator;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -59,76 +61,53 @@ import org.deegree.commons.xml.schema.SchemaValidator;
  */
 @FacesComponent(value = "HtmlInputConfigurationXML")
 public class HtmlInputConfigurationXML extends HtmlInputTextarea {
-
-    public HtmlInputConfigurationXML() {
-        setRendererType( "org.deegree.InputConfigurationXML" );
-    }
+    private static final Logger LOG = getLogger( HtmlInputConfigurationXML.class );
 
     private enum AdditionalProperties {
         schemaURLS
     }
 
-    @Override
-    public void setValue( Object value ) {
-        System.out.println( "setValue " + value );
-        if ( !( value instanceof InputStream ) ) {
-            throw new FacesException(
-                                      "value of HtmlInputConfigurationXML component must be from type org.deegree.commons.xml.XMLAdapter" );
-        }
-        super.setValue( value );
-    }
-
     public void setSchemaURLS( String schemaURLS ) {
+        System.out.println( "sets " + schemaURLS );
         getStateHelper().put( AdditionalProperties.schemaURLS, schemaURLS );
     }
 
     public String getSchemaURLS() {
+        System.out.println( "gets " + getStateHelper().get( AdditionalProperties.schemaURLS ) );
         return (String) getStateHelper().eval( AdditionalProperties.schemaURLS, null );
-    }
-
-    @Override
-    protected Object getConvertedValue( FacesContext context, Object value )
-                            throws ConverterException {
-        if ( value != null ) {
-            return new ByteArrayInputStream( value.toString().getBytes() );
-        }
-        return null;
     }
 
     @Override
     protected void validateValue( FacesContext context, Object newValue ) {
         super.validateValue( context, newValue );
-        InputStream xml = (InputStream) newValue;
+        try {
+            String v = newValue.toString();
+            if ( !v.startsWith( "<?" ) ) {
+                v = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + v;
+            }
+            InputStream xml = new ByteArrayInputStream( v.getBytes( "UTF-8" ) );
+            String s = getSchemaURLS();
+            String[] schemas = null;
+            if ( s != null && s.length() > 0 ) {
+                schemas = s.split( "," );
+            }
+            List<String> results;
+            results = SchemaValidator.validate( xml, schemas );
+            if ( results.size() > 0 ) {
+                FacesMessage message = MessageUtils.getFacesMessage(
+                                                                     null,
+                                                                     FacesMessage.SEVERITY_ERROR,
+                                                                     "org.deegree.client.core.component.HtmlInputConfiguration.VALIDATION_FAILED",
+                                                                     results );
+                context.addMessage( getClientId( context ), message );
+                setValid( false );
+            } else {
+                setValid( true );
+            }
 
-        // StringBuilder sb = new StringBuilder();
-        // String line;
-        // try {
-        // BufferedReader reader = new BufferedReader( new InputStreamReader( xml, "UTF-8" ) );
-        // try {
-        // while ( ( line = reader.readLine() ) != null ) {
-        // sb.append( line ).append( "\n" );
-        // }
-        // } finally {
-        // reader.close();
-        // }
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // System.out.println( sb.toString() );
-        System.out.println(getSchemaURLS());
-
-        List<String> results = SchemaValidator.validate( xml, getSchemaURLS().split( "," ) );
-        if ( results.size() > 0 ) {
-            FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 null,
-                                                                 FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputConfiguration.VALIDATION_FAILED",
-                                                                 results );
-            context.addMessage( getClientId( context ), message );
-            setValid( false );
-        } else {
-            setValid( true );
+        } catch ( UnsupportedEncodingException e ) {
+            LOG.error( "UTF-8 is not supported!" );
         }
+
     }
 }
