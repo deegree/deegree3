@@ -126,7 +126,7 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         }
         metadata.setOperationsMetadata( opMetadata );
 
-        Version version = getRequiredNodeAsVersion( rootEl, new XPath( "@version", nsContext ) );
+        Version version = getNodeAsVersion( rootEl, new XPath( "@version", nsContext ), null );
         metadata.setVersion( version );
 
         String sequence = getNodeAsString( rootEl, new XPath( "@updateSequence", nsContext ), null );
@@ -143,24 +143,30 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         OperationsMetadata opMetadata = new OperationsMetadata();
 
         XPath xpath = new XPath( "ows:Operation", nsContext );
-        List<OMElement> opEls = getRequiredElements( opMetadataEl, xpath );
-        for ( OMElement opEl : opEls ) {
-            Operation op = parseOperation( opEl );
-            opMetadata.getOperation().add( op );
+        List<OMElement> opEls = getElements( opMetadataEl, xpath );
+        if ( opEls != null ) {
+            for ( OMElement opEl : opEls ) {
+                Operation op = parseOperation( opEl );
+                opMetadata.getOperation().add( op );
+            }
         }
 
         xpath = new XPath( "ows:Parameter", nsContext );
         List<OMElement> paramEls = getElements( opMetadataEl, xpath );
-        for ( OMElement paramEl : paramEls ) {
-            Domain parameter = parseDomain( paramEl );
-            opMetadata.getParameter().add( parameter );
+        if ( paramEls != null ) {
+            for ( OMElement paramEl : paramEls ) {
+                Domain parameter = parseDomain( paramEl );
+                opMetadata.getParameter().add( parameter );
+            }
         }
 
         xpath = new XPath( "ows:Constraint", nsContext );
         List<OMElement> constaintEls = getElements( opMetadataEl, xpath );
-        for ( OMElement constaintEl : constaintEls ) {
-            Domain constraint = parseDomain( constaintEl );
-            opMetadata.getConstraint().add( constraint );
+        if ( constaintEls != null ) {
+            for ( OMElement constaintEl : constaintEls ) {
+                Domain constraint = parseDomain( constaintEl );
+                opMetadata.getConstraint().add( constraint );
+            }
         }
 
         xpath = new XPath( "ows:ExtendedCapabilities", nsContext );
@@ -178,39 +184,47 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         Operation operation = new Operation();
 
         XPath xpath = new XPath( "@name", nsContext );
-        String name = getRequiredNodeAsString( opEl, xpath );
+        String name = getNodeAsString( opEl, xpath, null );
         operation.setName( name );
 
         xpath = new XPath( "ows:DCP", nsContext );
-        List<OMElement> dcpEls = getRequiredElements( opEl, xpath );
-        for ( OMElement dcpEl : dcpEls ) {
-            DCP dcp = parseDCP( dcpEl );
-            operation.getDCP().add( dcp );
+        List<OMElement> dcpEls = getElements( opEl, xpath );
+        if ( dcpEls != null ) {
+            for ( OMElement dcpEl : dcpEls ) {
+                DCP dcp = parseDCP( dcpEl );
+                operation.getDCP().add( dcp );
+            }
         }
 
         xpath = new XPath( "ows:Parameter", nsContext );
         List<OMElement> paramEls = getElements( opEl, xpath );
-        for ( OMElement paramEl : paramEls ) {
-            Domain parameter = parseDomain( paramEl );
-            operation.getParameter().add( parameter );
+        if ( paramEls != null ) {
+            for ( OMElement paramEl : paramEls ) {
+                Domain parameter = parseDomain( paramEl );
+                operation.getParameter().add( parameter );
+            }
         }
 
         xpath = new XPath( "ows:Constraint", nsContext );
         List<OMElement> constaintEls = getElements( opEl, xpath );
-        for ( OMElement constaintEl : constaintEls ) {
-            Domain constraint = parseDomain( constaintEl );
-            operation.getConstraint().add( constraint );
+        if ( constaintEls != null ) {
+            for ( OMElement constaintEl : constaintEls ) {
+                Domain constraint = parseDomain( constaintEl );
+                operation.getConstraint().add( constraint );
+            }
         }
 
         xpath = new XPath( "ows:Metadata", nsContext );
         List<OMElement> metadataEls = getElements( opEl, xpath );
-        for ( OMElement metadataEl : metadataEls ) {
-            xpath = new XPath( "@xlink:href", nsContext );
-            URL ref = getNodeAsURL( metadataEl, xpath, null );
+        if ( metadataEls != null ) {
+            for ( OMElement metadataEl : metadataEls ) {
+                xpath = new XPath( "@xlink:href", nsContext );
+                URL ref = getNodeAsURL( metadataEl, xpath, null );
 
-            xpath = new XPath( "@about", nsContext );
-            URL about = getNodeAsURL( metadataEl, xpath, null );
-            operation.getMetadata().add( new Pair<URL, URL>( ref, about ) );
+                xpath = new XPath( "@about", nsContext );
+                URL about = getNodeAsURL( metadataEl, xpath, null );
+                operation.getMetadata().add( new Pair<URL, URL>( ref, about ) );
+            }
         }
 
         return operation;
@@ -224,7 +238,7 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         Domain domain = new Domain();
 
         XPath xpath = new XPath( "@name", nsContext );
-        domain.setName( getRequiredNodeAsString( domainEl, xpath ) );
+        domain.setName( getNodeAsString( domainEl, xpath, null ) );
 
         PossibleValues possbileVals = parsePossibleValues( domainEl );
         domain.setPossibleValues( possbileVals );
@@ -359,37 +373,41 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         DCP dcp = new DCP();
 
         XPath xpath = new XPath( "ows:HTTP/ows:Get", nsContext );
-        List<OMElement> getEls = getRequiredElements( dcpEl, xpath );
-        for ( OMElement getEl : getEls ) {
-            xpath = new XPath( "@xlink:href", nsContext );
-            URL href = getNodeAsURL( getEl, xpath, null );
+        List<OMElement> getEls = getElements( dcpEl, xpath );
+        if ( getEls != null ) {
+            for ( OMElement getEl : getEls ) {
+                xpath = new XPath( "@xlink:href", nsContext );
+                URL href = getNodeAsURL( getEl, xpath, null );
 
-            xpath = new XPath( "ows:Constraint", nsContext );
-            List<OMElement> constaintEls = getElements( getEl, xpath );
-            List<Domain> domains = new ArrayList<Domain>();
-            for ( OMElement constaintEl : constaintEls ) {
-                Domain constraint = parseDomain( constaintEl );
-                domains.add( constraint );
+                xpath = new XPath( "ows:Constraint", nsContext );
+                List<OMElement> constaintEls = getElements( getEl, xpath );
+                List<Domain> domains = new ArrayList<Domain>();
+                for ( OMElement constaintEl : constaintEls ) {
+                    Domain constraint = parseDomain( constaintEl );
+                    domains.add( constraint );
+                }
+
+                dcp.getGetURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
             }
-
-            dcp.getGetURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
         }
 
         xpath = new XPath( "ows:HTTP/ows:Post", nsContext );
-        List<OMElement> postEls = getRequiredElements( dcpEl, xpath );
-        for ( OMElement postEl : postEls ) {
-            xpath = new XPath( "@xlink:href", nsContext );
-            URL href = getNodeAsURL( postEl, xpath, null );
+        List<OMElement> postEls = getElements( dcpEl, xpath );
+        if ( postEls != null ) {
+            for ( OMElement postEl : postEls ) {
+                xpath = new XPath( "@xlink:href", nsContext );
+                URL href = getNodeAsURL( postEl, xpath, null );
 
-            xpath = new XPath( "ows:Constraint", nsContext );
-            List<OMElement> constaintEls = getElements( postEl, xpath );
-            List<Domain> domains = new ArrayList<Domain>();
-            for ( OMElement constaintEl : constaintEls ) {
-                Domain constraint = parseDomain( constaintEl );
-                domains.add( constraint );
+                xpath = new XPath( "ows:Constraint", nsContext );
+                List<OMElement> constaintEls = getElements( postEl, xpath );
+                List<Domain> domains = new ArrayList<Domain>();
+                for ( OMElement constaintEl : constaintEls ) {
+                    Domain constraint = parseDomain( constaintEl );
+                    domains.add( constraint );
+                }
+
+                dcp.getPostURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
             }
-
-            dcp.getPostURLs().add( new Pair<URL, List<Domain>>( href, domains ) );
         }
 
         return dcp;
@@ -431,15 +449,17 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         Description description = parseDescription( serviceIdEl );
         serviceId.setDescription( description );
 
-        OMElement serviceTypeEl = getRequiredElement( serviceIdEl, new XPath( "ows:ServiceType", nsContext ) );
+        OMElement serviceTypeEl = getElement( serviceIdEl, new XPath( "ows:ServiceType", nsContext ) );
         CodeType serviceType = parseCodeSpace( serviceTypeEl );
         serviceId.setServiceType( serviceType );
 
-        List<OMElement> serviceTypeVersionEls = getRequiredElements( serviceIdEl, new XPath( "ows:ServiceTypeVersion",
-                                                                                             nsContext ) );
-        for ( OMElement serviceTypeVersionEl : serviceTypeVersionEls ) {
-            Version version = getRequiredNodeAsVersion( serviceTypeVersionEl, new XPath( ".", nsContext ) );
-            serviceId.getServiceTypeVersion().add( version );
+        XPath xpath = new XPath( "ows:ServiceTypeVersion", nsContext );
+        List<OMElement> serviceTypeVersionEls = getElements( serviceIdEl, xpath );
+        if ( serviceTypeVersionEls != null ) {
+            for ( OMElement serviceTypeVersionEl : serviceTypeVersionEls ) {
+                Version version = getNodeAsVersion( serviceTypeVersionEl, new XPath( ".", nsContext ), null );
+                serviceId.getServiceTypeVersion().add( version );
+            }
         }
 
         String[] profiles = getNodesAsStrings( serviceIdEl, new XPath( "ows:Profiles", nsContext ) );
@@ -478,11 +498,13 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
 
         List<OMElement> keywordsEls = getElements( serviceIdEl, new XPath( "ows:Keywords", nsContext ) );
         for ( OMElement keywordsEl : keywordsEls ) {
-            List<OMElement> keywordSeq = getRequiredElements( keywordsEl, new XPath( "ows:Keyword", nsContext ) );
+            List<OMElement> keywordSeq = getElements( keywordsEl, new XPath( "ows:Keyword", nsContext ) );
             List<LanguageString> keywordLS = new ArrayList<LanguageString>();
-            for ( OMElement keywordEl : keywordSeq ) {
-                String lang = keywordEl.getAttributeValue( new QName( XML1998NS, "lang" ) );
-                keywordLS.add( new LanguageString( keywordEl.getText(), lang ) );
+            if ( keywordSeq != null ) {
+                for ( OMElement keywordEl : keywordSeq ) {
+                    String lang = keywordEl.getAttributeValue( new QName( XML1998NS, "lang" ) );
+                    keywordLS.add( new LanguageString( keywordEl.getText(), lang ) );
+                }
             }
             OMElement typeEl = getElement( keywordsEl, new XPath( "ows:Type", nsContext ) );
             CodeType type = parseCodeSpace( typeEl );
@@ -513,11 +535,14 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         serviceProvider.setProviderName( getNodeAsString( serviceProviderEl, xpath, null ) );
 
         xpath = new XPath( "ows:ProviderSite/@xlink:href", nsContext );
-        serviceProvider.setProviderSite( getRequiredNodeAsURL( serviceProviderEl, xpath ) );
+        serviceProvider.setProviderSite( getNodeAsURL( serviceProviderEl, xpath, null ) );
 
         xpath = new XPath( "ows:ServiceContact", nsContext );
-        OMElement serviceContactEl = getRequiredElement( serviceProviderEl, xpath );
-        ServiceContact serviceContact = parseServiceContact( serviceContactEl );
+        OMElement serviceContactEl = getElement( serviceProviderEl, xpath );
+        ServiceContact serviceContact = null;
+        if ( serviceContactEl != null ) {
+            serviceContact = parseServiceContact( serviceContactEl );
+        }
         serviceProvider.setServiceContact( serviceContact );
 
         return serviceProvider;
@@ -527,17 +552,17 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         ServiceContact serviceContact = new ServiceContact();
 
         XPath xpath = new XPath( "ows:IndividualName", nsContext );
-        serviceContact.setIndividualName( getRequiredNodeAsString( serviceContactEl, xpath ) );
+        serviceContact.setIndividualName( getNodeAsString( serviceContactEl, xpath, null ) );
 
         xpath = new XPath( "ows:PositionName", nsContext );
-        serviceContact.setPositionName( getRequiredNodeAsString( serviceContactEl, xpath ) );
+        serviceContact.setPositionName( getNodeAsString( serviceContactEl, xpath, null ) );
 
         xpath = new XPath( "ows:ContactInfo", nsContext );
         ContactInfo contactInfo = parseContactInfo( getElement( serviceContactEl, xpath ) );
         serviceContact.setContactInfo( contactInfo );
 
         xpath = new XPath( "ows:Role", nsContext );
-        CodeType role = parseCodeSpace( getRequiredElement( serviceContactEl, xpath ) );
+        CodeType role = parseCodeSpace( getElement( serviceContactEl, xpath ) );
         serviceContact.setRole( role );
 
         return serviceContact;
