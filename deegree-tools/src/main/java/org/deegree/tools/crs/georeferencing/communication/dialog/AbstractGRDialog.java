@@ -43,6 +43,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  * TODO add class documentation here
@@ -67,12 +68,15 @@ public abstract class AbstractGRDialog extends JDialog {
 
     private Component parent;
 
+    private JScrollPane pane;
+
     public AbstractGRDialog( Component parent, Dimension dim ) {
         this.parent = parent;
         this.dim = dim;
         this.setLayout( new BorderLayout() );
         this.setModal( true );
         this.setResizable( false );
+        pane = new JScrollPane();
         buttons = new ButtonPanel();
         panel = new JPanel();
         panel.setLayout( new BoxLayout( panel, BoxLayout.PAGE_AXIS ) );
@@ -82,7 +86,9 @@ public abstract class AbstractGRDialog extends JDialog {
                         new Double( parent.getBounds().getCenterY() - ( this.dim.getHeight() / 2 ) ).intValue(),
                         new Double( this.dim.getWidth() ).intValue(), new Double( this.dim.getHeight() ).intValue() );
 
-        this.getContentPane().add( panel, BorderLayout.CENTER );
+        this.getContentPane().add( pane, BorderLayout.CENTER );
+        pane.setViewportView( panel );
+        // this.getContentPane().add( panel, BorderLayout.CENTER );
         this.getContentPane().add( buttons, BorderLayout.SOUTH );
 
     }

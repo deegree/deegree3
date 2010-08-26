@@ -109,35 +109,28 @@ public class Scene2DImplWMS implements Scene2D {
     private int imageWidth, imageHeight;
 
     public Scene2DImplWMS( RasterIOOptions options ) {
-        // private FeatureStore store;
+        this.options = options;
     }
 
     @Override
     public void init( Scene2DValues values ) {
         URL url = null;
         this.sceneValues = values;
-        RasterIOOptions options = new RasterIOOptions();
-        options.add( RasterIOOptions.OPT_FORMAT, "WMS_111" );
-        options.add( RIO_WMS_SYS_ID, values.getGeorefURL() );
-        options.add( RIO_WMS_MAX_SCALE, "0.1" );
-        options.add( RESOLUTION, "1.0" );
-        options.add( RIO_WMS_ENABLE_TRANSPARENT, "true" );
-
-        // options.
 
         try {
-            url = new URL( values.getGeorefURL() );
+            url = new URL( options.get( "RASTER_URL" ) );
 
             InputStream in = url.openStream();
             raster = RasterFactory.loadRasterFromStream( in, options );
             in.close();
-            ra = raster.getAsSimpleRaster().getSubRaster( values.getGeoreferenceBBox().getleftX(),
-                                                          values.getGeoreferenceBBox().getUpperY(),
-                                                          values.getGeoreferenceBBox().getRightX(),
-                                                          values.getGeoreferenceBBox().getLowerY() );
+            SimpleRaster ra = raster.getAsSimpleRaster().getSubRaster(
+                                                                       Double.parseDouble( options.get( "LEFT_LOWER_X" ) ),
+                                                                       Double.parseDouble( options.get( "LEFT_LOWER_Y" ) ),
+                                                                       Double.parseDouble( options.get( "RIGHT_UPPER_X" ) ),
+                                                                       Double.parseDouble( options.get( "RIGHT_UPPER_Y" ) ) );
             this.sceneValues.setEnvelopeGeoref( ra.getEnvelope() );
             ref = ra.getRasterReference();
-            // rasterRect = ref.convertEnvelopeToRasterCRS( ra.getEnvelope() );
+            rasterRect = ref.convertEnvelopeToRasterCRS( ra.getEnvelope() );
             this.sceneValues.setCrs( raster.getCoordinateSystem() );
 
         } catch ( IOException e ) {
@@ -146,21 +139,11 @@ public class Scene2DImplWMS implements Scene2D {
 
         wmsClient = new WMSClient111( url );
 
-        // lays = getLayers( options );
-        // format = options.get( "RASTERIO_WMS_DEFAULT_FORMAT" );
-        // srs = options.getCRS();
-        // imageWidth = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_WIDTH" ) );
-        // imageHeight = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_HEIGHT" ) );
-        lays = values.getSelectedLayers();
-        format = values.getFormat();
-        srs = values.getCrs();
-        if ( values.getQuality().getWidth() != 0 ) {
-            imageWidth = values.getQuality().getWidth();
-            imageHeight = values.getQuality().getHeight();
-        } else {
-            imageWidth = 1000;
-            imageHeight = 1000;
-        }
+        lays = getLayers( options );
+        format = options.get( "RASTERIO_WMS_DEFAULT_FORMAT" );
+        srs = options.getCRS();
+        imageWidth = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_WIDTH" ) );
+        imageHeight = Integer.parseInt( options.get( "RASTERIO_WMS_MAX_HEIGHT" ) );
 
     }
 
@@ -184,35 +167,6 @@ public class Scene2DImplWMS implements Scene2D {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-
-        // Graphics2D g = i.createGraphics();
-        //
-        // Java2DRenderer renderer = new Java2DRenderer( g, imageWidth, imageHeight, imageBoundingbox );
-        // Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
-        //
-        // ApplicationSchema schema = store.getSchema();
-        // Query query = new Query( schema.getFeatureTypes()[0].getName(), imageBoundingbox, null, -1, -1, -1 );
-        // double resolution = max( imageBoundingbox.getSpan0() / imageWidth, imageBoundingbox.getSpan1() / imageHeight
-        // );
-        // try {
-        // FeatureResultSet fs = store.query( query );
-        // for ( Feature f : fs ) {
-        // Layer.render( f, null, renderer, textRenderer, Utils.calcScaleWMS130( imageWidth, imageHeight,
-        // imageBoundingbox,
-        // srs.getWrappedCRS() ), resolution );
-        // }
-        // } catch ( FeatureStoreException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch ( FilterEvaluationException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch ( UnknownCRSException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        //
-        // g.dispose();
 
         return i;
     }

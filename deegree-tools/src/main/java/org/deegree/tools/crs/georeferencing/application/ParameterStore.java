@@ -106,14 +106,23 @@ public class ParameterStore {
                             + RIGHT_UPPER_Y + ">" );
 
         String[] inputParametersQOR = null;
-        inputParametersQOR = p.split( qor );
+        if ( qor != null ) {
+            inputParametersQOR = p.split( qor );
+            if ( inputParametersQOR.length == 1 ) {
+                QORX = inputParametersQOR[0];
+                QORY = inputParametersQOR[0];
+            } else {
+                for ( int i = 0; i < inputParametersQOR.length; i += 2 ) {
 
-        for ( int i = 0; i < inputParametersQOR.length; i += 2 ) {
+                    QORX = inputParametersQOR[i];
 
-            QORX = inputParametersQOR[i];
+                    QORY = inputParametersQOR[i + 1];
 
-            QORY = inputParametersQOR[i + 1];
-
+                }
+            }
+        } else {
+            QORX = "5000";
+            QORY = "5000";
         }
         System.out.println( "[ParameterStore] QOR: <" + QORX + "," + QORY + ">" );
 

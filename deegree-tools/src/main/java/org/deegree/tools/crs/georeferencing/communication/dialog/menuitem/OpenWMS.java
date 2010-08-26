@@ -65,6 +65,7 @@ public class OpenWMS extends AbstractGRDialog {
         super( parent, DIM_COORDINATEJUMPER );
 
         textField = new JTextField( 18 );
+        textField.setText( "http://localhost:8080/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
 
         this.getPanel().add( textField, BorderLayout.CENTER );
 

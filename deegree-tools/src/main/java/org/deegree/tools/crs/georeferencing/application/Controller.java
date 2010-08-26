@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
+import static java.lang.Math.max;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_HELMERT;
 
 import java.awt.Rectangle;
@@ -48,8 +48,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,9 +69,9 @@ import javax.vecmath.Point2d;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
@@ -154,8 +152,7 @@ public class Controller {
 
     private Point2d changePoint;
 
-    private boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref, selectedFoot,
-                            verifyWMSStart;
+    private boolean isHorizontalRefGeoref, isHorizontalRefFoot, start, isControlDown, selectedGeoref, selectedFoot;
 
     private boolean isZoomInGeoref, isZoomInFoot, isZoomOutGeoref, isZoomOutFoot;
 
@@ -689,42 +686,33 @@ public class Controller {
                         // new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
                         // }
                     } else if ( wmsStartDialog != null && wmsStartDialog.isVisible() == true ) {
-
-                        wmsStartDialog.setVisible( false );
-                        wmsParameter = new WMSParameterChooser( wmsStartDialog );
                         mapURL = wmsStartDialog.getTextField().getText();
+                        wmsStartDialog.setVisible( false );
+                        wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURL );
 
                         // String mapURL =
                         // "http://localhost:8080/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
-                        URL url = null;
-                        try {
-                            url = new URL( mapURL );
-                        } catch ( MalformedURLException e1 ) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                        }
 
-                        WMSClient111 wmsClient = new WMSClient111( url );
-                        List<String> allLayers = wmsClient.getNamedLayers();
-                        List<String> allFormats = wmsClient.getFormats( GetMap );
-                        wmsParameter.setCheckBoxListLayer( allLayers );
-                        wmsParameter.setCheckBoxListFormat( allFormats );
-                        verifyWMSStart = true;
                         wmsParameter.addListeners( new ButtonListener() );
                         wmsParameter.setVisible( true );
 
                     }
                     if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
 
-                        String CRS = "EPSG:4326";
-                        String format = "image/png";
-                        // String layers = "cite:BasicPolygons";
-                        String bbox = "-2.0 -1.0 0.0 3.0";
-                        String qor = "500 500";
+                        String CRS = wmsParameter.getCheckBoxSRSAsString().toString();
                         String layers = wmsParameter.getCheckBoxListAsString().toString();
-                        System.out.println( "[Controller] layers " + layers );
-
+                        List<String> layerList = wmsParameter.getCheckBoxListLayer();
+                        String format = wmsParameter.getCheckBoxFormatAsString().toString();
+                        Envelope env = wmsParameter.getEnvelope( layerList );
+                        double minX = env.getMin().get0();
+                        double minY = env.getMin().get1();
+                        double maxX = env.getMax().get0();
+                        double maxY = env.getMax().get1();
+                        String bbox = minX + " " + minY + " " + maxX + " " + maxY;
+                        System.out.println( "[Controller] bbox " + bbox );
+                        String qor = new Integer( max( panel.getWidth(), panel.getHeight() ) ).toString();
                         // verifyWMSStart = false;
+                        sceneValues.setGeorefURL( mapURL );
                         store = new ParameterStore( mapURL, CRS, format, layers, bbox, qor );
                         options = new RasterOptions( store ).getOptions();
                         model = new Scene2DImplWMS( options );
@@ -777,11 +765,10 @@ public class Controller {
 
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_WMS_LAYER ) ) {
-                    // TODO everthing should come from a dialog
+
                     wmsStartDialog = new OpenWMS( view );
                     wmsStartDialog.addListeners( new ButtonListener() );
                     wmsStartDialog.setVisible( true );
-                    System.out.println( "[Controller738] visible" );
 
                 }
 
