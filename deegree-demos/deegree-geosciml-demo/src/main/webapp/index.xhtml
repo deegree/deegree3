@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<h:head>
+  <title>deegree 3 GeoSciML demo (technology preview)</title>
+  <h:outputStylesheet name="styles.css" />
+</h:head>
+<h:body>
+  <pre><h:outputText value="#{applicationBean.logo}" /></pre>
+  Welcome to the deegree 3 GeoSciML demo (technology preview).
+  <br />
+  <br />
+  <br />Version information<br />
+  <br />
+  <ui:repeat value="#{applicationBean.moduleInfos}" var="moduleInfo">
+    - <h:outputText value="#{moduleInfo}" />
+    <br />
+  </ui:repeat>  
+  <br />
+  <br />Links<br />
+  <br />
+  - [<a href="http://wiki.deegree.org/deegreeWiki/deegree3/WebFeatureService">See deegree 3 WFS / demo documentation</a>]
+  <br />
+  - [<a href="console/client/client.html">Send WFS requests</a>]
+  <br />
+  - [<a href="console/client/wfs/wfs.jsp">See WFS feature types</a>]
+  <br />
+  <br />
+  NOTE: In the online version, transactions are disabled, see the [<a
+    href="http://wiki.deegree.org/deegreeWiki/deegree3/WebFeatureService">deegree 3 WFS documentation</a>] for setting up a local version.
+  <br />
+  <br />
+  <br />Live map (rendered from complex GeoSciML features)<br />
+  <br />
+  
+</h:body>
+</html>
