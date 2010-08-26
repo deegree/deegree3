@@ -90,7 +90,6 @@
             </goals>
             <configuration>
               <classifier>webapp-template</classifier>
-              <excludes>**/web.xml</excludes>
               <type>zip</type>
               <includeGroupIds>org.deegree</includeGroupIds>
               <includeArtifactIds>deegree-services-console</includeArtifactIds>
