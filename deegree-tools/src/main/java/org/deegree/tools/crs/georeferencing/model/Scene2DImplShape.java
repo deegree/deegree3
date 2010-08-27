@@ -43,6 +43,8 @@ import java.awt.image.BufferedImage;
 
 import javax.vecmath.Point2d;
 
+import jj2000.j2k.NotImplementedError;
+
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -61,7 +63,7 @@ import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 
 /**
- * TODO add class documentation here
+ * Generates a 2D BufferedImage from a ShapeFile.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -183,31 +185,7 @@ public class Scene2DImplShape implements Scene2D {
 
     @Override
     public void generatePredictedImage( Point2d changePoint ) {
-
-        // double minX = changePoint.x * 2 * ref.getResolutionX();
-        // double minY = changePoint.y * 2 * ref.getResolutionY();
-        // Point2d predictedBounds = new Point2d( transformedBounds.x * 2, transformedBounds.y * 2 );
-        // double maxX = minX + predictedBounds.x;
-        // double maxY = minY + predictedBounds.y;
-        // double minX = 0;
-        // double minY = 0;
-        // double[] max = ref.getWorldCoordinate( raster.getColumns(), raster.getRows() );
-
-        // System.out.println( ref.getSize( raster.getEnvelope() ) );
-        // System.out.println( max[0] + " " + max[1] );
-
-        // transform to get the boundingbox coordinates
-        // double[] worldCoordLeftLower = ref.getWorldCoordinate( minX, maxY );
-        // double[] worldCoordRightUpper = ref.getWorldCoordinate( maxX, minY );
-        //
-        // SimpleRaster predRaster = raster.getAsSimpleRaster().getSubRaster( worldCoordLeftLower[0],
-        // worldCoordLeftLower[1],
-        // worldCoordRightUpper[0],
-        // worldCoordRightUpper[1] );
-        // System.out.println( "predictedRaster: " + predRaster );
-        // System.out.println( "world: " + worldCoordLeftLower[0] + " " + worldCoordLeftLower[1] + " "
-        // + worldCoordRightUpper[0] + " " + worldCoordRightUpper[1] );
-
+        throw new NotImplementedError();
     }
 
     @Override
@@ -215,105 +193,10 @@ public class Scene2DImplShape implements Scene2D {
         return generatedImage;
     }
 
-    // /**
-    // * @param options
-    // */
-    // private List<String> getLayers( RasterIOOptions options ) {
-    // List<String> configuredLayers = new LinkedList<String>();
-    // String layers = options.get( "RASTERIO_WMS_REQUESTED_LAYERS" );
-    // if ( StringUtils.isSet( layers ) ) {
-    // String[] layer = layers.split( "," );
-    // for ( String l : layer ) {
-    //
-    // configuredLayers.add( l );
-    // }
-    // }
-    // if ( configuredLayers.isEmpty() ) {
-    // List<String> namedLayers = this.wmsClient.getNamedLayers();
-    // if ( namedLayers != null ) {
-    //
-    // configuredLayers.addAll( namedLayers );
-    // }
-    // }
-    //
-    // return configuredLayers;
-    // }
-
     @Override
     public BufferedImage getPredictedImage() {
 
         return predictedImage;
     }
-
-    // @Override
-    // public void generatePredictedImage( SimpleRaster coverage ) {
-    // imageAround = new BufferedImage[4];
-    // int c = coverage.getColumns();
-    // int r = coverage.getRows();
-    // GeometryFactory geoFac = new GeometryFactory();
-    // // Grid
-    // double[] leftUpperCornerRaster = new double[] { 0 - c, 0 - r };
-    // double[] leftUpperCornerWorld = ref.getWorldCoordinate( leftUpperCornerRaster[0], leftUpperCornerRaster[1] );
-    //
-    // double[] rightUpperCornerRaster = new double[] { c * 2, 0 - r };
-    // double[] rightUpperCornerWorld = ref.getWorldCoordinate( rightUpperCornerRaster[0], rightUpperCornerRaster[1] );
-    //
-    // double[] leftMiddleUpperCornerRaster = new double[] { 0 - c, 0 };
-    // double[] leftMiddleUpperCornerWorld = ref.getWorldCoordinate( leftMiddleUpperCornerRaster[0],
-    // leftMiddleUpperCornerRaster[1] );
-    //
-    // double[] rightMiddleUpperCornerRaster = new double[] { c * 2, 0 };
-    // double[] rightMiddleUpperCornerWorld = ref.getWorldCoordinate( rightMiddleUpperCornerRaster[0],
-    // rightMiddleUpperCornerRaster[1] );
-    //
-    // double[] leftMiddleLowerCornerRaster = new double[] { 0 - c, r };
-    // double[] leftMiddleLowerCornerWorld = ref.getWorldCoordinate( leftMiddleLowerCornerRaster[0],
-    // leftMiddleLowerCornerRaster[1] );
-    //
-    // double[] rightMiddleLowerCornerRaster = new double[] { c * 2, r };
-    // double[] rightMiddleLowerCornerWorld = ref.getWorldCoordinate( rightMiddleLowerCornerRaster[0],
-    // rightMiddleLowerCornerRaster[1] );
-    //
-    // double[] leftLowerCornerRaster = new double[] { 0 - c, r * 2 };
-    // double[] leftLowerCornerWorld = ref.getWorldCoordinate( leftLowerCornerRaster[0], leftLowerCornerRaster[1] );
-    //
-    // double[] rightLowerCornerRaster = new double[] { c * 2, r * 2 };
-    // double[] rightLowerCornerWorld = ref.getWorldCoordinate( rightLowerCornerRaster[0], rightLowerCornerRaster[1] );
-    //
-    // double[] leftUpperMiddleCornerRaster = new double[] { 0, 0 - r };
-    // double[] leftUpperMiddleCornerWorld = ref.getWorldCoordinate( leftUpperMiddleCornerRaster[0],
-    // leftUpperMiddleCornerRaster[1] );
-    //
-    // double[] rightUpperMiddleCornerRaster = new double[] { c, 0 - r };
-    // double[] rightUpperMiddleCornerWorld = ref.getWorldCoordinate( rightUpperMiddleCornerRaster[0],
-    // rightUpperMiddleCornerRaster[1] );
-    //
-    // double[] leftLowerMiddleCornerRaster = new double[] { 0, r * 2 };
-    // double[] leftLowerMiddleCornerWorld = ref.getWorldCoordinate( leftLowerMiddleCornerRaster[0],
-    // leftLowerMiddleCornerRaster[1] );
-    //
-    // double[] rightLowerMiddleCornerRaster = new double[] { c, r * 2 };
-    // double[] rightLowerMiddleCornerWorld = ref.getWorldCoordinate( rightLowerMiddleCornerRaster[0],
-    // rightLowerMiddleCornerRaster[1] );
-    //
-    // Envelope env1 = geoFac.createEnvelope( leftMiddleUpperCornerWorld, rightUpperCornerWorld, ref.getCrs() );
-    // Envelope env2 = geoFac.createEnvelope( leftLowerCornerWorld, leftUpperMiddleCornerWorld, ref.getCrs() );
-    // Envelope env3 = geoFac.createEnvelope( leftLowerCornerWorld, rightMiddleLowerCornerWorld, ref.getCrs() );
-    // Envelope env4 = geoFac.createEnvelope( rightLowerMiddleCornerWorld, rightUpperCornerWorld, ref.getCrs() );
-    //
-    // imageAround[0] = generateMap( env1 );
-    // imageAround[1] = generateMap( env2 );
-    // imageAround[2] = generateMap( env3 );
-    // imageAround[3] = generateMap( env4 );
-    //
-    // if ( coverage.getEnvelope().intersects( env4 ) ) {
-    // System.out.println( "bin intersected mit env4" );
-    // System.out.println( coverage.getEnvelope() );
-    // System.out.println( env4 );
-    // BufferedImage img = imageAround[3];
-    // RasterFactory.imageFromRaster( coverage );
-    // }
-    //
-    // }
 
 }

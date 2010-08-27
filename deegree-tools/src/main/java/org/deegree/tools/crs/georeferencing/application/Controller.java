@@ -113,6 +113,7 @@ import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.deegree.tools.crs.georeferencing.model.textfield.AbstractCoordinateJumperModel;
 import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
 import org.deegree.tools.rendering.viewer.File3dImporter;
@@ -1069,16 +1070,9 @@ public class Controller {
                                                                                        - minPoint.getX() ).intValue() ),
                                                                  Math.abs( new Double( maxPoint.getY()
                                                                                        - minPoint.getY() ).intValue() ) );
-                                    GeoReferencedPoint center = new GeoReferencedPoint( r.getCenterX(), r.getCenterY() );
-                                    GeoReferencedPoint dimension = new GeoReferencedPoint(
-                                                                                           Math.abs( new Double(
-                                                                                                                 maxPoint.getX()
-                                                                                                                                         - minPoint.getX() ).intValue() ),
-                                                                                           Math.abs( new Double(
-                                                                                                                 maxPoint.getY()
-                                                                                                                                         - minPoint.getY() ).intValue() ) );
-                                    sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
-                                    // sceneValues.computeAbsoluteEnvelope( GeoreferencedPoint, r );
+
+                                    sceneValues.createZoomedEnvWithMinPoint( PointType.GeoreferencedPoint, r );
+
                                 }
                             } else if ( isZoomOutGeoref ) {
                                 sceneValues.computeZoomedEnvelope( false, dialogModel.getResizeValue().second,
@@ -1160,10 +1154,8 @@ public class Controller {
                                                              new Double( minPoint.getY() ).intValue(),
                                                              Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
                                                              Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
-                                FootprintPoint center = new FootprintPoint( r.getCenterX(), r.getCenterY() );
-                                FootprintPoint dimension = new FootprintPoint( r.getWidth(), r.getHeight() );
-                                sceneValues.setCentroidRasterEnvelopePosition( center, dimension );
-                                // sceneValues.computeAbsoluteEnvelope( FootprintPoint, r );
+
+                                sceneValues.createZoomedEnvWithMinPoint( PointType.FootprintPoint, r );
                             }
                         } else if ( isZoomOutFoot ) {
                             sceneValues.computeZoomedEnvelope( false, dialogModel.getResizeValue().second,

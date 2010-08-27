@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.application;
 
-import java.awt.Rectangle;
 import java.net.URL;
 
 import org.deegree.cs.CRS;
@@ -63,7 +62,7 @@ public class ParameterStore {
 
     private final int qor;
 
-    private final Rectangle rasterEnvelope;
+    // private final Rectangle rasterEnvelope;
 
     private final static String separator = "\\p{Space}*[ ;/]\\p{Space}*";
 
@@ -75,7 +74,7 @@ public class ParameterStore {
         this.layers = layers;
         this.bbox = bbox;
         this.qor = qor;
-        this.rasterEnvelope = new Rectangle( qor, qor );
+        // this.rasterEnvelope = new Rectangle( qor, qor );
 
     }
 
@@ -103,8 +102,8 @@ public class ParameterStore {
         return qor;
     }
 
-    public Rectangle getRasterEnvelope() {
-        return rasterEnvelope;
-    }
+    // public Rectangle getRasterEnvelope() {
+    // return rasterEnvelope;
+    // }
 
 }

@@ -41,12 +41,9 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.tools.crs.georeferencing.model.BoundingBox;
-import org.deegree.tools.crs.georeferencing.model.GeorefernceQuality;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
@@ -66,21 +63,6 @@ public class Scene2DValues {
 
     private Rectangle dimensionFootprint;
 
-    /**
-     * new width and new height
-     */
-    private Point2d transformedRasterSpan;
-
-    private Point2d convertedPixelToRasterPoint;
-
-    private RasterRect rect;
-
-    private double sizeGeoRef;
-
-    private Point2d minPointRaster;
-
-    private Point2d minPointPixel;
-
     private CRS crs;
 
     private Envelope envelopeFootprint;
@@ -89,15 +71,13 @@ public class Scene2DValues {
 
     private GeometryFactory geom;
 
-    private double ratio;
+    private double ratioGeoref;
+
+    private double ratioFoot;
 
     private URL georefURL;
 
-    private GeorefernceQuality quality;
-
     private List<String> selectedLayers;
-
-    private BoundingBox georeferenceBBox;
 
     private String format;
 
@@ -161,7 +141,7 @@ public class Scene2DValues {
      *            , not <Code>null</Code>.
      * @return an AbstractGRPoint in worldCoordinates.
      */
-    private AbstractGRPoint getWorldDimension( AbstractGRPoint dimension ) {
+    public AbstractGRPoint getWorldDimension( AbstractGRPoint dimension ) {
         switch ( dimension.getPointType() ) {
 
         case GeoreferencedPoint:
@@ -171,12 +151,9 @@ public class Scene2DValues {
                 double spanX = this.envelopeGeoref.getSpan0();
                 double spanY = this.envelopeGeoref.getSpan1();
 
-                // if(){
-                //                    
-                // }
                 // determine the percentage of the requested point
-                double percentX = ( dimension.getX() / rect.width ) * spanX;
-                double percentY = ( dimension.getY() / rect.height ) * spanY;
+                double percentX = ( dimension.getX() / dimensionGeoreference.width ) * spanX;
+                double percentY = ( dimension.getY() / dimensionGeoreference.height ) * spanY;
 
                 return new GeoReferencedPoint( percentX, percentY );
 
@@ -236,103 +213,6 @@ public class Scene2DValues {
     }
 
     /**
-     * Sets the points <i>xCoord</i> and <i>yCoord</i> as the centroid of the envelope with specified spans in x- and
-     * y-direction. These parameters will be corrected if there is a mismatch regarding to the proportion of the
-     * requested envelope.
-     * 
-     * @param xCoord
-     *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
-     * @param yCoord
-     *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
-     * @param spanX
-     *            x-dimension that should be the width of the envelope, if not specified use
-     *            {@link #setCentroidWorldEnvelopePosition(double, double)} instead.
-     * @param spanY
-     *            y-dimension that should be the height of the envelope, if not specified use
-     *            {@link #setCentroidWorldEnvelopePosition(double, double)} instead.
-     */
-    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, double spanX, double spanY,
-                                                  PointType type ) {
-
-        double halfSpanXWorld;
-        double halfSpanYWorld;
-        Envelope e1 = geom.createEnvelope( xCoord - spanX / 2, yCoord - spanY / 2, xCoord + spanX / 2, yCoord + spanY
-                                                                                                       / 2, null );
-
-        switch ( type ) {
-        case GeoreferencedPoint:
-            if ( spanX != -1 && spanY != -1 ) {
-                if ( ratio < 1 ) {
-                    halfSpanYWorld = spanY / 2;
-                    halfSpanXWorld = halfSpanYWorld * transformedRasterSpan.x / transformedRasterSpan.y;
-
-                } else {
-
-                    halfSpanXWorld = spanX / 2;
-                    halfSpanYWorld = halfSpanXWorld * transformedRasterSpan.x / transformedRasterSpan.y;
-
-                }
-
-            } else {
-                halfSpanXWorld = this.envelopeGeoref.getSpan0() / 2;
-                halfSpanYWorld = this.envelopeGeoref.getSpan1() / 2;
-
-            }
-
-            double minX = xCoord - halfSpanXWorld;
-            double minY = yCoord - halfSpanYWorld;
-            double maxX = xCoord + halfSpanXWorld;
-            double maxY = yCoord + halfSpanYWorld;
-            envelopeGeoref = createZoomedEnv( e1, 1, new GeoReferencedPoint( xCoord, yCoord ) );
-            // envelopeGeoref = geom.createEnvelope( minX, minY, maxX, maxY, crs );
-            System.out.println( "[Scene2DValues] subRaster: " + envelopeGeoref );
-            break;
-        case FootprintPoint:
-            halfSpanXWorld = spanX / 2;
-            halfSpanYWorld = spanY / 2;
-            double minXF = xCoord - halfSpanXWorld;
-            double minYF = yCoord - halfSpanYWorld;
-            double maxYF = yCoord + halfSpanYWorld;
-            double maxXF = xCoord + halfSpanXWorld;
-            Envelope e = geom.createEnvelope( minXF, minYF, maxXF, maxYF, envelopeFootprint.getCoordinateSystem() );
-            transformProportionFootprint( e );
-            break;
-        }
-    }
-
-    /**
-     * 
-     * Sets the point as the centroid of the envelope.
-     * 
-     * @param xCoord
-     *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
-     * @param yCoord
-     *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
-     * 
-     */
-    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, PointType type ) {
-        this.setCentroidWorldEnvelopePosition( xCoord, yCoord, -1, -1, type );
-    }
-
-    /**
-     * Resizes the envelope in world coordinates to the specified size. The specified centroid will be the
-     * centerposition of the new envelope.
-     * 
-     * @param centroid
-     *            the centroid position in pixel coordinates, not <Code>null</Code>.
-     * 
-     * @param dimension
-     *            the width and height of the envelope in pixel coordinates, not <Code>null</Code>.
-     */
-    public void setCentroidRasterEnvelopePosition( AbstractGRPoint centroid, AbstractGRPoint dimension ) {
-        AbstractGRPoint center = getWorldPoint( centroid );
-        AbstractGRPoint dim = getWorldDimension( dimension );
-
-        this.setCentroidWorldEnvelopePosition( center.getX(), center.getY(), dim.getX(), dim.getY(),
-                                               center.getPointType() );
-    }
-
-    /**
      * Computes the percent of the AbstractGRPoint relative to the Envelope in worldCoordinates.
      * 
      * @param env
@@ -379,22 +259,8 @@ public class Scene2DValues {
 
         this.dimensionFootprint = dimension;
         if ( envelopeFootprint != null ) {
-            transformPropFoot();
+            transformProportionFoot( envelopeFootprint );
         }
-    }
-
-    public void setEnvelopeGeoref( Envelope envelopeGeoref ) {
-        this.envelopeGeoref = envelopeGeoref;
-    }
-
-    public Point2d generateTransformedBounds( RasterRect rasterRect ) {
-
-        return transformProportion( rasterRect );
-
-    }
-
-    public Point2d getTransformedBounds() {
-        return this.transformedRasterSpan;
     }
 
     /**
@@ -472,77 +338,7 @@ public class Scene2DValues {
     }
 
     /**
-     * Computes the zoomed envelope with a absoulte startposition and a specified width and height.
-     * 
-     * @param type
-     *            the type of the specified point, not be <Code>null</Code>
-     * @param rect
-     *            the rectangle that is requested, not be <Code>null</Code>
-     */
-    public void computeAbsoluteEnvelope( PointType type, Rectangle rect ) {
-
-        double w = dimensionGeoreference.getWidth();
-        double h = dimensionGeoreference.getHeight();
-        double wR = rect.getWidth();
-        double hR = rect.getHeight();
-        double minX = rect.getMinX();
-        double minY = rect.getMinY();
-        double ratioRect = wR / hR;
-
-        double newHeight = -1;
-        double newWidth = -1;
-        AbstractGRPoint minP = null;
-        AbstractGRPoint dim = null;
-
-        if ( ratioRect < 1 ) {
-
-            newHeight = ( wR * h / w );
-
-        } else if ( ratioRect > 1 ) {
-            newWidth = ( hR * w / h );
-
-        }
-
-        switch ( type ) {
-        case GeoreferencedPoint:
-            // Envelope env = null;
-            // minP = getWorldPoint( new GeoReferencedPoint( minX, minY ) );
-            //
-            // if ( newHeight != -1 ) {
-            //
-            // dim = getWorldDimension( new GeoReferencedPoint( wR, newHeight ) );
-            //
-            // } else if ( newWidth != -1 ) {
-            // dim = getWorldDimension( new GeoReferencedPoint( newWidth, hR ) );
-            //
-            // }
-            // env = geom.createEnvelope( minP.getX(), minP.getY() - dim.getY(), minP.getX() + dim.getX(), minP.getY(),
-            // this.subRaster.getCoordinateSystem() );
-            // if ( env != null ) {
-            // this.subRaster = raster.getAsSimpleRaster().getSubRaster( env );
-            // } else {
-            // throw new IllegalArgumentException( "No envelope could be created. " );
-            // }
-            break;
-        case FootprintPoint:
-            // minP = getWorldPoint( new FootprintPoint( minX, minY ) );
-            // if ( newHeight != -1 ) {
-            // dim = getWorldDimension( new FootprintPoint( wR, newHeight ) );
-            //
-            // } else if ( newWidth != -1 ) {
-            // dim = getWorldDimension( new FootprintPoint( newWidth, hR ) );
-            // } else {
-            // throw new IllegalArgumentException( "No envelope could be created. " );
-            // }
-            // this.envelopeFootprint = geom.createEnvelope( minP.getX(), minP.getY() - dim.getY(), minP.getX()
-            // + dim.getX(),
-            // minP.getY(), this.subRaster.getCoordinateSystem() );
-            break;
-        }
-    }
-
-    /**
-     * Creates the envelope for zoom.
+     * Creates the envelope for zoom in worldCoordinates.
      * 
      * @param env
      *            to be zoomed, not <Code>null</Code>
@@ -567,8 +363,45 @@ public class Scene2DValues {
         double minPointY = center.getY() - percentSpanY;
         double maxPointX = center.getX() + percentSpanXPos;
         double maxPointY = center.getY() + percentSpanYPos;
+        Envelope e = geom.createEnvelope( minPointX, minPointY, maxPointX, maxPointY, env.getCoordinateSystem() );
+        System.out.println( "[Scene2DValues] createdZoomedEnv " + e );
+        return e;
+    }
 
-        return geom.createEnvelope( minPointX, minPointY, maxPointX, maxPointY, env.getCoordinateSystem() );
+    /**
+     * Creates a new envelope from an envelope and a centerPoint and translates it to the relative bounds.
+     * 
+     * @param env
+     * @param center
+     * @return
+     */
+    public void createZoomedEnvWithMinPoint( PointType type, Rectangle rect ) {
+        double minXRaster = rect.getX();
+        double maxYRaster = rect.getY();
+        double maxXRaster = minXRaster + rect.getWidth();
+        double minYRaster = maxYRaster - rect.getHeight();
+        AbstractGRPoint minPoint = null;
+        AbstractGRPoint maxPoint = null;
+
+        switch ( type ) {
+        case GeoreferencedPoint:
+            minPoint = getWorldPoint( new GeoReferencedPoint( minXRaster, minYRaster ) );
+            maxPoint = getWorldPoint( new GeoReferencedPoint( maxXRaster, maxYRaster ) );
+
+            transformProportionGeoref( geom.createEnvelope( minPoint.getX(), minPoint.getY(), maxPoint.getX(),
+                                                            maxPoint.getY(), crs ) );
+            break;
+
+        case FootprintPoint:
+            minPoint = getWorldPoint( new FootprintPoint( minXRaster, minYRaster ) );
+            maxPoint = getWorldPoint( new FootprintPoint( maxXRaster, maxYRaster ) );
+
+            transformProportionFoot( geom.createEnvelope( minPoint.getX(), minPoint.getY(), maxPoint.getX(),
+                                                          maxPoint.getY(), null ) );
+
+            break;
+        }
+
     }
 
     /**
@@ -576,139 +409,58 @@ public class Scene2DValues {
      * should influence the display of the image returned by the WMS to prevent any deformation. <li>pos - orientation
      * on width because width is larger</li> <li>neg - orientation on hight because hight is larger</li> <li>other -
      * orientation on width/hight because they are even</li>
-     * <p>
-     * Additionally it generates a converted point that represents a rasterPoint converted from a pixelPoint
      * 
-     * @param panelBounds
-     *            the rectangle bounds, not <Code>null</Code>
-     * @return an positive, negative or even integer
+     * @param envelope
+     *            to be transformed, must be not <Code>null</Code>.
      */
-    private Point2d transformProportion( RasterRect rect ) {
+    public void transformProportionGeoref( Envelope envelope ) {
         double w = dimensionGeoreference.width;
         double h = dimensionGeoreference.height;
 
-        ratio = w / h;
-        if ( sizeGeoRef == 0.0f ) {
-            sizeGeoRef = 1.0f;
+        double minX = envelope.getMin().get0();
+        double maxY = envelope.getMax().get1();
+        double newWidth = envelope.getSpan0();
+        double newHeight = envelope.getSpan1();
+
+        ratioGeoref = w / h;
+
+        if ( ratioGeoref < 1 ) {
+            newWidth = newHeight * ratioGeoref;
+        } else if ( ratioGeoref > 1 ) {
+            newHeight = newWidth * 1 / ratioGeoref;
         }
-
-        if ( ratio < 1 ) {
-            // if < 1 then do orientation on h
-            double newWidth = ( w / h ) * sizeGeoRef * rect.width;
-
-            convertedPixelToRasterPoint = new Point2d( newWidth / w, rect.height * sizeGeoRef / h );
-            transformedRasterSpan = new Point2d( newWidth, rect.height * sizeGeoRef );
-
-            return transformedRasterSpan;
-        } else if ( ratio > 1 ) {
-            // if > 1 then do orientation on w
-            double newHeight = ( h / w ) * sizeGeoRef * rect.height;
-
-            convertedPixelToRasterPoint = new Point2d( rect.width * sizeGeoRef / w, newHeight / h );
-            transformedRasterSpan = new Point2d( rect.width * sizeGeoRef, newHeight );
-            return transformedRasterSpan;
-        }
-        // if w = h then return 0
-        transformedRasterSpan = new Point2d( rect.width * sizeGeoRef, rect.height * sizeGeoRef );
-
-        return transformedRasterSpan;
+        this.envelopeGeoref = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
+        System.out.println( "[Scene2DValues] radioEnvGeoref " + envelopeGeoref );
     }
 
     /**
      * Transforms the ratio of the dimensions of the footprintPanel. <br>
      * It takes the ratio between the dimension -width and -height and the ratio between the envelope -width and
      * -height.
-     */
-    private void transformPropFoot() {
-        double wE = envelopeFootprint.getSpan0();
-        double hE = envelopeFootprint.getSpan1();
-        double w = dimensionFootprint.width;
-        double h = dimensionFootprint.height;
-        double ratioEnv = wE / hE;
-        double ratio = w / h;
-
-        System.out.println( "[Scene2DValues] bevore " + dimensionFootprint + " " + ratio );
-        if ( ratio < 1 ) {
-
-            dimensionFootprint.height = new Double( dimensionFootprint.height * ratio / ratioEnv ).intValue();
-        } else if ( ratio > 1 ) {
-
-            dimensionFootprint.width = new Double( dimensionFootprint.width * ratioEnv / ratio ).intValue();
-
-        }
-        System.out.println( "[Scene2DValues] after " + dimensionFootprint + " " + envelopeFootprint );
-
-    }
-
-    private void transformProportionFootprint( Envelope env ) {
-        double wE = env.getSpan0();
-        double hE = env.getSpan1();
-        double w = dimensionFootprint.width;
-        double h = dimensionFootprint.height;
-        double ratioEnv = wE / hE;
-        double ratio = w / h;
-        double rW = w / wE;
-        double rH = h / hE;
-
-        double minX = env.getMin().get0();
-        double minY = env.getMin().get1();
-
-        if ( ratioEnv < 1 ) {
-
-            double newHeight = minY + ( wE * h / w );
-            this.envelopeFootprint = geom.createEnvelope( minX, minY, minX + env.getSpan0(), newHeight,
-                                                          env.getCoordinateSystem() );
-            System.out.println( "[Scene2DValues] newHeight " + env );
-        } else if ( ratioEnv > 1 ) {
-
-            double newWidth = minX + ( hE * w / h );
-            this.envelopeFootprint = geom.createEnvelope( minX, minY, newWidth, minY + env.getSpan1(),
-                                                          env.getCoordinateSystem() );
-            System.out.println( "[Scene2DValues] newWidth " + env );
-        }
-
-        // TODO what if equals?
-        System.out.println( "[Scene2DValues] after " + dimensionFootprint + " " + envelopeFootprint );
-
-    }
-
-    /**
-     * Sets the minimum points to generate a georeferenced map
      * 
-     * @param minPoint
-     *            the pixel representation of the point, can be <Code>null</Code>.
+     * @param envelope
+     *            the footprint envelope that has to be transformed, must not be <Code>null</Code>.
      */
-    public void setStartRasterEnvelopePosition( Point2d minPoint ) {
-        if ( minPointPixel == null ) {
-            minPointPixel = new Point2d( 0.0, 0.0 );
+    public void transformProportionFoot( Envelope envelope ) {
+        double w = dimensionFootprint.width;
+        double h = dimensionFootprint.height;
+
+        double minX = envelope.getMin().get0();
+        double maxY = envelope.getMax().get1();
+        double newWidth = envelope.getSpan0();
+        double newHeight = envelope.getSpan1();
+
+        ratioFoot = w / h;
+
+        if ( ratioFoot < 1 ) {
+            newWidth = newHeight * ratioFoot;
+        } else if ( ratioFoot > 1 ) {
+            newHeight = newWidth * 1 / ratioFoot;
+
         }
 
-        double minRX = this.minPointRaster.x + ( minPoint.x * convertedPixelToRasterPoint.x );
-        double minRY = this.minPointRaster.y + ( minPoint.y * convertedPixelToRasterPoint.y );
-
-        double minPX = this.minPointPixel.x + minPoint.x;
-        double minPY = this.minPointPixel.y + minPoint.y;
-
-        this.minPointRaster = new Point2d( minRX, minRY );
-        this.minPointPixel = new Point2d( minPX, minPY );
-        System.out.println( "[Scene2DValues] minPixel: " + minPointPixel + " minRaster: " + minPointRaster );
-    }
-
-    public Point2d getMinPointRaster() {
-
-        return minPointRaster;
-    }
-
-    public void setMinPointRaster( Point2d min ) {
-        this.minPointRaster = min;
-    }
-
-    public Point2d getMinPointPixel() {
-        return minPointPixel;
-    }
-
-    public void setMinPointPixel( Point2d minPointPixel ) {
-        this.minPointPixel = minPointPixel;
+        this.envelopeFootprint = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
+        System.out.println( "[Scene2DValues] radioEnvFootprint " + envelopeFootprint );
     }
 
     public CRS getCrs() {
@@ -723,6 +475,10 @@ public class Scene2DValues {
         this.envelopeFootprint = createEnvelope;
     }
 
+    public void setEnvelopeGeoref( Envelope envelopeGeoref ) {
+        this.envelopeGeoref = envelopeGeoref;
+    }
+
     public URL getGeorefURL() {
         return georefURL;
     }
@@ -735,23 +491,6 @@ public class Scene2DValues {
     public List<String> getSelectedLayers() {
 
         return this.selectedLayers;
-    }
-
-    public GeorefernceQuality getQuality() {
-        return quality;
-    }
-
-    public void setQuality( GeorefernceQuality quality ) {
-        this.quality = quality;
-    }
-
-    public void setGeoreferenceBBox( BoundingBox bbox ) {
-        this.georeferenceBBox = bbox;
-
-    }
-
-    public BoundingBox getGeoreferenceBBox() {
-        return georeferenceBBox;
     }
 
     public void setFormat( String format ) {
@@ -773,11 +512,6 @@ public class Scene2DValues {
 
     public Envelope getEnvelopeGeoref() {
         return envelopeGeoref;
-    }
-
-    public void setRasterRect( RasterRect rasterRect ) {
-        this.rect = rasterRect;
-
     }
 
 }
