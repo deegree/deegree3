@@ -133,7 +133,8 @@ public class Scene2DImplWMS implements Scene2D {
 
     @Override
     public BufferedImage generateSubImage( Rectangle bounds ) {
-        sceneValues.transformProportionGeoref( store.getBbox() );
+        sceneValues.transformProportionGeorefPartialOrientation( store.getBbox() );
+        // sceneValues.transformProportionGeorefFullOrientation( store.getBbox() );
         return generatedImage = generateMap( sceneValues.getEnvelopeGeoref() );
 
     }

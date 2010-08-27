@@ -259,7 +259,7 @@ public class Scene2DValues {
 
         this.dimensionFootprint = dimension;
         if ( envelopeFootprint != null ) {
-            transformProportionFoot( envelopeFootprint );
+            transformProportionPartialOrientationFoot( envelopeFootprint );
         }
     }
 
@@ -388,16 +388,16 @@ public class Scene2DValues {
             minPoint = getWorldPoint( new GeoReferencedPoint( minXRaster, minYRaster ) );
             maxPoint = getWorldPoint( new GeoReferencedPoint( maxXRaster, maxYRaster ) );
 
-            transformProportionGeoref( geom.createEnvelope( minPoint.getX(), minPoint.getY(), maxPoint.getX(),
-                                                            maxPoint.getY(), crs ) );
+            transformProportionGeorefPartialOrientation( geom.createEnvelope( minPoint.getX(), minPoint.getY(),
+                                                                              maxPoint.getX(), maxPoint.getY(), crs ) );
             break;
 
         case FootprintPoint:
             minPoint = getWorldPoint( new FootprintPoint( minXRaster, minYRaster ) );
             maxPoint = getWorldPoint( new FootprintPoint( maxXRaster, maxYRaster ) );
 
-            transformProportionFoot( geom.createEnvelope( minPoint.getX(), minPoint.getY(), maxPoint.getX(),
-                                                          maxPoint.getY(), null ) );
+            transformProportionPartialOrientationFoot( geom.createEnvelope( minPoint.getX(), minPoint.getY(),
+                                                                            maxPoint.getX(), maxPoint.getY(), null ) );
 
             break;
         }
@@ -405,15 +405,19 @@ public class Scene2DValues {
     }
 
     /**
+     * 
+     * 
      * Determines the ratio the boundingbox has to orient on. If there is a mismatch between the width and height this
      * should influence the display of the image returned by the WMS to prevent any deformation. <li>pos - orientation
      * on width because width is larger</li> <li>neg - orientation on hight because hight is larger</li> <li>other -
      * orientation on width/hight because they are even</li>
+     * <p>
+     * The partial orientation orients on the minimal span dimension.
      * 
      * @param envelope
      *            to be transformed, must be not <Code>null</Code>.
      */
-    public void transformProportionGeoref( Envelope envelope ) {
+    public void transformProportionGeorefPartialOrientation( Envelope envelope ) {
         double w = dimensionGeoreference.width;
         double h = dimensionGeoreference.height;
 
@@ -434,6 +438,34 @@ public class Scene2DValues {
     }
 
     /**
+     * 
+     * The full orientation orients on the maximal span dimension.
+     * 
+     * @param envelope
+     *            to be transformed, must be not <Code>null</Code>.
+     */
+    public void transformProportionGeorefFullOrientation( Envelope envelope ) {
+        double w = dimensionGeoreference.width;
+        double h = dimensionGeoreference.height;
+
+        double minX = envelope.getMin().get0();
+        double maxY = envelope.getMax().get1();
+        double newWidth = envelope.getSpan0();
+        double newHeight = envelope.getSpan1();
+
+        ratioGeoref = w / h;
+
+        if ( ratioGeoref < 1 ) {
+            newHeight = newWidth * 1 / ratioGeoref;
+
+        } else if ( ratioGeoref > 1 ) {
+            newWidth = newHeight * ratioGeoref;
+        }
+        this.envelopeGeoref = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
+        System.out.println( "[Scene2DValues] radioEnvGeoref " + envelopeGeoref );
+    }
+
+    /**
      * Transforms the ratio of the dimensions of the footprintPanel. <br>
      * It takes the ratio between the dimension -width and -height and the ratio between the envelope -width and
      * -height.
@@ -441,7 +473,7 @@ public class Scene2DValues {
      * @param envelope
      *            the footprint envelope that has to be transformed, must not be <Code>null</Code>.
      */
-    public void transformProportionFoot( Envelope envelope ) {
+    public void transformProportionPartialOrientationFoot( Envelope envelope ) {
         double w = dimensionFootprint.width;
         double h = dimensionFootprint.height;
 
@@ -457,6 +489,28 @@ public class Scene2DValues {
         } else if ( ratioFoot > 1 ) {
             newHeight = newWidth * 1 / ratioFoot;
 
+        }
+
+        this.envelopeFootprint = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
+        System.out.println( "[Scene2DValues] radioEnvFootprint " + envelopeFootprint );
+    }
+
+    public void transformProportionFullOrientationFoot( Envelope envelope ) {
+        double w = dimensionFootprint.width;
+        double h = dimensionFootprint.height;
+
+        double minX = envelope.getMin().get0();
+        double maxY = envelope.getMax().get1();
+        double newWidth = envelope.getSpan0();
+        double newHeight = envelope.getSpan1();
+
+        ratioFoot = w / h;
+
+        if ( ratioFoot < 1 ) {
+            newHeight = newWidth * 1 / ratioFoot;
+        } else if ( ratioFoot > 1 ) {
+
+            newWidth = newHeight * ratioFoot;
         }
 
         this.envelopeFootprint = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
