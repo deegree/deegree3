@@ -83,6 +83,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.linearization.CurveLinearizer;
 import org.deegree.geometry.linearization.NumPointsCriterion;
+import org.deegree.geometry.linearization.SurfaceLinearizer;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
@@ -128,7 +129,9 @@ public class Java2DRenderer implements Renderer {
 
     private double res;
 
-    private static final CurveLinearizer linearizer = new CurveLinearizer( new GeometryFactory() );
+    private static final CurveLinearizer curveLinearizer = new CurveLinearizer( new GeometryFactory() );
+
+    private static final SurfaceLinearizer surfaceLinearizer = new SurfaceLinearizer( new GeometryFactory() );
 
     /**
      * @param graphics
@@ -373,8 +376,26 @@ public class Java2DRenderer implements Renderer {
                 if ( transformer.getWrappedTargetCRS().equals( crs ) ) {
                     return g;
                 }
-                return transformer.transform( g );
+                T g2 = transformer.transform( g );
+                if ( g2 == null ) {
+                    LOG.warn( "Geometry transformer returned null for geometry of type {}, crs was {}.",
+                              g.getClass().getSimpleName(), crs );
+                    return g;
+                }
+                return g2;
             } catch ( IllegalArgumentException e ) {
+                if ( g instanceof Surface ) {
+                    @SuppressWarnings("unchecked")
+                    T g2 = (T) transform( surfaceLinearizer.linearize( (Surface) g, new NumPointsCriterion( 100 ) ) );
+                    g2.setCoordinateSystem( g.getCoordinateSystem() );
+                    return g2;
+                }
+                if ( g instanceof Curve ) {
+                    @SuppressWarnings("unchecked")
+                    T g2 = (T) transform( curveLinearizer.linearize( (Curve) g, new NumPointsCriterion( 100 ) ) );
+                    g2.setCoordinateSystem( g.getCoordinateSystem() );
+                    return g2;
+                }
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Could not transform geometry of type '{}' before rendering, "
                           + "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs );
@@ -468,7 +489,7 @@ public class Java2DRenderer implements Renderer {
 
         // TODO use error criterion
         CRS crs = curve.getCoordinateSystem();
-        curve = linearizer.linearize( curve, new NumPointsCriterion( 100 ) );
+        curve = curveLinearizer.linearize( curve, new NumPointsCriterion( 100 ) );
         curve.setCoordinateSystem( crs );
         Points points = curve.getControlPoints();
         Iterator<Point> iter = points.iterator();
