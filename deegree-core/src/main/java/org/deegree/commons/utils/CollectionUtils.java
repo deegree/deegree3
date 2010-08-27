@@ -68,6 +68,18 @@ public class CollectionUtils {
     };
 
     /**
+     * @param delim
+     * @return a reducer that joins a string list
+     */
+    public static Reducer<String> getStringJoiner( final String delim ) {
+        return new Reducer<String>() {
+            public String reduce( String t1, String t2 ) {
+                return t1 + delim + t2;
+            }
+        };
+    }
+
+    /**
      * @param <T>
      * @return a mapper to output an object array
      * */
