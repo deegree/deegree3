@@ -161,7 +161,7 @@ public class Java2DRenderer implements Renderer {
                     res = bbox.getSpan0() / width; // use x for resolution
                 } else {
                     // heuristics more or less copied from d2, TODO is use the proper UTM conversion
-                    Envelope box = (Envelope) new GeometryTransformer( EPSG_4326.getWrappedCRS() ).transform( bbox );
+                    Envelope box = new GeometryTransformer( EPSG_4326.getWrappedCRS() ).transform( bbox );
                     double minx = box.getMin().get0(), miny = box.getMin().get1();
                     double maxx = minx + box.getSpan0();
                     double r = 6378.137;
@@ -356,18 +356,24 @@ public class Java2DRenderer implements Renderer {
         graphics.draw( object );
     }
 
-    <T> T transform( T g ) {
+    <T extends Geometry> T transform( T g ) {
+        if ( g == null ) {
+            LOG.warn( "Trying to transform null geometry." );
+            return null;
+        }
+        if ( g.getCoordinateSystem() == null ) {
+            LOG.warn( "Geometry of type '{}' had null coordinate system.", g.getClass().getSimpleName() );
+            return g;
+        }
         if ( transformer != null ) {
             CRS crs = null;
             try {
-                if ( g != null ) {
-                    // TODO minimize transformations in all other cases as well
-                    crs = ( (Geometry) g ).getCoordinateSystem();
-                    if ( transformer.getWrappedTargetCRS().equals( crs ) ) {
-                        return (T) g;
-                    }
+                // TODO minimize transformations in all other cases as well
+                crs = ( (Geometry) g ).getCoordinateSystem();
+                if ( transformer.getWrappedTargetCRS().equals( crs ) ) {
+                    return g;
                 }
-                return (T) transformer.transform( (Geometry) g );
+                return transformer.transform( g );
             } catch ( IllegalArgumentException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Could not transform geometry of type '{}' before rendering, "
