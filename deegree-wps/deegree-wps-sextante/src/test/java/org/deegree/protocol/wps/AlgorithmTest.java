@@ -6,9 +6,10 @@ import java.net.URL;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.protocol.wps.process.Process;
-import org.deegree.protocol.wps.process.ProcessExecution;
-import org.deegree.protocol.wps.process.execute.ExecutionOutputs;
+import org.deegree.protocol.wps.client.WPSClient;
+import org.deegree.protocol.wps.client.process.ProcessExecution;
+import org.deegree.protocol.wps.client.process.Process;
+import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.wps.provider.SextanteProcessProvider;
 import org.junit.Assert;
@@ -61,7 +62,7 @@ public class AlgorithmTest {
                 for ( int i = 0; i < algs.length; i++ ) {
                     GeoAlgorithm alg = algs[i];
 
-                    Process process = client.getProcess( alg.getCommandLineName(), null );
+                    Process process = client.getProcess( alg.getCommandLineName() );
                     ProcessExecution execution = process.prepareExecution();
 
                     // add all inputs

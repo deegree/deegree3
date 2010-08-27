@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -114,70 +116,14 @@ public class SextanteWPSProcess implements WPSProcess {
     // process description
     private final ProcessDefinition description;
 
-    // format types
-    private ComplexFormatType complexFormatTypeGML2;
+    // complex format types
+    private LinkedList<ComplexFormatType> gmInputFormats = FormatHelper.getInputFormatsWithoutDefault();
 
-    private ComplexFormatType complexFormatTypeGML30;
-
-    private ComplexFormatType complexFormatTypeGML31;
-
-    private ComplexFormatType complexFormatTypeGML32;
-
-    private ComplexFormatType complexFormatTypeGML2FeatureCollection;
-
-    private ComplexFormatType complexFormatTypeGML30FeatureCollection;
-
-    private ComplexFormatType complexFormatTypeGML31FeatureCollection;
-
-    private ComplexFormatType complexFormatTypeGML32FeatureCollection;
+    private LinkedList<ComplexFormatType> gmlOutputFormats = FormatHelper.getOutputFormatsWithoutDefault();
 
     SextanteWPSProcess( GeoAlgorithm alg ) {
-        initComplexFormatTypes();
         processlet = new SextanteProcesslet( alg );
         description = createDescription( alg );
-    }
-
-    private void initComplexFormatTypes() {
-
-        complexFormatTypeGML2 = new ComplexFormatType();
-        complexFormatTypeGML2.setEncoding( "UTF-8" );
-        complexFormatTypeGML2.setMimeType( "text/xml" );
-        complexFormatTypeGML2.setSchema( SupportedGMLSchemas.GML_2_GEOMETRY_SCHEMA.getSchema() );
-
-        complexFormatTypeGML30 = new ComplexFormatType();
-        complexFormatTypeGML30.setEncoding( "UTF-8" );
-        complexFormatTypeGML30.setMimeType( "text/xml" );
-        complexFormatTypeGML30.setSchema( SupportedGMLSchemas.GML_30_GEOMETRY_SCHEMA.getSchema() );
-
-        complexFormatTypeGML31 = new ComplexFormatType();
-        complexFormatTypeGML31.setEncoding( "UTF-8" );
-        complexFormatTypeGML31.setMimeType( "text/xml" );
-        complexFormatTypeGML31.setSchema( SupportedGMLSchemas.GML_31_GEOMETRY_SCHEMA.getSchema() );
-
-        complexFormatTypeGML32 = new ComplexFormatType();
-        complexFormatTypeGML32.setEncoding( "UTF-8" );
-        complexFormatTypeGML32.setMimeType( "text/xml" );
-        complexFormatTypeGML32.setSchema( SupportedGMLSchemas.GML_32_GEOMETRY_SCHEMA.getSchema() );
-
-        complexFormatTypeGML2FeatureCollection = new ComplexFormatType();
-        complexFormatTypeGML2FeatureCollection.setEncoding( "UTF-8" );
-        complexFormatTypeGML2FeatureCollection.setMimeType( "text/xml" );
-        complexFormatTypeGML2FeatureCollection.setSchema( SupportedGMLSchemas.GML_2_FEATURE_COLLECTION_SCHEMA.getSchema() );
-
-        complexFormatTypeGML30FeatureCollection = new ComplexFormatType();
-        complexFormatTypeGML30FeatureCollection.setEncoding( "UTF-8" );
-        complexFormatTypeGML30FeatureCollection.setMimeType( "text/xml" );
-        complexFormatTypeGML30FeatureCollection.setSchema( SupportedGMLSchemas.GML_30_FEATURE_COLLECTION_SCHEMA.getSchema() );
-
-        complexFormatTypeGML31FeatureCollection = new ComplexFormatType();
-        complexFormatTypeGML31FeatureCollection.setEncoding( "UTF-8" );
-        complexFormatTypeGML31FeatureCollection.setMimeType( "text/xml" );
-        complexFormatTypeGML31FeatureCollection.setSchema( SupportedGMLSchemas.GML_31_FEATURE_COLLECTION_SCHEMA.getSchema() );
-
-        complexFormatTypeGML32FeatureCollection = new ComplexFormatType();
-        complexFormatTypeGML32FeatureCollection.setEncoding( "UTF-8" );
-        complexFormatTypeGML32FeatureCollection.setMimeType( "text/xml" );
-        complexFormatTypeGML32FeatureCollection.setSchema( SupportedGMLSchemas.GML_32_FEATURE_COLLECTION_SCHEMA.getSchema() );
     }
 
     /**
@@ -341,15 +287,9 @@ public class SextanteWPSProcess implements WPSProcess {
         complexInputValue.setTitle( complexInputTitle );
 
         // ComplexInput - Format
-        complexInputValue.setDefaultFormat( complexFormatTypeGML2 );
+        complexInputValue.setDefaultFormat( FormatHelper.getDefaultInputFormat() );
         List<ComplexFormatType> inputOtherFormats = complexInputValue.getOtherFormats();
-        inputOtherFormats.add( complexFormatTypeGML2FeatureCollection );
-        inputOtherFormats.add( complexFormatTypeGML30 );
-        inputOtherFormats.add( complexFormatTypeGML30FeatureCollection );
-        inputOtherFormats.add( complexFormatTypeGML31 );
-        inputOtherFormats.add( complexFormatTypeGML31FeatureCollection );
-        inputOtherFormats.add( complexFormatTypeGML32 );
-        inputOtherFormats.add( complexFormatTypeGML32FeatureCollection );
+        inputOtherFormats.addAll( gmInputFormats );
 
         return complexInput;
     }
@@ -594,14 +534,9 @@ public class SextanteWPSProcess implements WPSProcess {
         complexOutputValue.setTitle( complexOutputTitle );
 
         // ComplexOutput - Format
-        complexOutputValue.setDefaultFormat( complexFormatTypeGML2 );
+        complexOutputValue.setDefaultFormat( FormatHelper.getDefaultOutputFormat() );
         List<ComplexFormatType> outputOtherFormats = complexOutputValue.getOtherFormats();
-        outputOtherFormats.add( complexFormatTypeGML30 );
-        outputOtherFormats.add( complexFormatTypeGML30FeatureCollection );
-        outputOtherFormats.add( complexFormatTypeGML31 );
-        outputOtherFormats.add( complexFormatTypeGML31FeatureCollection );
-        outputOtherFormats.add( complexFormatTypeGML32 );
-        outputOtherFormats.add( complexFormatTypeGML32FeatureCollection );
+        outputOtherFormats.addAll( gmlOutputFormats );
 
         return complexOutput;
     }

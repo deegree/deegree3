@@ -55,7 +55,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.output.ComplexOutput;
-import org.deegree.services.wps.provider.GMLSchema.GMLSchemaType;
+import org.deegree.services.wps.provider.GMLSchema.GMLType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import es.unex.sextante.core.GeoAlgorithm;
@@ -102,11 +102,13 @@ public class SextanteProcesslet implements Processlet {
                             throws ProcessletException {
         try {
 
+            SextanteWPSProcess.logAlgorithm( alg );
+            LOG.info( "SET INPUT PARAMETERS" );
+
             // sets all input values
             setInputValues( alg, in );
 
-            // sets output parameters (here only the output channel)
-            setOutputParameters( alg );
+            LOG.info( "GET OUTPUT PARAMETERS" );
 
             // execute the algorithm
             alg.execute( null, new OutputFactoryImpl() );
@@ -142,10 +144,7 @@ public class SextanteProcesslet implements Processlet {
     private void setInputValues( GeoAlgorithm alg, ProcessletInputs in )
                             throws ProcessletException, ClassNotFoundException {
 
-        SextanteWPSProcess.logAlgorithm( alg );
-
         // input parameters
-        LOG.info( "SET INTPUT PARAMETERS" );
         ParametersSet paramSet = alg.getParameters();
 
         // traverses the input parameters
@@ -204,28 +203,25 @@ public class SextanteProcesslet implements Processlet {
         // create vector layer
         IVectorLayer layer = null;
 
-        // input
-        GMLSchema schema = SupportedGMLSchemas.getGMLSchema( gmlInput.getSchema() );
-        if ( schema != null ) {
-            if ( schema.getGMLSchemaTyp().equals( GMLSchemaType.FEATURE_COLLECTION ) ) {// feature collection
-                FeatureCollection coll = readFeatureCollection( gmlInput );
-                layer = IVectorLayerAdapter.createVectorLayer( coll );
+        // feature collection input
+        if ( FormatHelper.determineGMLType( gmlInput ).equals( GMLType.FEATURE_COLLECTION ) ) {
+            FeatureCollection coll = readFeatureCollection( gmlInput );
+            layer = IVectorLayerAdapter.createVectorLayer( coll );
+        } else {
 
-            } else {
-                if ( schema.getGMLSchemaTyp().equals( GMLSchemaType.GEOMETRY ) ) {// geometry
-                    Geometry geometry = readGeometry( gmlInput );
-                    layer = IVectorLayerAdapter.createVectorLayer( geometry );
-                }
+            // geometry input
+            if ( FormatHelper.determineGMLType( gmlInput ).equals( GMLType.GEOMETRY ) ) {
+                Geometry geometry = readGeometry( gmlInput );
+                layer = IVectorLayerAdapter.createVectorLayer( geometry );
             }
-
         }
 
         if ( layer != null ) {
             // set vector layer
             param.setParameterValue( layer );
 
-        } else {// unknown input schema
-            LOG.error( "\"" + schema + "\" is a not supported GML schema." );
+        } else {// unknown payload
+            LOG.error( "Payload of schema \"" + gmlInput.getSchema() + "\" is unknown." );
             // TODO throw exception
         }
 
@@ -397,21 +393,6 @@ public class SextanteProcesslet implements Processlet {
         // TODO implement this input parameter type
     }
 
-    private void setOutputParameters( GeoAlgorithm alg )
-                            throws WrongOutputIDException {
-
-        LOG.info( "SET OUTPUT PARAMETERS" );
-
-        // output parameter of algorithm
-        OutputObjectsSet outputs = alg.getOutputObjects();
-
-        StreamOutputChannel outCh = new StreamOutputChannel();
-        for ( int i = 0; i < outputs.getOutputObjectsCount(); i++ ) {
-            outputs.getOutput( i ).setOutputChannel( outCh );
-        }
-
-    }
-
     /**
      * Reads the geometry from input (GML).
      * 
@@ -423,11 +404,10 @@ public class SextanteProcesslet implements Processlet {
     private Geometry readGeometry( ComplexInput gmlInput )
                             throws ProcessletException {
         try {
-            String gmlSchema = gmlInput.getSchema();
 
             XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
             GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(
-                                                                               SupportedGMLSchemas.getGMLVersion( gmlSchema ),
+                                                                               FormatHelper.determineGMLVersion( gmlInput ),
                                                                                xmlReader );
 
             return gmlReader.readGeometry();
@@ -449,12 +429,11 @@ public class SextanteProcesslet implements Processlet {
     private FeatureCollection readFeatureCollection( ComplexInput gmlInput )
                             throws ProcessletException {
         try {
-            String gmlSchema = gmlInput.getSchema();
 
             XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
 
             GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(
-                                                                               SupportedGMLSchemas.getGMLVersion( gmlSchema ),
+                                                                               FormatHelper.determineGMLVersion( gmlInput ),
                                                                                xmlReader );
 
             return gmlReader.readFeatureCollection();
@@ -530,20 +509,21 @@ public class SextanteProcesslet implements Processlet {
         // output object
         VectorLayerImpl result = (VectorLayerImpl) obj.getOutputObject();
 
-        ComplexOutput complexOutput = (ComplexOutput) out.getParameter( obj.getName() );
+        ComplexOutput gmlOutput = (ComplexOutput) out.getParameter( obj.getName() );
 
-        GMLSchema schema = SupportedGMLSchemas.getGMLSchema( complexOutput.getRequestedSchema() );
-        if ( schema.getGMLSchemaTyp().equals( GMLSchemaType.FEATURE_COLLECTION ) ) {// feature collection
+        // feature collection output
+        if ( FormatHelper.determineGMLType( gmlOutput ).equals( GMLType.FEATURE_COLLECTION ) ) {
             FeatureCollection fc = IVectorLayerAdapter.createFeatureCollection( result );
-            writeFeatureCollection( complexOutput, fc );
-
+            writeFeatureCollection( gmlOutput, fc );
         } else {
-            if ( schema.getGMLSchemaTyp().equals( GMLSchemaType.GEOMETRY ) ) {// geometry
-                Geometry g = IVectorLayerAdapter.createGeometry( result );
-                writeGeometry( complexOutput, g );
 
-            } else {// unknown schema
-                LOG.error( "\"" + schema + "\" is a not supported GML schema." );
+            // geometry output
+            if ( FormatHelper.determineGMLType( gmlOutput ).equals( GMLType.GEOMETRY ) ) {
+                Geometry g = IVectorLayerAdapter.createGeometry( result );
+                writeGeometry( gmlOutput, g );
+
+            } else {// unknown payload
+                LOG.error( "Payload of schema \"" + gmlOutput.getRequestedSchema() + "\" is unknown." );
                 // TODO throw exception
             }
         }
@@ -619,7 +599,7 @@ public class SextanteProcesslet implements Processlet {
                                                                     "http://www.opengis.net/gml " + gmlSchema );
             sw.setPrefix( "gml", GMLNS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
-                                                                                SupportedGMLSchemas.getGMLVersion( gmlSchema ),
+                                                                                FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );
             gmlWriter.write( geometry );
         } catch ( Exception e ) {
@@ -645,7 +625,7 @@ public class SextanteProcesslet implements Processlet {
                                                                     "http://www.opengis.net/gml " + gmlSchema );
             sw.setPrefix( "gml", GMLNS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
-                                                                                SupportedGMLSchemas.getGMLVersion( gmlSchema ),
+                                                                                FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );
             gmlWriter.write( coll );
 

@@ -115,7 +115,7 @@ public class IVectorLayerAdapter {
             FeatureType fType = f.getType();
 
             // get crs
-            crs = createCRS( f );
+            crs = determineCRS( f );
 
             // get property declarations
             vectorLayerPropertyDeclarations = createPropertyDeclarationsForVectorLayer( fType );
@@ -169,7 +169,7 @@ public class IVectorLayerAdapter {
             return createVectorLayer( (FeatureCollection) f );
         } else {
             // get crs
-            String crs = createCRS( f );
+            String crs = determineCRS( f );
 
             // create property declarations
             Field[] propertiyDeclarations = createPropertyDeclarationsForVectorLayer( f.getType() );
@@ -399,7 +399,7 @@ public class IVectorLayerAdapter {
      *            - feature
      * @return CRS-String
      */
-    private static String createCRS( Feature f ) {
+    private static String determineCRS( Feature f ) {
 
         String crs = null;
         Property[] geoms = f.getGeometryProperties();

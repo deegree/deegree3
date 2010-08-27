@@ -32,11 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
 /**
- * This class manage a column of a attribute table. <br>
+ * Manages a column of a attribute table. <br>
  * 'Name' is the column name and 'Type' the data type.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
@@ -46,35 +46,34 @@ package org.deegree.services.wps.provider;
  */
 public class Field {
     private String m_Name; // column name
+
     private Class<?> m_Type; // data type
 
     /**
-     * Creates an array of Fields. 
-     * If the length of names and types are different
-     * then this method returns null.
+     * Creates an array of Fields. If the length of names and types are different then this method returns null.
      * 
      * @param names
-     *            - column name
+     *            - Column name.
      * @param types
-     *            - data type
+     *            - Data type.
      * @return
      */
-    public static Field[] createFieldArray(String[] names, Class<?>[] types) {
+    public static Field[] createFieldArray( String[] names, Class<?>[] types ) {
 
         Field[] f = null;
 
-        if (names.length == types.length) {
+        if ( names.length == types.length ) {
             f = new Field[names.length];
 
-            for (int i = 0; i < f.length; i++) {
-                f[i] = new Field(names[i], types[i]);
+            for ( int i = 0; i < f.length; i++ ) {
+                f[i] = new Field( names[i], types[i] );
             }
         }
 
         return f;
     }
 
-    public Field(String name, Class<?> type) {
+    public Field( String name, Class<?> type ) {
         m_Name = name;
         m_Type = type;
     }

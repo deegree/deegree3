@@ -38,7 +38,7 @@ package org.deegree.services.wps.provider;
 import org.deegree.gml.GMLVersion;
 
 /**
- * TODO add class documentation here
+ * Describes a GML schema with URL, version and type.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -46,32 +46,67 @@ import org.deegree.gml.GMLVersion;
  * @version $Revision: $, $Date: $
  */
 public class GMLSchema {
-    public enum GMLSchemaType {
+
+    /**
+     * Describes the type of the GML data.
+     * 
+     * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
+     * @author last edited by: $Author: pabel $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum GMLType {
         GEOMETRY, FEATURE_COLLECTION;
     }
 
-    private GMLSchemaType type;
+    private final GMLType type;
 
-    private String schema;
+    private final String schema;
 
-    private GMLVersion version;
+    private final GMLVersion version;
 
-    public GMLSchema( String schema, GMLVersion version, GMLSchemaType type ) {
+    /**
+     * Creates a new {@link GMLSchema} and add the schema to map from {@link FormatHelper}.
+     * 
+     * @param schema
+     *            - Schema URL.
+     * @param version
+     *            - {@link GMLVersion} of the schema URL.
+     * @param type
+     *            -{@link GMLType} of the schema URL.
+     * 
+     */
+    public GMLSchema( String schema, GMLVersion version, GMLType type ) {
         this.schema = schema;
         this.version = version;
         this.type = type;
-        SupportedGMLSchemas.ALL_SCHEMAS.put( this.schema, this );
+        FormatHelper.ALL_SCHEMAS.put( this.schema, this );
     }
 
+    /**
+     * Returns {@link GMLVersion} of the schema.
+     * 
+     * @return
+     */
     public GMLVersion getGMLVersion() {
         return version;
     }
 
+    /**
+     * Returns the schema URL.
+     * 
+     * @return
+     */
     public String getSchema() {
         return schema;
     }
 
-    public GMLSchemaType getGMLSchemaTyp() {
+    /**
+     * Returns the {@link GMLType} of the schema.
+     * 
+     * @return
+     */
+    public GMLType getGMLType() {
         return type;
     }
 }
