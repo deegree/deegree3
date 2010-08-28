@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<h:head>
+	<title>Generic XML editor</title>
+	<h:outputStylesheet name="styles.css" />
+</h:head>
+<h:body>
+    Editing: ${editorConfig.config.location}
+	<h:form>
+		<h:inputTextarea cols="100" rows="20" value="${editorConfig.config.content}" />
+		<br />
+		<h:commandButton value="OK" action="/console.jsf" />		
+		<h:commandButton value="Save" action="${editorConfig.config.save}" />
+	</h:form>
+</h:body>
+</html>

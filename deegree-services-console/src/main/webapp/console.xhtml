@@ -10,116 +10,127 @@
   <pre><h:outputText value="#{applicationBean.logo}" /></pre>
   ...has been successfully installed on this server.
   <br />
+  <br />  
+  ------------------------------------------------------------------------------  
   <br />
-  <br />Version information<br />
+    Version information
   <br />
+  ------------------------------------------------------------------------------
+  <br />  
+  <br />  
   <ui:repeat value="#{applicationBean.moduleInfos}" var="moduleInfo">
     - <h:outputText value="#{moduleInfo}" />
     <br />
   </ui:repeat>
-  <h:panelGroup id="configuration">
-    <h:form id="requestForm">
-      <br />    
-      <br />
+      <br/>
+
+      ------------------------------------------------------------------------------
+      <h:panelGroup id="workspace">
+      <h:form>
         Workspace
         [<h:commandLink value="Reload" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":workspace" />
         </h:commandLink>]
         [<h:commandLink value="Switch" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":workspace" />
         </h:commandLink>]
-      <br />
-      <br />
+      <br />                  
+      ------------------------------------------------------------------------------
+      <br />      
+      <br/>      
       - Name: <h:outputText value="#{applicationBean.workspaceName}" /><br/>      
       - Directory: <h:outputText value="#{applicationBean.workspaceDirectory}" />
       <br />
+      <br />
+      </h:form>
+      </h:panelGroup>
 
-      <br />
-      <br />
-        JDBC connections
-        [<h:commandLink value="Reload" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
-        </h:commandLink>]
-        [<h:commandLink value="Add" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
-        </h:commandLink>]
-      <br />
-      <br />
-	  <ui:repeat value="#{applicationBean.connections}" var="connection">
-	    - <h:outputText value="#{connection.id}" />: <h:outputText value="#{connection.status}" />
-	    [<h:commandLink value="Delete" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
-        </h:commandLink>]	    
-	    <br />
-	  </ui:repeat>      
-
-      <br />
-      <br />
-        Feature stores
-        [<h:commandLink value="Reload" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
-        </h:commandLink>]
-        [<h:commandLink value="Add" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
-        </h:commandLink>]
-      <br />
-      <br />
-	  <ui:repeat value="#{applicationBean.featureStores}" var="featureStore">
-	    - <h:outputText value="#{featureStore}" />
-	    [<h:commandLink value="Delete" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
-        </h:commandLink>]
-	    <br />
-	  </ui:repeat>      
-      
-      <br />
-      <br />
+      ------------------------------------------------------------------------------
+      <h:panelGroup id="services">
+      <h:form>          
         Web services
         [<h:commandLink value="Reload" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
         </h:commandLink>]
         [<h:commandLink value="Add" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
         </h:commandLink>]
       <br />
+      ------------------------------------------------------------------------------      
       <br />
       <ui:repeat value="#{applicationBean.nameToController}" var="ntc">
         - <h:outputText value="#{ntc}" />
         <h:outputText value="&#160;" />
         <h:panelGroup rendered="#{ntc == 'WFS'}">
           [<h:commandLink value="Delete" style="text-align: right;">
-            <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+            <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
             </h:commandLink>]
           [<h:outputLink value="console/#{fn:toLowerCase(ntc)}/index.jsp">Details</h:outputLink>]
           [<h:outputLink value="console/client/client.html">Send requests</h:outputLink>]
         </h:panelGroup>
         <h:panelGroup rendered="#{ntc == 'WPS'}">
           [<h:commandLink value="Delete" style="text-align: right;">
-            <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+            <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
             </h:commandLink>]        
           [<h:outputLink value="console/#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
           [<h:outputLink value="console/client/client.html">Send requests</h:outputLink>]
         </h:panelGroup>
         <h:panelGroup rendered="#{ntc == 'WMS'}">
           [<h:commandLink value="Delete" style="text-align: right;">
-            <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":configuration" />
+            <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
             </h:commandLink>]        
           [<h:outputLink value="console/#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
           [<h:outputLink value="console/client/client.html">Send requests</h:outputLink>]
         </h:panelGroup>        
         <br />
+        <h:outputText rendered="#{empty applicationBean.nameToController}" value="No services have been defined." />
+        <br/>
       </ui:repeat>
-    </h:form>
-  </h:panelGroup>
-  <br />
-  <br />Request statistics<br />
-  <br />
-    - Dispatched: <h:outputText value="#{statisticBean.dispatchedRequests}" />
-  <br />
-    - Active: <h:outputText value="#{statisticBean.activeRequests}" />
-  <br />
-    - Average: <h:outputText value="#{statisticBean.averageResponseTime}" /> ms<br />
-    - Maximum: <h:outputText value="#{statisticBean.maximumResponseTime}" /> ms<br />
-  <br />    
+      </h:form>
+      <br/>      
+      
+      ------------------------------------------------------------------------------
+      <h:panelGroup id="featurestores">
+      <h:form>
+        Feature stores
+        [<h:commandLink value="Reload" style="text-align: right;">
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":featurestores" />
+        </h:commandLink>]
+        [<h:commandLink value="Add" style="text-align: right;">
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":featurestores" />
+        </h:commandLink>]
+      <br />
+      ------------------------------------------------------------------------------      
+      <br />
+	  <ui:repeat value="#{applicationBean.featureStores}" var="featureStore">
+	    - <h:outputText value="#{featureStore}" />
+	    [<h:commandLink value="Delete" style="text-align: right;">
+        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":featurestores" />
+        </h:commandLink>]
+	    <br />
+	  </ui:repeat>            
+      <br />
+      </h:form>
+      </h:panelGroup>
+
+	  <h:form>
+      <h:panelGroup id="jdbc">
+      ------------------------------------------------------------------------------<br />
+      JDBC connections<br />
+      ------------------------------------------------------------------------------<br />
+      <br />      
+	  <ui:repeat value="#{connectionsConfig.connections}" var="config">
+	    - <h:outputText value="#{config.id}" />: <h:outputText value="#{config.status}" />
+	    <h:commandButton value="Edit" action="#{config.edit}"/>
+	    <h:commandButton value="Delete" action="#{config.delete}"/>
+	    <br />
+	  </ui:repeat>
+      <br />
+      Add: <h:inputText value="#{connectionConfig.id}" size="16"/>
+        <h:commandButton value="OK" action="#{connectionConfig.create}"/>      
+      </h:panelGroup>
+      </h:form>
+
+  </h:panelGroup>    
 </h:body>
 </html>
