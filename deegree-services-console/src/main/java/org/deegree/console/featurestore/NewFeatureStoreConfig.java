@@ -33,12 +33,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.services;
+package org.deegree.console.featurestore;
 
-import javax.faces.bean.ApplicationScoped;
+import java.io.IOException;
+
 import javax.faces.bean.ManagedBean;
+import javax.faces.context.FacesContext;
 
-import org.deegree.console.XMLConfigManager;
+import lombok.Getter;
+import lombok.Setter;
+
+import org.deegree.console.ConfigManager;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 
 /**
  * TODO add class documentation here
@@ -49,19 +55,25 @@ import org.deegree.console.XMLConfigManager;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@ApplicationScoped
-public class ServiceConfigManager extends XMLConfigManager<ServiceConfig> {
+public class NewFeatureStoreConfig {
 
-    @Override
-    protected void add( String id, String namespace, boolean ignore ) {
-        if ( !( id.equals( "main" ) || id.equals( "metadata" ) ) ) {
-            ServiceConfig config = new ServiceConfig( id, !ignore, ignore, this );
-            idToConfig.put( id, config );
-        }
-    }
+    @Getter
+    @Setter
+    private String id;
 
-    @Override
-    public String getBaseDir() {
-        return "services";
+    @Getter
+    @Setter
+    private String type;
+
+    public String create()
+                            throws IOException {
+
+        FeatureStoreConfigManager configManager = ConfigManager.getApplicationInstance().getFsManager();
+        FeatureStoreProvider provider = configManager.getProvider( type );
+        FeatureStoreConfig config = new FeatureStoreConfig( id, false, false, configManager, provider );
+        configManager.add( config );
+        config.create();
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
+        return "console/generic/xmleditor.jsf";
     }
 }

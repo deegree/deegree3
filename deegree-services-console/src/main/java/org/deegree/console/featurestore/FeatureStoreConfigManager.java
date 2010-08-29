@@ -35,11 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.featurestore;
 
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.deegree.console.XMLConfigManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 
 /**
  * TODO add class documentation here
@@ -49,15 +52,35 @@ import org.deegree.feature.persistence.FeatureStoreManager;
  * 
  * @version $Revision: $, $Date: $
  */
-@ManagedBean
-@ApplicationScoped
 public class FeatureStoreConfigManager extends XMLConfigManager<FeatureStoreConfig> {
 
+    private final Map<String, FeatureStoreProvider> fsTypeToProvider = new TreeMap<String, FeatureStoreProvider>();
+
+    public FeatureStoreConfigManager() {
+        for ( FeatureStoreProvider provider : FeatureStoreManager.getProviders().values() ) {
+            String className = provider.getClass().getSimpleName();
+            String name = className;
+            if ( className.endsWith( "FeatureStoreProvider" ) ) {
+                name = className.substring( 0, className.length() - "FeatureStoreProvider".length() );
+            }
+            fsTypeToProvider.put( name, provider );
+        }
+    }
+
     @Override
-    protected void add( String id, boolean ignore ) {
+    protected void add( String id, String namespace, boolean ignore ) {
         boolean active = FeatureStoreManager.get( id ) != null;
-        FeatureStoreConfig config = new FeatureStoreConfig( id, active, ignore, this );
+        FeatureStoreProvider provider = FeatureStoreManager.getProviders().get( namespace );
+        FeatureStoreConfig config = new FeatureStoreConfig( id, active, ignore, this, provider );
         idToConfig.put( id, config );
+    }
+
+    public List<String> getFsTypes() {
+        return new ArrayList<String>( fsTypeToProvider.keySet() );
+    }
+
+    public FeatureStoreProvider getProvider( String fsType ) {
+        return fsTypeToProvider.get( fsType );
     }
 
     @Override

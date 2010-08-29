@@ -36,8 +36,7 @@
       <br/>
       <h:panelGroup rendered="#{configManager.pendingChanges}">
       <div class="attention">
-      <h:outputText value="#{configManager.lastMessage}" /></div>
-      [<h:commandLink value="Apply changes" action="#{configManager.applyChanges}"/>]
+      <h:outputText value="#{configManager.lastMessage}" /> (needs reloading)</div>
       </h:panelGroup>
       <h:panelGroup rendered="#{!configManager.pendingChanges}">
       <h:outputText value="#{configManager.lastMessage}" /> 
@@ -58,7 +57,12 @@
 	  <ui:repeat value="#{configManager.serviceManager.configs}" var="config">
 	    - <h:outputText value="#{config.id}" />: <h:outputText value="#{config.status}" />
 	    [<h:commandLink rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}"/><h:commandLink rendered="#{config.deactivated}" value="Activate" action="#{config.activate}"/>]
-	    [<h:commandLink value="Edit" action="#{config.edit}"/>]    
+	    [<h:commandLink value="Edit" action="#{config.edit}"/>]
+        <h:panelGroup rendered="#{config.active}">	    
+	      [<h:outputLink value="#{config.capabilitiesURL}">
+	         <h:outputText value="Capabilities"/> 
+	       </h:outputLink>]
+	    </h:panelGroup>
 	    <br />
 	  </ui:repeat>
       </h:form>
@@ -75,15 +79,21 @@
 	    [<h:commandLink rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}"/><h:commandLink rendered="#{config.deactivated}" value="Activate" action="#{config.activate}"/>]
 	    [<h:commandLink value="Edit" action="#{config.edit}"/>]
 	    [<h:commandLink value="Delete" action="#{config.delete}"/>]        
-        [<h:commandLink value="Create tables" action="#{config.createTables}"/>]
         <h:panelGroup rendered="#{config.active}">
-		  [<h:commandLink value="Info" action="#{config.showInfo}"/>]  
+		  [<h:commandLink value="Info" action="#{config.showInfo}"/>]        
+          <h:panelGroup rendered="#{config.sql}">
+            [<h:commandLink value="Setup tables" action="#{config.createTables}"/>]
+          </h:panelGroup>  
         </h:panelGroup>	    
 	    <br />
 	  </ui:repeat>
       <br />
-      Add: <h:inputText value="#{newConnectionConfig.id}" size="16"/>
-        <h:commandButton value="OK" action="#{newConnectionConfig.create}"/>      
+      Add:
+        <h:inputText value="#{newFeatureStoreConfig.id}" size="16"/>
+        <h:selectOneMenu value="#{newFeatureStoreConfig.type}">
+          <f:selectItems value="#{configManager.fsManager.fsTypes}"/>
+        </h:selectOneMenu>      
+        <h:commandButton value="OK" action="#{newFeatureStoreConfig.create}"/>
       </h:panelGroup>
       </h:form>
       <br/>
@@ -110,7 +120,7 @@
       <h:form>
       <h:panelGroup id="links">
       ------------------------------------------------------------------------------<br />
-      [<a href="console/client/client.html">Generic OGC client</a>] [<a href="http://wiki.deegree.org">deegree Wiki</a>]
+      [<a href="/console/client/client.html">Generic OGC client</a>] [<a href="http://wiki.deegree.org">deegree Wiki</a>]
       </h:panelGroup>
       </h:form>
       <br/>      

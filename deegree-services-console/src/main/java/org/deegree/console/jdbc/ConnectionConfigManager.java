@@ -54,7 +54,7 @@ import org.deegree.console.XMLConfigManager;
 public class ConnectionConfigManager extends XMLConfigManager<ConnectionConfig> {
 
     @Override
-    protected void add( String id, boolean ignore ) {
+    protected void add( String id, String namespace, boolean ignore ) {
         boolean active = ConnectionManager.getConnectionIds().contains( id );
         ConnectionConfig config = new ConnectionConfig( id, active, ignore, this );
         idToConfig.put( id, config );

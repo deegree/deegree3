@@ -62,4 +62,8 @@ public class ServiceConfig extends ManagedXMLConfig {
     public ServiceConfig( String id, ServiceConfigManager manager ) {
         this( id, false, false, manager );
     }
+
+    public String getCapabilitiesURL() {
+        return "/deegree-foss4g2010-demo/services?service=" + getId().toUpperCase() + "&request=GetCapabilities";
+    }
 }

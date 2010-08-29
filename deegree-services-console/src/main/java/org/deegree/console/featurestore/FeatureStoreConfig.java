@@ -49,6 +49,7 @@ import org.deegree.console.SQLExecution;
 import org.deegree.console.ManagedXMLConfig;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
@@ -66,25 +67,24 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
 
     private static final long serialVersionUID = 6752472497206455251L;
 
-    private static URL CONFIG_TEMPLATE = FeatureStoreConfigManager.class.getResource( "template.xml" );
-
-    private static URL SCHEMA_URL = FeatureStoreConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
-
-    public FeatureStoreConfig( String id, boolean active, boolean ignore, FeatureStoreConfigManager manager ) {
-        super( id, active, ignore, manager, SCHEMA_URL, CONFIG_TEMPLATE );
+    public FeatureStoreConfig( String id, boolean active, boolean ignore, FeatureStoreConfigManager manager, FeatureStoreProvider provider ) {
+        super( id, active, ignore, manager, provider.getConfigSchema(), provider.getConfigTemplate() );
     }
 
-    public FeatureStoreConfig( String id, FeatureStoreConfigManager manager ) {
-        this( id, false, false, manager );
+    public boolean getSql () {
+        if ( !isActive() ) {
+            return false;
+        }
+        return FeatureStoreManager.get( getId() ) instanceof SQLFeatureStore;
     }
-
+    
     public String createTables() {
         if ( !isActive() ) {
             throw new RuntimeException();
         }
 
-        SQLFeatureStore fs = (SQLFeatureStore) this;
-        String connId = "inspire-postgis";
+        SQLFeatureStore fs = (SQLFeatureStore) FeatureStoreManager.get( getId() );
+        String connId = fs.getConnId();
         String[] sql = fs.getDDL();
         SQLExecution execution = new SQLExecution( connId, sql );
 

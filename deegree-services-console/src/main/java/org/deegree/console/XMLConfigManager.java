@@ -36,6 +36,7 @@
 package org.deegree.console;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +44,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.services.controller.OGCFrontController;
 
 /**
@@ -68,7 +73,7 @@ public abstract class XMLConfigManager<T extends ManagedXMLConfig> {
     }
 
     public void scan() {
-        System.out.println ("Scanning: " + this);
+        System.out.println( "Scanning: " + this );
         idToConfig.clear();
         File wsDir = OGCFrontController.getServiceWorkspace().getLocation();
         File baseDir = new File( wsDir, getBaseDir() );
@@ -77,11 +82,12 @@ public abstract class XMLConfigManager<T extends ManagedXMLConfig> {
             public boolean accept( File dir, String name ) {
                 if ( name.endsWith( SUFFIX_IGNORE ) ) {
                     String id = name.substring( 0, name.length() - SUFFIX_IGNORE.length() );
-                    add( id, true );
+                    String ns = getNamespace( dir, name );
+                    add( id, ns, true );
                 } else if ( name.endsWith( SUFFIX ) ) {
-                    System.out.println( name );
                     String id = name.substring( 0, name.length() - SUFFIX.length() );
-                    add( id, false );
+                    String ns = getNamespace( dir, name );
+                    add( id, ns, false );
                 }
                 return false;
             }
@@ -89,7 +95,24 @@ public abstract class XMLConfigManager<T extends ManagedXMLConfig> {
         needsReloading = false;
     }
 
-    protected abstract void add( String id, boolean ignore );
+    private String getNamespace( File dir, String name ) {
+
+        String ns = null;
+        try {
+            File file = new File( dir, name );
+            FileInputStream is = new FileInputStream( file );
+            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+            StAXParsingHelper.skipStartDocument( xmlStream );
+            ns = xmlStream.getNamespaceURI();
+            xmlStream.close();
+            is.close();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+        return ns;
+    }
+
+    protected abstract void add( String id, String namespace, boolean ignore );
 
     public List<T> getConfigs() {
         return new ArrayList<T>( idToConfig.values() );
