@@ -43,6 +43,8 @@ import javax.faces.context.FacesContext;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.deegree.console.ConfigManager;
+
 /**
  * TODO add class documentation here
  * 
@@ -60,8 +62,9 @@ public class NewConnectionConfig {
 
     public String create()
                             throws IOException {
-        ConnectionConfigManager configManager = (ConnectionConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "connectionConfigManager" );
-        ConnectionConfig config = new ConnectionConfig( id, configManager );        
+
+        ConnectionConfigManager configManager = ConfigManager.getApplicationInstance().getConnManager();
+        ConnectionConfig config = new ConnectionConfig( id, configManager );
         configManager.add( config );
         config.create();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );

@@ -27,25 +27,38 @@
       <h:panelGroup id="workspace">
       <h:form>
       ------------------------------------------------------------------------------<br />
-      Workspace<br />                  
+      Workspace [ <h:commandLink value="Reload" action="#{configManager.applyChanges}"/>]<br />                  
       ------------------------------------------------------------------------------<br />
       <br/>      
       - Name: <h:outputText value="#{applicationBean.workspaceName}" /><br/>      
       - Directory: <h:outputText value="#{applicationBean.workspaceDirectory}" />
       <br />
-      <br />
+      <br/>
+      <h:panelGroup rendered="#{configManager.pendingChanges}">
+      <div class="attention">
+      <h:outputText value="#{configManager.lastMessage}" /></div>
+      [<h:commandLink value="Apply changes" action="#{configManager.applyChanges}"/>]
+      </h:panelGroup>
+      <h:panelGroup rendered="#{!configManager.pendingChanges}">
+      <h:outputText value="#{configManager.lastMessage}" /> 
+      </h:panelGroup>           
+      <br/>
       </h:form>
       </h:panelGroup>
+      <br/>
 
       <h:form>          
       ------------------------------------------------------------------------------<br />
-      Web services<br />
+      Web services
+      [<h:commandLink value="Edit metadata" action="#{configManager.serviceMetadataConfig.edit}"/>]
+      [<h:commandLink value="Edit global config" action="#{configManager.serviceMainConfig.edit}"/>]
+      <br />
       ------------------------------------------------------------------------------<br />
       <br />      
-	  <ui:repeat value="#{serviceConfigManager.configs}" var="config">
+	  <ui:repeat value="#{configManager.serviceManager.configs}" var="config">
 	    - <h:outputText value="#{config.id}" />: <h:outputText value="#{config.status}" />
-	    [<h:commandLink value="Edit" action="#{config.edit}"/>]
-	    [<h:commandLink rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}"/><h:commandLink rendered="#{config.deactivated}" value="Activate" action="#{config.activate}"/>]	    
+	    [<h:commandLink rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}"/><h:commandLink rendered="#{config.deactivated}" value="Activate" action="#{config.activate}"/>]
+	    [<h:commandLink value="Edit" action="#{config.edit}"/>]    
 	    <br />
 	  </ui:repeat>
       </h:form>
@@ -57,12 +70,15 @@
       Feature stores<br />
       ------------------------------------------------------------------------------<br />
       <br />      
-	  <ui:repeat value="#{featureStoreConfigManager.configs}" var="config">
+	  <ui:repeat value="#{configManager.fsManager.configs}" var="config">
 	    - <h:outputText value="#{config.id}" />: <h:outputText value="#{config.status}" />
+	    [<h:commandLink rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}"/><h:commandLink rendered="#{config.deactivated}" value="Activate" action="#{config.activate}"/>]
 	    [<h:commandLink value="Edit" action="#{config.edit}"/>]
-	    [<h:commandLink value="Delete" action="#{config.delete}"/>]
-        [<h:commandLink rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}"/><h:commandLink rendered="#{config.deactivated}" value="Activate" action="#{config.activate}"/>]
-        [<h:commandLink value="Create tables" action="#{config.createTables}"/>]	    
+	    [<h:commandLink value="Delete" action="#{config.delete}"/>]        
+        [<h:commandLink value="Create tables" action="#{config.createTables}"/>]
+        <h:panelGroup rendered="#{config.active}">
+		  [<h:commandLink value="Info" action="#{config.showInfo}"/>]  
+        </h:panelGroup>	    
 	    <br />
 	  </ui:repeat>
       <br />
@@ -78,8 +94,8 @@
       JDBC connections<br />
       ------------------------------------------------------------------------------<br />
       <br />      
-	  <ui:repeat value="#{connectionConfigManager.configs}" var="config">
-	    - <h:outputText value="#{config.id}" />: <h:outputText value="#{config.status}" />
+	  <ui:repeat value="#{configManager.connManager.configs}" var="config">
+	    - <h:outputText value="#{config.id}" />: <h:outputText value="#{config.connectionStatus}" />
 	    [<h:commandLink value="Edit" action="#{config.edit}"/>]
 	    [<h:commandLink value="Delete" action="#{config.delete}"/>]	    
 	    <br />
@@ -90,18 +106,13 @@
       </h:panelGroup>
       </h:form>
       <br/>
+      
+      <h:form>
+      <h:panelGroup id="links">
       ------------------------------------------------------------------------------<br />
-      <br/>
-      <h:panelGroup rendered="#{applicationBean.pendingChanges}">
-      <h:form>
-      Configuration has been changed. [<h:commandLink value="Reload" action="#{applicationBean.applyChanges}"/>]            
-      </h:form>
+      [<a href="console/client/client.html">Generic OGC client</a>] [<a href="http://wiki.deegree.org">deegree Wiki</a>]
       </h:panelGroup>
-      <h:panelGroup rendered="#{!applicationBean.pendingChanges}">
-      <h:form>
-      No configuration changes pending. [<h:commandLink value="Reload anyway" action="#{applicationBean.applyChanges}"/>            
       </h:form>
-      </h:panelGroup>
       <br/>      
 </h:body>
 </html>

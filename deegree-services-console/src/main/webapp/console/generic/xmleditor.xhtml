@@ -13,9 +13,10 @@
     Editing: ${editConfig.location}
 	<h:form>
 		<h:inputTextarea cols="120" rows="30" value="${editConfig.content}" />
-		<br />		
+		<br />
 		<h:commandButton value="Save" action="${editConfig.save}" />
-	    <h:commandButton value="Back" action="/console" />
+		<h:commandButton value="Display schema" action="${editConfig.displaySchema}" />
+		<h:commandButton value="From scratch" action="${editConfig.reinit}" />
 	</h:form>
 </h:body>
 </html>

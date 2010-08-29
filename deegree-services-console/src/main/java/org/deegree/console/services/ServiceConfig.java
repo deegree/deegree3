@@ -37,7 +37,7 @@ package org.deegree.console.services;
 
 import java.net.URL;
 
-import org.deegree.console.XMLConfig;
+import org.deegree.console.ManagedXMLConfig;
 
 /**
  * TODO add class documentation here
@@ -47,7 +47,7 @@ import org.deegree.console.XMLConfig;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ServiceConfig extends XMLConfig {
+public class ServiceConfig extends ManagedXMLConfig {
 
     private static final long serialVersionUID = 5777982897759843271L;
 

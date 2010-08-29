@@ -35,9 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
-import static org.deegree.console.XMLConfigManager.SUFFIX;
-import static org.deegree.console.XMLConfigManager.SUFFIX_IGNORE;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,10 +48,9 @@ import javax.faces.context.FacesContext;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.controller.OGCFrontController;
 
 /**
- * TODO add class documentation here
+ * Represents an XML configuration file.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
@@ -63,15 +59,11 @@ import org.deegree.services.controller.OGCFrontController;
  */
 public class XMLConfig implements Serializable {
 
-    private static final long serialVersionUID = 1161707801237264353L;
-
-    private final XMLConfigManager manager;
+    private final File location;
 
     private final URL schema;
 
     private final URL template;
-
-    private String id;
 
     private String content;
 
@@ -80,6 +72,14 @@ public class XMLConfig implements Serializable {
     private boolean modified;
 
     private boolean deactivated;
+
+    protected XMLConfig( boolean active, boolean ignore, File location, URL schema, URL template ) {
+        this.active = active;
+        this.deactivated = ignore;
+        this.location = location;
+        this.schema = schema;
+        this.template = template;
+    }
 
     /**
      * @return the active
@@ -128,7 +128,7 @@ public class XMLConfig implements Serializable {
             this.deactivated = deactivated;
             File newFile = getLocation();
             file.renameTo( newFile );
-            System.out.println( file + " -> " + newFile );
+            modified = true;
         }
     }
 
@@ -140,37 +140,8 @@ public class XMLConfig implements Serializable {
         setDeactivated( true );
     }
 
-    protected XMLConfig( String id, boolean active, boolean ignore, XMLConfigManager manager, URL schema, URL template ) {
-        this.id = id;
-        this.active = active;
-        this.deactivated = ignore;
-        this.manager = manager;
-        this.schema = schema;
-        this.template = template;
-    }
-
-    /**
-     * @return the id
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @param id
-     *            the id to set
-     */
-    public void setId( String id ) {
-        this.id = id;
-    }
-
     public File getLocation() {
-        if ( id == null ) {
-            throw new RuntimeException();
-        }
-        File wsDir = OGCFrontController.getServiceWorkspace().getLocation();
-        File baseDir = new File( wsDir, manager.getBaseDir() );
-        return new File( baseDir, id + ( deactivated ? SUFFIX_IGNORE : SUFFIX ) );
+        return location;
     }
 
     public String getContent() {
@@ -178,14 +149,22 @@ public class XMLConfig implements Serializable {
         return adapter.toString();
     }
 
+    public String getSchema() {
+        String xml = null;
+        if ( schema != null ) {
+            XMLAdapter adapter = new XMLAdapter( schema );
+            xml = adapter.toString();
+        }
+        return xml;
+    }
+
     public void setContent( String content ) {
-        System.out.println( "setContent()..." );
         this.content = content.trim();
     }
 
     public String getStatus() {
         if ( deactivated ) {
-            return "DEACTIVATED";
+            return "INACTIVE";
         }
         if ( modified ) {
             return "MODIFIED";
@@ -193,18 +172,18 @@ public class XMLConfig implements Serializable {
         if ( !active && !deactivated ) {
             return "ERROR (see logs)";
         }
-        return "OK";
+        return "ACTIVE";
     }
 
-    public void save()
+    public String save()
                             throws XMLStreamException, IOException {
         XMLAdapter adapter = new XMLAdapter( new StringReader( content ), XMLAdapter.DEFAULT_URL );
         File location = getLocation();
         OutputStream os = new FileOutputStream( location );
         adapter.getRootElement().serialize( os );
         os.close();
-        System.out.println( "Saved " + location );
         modified = true;
+        return "/console";
     }
 
     public void create()
@@ -225,7 +204,6 @@ public class XMLConfig implements Serializable {
     }
 
     public void delete() {
-        manager.remove( this );
         File location = getLocation();
         if ( location.exists() ) {
             location.delete();
@@ -234,11 +212,11 @@ public class XMLConfig implements Serializable {
 
     public String edit() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
-        return "console/generic/xmleditor.jsf";
+        return "console/generic/xmleditor";
     }
 
     @Override
     public String toString() {
-        return "{id=" + id + ", location=" + getLocation() + ",schema=" + schema + ",template=" + template + "}";
+        return "{location=" + getLocation() + ",schema=" + schema + ",template=" + template + "}";
     }
 }

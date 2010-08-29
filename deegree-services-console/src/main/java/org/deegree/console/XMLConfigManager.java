@@ -53,11 +53,13 @@ import org.deegree.services.controller.OGCFrontController;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class XMLConfigManager<T extends XMLConfig> {
+public abstract class XMLConfigManager<T extends ManagedXMLConfig> {
 
     public static final String SUFFIX = ".xml";
 
     public static final String SUFFIX_IGNORE = ".ignore";
+
+    private boolean needsReloading = true;
 
     protected Map<String, T> idToConfig = Collections.synchronizedMap( new TreeMap<String, T>() );
 
@@ -66,10 +68,10 @@ public abstract class XMLConfigManager<T extends XMLConfig> {
     }
 
     public void scan() {
+        System.out.println ("Scanning: " + this);
         idToConfig.clear();
         File wsDir = OGCFrontController.getServiceWorkspace().getLocation();
         File baseDir = new File( wsDir, getBaseDir() );
-        System.out.println( "Listing: " + baseDir );
         baseDir.list( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
@@ -84,7 +86,7 @@ public abstract class XMLConfigManager<T extends XMLConfig> {
                 return false;
             }
         } );
-
+        needsReloading = false;
     }
 
     protected abstract void add( String id, boolean ignore );
@@ -98,11 +100,21 @@ public abstract class XMLConfigManager<T extends XMLConfig> {
             throw new RuntimeException( "Connection '" + config.getId() + "' already exists." );
         }
         idToConfig.put( config.getId(), config );
+        needsReloading = true;
     }
 
     public void remove( T config ) {
         idToConfig.remove( config.getId() );
+        needsReloading = true;
+    }
+
+    public void switchState( T config ) {
+        needsReloading = true;
     }
 
     public abstract String getBaseDir();
+
+    public boolean needsReloading() {
+        return needsReloading;
+    }
 }

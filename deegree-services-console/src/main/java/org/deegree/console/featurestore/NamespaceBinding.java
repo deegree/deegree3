@@ -33,12 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.jdbc;
+package org.deegree.console.featurestore;
 
-import java.net.URL;
-
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.console.ManagedXMLConfig;
+import lombok.Getter;
 
 /**
  * TODO add class documentation here
@@ -48,31 +45,31 @@ import org.deegree.console.ManagedXMLConfig;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConnectionConfig extends ManagedXMLConfig {
+public class NamespaceBinding implements Comparable<NamespaceBinding> {
 
-    private static final long serialVersionUID = 5777982897759843271L;
+    @Getter
+    private String prefix;
 
-    private static URL CONFIG_TEMPLATE = ConnectionConfigManager.class.getResource( "template.xml" );
+    @Getter
+    private String namespace;
 
-    private static URL SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
-
-    public ConnectionConfig( String id, boolean active, boolean ignore, ConnectionConfigManager manager ) {
-        super( id, active, ignore, manager, SCHEMA_URL, CONFIG_TEMPLATE );
+    NamespaceBinding( String prefix, String namespace ) {
+        this.prefix = prefix;
+        this.namespace = namespace;
     }
 
-    public ConnectionConfig( String id, ConnectionConfigManager manager ) {
-        this( id, false, false, manager );
+    @Override
+    public int compareTo( NamespaceBinding that ) {
+        return this.prefix.compareTo( that.prefix );
     }
 
-    public String getConnectionStatus() {
-        if ( !isActive() ) {
-            return "MODIFIED (needs reload)";
-        }
-        try {
-            ConnectionManager.getConnection( getId() );
-        } catch ( Exception e ) {
-            return "ERROR: " + e.getMessage();
-        }
-        return "OK";
+    @Override
+    public boolean equals( Object that ) {
+        return toString().equals( that.toString() );
+    }
+
+    @Override
+    public String toString() {
+        return prefix + "=" + namespace;
     }
 }
