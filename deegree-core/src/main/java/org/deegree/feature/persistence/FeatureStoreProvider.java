@@ -56,6 +56,20 @@ public interface FeatureStoreProvider {
      * @return the namespace for configurations documents, never <code>null</code>
      */
     public String getConfigNamespace();
+    
+    /**
+     * Returns the URL for retrieving the configuration document schema.
+     * 
+     * @return the URL for retrieving the configuration document schema, may be <code>null</code>
+     */
+    public URL getConfigSchema ();
+    
+    /**
+     * Returns the URL for retrieving the configuration document template.
+     * 
+     * @return the URL for retrieving the configuration document template, may be <code>null</code>
+     */    
+    public URL getConfigTemplate ();
 
     /**
      * Creates a new {@link FeatureStore} instance from the given configuration document.

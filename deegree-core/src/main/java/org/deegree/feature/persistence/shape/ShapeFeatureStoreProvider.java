@@ -73,6 +73,16 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
+    public URL getConfigSchema() {
+        return ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/0.6.0/shape.xsd" );
+    }
+
+    @Override
+    public URL getConfigTemplate() {
+        return ShapeFeatureStoreProvider.class.getResource( "config_template.xml" );
+    }
+
+    @Override
     public FeatureStore getFeatureStore( URL configURL )
                             throws FeatureStoreException {
 

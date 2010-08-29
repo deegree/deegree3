@@ -1,0 +1,7 @@
+<SimpleSQLFeatureStore configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/simplesql"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql http://schemas.deegree.org/datasource/0.5.0/feature/simplesql.xsd">
+
+  <!-- TODO: Template (look in schema for now)-->
+  
+</SimpleSQLFeatureStore>
