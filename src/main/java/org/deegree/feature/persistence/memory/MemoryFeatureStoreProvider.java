@@ -83,6 +83,16 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
+    public URL getConfigSchema() {
+        return MemoryFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/memory.xsd" );
+    }
+
+    @Override
+    public URL getConfigTemplate() {
+        return MemoryFeatureStoreProvider.class.getResource( "config_template.xml" );
+    }
+
+    @Override
     public FeatureStore getFeatureStore( URL configURL )
                             throws FeatureStoreException {
 

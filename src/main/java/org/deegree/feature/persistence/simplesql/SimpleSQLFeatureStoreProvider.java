@@ -44,8 +44,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
@@ -75,6 +75,16 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
     @Override
     public String getConfigNamespace() {
         return "http://www.deegree.org/datasource/feature/simplesql";
+    }
+
+    @Override
+    public URL getConfigSchema() {
+        return SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/simpleqsl.xsd" );
+    }
+
+    @Override
+    public URL getConfigTemplate() {
+        return SimpleSQLFeatureStoreProvider.class.getResource( "config_template.xml" );
     }
 
     @Override
