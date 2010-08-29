@@ -155,6 +155,11 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         taManager = new TransactionManager( this, jdbcConnId );
     }
 
+    @Override
+    public String getConnId() {
+        return jdbcConnId;
+    }
+    
     /**
      * Returns the relational mapping for the given feature type name.
      * 

@@ -48,6 +48,13 @@ import org.deegree.feature.persistence.FeatureStore;
 public interface SQLFeatureStore extends FeatureStore {
 
     /**
+     * Returns the JDBC connection id.
+     * 
+     * @return the JDBC connection id, never <code>null</code>
+     */
+    public String getConnId();
+    
+    /**
      * Returns the SQL statements for creating the database tables.
      * 
      * @return the SQL statements for creating the database tables, never <code>null</code>
