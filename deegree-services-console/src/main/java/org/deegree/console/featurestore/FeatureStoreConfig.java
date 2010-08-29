@@ -33,11 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.jdbc;
+package org.deegree.console.featurestore;
 
 import java.net.URL;
 
+import javax.faces.context.FacesContext;
+
+import org.deegree.console.SQLExecution;
 import org.deegree.console.XMLConfig;
+import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
 
 /**
  * TODO add class documentation here
@@ -47,19 +52,33 @@ import org.deegree.console.XMLConfig;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConnectionConfig extends XMLConfig {
+public class FeatureStoreConfig extends XMLConfig {
 
-    private static final long serialVersionUID = 5777982897759843271L;
+    private static final long serialVersionUID = 6752472497206455251L;
 
-    private static URL CONFIG_TEMPLATE = ConnectionConfigManager.class.getResource( "template.xml" );
+    private static URL CONFIG_TEMPLATE = FeatureStoreConfigManager.class.getResource( "template.xml" );
 
-    private static URL SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
+    private static URL SCHEMA_URL = FeatureStoreConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
 
-    public ConnectionConfig( String id, boolean active, boolean ignore, ConnectionConfigManager manager ) {
+    public FeatureStoreConfig( String id, boolean active, boolean ignore, FeatureStoreConfigManager manager ) {
         super( id, active, ignore, manager, SCHEMA_URL, CONFIG_TEMPLATE );
     }
 
-    public ConnectionConfig( String id, ConnectionConfigManager manager ) {
+    public FeatureStoreConfig( String id, FeatureStoreConfigManager manager ) {
         this( id, false, false, manager );
+    }
+
+    public String createTables() {
+        if ( !isActive() ) {
+            throw new RuntimeException();
+        }
+
+        SQLFeatureStore fs = (SQLFeatureStore) FeatureStoreManager.get( getId() );
+        String connId = "inspire-postgis";
+        String[] sql = fs.getDDL();
+        SQLExecution execution = new SQLExecution( connId, sql );
+
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
+        return "console/generic/sql.jsf";
     }
 }

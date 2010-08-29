@@ -35,9 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.jdbc;
 
-import java.net.URL;
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
 
-import org.deegree.console.XMLConfig;
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.console.XMLConfigManager;
 
 /**
  * TODO add class documentation here
@@ -47,19 +49,19 @@ import org.deegree.console.XMLConfig;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConnectionConfig extends XMLConfig {
+@ManagedBean
+@ApplicationScoped
+public class ConnectionConfigManager extends XMLConfigManager<ConnectionConfig> {
 
-    private static final long serialVersionUID = 5777982897759843271L;
-
-    private static URL CONFIG_TEMPLATE = ConnectionConfigManager.class.getResource( "template.xml" );
-
-    private static URL SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
-
-    public ConnectionConfig( String id, boolean active, boolean ignore, ConnectionConfigManager manager ) {
-        super( id, active, ignore, manager, SCHEMA_URL, CONFIG_TEMPLATE );
+    @Override
+    protected void add( String id, boolean ignore ) {
+        boolean active = ConnectionManager.getConnectionIds().contains( id );
+        ConnectionConfig config = new ConnectionConfig( id, active, ignore, this );
+        idToConfig.put( id, config );
     }
 
-    public ConnectionConfig( String id, ConnectionConfigManager manager ) {
-        this( id, false, false, manager );
+    @Override
+    public String getBaseDir() {
+        return "jdbc";
     }
 }

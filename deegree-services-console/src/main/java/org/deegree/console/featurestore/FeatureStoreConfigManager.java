@@ -33,18 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.jdbc;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+package org.deegree.console.featurestore;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 
-import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.console.XMLConfigManager;
+import org.deegree.feature.persistence.FeatureStoreManager;
 
 /**
  * TODO add class documentation here
@@ -56,29 +51,17 @@ import org.deegree.commons.jdbc.ConnectionManager;
  */
 @ManagedBean
 @ApplicationScoped
-public class ConnectionsConfig {
+public class FeatureStoreConfigManager extends XMLConfigManager<FeatureStoreConfig> {
 
-    private static final Map<String, ConnectionConfig> idToConfig = Collections.synchronizedMap( new TreeMap<String, ConnectionConfig>() );
-
-    public ConnectionsConfig() {
-        for ( String connId : ConnectionManager.getConnectionIds() ) {
-            ConnectionConfig config = new ConnectionConfig( connId );
-            idToConfig.put( connId, config );
-        }
+    @Override
+    protected void add( String id, boolean ignore ) {
+        boolean active = FeatureStoreManager.get( id ) != null;
+        FeatureStoreConfig config = new FeatureStoreConfig( id, active, ignore, this );
+        idToConfig.put( id, config );
     }
 
-    public List<ConnectionConfig> getConnections() {
-        return new ArrayList<ConnectionConfig>( ConnectionsConfig.idToConfig.values() );
-    }
-
-    public static void addConnection( ConnectionConfig config ) {
-        if ( idToConfig.containsKey( config.getId() ) ) {
-            throw new RuntimeException( "Connection '" + config.getId() + "' already exists." );
-        }
-        idToConfig.put( config.getId(), config );
-    }
-
-    public static void removeConnection( ConnectionConfig config ) {
-        idToConfig.remove( config.getId() );
+    @Override
+    public String getBaseDir() {
+        return "datasources/feature";
     }
 }

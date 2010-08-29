@@ -35,9 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.jdbc;
 
-import java.net.URL;
+import java.io.IOException;
 
-import org.deegree.console.XMLConfig;
+import javax.faces.bean.ManagedBean;
+import javax.faces.context.FacesContext;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * TODO add class documentation here
@@ -47,19 +51,20 @@ import org.deegree.console.XMLConfig;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConnectionConfig extends XMLConfig {
+@ManagedBean
+public class NewConnectionConfig {
 
-    private static final long serialVersionUID = 5777982897759843271L;
+    @Getter
+    @Setter
+    private String id;
 
-    private static URL CONFIG_TEMPLATE = ConnectionConfigManager.class.getResource( "template.xml" );
-
-    private static URL SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
-
-    public ConnectionConfig( String id, boolean active, boolean ignore, ConnectionConfigManager manager ) {
-        super( id, active, ignore, manager, SCHEMA_URL, CONFIG_TEMPLATE );
-    }
-
-    public ConnectionConfig( String id, ConnectionConfigManager manager ) {
-        this( id, false, false, manager );
+    public String create()
+                            throws IOException {
+        ConnectionConfigManager configManager = (ConnectionConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "connectionConfigManager" );
+        ConnectionConfig config = new ConnectionConfig( id, configManager );        
+        configManager.add( config );
+        config.create();
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
+        return "console/generic/xmleditor.jsf";
     }
 }

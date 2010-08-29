@@ -41,12 +41,14 @@ import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.context.FacesContext;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.version.DeegreeModuleInfo;
+import org.deegree.console.featurestore.FeatureStoreConfigManager;
+import org.deegree.console.jdbc.ConnectionConfigManager;
+import org.deegree.console.services.ServiceConfigManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.services.controller.OGCFrontController;
 
@@ -89,10 +91,10 @@ public class ApplicationBean {
         return nameToController;
     }
 
-    public String getWorkspaceName () {
+    public String getWorkspaceName() {
         return OGCFrontController.getServiceWorkspace().getName();
     }
-    
+
     public String getWorkspaceDirectory() {
         return OGCFrontController.getServiceWorkspace().getLocation().getAbsolutePath();
     }
@@ -109,12 +111,31 @@ public class ApplicationBean {
         return FeatureStoreManager.getFeatureStoreIds();
     }
 
-    public void reloadConfig( AjaxBehaviorEvent event )
-                            throws AbortProcessingException {
+    public boolean getPendingChanges () {
+        return true;
+    }
+    
+    public void applyChanges()
+                            throws Exception {
         try {
             OGCFrontController.getInstance().reload();
         } catch ( Exception e ) {
             e.printStackTrace();
+        }
+
+        ServiceConfigManager serviceConfigManager = (ServiceConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "serviceConfigManager" );
+        if ( serviceConfigManager != null ) {
+            serviceConfigManager.scan();
+        }
+        
+        FeatureStoreConfigManager fsConfigManager = (FeatureStoreConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "featureStoreConfigManager" );
+        if ( fsConfigManager != null ) {
+            fsConfigManager.scan();
+        }
+
+        ConnectionConfigManager connConfigManager = (ConnectionConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "connectionConfigManager" );
+        if ( connConfigManager != null ) {
+            connConfigManager.scan();
         }
     }
 }

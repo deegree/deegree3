@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.jdbc;
+package org.deegree.console.services;
 
 import java.net.URL;
 
@@ -47,19 +47,19 @@ import org.deegree.console.XMLConfig;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConnectionConfig extends XMLConfig {
+public class ServiceConfig extends XMLConfig {
 
     private static final long serialVersionUID = 5777982897759843271L;
 
-    private static URL CONFIG_TEMPLATE = ConnectionConfigManager.class.getResource( "template.xml" );
+    private static URL CONFIG_TEMPLATE = ServiceConfigManager.class.getResource( "template.xml" );
 
-    private static URL SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
+    private static URL SCHEMA_URL = ServiceConfigManager.class.getResource( "/META-INF/schemas/jdbc/0.5.0/jdbc.xsd" );
 
-    public ConnectionConfig( String id, boolean active, boolean ignore, ConnectionConfigManager manager ) {
+    public ServiceConfig( String id, boolean active, boolean ignore, ServiceConfigManager manager ) {
         super( id, active, ignore, manager, SCHEMA_URL, CONFIG_TEMPLATE );
     }
 
-    public ConnectionConfig( String id, ConnectionConfigManager manager ) {
+    public ServiceConfig( String id, ServiceConfigManager manager ) {
         this( id, false, false, manager );
     }
 }

@@ -17,26 +17,18 @@
   <br />
   ------------------------------------------------------------------------------
   <br />  
-  <br />  
+  <br />
   <ui:repeat value="#{applicationBean.moduleInfos}" var="moduleInfo">
     - <h:outputText value="#{moduleInfo}" />
     <br />
   </ui:repeat>
-      <br/>
-
-      ------------------------------------------------------------------------------
+  <br />
+      
       <h:panelGroup id="workspace">
       <h:form>
-        Workspace
-        [<h:commandLink value="Reload" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":workspace" />
-        </h:commandLink>]
-        [<h:commandLink value="Switch" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":workspace" />
-        </h:commandLink>]
-      <br />                  
-      ------------------------------------------------------------------------------
-      <br />      
+      ------------------------------------------------------------------------------<br />
+      Workspace<br />                  
+      ------------------------------------------------------------------------------<br />
       <br/>      
       - Name: <h:outputText value="#{applicationBean.workspaceName}" /><br/>      
       - Directory: <h:outputText value="#{applicationBean.workspaceDirectory}" />
@@ -45,73 +37,40 @@
       </h:form>
       </h:panelGroup>
 
-      ------------------------------------------------------------------------------
-      <h:panelGroup id="services">
       <h:form>          
-        Web services
-        [<h:commandLink value="Reload" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
-        </h:commandLink>]
-        [<h:commandLink value="Add" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
-        </h:commandLink>]
-      <br />
-      ------------------------------------------------------------------------------      
-      <br />
-      <ui:repeat value="#{applicationBean.nameToController}" var="ntc">
-        - <h:outputText value="#{ntc}" />
-        <h:outputText value="&#160;" />
-        <h:panelGroup rendered="#{ntc == 'WFS'}">
-          [<h:commandLink value="Delete" style="text-align: right;">
-            <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
-            </h:commandLink>]
-          [<h:outputLink value="console/#{fn:toLowerCase(ntc)}/index.jsp">Details</h:outputLink>]
-          [<h:outputLink value="console/client/client.html">Send requests</h:outputLink>]
-        </h:panelGroup>
-        <h:panelGroup rendered="#{ntc == 'WPS'}">
-          [<h:commandLink value="Delete" style="text-align: right;">
-            <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
-            </h:commandLink>]        
-          [<h:outputLink value="console/#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
-          [<h:outputLink value="console/client/client.html">Send requests</h:outputLink>]
-        </h:panelGroup>
-        <h:panelGroup rendered="#{ntc == 'WMS'}">
-          [<h:commandLink value="Delete" style="text-align: right;">
-            <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":services" />
-            </h:commandLink>]        
-          [<h:outputLink value="console/#{fn:toLowerCase(ntc)}/index.jsf">Details</h:outputLink>]
-          [<h:outputLink value="console/client/client.html">Send requests</h:outputLink>]
-        </h:panelGroup>        
-        <br />
-        <h:outputText rendered="#{empty applicationBean.nameToController}" value="No services have been defined." />
-        <br/>
-      </ui:repeat>
+      ------------------------------------------------------------------------------<br />
+      Web services<br />
+      ------------------------------------------------------------------------------<br />
+      <br />      
+	  <ui:repeat value="#{serviceConfigManager.configs}" var="config">
+	    - <h:outputText value="#{config.id}" />: <h:outputText value="#{config.status}" />
+	    [<h:commandLink value="Edit" action="#{config.edit}"/>]
+	    [<h:commandLink rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}"/><h:commandLink rendered="#{config.deactivated}" value="Activate" action="#{config.activate}"/>]	    
+	    <br />
+	  </ui:repeat>
       </h:form>
       <br/>      
-      
-      ------------------------------------------------------------------------------
+
+	  <h:form>
       <h:panelGroup id="featurestores">
-      <h:form>
-        Feature stores
-        [<h:commandLink value="Reload" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":featurestores" />
-        </h:commandLink>]
-        [<h:commandLink value="Add" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":featurestores" />
-        </h:commandLink>]
-      <br />
-      ------------------------------------------------------------------------------      
-      <br />
-	  <ui:repeat value="#{applicationBean.featureStores}" var="featureStore">
-	    - <h:outputText value="#{featureStore}" />
-	    [<h:commandLink value="Delete" style="text-align: right;">
-        <f:ajax listener="#{applicationBean.reloadConfig}" execute="@this" render=":featurestores" />
-        </h:commandLink>]
+      ------------------------------------------------------------------------------<br />
+      Feature stores<br />
+      ------------------------------------------------------------------------------<br />
+      <br />      
+	  <ui:repeat value="#{featureStoreConfigManager.configs}" var="config">
+	    - <h:outputText value="#{config.id}" />: <h:outputText value="#{config.status}" />
+	    [<h:commandLink value="Edit" action="#{config.edit}"/>]
+	    [<h:commandLink value="Delete" action="#{config.delete}"/>]
+        [<h:commandLink rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}"/><h:commandLink rendered="#{config.deactivated}" value="Activate" action="#{config.activate}"/>]
+        [<h:commandLink value="Create tables" action="#{config.createTables}"/>]	    
 	    <br />
-	  </ui:repeat>            
+	  </ui:repeat>
       <br />
-      </h:form>
+      Add: <h:inputText value="#{newConnectionConfig.id}" size="16"/>
+        <h:commandButton value="OK" action="#{newConnectionConfig.create}"/>      
       </h:panelGroup>
+      </h:form>
+      <br/>
 
 	  <h:form>
       <h:panelGroup id="jdbc">
@@ -119,18 +78,30 @@
       JDBC connections<br />
       ------------------------------------------------------------------------------<br />
       <br />      
-	  <ui:repeat value="#{connectionsConfig.connections}" var="config">
+	  <ui:repeat value="#{connectionConfigManager.configs}" var="config">
 	    - <h:outputText value="#{config.id}" />: <h:outputText value="#{config.status}" />
-	    <h:commandButton value="Edit" action="#{config.edit}"/>
-	    <h:commandButton value="Delete" action="#{config.delete}"/>
+	    [<h:commandLink value="Edit" action="#{config.edit}"/>]
+	    [<h:commandLink value="Delete" action="#{config.delete}"/>]	    
 	    <br />
 	  </ui:repeat>
       <br />
-      Add: <h:inputText value="#{connectionConfig.id}" size="16"/>
-        <h:commandButton value="OK" action="#{connectionConfig.create}"/>      
+      Add: <h:inputText value="#{newConnectionConfig.id}" size="16"/>
+        <h:commandButton value="OK" action="#{newConnectionConfig.create}"/>      
       </h:panelGroup>
       </h:form>
-
-  </h:panelGroup>    
+      <br/>
+      ------------------------------------------------------------------------------<br />
+      <br/>
+      <h:panelGroup rendered="#{applicationBean.pendingChanges}">
+      <h:form>
+      Configuration has been changed. [<h:commandLink value="Reload" action="#{applicationBean.applyChanges}"/>]            
+      </h:form>
+      </h:panelGroup>
+      <h:panelGroup rendered="#{!applicationBean.pendingChanges}">
+      <h:form>
+      No configuration changes pending. [<h:commandLink value="Reload anyway" action="#{applicationBean.applyChanges}"/>            
+      </h:form>
+      </h:panelGroup>
+      <br/>      
 </h:body>
 </html>
