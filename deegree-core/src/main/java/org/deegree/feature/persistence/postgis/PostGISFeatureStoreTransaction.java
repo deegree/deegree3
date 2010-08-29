@@ -42,6 +42,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -62,6 +63,8 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.FeatureTypeMapping;
+import org.deegree.feature.persistence.query.FeatureResultSet;
+import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -157,8 +160,20 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public int performDelete( QName ftName, OperatorFilter filter, Lock lock )
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return 0;
+
+        // TODO implement this properly
+        Set<String> ids = new HashSet<String>();
+        Query query = new Query( ftName, null, filter, -1, -1, -1 );
+        try {
+            FeatureResultSet rs = fs.query( query );
+            for ( Feature feature : rs ) {
+                ids.add( feature.getId() );
+            }
+            rs.close();
+        } catch ( FilterEvaluationException e ) {
+            throw new FeatureStoreException( e );
+        }
+        return performDelete( new IdFilter( ids ), lock );
     }
 
     @Override
@@ -336,7 +351,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             LOG.error( msg, e.getMessage() );
             throw new SQLException( msg, e );
         }
-        byte [] bytes = bos.toByteArray();
+        byte[] bytes = bos.toByteArray();
         stmt.setBytes( 3, bytes );
         LOG.debug( "Feature blob size: " + bytes.length );
         Envelope bbox = feature.getEnvelope();
