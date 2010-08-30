@@ -48,6 +48,7 @@ import org.deegree.services.jaxb.wps.LanguageStringType;
 import org.deegree.services.jaxb.wps.LiteralOutputDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
+import org.deegree.services.wps.GenericWPSProcess;
 import org.deegree.services.wps.WPSProcess;
 
 /**
@@ -80,13 +81,13 @@ public class ExampleProcessProvider implements ProcessProvider {
         ConstantProcesslet processlet = new ConstantProcesslet( returnValue );
 
         // create process definition dynamically
-        ProcessDefinition definition = createProcessDefinition( processId  );
+        ProcessDefinition definition = createProcessDefinition( processId );
 
         // build WPSProcess from processlet and process definition
-        return new WPSProcess( definition, processlet );
+        return new GenericWPSProcess( definition, processlet );
     }
 
-    private ProcessDefinition createProcessDefinition( String processId  ) {
+    private ProcessDefinition createProcessDefinition( String processId ) {
 
         ProcessDefinition definition = new ProcessDefinition();
 
@@ -109,7 +110,7 @@ public class ExampleProcessProvider implements ProcessProvider {
         title = new LanguageStringType();
         title.setValue( "Constant" );
         literalOutput.setTitle( title );
-        
+
         JAXBElement<LiteralOutputDefinition> outputEl = new JAXBElement<LiteralOutputDefinition>(
                                                                                                   new QName( "", "" ),
                                                                                                   LiteralOutputDefinition.class,
