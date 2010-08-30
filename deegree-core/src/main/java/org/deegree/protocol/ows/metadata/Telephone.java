@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>Telephone</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -54,6 +54,9 @@ public class Telephone {
 
     private List<String> facsimile;
 
+    /**
+     * @return voice, may be empty but never <code>null</code>.
+     */
     public List<String> getVoice() {
         if ( voice == null ) {
             voice = new ArrayList<String>();
@@ -61,6 +64,9 @@ public class Telephone {
         return voice;
     }
 
+    /**
+     * @return facsimile, may be empty but never <code>null</code>.
+     */
     public List<String> getFacsimile() {
         if ( facsimile == null ) {
             facsimile = new ArrayList<String>();

@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>OperationsMetadata</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -58,6 +58,9 @@ public class OperationsMetadata {
 
     private Object extendedCapabilities;
 
+    /**
+     * @return operation, may be empty but never <code>null</code>.
+     */
     public List<Operation> getOperation() {
         if ( operation == null ) {
             operation = new ArrayList<Operation>();
@@ -65,6 +68,9 @@ public class OperationsMetadata {
         return operation;
     }
 
+    /**
+     * @return parameter, may be empty but never <code>null</code>.
+     */
     public List<Domain> getParameter() {
         if ( parameter == null ) {
             parameter = new ArrayList<Domain>();
@@ -72,6 +78,9 @@ public class OperationsMetadata {
         return parameter;
     }
 
+    /**
+     * @return constraint, may be empty but never <code>null</code>.
+     */
     public List<Domain> getConstraint() {
         if ( constraint == null ) {
             constraint = new ArrayList<Domain>();

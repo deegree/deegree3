@@ -35,9 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.metadata;
 
-
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>Range</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -56,34 +55,58 @@ public class Range {
 
     private String rangeClosure;
 
+    /**
+     * @return minimumValue, may be <code>null</code>
+     */
     public String getMinimumValue() {
         return minimumValue;
     }
 
+    /**
+     * @param value
+     */
     public void setMinimumValue( String value ) {
         this.minimumValue = value;
     }
 
+    /**
+     * @return maximumValue, may be <code>null</code>
+     */
     public String getMaximumValue() {
         return maximumValue;
     }
 
+    /**
+     * @param value
+     */
     public void setMaximumValue( String value ) {
         this.maximumValue = value;
     }
 
+    /**
+     * @return spacing, may be <code>null</code>.
+     */
     public String getSpacing() {
         return spacing;
     }
 
+    /**
+     * @param value
+     */
     public void setSpacing( String value ) {
         this.spacing = value;
     }
 
+    /**
+     * @param rangeClosure
+     */
     public void setRangeClosure( String rangeClosure ) {
         this.rangeClosure = rangeClosure;
     }
 
+    /**
+     * @return rangeClosure, may be <code>null</code>.
+     */
     public String getRangeClosure() {
         return rangeClosure;
     }

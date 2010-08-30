@@ -42,7 +42,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>ServiceIdentification</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -65,22 +65,37 @@ public class ServiceIdentification {
 
     private List<String> accessConstraints;
 
+    /**
+     * @param description
+     */
     public void setDescription( Description description ) {
         this.description = description;
     }
 
+    /**
+     * @return description, may be <code>null</code>.
+     */
     public Description getDescription() {
         return description;
     }
 
+    /**
+     * @param serviceType
+     */
     public void setServiceType( CodeType serviceType ) {
         this.serviceType = serviceType;
     }
 
+    /**
+     * @return serviceType, may be <code>null</code>.
+     */
     public CodeType getServiceType() {
         return serviceType;
     }
 
+    /**
+     * @return serviceTypeVersion, may be empty but never <code>null</code>.
+     */
     public List<Version> getServiceTypeVersion() {
         if ( serviceTypeVersion == null ) {
             serviceTypeVersion = new ArrayList<Version>();
@@ -88,6 +103,9 @@ public class ServiceIdentification {
         return serviceTypeVersion;
     }
 
+    /**
+     * @return profiles, may be empty but never <code>null</code>.
+     */
     public List<String> getProfiles() {
         if ( profiles == null ) {
             profiles = new ArrayList<String>();
@@ -102,6 +120,9 @@ public class ServiceIdentification {
         this.fees = fees;
     }
 
+    /**
+     * @return accessConstraints, may be <code>null</code>.
+     */
     public List<String> getAccessConstraints() {
         return accessConstraints;
     }

@@ -42,7 +42,7 @@ import java.util.List;
 import org.deegree.commons.utils.Pair;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>Operation</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -63,6 +63,9 @@ public class Operation {
 
     private String name;
 
+    /**
+     * @return dcp, never <code>null</code>.
+     */
     public List<DCP> getDCP() {
         if ( dcp == null ) {
             dcp = new ArrayList<DCP>();
@@ -70,6 +73,9 @@ public class Operation {
         return dcp;
     }
 
+    /**
+     * @return parameter, never <code>null</code>.
+     */
     public List<Domain> getParameter() {
         if ( parameter == null ) {
             parameter = new ArrayList<Domain>();
@@ -77,6 +83,9 @@ public class Operation {
         return parameter;
     }
 
+    /**
+     * @return constraint, never <code>null</code>
+     */
     public List<Domain> getConstraint() {
         if ( constraint == null ) {
             constraint = new ArrayList<Domain>();
@@ -84,6 +93,9 @@ public class Operation {
         return constraint;
     }
 
+    /**
+     * @return metadata, never <code>null</code>
+     */
     public List<Pair<URL, URL>> getMetadata() {
         if ( metadata == null ) {
             metadata = new ArrayList<Pair<URL, URL>>();
@@ -91,6 +103,9 @@ public class Operation {
         return metadata;
     }
 
+    /**
+     * @param name
+     */
     public void setName( String name ) {
         this.name = name;
     }

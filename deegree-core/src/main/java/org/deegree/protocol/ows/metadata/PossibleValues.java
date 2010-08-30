@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>PossibleValues</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -62,6 +62,9 @@ public class PossibleValues {
 
     private String referenceURL;
 
+    /**
+     * @return value, may be empty but never <code>null</code>
+     */
     public List<String> getValue() {
         if ( value == null ) {
             value = new ArrayList<String>();
@@ -69,6 +72,9 @@ public class PossibleValues {
         return value;
     }
 
+    /**
+     * @return range, may be empty but never <code>null</code>
+     */
     public List<Range> getRange() {
         if ( range == null ) {
             range = new ArrayList<Range>();
@@ -76,34 +82,58 @@ public class PossibleValues {
         return range;
     }
 
+    /**
+     * 
+     */
     public void setAnyValue() {
         anyvalue = true;
     }
 
+    /**
+     * @return anyvalue
+     */
     public boolean getAnyValue() {
         return anyvalue;
     }
 
+    /**
+     * 
+     */
     public void setNoValue() {
         novalue = true;
     }
 
+    /**
+     * @return novalue
+     */
     public boolean getNoValue() {
         return novalue;
     }
 
+    /**
+     * @param referenceName
+     */
     public void setReferenceName( String referenceName ) {
         this.referenceName = referenceName;
     }
 
+    /**
+     * @return referenceName, may be <code>null</code>.
+     */
     public String getReferenceName() {
         return referenceName;
     }
 
+    /**
+     * @param referenceURL
+     */
     public void setReferenceURL( String referenceURL ) {
         this.referenceURL = referenceURL;
     }
 
+    /**
+     * @return referenceURL, may be <code>null</code>.
+     */
     public String getReferenceURL() {
         return referenceURL;
     }

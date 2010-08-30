@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>Address</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -62,6 +62,9 @@ public class Address {
 
     private List<String> electronicMailAddress;
 
+    /**
+     * @return deliveryPoint, never <code>null</code>
+     */
     public List<String> getDeliveryPoint() {
         if ( deliveryPoint == null ) {
             deliveryPoint = new ArrayList<String>();
@@ -69,38 +72,65 @@ public class Address {
         return deliveryPoint;
     }
 
+    /**
+     * @param city
+     */
     public void setCity( String city ) {
         this.city = city;
     }
 
+    /**
+     * @return city, may be <code>null</code>
+     */
     public String getCity() {
         return city;
     }
 
+    /**
+     * @param administrativeArea
+     */
     public void setAdministrativeArea( String administrativeArea ) {
         this.administrativeArea = administrativeArea;
     }
 
+    /**
+     * @return administrativeArea, may be <code>null</code>
+     */
     public String getAdministrativeArea() {
         return administrativeArea;
     }
 
+    /**
+     * @param postalCode
+     */
     public void setPostalCode( String postalCode ) {
         this.postalCode = postalCode;
     }
 
+    /**
+     * @return postalCode, may be <code>null</code>
+     */
     public String getPostalCode() {
         return postalCode;
     }
 
+    /**
+     * @param country
+     */
     public void setCountry( String country ) {
         this.country = country;
     }
 
+    /**
+     * @return country, may be <code>null</code>
+     */
     public String getCountry() {
         return country;
     }
 
+    /**
+     * @return electronicMailAddress, never <code>null</code>
+     */
     public List<String> getElectronicMailAddress() {
         if ( electronicMailAddress == null ) {
             electronicMailAddress = new ArrayList<String>();

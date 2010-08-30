@@ -38,7 +38,7 @@ package org.deegree.protocol.ows.metadata;
 import java.net.URL;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>ContactInfo</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -59,42 +59,72 @@ public class ContactInfo {
 
     private String contactInstructions;
 
+    /**
+     * @param phone
+     */
     public void setPhone( Telephone phone ) {
         this.phone = phone;
     }
 
+    /**
+     * @return phone, may be <code>null</code>
+     */
     public Telephone getPhone() {
         return phone;
     }
 
+    /**
+     * @param address
+     */
     public void setAddress( Address address ) {
         this.address = address;
     }
 
+    /**
+     * @return address, may be <code>null</code>
+     */
     public Address getAddress() {
         return address;
     }
 
+    /**
+     * @param onlineResource
+     */
     public void setOnlineResource( URL onlineResource ) {
         this.onlineResource = onlineResource;
     }
 
+    /**
+     * @return onlineResource, may be <code>null</code>
+     */
     public URL getOnlineResource() {
         return onlineResource;
     }
 
+    /**
+     * @param hoursOfService
+     */
     public void setHoursOfService( String hoursOfService ) {
         this.hoursOfService = hoursOfService;
     }
 
+    /**
+     * @return hoursOfService, may be <code>null</code>
+     */
     public String getHoursOfService() {
         return hoursOfService;
     }
 
+    /**
+     * @param contactInstructions
+     */
     public void setContactInstructions( String contactInstructions ) {
         this.contactInstructions = contactInstructions;
     }
 
+    /**
+     * @return contactInstructions, may be <code>null</code>
+     */
     public String getContactInstruction() {
         return contactInstructions;
     }
