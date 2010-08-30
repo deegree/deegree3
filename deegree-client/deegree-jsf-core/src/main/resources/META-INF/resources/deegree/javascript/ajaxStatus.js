@@ -1,10 +1,12 @@
 function processAjaxUpdate(msgId) {
 	function processEvent(data) {
 		var msg = document.getElementById(msgId);
-		if (data.status == "begin") {
-			msg.style.display = '';
-		} else if (data.status == "success") {
-			msg.style.display = 'none';
+		if(msg != null){
+			if (data.status == "begin") {
+				msg.style.display = '';
+			} else if (data.status == "success") {
+				msg.style.display = 'none';
+			}
 		}
 	}
 	return processEvent;
