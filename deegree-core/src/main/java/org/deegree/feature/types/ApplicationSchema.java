@@ -35,7 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,9 +47,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSNamespaceItemList;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -364,6 +370,30 @@ public class ApplicationSchema {
 
     public Map<FeatureType, FeatureType> getFtToSuperFt() {
         return ftToSuperFt;
+    }
+
+    public Collection<String> getNamespaces() {
+        Set<String> namespaces = new TreeSet<String>();
+        for ( FeatureType ft : getFeatureTypes() ) {
+            namespaces.add( ft.getName().getNamespaceURI() );
+        }
+        if ( xsModel != null ) {
+            XSNamespaceItemList nsItems = xsModel.getNamespaces();
+            for ( int i = 0; i < nsItems.getLength(); i++ ) {
+                String ns = nsItems.item( i ).getSchemaNamespace();
+                if ( ns.equals( GMLNS ) ) {
+                    continue;
+                } else if ( ns.equals( GML3_2_NS ) ) {
+                    continue;
+                } else if ( ns.equals( "http://www.w3.org/XML/1998/namespace" ) ) {
+                    continue;
+                } else if ( ns.equals( "http://www.w3.org/2001/XMLSchema" ) ) {
+                    continue;
+                }
+                namespaces.add( ns );
+            }
+        }
+        return namespaces;
     }
 
     /**

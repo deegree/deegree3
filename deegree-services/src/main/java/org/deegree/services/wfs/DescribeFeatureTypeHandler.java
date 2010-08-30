@@ -53,6 +53,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -60,7 +61,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
@@ -68,6 +69,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -115,9 +117,9 @@ class DescribeFeatureTypeHandler {
      * Performs the given {@link DescribeFeatureType} request.
      * <p>
      * If the request targets feature types in multiple namespaces, a WFS 2.0.0-style wrapper document is generated. The
-     * response document embedds all feature type declarations from one of the namespaces and imports the declarations
-     * of the feature types from the other namespaces using a KVP-<code>DescribeFeatureType</code> request that refers
-     * back to the service.
+     * response document embeds all feature type declarations from one of the namespaces and imports the declarations of
+     * the feature types from the other namespaces using a KVP-<code>DescribeFeatureType</code> request that refers back
+     * to the service.
      * </p>
      * 
      * @param request
@@ -157,7 +159,7 @@ class DescribeFeatureTypeHandler {
                                         ControllerException.NO_APPLICABLE_CODE );
             } else if ( nsToFts.size() == 1 ) {
                 // specific feature types from single namespace -> one schema document suffices
-                Map<String, String> importMap = buildImportMap( request, nsToFts );
+                Map<String, String> importMap = buildImportMap( request, nsToFts.keySet() );
                 Map<String, String> prefixToNs = service.getPrefixToNs();
                 String namespace = nsToFts.keySet().iterator().next();
                 ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, namespace, importMap,
@@ -165,24 +167,19 @@ class DescribeFeatureTypeHandler {
                 exporter.export( writer, nsToFts.get( nsToFts.keySet().iterator().next() ) );
             } else if ( request.getTypeNames() == null && request.getNsBindings() != null ) {
                 // all feature types from a single namespace
-                Map<String, String> importMap = buildImportMap( request, nsToFts );
+                Map<String, String> importMap = buildImportMap( request, nsToFts.keySet() );
                 Map<String, String> prefixToNs = service.getPrefixToNs();
                 String namespace = nsToFts.keySet().iterator().next();
                 ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, namespace, importMap,
                                                                                         prefixToNs );
                 exporter.export( writer, nsToFts.get( nsToFts.keySet().iterator().next() ) );
             } else {
-                // feature types from multiple namespaces -> generate wrapper schema document
-                Map<String, List<FeatureType>> nsToFtsFull = new HashMap<String, List<FeatureType>>();
-                for ( String ns : nsToFts.keySet() ) {
-                    nsToFtsFull.put(
-                                     ns,
-                                     nsToFts.values().iterator().next().iterator().next().getSchema().getFeatureTypes(
-                                                                                                                       ns,
-                                                                                                                       true,
-                                                                                                                       true ) );
+                // feature types from multiple namespaces -> generate wrapper schema document from all feature stores
+                Set<String> namespaces = new TreeSet<String>();
+                for ( FeatureStore fs : service.getStores() ) {
+                    namespaces.addAll( fs.getSchema().getNamespaces() );
                 }
-                writeWrapperSchema( writer, request, version, nsToFtsFull );
+                writeWrapperSchema( writer, request, version, namespaces );
             }
         }
         writer.flush();
@@ -306,20 +303,23 @@ class DescribeFeatureTypeHandler {
     }
 
     private void writeWrapperSchema( XMLStreamWriter writer, DescribeFeatureType request, GMLVersion gmlVersion,
-                                     Map<String, List<FeatureType>> nsToFts )
+                                     Collection<String> namespaces )
                             throws XMLStreamException {
+
+        Iterator<String> iter = namespaces.iterator();
 
         writer.writeStartElement( XSNS, "schema" );
         writer.writeAttribute( "attributeFormDefault", "unqualified" );
         writer.writeAttribute( "elementFormDefault", "qualified" );
-        writer.writeAttribute( "targetNamespace", nsToFts.keySet().iterator().next() );
+        writer.writeAttribute( "targetNamespace", iter.next() );
         writer.writeNamespace( WFS_PREFIX, WFSConstants.WFS_NS );
 
         writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeNamespace( GML_PREFIX, gmlVersion.getNamespace() );
-        for ( Entry<String, List<FeatureType>> entry : nsToFts.entrySet() ) {
-            QName ftName = entry.getValue().iterator().next().getName();
-            writer.writeNamespace( ftName.getPrefix(), ftName.getNamespaceURI() );
+        while ( iter.hasNext() ) {
+            String ns = iter.next();
+            String prefix = service.getTargetNsToPrefix().get( ns );
+            writer.writeNamespace( prefix, ns );
         }
 
         // import GML core schema
@@ -341,52 +341,32 @@ class DescribeFeatureTypeHandler {
         }
 
         boolean first = true;
-        for ( Entry<String, List<FeatureType>> entry : nsToFts.entrySet() ) {
+        for ( String ns : namespaces ) {
             if ( first ) {
                 writer.writeEmptyElement( XSNS, "include" );
                 first = false;
             } else {
                 writer.writeEmptyElement( XSNS, "import" );
-                writer.writeAttribute( "namespace", entry.getKey() );
+                writer.writeAttribute( "namespace", ns );
             }
-            writer.writeAttribute( "schemaLocation", buildDescribeFeatureTypeRequest( request, entry.getKey() ) );
+            writer.writeAttribute( "schemaLocation", buildDescribeFeatureTypeRequest( request, ns ) );
         }
 
         // end 'xs:schema'
         writer.writeEndElement();
     }
 
-    private Map<String, String> buildImportMap( DescribeFeatureType request, Map<String, List<FeatureType>> nsToFts ) {
+    private Map<String, String> buildImportMap( DescribeFeatureType request, Collection<String> namespaces ) {
         Map<String, String> nsToDescribeFtRequest = new HashMap<String, String>();
-        Iterator<String> namespaceIter = nsToFts.keySet().iterator();
+        Iterator<String> namespaceIter = namespaces.iterator();
         // skip first namespace (will be included directly in output document)
         namespaceIter.next();
         while ( namespaceIter.hasNext() ) {
             String ns = namespaceIter.next();
-            String requestURL = null;
-            if ( request.getTypeNames() == null && request.getNsBindings() != null ) {
-                requestURL = buildDescribeFeatureTypeRequest( request, ns );
-            } else {
-                requestURL = buildDescribeFeatureTypeRequest( request, nsToFts.get( ns ) );
-            }
+            String requestURL = buildDescribeFeatureTypeRequest( request, ns );
             nsToDescribeFtRequest.put( ns, requestURL );
         }
         return nsToDescribeFtRequest;
-    }
-
-    private String buildDescribeFeatureTypeRequest( DescribeFeatureType request, List<FeatureType> fts ) {
-
-        QName[] typeNames = new QName[fts.size()];
-        int i = 0;
-        for ( FeatureType ft : fts ) {
-            typeNames[i++] = ft.getName();
-        }
-        DescribeFeatureType subRequest = new DescribeFeatureType( request.getVersion(), null,
-                                                                  request.getOutputFormat(), typeNames, null );
-
-        String baseURL = OGCFrontController.getHttpGetURL();
-        String paramPart = DescribeFeatureTypeKVPAdapter.export( subRequest, request.getVersion() );
-        return baseURL + paramPart;
     }
 
     private String buildDescribeFeatureTypeRequest( DescribeFeatureType request, String namespace ) {
@@ -426,8 +406,7 @@ class DescribeFeatureTypeHandler {
             } else {
                 String ns = request.getNsBindings().values().iterator().next();
                 LOG.debug( "Describing all feature types in namespace '" + ns + "'." );
-                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes(
-                                                                                                                   ns,
+                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes( ns,
                                                                                                                    true,
                                                                                                                    false );
                 for ( FeatureType ft : nsFts ) {

@@ -98,7 +98,7 @@ public class WFService {
 
         for ( FeatureStore fs : FeatureStoreManager.getAll() ) {
             addStore( fs );
-            addNotYetHintedNamespaces( fs.getSchema().getFeatureTypes() );
+            addNotYetHintedNamespaces( fs.getSchema().getNamespaces() );
         }
 
         LOG.debug( "The following prefix-to-namespace and namespace-to-prefix bindings are used for resolution..." );
@@ -110,21 +110,13 @@ public class WFService {
         }
     }
 
-    private void addNotYetHintedNamespaces( FeatureType[] featureTypes ) {
-        for ( int i = 0; i < featureTypes.length; i++ ) {
-            if ( !hintedNamespaces.contains( featureTypes[i].getName().getNamespaceURI() ) ) {
-                hintedNamespaces.add( featureTypes[i].getName().getNamespaceURI() );
-
-                if ( featureTypes[i].getName().getPrefix() != null
-                     && !featureTypes[i].getName().getPrefix().equals( "" ) ) {
-                    // add the prefixes that were forgotten to be added in the NamespaceHint elements from the
-                    // configuration
-                    prefixToNs.put( featureTypes[i].getName().getPrefix(), featureTypes[i].getName().getNamespaceURI() );
-                } else {
-                    // the elements that have no prefix must be in an application schema namespace
-                    targetNsToPrefix.put( featureTypes[i].getName().getNamespaceURI(), "app" + indexPrefix );
-                    indexPrefix++;
-                }
+    private void addNotYetHintedNamespaces( Collection<String> namespaces ) {
+        for ( String ns : namespaces ) {
+            if ( !hintedNamespaces.contains( ns ) ) {
+                String prefix = "app" + ( indexPrefix++ );
+                hintedNamespaces.add( ns );
+                prefixToNs.put( prefix, ns );
+                targetNsToPrefix.put( ns, prefix );
             }
         }
     }

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
+import static com.sun.org.apache.xerces.internal.xs.XSConstants.ELEMENT_DECLARATION;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
@@ -45,6 +46,7 @@ import static org.apache.xerces.xs.XSConstants.DERIVATION_NONE;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_RESTRICTION;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_SUBSTITUTION;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_UNION;
+import static org.apache.xerces.xs.XSConstants.TYPE_DEFINITION;
 import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_ALL;
 import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_CHOICE;
 import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_SEQUENCE;
@@ -88,7 +90,11 @@ import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSFacet;
+import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSNamedMap;
+import org.apache.xerces.xs.XSNamespaceItem;
+import org.apache.xerces.xs.XSNamespaceItemList;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
@@ -107,6 +113,7 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -303,29 +310,55 @@ public class ApplicationSchemaXSDEncoder {
         // writer.writeEndElement();
         // }
 
+        Set<ApplicationSchema> schemas = new HashSet<ApplicationSchema>();
+
         // export feature type declarations (in the target namespace)
         for ( FeatureType ft : fts ) {
+            schemas.add( ft.getSchema() );
             if ( ft.getName().getNamespaceURI().equals( targetNs ) ) {
                 export( writer, ft );
             }
         }
 
-        // export custom simple type declarations (in the target namespace)
-        for ( XSSimpleTypeDefinition xsSimpleType : customSimpleTypes.values() ) {
-            export( writer, xsSimpleType );
-        }
+        // export element declarations and type declarations (in the target namespace) that are not feature type related
+        for ( ApplicationSchema schema : schemas ) {
+            GMLSchemaAnalyzer analyzer = schema.getXSModel();
+            if ( analyzer != null ) {
+                XSModel xsModel = analyzer.getXSModel();
+                XSNamespaceItemList nsItems = xsModel.getNamespaceItems();
+                for ( int i = 0; i < nsItems.getLength(); i++ ) {
+                    XSNamespaceItem nsItem = nsItems.item( i );
+                    String ns = nsItem.getSchemaNamespace();
+                    if ( ns.equals( targetNs ) ) {
 
-        // build convenience set in order to check just the names of the previously exported simple types
-        for ( XSSimpleTypeDefinition xsSimpleType : customSimpleTypes.values() ) {
-            customStNames.add( xsSimpleType.getName() );
-        }
+                        XSNamedMap elements = nsItem.getComponents( ELEMENT_DECLARATION );
+                        for ( int j = 0; j < elements.getLength(); j++ ) {
+                            XSElementDeclaration xsElement = (XSElementDeclaration) elements.item( j );
+                            QName name = new QName( xsElement.getNamespace(), xsElement.getName() );
+                            if ( !exportedFts.contains( name ) ) {
+                                exportElement( writer, xsElement, 1, 1, false );
+                            }
+                        }
 
-        int index = 0;
-        while ( index < customExportedTypes.size() ) {
-            XSTypeDefinition xsTypeDef = customExportedTypes.get( index );
-            LOG.debug( "Exporting type " + xsTypeDef );
-            exportType( writer, xsTypeDef );
-            index++;
+                        XSNamedMap types = nsItem.getComponents( TYPE_DEFINITION );
+                        for ( int j = 0; j < types.getLength(); j++ ) {
+                            XSTypeDefinition xsType = (XSTypeDefinition) types.item( j );
+
+                            // TODO remove hacky way
+                            String localName = xsType.getName();
+                            if ( localName.endsWith( "Type" ) ) {
+                                localName = localName.substring( 0, 4 );
+                            }
+                            if ( !exportedFts.contains( localName ) ) {
+                                QName name = new QName( xsType.getNamespace(), xsType.getName() );
+                                if ( !exportedFts.contains( name ) ) {
+                                    exportType( writer, xsType );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // end 'xs:schema'
