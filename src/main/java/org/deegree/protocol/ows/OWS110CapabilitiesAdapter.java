@@ -95,9 +95,7 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
     }
 
     /**
-     * Returns the service metadata.
-     * 
-     * @return the service metadata, never <code>null</code>
+     * @return a {@link ServiceMetadata} instance, never <code>null</code>
      */
     public ServiceMetadata parseMetadata() {
 
@@ -137,7 +135,8 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
 
     /**
      * @param opMetadataEl
-     * @return
+     *            context {@link OMElement}
+     * @return an {@link OperationMetadata} instance, never <code>null</code>
      */
     private OperationsMetadata parseOperationsMetadata( OMElement opMetadataEl ) {
         OperationsMetadata opMetadata = new OperationsMetadata();
@@ -178,7 +177,8 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
 
     /**
      * @param opEl
-     * @return
+     *            context {@link OMElement}
+     * @return an {@link Operation} instance, never <code>null</code>
      */
     private Operation parseOperation( OMElement opEl ) {
         Operation operation = new Operation();
@@ -231,8 +231,9 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
     }
 
     /**
-     * @param constaintEl
-     * @return
+     * @param domainEl
+     *            context {@link OMElement}
+     * @return an {@link Operation} instance, never <code>null</code>
      */
     private Domain parseDomain( OMElement domainEl ) {
         Domain domain = new Domain();
@@ -279,8 +280,8 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
 
     /**
      * @param domainEl
-     * @param domain
-     * @return
+     *            context {@link OMElement}
+     * @return an {@link ValuesUnit} instance, never <code>null</code>
      */
     private ValuesUnit parseValuesUnit( OMElement domainEl ) {
         ValuesUnit values = new ValuesUnit();
@@ -306,7 +307,8 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
 
     /**
      * @param domainEl
-     * @param domain
+     *            context {@link OMElement}
+     * @return an {@link PossibleValues} instance, never <code>null</code>
      */
     private PossibleValues parsePossibleValues( OMElement domainEl ) {
         PossibleValues possibleVals = new PossibleValues();
@@ -348,7 +350,8 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
 
     /**
      * @param rangeEl
-     * @return
+     *            context {@link OMElement}
+     * @return an {@link Range} instance, never <code>null</code>
      */
     private Range parseRange( OMElement rangeEl ) {
         Range range = new Range();
@@ -367,7 +370,8 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
 
     /**
      * @param dcpEl
-     * @return
+     *            context {@link OMElement}
+     * @return an {@link DCP} instance, never <code>null</code>
      */
     private DCP parseDCP( OMElement dcpEl ) {
         DCP dcp = new DCP();
@@ -442,6 +446,11 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         return url;
     }
 
+    /**
+     * @param serviceIdEl
+     *            context {@link OMElement}
+     * @return an {@link ServiceIdentification} instance, never <code>null</code>
+     */
     private ServiceIdentification parseServiceIdentification( OMElement serviceIdEl ) {
 
         ServiceIdentification serviceId = new ServiceIdentification();
@@ -479,7 +488,9 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
     }
 
     /**
-     * @return
+     * @param serviceIdEl
+     *            context {@link OMElement}
+     * @return an {@link Description} instance, never <code>null</code>
      */
     private Description parseDescription( OMElement serviceIdEl ) {
         Description description = new Description();
@@ -516,8 +527,9 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
     }
 
     /**
-     * @param typeEl
-     * @return
+     * @param omelement
+     *            context {@link OMElement}
+     * @return an {@link CodeType} instance, never <code>null</code>
      */
     private CodeType parseCodeSpace( OMElement omelement ) {
         String codeSpace = getNodeAsString( omelement, new XPath( "codeSpace", nsContext ), null );
@@ -527,6 +539,11 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         return new CodeType( omelement.getText() );
     }
 
+    /**
+     * @param serviceProviderEl
+     *            context {@link OMElement}
+     * @return an {@link ServiceProvider} instance, never <code>null</code>
+     */
     private ServiceProvider parseServiceProvider( OMElement serviceProviderEl ) {
 
         ServiceProvider serviceProvider = new ServiceProvider();
@@ -548,6 +565,11 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         return serviceProvider;
     }
 
+    /**
+     * @param serviceContactEl
+     *            context {@link OMElement}
+     * @return an {@link ServiceContact} instance, never <code>null</code>
+     */
     private ServiceContact parseServiceContact( OMElement serviceContactEl ) {
         ServiceContact serviceContact = new ServiceContact();
 
@@ -569,8 +591,9 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
     }
 
     /**
-     * @param element
-     * @return
+     * @param contactInfoEl
+     *            context {@link OMElement}
+     * @return an {@link ContactInfo} instance, never <code>null</code>
      */
     private ContactInfo parseContactInfo( OMElement contactInfoEl ) {
         ContactInfo contactInfo = new ContactInfo();
@@ -596,8 +619,9 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
     }
 
     /**
-     * @param nodeAsString
-     * @return
+     * @param phoneEl
+     *            context {@link OMElement}
+     * @return an {@link Telephone} instance, never <code>null</code>
      */
     private Telephone parsePhone( OMElement phoneEl ) {
         Telephone phone = new Telephone();
@@ -617,6 +641,11 @@ public class OWS110CapabilitiesAdapter extends XMLAdapter {
         return phone;
     }
 
+    /**
+     * @param addressEl
+     *            context {@link OMElement}
+     * @return an {@link Address} instance, never <code>null</code>
+     */
     private Address parseAddress( OMElement addressEl ) {
         Address address = new Address();
 
