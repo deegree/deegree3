@@ -84,15 +84,10 @@ public class WMSParameterChooser extends AbstractGRDialog {
 
     private URL url;
 
-    public WMSParameterChooser( Component parent, String urlString ) {
+    public WMSParameterChooser( Component parent, String urlString ) throws MalformedURLException, NullPointerException {
         super( parent, new Dimension( 300, 600 ) );
 
-        try {
-            url = new URL( urlString );
-        } catch ( MalformedURLException e1 ) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+        url = new URL( urlString );
 
         wmsClient = new WMSClient111( url );
 

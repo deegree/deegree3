@@ -48,6 +48,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -440,6 +441,7 @@ public class Controller {
      * @version $Revision$, $Date$
      */
     class ButtonListener implements ActionListener {
+        private boolean isRunIntoTrouble = false;
 
         @Override
         public void actionPerformed( ActionEvent e ) {
@@ -623,7 +625,7 @@ public class Controller {
                 }
                 if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_OK ) ) {
                     if ( optionDialog != null && optionDialog.isVisible() == true ) {
-                        boolean isRunIntoTrouble = false;
+
                         if ( optionSettingPanel != null ) {
 
                             if ( optionSettingPanel instanceof ViewPanel ) {
@@ -700,9 +702,21 @@ public class Controller {
                         wmsStartDialog.setVisible( false );
                         // modelFormats = new CheckBoxListModel();
                         // modelCRS = new CheckBoxListModel();
-                        wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURLString );
-                        wmsParameter.addListeners( new ButtonListener() );
-                        wmsParameter.setVisible( true );
+                        try {
+                            wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURLString );
+                        } catch ( MalformedURLException e1 ) {
+                            new ErrorDialog( wmsStartDialog, JDialog.ERROR,
+                                             "The requested URL is malformed! There is no response gotten from the server. " );
+                            isRunIntoTrouble = true;
+                        } catch ( NullPointerException e2 ) {
+                            new ErrorDialog( wmsStartDialog, JDialog.ERROR,
+                                             "The requested URL is malformed! There is no response gotten from the server. " );
+                            isRunIntoTrouble = true;
+                        }
+                        if ( isRunIntoTrouble == false ) {
+                            wmsParameter.addListeners( new ButtonListener() );
+                            wmsParameter.setVisible( true );
+                        }
 
                     }
                     if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
