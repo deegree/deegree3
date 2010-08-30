@@ -56,6 +56,10 @@ import org.deegree.protocol.ows.exception.OWSException;
  */
 public class OWSExceptionReader {
 
+    /**
+     * @param reader
+     * @return true if the current element in the reader is an <code>ows:ExceptionReport</code>, false otherwise
+     */
     public static boolean isException( XMLStreamReader reader ) {
         return ( new QName( OWS_11_NS, "ExceptionReport" ).equals( reader.getName() ) );
     }
@@ -67,8 +71,9 @@ public class OWSExceptionReader {
      * (&lt;/ows:ExceptionReport&gt;)</li>
      * </ul>
      * 
-     * @return
-     * @throws XMLStreamException
+     * @param reader
+     * 
+     * @return the parsed {@link OWSException}
      */
     public static OWSException parseException( XMLStreamReader reader ) {
         String code = null;
