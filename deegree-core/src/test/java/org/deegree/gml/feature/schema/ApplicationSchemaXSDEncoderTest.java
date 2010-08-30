@@ -37,15 +37,15 @@
 package org.deegree.gml.feature.schema;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLVersion;
@@ -70,16 +70,14 @@ public class ApplicationSchemaXSDEncoderTest {
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
 
-        XMLStreamWriter writer = new FormattingXMLStreamWriter(
-                                                                XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                      new FileWriter(
-                                                                                                                                      System.getProperty( "java.io.tmpdir" )
-                                                                                                                                                              + File.separatorChar
-                                                                                                                                                              + "out.xml" ) ) );
-        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
-        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
-        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        new ApplicationSchemaXSDEncoder( GMLVersion.GML_31, null ).export( writer, schema );
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
+        OutputStream os = new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "out.xml" );
+        XMLStreamWriter writer = new FormattingXMLStreamWriter( outputFactory.createXMLStreamWriter( os ) );
+        ApplicationSchemaXSDEncoder encoder = new ApplicationSchemaXSDEncoder( GMLVersion.GML_31,
+                                                                               "http://cite.opengeospatial.org/gmlsf",
+                                                                               null, schema.getNamespaceBindings() );
+        encoder.export( writer, schema );
         writer.close();
     }
 }

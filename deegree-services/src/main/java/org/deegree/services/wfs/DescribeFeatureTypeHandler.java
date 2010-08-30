@@ -158,12 +158,18 @@ class DescribeFeatureTypeHandler {
             } else if ( nsToFts.size() == 1 ) {
                 // specific feature types from single namespace -> one schema document suffices
                 Map<String, String> importMap = buildImportMap( request, nsToFts );
-                ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, importMap );
+                Map<String, String> prefixToNs = service.getPrefixToNs();
+                String namespace = nsToFts.keySet().iterator().next();
+                ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, namespace, importMap,
+                                                                                        prefixToNs );
                 exporter.export( writer, nsToFts.get( nsToFts.keySet().iterator().next() ) );
             } else if ( request.getTypeNames() == null && request.getNsBindings() != null ) {
                 // all feature types from a single namespace
                 Map<String, String> importMap = buildImportMap( request, nsToFts );
-                ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, importMap );
+                Map<String, String> prefixToNs = service.getPrefixToNs();
+                String namespace = nsToFts.keySet().iterator().next();
+                ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, namespace, importMap,
+                                                                                        prefixToNs );
                 exporter.export( writer, nsToFts.get( nsToFts.keySet().iterator().next() ) );
             } else {
                 // feature types from multiple namespaces -> generate wrapper schema document

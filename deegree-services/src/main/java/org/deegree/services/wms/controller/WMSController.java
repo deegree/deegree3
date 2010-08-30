@@ -563,7 +563,15 @@ public class WMSController extends AbstractOGCServiceController {
         try {
             response.setContentType( "text/xml" );
             XMLStreamWriter writer = response.getXMLWriter();
-            new ApplicationSchemaXSDEncoder( GMLVersion.GML_2, null ).export( writer, schema );
+            
+            // TODO handle multiple namespaces
+            String namespace = "http://www.deegree.org/app";
+            if ( !schema.isEmpty() ) {
+                namespace = schema.get( 0 ).getName().getNamespaceURI();
+            }
+            Map<String,String> nsToPrefix = new HashMap<String,String>();
+            nsToPrefix.put ("app", namespace);
+            new ApplicationSchemaXSDEncoder( GMLVersion.GML_2, namespace, null, nsToPrefix ).export( writer, schema );
             writer.writeEndDocument();
         } catch ( XMLStreamException e ) {
             LOG.error( "Unknown error", e );
