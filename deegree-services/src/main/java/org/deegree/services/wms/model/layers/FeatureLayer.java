@@ -62,6 +62,7 @@ import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -89,6 +90,8 @@ import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryTransformer;
+import org.deegree.protocol.wms.Utils;
 import org.deegree.protocol.wms.dims.DimensionInterval;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
@@ -279,8 +282,24 @@ public class FeatureLayer extends Layer {
             Integer maxFeats = gm.getMaxFeatures().get( this );
             int max = maxFeats == null ? -1 : maxFeats;
             int cnt = 0;
+            double resolution = gm.getResolution();
+            if ( !gm.getCoordinateSystem().equals( datastore.getStorageSRS() ) ) {
+                try {
+                    Envelope b = new GeometryTransformer( datastore.getStorageSRS() ).transform( gm.getBoundingBox() );
+                    resolution = Utils.calcResolution( b, gm.getWidth(), gm.getHeight() );
+                } catch ( IllegalArgumentException e ) {
+                    LOG.warn( "Calculating the resolution failed: '{}'", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                } catch ( TransformationException e ) {
+                    LOG.warn( "Calculating the resolution failed: '{}'", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                } catch ( UnknownCRSException e ) {
+                    LOG.warn( "Calculating the resolution failed: '{}'", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
             for ( Feature f : rs ) {
-                render( f, style, renderer, textRenderer, gm.getScale(), gm.getResolution() );
+                render( f, style, renderer, textRenderer, gm.getScale(), resolution );
                 if ( max > 0 && ++cnt == max ) {
                     LOG.debug( "Reached max features of {} for layer '{}', stopping.", max, this );
                     break;
