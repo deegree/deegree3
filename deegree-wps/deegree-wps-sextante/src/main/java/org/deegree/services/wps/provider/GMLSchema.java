@@ -86,7 +86,7 @@ public class GMLSchema {
     /**
      * Returns {@link GMLVersion} of the schema.
      * 
-     * @return
+     * @return {@link GMLVersion} of the schema.
      */
     public GMLVersion getGMLVersion() {
         return version;
@@ -95,7 +95,7 @@ public class GMLSchema {
     /**
      * Returns the schema URL.
      * 
-     * @return
+     * @return Schema URL.
      */
     public String getSchema() {
         return schema;
@@ -104,7 +104,7 @@ public class GMLSchema {
     /**
      * Returns the {@link GMLType} of the schema.
      * 
-     * @return
+     * @return {@link GMLType} of the schema.
      */
     public GMLType getGMLType() {
         return type;

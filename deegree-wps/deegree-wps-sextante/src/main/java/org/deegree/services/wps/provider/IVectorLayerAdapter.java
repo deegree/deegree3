@@ -38,9 +38,7 @@ package org.deegree.services.wps.provider;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.xml.namespace.QName;
-
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -66,9 +64,7 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.vividsolutions.jts.geom.PrecisionModel;
-
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
@@ -76,8 +72,9 @@ import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.IteratorException;
 
 /**
- * The IVectorLayerAdapter has methods to create a vector layer from a geometry, feature or feature collection and <br>
- * methods to create a geometry or feature collection from a vector layer.
+ * The {@link IVectorLayerAdapter} has methods to create a {@link IVectorLayer} from a {@link Geometry}, <br>
+ * {@link Feature} or {@link FeatureCollection} and methods to create a {@link Geometry}, {@link Feature} or
+ * {@link FeatureCollection} from a {@link IVectorLayer} .
  * 
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
@@ -91,11 +88,17 @@ public class IVectorLayerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger( IVectorLayerAdapter.class );
 
     /**
-     * Creates a IVectorLayer from a org.deegree.feature.FeatureCollection.
+     * Creates an {@link IVectorLayer} from a {@link FeatureCollection}.
      * 
      * @param c
-     *            feature collection
-     * @return vector layer
+     *            - The {@link FeatureCollection} must contain simple {@link Feature}s, this means that a
+     *            {@link Feature} has only one geometry and only properties with different names. If a {@link Feature}
+     *            has more geometries, they would be merged. If a {@link Feature} has more properties with the same
+     *            name, it will be used the first. Some cases can't handled, when the {@link Feature}s has different
+     *            {@link FeatureType}s or contains other {@link Feature}s.
+     * 
+     * @return An {@link IVectorLayer} with {@link IFeature}s. The {@link IFeature}s contains only one
+     *         {@link com.vividsolutions.jts.geom.Geometry} and only properties with different names.
      */
     public static IVectorLayer createVectorLayer( FeatureCollection c ) {
 
@@ -103,9 +106,6 @@ public class IVectorLayerAdapter {
         LinkedList<IFeature> features = new LinkedList<IFeature>();
         Field[] vectorLayerPropertyDeclarations = null;
         String crs = null;
-
-        // property names
-        LinkedList<QName> featurePropertyDeclarationNames = new LinkedList<QName>();
 
         Iterator<Feature> it = c.iterator();
         if ( it.hasNext() ) {
@@ -157,11 +157,17 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates a IVectorLayer from a org.deegree.feature.Feature.
+     * Creates an {@link IVectorLayer} from a {@link Feature}.
      * 
      * @param f
-     *            - feature
-     * @return vector layer
+     *            - The {@link Feature} must be simple, this means that a {@link Feature} has only one geometry and only
+     *            properties with different names. If a {@link Feature} has more geometries, they would be merged. If a
+     *            {@link Feature} has more properties with the same name, it will be used the first. A case can't
+     *            handled, if the {@link Feature} contains other {@link Feature}s. If the {@link Feature} is a
+     *            {@link FeatureCollection}, it can handled.
+     * 
+     * @return An {@link IVectorLayer} with a {@link IFeature}. The {@link IFeature} contains only one
+     *         {@link com.vividsolutions.jts.geom.Geometry} and only properties with different names.
      */
     public static IVectorLayer createVectorLayer( Feature f ) {
 
@@ -189,11 +195,13 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates a IVectorLayer from a org.deegree.geometry.Geometry.
+     * Creates an {@link IVectorLayer} from a {@link Geometry}.
      * 
      * @param g
-     *            - geometry
-     * @return vector layer
+     *            - If the {@link Geometry} isn't simple, she will be linearized.
+     * 
+     * @return An {@link IVectorLayer} with a {@link IFeature}. The {@link IFeature} contains only one
+     *         {@link com.vividsolutions.jts.geom.Geometry} and no properties.
      */
     public static IVectorLayer createVectorLayer( Geometry g ) {
 
@@ -207,11 +215,15 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates a org.deegree.feature.FeatureCollection from a vector layer.
+     * Creates a {@link FeatureCollection} from an {@link IVectorLayer}.
+     * 
+     * TODO more details.
      * 
      * @param l
-     *            - vector layer
-     * @return feature collection
+     *            - Every {@link IVectorLayer}.
+     * 
+     * @return {@link FeatureCollection}
+     * 
      * @throws IteratorException
      * @throws IllegalArgumentException
      * @throws InstantiationException
@@ -239,11 +251,15 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates a org.deegree.feature.Feature from a IVectorLayer.
+     * Creates a {@link Feature} from an {@link IVectorLayer}.
+     * 
+     * TODO more details.
      * 
      * @param l
-     *            - vector layer
+     *            - {@link IVectorLayer}
+     * 
      * @return feature
+     * 
      * @throws IteratorException
      * @throws IllegalArgumentException
      * @throws InstantiationException
@@ -273,17 +289,17 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates a org.deegree.feature.Feature from a IFeature.
+     * Creates a {@link Feature} from an {@link IFeature}.
      * 
      * @param f
-     *            - IFeature
+     *            - {@link IFeature}
      * @param id
-     *            - feature id
+     *            - {@link IFeature} id
      * @param l
-     *            - vector layer
-     * @param ft
-     *            - feature type
-     * @return feature
+     *            - {@link IVectorLayer}
+     * 
+     * @return {@link Feature}
+     * 
      * @throws IllegalArgumentException
      * @throws InstantiationException
      * @throws IllegalAccessException
@@ -351,11 +367,14 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates a org.deegree.geometry.Geometry from a vector layer.
+     * Creates a {@link Geometry} from an {@link IVectorLayer}.
      * 
      * @param l
-     *            - vector layer
-     * @return geometry
+     *            - Every {@link IVectorLayer}.
+     * 
+     * @return Returns a {@link Geometry}. If the {@link IVectorLayer} contains more than one {@link IFeature}, they
+     *         will be merged to a MultiGeometry.
+     * 
      * @throws IteratorException
      */
     public static Geometry createGeometry( IVectorLayer l )
@@ -393,11 +412,11 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates a CRS-String from a feature.
+     * Creates a CRS name from a {@link Feature}.
      * 
      * @param f
-     *            - feature
-     * @return CRS-String
+     *            - {@link Feature}
+     * @return CRS name.
      */
     private static String determineCRS( Feature f ) {
 
@@ -412,11 +431,12 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates com.vividsolutions.jts.geom.Geometry from org.deegree.feature.Feature.
+     * Creates {@link com.vividsolutions.jts.geom.Geometry} from {@link Feature}.
      * 
      * @param f
-     *            - feature
-     * @return geometry
+     *            - {@link Feature}
+     * @return Returns a {@link com.vividsolutions.jts.geom.Geometry}. If the {@link Feature} contains more than one
+     *         geometry property, they will be merged to a MultiGeometry.
      */
     private static com.vividsolutions.jts.geom.Geometry createJTSGeometry( Feature f ) {
 
@@ -447,11 +467,12 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates com.vividsolutions.jts.geom.Geometry from org.deegree.geometry.Geometry.
+     * Creates {@link com.vividsolutions.jts.geom.Geometry} from {@link Geometry} .
      * 
      * @param g
-     *            - geometry (deegree)
-     * @return geometry (JTS)
+     *            - {@link Geometry}
+     * @return Returns a {@link com.vividsolutions.jts.geom.Geometry}. If the {@link Geometry} isn't simple, she will be
+     *         linearized.
      */
     private static com.vividsolutions.jts.geom.Geometry createJTSGeometry( Geometry g ) {
 
@@ -463,11 +484,11 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates org.deegree.geometry.Geometry from com.vividsolutions.jts.geom.Geometry.
+     * Creates {@link Geometry} from {@link com.vividsolutions.jts.geom.Geometry} .
      * 
      * @param gJTS
-     *            - geometry (JTS)
-     * @return geometry (deegree)
+     *            - {@link com.vividsolutions.jts.geom.Geometry}
+     * @return {@link Geometry}
      */
     private static Geometry createGeometry( com.vividsolutions.jts.geom.Geometry gJTS ) {
 
@@ -482,11 +503,11 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates a property declaration for a vector layer.
+     * Creates a property declaration of a {@link IVectorLayer}.
      * 
      * @param type
-     *            - feature type
-     * @return property declaration
+     *            - {@link FeatureType}
+     * @return The property declaration of a {@link IVectorLayer} as a {@link Field} array.
      */
     private static Field[] createPropertyDeclarationsForVectorLayer( FeatureType type ) {
 
@@ -529,15 +550,16 @@ public class IVectorLayerAdapter {
     }
 
     /**
-     * Creates properties for a geometry of a vector layer. <br>
-     * Returns for multiple properties, the first property <br>
-     * if names are set.
+     * Creates properties for a {@link com.vividsolutions.jts.geom.Geometry} of the {@link IVectorLayer}. <br>
+     * If a {@link Feature} has more properties with the same name, it will be used the first.
      * 
      * @param f
-     *            - feature
+     *            - {@link Feature}
+     * 
      * @param propertyDeclarations
-     *            - names of properties for return
-     * @return properties
+     *            - Property declaration as {@link Field} array.
+     * 
+     * @return {@link IFeature} properties as object array.
      */
     private static Object[] createPropertiesForVectorLayerGeometry( Feature f, Field[] propertyDeclarations ) {
 

@@ -38,10 +38,8 @@ package org.deegree.services.wps.provider;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -52,8 +50,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
-
+import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.dataObjects.AbstractVectorLayer;
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
@@ -61,7 +58,7 @@ import es.unex.sextante.dataObjects.IFeatureIterator;
 import es.unex.sextante.dataObjects.IVectorLayer;
 
 /**
- * Manage features to execute a SEXTANTE-Algorithm.
+ * Manage features to execute a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -243,10 +240,10 @@ public class VectorLayerImpl extends AbstractVectorLayer {
     }
 
     /**
-     * Sets the ShapeType on the basis of the geometry.
+     * Sets the shape type on the basis of the {@link Geometry}.
      * 
      * @param geom
-     *            - geometry
+     *            - {@link Geometry}
      */
     private void setShapeType( Geometry geom ) {
 
@@ -313,10 +310,10 @@ public class VectorLayerImpl extends AbstractVectorLayer {
     }
 
     /**
-     * Sets the ShapeType on the basis of the IVectorLayer.SHAPE_TYPES.
+     * Sets the shape type on the basis of the IVectorLayer.SHAPE_TYPES.
      * 
      * @param shapeType
-     *            - shape type
+     *            - IVectorLayer.SHAPE_TYPE
      */
     private void setNewShapeType( int shapeType ) {
 
@@ -364,23 +361,4 @@ public class VectorLayerImpl extends AbstractVectorLayer {
 
     }
 
-    /**
-     * Returns the layer as geometry collection.
-     * 
-     * @return geometry collection
-     */
-    public Geometry getGeometriesAsGeometryCollection() {
-
-        // layer to geometry array
-        Geometry[] geoms = new Geometry[m_Features.size()];
-        int i = 0;
-        for ( IFeature feature : m_Features ) {
-            geoms[i] = feature.getGeometry();
-            i++;
-        }
-
-        // geometry array to geometry collection
-        GeometryFactory gf = new GeometryFactory( new PrecisionModel() );
-        return gf.createGeometryCollection( geoms );
-    }
 }

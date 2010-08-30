@@ -32,17 +32,18 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
+import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.IteratorException;
 
 /**
- * TODO add class documentation here
+ * An iterator over a {@link IVectorLayer}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -50,13 +51,13 @@ import es.unex.sextante.exceptions.IteratorException;
  * @version $Revision: $, $Date: $
  */
 public class FeatureInteratorImpl implements IFeatureIterator {
-    
+
     private Iterator<IFeature> it;
-    
-    public FeatureInteratorImpl(Iterator<IFeature> it){
+
+    public FeatureInteratorImpl( Iterator<IFeature> it ) {
         this.it = it;
     }
-    
+
     @Override
     public void close() {
         it = null;
@@ -68,15 +69,16 @@ public class FeatureInteratorImpl implements IFeatureIterator {
     }
 
     @Override
-    public IFeature next() throws IteratorException {
-    
+    public IFeature next()
+                            throws IteratorException {
+
         IFeature f = null;
-        
+
         try {
             f = it.next();
-            
-        } catch (NoSuchElementException e) {
-            throw new IteratorException("No features in the layer!");
+
+        } catch ( NoSuchElementException e ) {
+            throw new IteratorException( "No features in the layer!" );
         }
 
         return f;

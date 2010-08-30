@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
@@ -61,7 +60,9 @@ import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * TODO add class documentation here
+ * Presents a SEXTANTE WPSProcess.
+ * 
+ * TODO more details
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -126,11 +127,26 @@ public class SextanteWPSProcess implements WPSProcess {
         description = createDescription( alg );
     }
 
+    @Override
+    public Processlet getProcesslet() {
+        return processlet;
+    }
+
+    @Override
+    public ProcessDefinition getDescription() {
+        return description;
+    }
+
+    @Override
+    public ExceptionCustomizer getExceptionCustomizer() {
+        return null;
+    }
+
     /**
      * Creates a process definition for a SEXTANTE algorithm.
      * 
      * @param alg
-     *            - SEXTANTE algorithm
+     *            - SEXTANTE {@link GeoAlgorithm}
      * @return
      */
     private ProcessDefinition createDescription( GeoAlgorithm alg ) {
@@ -245,21 +261,6 @@ public class SextanteWPSProcess implements WPSProcess {
         return processDefinition;
     }
 
-    @Override
-    public Processlet getProcesslet() {
-        return processlet;
-    }
-
-    @Override
-    public ProcessDefinition getDescription() {
-        return description;
-    }
-
-    @Override
-    public ExceptionCustomizer getExceptionCustomizer() {
-        return null;
-    }
-
     /**
      * Returns a input parameter definition for a vector layer.
      * 
@@ -328,7 +329,7 @@ public class SextanteWPSProcess implements WPSProcess {
         // literalDataType.setValue( "double" );
         // literalInputValue.setDataType( literalDataType );
 
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -342,7 +343,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -356,7 +357,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -370,7 +371,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -405,7 +406,7 @@ public class SextanteWPSProcess implements WPSProcess {
             }
         }
 
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -419,7 +420,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -433,7 +434,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -448,7 +449,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -462,7 +463,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -476,7 +477,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -490,7 +491,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -504,7 +505,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + param.getParameterTypeName()
                    + "\" a is not supported input parameter type (but is in implementation)" );
         // TODO implement this input parameter type
-        return createVectorLayerInputParameter( param );
+        return null;
     }
 
     /**
@@ -552,7 +553,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + out.getTypeDescription()
                    + "\" a is not supported output parameter type (but is in implementation)" );
         // TODO implement this output parameter type
-        return createVectorLayerOutputParameter( out );
+        return null;
     }
 
     /**
@@ -566,7 +567,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + out.getTypeDescription()
                    + "\" a is not supported output parameter type (but is in implementation)" );
         // TODO implement this output parameter type
-        return createVectorLayerOutputParameter( out );
+        return null;
     }
 
     /**
@@ -580,7 +581,7 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + out.getTypeDescription()
                    + "\" a is not supported output parameter type (but is in implementation)" );
         // TODO implement this output parameter type
-        return createVectorLayerOutputParameter( out );
+        return null;
     }
 
     /**
@@ -594,14 +595,14 @@ public class SextanteWPSProcess implements WPSProcess {
         LOG.error( "\"" + out.getTypeDescription()
                    + "\" a is not supported output parameter type (but is in implementation)" );
         // TODO implement this output parameter type
-        return createVectorLayerOutputParameter( out );
+        return null;
     }
 
     /**
-     * Logs a SEXTANTE algorithm with his input und output parameters.
+     * Logs a SEXTANTE {@link GeoAlgorithm} with his input und output parameters.
      * 
      * @param alg
-     *            - SEXTANTE algorithm
+     *            - SEXTANTE {@link GeoAlgorithm}
      */
     public static void logAlgorithm( GeoAlgorithm alg ) {
 

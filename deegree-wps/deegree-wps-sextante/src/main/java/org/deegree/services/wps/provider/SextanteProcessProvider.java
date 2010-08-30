@@ -37,37 +37,18 @@ package org.deegree.services.wps.provider;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.wps.ComplexFormatType;
-import org.deegree.services.jaxb.wps.ComplexInputDefinition;
-import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
-import org.deegree.services.jaxb.wps.LanguageStringType;
-import org.deegree.services.jaxb.wps.ProcessDefinition;
-import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
-import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
-import org.deegree.services.jaxb.wps.ProcessDefinition.InputParameters;
-import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
-import org.deegree.services.wps.GenericWPSProcess;
-import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPSProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.IGeoAlgorithmFilter;
 import es.unex.sextante.core.OutputObjectsSet;
-import es.unex.sextante.core.ParametersSet;
 import es.unex.sextante.core.Sextante;
 import es.unex.sextante.outputs.Output;
-import es.unex.sextante.parameters.Parameter;
 
 /**
  * {@link ProcessProvider} that provides <a
@@ -169,7 +150,6 @@ public class SextanteProcessProvider implements ProcessProvider {
 
         return algs;
     }
-
 
     SextanteProcessProvider() {
     }

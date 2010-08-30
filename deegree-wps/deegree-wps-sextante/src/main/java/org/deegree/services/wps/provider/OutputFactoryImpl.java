@@ -54,6 +54,9 @@ import es.unex.sextante.rasterWrappers.GridExtent;
  */
 import javax.swing.JDialog;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Factory to create output objects.
  * 
@@ -64,6 +67,9 @@ import javax.swing.JDialog;
  */
 public class OutputFactoryImpl extends OutputFactory {
 
+    // logger
+    private static final Logger LOG = LoggerFactory.getLogger( OutputFactoryImpl.class );
+
     @Override
     public Object getDefaultCRS() {
         return "EPSG:4326";
@@ -73,56 +79,54 @@ public class OutputFactoryImpl extends OutputFactory {
     public IRasterLayer getNewRasterLayer( String sName, int iDataType, GridExtent extent, int iBands,
                                            IOutputChannel channel, Object crs )
                             throws UnsupportedOutputChannelException {
-        throw new UnsupportedOperationException();
-        // return null;
+        // TODO implement this method.
+        LOG.error( "The method \"" + "getNewRasterLayer()" + "\" isn't implemented." );
+        return null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public ITable getNewTable( String sName, Class[] types, String[] sFields, IOutputChannel channe )
                             throws UnsupportedOutputChannelException {
-        throw new UnsupportedOperationException();
-        // return null;
+        // TODO implement this method.
+        LOG.error( "The method \"" + "getNewTable()" + "\" isn't implemented." );
+        return null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public IVectorLayer getNewVectorLayer( String iName, int iShapeType, Class[] types, String[] sFields,
                                            IOutputChannel channel, Object crs )
                             throws UnsupportedOutputChannelException {
 
-        // LOG.info(channel.getAsCommandLineParameter());
-
         return new VectorLayerImpl( iName, crs.toString(), Field.createFieldArray( sFields, types ) );
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public IVectorLayer getNewVectorLayer( String iName, int iShapeType, Class[] types, String[] sFields,
                                            IOutputChannel channel, Object crs, int[] fieldSize )
                             throws UnsupportedOutputChannelException {
-
-        // LOG.info(channel.getAsCommandLineParameter());
 
         return new VectorLayerImpl( iName, crs.toString(), Field.createFieldArray( sFields, types ) );
     }
 
     @Override
     public String[] getRasterLayerOutputExtensions() {
-        throw new UnsupportedOperationException();
-        // return null;
+        // TODO implement this method.
+        LOG.error( "The method \"" + "getRasterLayerOutputExtensions()" + "\" isn't implemented." );
+        return null;
     }
 
     @Override
     public String[] getTableOutputExtensions() {
-        throw new UnsupportedOperationException();
-        // return null;
+        // TODO implement this method.
+        LOG.error( "The method \"" + "getTableOutputExtensions()" + "\" isn't implemented." );
+        return null;
     }
 
     @Override
     public ITaskMonitor getTaskMonitor( String sTitle, boolean bDeterminate, JDialog parent ) {
-        throw new UnsupportedOperationException();
-        // return null;
+        // TODO implement this method.
+        LOG.error( "The method \"" + "getTaskMonitor()" + "\" isn't implemented." );
+        return null;
     }
 
     @Override

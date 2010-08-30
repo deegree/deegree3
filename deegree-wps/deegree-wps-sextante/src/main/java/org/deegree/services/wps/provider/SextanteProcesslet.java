@@ -38,16 +38,12 @@ package org.deegree.services.wps.provider;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
-import org.deegree.cs.CRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
-import org.deegree.gml.GMLVersion;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
@@ -61,16 +57,17 @@ import org.slf4j.LoggerFactory;
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
+import es.unex.sextante.dataObjects.IRasterLayer;
+import es.unex.sextante.dataObjects.ITable;
 import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.GeoAlgorithmExecutionException;
 import es.unex.sextante.exceptions.IteratorException;
 import es.unex.sextante.exceptions.WrongOutputIDException;
 import es.unex.sextante.outputs.Output;
-import es.unex.sextante.outputs.StreamOutputChannel;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * Presents a processlet based on a SEXTANTE-Algorithm.
+ * Presents a {@link Processlet} based on a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -82,7 +79,7 @@ public class SextanteProcesslet implements Processlet {
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( SextanteProcesslet.class );
 
-    // SEXTANTE a lgorithm
+    // SEXTANTE {@link GeoAlgorithm}
     private final GeoAlgorithm alg;
 
     SextanteProcesslet( GeoAlgorithm alg ) {
@@ -132,12 +129,13 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the input data (all supported types) to the algorithm parameter.
+     * Commits the input data (all supported types) to the {@link GeoAlgorithm} input parameter.
      * 
      * @param alg
-     *            - algorithm
+     *            - SEXTANTE {@link GeoAlgorithm}.
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
+     * 
      * @throws ProcessletException
      * @throws ClassNotFoundException
      */
@@ -187,12 +185,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the vector layer input data to the algorithm parameter.
+     * Commits the {@link IVectorLayer} input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}
      * @throws ClassNotFoundException
      */
     private void setVectorLayerInputValue( ProcessletInputs in, Parameter param )
@@ -228,12 +226,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the numerical input data to the algorithm parameter.
+     * Commits the numerical input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setNumericalValueInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -242,12 +240,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the selection input data to the algorithm parameter.
+     * Commits the selection input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setSelectionInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -256,12 +254,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the filepath input data to the algorithm parameter.
+     * Commits the filepath input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ComplexInput}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setFilepathInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -270,24 +268,24 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the boolean input data to the algorithm parameter.
+     * Commits the boolean input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}
      */
     private void setBooleanInputValue( ProcessletInputs in, Parameter param ) {
         LOG.warn( "Using boolean input data is not supported." );
     }
 
     /**
-     * Passes the string input data to the algorithm parameter.
+     * Commits the string input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setStringInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -296,26 +294,26 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the multiple input data to the algorithm parameter.
+     * Commits the multiple input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      *@param paramSet
-     *            - all algorithm parameters
+     *            - Input parameter set of {@link GeoAlgorithm}.
      */
     private void setMultipleInputInputValue( ProcessletInputs in, Parameter param, ParametersSet paramSet ) {
         LOG.warn( "Using multiple input input data is not supported." );
     }
 
     /**
-     * Passes the raster layer input data to the algorithm parameter.
+     * Commits the raster layer input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setRasterLayerInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -324,12 +322,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the table field input data to the algorithm parameter.
+     * Commits the table field input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setTableFieldInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -338,12 +336,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the point input data to the algorithm parameter.
+     * Commits the point input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setPointInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -352,12 +350,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the band input data to the algorithm parameter.
+     * Commits the band input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setBandInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -366,12 +364,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the table input data to the algorithm parameter.
+     * Commits the table input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setTableInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -380,12 +378,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Passes the fixed table input data to the algorithm parameter.
+     * Commits the fixed table input data to the {@link GeoAlgorithm} input parameter.
      * 
      * @param in
-     *            - input data
+     *            - Input data as {@link ProcessletInputs}.
      * @param param
-     *            - algorithm parameter
+     *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setFixedTableInputValue( ProcessletInputs in, Parameter param ) {
         LOG.error( "\"" + param.getParameterTypeName()
@@ -394,11 +392,11 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Reads the geometry from input (GML).
+     * Reads the {@link Geometry} from {@link ComplexInput}.
      * 
      * @param gmlInput
-     *            - input data
-     * @return org.deegree.geometry.Geometry
+     *            - Input data as {@link ComplexInput}.
+     * @return {@link Geometry}
      * @throws ProcessletException
      */
     private Geometry readGeometry( ComplexInput gmlInput )
@@ -419,10 +417,10 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Reads the feature collection from input (GML).
+     * Reads the {@link FeatureCollection} from {@link ComplexInput}.
      * 
      * @param gmlInput
-     *            - input data
+     *            - {@link ComplexInput}
      * @return feature collection
      * @throws ProcessletException
      */
@@ -448,9 +446,10 @@ public class SextanteProcesslet implements Processlet {
      * Writes the output data (all supported types).
      * 
      * @param alg
-     *            - SEXTANTE-Algorithm
+     *            - SEXTANTE {@link GeoAlgorithm}
      * @param out
-     *            - output channel
+     *            - {@link ProcessletOutputs}
+     * 
      * @throws WrongOutputIDException
      * @throws ProcessletException
      * @throws IteratorException
@@ -491,12 +490,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Writes a vector layer.
+     * Writes an {@link IVectorLayer}.
      * 
      * @param obj
-     *            - vector layer
+     *            - {@link IVectorLayer} as {@link Output}
      * @param out
-     *            - output channel
+     *            - {@link ProcessletOutputs}
      * @throws IteratorException
      * @throws ProcessletException
      * @throws IllegalAccessException
@@ -530,12 +529,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Writes a raster layer.
+     * Writes an {@link IRasterLayer}.
      * 
      * @param obj
-     *            - raster layer
+     *            - {@link IRasterLayer} as {@link Output}.
      * @param out
-     *            - output channel
+     *            - {@link ProcessletOutputs}
      */
     private void writeRasterLayer( Output obj, ProcessletOutputs out ) {
         LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
@@ -543,12 +542,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Writes a table.
+     * Writes an {@link ITable}.
      * 
      * @param obj
-     *            - table
+     *            - {@link ITable} as {@link Output}.
      * @param out
-     *            - output channel
+     *            - {@link ProcessletOutputs}
      */
     private void writeTable( Output obj, ProcessletOutputs out ) {
         LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
@@ -559,9 +558,9 @@ public class SextanteProcesslet implements Processlet {
      * Writes a text.
      * 
      * @param obj
-     *            - text
+     *            - text as {@link Output}.
      * @param out
-     *            - output channel
+     *            - {@link ProcessletOutputs}
      */
     private void writeText( Output obj, ProcessletOutputs out ) {
         LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
@@ -572,9 +571,9 @@ public class SextanteProcesslet implements Processlet {
      * Writes a chart.
      * 
      * @param obj
-     *            - chart
+     *            - chart as {@link Output}.
      * @param out
-     *            - output channel
+     *            - {@link ProcessletOutputs}
      */
     private void writeChart( Output obj, ProcessletOutputs out ) {
         LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
@@ -582,12 +581,12 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Writes a org.deegree.geometry.Geometry.
+     * Writes a {@link Geometry}.
      * 
      * @param gmlOutput
-     *            - output channel
+     *            - {@link ComplexOutput}
      * @param geometry
-     *            - geometry
+     *            - {@link Geometry}
      * @throws ProcessletException
      */
     private void writeGeometry( ComplexOutput gmlOutput, Geometry geometry )
@@ -608,12 +607,13 @@ public class SextanteProcesslet implements Processlet {
     }
 
     /**
-     * Writes a feature collection.
+     * Writes a {@link FeatureCollection}.
      * 
      * @param gmlOutput
-     *            - output channel
+     *            - {@link ComplexOutput}
      * @param coll
-     *            - feature collection
+     *            - {@link FeatureCollection}
+     * 
      * @throws ProcessletException
      */
     private void writeFeatureCollection( ComplexOutput gmlOutput, FeatureCollection coll )

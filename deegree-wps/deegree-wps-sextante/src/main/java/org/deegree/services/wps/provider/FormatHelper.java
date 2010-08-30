@@ -39,8 +39,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.services.jaxb.wps.ComplexFormatType;
 import org.deegree.services.wps.ProcessletInputs;
@@ -61,6 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FormatHelper {
 
+    // logger
     private static final Logger LOG = LoggerFactory.getLogger( FormatHelper.class );
 
     // GML schemas as map
@@ -179,6 +178,11 @@ public class FormatHelper {
         }
     }
 
+    /**
+     * Returns the {@link ComplexFormatType} of the default input schema.
+     * 
+     * @return {@link ComplexFormatType} of the default input schema
+     */
     public static ComplexFormatType getDefaultInputFormat() {
 
         ComplexFormatType cft = new ComplexFormatType();
@@ -189,10 +193,20 @@ public class FormatHelper {
         return cft;
     }
 
+    /**
+     * Returns the {@link ComplexFormatType} of the default output schema.
+     * 
+     * @return {@link ComplexFormatType} of the default output schema
+     */
     public static ComplexFormatType getDefaultOutputFormat() {
         return getDefaultInputFormat();
     }
 
+    /**
+     * Returns the {@link ComplexFormatType}s of all input schemas without the default schema.
+     * 
+     * @return {@link ComplexFormatType} of all input schemas without the default schema.
+     */
     public static LinkedList<ComplexFormatType> getInputFormatsWithoutDefault() {
 
         // default schema
@@ -211,26 +225,27 @@ public class FormatHelper {
                 cft.setSchema( gmlSchema.getSchema() );
                 inputCft.add( cft );
             }
-
         }
 
         return inputCft;
     }
 
+    /**
+     * Returns the {@link ComplexFormatType}s of all output schemas without the default schema.
+     * 
+     * @return {@link ComplexFormatType} of all output schemas without the default schema.
+     */
     public static LinkedList<ComplexFormatType> getOutputFormatsWithoutDefault() {
         return getInputFormatsWithoutDefault();
     }
 
-    public static String getApplicationSchema( ComplexInput input ) {
-        // TODO
-        return input.getSchema();
-    }
-
-    public static String getApplicationSchema( ComplexOutput output ) {
-        // TODO
-        return output.getRequestedSchema();
-    }
-
+    /**
+     * Returns a {@link GMLSchema} based on the schema URL.
+     * 
+     * @param schema
+     *            - URL schema.
+     * @return {@link GMLSchema} based on the schema URL
+     */
     public static GMLSchema getGMLSchema( String schema ) {
         GMLSchema foundSchema = ALL_SCHEMAS.get( schema );
 
@@ -244,4 +259,13 @@ public class FormatHelper {
 
     }
 
+    public static String getApplicationSchema( ComplexInput input ) {
+        // TODO ???
+        return input.getSchema();
+    }
+
+    public static String getApplicationSchema( ComplexOutput output ) {
+        // TODO ???
+        return output.getRequestedSchema();
+    }
 }

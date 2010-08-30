@@ -45,18 +45,18 @@ package org.deegree.services.wps.provider;
  * @version $Revision: $, $Date: $
  */
 public class Field {
-    private String m_Name; // column name
+    private final String m_Name; // column name
 
-    private Class<?> m_Type; // data type
+    private final Class<?> m_Type; // data type
 
     /**
-     * Creates an array of Fields. If the length of names and types are different then this method returns null.
+     * Creates an array of {@link Field}s. If the length of names and types are different then this method returns null.
      * 
      * @param names
      *            - Column name.
      * @param types
      *            - Data type.
-     * @return
+     * @return Array of {@link Field}s.
      */
     public static Field[] createFieldArray( String[] names, Class<?>[] types ) {
 
@@ -68,9 +68,12 @@ public class Field {
             for ( int i = 0; i < f.length; i++ ) {
                 f[i] = new Field( names[i], types[i] );
             }
+        } else {
+            // TODO throw Exception?
         }
 
         return f;
+
     }
 
     public Field( String name, Class<?> type ) {
@@ -81,7 +84,8 @@ public class Field {
     /**
      * Returns the column name.
      * 
-     * @return
+     * @return Column name.
+     * 
      */
     public String getName() {
         return m_Name;
@@ -90,7 +94,7 @@ public class Field {
     /**
      * Returns the data type.
      * 
-     * @return
+     * @return Data type.
      */
     public Class<?> getType() {
         return m_Type;
