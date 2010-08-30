@@ -40,6 +40,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamReader;
 
@@ -67,7 +68,7 @@ import org.deegree.services.wps.output.ComplexOutput;
  * 
  * @version $Revision$, $Date$
  */
-public class BufferProcesslet implements Processlet {
+public class BufferProcesslet implements Processlet, GeometryHandler {
 
     @Override
     public void destroy() {
@@ -111,5 +112,11 @@ public class BufferProcesslet implements Processlet {
         } catch ( Exception e ) {
             throw new ProcessletException( "Error exporting geometry: " + e.getMessage() );
         }
+    }
+
+    @Override
+    public Geometry process( Geometry inputGeometry, Map<String, Object> params ) {
+        double bufferDistance = (Double) params.get( "BufferDistance" );
+        return inputGeometry.getBuffer( new Measure( new BigDecimal( bufferDistance ), "unity" ) );
     }
 }

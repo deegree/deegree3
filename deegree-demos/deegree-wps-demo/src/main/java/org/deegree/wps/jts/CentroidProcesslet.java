@@ -38,6 +38,8 @@ package org.deegree.wps.jts;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.gml.GMLVersion.GML_31;
 
+import java.util.Map;
+
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
@@ -65,7 +67,7 @@ import org.deegree.services.wps.output.ComplexOutput;
  * @version $Revision$, $Date$
  * 
  */
-public class CentroidProcesslet implements Processlet {
+public class CentroidProcesslet implements Processlet, GeometryHandler {
 
     @Override
     public void destroy() {
@@ -88,6 +90,11 @@ public class CentroidProcesslet implements Processlet {
         Point centroid = geometry.getCentroid();
         ComplexOutput centroidOutput = (ComplexOutput) out.getParameter( "Centroid" );
         writeGeometry( centroidOutput, centroid );
+    }
+
+    @Override
+    public Geometry process( Geometry inputGeometry, Map<String, Object> params ) {
+        return inputGeometry.getCentroid();
     }
 
     private void writeGeometry( ComplexOutput gmlOutput, Geometry geometry )
