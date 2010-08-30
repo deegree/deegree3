@@ -17,25 +17,15 @@
 <composite:implementation>
 				<h:outputScript name="javascript/collapsible.js" library="deegree" target="head" />
 				<div class="#{cc.attrs.styleClass}">
-							<h:panelGroup styleClass="header" layout="block">
-								<div style="height: 100%;">
-									<div style="float: left;">
-										<composite:renderFacet name="header" />
-									</div>
-									<div style="vertical-align: middle; height: 100%;">
-										<h:commandButton id="collapse"
+				<h:panelGrid columns="2" styleClass="header" layout="block" style="vertical-align:middle;">
+								<composite:renderFacet name="header" />
+								<h:commandButton id="collapse"
 												onclick="collapse(this, '#{cc.clientId}:content', '#{cc.attrs.openImg}', '#{cc.attrs.collapseImg}');"
 												image="#{cc.attrs.collapsed ? cc.attrs.openImg : cc.attrs.collapseImg }" />
-									</div>
-								</div>
-								<div style="float: left" />
-							</h:panelGroup> 
-							<br/>
-							<h:panelGroup id="content" style="#{cc.attrs.collapsed ? 'display:none;' : 'display:inline;' }"
+				</h:panelGrid> <h:panelGroup id="content" style="#{cc.attrs.collapsed ? 'display:none;' : 'display:inline;' }"
 								styleClass="content" layout="block">
 								<composite:insertChildren />
-							</h:panelGroup>
-				</div>
+				</h:panelGroup></div>
 </composite:implementation>
 </body>
 </html>
