@@ -343,7 +343,6 @@ public class ApplicationSchemaXSDEncoder {
                         XSNamedMap types = nsItem.getComponents( TYPE_DEFINITION );
                         for ( int j = 0; j < types.getLength(); j++ ) {
                             XSTypeDefinition xsType = (XSTypeDefinition) types.item( j );
-
                             // TODO remove hacky way
                             String localName = xsType.getName();
                             if ( localName.endsWith( "Type" ) ) {
@@ -661,123 +660,118 @@ public class ApplicationSchemaXSDEncoder {
     private void exportSimpleType( XMLStreamWriter writer, XSSimpleTypeDefinition simple )
                             throws XMLStreamException {
 
-        if ( simple.getNamespace().equals( targetNs ) ) {
-
-            writer.writeStartElement( XSNS, "simpleType" );
+        writer.writeStartElement( XSNS, "simpleType" );
+        if ( !simple.getAnonymous() ) {
             writer.writeAttribute( "name", simple.getName() );
-
-            // TODO how can one find the derivation type? getFinal() is wrong!
-            LOG.debug( "Exporting a simple type is done always by restriction. Other derivations may be possible?!" );
-            writer.writeStartElement( "xs", "restriction", XSNS );
-
-            String prefix = getPrefix( simple.getBaseType().getNamespace() );
-            writer.writeAttribute( "base", prefix + ":" + simple.getBaseType().getName() );
-            StringList members = simple.getLexicalEnumeration();
-            if ( members != null && members.getLength() > 0 ) {
-                for ( int i = 0; i < members.getLength(); i++ ) {
-                    writer.writeEmptyElement( "xs", "enumeration", XSNS );
-                    writer.writeAttribute( "value", members.item( i ) );
-                }
-            }
-
-            writer.writeEndElement(); // derivation (restriction, extension, etc.)
-            writer.writeEndElement(); // simpleType
         }
+
+        // TODO how can one find the derivation type? getFinal() is wrong!
+        LOG.debug( "Exporting a simple type is done always by restriction. Other derivations may be possible?!" );
+        writer.writeStartElement( "xs", "restriction", XSNS );
+
+        String prefix = getPrefix( simple.getBaseType().getNamespace() );
+        writer.writeAttribute( "base", prefix + ":" + simple.getBaseType().getName() );
+        StringList members = simple.getLexicalEnumeration();
+        if ( members != null && members.getLength() > 0 ) {
+            for ( int i = 0; i < members.getLength(); i++ ) {
+                writer.writeEmptyElement( "xs", "enumeration", XSNS );
+                writer.writeAttribute( "value", members.item( i ) );
+            }
+        }
+
+        writer.writeEndElement(); // derivation (restriction, extension, etc.)
+        writer.writeEndElement(); // simpleType
     }
 
     private void exportComplexType( XMLStreamWriter writer, XSComplexTypeDefinition complex )
                             throws XMLStreamException {
 
-        if ( complex.getNamespace().equals( targetNs ) ) {
-            writer.writeStartElement( XSNS, "complexType" );
-            if ( !complex.getAnonymous() ) {
-                writer.writeAttribute( "name", complex.getName() );
-            }
+        writer.writeStartElement( XSNS, "complexType" );
+        if ( !complex.getAnonymous() ) {
+            writer.writeAttribute( "name", complex.getName() );
+        }
 
-            boolean contentTypeBegin = false;
-            short contentType = complex.getContentType();
+        boolean contentTypeBegin = false;
+        short contentType = complex.getContentType();
 
-            short derivation = complex.getDerivationMethod();
-            XSTypeDefinition base = complex.getBaseType();
+        short derivation = complex.getDerivationMethod();
+        XSTypeDefinition base = complex.getBaseType();
 
-            switch ( contentType ) {
-            case CONTENTTYPE_SIMPLE:
-                writer.writeStartElement( "xs", "simpleContent", XSNS );
-                contentTypeBegin = true;
-                break;
-            case CONTENTTYPE_MIXED:
+        switch ( contentType ) {
+        case CONTENTTYPE_SIMPLE:
+            writer.writeStartElement( "xs", "simpleContent", XSNS );
+            contentTypeBegin = true;
+            break;
+        case CONTENTTYPE_MIXED:
+            writer.writeStartElement( "xs", "complexContent", XSNS );
+            contentTypeBegin = true;
+            break;
+        case CONTENTTYPE_EMPTY:
+            break;
+        case CONTENTTYPE_ELEMENT:
+            // TODO check if non-redundant restriction / extension is performed (in that case, complexContent
+            // container element is required)
+            if ( base != null && !base.getName().equals( "anyType" ) ) {
                 writer.writeStartElement( "xs", "complexContent", XSNS );
                 contentTypeBegin = true;
-                break;
-            case CONTENTTYPE_EMPTY:
-                break;
-            case CONTENTTYPE_ELEMENT:
-                // TODO check if non-redundant restriction / extension is performed (in that case, complexContent
-                // container element is required)
-                if ( base != null && !base.getName().equals( "anyType" ) ) {
-                    writer.writeStartElement( "xs", "complexContent", XSNS );
-                    contentTypeBegin = true;
-                }
-                break;
             }
-
-            boolean derivationBegin = false;
-            String prefix = getPrefix( base.getNamespace() );
-            switch ( derivation ) {
-            case DERIVATION_EXTENSION:
-                writer.writeStartElement( "xs", "extension", XSNS );
-                writer.writeAttribute( "base", prefix + ":" + base.getName() );
-                derivationBegin = true;
-                break;
-            case DERIVATION_LIST:
-                LOG.warn( "Derivation by list is not implemented/tested. Occured for complex element "
-                          + complex.getName() );
-                break;
-            case DERIVATION_NONE:
-                // nothing to do, handled above
-                break;
-            case DERIVATION_RESTRICTION:
-                if ( !base.getName().equals( "anyType" ) ) {
-                    writer.writeStartElement( "xs", "restriction", XSNS );
-                    writer.writeAttribute( "base", prefix + base.getName() );
-                    derivationBegin = true;
-                }
-                break;
-            case DERIVATION_SUBSTITUTION:
-                LOG.warn( "Derivation by subtitution is not implemented/tested. Occured for complex element "
-                          + complex.getName() );
-                break;
-            case DERIVATION_UNION:
-                LOG.warn( "Derivation by union is not implemented/tested. Occured for complex element "
-                          + complex.getName() );
-                break;
-            }
-
-            XSParticle particle = complex.getParticle();
-            if ( particle != null ) {
-                exportTerm( writer, particle.getTerm(), particle.getMinOccurs(), particle.getMaxOccurs(),
-                            particle.getMaxOccursUnbounded() );
-            }
-
-            // TODO only export attribute uses that are different from super types
-            XSObjectList attributes = complex.getAttributeUses();
-            for ( int i = 0; i < attributes.getLength(); i++ ) {
-                XSAttributeUse attribute = ( (XSAttributeUse) attributes.item( i ) );
-                writer.writeEmptyElement( "xs", "attribute", XSNS );
-                writer.writeAttribute( "name", attribute.getAttrDeclaration().getName() );
-                XSTypeDefinition type = attribute.getAttrDeclaration().getTypeDefinition();
-                writer.writeAttribute( "type", "xs:" + type.getName() );
-                writer.writeAttribute( "use", attribute.getRequired() ? "required" : "optional" );
-            }
-
-            if ( derivationBegin ) {
-                writer.writeEndElement(); // extension, etc.
-            }
-            if ( contentTypeBegin ) {
-                writer.writeEndElement(); // simpleContent or complexContent
-            }
-            writer.writeEndElement(); // complexType
+            break;
         }
+
+        boolean derivationBegin = false;
+        String prefix = getPrefix( base.getNamespace() );
+        switch ( derivation ) {
+        case DERIVATION_EXTENSION:
+            writer.writeStartElement( "xs", "extension", XSNS );
+            writer.writeAttribute( "base", prefix + ":" + base.getName() );
+            derivationBegin = true;
+            break;
+        case DERIVATION_LIST:
+            LOG.warn( "Derivation by list is not implemented/tested. Occured for complex element " + complex.getName() );
+            break;
+        case DERIVATION_NONE:
+            // nothing to do, handled above
+            break;
+        case DERIVATION_RESTRICTION:
+            if ( !base.getName().equals( "anyType" ) ) {
+                writer.writeStartElement( "xs", "restriction", XSNS );
+                writer.writeAttribute( "base", prefix + base.getName() );
+                derivationBegin = true;
+            }
+            break;
+        case DERIVATION_SUBSTITUTION:
+            LOG.warn( "Derivation by subtitution is not implemented/tested. Occured for complex element "
+                      + complex.getName() );
+            break;
+        case DERIVATION_UNION:
+            LOG.warn( "Derivation by union is not implemented/tested. Occured for complex element " + complex.getName() );
+            break;
+        }
+
+        XSParticle particle = complex.getParticle();
+        if ( particle != null ) {
+            exportTerm( writer, particle.getTerm(), particle.getMinOccurs(), particle.getMaxOccurs(),
+                        particle.getMaxOccursUnbounded() );
+        }
+
+        // TODO only export attribute uses that are different from super types
+        XSObjectList attributes = complex.getAttributeUses();
+        for ( int i = 0; i < attributes.getLength(); i++ ) {
+            XSAttributeUse attribute = ( (XSAttributeUse) attributes.item( i ) );
+            writer.writeEmptyElement( "xs", "attribute", XSNS );
+            writer.writeAttribute( "name", attribute.getAttrDeclaration().getName() );
+            XSTypeDefinition type = attribute.getAttrDeclaration().getTypeDefinition();
+            writer.writeAttribute( "type", "xs:" + type.getName() );
+            writer.writeAttribute( "use", attribute.getRequired() ? "required" : "optional" );
+        }
+
+        if ( derivationBegin ) {
+            writer.writeEndElement(); // extension, etc.
+        }
+        if ( contentTypeBegin ) {
+            writer.writeEndElement(); // simpleContent or complexContent
+        }
+        writer.writeEndElement(); // complexType
     }
 
     private void exportTerm( XMLStreamWriter writer, XSTerm term, int minOccurs, int maxOccurs, boolean maxUnbounded )
