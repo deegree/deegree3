@@ -66,6 +66,7 @@ import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.XMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XS_PREFIX;
 import static org.deegree.gml.GMLVersion.GML_2;
@@ -96,6 +97,7 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
@@ -109,7 +111,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stream-based writer for GML application schemas.
+ * Stream-based writer for exporting {@link FeatureType} instances as GML application schemas.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -130,13 +132,21 @@ public class ApplicationSchemaXSDEncoder {
 
     private final GMLVersion version;
 
+    private final String targetNs;
+
     private String gmlNsURI;
 
     private final Map<String, String> importURLs;
 
+    private final Map<String, String> prefixesToNs = new HashMap<String, String>();
+
+    private final Map<String, String> nsToPrefix = new HashMap<String, String>();
+
     // set to "gml:_Feature" (GML 2 and 3.1) or "gml:AbstractFeatureType" (GML 3.2)
-    // ai: in CITE 1.0.0 the element ComplexFeatureCollection requires substitution group gml:_FeatureCollection
     private String abstractGMLFeatureElement;
+
+    // set to "gml:_FeatureCollection" (GML 2 and 3.1) or null (GML 3.2)
+    private String abstractGMLFeatureCollectionElement;
 
     // set to "gml:FeatureAssociationType" (GML 2) or "gml:FeaturePropertyType" (GML 3.1 / GML 3.2)
     private String featurePropertyType;
@@ -157,13 +167,19 @@ public class ApplicationSchemaXSDEncoder {
      * 
      * @param version
      *            gml version that exported schemas will comply to, must not be <code>null</code>
+     * @param targetNamespace
+     *            target namespace for the schema document, may be <code>null/<code>
      * @param importURLs
      *            to be imported in the generated schema document, this may also contain a URL for the gml namespace,
      *            may be <code>null</code>
+     * @param prefixToNs
+     *            keys: namespace prefixes, values: namespaces, may be <code>null</code>
      */
-    public ApplicationSchemaXSDEncoder( GMLVersion version, Map<String, String> importURLs ) {
+    public ApplicationSchemaXSDEncoder( GMLVersion version, String targetNamespace, Map<String, String> importURLs,
+                                        Map<String, String> prefixToNs ) {
 
         this.version = version;
+        this.targetNs = targetNamespace;
         if ( importURLs == null ) {
             this.importURLs = new HashMap<String, String>();
         } else {
@@ -173,6 +189,7 @@ public class ApplicationSchemaXSDEncoder {
         case GML_2:
             gmlNsURI = GMLNS;
             abstractGMLFeatureElement = "gml:_Feature";
+            abstractGMLFeatureCollectionElement = "gml:_FeatureCollection";
             featurePropertyType = "gml:FeatureAssociationType";
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
                 this.importURLs.put( gmlNsURI, GML_2_DEFAULT_INCLUDE );
@@ -181,6 +198,7 @@ public class ApplicationSchemaXSDEncoder {
         case GML_30:
             gmlNsURI = GMLNS;
             abstractGMLFeatureElement = "gml:_Feature";
+            abstractGMLFeatureCollectionElement = "gml:_FeatureCollection";
             featurePropertyType = "gml:FeaturePropertyType";
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
                 this.importURLs.put( gmlNsURI, GML_30_DEFAULT_INCLUDE );
@@ -189,6 +207,7 @@ public class ApplicationSchemaXSDEncoder {
         case GML_31:
             gmlNsURI = GMLNS;
             abstractGMLFeatureElement = "gml:_Feature";
+            abstractGMLFeatureCollectionElement = "gml:_FeatureCollection";
             featurePropertyType = "gml:FeaturePropertyType";
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
                 this.importURLs.put( gmlNsURI, GML_31_DEFAULT_INCLUDE );
@@ -203,52 +222,38 @@ public class ApplicationSchemaXSDEncoder {
             }
             break;
         }
+
+        if ( prefixToNs != null ) {
+            for ( String prefix : prefixToNs.keySet() ) {
+                String ns = prefixToNs.get( prefix );
+                addNsBinding( prefix, ns );
+            }
+        }
+        addNsBinding( "gml", gmlNsURI );
+        addNsBinding( "xs", XSNS );
+        addNsBinding( "xml", XMLNS );
+
+        // special treatment needed for GML namespaces
+        nsToPrefix.put( GMLNS, "gml" );
+        nsToPrefix.put( GML3_2_NS, "gml" );
     }
 
-    /**
-     * @param writer
-     * @param schema
-     * @throws XMLStreamException
-     */
+    private void addNsBinding( String prefix, String ns ) {
+        this.prefixesToNs.put( prefix, ns );
+        this.nsToPrefix.put( ns, prefix );
+    }
+
     public void export( XMLStreamWriter writer, ApplicationSchema schema )
                             throws XMLStreamException {
-
-        // TODO prefix handling
-        final String uri = schema.getFeatureTypes()[0].getName().getNamespaceURI();
-        if ( uri != null && !uri.isEmpty() ) {
-            writer.setPrefix( "app", uri );
-        }
-
-        writer.setPrefix( XS_PREFIX, XSNS );
-        writer.setPrefix( GML_PREFIX, gmlNsURI );
-
-        writer.writeStartElement( XSNS, "schema" );
-        writer.writeNamespace( XS_PREFIX, XSNS );
-        writer.writeNamespace( GML_PREFIX, gmlNsURI );
-        writer.writeAttribute( "attributeFormDefault", "unqualified" );
-        writer.writeAttribute( "elementFormDefault", "qualified" );
-
-        for ( String importNamespace : importURLs.keySet() ) {
-            writer.writeEmptyElement( XSNS, "import" );
-            writer.writeAttribute( "namespace", importNamespace );
-            writer.writeAttribute( "schemaLocation", importURLs.get( importNamespace ) );
-        }
-
-        // export feature type declarations
-        for ( FeatureType ft : schema.getFeatureTypes() ) {
-            export( writer, ft );
-        }
-
-        // export custom simple type declarations
-        for ( XSSimpleTypeDefinition xsSimpleType : customSimpleTypes.values() ) {
-            export( writer, xsSimpleType );
-        }
-
-        // end 'xs:schema'
-        writer.writeEndElement();
+        export( writer, schema.getFeatureTypes( null, true, true ) );
     }
 
     /**
+     * Exports the given list of {@link FeatureType} instances as an XML schema document.
+     * <p>
+     * NOTE: The given writer must be configured to repair namespaces.
+     * </p>
+     * 
      * @param writer
      * @param fts
      * @throws XMLStreamException
@@ -256,20 +261,15 @@ public class ApplicationSchemaXSDEncoder {
     public void export( XMLStreamWriter writer, List<FeatureType> fts )
                             throws XMLStreamException {
 
-        // TODO better prefix handling
-        final String targetNs = fts.get( 0 ).getName().getNamespaceURI();
-        final String targetPrefix = fts.get( 0 ).getName().getPrefix();
-        if ( targetNs != null && !targetNs.isEmpty() ) {
-            writer.setPrefix( "app", targetNs );
+        for ( String prefix : prefixesToNs.keySet() ) {
+            String ns = prefixesToNs.get( prefix );
+            writer.setPrefix( prefix, ns );
         }
-
-        writer.setPrefix( XS_PREFIX, XSNS );
-        writer.setPrefix( GML_PREFIX, gmlNsURI );
-        writer.setPrefix( targetPrefix, targetNs );
 
         writer.writeStartElement( XSNS, "schema" );
         writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeNamespace( GML_PREFIX, gmlNsURI );
+
         if ( targetNs != null && !targetNs.isEmpty() ) {
             writer.writeAttribute( "targetNamespace", targetNs );
             writer.writeAttribute( "elementFormDefault", "qualified" );
@@ -285,31 +285,32 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeAttribute( "schemaLocation", importURLs.get( importNamespace ) );
         }
 
-        if ( targetNs == null || targetNs.isEmpty() ) {
-            writer.writeStartElement( XSNS, "element" );
-            writer.writeAttribute( "name", "FeatureCollection" );
-            writer.writeAttribute( "substitutionGroup", "gml:_FeatureCollection" );
-            writer.writeAttribute( "type", "FeatureCollectionType" );
-            writer.writeEndElement();
-            writer.writeStartElement( XSNS, "complexType" );
-            writer.writeAttribute( "name", "FeatureCollectionType" );
-            writer.writeStartElement( XSNS, "complexContent" );
-            writer.writeStartElement( XSNS, "extension" );
-            writer.writeAttribute( "base", "gml:AbstractFeatureCollectionType" );
-            writer.writeStartElement( XSNS, "sequence" );
-            writer.writeEndElement();
-            writer.writeEndElement();
-            writer.writeEndElement();
-            writer.writeEndElement();
-        }
+        // if ( targetNs == null || targetNs.isEmpty() ) {
+        // writer.writeStartElement( XSNS, "element" );
+        // writer.writeAttribute( "name", "FeatureCollection" );
+        // writer.writeAttribute( "substitutionGroup", "gml:_FeatureCollection" );
+        // writer.writeAttribute( "type", "FeatureCollectionType" );
+        // writer.writeEndElement();
+        // writer.writeStartElement( XSNS, "complexType" );
+        // writer.writeAttribute( "name", "FeatureCollectionType" );
+        // writer.writeStartElement( XSNS, "complexContent" );
+        // writer.writeStartElement( XSNS, "extension" );
+        // writer.writeAttribute( "base", "gml:AbstractFeatureCollectionType" );
+        // writer.writeStartElement( XSNS, "sequence" );
+        // writer.writeEndElement();
+        // writer.writeEndElement();
+        // writer.writeEndElement();
+        // writer.writeEndElement();
+        // }
 
-        // export feature type declarations
+        // export feature type declarations (in the target namespace)
         for ( FeatureType ft : fts ) {
-            LOG.debug( "Exporting ft " + ft.getName() );
-            export( writer, ft );
+            if ( ft.getName().getNamespaceURI().equals( targetNs ) ) {
+                export( writer, ft );
+            }
         }
 
-        // export custom simple type declarations
+        // export custom simple type declarations (in the target namespace)
         for ( XSSimpleTypeDefinition xsSimpleType : customSimpleTypes.values() ) {
             export( writer, xsSimpleType );
         }
@@ -323,7 +324,7 @@ public class ApplicationSchemaXSDEncoder {
         while ( index < customExportedTypes.size() ) {
             XSTypeDefinition xsTypeDef = customExportedTypes.get( index );
             LOG.debug( "Exporting type " + xsTypeDef );
-            exportType( writer, xsTypeDef, targetPrefix, targetNs );
+            exportType( writer, xsTypeDef );
             index++;
         }
 
@@ -331,16 +332,329 @@ public class ApplicationSchemaXSDEncoder {
         writer.writeEndElement();
     }
 
-    /**
-     * @param writer
-     * @param type
-     * @param targetPrefix
-     * @param targetNs
-     * @throws XMLStreamException
-     */
-    private void exportComplexType( XMLStreamWriter writer, XSComplexTypeDefinition complex, String targetPrefix,
-                                    String targetNs )
+    private void export( XMLStreamWriter writer, FeatureType ft )
                             throws XMLStreamException {
+
+        if ( exportedFts.contains( ft.getName() ) ) {
+            return;
+        }
+
+        // export parent feature types
+        boolean hasSubTypes = false;
+        ApplicationSchema schema = ft.getSchema();
+        FeatureType parentFt = null;
+        if ( schema != null ) {
+            hasSubTypes = schema.getDirectSubtypes( ft ).length > 0;
+            parentFt = schema.getParentFt( ft );
+            if ( parentFt != null ) {
+                export( writer, parentFt );
+            }
+        }
+
+        LOG.debug( "Exporting feature type declaration: " + ft.getName() );
+        writer.writeStartElement( XSNS, "element" );
+        writer.writeAttribute( "name", ft.getName().getLocalPart() );
+
+        // only export type name if derived feature type exists (otherwise export type inline)
+        if ( hasSubTypes ) {
+            String prefix = getPrefix( targetNs );
+            writer.writeAttribute( "type", prefix + ":" + ft.getName().getLocalPart() + "Type" );
+        }
+
+        if ( ft.isAbstract() ) {
+            writer.writeAttribute( "abstract", "true" );
+        }
+
+        if ( parentFt != null ) {
+            String prefix = getPrefix( parentFt.getName().getNamespaceURI() );
+            writer.writeAttribute( "substitutionGroup", prefix + ":" + parentFt.getName().getLocalPart() );
+        } else {
+            if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
+                writer.writeAttribute( "substitutionGroup", abstractGMLFeatureCollectionElement );
+            } else {
+                writer.writeAttribute( "substitutionGroup", abstractGMLFeatureElement );
+            }
+        }
+
+        // end 'xs:element' here if derived feature types exists (type will be exported separately)
+        if ( hasSubTypes ) {
+            writer.writeEndElement();
+        }
+
+        // ai: not everytime one should write the complexType definition; need to check if the type extends another type
+        // from the same namespace
+        writer.writeStartElement( XSNS, "complexType" );
+        if ( hasSubTypes ) {
+            writer.writeAttribute( "name", ft.getName().getLocalPart() + "Type" );
+        }
+        if ( ft.isAbstract() ) {
+            writer.writeAttribute( "abstract", "true" );
+        }
+
+        writer.writeStartElement( XSNS, "complexContent" );
+        writer.writeStartElement( XSNS, "extension" );
+
+        if ( parentFt != null ) {
+            String prefix = getPrefix( parentFt.getName().getNamespaceURI() );
+            writer.writeAttribute( "base", prefix + ":" + parentFt.getName().getLocalPart() + "Type" );
+        } else {
+            if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
+                writer.writeAttribute( "base", "gml:AbstractFeatureCollectionType" );
+            } else {
+                writer.writeAttribute( "base", "gml:AbstractFeatureType" );
+            }
+        }
+
+        writer.writeStartElement( XSNS, "sequence" );
+
+        // TODO check for GML 2-only properties (gml:pointProperty, ...) and export as "app:gml2PointProperty" for GML 3
+
+        // export property definitions (only for non-GML ones)
+        if ( schema != null ) {
+            for ( PropertyType pt : schema.getNewPropertyDeclarations( ft ) ) {
+                if ( pt == null ) {
+                    LOG.warn( "Property type null inside " + ft.getName() );
+                    continue;
+                }
+                LOG.debug( "Exporting property type " + pt );
+                export( writer, pt );
+            }
+        }
+
+        // end 'xs:sequence'
+        writer.writeEndElement();
+        // end 'xs:extension'
+        writer.writeEndElement();
+        // end 'xs:complexContent'
+        writer.writeEndElement();
+        // end 'xs:complexType'
+        writer.writeEndElement();
+
+        if ( !hasSubTypes ) {
+            // end 'xs:element'
+            writer.writeEndElement();
+        }
+
+        exportedFtTypes.add( ft.getName().getLocalPart() + "Type" );
+        exportedFts.add( ft.getName() );
+    }
+
+    private void export( XMLStreamWriter writer, PropertyType pt )
+                            throws XMLStreamException {
+
+        LOG.debug( "Exporting property type " + pt.getName() );
+
+        // TODO is the more to this decision?
+        boolean byRef = !pt.getName().getNamespaceURI().equals( targetNs );
+
+        if ( byRef ) {
+            writer.writeEmptyElement( XSNS, "element" );
+            String prefix = getPrefix( pt.getName().getNamespaceURI() );
+            writer.writeAttribute( "ref", prefix + ":" + pt.getName().getLocalPart() );
+        } else {
+            writer.writeStartElement( XSNS, "element" );
+            writer.writeAttribute( "name", pt.getName().getLocalPart() );
+        }
+
+        if ( pt.getMinOccurs() != 1 ) {
+            writer.writeAttribute( "minOccurs", "" + pt.getMinOccurs() );
+        }
+
+        if ( pt.getMaxOccurs() != 1 ) {
+            if ( pt.getMaxOccurs() == -1 ) {
+                writer.writeAttribute( "maxOccurs", "unbounded" );
+            } else {
+                writer.writeAttribute( "maxOccurs", "" + pt.getMaxOccurs() );
+            }
+        }
+
+        if ( pt.isNillable() ) {
+            // TODO activate when parser is ready
+            // writer.writeAttribute( "nillable", "true" );
+        }
+
+        if ( !byRef ) {
+            if ( pt instanceof SimplePropertyType ) {
+                export( writer, (SimplePropertyType) pt );
+            } else if ( pt instanceof GeometryPropertyType ) {
+                export( writer, (GeometryPropertyType) pt );
+            } else if ( pt instanceof FeaturePropertyType ) {
+                export( writer, (FeaturePropertyType) pt );
+            } else if ( pt instanceof CodePropertyType ) {
+                export( writer, (CodePropertyType) pt );
+            } else if ( pt instanceof MeasurePropertyType ) {
+                export( writer, (MeasurePropertyType) pt );
+            } else if ( pt instanceof CustomPropertyType ) {
+                export( writer, (CustomPropertyType) pt );
+            } else {
+                throw new RuntimeException( "Unhandled property type '" + pt.getClass() + "'" );
+            }
+            writer.writeEndElement(); // end 'xs:element'
+        }
+    }
+
+    private void export( XMLStreamWriter writer, SimplePropertyType pt )
+                            throws XMLStreamException {
+
+        XSSimpleTypeDefinition xsdType = pt.getXSDType();
+        if ( xsdType == null ) {
+            // export without XML schema information
+            PrimitiveType type = pt.getPrimitiveType();
+            writer.writeAttribute( "type", "xs:" + getSimpleType( type ) );
+        } else {
+            // reconstruct XML schema type definition
+            String name = xsdType.getName();
+            String ns = xsdType.getNamespace();
+            if ( xsdType.getName() != null ) {
+                if ( XSNS.equals( ns ) ) {
+                    writer.writeAttribute( "type", "xs:" + name );
+                } else {
+                    String prefix = getPrefix( targetNs );
+                    writer.writeAttribute( "type", prefix + ":" + name );
+                    while ( xsdType != null && !XSNS.equals( xsdType.getNamespace() ) ) {
+                        name = xsdType.getName();
+                        ns = xsdType.getNamespace();
+                        QName qName = new QName( ns, name );
+                        if ( !customSimpleTypes.containsKey( qName ) ) {
+                            customSimpleTypes.put( qName, xsdType );
+                        }
+                        xsdType = (XSSimpleTypeDefinition) xsdType.getBaseType();
+                    }
+                }
+            } else {
+                // unnamed simple property
+                writer.writeStartElement( "xs", "simpleType", XSNS );
+                writer.writeStartElement( "xs", "restriction", XSNS );
+                writer.writeAttribute( "base", "xs:" + getSimpleType( pt.getPrimitiveType() ) );
+
+                XSObjectList facets = pt.getXSDType().getFacets();
+                for ( int i = 0; i < facets.getLength(); i++ ) {
+                    XSFacet facet = (XSFacet) facets.item( i );
+                    writer.writeEmptyElement( "xs", getFacetName( facet.getFacetKind() ), XSNS );
+                    writer.writeAttribute( "value", facet.getLexicalFacetValue() );
+                }
+
+                writer.writeEndElement();
+                writer.writeEndElement();
+            }
+        }
+    }
+
+    private void export( XMLStreamWriter writer, GeometryPropertyType pt )
+                            throws XMLStreamException {
+        writer.writeAttribute( "type", "gml:GeometryPropertyType" );
+        writer.writeComment( "TODO: Export geometry type restriction" );
+    }
+
+    private void export( XMLStreamWriter writer, FeaturePropertyType pt )
+                            throws XMLStreamException {
+
+        QName containedFt = pt.getFTName();
+        if ( containedFt != null ) {
+            writer.writeStartElement( XSNS, "complexType" );
+
+            // TODO what about schemas that disallow nesting of feature properties?
+            writer.writeStartElement( XSNS, "sequence" );
+            writer.writeEmptyElement( XSNS, "element" );
+            String prefix = getPrefix( containedFt.getNamespaceURI() );
+            writer.writeAttribute( "ref", prefix + ":" + containedFt.getLocalPart() );
+            writer.writeAttribute( "minOccurs", "0" );
+            // end 'xs:sequence'
+            writer.writeEndElement();
+
+            writer.writeEmptyElement( XSNS, "attributeGroup" );
+            writer.writeAttribute( "ref", "gml:AssociationAttributeGroup" );
+            // end 'xs:complexType'
+            writer.writeEndElement();
+        } else {
+            writer.writeAttribute( "type", featurePropertyType );
+        }
+    }
+
+    private void export( XMLStreamWriter writer, CustomPropertyType pt )
+                            throws XMLStreamException {
+
+        XSComplexTypeDefinition xsTypeDef = pt.getXSDValueType();
+
+        if ( xsTypeDef == null ) {
+            LOG.warn( "Type definition null inside " + pt.getName() + " property type." );
+        } else {
+            if ( !xsTypeDef.getAnonymous() ) {
+                if ( exportedFtTypes.contains( xsTypeDef.getName() ) ) {
+                    writer.writeAttribute( "ref", xsTypeDef.getName() );
+                }
+                if ( !customExportedTypes.contains( xsTypeDef ) ) {
+                    customExportedTypes.add( xsTypeDef );
+                }
+                String prefix = getPrefix( xsTypeDef.getNamespace() );
+                writer.writeAttribute( "type", prefix + ":" + xsTypeDef.getName() );
+            } else {
+                LOG.debug( "Exporting anonymous type " + xsTypeDef );
+                exportType( writer, xsTypeDef );
+            }
+        }
+    }
+
+    private void export( XMLStreamWriter writer, CodePropertyType pt )
+                            throws XMLStreamException {
+        if ( version.equals( GML_2 ) ) {
+            LOG.warn( "Exporting CodePropertyType as GML2 schema: narrowing down to xs:string." );
+            writer.writeAttribute( "type", "xs:string" );
+        } else {
+            writer.writeAttribute( "type", "gml:CodeType" );
+        }
+    }
+
+    private void export( XMLStreamWriter writer, MeasurePropertyType pt )
+                            throws XMLStreamException {
+        if ( version.equals( GML_2 ) ) {
+            LOG.warn( "Exporting MeasurePropertyType as GML2 schema: narrowing to xs:string." );
+            writer.writeAttribute( "type", "xs:string" );
+        } else {
+            writer.writeAttribute( "type", "gml:MeasureType" );
+        }
+    }
+
+    private void exportType( XMLStreamWriter writer, XSTypeDefinition type )
+                            throws XMLStreamException {
+        short typeCat = type.getTypeCategory();
+        if ( typeCat == SIMPLE_TYPE ) {
+            exportSimpleType( writer, (XSSimpleTypeDefinition) type );
+        } else if ( typeCat == COMPLEX_TYPE ) {
+            exportComplexType( writer, (XSComplexTypeDefinition) type );
+        }
+    }
+
+    private void exportSimpleType( XMLStreamWriter writer, XSSimpleTypeDefinition simple )
+                            throws XMLStreamException {
+
+        if ( simple.getNamespace().equals( targetNs ) ) {
+
+            writer.writeStartElement( XSNS, "simpleType" );
+            writer.writeAttribute( "name", simple.getName() );
+
+            // TODO how can one find the derivation type? getFinal() is wrong!
+            LOG.debug( "Exporting a simple type is done always by restriction. Other derivations may be possible?!" );
+            writer.writeStartElement( "xs", "restriction", XSNS );
+
+            String prefix = getPrefix( simple.getBaseType().getNamespace() );
+            writer.writeAttribute( "base", prefix + ":" + simple.getBaseType().getName() );
+            StringList members = simple.getLexicalEnumeration();
+            if ( members != null && members.getLength() > 0 ) {
+                for ( int i = 0; i < members.getLength(); i++ ) {
+                    writer.writeEmptyElement( "xs", "enumeration", XSNS );
+                    writer.writeAttribute( "value", members.item( i ) );
+                }
+            }
+
+            writer.writeEndElement(); // derivation (restriction, extension, etc.)
+            writer.writeEndElement(); // simpleType
+        }
+    }
+
+    private void exportComplexType( XMLStreamWriter writer, XSComplexTypeDefinition complex )
+                            throws XMLStreamException {
+
         if ( complex.getNamespace().equals( targetNs ) ) {
             writer.writeStartElement( XSNS, "complexType" );
             if ( !complex.getAnonymous() ) {
@@ -375,15 +689,15 @@ public class ApplicationSchemaXSDEncoder {
             }
 
             boolean derivationBegin = false;
-            String prefix = determinePrefix( base.getNamespace(), targetNs, targetPrefix );
+            String prefix = getPrefix( base.getNamespace() );
             switch ( derivation ) {
             case DERIVATION_EXTENSION:
                 writer.writeStartElement( "xs", "extension", XSNS );
-                writer.writeAttribute( "base", prefix + base.getName() );
+                writer.writeAttribute( "base", prefix + ":" + base.getName() );
                 derivationBegin = true;
                 break;
             case DERIVATION_LIST:
-                LOG.warn( "Derviation by list is not implemented/tested. Occured for complex element "
+                LOG.warn( "Derivation by list is not implemented/tested. Occured for complex element "
                           + complex.getName() );
                 break;
             case DERIVATION_NONE:
@@ -397,11 +711,11 @@ public class ApplicationSchemaXSDEncoder {
                 }
                 break;
             case DERIVATION_SUBSTITUTION:
-                LOG.warn( "Derviation by subtitution is not implemented/tested. Occured for complex element "
+                LOG.warn( "Derivation by subtitution is not implemented/tested. Occured for complex element "
                           + complex.getName() );
                 break;
             case DERIVATION_UNION:
-                LOG.warn( "Derviation by union is not implemented/tested. Occured for complex element "
+                LOG.warn( "Derivation by union is not implemented/tested. Occured for complex element "
                           + complex.getName() );
                 break;
             }
@@ -409,9 +723,10 @@ public class ApplicationSchemaXSDEncoder {
             XSParticle particle = complex.getParticle();
             if ( particle != null ) {
                 exportTerm( writer, particle.getTerm(), particle.getMinOccurs(), particle.getMaxOccurs(),
-                            particle.getMaxOccursUnbounded(), targetPrefix, targetNs );
+                            particle.getMaxOccursUnbounded() );
             }
 
+            // TODO only export attribute uses that are different from super types
             XSObjectList attributes = complex.getAttributeUses();
             for ( int i = 0; i < attributes.getLength(); i++ ) {
                 XSAttributeUse attribute = ( (XSAttributeUse) attributes.item( i ) );
@@ -432,48 +747,7 @@ public class ApplicationSchemaXSDEncoder {
         }
     }
 
-    /**
-     * @throws XMLStreamException
-     * 
-     */
-    private void exportSimpleType( XMLStreamWriter writer, XSSimpleTypeDefinition simple, String targetPrefix,
-                                   String targetNs )
-                            throws XMLStreamException {
-        if ( simple.getNamespace().equals( targetNs ) ) {
-
-            writer.writeStartElement( XSNS, "simpleType" );
-            writer.writeAttribute( "name", simple.getName() );
-
-            // TODO how can one find the derivation type? getFinal() is wrong!
-            LOG.debug( "Exporting a simple type is done always by restriction. Other derivations may be possible?!" );
-            writer.writeStartElement( "xs", "restriction", XSNS );
-
-            String simpleNs = simple.getBaseType().getNamespace();
-            String prefix = determinePrefix( simpleNs, targetNs, targetPrefix );
-
-            writer.writeAttribute( "base", prefix + simple.getBaseType().getName() );
-            StringList members = simple.getLexicalEnumeration();
-            if ( members != null && members.getLength() > 0 ) {
-                for ( int i = 0; i < members.getLength(); i++ ) {
-                    writer.writeEmptyElement( "xs", "enumeration", XSNS );
-                    writer.writeAttribute( "value", members.item( i ) );
-                }
-            }
-
-            writer.writeEndElement(); // derivation (restriction, extension, etc.)
-            writer.writeEndElement(); // simpleType
-        }
-    }
-
-    private String determinePrefix( String ns, String targetNs, String targetPrefix ) {
-        String prefix = ns == targetNs ? targetPrefix + ":" : "";
-        prefix = ns == GMLNS ? GML_PREFIX + ":" : prefix;
-        prefix = ns == XSNS ? XS_PREFIX + ":" : prefix;
-        return prefix;
-    }
-
-    private void exportTerm( XMLStreamWriter writer, XSTerm term, int minOccurs, int maxOccurs, boolean maxUnbounded,
-                             String targetPrefix, String targetNs )
+    private void exportTerm( XMLStreamWriter writer, XSTerm term, int minOccurs, int maxOccurs, boolean maxUnbounded )
                             throws XMLStreamException {
         if ( term instanceof XSModelGroup ) {
             XSModelGroup modelGroup = (XSModelGroup) term;
@@ -491,26 +765,24 @@ public class ApplicationSchemaXSDEncoder {
             for ( int i = 0; i < particles.getLength(); i++ ) {
                 XSParticle particle = (XSParticle) particles.item( i );
                 exportTerm( writer, particle.getTerm(), particle.getMinOccurs(), particle.getMaxOccurs(),
-                            particle.getMaxOccursUnbounded(), targetPrefix, targetNs );
+                            particle.getMaxOccursUnbounded() );
             }
             writer.writeEndElement();
 
         } else if ( term instanceof XSElementDeclaration ) {
-            exportElement( writer, (XSElementDeclaration) term, minOccurs, maxOccurs, maxUnbounded, targetPrefix,
-                           targetNs );
+            exportElement( writer, (XSElementDeclaration) term, minOccurs, maxOccurs, maxUnbounded );
         } else if ( term instanceof XSWildcard ) {
             XSWildcard wildcard = (XSWildcard) term;
             LOG.warn( "Exporting of wildcards not handled." );
             // TODO
         }
-
     }
 
     private void exportElement( XMLStreamWriter writer, XSElementDeclaration element, int minOccurs, int maxOccurs,
-                                boolean maxUnbounded, String targetPrefix, String targetNs )
+                                boolean maxUnbounded )
                             throws XMLStreamException {
 
-        LOG.debug( "Exporting Element " + element.getNamespace() + "/" + element.getName() );
+        LOG.debug( "Exporting generic element " + element.getNamespace() + "/" + element.getName() );
         writer.writeStartElement( "xs", "element", XSNS );
         writer.writeAttribute( "name", element.getName() );
         if ( minOccurs != 1 ) {
@@ -525,276 +797,24 @@ public class ApplicationSchemaXSDEncoder {
         XSTypeDefinition type = element.getTypeDefinition();
         if ( type.getNamespace().equals( targetNs ) ) {
             if ( exportedFtTypes.contains( type.getName() ) || customStNames.contains( type.getName() ) ) {
-                writer.writeAttribute( "ref", targetPrefix + ":" + type.getName() );
+                String prefix = getPrefix( type.getNamespace() );
+                writer.writeAttribute( "ref", prefix + ":" + type.getName() );
             } else {
-
                 if ( !type.getAnonymous() ) {
-                    writer.writeAttribute( "type", targetPrefix + ":" + type.getName() );
+                    String prefix = getPrefix( type.getNamespace() );
+                    writer.writeAttribute( "type", prefix + ":" + type.getName() );
                     if ( !customExportedTypes.contains( type ) ) {
                         customExportedTypes.add( type );
                     }
                 } else {
-                    exportType( writer, type, targetPrefix, targetNs );
+                    exportType( writer, type );
                 }
             }
         } else {
-            String prefix = determinePrefix( type.getNamespace(), targetNs, targetPrefix );
-            writer.writeAttribute( "type", prefix + type.getName() );
+            String prefix = getPrefix( type.getNamespace() );
+            writer.writeAttribute( "type", prefix + ":" + type.getName() );
         }
-
         writer.writeEndElement(); // xs:element
-    }
-
-    /**
-     * @param typeDefinition
-     * @throws XMLStreamException
-     */
-    private void exportType( XMLStreamWriter writer, XSTypeDefinition type, String targetPrefix, String targetNs )
-                            throws XMLStreamException {
-        short typeCat = type.getTypeCategory();
-        if ( typeCat == SIMPLE_TYPE ) {
-            exportSimpleType( writer, (XSSimpleTypeDefinition) type, targetPrefix, targetNs );
-
-        } else if ( typeCat == COMPLEX_TYPE ) {
-            exportComplexType( writer, (XSComplexTypeDefinition) type, targetPrefix, targetNs );
-        }
-
-    }
-
-    private void export( XMLStreamWriter writer, FeatureType ft )
-                            throws XMLStreamException {
-
-        if ( exportedFts.contains( ft.getName() ) ) {
-            return;
-        }
-
-        ApplicationSchema schema = ft.getSchema();
-        FeatureType parentFt = null;
-        boolean hasSubTypes = false;
-        if ( schema != null ) {
-            parentFt = schema.getParentFt( ft );
-            if ( parentFt != null ) {
-                export( writer, parentFt );
-            }
-        }
-
-        if ( schema != null ) {
-            hasSubTypes = schema.getDirectSubtypes( ft ).length > 0;
-        }
-
-        writer.writeStartElement( XSNS, "element" );
-        // TODO (what about features in other namespaces???)
-        writer.writeAttribute( "name", ft.getName().getLocalPart() );
-
-        if ( hasSubTypes ) {
-            writer.writeAttribute( "type", "app:" + ft.getName().getLocalPart() + "Type" );
-        }
-
-        if ( ft.isAbstract() ) {
-            writer.writeAttribute( "abstract", "true" );
-        }
-        if ( parentFt != null ) {
-            writer.writeAttribute( "substitutionGroup", "app:" + parentFt.getName().getLocalPart() );
-        } else {
-            // ai: in CITE 1.0.0 the element ComplexFeatureCollection requires substitution group gml:_FeatureCollection
-            writer.writeAttribute( "substitutionGroup", abstractGMLFeatureElement );
-        }
-        // end 'xs:element'
-        if ( hasSubTypes ) {
-            writer.writeEndElement();
-        }
-
-        // ai: not everytime one should write the complexType definition; need to check if the type extends another type
-        // from the same namespace
-        writer.writeStartElement( XSNS, "complexType" );
-        if ( hasSubTypes ) {
-            writer.writeAttribute( "name", ft.getName().getLocalPart() + "Type" );
-        }
-        if ( ft.isAbstract() && hasSubTypes ) {
-            writer.writeAttribute( "abstract", "true" );
-        }
-        writer.writeStartElement( XSNS, "complexContent" );
-        writer.writeStartElement( XSNS, "extension" );
-
-        if ( parentFt != null ) {
-            writer.writeAttribute( "base", "app:" + parentFt.getName().getLocalPart() + "Type" );
-        } else {
-            writer.writeAttribute( "base", "gml:AbstractFeatureType" );
-        }
-
-        writer.writeStartElement( XSNS, "sequence" );
-
-        // TODO check for GML 2 properties (gml:pointProperty, ...) and export as "app:gml2PointProperty" for GML 3
-
-        // export property definitions (only for non-GML ones)
-        if ( schema != null ) {
-            for ( PropertyType pt : schema.getNewPropertyDeclarations( ft ) ) {
-                if ( pt == null ) {
-                    LOG.warn( "Property type null inside " + ft.getName() );
-                    continue;
-                }
-                LOG.debug( "Exporting property type " + pt );
-                export( writer, pt, version );
-            }
-        }
-
-        // end 'xs:sequence'
-        writer.writeEndElement();
-        // end 'xs:extension'
-        writer.writeEndElement();
-        // end 'xs:complexContent'
-        writer.writeEndElement();
-        // end 'xs:complexType'
-        writer.writeEndElement();
-
-        if ( !hasSubTypes ) {
-            // end 'xs:element'
-            writer.writeEndElement();
-        }
-
-        exportedFtTypes.add( ft.getName().getLocalPart() + "Type" );
-
-        exportedFts.add( ft.getName() );
-    }
-
-    private void export( XMLStreamWriter writer, PropertyType pt, GMLVersion version )
-                            throws XMLStreamException {
-
-        LOG.debug( "Exporting property type " + pt.getName() );
-
-        writer.writeStartElement( XSNS, "element" );
-        // TODO (what about properties in other namespaces???)
-        writer.writeAttribute( "name", pt.getName().getLocalPart() );
-
-        if ( pt.getMinOccurs() != 1 ) {
-            writer.writeAttribute( "minOccurs", "" + pt.getMinOccurs() );
-        }
-        if ( pt.getMaxOccurs() != 1 ) {
-            if ( pt.getMaxOccurs() == -1 ) {
-                writer.writeAttribute( "maxOccurs", "unbounded" );
-            } else {
-                writer.writeAttribute( "maxOccurs", "" + pt.getMaxOccurs() );
-            }
-        }
-
-        if ( pt instanceof SimplePropertyType ) {
-            export( writer, (SimplePropertyType) pt, version );
-        } else if ( pt instanceof GeometryPropertyType ) {
-            // TODO handle restricted types (e.g. 'gml:PointPropertyType')
-            writer.writeAttribute( "type", "gml:GeometryPropertyType" );
-        } else if ( pt instanceof FeaturePropertyType ) {
-            QName containedFt = ( (FeaturePropertyType) pt ).getFTName();
-            if ( containedFt != null ) {
-                writer.writeStartElement( XSNS, "complexType" );
-                writer.writeStartElement( XSNS, "sequence" );
-                writer.writeEmptyElement( XSNS, "element" );
-                // TODO
-                if ( containedFt.getPrefix() != null ) {
-                    writer.setPrefix( containedFt.getPrefix(), containedFt.getNamespaceURI() );
-                    writer.writeAttribute( "ref", containedFt.getPrefix() + ":" + containedFt.getLocalPart() );
-                } else {
-                    writer.writeAttribute( "ref", "app:" + containedFt.getLocalPart() );
-                }
-                writer.writeAttribute( "minOccurs", "0" );
-                // end 'xs:sequence'
-                writer.writeEndElement();
-                writer.writeEmptyElement( XSNS, "attributeGroup" );
-                writer.writeAttribute( "ref", "gml:AssociationAttributeGroup" );
-                // end 'xs:complexType'
-                writer.writeEndElement();
-            } else {
-                writer.writeAttribute( "type", featurePropertyType );
-            }
-        } else if ( pt instanceof CodePropertyType ) {
-            if ( version.equals( GML_2 ) ) {
-                LOG.warn( "Exporting CodePropertyType as GML2 schema: narrowing down to xs:string." );
-                writer.writeAttribute( "type", "xs:string" );
-            } else {
-                writer.writeAttribute( "type", "gml:CodeType" );
-            }
-        } else if ( pt instanceof MeasurePropertyType ) {
-            if ( version.equals( GML_2 ) ) {
-                LOG.warn( "Exporting MeasurePropertyType as GML2 schema: narrowing to xs:string." );
-                writer.writeAttribute( "type", "xs:string" );
-            } else {
-                writer.writeAttribute( "type", "gml:MeasureType" );
-            }
-        } else if ( pt instanceof CustomPropertyType ) {
-            XSComplexTypeDefinition xsTypeDef = ( (CustomPropertyType) pt ).getXSDValueType();
-            String targetPrefix = pt.getName().getPrefix();
-            String targetNs = pt.getName().getNamespaceURI();
-            if ( xsTypeDef == null ) {
-                LOG.warn( "Type definition null inside " + pt.getName() + " property type." );
-            } else {
-
-                if ( exportedFtTypes.contains( xsTypeDef.getName() ) ) {
-                    writer.writeAttribute( "ref", targetPrefix + ":" + xsTypeDef.getName() );
-                } else {
-
-                    if ( !xsTypeDef.getAnonymous() ) {
-                        if ( exportedFtTypes.contains( xsTypeDef.getName() ) ) {
-                            writer.writeAttribute( "ref", xsTypeDef.getName() );
-                        }
-                        if ( !customExportedTypes.contains( xsTypeDef ) ) {
-                            customExportedTypes.add( xsTypeDef );
-                        }
-                        writer.writeAttribute( "type", targetPrefix + ":" + xsTypeDef.getName() );
-                    } else {
-                        LOG.debug( "Exporting anonymous Type " + xsTypeDef );
-                        exportType( writer, xsTypeDef, targetPrefix, targetNs );
-                    }
-                }
-            }
-        }
-
-        writer.writeEndElement(); // end 'xs:element'
-    }
-
-    private void export( XMLStreamWriter writer, SimplePropertyType pt, GMLVersion version )
-                            throws XMLStreamException {
-
-        XSSimpleTypeDefinition xsdType = pt.getXSDType();
-        if ( xsdType == null ) {
-            // export without XML schema information
-            PrimitiveType type = pt.getPrimitiveType();
-            writer.writeAttribute( "type", "xs:" + getSimpleType( type ) );
-        } else {
-            // reconstruct XML schema type definition
-            String name = xsdType.getName();
-            String ns = xsdType.getNamespace();
-            if ( xsdType.getName() != null ) {
-                if ( XSNS.equals( ns ) ) {
-                    writer.writeAttribute( "type", "xs:" + name );
-                } else {
-                    // TODO handle other namespaces
-                    writer.writeAttribute( "type", "app:" + name );
-                    while ( xsdType != null && !XSNS.equals( xsdType.getNamespace() ) ) {
-                        name = xsdType.getName();
-                        ns = xsdType.getNamespace();
-                        QName qName = new QName( ns, name );
-                        if ( !customSimpleTypes.containsKey( qName ) ) {
-                            customSimpleTypes.put( qName, xsdType );
-                        }
-                        xsdType = (XSSimpleTypeDefinition) xsdType.getBaseType();
-                    }
-                }
-            } else {
-                // unnamed simple property
-                writer.writeStartElement( "xs", "simpleType", XSNS );
-                writer.writeStartElement( "xs", "restriction", XSNS );
-                writer.writeAttribute( "base", "xs:" + getSimpleType( pt.getPrimitiveType() ) );
-
-                XSObjectList facets = pt.getXSDType().getFacets();
-                for ( int i = 0; i < facets.getLength(); i++ ) {
-                    XSFacet facet = (XSFacet) facets.item( i );
-                    writer.writeEmptyElement( "xs", getFacetName( facet.getFacetKind() ), XSNS );
-                    writer.writeAttribute( "value", facet.getLexicalFacetValue() );
-                }
-
-                writer.writeEndElement();
-                writer.writeEndElement();
-            }
-        }
     }
 
     private String getFacetName( short facetKind ) {
@@ -887,10 +907,9 @@ public class ApplicationSchemaXSDEncoder {
             LOG.warn( "Custom simple type '{" + xsSimpleType.getNamespace() + "}" + xsSimpleType.getName()
                       + "' is based on unnamed type. Defaulting to xs:string." );
             writer.writeAttribute( "base", "xs:string" );
-        } else if ( XSNS.equals( baseTypeNs ) ) {
-            writer.writeAttribute( "base", "xs:" + baseTypeName );
         } else {
-            writer.writeAttribute( "base", "app:" + baseTypeName );
+            String prefix = getPrefix( baseTypeNs );
+            writer.writeAttribute( "base", prefix + ":" + baseTypeName );
         }
         StringList enumValues = xsSimpleType.getLexicalEnumeration();
         for ( int i = 0; i < enumValues.getLength(); i++ ) {
@@ -899,5 +918,15 @@ public class ApplicationSchemaXSDEncoder {
         }
         writer.writeEndElement();
         writer.writeEndElement();
+    }
+
+    private String getPrefix( String namespace ) {
+
+        String prefix = nsToPrefix.get( namespace );
+        if ( prefix == null ) {
+            LOG.warn( "No prefix for namespace '" + namespace + "' defined." );
+            return "app";
+        }
+        return prefix;
     }
 }

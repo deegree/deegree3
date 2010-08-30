@@ -100,7 +100,7 @@ public class ApplicationSchema {
      */
     public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt )
                             throws IllegalArgumentException {
-       
+
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
             ft.setSchema( this );
@@ -361,8 +361,21 @@ public class ApplicationSchema {
         }
         return propDecls.subList( firstNewIdx, propDecls.size() );
     }
-    
-    public Map<FeatureType,FeatureType> getFtToSuperFt () {
+
+    public Map<FeatureType, FeatureType> getFtToSuperFt() {
         return ftToSuperFt;
+    }
+
+    /**
+     * TODO implement this properly
+     * 
+     * @return
+     */
+    public Map<String, String> getNamespaceBindings() {
+        Map<String, String> prefixToNs = new HashMap<String, String>();
+        for ( FeatureType ft : getFeatureTypes() ) {
+            prefixToNs.put( ft.getName().getPrefix(), ft.getName().getNamespaceURI() );
+        }
+        return prefixToNs;
     }
 }
