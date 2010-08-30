@@ -38,7 +38,7 @@ package org.deegree.protocol.ows.metadata;
 import java.net.URL;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>ServiceProvider</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -55,26 +55,44 @@ public class ServiceProvider {
 
     private ServiceContact serviceContact;
 
+    /**
+     * @param providerName
+     */
     public void setProviderName( String providerName ) {
         this.providerName = providerName;
     }
 
+    /**
+     * @return providerName, may be <code>null</code>.
+     */
     public String getProviderName() {
         return providerName;
     }
 
+    /**
+     * @param providerSite
+     */
     public void setProviderSite( URL providerSite ) {
         this.providerSite = providerSite;
     }
 
+    /**
+     * @return providerSite, may be <code>null</code>.
+     */
     public URL getProviderSite() {
         return providerSite;
     }
 
+    /**
+     * @param serviceContact
+     */
     public void setServiceContact( ServiceContact serviceContact ) {
         this.serviceContact = serviceContact;
     }
 
+    /**
+     * @return serviceContact, may be <code>null</code>.
+     */
     public ServiceContact getServiceContact() {
         return serviceContact;
     }

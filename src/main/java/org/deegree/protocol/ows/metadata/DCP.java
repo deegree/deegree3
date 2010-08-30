@@ -42,7 +42,7 @@ import java.util.List;
 import org.deegree.commons.utils.Pair;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>DCP</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -57,6 +57,9 @@ public class DCP {
 
     private List<Pair<URL, List<Domain>>> postURLs;
 
+    /**
+     * @return getURLs, never <code>null</code>
+     */
     public List<Pair<URL, List<Domain>>> getGetURLs() {
         if ( getURLs == null ) {
             getURLs = new ArrayList<Pair<URL, List<Domain>>>();
@@ -64,6 +67,9 @@ public class DCP {
         return getURLs;
     }
 
+    /**
+     * @return getPostURLs, never <code>null</code>
+     */
     public List<Pair<URL, List<Domain>>> getPostURLs() {
         if ( postURLs == null ) {
             postURLs = new ArrayList<Pair<URL, List<Domain>>>();

@@ -45,7 +45,7 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.protocol.ows.exception.OWSException;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>OWSExceptionReader</code> class parses the OWSException report.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 

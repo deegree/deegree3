@@ -42,7 +42,7 @@ import java.util.List;
 import org.deegree.commons.tom.ows.Version;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>Process</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -61,14 +61,23 @@ public class Process {
 
     private Version processVersion;
 
+    /**
+     * @param description
+     */
     public void setDescription( Description description ) {
         this.description = description;
     }
 
+    /**
+     * @return description, may be <code>null</code>.
+     */
     public Description getDescription() {
         return description;
     }
 
+    /**
+     * @return profiles, may be empty but never <code>null</code>.
+     */
     public List<String> getProfiles() {
         if ( profiles == null ) {
             profiles = new ArrayList<String>();
@@ -76,18 +85,30 @@ public class Process {
         return profiles;
     }
 
-    public void setWSDL() {
+    /**
+     * @param wsdl
+     */
+    public void setWSDL( URL wsdl ) {
         this.wsdl = wsdl;
     }
 
+    /**
+     * @return may be <code>null</code>.
+     */
     public URL getWSDL() {
         return wsdl;
     }
 
+    /**
+     * @param processVersion
+     */
     public void setProcessVersion( Version processVersion ) {
         this.processVersion = processVersion;
     }
 
+    /**
+     * @return processVersion, may be <code>null</code>
+     */
     public Version getProcessVersion() {
         return processVersion;
     }

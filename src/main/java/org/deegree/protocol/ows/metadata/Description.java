@@ -43,7 +43,7 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>Description</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -60,6 +60,9 @@ public class Description {
 
     private List<Pair<List<LanguageString>, CodeType>> keywords;
 
+    /**
+     * @return title, never <code>null</code>
+     */
     public List<LanguageString> getTitle() {
         if ( title == null ) {
             title = new ArrayList<LanguageString>();
@@ -67,6 +70,9 @@ public class Description {
         return title;
     }
 
+    /**
+     * @return serviceAbstract, never <code>null</code>
+     */
     public List<LanguageString> getAbstract() {
         if ( serviceAbstract == null ) {
             serviceAbstract = new ArrayList<LanguageString>();
@@ -74,6 +80,9 @@ public class Description {
         return serviceAbstract;
     }
 
+    /**
+     * @return keywords, never <code>null</code>
+     */
     public List<Pair<List<LanguageString>, CodeType>> getKeywords() {
         if ( keywords == null ) {
             keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();

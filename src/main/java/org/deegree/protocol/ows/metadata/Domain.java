@@ -42,7 +42,7 @@ import java.util.List;
 import org.deegree.commons.utils.Pair;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>Domain</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -71,70 +71,121 @@ public class Domain {
 
     private List<Pair<URL, URL>> metadata;
 
+    /**
+     * @param name
+     */
     public void setName( String name ) {
         this.name = name;
     }
 
+    /**
+     * @return name, may be <code>null</code>
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param possibleValues
+     */
     public void setPossibleValues( PossibleValues possibleValues ) {
         this.possibleValues = possibleValues;
     }
 
+    /**
+     * @return possibleValues, may be <code>null</code>
+     */
     public PossibleValues getPossibleValues() {
         return possibleValues;
     }
 
+    /**
+     * @param defaultValue
+     */
     public void setDefaultValue( String defaultValue ) {
         this.defaultValue = defaultValue;
     }
 
+    /**
+     * @return defaultValue, may be <code>null</code>
+     */
     public String getDefaultValue() {
         return defaultValue;
     }
 
+    /**
+     * @param meaningName
+     */
     public void setMeaningName( String meaningName ) {
         this.meaningName = meaningName;
     }
 
+    /**
+     * @param meaningURL
+     */
     public void setMeaningURL( String meaningURL ) {
         this.meaningURL = meaningURL;
     }
 
+    /**
+     * @return meaningName, may be <code>null</code>
+     */
     public String getMeaningName() {
         return meaningName;
     }
 
+    /**
+     * @return meaningURL, may be <code>null</code>
+     */
     public String getMeaningURL() {
         return meaningURL;
     }
 
+    /**
+     * @param dataTypeName
+     */
     public void setDataTypeName( String dataTypeName ) {
         this.dataTypeName = dataTypeName;
     }
 
+    /**
+     * @param dataTypeURL
+     */
     public void setDataTypeURL( String dataTypeURL ) {
         this.dataTypeURL = dataTypeURL;
     }
 
+    /**
+     * @return dataTypeName, may be <code>null</code>
+     */
     public String getDataTypeName() {
         return dataTypeName;
     }
 
+    /**
+     * @return dataTypeURL, may be <code>null</code>
+     */
     public String getDataTypeURL() {
         return dataTypeURL;
     }
 
+    /**
+     * @param valuesUnit
+     */
     public void setValuesUnit( ValuesUnit valuesUnit ) {
         this.valuesUnit = valuesUnit;
     }
 
+    /**
+     * @return valuesUnit, may be <code>null</code>
+     */
     public ValuesUnit getValuesUnit() {
         return valuesUnit;
     }
 
+    /**
+     * @return metadata, never <code>null</code>
+     */
     public List<Pair<URL, URL>> getMetadata() {
         if ( metadata == null ) {
             metadata = new ArrayList<Pair<URL, URL>>();

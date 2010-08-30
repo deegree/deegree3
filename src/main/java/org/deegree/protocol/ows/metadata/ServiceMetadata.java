@@ -38,6 +38,7 @@ package org.deegree.protocol.ows.metadata;
 import org.deegree.commons.tom.ows.Version;
 
 /**
+ * The <code>ServiceMetadata</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -57,42 +58,72 @@ public class ServiceMetadata {
 
     private String updateSequence;
 
+    /**
+     * @param serviceIdentificaiton
+     */
     public void setServiceIdentification( ServiceIdentification serviceIdentificaiton ) {
         this.serviceIdentificaiton = serviceIdentificaiton;
     }
 
+    /**
+     * @return serviceIndentification, may be <code>null</code>.
+     */
     public ServiceIdentification getServiceIdentification() {
         return serviceIdentificaiton;
     }
 
+    /**
+     * @param serviceProvider
+     */
     public void setServiceProvider( ServiceProvider serviceProvider ) {
         this.serviceProvider = serviceProvider;
     }
 
+    /**
+     * @return serviceProvider, may be <code>null</code>.
+     */
     public ServiceProvider getServiceProvider() {
         return serviceProvider;
     }
 
+    /**
+     * @param operationsMetadata
+     */
     public void setOperationsMetadata( OperationsMetadata operationsMetadata ) {
         this.operationsMetadata = operationsMetadata;
     }
 
+    /**
+     * @return operationsMetadata, may be <code>null</code>.
+     */
     public OperationsMetadata getOperationsMetadata() {
         return operationsMetadata;
     }
 
+    /**
+     * @param version
+     */
     public void setVersion( Version version ) {
         this.version = version;
     }
 
+    /**
+     * @return version, may be <code>null</code>.
+     */
     public Version getVersion() {
         return version;
     }
 
+    /**
+     * @param updateSequence
+     */
     public void setUpdateSequence( String updateSequence ) {
         this.updateSequence = updateSequence;
     }
 
+    /**
+     * @return updateSequence, may be <code>null</code>.
+     */
     public String getUpdateSequence() {
         return updateSequence;
     }

@@ -36,7 +36,7 @@
 package org.deegree.protocol.ows.metadata;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>ValuesUnit</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -55,28 +55,60 @@ public class ValuesUnit {
 
     private String referenceSystemURL;
 
+    /**
+     * @param uomName
+     */
     public void setUomName( String uomName ) {
         this.uomName = uomName;
     }
 
+    /**
+     * @return uomName, may be <code>null</code>.
+     */
     public String getUomName() {
         return uomName;
     }
 
+    /**
+     * @param uomURI
+     */
     public void setUomURI( String uomURI ) {
         this.uomURI = uomURI;
     }
 
+    /**
+     * @return uomURI, may be <code>null</code>.
+     */
     public String getUomURI() {
         return uomURI;
     }
 
+    /**
+     * @param referenceSystemName
+     */
     public void setReferenceSystemName( String referenceSystemName ) {
         this.referenceSystemName = referenceSystemName;
     }
 
+    /**
+     * @return referenceSystemName, may be <code>null</code>.
+     */
+    public String getReferenceSystemName() {
+        return referenceSystemName;
+    }
+
+    /**
+     * @param referenceSystemURI
+     */
     public void setReferenceSystemURL( String referenceSystemURI ) {
         this.referenceSystemURL = referenceSystemURI;
+    }
+
+    /**
+     * @return referenceSystemURL, may be <code>null</code>.
+     */
+    public String getReferenceSystemURL() {
+        return referenceSystemURL;
     }
 
 }

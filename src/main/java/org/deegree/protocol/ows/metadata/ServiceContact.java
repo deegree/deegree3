@@ -38,7 +38,7 @@ package org.deegree.protocol.ows.metadata;
 import org.deegree.commons.tom.ows.CodeType;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>ServiceContact</code> bean encapsulates the corresponding GetCapabilities response metadata element.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -57,34 +57,58 @@ public class ServiceContact {
 
     private CodeType role;
 
+    /**
+     * @param individualName
+     */
     public void setIndividualName( String individualName ) {
         this.individualName = individualName;
     }
 
+    /**
+     * @return individualName, may be <code>null</code>.
+     */
     public String getIndividualName() {
         return individualName;
     }
 
+    /**
+     * @param positionName
+     */
     public void setPositionName( String positionName ) {
         this.positionName = positionName;
     }
 
+    /**
+     * @return positionName, may be <code>null</code>.
+     */
     public String getPositionName() {
         return positionName;
     }
 
+    /**
+     * @param contactInfo
+     */
     public void setContactInfo( ContactInfo contactInfo ) {
         this.contactInfo = contactInfo;
     }
 
+    /**
+     * @return contactInfo, may be <code>null</code>.
+     */
     public ContactInfo getContactInfo() {
         return contactInfo;
     }
 
+    /**
+     * @param role
+     */
     public void setRole( CodeType role ) {
         this.role = role;
     }
 
+    /**
+     * @return role, may be <code>null</code>.
+     */
     public CodeType getRole() {
         return role;
     }
