@@ -73,6 +73,16 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
     }
 
     @Override
+    public URL getConfigSchema() {
+        return OracleFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/oracle.xsd" );
+    }
+
+    @Override
+    public URL getConfigTemplate() {
+        return OracleFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/example.xml" );
+    }
+
+    @Override
     public FeatureStore getFeatureStore( URL configURL )
                             throws FeatureStoreException {
 
