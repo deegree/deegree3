@@ -17,7 +17,7 @@
   <!-- [1] bounding box statement -->
   <BBoxStatement>SELECT astext(ST_Estimated_Extent('some_table', 'the_geom')) as bbox</BBoxStatement>
   
-  <!-- [0..n] -->
+  <!-- [0..n] different statements for specific WMS scale ranges -->
   <LODStatement aboveScale="3000">
             SELECT name, title, asbinary(st_simplifypreservetopology(the_geom, 1)) FROM some_table
             WHERE the_geom &amp;&amp; st_geomfromtext(?, -1)
