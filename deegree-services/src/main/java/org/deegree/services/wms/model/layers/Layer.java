@@ -69,6 +69,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.wms.dims.DimensionLexer;
 import org.deegree.protocol.wms.dims.parser;
@@ -299,7 +300,7 @@ public abstract class Layer {
             boolean invisible = true;
 
             inner: for ( Geometry g : evald.second ) {
-                if ( g instanceof Point ) {
+                if ( g instanceof Point || g instanceof MultiPoint ) {
                     invisible = false;
                     break inner;
                 }
@@ -315,6 +316,8 @@ public abstract class Layer {
                 } else {
                     renderer.render( evald.first, evald.second );
                 }
+            } else {
+                LOG.debug( "Skipping invisible feature." );
             }
         }
     }
