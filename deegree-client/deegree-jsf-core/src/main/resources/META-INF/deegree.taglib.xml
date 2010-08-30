@@ -67,7 +67,7 @@
         </component>
         <attribute>
             <name>schemaURLS</name>
-            <description>A comma seperated list of schema urls!</description>
+            <description>A comma seperated list of the schema urls used to validate the XML value!</description>
         </attribute>
     </tag>
 
