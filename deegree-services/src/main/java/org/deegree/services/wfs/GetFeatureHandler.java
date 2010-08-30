@@ -393,8 +393,9 @@ class GetFeatureHandler {
         gmlStream.setXLinkFeatureProperties( analyzer.getXLinkProps() );
         gmlStream.setFeatureProperties( analyzer.getRequestedProps() );
         gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
-        // TODO make this configurable
-        gmlStream.setCoordinateFormatter( new DoubleCoordinateFormatter() );
+        // TODO make the coordinate formatter configurable,
+        // but don't use DoubleCoordinateFormatter (1.2122E7 may be the result)
+//        gmlStream.setCoordinateFormatter( new DoubleCoordinateFormatter() );
 
         bindFeatureTypePrefixes( xmlStream, analyzer.getFeatureTypes() );
 
