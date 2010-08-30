@@ -141,6 +141,18 @@ public class GeometryTransformer extends Transformer {
     }
 
     /**
+     * Creates a new GeometryTransformer object.
+     * 
+     * @param targetCRS
+     * @throws IllegalArgumentException
+     *             if the given parameter is null.
+     * @throws UnknownCRSException
+     */
+    public GeometryTransformer( CRS targetCRS ) throws IllegalArgumentException, UnknownCRSException {
+        super( targetCRS.getWrappedCRS() );
+    }
+
+    /**
      * Creates a new GeometryTransformer object, with the given id as the target CRS.
      * 
      * @param targetCRS
