@@ -84,7 +84,7 @@ public class SimpleSQLFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigTemplate() {
-        return SimpleSQLFeatureStoreProvider.class.getResource( "config_template.xml" );
+        return SimpleSQLFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/example_simpleqsl.xsd" );
     }
 
     @Override

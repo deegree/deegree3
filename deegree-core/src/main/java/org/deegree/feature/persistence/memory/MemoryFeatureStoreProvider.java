@@ -89,7 +89,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigTemplate() {
-        return MemoryFeatureStoreProvider.class.getResource( "config_template.xml" );
+        return MemoryFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/feature/example_memory.xml" );
     }
 
     @Override

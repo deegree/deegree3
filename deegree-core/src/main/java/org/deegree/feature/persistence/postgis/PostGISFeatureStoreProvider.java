@@ -87,7 +87,7 @@ public class PostGISFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigTemplate() {
-        return PostGISFeatureStoreProvider.class.getResource( "config_template.xml" );
+        return PostGISFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/postgis/0.6.0/example.xml" );
     }
 
     @Override
