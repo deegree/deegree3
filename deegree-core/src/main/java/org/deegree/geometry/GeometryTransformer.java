@@ -614,7 +614,7 @@ public class GeometryTransformer extends Transformer {
         Curve result = null;
         switch ( type ) {
         case CompositeCurve:
-            transform( (CompositeCurve) curve, trans );
+            result = transform( (CompositeCurve) curve, trans );
             break;
         case OrientableCurve:
         case Curve: {
