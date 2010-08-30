@@ -149,6 +149,13 @@ public class XMLConfig implements Serializable {
         return adapter.toString();
     }
 
+    public String getSchemaURL() {
+        if ( schema != null ) {
+            return schema.toExternalForm();
+        }
+        return null;
+    }
+
     public String getSchema() {
         String xml = null;
         if ( schema != null ) {

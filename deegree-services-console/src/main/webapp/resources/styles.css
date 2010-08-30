@@ -25,3 +25,15 @@ a {
 .attention {
 	color: red;
 }
+
+.collapsiblePanel {
+	margin-top: 20px;
+}
+
+.collapsiblePanel .header {
+	margin-bottom: 10px;
+}
+
+.collapsiblePanel .content {
+	margin-bottom: 10px;
+}
