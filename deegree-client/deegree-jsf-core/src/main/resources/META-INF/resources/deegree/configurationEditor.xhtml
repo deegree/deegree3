@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:composite="http://java.sun.com/jsf/composite" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+<head>
+<title>A composite component to edit configuration xml files</title>
+</head>
+<body>
+<composite:interface>
+				<composite:attribute name="editorID" required="true" />
+				<composite:attribute name="editorType" required="true" />
+				<composite:attribute name="editBean" required="true">
+								<composite:attribute name="map" required="true" />
+								<composite:attribute name="openGUI" method-signature="java.lang.String f()" required="true" />
+								<composite:attribute name="closeGUI" method-signature="java.lang.String f()" required="true" />
+								<composite:attribute name="saveXMLAndCloseGUI" method-signature="void f()" required="true" />
+				</composite:attribute>
+				<composite:attribute name="openLabel" />
+				<composite:attribute name="closeLabel" />
+				<composite:attribute name="saveLabel" />
+</composite:interface>
+<composite:implementation>
+				<div><h:panelGroup id="component">
+								<h:commandLink id="open" value="#{cc.attrs.openLabel != null ? cc.attrs.openLabel : open}"
+												action="#{cc.attrs.editBean.openGUI}" rendered="#{cc.attrs.editBean.map[cc.attrs.editorID] == null}">
+												<f:param name="type" value="#{cc.attrs.editorType}" />
+												<f:param name="id" value="#{cc.attrs.editorID}" />
+												<f:ajax execute="@this" render="component" />
+								</h:commandLink>
+
+								<h:commandLink id="close" value="#{cc.attrs.closeLabel != null ? cc.attrs.closeLabel : close}"
+												action="#{cc.attrs.editBean.closeGUI}" rendered="#{cc.attrs.editBean.map[cc.attrs.editorID] != null}">
+												<f:param name="id" value="#{cc.attrs.editorID}" />
+												<f:ajax execute="@this" render="component" />
+								</h:commandLink>
+								<br />
+								<h:panelGroup id="editPanel" rendered="#{cc.attrs.editBean.map[cc.attrs.editorID] != null}">
+												<dg:inputConfigurationXML id="inputXML" value="#{cc.attrs.editBean.map[cc.attrs.editorID].xml}"
+																schemaURLS="#{cc.attrs.editBean.map[cc.attrs.editorID].schemaURLS}" style="width:500px; height:300px;" />
+												<br />
+												<h:commandButton id="save" value="#{cc.attrs.saveLabel != null ? cc.attrs.saveLabel : 'save'}">
+																<f:param name="id" value="#{cc.attrs.editorID}" />
+																<f:ajax execute="@form" render="component" listener="#{cc.attrs.editBean.saveXMLAndCloseGUI}" />
+												</h:commandButton>
+												<dgc:ajaxStatus text="Working" />
+								</h:panelGroup>
+								<br />
+								<h:message for="#{cc.clientId}:inputXML" showDetail="true" showSummary="true" />
+				</h:panelGroup></div>
+</composite:implementation>
+</body>
+</html>
