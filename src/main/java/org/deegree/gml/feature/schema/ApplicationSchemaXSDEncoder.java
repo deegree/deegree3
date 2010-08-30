@@ -445,7 +445,7 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeAttribute( "name", simple.getName() );
 
             // TODO how can one find the derivation type? getFinal() is wrong!
-            LOG.warn( "Exporing a simple type is done always by restriction. Other derivations may be possible?!" );
+            LOG.debug( "Exporting a simple type is done always by restriction. Other derivations may be possible?!" );
             writer.writeStartElement( "xs", "restriction", XSNS );
 
             String simpleNs = simple.getBaseType().getNamespace();
@@ -659,6 +659,8 @@ public class ApplicationSchemaXSDEncoder {
 
     private void export( XMLStreamWriter writer, PropertyType pt, GMLVersion version )
                             throws XMLStreamException {
+
+        LOG.debug( "Exporting property type " + pt.getName() );
 
         writer.writeStartElement( XSNS, "element" );
         // TODO (what about properties in other namespaces???)

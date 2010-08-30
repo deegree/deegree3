@@ -79,7 +79,7 @@ public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
 
     @Override
     public URL getConfigTemplate() {
-        return ShapeFeatureStoreProvider.class.getResource( "config_template.xml" );
+        return ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/0.6.0/example.xml" );
     }
 
     @Override
