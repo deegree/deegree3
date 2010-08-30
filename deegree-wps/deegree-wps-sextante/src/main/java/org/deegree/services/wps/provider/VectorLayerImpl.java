@@ -132,16 +132,16 @@ public class VectorLayerImpl extends AbstractVectorLayer {
     }
 
     @Override
-    public void addFeature( Geometry geom, Object[] values ) {
+    public void addFeature( Geometry geometry, Object[] attributes ) {
 
-        if ( values == null ) {
-            values = new Object[] {};
+        if ( attributes == null ) {
+            attributes = new Object[] {};
         }
 
         // attribute count correct
-        if ( values.length == m_Fields.length ) {
-            setShapeType( geom );
-            m_Features.add( new FeatureImpl( geom, values ) );
+        if ( attributes.length == m_Fields.length ) {
+            setShapeType( geometry );
+            m_Features.add( new FeatureImpl( geometry, attributes ) );
 
         } else { // attribute count not correct
             LOG.error( "addFeature(): Values are not correct." );
@@ -156,13 +156,13 @@ public class VectorLayerImpl extends AbstractVectorLayer {
     }
 
     @Override
-    public String getFieldName( int iName ) {
-        return m_Fields[iName].getName();
+    public String getFieldName( int index ) {
+        return m_Fields[index].getName();
     }
 
     @Override
-    public Class<?> getFieldType( int iType ) {
-        return m_Fields[iType].getType();
+    public Class<?> getFieldType( int index ) {
+        return m_Fields[index].getType();
     }
 
     @Override
@@ -235,8 +235,8 @@ public class VectorLayerImpl extends AbstractVectorLayer {
     }
 
     @Override
-    public void setName( String name ) {
-        m_Name = name;
+    public void setName( String sName ) {
+        m_Name = sName;
     }
 
     /**
