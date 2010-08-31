@@ -10,13 +10,13 @@
 <composite:interface>
 				<composite:attribute name="styleClass" default="collapsiblePanel" />
 				<composite:attribute name="collapsed" default="true" />
-				<composite:attribute name="openImg" default="#{resource['deegree:images/page_min.gif']}" />
-				<composite:attribute name="collapseImg" required="false" default="#{resource['deegree:images/page_max.gif']}" />
+				<composite:attribute name="openImg" default="#{resource['deegree:images/plus.png']}" />
+				<composite:attribute name="collapseImg" required="false" default="#{resource['deegree:images/minus.png']}" />
 				<composite:facet name="header" />
 </composite:interface>
 <composite:implementation>
 				<h:outputScript name="javascript/collapsible.js" library="deegree" target="head" />
-				<div class="#{cc.attrs.styleClass}">
+				<div class="#{cc.attrs.styleClass}" id="#{cc.clientId}">
 				<h:panelGrid columns="2" styleClass="header" layout="block" style="vertical-align:middle;">
 								<composite:renderFacet name="header" />
 								<h:commandButton id="collapse"

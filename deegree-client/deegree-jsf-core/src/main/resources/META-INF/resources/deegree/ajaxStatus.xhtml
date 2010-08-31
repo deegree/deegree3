@@ -9,6 +9,7 @@
 	  <composite:attribute name="text" default="Loading"/>
 	  <composite:attribute name="style"/>
 	  <composite:attribute name="styleClass" default="ajaxStatus"/>
+	  <composite:attribute name="modal" default="false"/>
 	</composite:interface>
 
 	<composite:implementation>
@@ -16,7 +17,7 @@
 	  <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
 	  <h:outputScript name="javascript/ajaxStatus.js" library="deegree" target="head"/>
 	  <script type="text/javascript">
-	    registerAjaxStatus('#{cc.clientId}:msg');
+	    registerAjaxStatus('#{cc.clientId}:msg', #{cc.attrs.modal});
 	  </script>
 	  <span id="#{cc.clientId}:msg" class="#{cc.attrs.styleClass}" style="display: none;#{cc.attrs.style}">
 	    #{cc.attrs.text}
