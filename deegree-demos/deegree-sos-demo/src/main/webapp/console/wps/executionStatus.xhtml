@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<h:head>
+  <title>deegree 3 WPS process status</title>
+  <h:outputStylesheet name="styles.css" />
+</h:head>
+
+<h:body>
+  deegree 3 WPS process status
+  <br />
+  ----------------------------
+  <br />
+  <br />
+  <h:panelGroup rendered="#{!empty processExecutionsBean.executions}" >
+    <table border="1" cellpadding="3" cellspacing="0">
+      <tr>
+        <th>Process</th>
+        <th>Status</th>
+        <th>Progress</th>
+        <th>Started</th>
+        <th>Finished</th>
+        <th>Duration</th>
+      </tr>
+      <ui:repeat value="#{processExecutionsBean.executions}" var="execution">
+        <tr align="center">
+          <td><h:outputText value="#{execution.id}" /></td>
+          <td><h:outputText value="#{execution.state}" /></td>
+          <td><h:outputText value="#{execution.percentage}" /></td>
+          <td><h:outputText value="#{execution.startTime}" /></td>
+          <td><h:outputText value="#{execution.finishTime}" /></td>
+          <td><h:outputText value="#{execution.duration}" /></td>
+        </tr>
+      </ui:repeat>
+    </table>
+  </h:panelGroup>
+  <h:outputText rendered="#{empty processExecutionsBean.executions}" value="No processes have been executed so far." />
+</h:body>
+</html>

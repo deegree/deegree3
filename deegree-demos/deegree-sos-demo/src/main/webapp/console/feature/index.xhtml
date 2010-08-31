@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<h:head>
+	<title>Feature store info</title>
+	<h:outputStylesheet name="styles.css" />
+</h:head>
+<h:body>  
+    ------------------------------------------------------------------------------<br />
+    Statistics<br />
+    ------------------------------------------------------------------------------<br />
+    <br/>
+    - Number of feature types (total): <h:outputText value="#{editConfig.numFtsTotal}"/>
+    <br/>
+    - Number of feature types (concrete): <h:outputText value="#{editConfig.numFtsConcrete}"/>    
+    <br/>
+    - Number of feature types (abstract): <h:outputText value="#{editConfig.numFtsAbstract}"/>
+    <br/>
+    <br/>    
+    ------------------------------------------------------------------------------<br />
+    Namespaces<br />
+    ------------------------------------------------------------------------------<br />
+    <br/>
+    <ui:repeat value="#{editConfig.namespaces}" var="namespace">
+	  - <h:outputText value="#{namespace}" /><br/>
+	</ui:repeat>    
+    <br/>
+    <br/>
+    ------------------------------------------------------------------------------<br />
+    Hierarchy (stored instances)<br />
+    ------------------------------------------------------------------------------<br />
+    <br/>
+    <h:outputText value="#{editConfig.ftInfo}" escape="false" />
+</h:body>
+</html>
