@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
+import java.io.Serializable;
+
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -49,16 +52,18 @@ import javax.faces.context.FacesContext;
  */
 @ManagedBean
 @SessionScoped
-public class LogBean {
+public class LogBean implements Serializable {
+
+    private static final long serialVersionUID = 2579606585051388806L;
 
     private static String serverName;
 
-    static {
+    @PostConstruct
+    public void detectServerName() {
         serverName = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
     }
 
     public boolean isLoggedIn() {
-
         if ( serverName != null && ( "localhost".equals( serverName ) || "127.0.0.1".equals( serverName ) ) ) {
             return true;
         }
