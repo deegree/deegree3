@@ -235,9 +235,11 @@ public class XMLConfig implements Serializable {
     public void reinit( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
         try {
-            InputStream is = template.openStream();
-            XMLAdapter adapter = new XMLAdapter( is );
-            setContent( adapter.toString() );
+            if ( template != null ) {
+                InputStream is = template.openStream();
+                XMLAdapter adapter = new XMLAdapter( is );
+                setContent( adapter.toString() );
+            }
         } catch ( IOException e ) {
             new AbortProcessingException( "Could not reinit file: " + e.getMessage() );
         }
