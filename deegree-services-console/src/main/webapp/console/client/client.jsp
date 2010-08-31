@@ -235,7 +235,6 @@
 <%
     }
 %>
-                [<a href="../../console.xhtml" target="parent">BACK</a>] Choose:
                 <select name="example" size="1" onchange="setProfile(this.selectedIndex);" id="profileSelectNode">
                     <option>------------------------</option>
                 </select>

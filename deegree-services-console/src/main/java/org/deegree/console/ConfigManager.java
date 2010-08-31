@@ -45,6 +45,7 @@ import javax.faces.context.FacesContext;
 import org.deegree.console.featurestore.FeatureStoreConfigManager;
 import org.deegree.console.jdbc.ConnectionConfigManager;
 import org.deegree.console.services.ServiceConfigManager;
+import org.deegree.console.styles.StyleConfigManager;
 import org.deegree.services.controller.OGCFrontController;
 
 /**
@@ -58,11 +59,11 @@ import org.deegree.services.controller.OGCFrontController;
 @ManagedBean
 @ApplicationScoped
 public class ConfigManager {
-    
+
     private static URL MAIN_TEMPLATE = ConnectionConfigManager.class.getResource( "main_template.xml" );
 
     private static URL MAIN_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/webservices/0.6.0/services.xsd" );
-    
+
     private static URL METADATA_TEMPLATE = ConnectionConfigManager.class.getResource( "metadata_template.xml" );
 
     private static URL METADATA_SCHEMA_URL = ConnectionConfigManager.class.getResource( "/META-INF/schemas/webservices/0.6.0/services.xsd" );
@@ -70,8 +71,10 @@ public class ConfigManager {
     private final XMLConfig serviceMainConfig;
 
     private final XMLConfig serviceMetadataConfig;
-    
+
     private final ServiceConfigManager serviceManager;
+
+    private final StyleConfigManager styleManager;
 
     private final FeatureStoreConfigManager fsManager;
 
@@ -80,25 +83,33 @@ public class ConfigManager {
     private String lastMessage = "Workspace initialized.";
 
     public ConfigManager() {
-        File serviceMainConfigFile = new File (OGCFrontController.getServiceWorkspace().getLocation(), "services/main.xml");
-        serviceMainConfig = new XMLConfig(true, false, serviceMainConfigFile, MAIN_SCHEMA_URL, MAIN_TEMPLATE );
-        File serviceMetadataConfigFile = new File (OGCFrontController.getServiceWorkspace().getLocation(), "services/metadata.xml");
-        serviceMetadataConfig = new XMLConfig( true, false, serviceMetadataConfigFile, METADATA_SCHEMA_URL, METADATA_TEMPLATE );
+        File serviceMainConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
+                                               "services/main.xml" );
+        serviceMainConfig = new XMLConfig( true, false, serviceMainConfigFile, MAIN_SCHEMA_URL, MAIN_TEMPLATE );
+        File serviceMetadataConfigFile = new File( OGCFrontController.getServiceWorkspace().getLocation(),
+                                                   "services/metadata.xml" );
+        serviceMetadataConfig = new XMLConfig( true, false, serviceMetadataConfigFile, METADATA_SCHEMA_URL,
+                                               METADATA_TEMPLATE );
         this.serviceManager = new ServiceConfigManager();
+        this.styleManager = new StyleConfigManager();
         this.fsManager = new FeatureStoreConfigManager();
         this.connManager = new ConnectionConfigManager();
     }
 
     public boolean getPendingChanges() {
-        if (serviceMetadataConfig.isModified()) {
+        if ( serviceMetadataConfig.isModified() ) {
             lastMessage = "Workspace has been changed.";
             return true;
         }
-        if (serviceMainConfig.isModified()) {
+        if ( serviceMainConfig.isModified() ) {
             lastMessage = "Workspace has been changed.";
             return true;
-        }        
+        }
         if ( serviceManager.needsReloading() ) {
+            lastMessage = "Workspace has been changed.";
+            return true;
+        }
+        if ( styleManager.needsReloading() ) {
             lastMessage = "Workspace has been changed.";
             return true;
         }
@@ -114,22 +125,30 @@ public class ConfigManager {
     }
 
     public static ConfigManager getApplicationInstance() {
-        return (ConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "configManager" );
+        return (ConfigManager) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get(
+                                                                                                               "configManager" );
     }
 
-    public XMLConfig getServiceMainConfig () {
+    public XMLConfig getServiceMainConfig() {
         return serviceMainConfig;
-    }    
-    
-    public XMLConfig getServiceMetadataConfig () {
+    }
+
+    public XMLConfig getServiceMetadataConfig() {
         return serviceMetadataConfig;
     }
-    
+
     /**
      * @return the serviceManager
      */
     public ServiceConfigManager getServiceManager() {
         return serviceManager;
+    }
+
+    /**
+     * @return the styleManager
+     */
+    public StyleConfigManager getStyleManager() {
+        return styleManager;
     }
 
     /**
@@ -146,10 +165,10 @@ public class ConfigManager {
         return connManager;
     }
 
-    public String getLastMessage () {
-        return lastMessage ;
+    public String getLastMessage() {
+        return lastMessage;
     }
-    
+
     public void applyChanges()
                             throws Exception {
         try {
@@ -162,6 +181,7 @@ public class ConfigManager {
         serviceMetadataConfig.setModified( false );
 
         serviceManager.scan();
+        styleManager.scan();
         fsManager.scan();
         connManager.scan();
         lastMessage = "Workspace changes have been applied.";
