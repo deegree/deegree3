@@ -115,7 +115,7 @@ public class FormatHelper {
         if ( schema != null ) {
             return schema.getGMLVersion();
         } else {
-            LOG.error( "\"" + input.getSchema() + " \" is a not supported GML schema." );
+            LOG.error( "INPUT: \"" + input.getSchema() + " \" is a not supported GML schema." );
             // TODO throw Exception
             return null;
         }
@@ -134,9 +134,12 @@ public class FormatHelper {
         if ( schema != null ) {
             return schema.getGMLVersion();
         } else {
-            LOG.error( "\"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
-            // TODO throw Exception
-            return null;
+            LOG.error( "OUTPUT: \"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
+            // TODO throw Exception?
+
+            GMLSchema defaultSchema = getGMLSchema( getDefaultOutputFormat().getSchema() );
+            LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchema() + "\" is in use." );
+            return defaultSchema.getGMLVersion();
         }
     }
 
@@ -153,7 +156,7 @@ public class FormatHelper {
         if ( schema != null ) {
             return schema.getGMLType();
         } else {
-            LOG.error( "\"" + input.getSchema() + " \" is a not supported GML schema." );
+            LOG.error( "INPUT: \"" + input.getSchema() + " \" is a not supported GML schema." );
             // TODO throw Exception
             return null;
         }
@@ -172,9 +175,12 @@ public class FormatHelper {
         if ( schema != null ) {
             return schema.getGMLType();
         } else {
-            LOG.error( "\"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
+            LOG.error( "OUTPUT: \"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
             // TODO throw Exception
-            return null;
+            
+            GMLSchema defaultSchema = getGMLSchema( getDefaultOutputFormat().getSchema() );
+            LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchema() + "\" is in use." );
+            return defaultSchema.getGMLType();
         }
     }
 
