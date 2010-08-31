@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
-import static com.sun.org.apache.xerces.internal.xs.XSConstants.ELEMENT_DECLARATION;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
@@ -46,6 +45,7 @@ import static org.apache.xerces.xs.XSConstants.DERIVATION_NONE;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_RESTRICTION;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_SUBSTITUTION;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_UNION;
+import static org.apache.xerces.xs.XSConstants.ELEMENT_DECLARATION;
 import static org.apache.xerces.xs.XSConstants.TYPE_DEFINITION;
 import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_ALL;
 import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_CHOICE;
@@ -88,6 +88,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.xerces.xs.StringList;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSFacet;
 import org.apache.xerces.xs.XSModel;
