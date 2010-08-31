@@ -40,11 +40,8 @@ import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,6 +70,7 @@ import lombok.Setter;
 
 import org.apache.commons.httpclient.HttpException;
 import org.deegree.commons.utils.net.HttpUtils;
+import org.deegree.commons.xml.XMLAdapter;
 import org.slf4j.Logger;
 
 /**
@@ -182,6 +180,9 @@ public class RequestBean implements Serializable {
     }
 
     public void sendRequest() {
+        if ( !request.startsWith( "<?xml" ) ) {
+            request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + request;
+        }
         LOG.debug( "Try to send the following request to " + targetUrl + " : \n" + request );
         if ( targetUrl != null && targetUrl.length() > 0 && request != null && request.length() > 0 ) {
             Map<String, String> header = new HashMap<String, String>();
@@ -328,46 +329,11 @@ public class RequestBean implements Serializable {
         if ( selectedRequest != null ) {
             LOG.debug( "load request " + selectedRequest );
             String realPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath( selectedRequest );
-            try {
-                BufferedReader reader = new BufferedReader( new FileReader( realPath ) );
-                String req = "";
-                String line = null;
-                while ( ( line = reader.readLine() ) != null ) {
-                    req += line;
-                }
-                setRequest( req );
-            } catch ( FileNotFoundException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch ( IOException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            File file = new File( realPath );
+            if ( file != null && file.exists() ) {
+                XMLAdapter adapter = new XMLAdapter( file );
+                setRequest( adapter.toString() );
             }
-
-            // try {
-            // String realPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath( selectedRequest );
-            // XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new FileReader( realPath )
-            // );
-            // StAXOMBuilder builder = new StAXOMBuilder( reader );
-            // OMElement rootElement = builder.getDocumentElement();
-            //
-            // StringWriter writer = new StringWriter();
-            // XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            // factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
-            // XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( writer ) );
-            //
-            // rootElement.serialize( xmlWriter );
-            // request = writer.toString();
-            // } catch ( FileNotFoundException e ) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // } catch ( XMLStreamException e ) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // } catch ( FactoryConfigurationError e ) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
         }
     }
 

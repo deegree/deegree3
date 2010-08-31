@@ -29,9 +29,7 @@
           </h:selectOneMenu>
         </h:column>
         <h:column>
-          <h:inputTextarea id="requestArea" value="#{requestBean.request}" styleClass="textarea">
-            <f:validator validatorId="org.deegree.XMLValidator" />
-          </h:inputTextarea>
+          <h:inputTextarea id="requestArea" value="#{requestBean.request}" styleClass="textarea" />
         </h:column>
         <h:column>
           <h:outputLabel value="URL: " for="url" />
@@ -49,7 +47,7 @@
 
         <h:column style="width: 95%; margin-top: 20px; border-top: 1px solid black; padding-top: 20px;">
         	<h:panelGroup id="result" >
-	          <dg:outputXML id="response" value="#{requestBean.response}" downloadable="true" downloadDir="download" minutesUntilDelete="30" rendered="#{requestBean.response != null}"/>
+	          <dg:outputXML id="response" value="#{requestBean.response}" downloadable="true" downloadDir="console/download" minutesUntilDelete="30" rendered="#{requestBean.response != null}"/>
 	          <h:outputText id="hint" value="Select or enter a request above and click the 'SEND' button. After processing, the service response will be displayed below." rendered="#{requestBean.response == null}"/>
 	        </h:panelGroup>
         </h:column>
