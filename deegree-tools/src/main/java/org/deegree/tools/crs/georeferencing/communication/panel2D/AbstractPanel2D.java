@@ -50,6 +50,7 @@ import javax.swing.JPanel;
 
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
+import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
@@ -118,13 +119,17 @@ public abstract class AbstractPanel2D extends JPanel {
         return selectedPoints;
     }
 
+    public void setSelectedPoints( List<Point4Values> selectedPoints ) {
+        this.selectedPoints = selectedPoints;
+    }
+
     public Point4Values getLastAbstractPoint() {
         return lastAbstractPoint;
     }
 
-    public void setLastAbstractPoint( AbstractGRPoint lastAbstractPoint, AbstractGRPoint worldCoords ) {
+    public void setLastAbstractPoint( AbstractGRPoint lastAbstractPoint, AbstractGRPoint worldCoords, RowColumn rc ) {
         if ( lastAbstractPoint != null && worldCoords != null ) {
-            this.lastAbstractPoint = new Point4Values( lastAbstractPoint, worldCoords );
+            this.lastAbstractPoint = new Point4Values( lastAbstractPoint, worldCoords, rc );
         } else {
             this.lastAbstractPoint = null;
         }
@@ -133,6 +138,13 @@ public abstract class AbstractPanel2D extends JPanel {
     public void addToSelectedPoints( Point4Values point ) {
 
         selectedPoints.add( point );
+
+    }
+
+    public void updateSelectedPoint( Object value, int row, int column ) {
+        for ( Point4Values p : selectedPoints ) {
+
+        }
 
     }
 

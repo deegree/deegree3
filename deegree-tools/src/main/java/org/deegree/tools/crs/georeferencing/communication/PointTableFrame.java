@@ -49,6 +49,7 @@ import javax.swing.JTable;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 
 /**
@@ -105,7 +106,7 @@ public class PointTableFrame extends JFrame {
         setAlwaysOnTop( true );
     }
 
-    public void addHorizontalRefListener( ActionListener c ) {
+    public void addActionButtonListener( ActionListener c ) {
         deleteSingleButton.addActionListener( c );
         deleteAllButton.addActionListener( c );
 
@@ -116,7 +117,7 @@ public class PointTableFrame extends JFrame {
 
     }
 
-    public void setCoords( AbstractGRPoint point ) {
+    public RowColumn setCoords( AbstractGRPoint point ) {
         if ( model.getRowCount() == 0 ) {
             addRow();
         }
@@ -125,15 +126,25 @@ public class PointTableFrame extends JFrame {
         switch ( point.getPointType() ) {
 
         case GeoreferencedPoint:
-            model.setValueAt( rowData[0], rowCount - 1, 0 );
-            model.setValueAt( rowData[1], rowCount - 1, 1 );
-            break;
+            int row = rowCount - 1;
+            int columnX = 0;
+            int columnY = 1;
+            model.setValueAt( rowData[0], row, columnX );
+            model.setValueAt( rowData[1], row, columnY );
+
+            return new RowColumn( row, columnX, columnY );
         case FootprintPoint:
+
+            int rowF = rowCount - 1;
+            int columnXF = 2;
+            int columnYF = 3;
             model.setValueAt( rowData[0], rowCount - 1, 2 );
             model.setValueAt( rowData[1], rowCount - 1, 3 );
-            break;
+            return new RowColumn( rowF, columnXF, columnYF );
 
         }
+
+        return null;
 
     }
 

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.model.points;
 
+import org.deegree.tools.crs.georeferencing.model.RowColumn;
+
 /**
  * Datastructure for every information needed to manipulate a point.
  * <p>
@@ -55,19 +57,23 @@ public class Point4Values {
 
     private AbstractGRPoint worldCoords;
 
+    private RowColumn rc;
+
     public Point4Values( AbstractGRPoint oldValue, AbstractGRPoint initialValue, AbstractGRPoint newValue,
-                         AbstractGRPoint worldCoords ) {
+                         AbstractGRPoint worldCoords, RowColumn rc ) {
         this.oldValue = oldValue;
         this.initialValue = initialValue;
         this.newValue = newValue;
         this.worldCoords = worldCoords;
+        this.rc = rc;
     }
 
-    public Point4Values( AbstractGRPoint initialValue, AbstractGRPoint worldCoords ) {
+    public Point4Values( AbstractGRPoint initialValue, AbstractGRPoint worldCoords, RowColumn rc ) {
         this.oldValue = initialValue;
         this.initialValue = initialValue;
         this.newValue = initialValue;
         this.worldCoords = worldCoords;
+        this.rc = rc;
     }
 
     public AbstractGRPoint getInitialValue() {
@@ -89,6 +95,10 @@ public class Point4Values {
 
     public AbstractGRPoint getWorldCoords() {
         return worldCoords;
+    }
+
+    public RowColumn getRc() {
+        return rc;
     }
 
     @Override

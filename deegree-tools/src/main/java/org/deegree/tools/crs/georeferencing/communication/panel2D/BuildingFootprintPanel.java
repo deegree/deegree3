@@ -235,7 +235,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
             double x = pValues[0];
             double y = pValues[1];
             FootprintPoint pi = new FootprintPoint( x, y );
-            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords() ) );
+            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords(),
+                                                      p.getRc() ) );
         }
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {

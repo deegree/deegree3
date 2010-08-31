@@ -148,7 +148,8 @@ public class Scene2DPanel extends AbstractPanel2D {
             double x = pValues[0];
             double y = pValues[1];
             GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
-            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords() ) );
+            selectedPointsTemp.add( new Point4Values( p.getNewValue(), p.getInitialValue(), pi, p.getWorldCoords(),
+                                                      p.getRc() ) );
         }
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {

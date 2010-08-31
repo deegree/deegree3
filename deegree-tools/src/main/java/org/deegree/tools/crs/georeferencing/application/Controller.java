@@ -63,8 +63,11 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.JTree;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.vecmath.Point2d;
 
@@ -104,6 +107,7 @@ import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootpr
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.CheckBoxListModel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
+import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.Scene2DImplShape;
 import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
@@ -204,6 +208,8 @@ public class Controller {
 
     private CheckBoxListModel modelCRS;
 
+    private RowColumn rc;
+
     public Controller( GRViewerGUI view ) {
 
         geom = new GeometryFactory();
@@ -240,8 +246,8 @@ public class Controller {
 
         // init the transformation method
         this.tablePanel = new PointTableFrame();
-        // this.tablePanel.addListeners( new ButtonListener() );
-        this.tablePanel.addHorizontalRefListener( new ButtonListener() );
+        this.tablePanel.addTableModelListener( new TableChangedEventListener() );
+        this.tablePanel.addActionButtonListener( new ButtonListener() );
         transform = null;
         if ( transformationType == null ) {
             order = 1;
@@ -529,13 +535,15 @@ public class Controller {
 
                     for ( int tableRow : tableRows ) {
                         FootprintPoint pointFromTable = new FootprintPoint(
-                                                                            (Double) tablePanel.getModel().getValueAt(
-                                                                                                                       tableRow,
-                                                                                                                       2 ),
-                                                                            (Double) tablePanel.getModel().getValueAt(
-                                                                                                                       tableRow,
+                                                                            new Double(
+                                                                                        tablePanel.getModel().getValueAt(
+                                                                                                                          tableRow,
+                                                                                                                          2 ).toString() ).doubleValue(),
+                                                                            new Double(
+                                                                                        tablePanel.getModel().getValueAt(
+                                                                                                                          tableRow,
 
-                                                                                                                       3 ) );
+                                                                                                                          3 ).toString() ).doubleValue() );
                         boolean contained = false;
                         for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
                             double x = p.first.getWorldCoords().getX();
@@ -549,8 +557,8 @@ public class Controller {
                             }
                         }
                         if ( contained == false ) {
-                            footPanel.setLastAbstractPoint( null, null );
-                            panel.setLastAbstractPoint( null, null );
+                            footPanel.setLastAbstractPoint( null, null, null );
+                            panel.setLastAbstractPoint( null, null, null );
                         }
 
                         tablePanel.removeRow( tableRow );
@@ -700,8 +708,6 @@ public class Controller {
                     } else if ( wmsStartDialog != null && wmsStartDialog.isVisible() == true ) {
                         String mapURLString = wmsStartDialog.getTextField().getText();
                         wmsStartDialog.setVisible( false );
-                        // modelFormats = new CheckBoxListModel();
-                        // modelCRS = new CheckBoxListModel();
                         try {
                             wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURLString );
                         } catch ( MalformedURLException e1 ) {
@@ -728,16 +734,9 @@ public class Controller {
                         String format = wmsParameter.getCheckBoxFormatAsString().toString();
                         Envelope env = wmsParameter.getEnvelope( CRS, layerList );
                         if ( env != null ) {
-                            // double minX = env.getMin().get0();
-                            // double minY = env.getMin().get1();
-                            // double maxX = env.getMax().get0();
-                            // double maxY = env.getMax().get1();
-                            // String bbox = minX + " " + minY + " " + maxX + " " + maxY;
-                            // System.out.println( "[Controller] env " + env );
                             int qor = max( panel.getWidth(), panel.getHeight() );
                             sceneValues.setGeorefURL( mapURL );
                             store = new ParameterStore( mapURL, CRS, format, layers, env, qor );
-                            // options = new RasterOptions( store ).getOptions();
                             model = new Scene2DImplWMS( store );
                             initGeoReferencingScene( model );
                             wmsParameter.setVisible( false );
@@ -838,6 +837,127 @@ public class Controller {
             }
 
         }
+    }
+
+    class TableChangedEventListener implements TableModelListener {
+
+        @Override
+        public void tableChanged( TableModelEvent e ) {
+
+            int row = e.getFirstRow();
+            int column = e.getColumn();
+            TableModel model = (TableModel) e.getSource();
+
+            if ( column != -1 && model.getValueAt( row, column ) != null ) {
+                String columnName = model.getColumnName( column );
+                Object data = model.getValueAt( row, column );
+
+                System.out.println( "[Controller] TableEvent row: " + row + " col: " + column + " colName: "
+                                    + columnName + " data: " + data );
+                for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+                    boolean changed = changePointLocation( p, data, row, column );
+                    if ( changed ) {
+
+                        List<Point4Values> listPS = new ArrayList<Point4Values>();
+                        List<Point4Values> listPF = new ArrayList<Point4Values>();
+                        for ( Pair<Point4Values, Point4Values> m : mappedPoints ) {
+                            listPS.add( m.second );
+                            listPF.add( m.first );
+                        }
+                        panel.setSelectedPoints( listPS );
+                        footPanel.setSelectedPoints( listPF );
+                        panel.repaint();
+                        footPanel.repaint();
+
+                        System.out.println( "[Controller] p.Second: \n" + p.second );
+                    }
+                }
+
+                if ( row == e.getLastRow() ) {
+                    Pair<Point4Values, Point4Values> newLastPair = new Pair<Point4Values, Point4Values>(
+                                                                                                         footPanel.getLastAbstractPoint(),
+                                                                                                         panel.getLastAbstractPoint() );
+                    if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
+                        boolean changed = changePointLocation( newLastPair, data, row, column );
+                        if ( changed ) {
+
+                            if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
+                                panel.setLastAbstractPoint( newLastPair.second.getNewValue(),
+                                                            newLastPair.second.getWorldCoords(),
+                                                            newLastPair.second.getRc() );
+                                footPanel.setLastAbstractPoint( newLastPair.first.getNewValue(),
+                                                                newLastPair.first.getWorldCoords(),
+                                                                newLastPair.first.getRc() );
+                            }
+                            panel.repaint();
+                            footPanel.repaint();
+
+                        }
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * 
+     * @param p
+     *            that is viewed to be changed, not <Code>null</Code>.
+     * @param data
+     *            the new data, not <Code>null</Code>.
+     * @param row
+     *            the row to be changed, not <Code>null</Code>.
+     * @param column
+     *            the column to be changed, not <Code>null</Code>.
+     */
+    private boolean changePointLocation( Pair<Point4Values, Point4Values> p, Object data, int row, int column ) {
+        boolean changed = false;
+        AbstractGRPoint pixelValue = null;
+        AbstractGRPoint worldCoords = null;
+        int rowPoints = p.first.getRc().getRow();
+        int fcpx = p.first.getRc().getColumnX();
+        int fcpy = p.first.getRc().getColumnY();
+
+        int scpx = p.second.getRc().getColumnX();
+        int scpy = p.second.getRc().getColumnY();
+        if ( row == rowPoints ) {
+            if ( column == fcpx ) {
+                worldCoords = new FootprintPoint( new Double( data.toString() ).doubleValue(),
+                                                  p.first.getWorldCoords().getY() );
+                int[] i = sceneValues.getPixelCoord( worldCoords );
+                pixelValue = new FootprintPoint( i[0], i[1] );
+
+                p.first = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.first.getRc() );
+                changed = true;
+            } else if ( column == fcpy ) {
+                worldCoords = new FootprintPoint( p.first.getWorldCoords().getX(),
+                                                  new Double( data.toString() ).doubleValue() );
+                int[] i = sceneValues.getPixelCoord( worldCoords );
+                pixelValue = new FootprintPoint( i[0], i[1] );
+                p.first = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.first.getRc() );
+                changed = true;
+            } else if ( column == scpx ) {
+                worldCoords = new GeoReferencedPoint( new Double( data.toString() ).doubleValue(),
+                                                      p.second.getWorldCoords().getY() );
+                int[] i = sceneValues.getPixelCoord( worldCoords );
+                pixelValue = new GeoReferencedPoint( i[0], i[1] );
+
+                p.second = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.second.getRc() );
+                changed = true;
+            } else if ( column == scpy ) {
+                worldCoords = new GeoReferencedPoint( p.second.getWorldCoords().getX(),
+                                                      new Double( data.toString() ).doubleValue() );
+                int[] i = sceneValues.getPixelCoord( worldCoords );
+                pixelValue = new GeoReferencedPoint( i[0], i[1] );
+
+                p.second = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.second.getRc() );
+                changed = true;
+            }
+
+        }
+        return changed;
     }
 
     /**
@@ -1120,8 +1240,8 @@ public class Controller {
                                 double y = m.getY();
                                 GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                                 GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
-                                panel.setLastAbstractPoint( geoReferencedPoint, g );
-                                tablePanel.setCoords( panel.getLastAbstractPoint().getWorldCoords() );
+                                rc = tablePanel.setCoords( g );
+                                panel.setLastAbstractPoint( geoReferencedPoint, g, rc );
 
                             } else {
                                 // just pan
@@ -1207,9 +1327,8 @@ public class Controller {
                                                                                                                                                    x,
                                                                                                                                                    y ) ) );
                             }
-
-                            footPanel.setLastAbstractPoint( point.first, point.second );
-                            tablePanel.setCoords( footPanel.getLastAbstractPoint().getWorldCoords() );
+                            rc = tablePanel.setCoords( point.second );
+                            footPanel.setLastAbstractPoint( point.first, point.second, rc );
 
                         } else {
                             mouseFootprint.setMouseChanging( new FootprintPoint(
@@ -1232,12 +1351,11 @@ public class Controller {
      * Sets values to the JTableModel.
      */
     private void setValues() {
-
         footPanel.addToSelectedPoints( footPanel.getLastAbstractPoint() );
         panel.addToSelectedPoints( panel.getLastAbstractPoint() );
         addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint() );
-        footPanel.setLastAbstractPoint( null, null );
-        panel.setLastAbstractPoint( null, null );
+        footPanel.setLastAbstractPoint( null, null, null );
+        panel.setLastAbstractPoint( null, null, null );
 
     }
 
@@ -1490,6 +1608,11 @@ public class Controller {
         }
     }
 
+    private void updateMappedPoints() {
+
+        // mappedPoints.set( index, element );
+    }
+
     /**
      * Removes everything after a complete deletion of the points.
      */
@@ -1498,9 +1621,9 @@ public class Controller {
         tablePanel.removeAllRows();
         panel.removeAllFromSelectedPoints();
         footPanel.removeAllFromSelectedPoints();
-        footPanel.setLastAbstractPoint( null, null );
+        footPanel.setLastAbstractPoint( null, null, null );
         panel.setPolygonList( null, null );
-        panel.setLastAbstractPoint( null, null );
+        panel.setLastAbstractPoint( null, null, null );
         panel.repaint();
         footPanel.repaint();
         reset();

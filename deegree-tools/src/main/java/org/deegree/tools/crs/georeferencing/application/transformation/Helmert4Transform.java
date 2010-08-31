@@ -109,8 +109,8 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
             double balancedPointDstX = cumulatedPointsDstX / arraySize;
             double balancedPointSrcY = cumulatedPointsSrcY / arraySize;
             double balancedPointDstY = cumulatedPointsDstY / arraySize;
-            System.out.println( "[Helmert4] BalancedCoords -->  \nE: " + balancedPointSrcY + " \nN: "
-                                + balancedPointSrcX + " \nY: " + balancedPointDstY + " \nX: " + balancedPointDstX );
+            System.out.println( "[Helmert4] BalancedCoords -->  \nE: " + balancedPointSrcX + " \nN: "
+                                + balancedPointSrcY + " \nY: " + balancedPointDstY + " \nX: " + balancedPointDstX );
 
             /*
              * Coordinates related to balancedPoints
@@ -123,13 +123,13 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
             int counter = 0;
             for ( double point : passPointsSrcY ) {
                 passPointsSrcY_two[counter] = point - balancedPointSrcY;
-                System.out.println( "[Helmert4] related BalancedCoords -->  \nE\'\': " + passPointsSrcY_two[counter] );
+                System.out.println( "[Helmert4] related BalancedCoords -->  \nN\'\': " + passPointsSrcY_two[counter] );
                 counter++;
             }
             counter = 0;
             for ( double point : passPointsSrcX ) {
                 passPointsSrcX_two[counter] = point - balancedPointSrcX;
-                System.out.println( "[Helmert4] related BalancedCoords -->  \nN\'\': " + passPointsSrcX_two[counter] );
+                System.out.println( "[Helmert4] related BalancedCoords -->  \nE\'\': " + passPointsSrcX_two[counter] );
                 counter++;
             }
             counter = 0;
