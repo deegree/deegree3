@@ -13,17 +13,6 @@
 
       <h:panelGrid>
         <h:column>
-          <h:outputText value="Filter requests:" />
-          <h:inputText id="requestFilter" value="#{requestBean.requestFilter}">
-            <f:ajax listener="#{requestBean.applyRequestFilter}" render="kvpRequestSel" />
-          </h:inputText>
-        </h:column>
-        <h:column>
-          <h:selectOneMenu id="kvpRequestSel" value="#{requestBean.kvpRequestSel}">
-            <f:selectItems value="#{requestBean.kvpRequests}" />
-          </h:selectOneMenu>
-        </h:column>
-        <h:column>
           <h:selectOneMenu id="servicesSel" value="#{requestBean.selectedService}">
             <f:selectItems value="#{requestBean.services}" var="service" itemLabel="#{service}" itemValue="#{service}" />
             <f:ajax render="requestProfilesSel requestsSel requestArea" />
@@ -55,7 +44,6 @@
             <f:ajax execute="url requestArea" render="sendMgs result" />
           </h:commandButton>
 
-          <h:commandButton id="sendKvpBt" value="Send selected KVP request" action="#{requestBean.sendKVPRequest}" />
         </h:column>
         <h:messages id="sendMgs" errorClass="errorMsg" />
 
