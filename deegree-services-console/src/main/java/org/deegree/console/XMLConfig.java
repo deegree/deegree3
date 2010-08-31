@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,9 +47,12 @@ import java.io.StringReader;
 import java.net.URL;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLAdapter;
+import org.slf4j.Logger;
 
 /**
  * Represents an XML configuration file.
@@ -58,6 +63,10 @@ import org.deegree.commons.xml.XMLAdapter;
  * @version $Revision: $, $Date: $
  */
 public class XMLConfig implements Serializable {
+
+    private static final long serialVersionUID = 3402980554627360105L;
+
+    private static final Logger LOG = getLogger( XMLConfig.class );
 
     private final File location;
 
@@ -79,6 +88,7 @@ public class XMLConfig implements Serializable {
         this.location = location;
         this.schema = schema;
         this.template = template;
+        reloadContent();
     }
 
     /**
@@ -145,8 +155,7 @@ public class XMLConfig implements Serializable {
     }
 
     public String getContent() {
-        XMLAdapter adapter = new XMLAdapter( getLocation() );
-        return adapter.toString();
+        return content;
     }
 
     public String getSchemaURL() {
@@ -190,7 +199,7 @@ public class XMLConfig implements Serializable {
         adapter.getRootElement().serialize( os );
         os.close();
         modified = true;
-        return "/console";
+        return "/console?faces-redirect=true";
     }
 
     public void create()
@@ -206,6 +215,7 @@ public class XMLConfig implements Serializable {
             os.write( buffer, 0, read );
         }
         os.close();
+        reloadContent();
         System.out.println( "Wrote " + location );
         modified = true;
     }
@@ -219,11 +229,37 @@ public class XMLConfig implements Serializable {
 
     public String edit() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
-        return "console/generic/xmleditor";
+        return "console/generic/xmleditor?faces-redirect=true";
+    }
+
+    public void reinit( AjaxBehaviorEvent event )
+                            throws AbortProcessingException {
+        try {
+            InputStream is = template.openStream();
+            XMLAdapter adapter = new XMLAdapter( is );
+            setContent( adapter.toString() );
+        } catch ( IOException e ) {
+            new AbortProcessingException( "Could not reinit file: " + e.getMessage() );
+        }
+    }
+
+    public Object cancel() {
+        reloadContent();
+        return "/console?faces-redirect=true";
+
     }
 
     @Override
     public String toString() {
         return "{location=" + getLocation() + ",schema=" + schema + ",template=" + template + "}";
+    }
+
+    protected void reloadContent() {
+        try {
+            XMLAdapter adapter = new XMLAdapter( getLocation() );
+            setContent( adapter.toString() );
+        } catch ( Exception e ) {
+            LOG.debug( "Could not reload content: " + e.getMessage() );
+        }
     }
 }

@@ -37,3 +37,8 @@ a {
 .collapsiblePanel .content {
 	margin-bottom: 10px;
 }
+
+.statusPanel {
+	font-style: italic;
+	color: red;
+}

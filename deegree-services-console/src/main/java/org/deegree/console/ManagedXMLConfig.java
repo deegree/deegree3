@@ -67,6 +67,7 @@ public class ManagedXMLConfig extends XMLConfig {
         super( active, ignore, null, schema, template );
         this.id = id;
         this.manager = manager;
+        reloadContent();
     }
 
     /**
@@ -108,7 +109,7 @@ public class ManagedXMLConfig extends XMLConfig {
                             throws XMLStreamException, IOException {
         super.save();
         manager.switchState( this );
-        return "/console";
+        return "/console?faces-redirect=true";
     }
 
     public void delete() {

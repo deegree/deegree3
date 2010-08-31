@@ -11,12 +11,18 @@
 				<pre><h:outputText value="#{applicationBean.logo}" /></pre>
 
 				<h:form id="reloadForm">
-  ...has been successfully installed on this server.
-				[<h:commandLink value="Reload" action="#{configManager.applyChanges}" style="margin:0px 10px;">
-												<f:ajax execute="@this" render="@form" />
-								</h:commandLink>]
+								<h:outputText value="...has been successfully installed on this server." />
+								
+												[<h:link outcome="/console/client/client.html" value="Generic OGC client" />]  [<dg:externalLink
+												target="_blank" href="http://wiki.deegree.org" title="deegree Wiki" />]
+																<br />
+								<br />
 				
-																<h:panelGroup rendered="#{configManager.pendingChanges}">
+				[<h:commandLink value="Reload" action="#{configManager.applyChanges}" style="margin:0px 10px;">
+												<f:ajax execute="@this" render="@form :workspacePanel" />
+								</h:commandLink>]<br />
+
+								<h:panelGroup rendered="#{configManager.pendingChanges}">
 												<div class="attention"><h:outputText
 																value="#{configManager.lastMessage} (needs
 																				reloading)" /></div>
@@ -25,6 +31,7 @@
 												<h:outputText value="#{configManager.lastMessage}" />
 								</h:panelGroup>
 
+								<dgc:ajaxStatus styleClass="statusPanel" text="reload workspace" modal="true" />
 				</h:form>
 				<br />
 				<dgc:collapsiblePanel styleClass="collapsiblePanel">
@@ -42,7 +49,7 @@
 				</dgc:collapsiblePanel>
 
 
-				<dgc:collapsiblePanel styleClass="collapsiblePanel">
+				<dgc:collapsiblePanel styleClass="collapsiblePanel" id="workspacePanel">
 								<f:facet name="header">
 									  ------------------------------------------------------------------------------  
 									  <br />
@@ -144,14 +151,6 @@
 												<h:commandButton value="OK" action="#{newConnectionConfig.create}" />
 								</h:form>
 				</dgc:collapsiblePanel>
-
-				<h:panelGroup id="links" style="margin: 20px; 0px;">
-								<h:outputText value="##################################################################################" />
-								<br />
-								<br />
-												[<h:link outcome="/console/client/client.html" value="Generic OGC client" />]  [<dg:externalLink
-												target="_blank" href="http://wiki.deegree.org" title="deegree Wiki" />]
-      </h:panelGroup>
 
 </h:body>
 </html>

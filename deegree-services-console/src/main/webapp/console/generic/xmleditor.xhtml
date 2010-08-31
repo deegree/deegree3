@@ -1,22 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
 				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
-				xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:dg="http://deegree.org/jsf" >
+				xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:dg="http://deegree.org/jsf">
 <h:head>
 				<title>Generic XML editor</title>
 				<h:outputStylesheet name="styles.css" />
 </h:head>
 <h:body>
-    Editing: ${editConfig.location}
-	<h:form>
+				<div style="width: 940px;">Editing: ${editConfig.location} <h:link value="Display schema" outcome="schema"
+								target="_blank" style="margin-left:auto; float:right; text-align:right;" /> <h:form>
 								<dg:inputConfigurationXML id="inputXML" value="${editConfig.content}" schemaURLS="${editConfig.schemaURL}"
-												style="width:500px; height:300px;" />
+												cols="120" rows="30" />
 								<br />
 								<h:commandButton value="Save" action="${editConfig.save}" />
-								<h:commandButton value="Display schema" action="${editConfig.displaySchema}" />
-								<h:commandButton value="From scratch" action="${editConfig.reinit}" />
-								<br/><br/>
+								<h:commandButton value="From scratch">
+												<f:ajax render="inputXML" listener="${editConfig.reinit}" />
+								</h:commandButton>
+								<h:commandButton value="Cancel" action="${editConfig.cancel}" />
+								<br />
+								<br />
 								<h:message for="inputXML" />
-				</h:form>
+				</h:form></div>
 </h:body>
 </html>
