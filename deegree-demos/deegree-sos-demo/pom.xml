@@ -48,6 +48,6 @@
         </configuration>
       </plugin>
     </plugins>
-    <finalName>deegree 3 SOS demo</finalName>
+    <finalName>deegree-sos-demo</finalName>
   </build>
 </project>
