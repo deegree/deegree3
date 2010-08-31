@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
+import static org.apache.xerces.xs.XSConstants.DERIVATION_EXTENSION;
+import static org.apache.xerces.xs.XSConstants.DERIVATION_LIST;
+import static org.apache.xerces.xs.XSConstants.DERIVATION_RESTRICTION;
+import static org.apache.xerces.xs.XSConstants.DERIVATION_UNION;
+import static org.apache.xerces.xs.XSConstants.TYPE_DEFINITION;
 import static org.w3c.dom.DOMError.SEVERITY_ERROR;
 import static org.w3c.dom.DOMError.SEVERITY_FATAL_ERROR;
 import static org.w3c.dom.DOMError.SEVERITY_WARNING;
@@ -48,11 +53,13 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.impl.xs.util.StringListImpl;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSNamespaceItemList;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,6 +186,55 @@ public class XSModelAnalyzer {
     }
 
     /**
+     * Returns the subtypes for the given type definition.
+     * 
+     * @param typeDef
+     *            type definition, must not be <code>null</code>
+     * @param namespace
+     *            only type definitions in this namespace are returned, set to <code>null</code> for all namespaces
+     * @param transitive
+     *            if true, also subtypes of subtypes (and so on) are included
+     * @param onlyConcrete
+     *            if true, only concrete (non-abstract) definitions are returned
+     * @return the definition of all sub type definitions in the requested namespace
+     */
+    public List<XSTypeDefinition> getSubtypes( XSTypeDefinition typeDef, String namespace, boolean transitive,
+                                               boolean onlyConcrete ) {
+        Set<QName> typeNames = new HashSet<QName>();
+        XSNamedMap typeDefs = xmlSchema.getComponents( TYPE_DEFINITION );
+        for ( int i = 0; i < typeDefs.getLength(); i++ ) {
+            XSTypeDefinition candidate = (XSTypeDefinition) typeDefs.item( i );
+            if ( namespace == null || namespace.equals( candidate.getNamespace() ) ) {
+                boolean isAbstract = false;
+                if ( candidate instanceof XSComplexTypeDefinition ) {
+                    isAbstract = ( (XSComplexTypeDefinition) candidate ).getAbstract();
+                }
+                if ( !onlyConcrete || !isAbstract ) {
+                    if ( transitive ) {
+                        if ( candidate.derivedFromType( typeDef,
+                                                        (short) ( DERIVATION_RESTRICTION | DERIVATION_EXTENSION
+                                                                  | DERIVATION_UNION | DERIVATION_LIST ) ) ) {
+                            typeNames.add( new QName( candidate.getNamespace(), candidate.getName() ) );
+                        }
+                    } else {
+                        XSTypeDefinition candidateBaseType = candidate.getBaseType();
+                        if ( typeDef.getName().equals( candidateBaseType.getName() )
+                             && typeDef.getNamespace().equals( candidateBaseType.getNamespace() ) ) {
+                            typeNames.add( new QName( candidate.getNamespace(), candidate.getName() ) );
+                        }
+                    }
+                }
+            }
+        }
+
+        List<XSTypeDefinition> subTypes = new ArrayList<XSTypeDefinition>( typeNames.size() );
+        for ( QName name : typeNames ) {
+            subTypes.add( xmlSchema.getTypeDefinition( name.getLocalPart(), name.getNamespaceURI() ) );
+        }
+        return subTypes;
+    }
+
+    /**
      * Returns the declarations of all elements that are substitutable for a given element name.
      * 
      * @param elementName
@@ -227,7 +283,7 @@ public class XSModelAnalyzer {
 
         RedirectingEntityResolver resolver = new RedirectingEntityResolver();
         for ( int i = 0; i < schemaUrls.length; i++ ) {
-            schemaUrls [i] = resolver.redirect( schemaUrls[i] );
+            schemaUrls[i] = resolver.redirect( schemaUrls[i] );
         }
         schemaLoader.setEntityResolver( resolver );
 
