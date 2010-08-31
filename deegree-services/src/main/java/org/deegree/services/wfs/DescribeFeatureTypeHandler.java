@@ -54,6 +54,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -79,7 +80,6 @@ import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapter;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
@@ -133,6 +133,7 @@ class DescribeFeatureTypeHandler {
      * @throws IOException
      *             if an IO-error occurs
      */
+    @SuppressWarnings("unchecked")
     void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException {
 
@@ -154,10 +155,7 @@ class DescribeFeatureTypeHandler {
             writeWFSSchema( writer, request.getVersion(), version );
         } else {
             Map<String, List<FeatureType>> nsToFts = determineRequestedFeatureTypes( request );
-            if ( nsToFts.size() == 0 ) {
-                throw new OWSException( Messages.get( "WFS_NO_FEATURE_TYPES_DEFINED" ),
-                                        ControllerException.NO_APPLICABLE_CODE );
-            } else if ( nsToFts.size() == 1 ) {
+            if ( nsToFts.size() == 1 ) {
                 // specific feature types from single namespace -> one schema document suffices
                 Map<String, String> importMap = buildImportMap( request, nsToFts.keySet() );
                 Map<String, String> prefixToNs = service.getPrefixToNs();
@@ -167,12 +165,13 @@ class DescribeFeatureTypeHandler {
                 exporter.export( writer, nsToFts.get( nsToFts.keySet().iterator().next() ) );
             } else if ( request.getTypeNames() == null && request.getNsBindings() != null ) {
                 // all feature types from a single namespace
-                Map<String, String> importMap = buildImportMap( request, nsToFts.keySet() );
+                String namespace = request.getNsBindings().get( "" );
+                Map<String, String> importMap = buildImportMap( request, Collections.singletonList( namespace ) );
                 Map<String, String> prefixToNs = service.getPrefixToNs();
-                String namespace = nsToFts.keySet().iterator().next();
                 ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, namespace, importMap,
                                                                                         prefixToNs );
-                exporter.export( writer, nsToFts.get( nsToFts.keySet().iterator().next() ) );
+                // TODO remove hack
+                exporter.export( writer, service.getStores()[0].getSchema() );
             } else {
                 // feature types from multiple namespaces -> generate wrapper schema document from all feature stores
                 Set<String> namespaces = new TreeSet<String>();
@@ -406,7 +405,8 @@ class DescribeFeatureTypeHandler {
             } else {
                 String ns = request.getNsBindings().values().iterator().next();
                 LOG.debug( "Describing all feature types in namespace '" + ns + "'." );
-                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes( ns,
+                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes(
+                                                                                                                   ns,
                                                                                                                    true,
                                                                                                                    false );
                 for ( FeatureType ft : nsFts ) {
