@@ -235,9 +235,9 @@
           <Property>TIMESTAMP</Property>
           <DefaultValue>2009-01-01T00:00:00Z</DefaultValue>
           <MultipleValues>true</MultipleValues>
-          <NearestValue>false</NearestValue>
-          <Current>false</Current>
-          <Extent>2009-01-01T00:00:00Z/2009-01-07T00:00:00Z/PTS5</Extent>
+          <NearestValue>true</NearestValue>
+          <Current>true</Current>
+          <Extent>2009-01-01T00:00:00Z/2009-01-07T00:00:00Z/P1D</Extent>
         </Dimension>
         <FeatureStoreId>utah_weather</FeatureStoreId>
         <DirectStyle>
