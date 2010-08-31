@@ -81,6 +81,7 @@ import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+import org.deegree.tools.crs.georeferencing.application.transformation.AffineTransformation;
 import org.deegree.tools.crs.georeferencing.application.transformation.Helmert4Transform;
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod;
@@ -476,6 +477,11 @@ public class Controller {
                     transformationType = TransformationType.Helmert_4;
                     view.activateTransformationCheckbox( selectedCheckbox );
                 }
+                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_AFFINE ) ) {
+
+                    transformationType = TransformationType.Affine;
+                    view.activateTransformationCheckbox( selectedCheckbox );
+                }
 
             }
 
@@ -597,6 +603,12 @@ public class Controller {
                         order = 1;
                         transform = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
                                                            order );
+
+                        break;
+                    case Affine:
+                        order = 1;
+                        transform = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS,
+                                                              targetCRS, order );
 
                         break;
                     }
@@ -785,8 +797,10 @@ public class Controller {
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
                     FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
-                    model = new Scene2DImplShape( fileChooser.getSelectedFilePath(), panel.getG2() );
-                    initGeoReferencingScene( model );
+                    if ( fileChooser.getSelectedFilePath() != null ) {
+                        model = new Scene2DImplShape( fileChooser.getSelectedFilePath(), panel.getG2() );
+                        initGeoReferencingScene( model );
+                    }
 
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_WMS_LAYER ) ) {
@@ -839,6 +853,15 @@ public class Controller {
         }
     }
 
+    /**
+     * 
+     * TODO add class documentation here
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
     class TableChangedEventListener implements TableModelListener {
 
         @Override
@@ -869,7 +892,6 @@ public class Controller {
                         panel.repaint();
                         footPanel.repaint();
 
-                        System.out.println( "[Controller] p.Second: \n" + p.second );
                     }
                 }
 

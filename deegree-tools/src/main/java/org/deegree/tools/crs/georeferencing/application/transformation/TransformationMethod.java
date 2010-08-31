@@ -54,7 +54,9 @@ public interface TransformationMethod {
 
         Helmert_4,
 
-        LeastSquarePolynomial
+        LeastSquarePolynomial,
+
+        Affine
     }
 
     public TransformationType getType();

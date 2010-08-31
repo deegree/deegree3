@@ -158,14 +158,6 @@ public class GRViewerGUI extends JFrame {
         menuFile.add( openWMS );
         menuFile.add( openBuilding );
 
-        //        
-        // checkbox = new CheckBoxList( sArray );
-        // panel.add( checkbox, BorderLayout.CENTER );
-        // panel.add( computeTransform, BorderLayout.SOUTH );
-
-        // menuTransformation.add( checkbox );
-        // menuTransformation.add( computeTransform );
-        // menuTransformation.add( panel );
         editMenuItem = new JMenuItem( MENUITEM_EDIT_OPTIONS );
         menuEdit.add( editMenuItem );
 
