@@ -9,7 +9,7 @@
 	filter: alpha(opacity = 50);
 	-moz-opacity: 0.2;
 	background-color: gray;
-	display: none;
+	display: inline;
 }
 
 #PLEASEWAIT {
@@ -24,7 +24,7 @@
 	background-color: transparent;
 	text-align: center;
 	font-size: 12pt;
-	display: none;
+	display: inline;
 }
 
 /* begin curved div */

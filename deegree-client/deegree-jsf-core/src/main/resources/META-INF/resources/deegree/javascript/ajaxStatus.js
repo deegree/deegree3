@@ -5,13 +5,11 @@ function processAjaxUpdate(msgId, modal) {
 			if (data.status == "begin") {
 				if (modal) {
 					document.body.style.cursor = 'wait'
-					showPleaseWait();
 				}
-				msg.style.display = '';
+				msg.style.display = 'inline';
 			} else if (data.status == "success") {
 				if (modal) {
 					document.body.style.cursor = 'auto'
-					hidePleaseWait();
 				}
 				msg.style.display = 'none';
 			}
@@ -22,14 +20,4 @@ function processAjaxUpdate(msgId, modal) {
 
 function registerAjaxStatus(msgId, modal) {
 	jsf.ajax.addOnEvent(processAjaxUpdate(msgId, modal));
-}
-
-function showPleaseWait() {
-	document.getElementById("PLEASEWAIT").style.display = "inline";
-	document.getElementById("PLEASEWAIT_BG").style.display = "inline";
-}
-
-function hidePleaseWait() {
-	document.getElementById("PLEASEWAIT").style.display = "none";
-	document.getElementById("PLEASEWAIT_BG").style.display = "none";
 }
