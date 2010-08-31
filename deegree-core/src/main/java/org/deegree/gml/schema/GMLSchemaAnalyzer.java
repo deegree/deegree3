@@ -111,6 +111,8 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
 
     private XSElementDeclaration abstractSurfacePatchElementDecl;
 
+    private XSTypeDefinition abstractFeatureElementTypeDecl;
+
     /**
      * Creates a new {@link GMLSchemaAnalyzer} instance for the given GML version and using the specified schemas.
      * 
@@ -129,6 +131,7 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
         case GML_2: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
+            abstractFeatureElementTypeDecl = xmlSchema.getTypeDefinition( "AbstractFeatureType", GML_PRE_32_NS );
             break;
         }
         case GML_30:
@@ -145,6 +148,7 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
             abstractStyleElementDecl = xmlSchema.getElementDeclaration( "_Style", GML_PRE_32_NS );
             abstractCurveSegmentElementDecl = xmlSchema.getElementDeclaration( "_CurveSegment", GML_PRE_32_NS );
             abstractSurfacePatchElementDecl = xmlSchema.getElementDeclaration( "_SurfacePatch", GML_PRE_32_NS );
+            abstractFeatureElementTypeDecl = xmlSchema.getTypeDefinition( "AbstractFeatureType", GML_PRE_32_NS );
             break;
         }
         case GML_32: {
@@ -158,8 +162,9 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
             abstractTimeObjectElementDecl = xmlSchema.getElementDeclaration( "AbstractTimeObject", GML_32_NS );
             abstractCoverageElementDecl = xmlSchema.getElementDeclaration( "AbstractCoverage", GML_32_NS );
             abstractStyleElementDecl = xmlSchema.getElementDeclaration( "AbstractStyle", GML_32_NS );
-            abstractCurveSegmentElementDecl = xmlSchema.getElementDeclaration( "AbstractCurveSegment", GML_PRE_32_NS );
-            abstractSurfacePatchElementDecl = xmlSchema.getElementDeclaration( "AbstractSurfacePatch", GML_PRE_32_NS );
+            abstractCurveSegmentElementDecl = xmlSchema.getElementDeclaration( "AbstractCurveSegment", GML_32_NS );
+            abstractSurfacePatchElementDecl = xmlSchema.getElementDeclaration( "AbstractSurfacePatch", GML_32_NS );
+            abstractFeatureElementTypeDecl = xmlSchema.getTypeDefinition( "AbstractFeatureType", GML_32_NS );
             break;
         }
         }
@@ -240,6 +245,10 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
 
     public List<XSElementDeclaration> getFeatureElementDeclarations( String namespace, boolean onlyConcrete ) {
         return getSubstitutions( abstractFeatureElementDecl, namespace, true, onlyConcrete );
+    }
+
+    public List<XSTypeDefinition> getFeatureTypeDefinitions( String namespace, boolean onlyConcrete ) {
+        return getSubtypes( abstractFeatureElementTypeDecl, namespace, true, onlyConcrete );
     }
 
     public List<XSElementDeclaration> getFeatureCollectionElementDeclarations( String namespace, boolean onlyConcrete ) {

@@ -46,6 +46,7 @@ import javax.xml.namespace.QName;
 import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.junit.Test;
@@ -87,6 +88,10 @@ public class GMLSchemaAnalyzerTest {
         List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, true );
         for ( XSElementDeclaration geometryElementDecl : geometryElementDecls ) {
             LOG.debug( "- Geometry type: " + geometryElementDecl.getName() );
+        }
+        List<XSTypeDefinition> featureTypeDefinitions = analyzer.getFeatureTypeDefinitions( null, true );
+        for ( XSTypeDefinition xsTypeDefinition : featureTypeDefinitions ) {
+            LOG.debug( "- Feature type definition: " + xsTypeDefinition.getName() );
         }
     }
 

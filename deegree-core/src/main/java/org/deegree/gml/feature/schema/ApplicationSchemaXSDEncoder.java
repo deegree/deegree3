@@ -237,6 +237,11 @@ public class ApplicationSchemaXSDEncoder {
         // special treatment needed for GML namespaces
         nsToPrefix.put( GMLNS, "gml" );
         nsToPrefix.put( GML3_2_NS, "gml" );
+        
+
+        // TODO get rid of these CITE hacks
+        exportedElements.add( "SimpleFeatureCollection" );
+        exportedTypes.add( "SimpleFeatureCollectionType" );
     }
 
     private void addNsBinding( String prefix, String ns ) {
@@ -365,7 +370,7 @@ public class ApplicationSchemaXSDEncoder {
         }
 
         exportedElements.add( ft.getName().getLocalPart() );
-        
+
         // TODO find a better way to do prevent re-exporting of the type
         exportedTypes.add( ft.getName().getLocalPart() + "Type" );
 
@@ -385,8 +390,9 @@ public class ApplicationSchemaXSDEncoder {
         writer.writeStartElement( XSNS, "element" );
         writer.writeAttribute( "name", ft.getName().getLocalPart() );
 
-        // only export type name if derived feature type exists (otherwise export type inline)
-        if ( hasSubTypes ) {
+        // export type name
+        QName typeName = getTypeName( ft, hasSubTypes );
+        if ( typeName != null ) {
             String prefix = getPrefix( targetNs );
             writer.writeAttribute( "type", prefix + ":" + ft.getName().getLocalPart() + "Type" );
         }
@@ -406,64 +412,86 @@ public class ApplicationSchemaXSDEncoder {
             }
         }
 
-        // end 'xs:element' here if derived feature types exists (type will be exported separately)
-        if ( hasSubTypes ) {
+        // end 'xs:element' here if type will be exported separately
+        if ( typeName != null ) {
             writer.writeEndElement();
         }
 
         // ai: not everytime one should write the complexType definition; need to check if the type extends another type
         // from the same namespace
-        writer.writeStartElement( XSNS, "complexType" );
-        if ( hasSubTypes ) {
-            writer.writeAttribute( "name", ft.getName().getLocalPart() + "Type" );
-        }
-        if ( ft.isAbstract() ) {
-            writer.writeAttribute( "abstract", "true" );
-        }
+        if ( typeName == null || typeName.getNamespaceURI().equals( targetNs ) ) {
+            writer.writeStartElement( XSNS, "complexType" );
+            if ( typeName != null ) {
+                writer.writeAttribute( "name", typeName.getLocalPart() );
+            }
+            if ( ft.isAbstract() ) {
+                writer.writeAttribute( "abstract", "true" );
+            }
 
-        writer.writeStartElement( XSNS, "complexContent" );
-        writer.writeStartElement( XSNS, "extension" );
+            writer.writeStartElement( XSNS, "complexContent" );
+            writer.writeStartElement( XSNS, "extension" );
 
-        if ( parentFt != null ) {
-            String prefix = getPrefix( parentFt.getName().getNamespaceURI() );
-            writer.writeAttribute( "base", prefix + ":" + parentFt.getName().getLocalPart() + "Type" );
-        } else {
-            if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
-                writer.writeAttribute( "base", "gml:AbstractFeatureCollectionType" );
+            if ( parentFt != null ) {
+                String prefix = getPrefix( parentFt.getName().getNamespaceURI() );
+                writer.writeAttribute( "base", prefix + ":" + parentFt.getName().getLocalPart() + "Type" );
             } else {
-                writer.writeAttribute( "base", "gml:AbstractFeatureType" );
-            }
-        }
-
-        writer.writeStartElement( XSNS, "sequence" );
-
-        // TODO check for GML 2-only properties (gml:pointProperty, ...) and export as "app:gml2PointProperty" for GML 3
-
-        // export property definitions (only for non-GML ones)
-        if ( schema != null ) {
-            for ( PropertyType pt : schema.getNewPropertyDeclarations( ft ) ) {
-                if ( pt == null ) {
-                    LOG.warn( "Property type null inside " + ft.getName() );
-                    continue;
+                if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
+                    writer.writeAttribute( "base", "gml:AbstractFeatureCollectionType" );
+                } else {
+                    writer.writeAttribute( "base", "gml:AbstractFeatureType" );
                 }
-                LOG.debug( "Exporting property type " + pt );
-                export( writer, pt );
             }
+
+            writer.writeStartElement( XSNS, "sequence" );
+
+            // TODO check for GML 2-only properties (gml:pointProperty, ...) and export as "app:gml2PointProperty" for
+            // GML 3
+
+            // export property definitions (only for non-GML ones)
+            if ( schema != null ) {
+                for ( PropertyType pt : schema.getNewPropertyDeclarations( ft ) ) {
+                    if ( pt == null ) {
+                        LOG.warn( "Property type null inside " + ft.getName() );
+                        continue;
+                    }
+                    LOG.debug( "Exporting property type " + pt );
+                    export( writer, pt );
+                }
+            }
+
+            // end 'xs:sequence'
+            writer.writeEndElement();
+            // end 'xs:extension'
+            writer.writeEndElement();
+            // end 'xs:complexContent'
+            writer.writeEndElement();
+            // end 'xs:complexType'
+            writer.writeEndElement();
         }
 
-        // end 'xs:sequence'
-        writer.writeEndElement();
-        // end 'xs:extension'
-        writer.writeEndElement();
-        // end 'xs:complexContent'
-        writer.writeEndElement();
-        // end 'xs:complexType'
-        writer.writeEndElement();
-
-        if ( !hasSubTypes ) {
+        if ( typeName == null ) {
             // end 'xs:element'
             writer.writeEndElement();
         }
+    }
+
+    private QName getTypeName( FeatureType ft, boolean hasSubTypes ) {
+        QName elName = ft.getName();
+        QName typeName = null;
+        GMLSchemaAnalyzer analyzer = ft.getSchema().getXSModel();
+        if ( analyzer == null ) {
+            if ( hasSubTypes ) {
+                typeName = new QName( elName.getNamespaceURI(), elName.getLocalPart() + "Type" );
+            }
+        } else {
+            XSElementDeclaration elDecl = analyzer.getXSModel().getElementDeclaration( elName.getLocalPart(),
+                                                                                       elName.getNamespaceURI() );
+            XSTypeDefinition typeDef = elDecl.getTypeDefinition();
+            if ( !typeDef.getAnonymous() ) {
+                typeName = new QName( typeDef.getNamespace(), typeDef.getName() );
+            }
+        }
+        return typeName;
     }
 
     private void export( XMLStreamWriter writer, PropertyType pt )
@@ -713,7 +741,8 @@ public class ApplicationSchemaXSDEncoder {
             derivationBegin = true;
             break;
         case DERIVATION_LIST:
-            LOG.warn( "Exporting derivation by list is not implemented. Occured for complex element " + complex.getName() );
+            LOG.warn( "Exporting derivation by list is not implemented. Occured for complex element "
+                      + complex.getName() );
             break;
         case DERIVATION_NONE:
             // nothing to do, handled above
@@ -723,17 +752,19 @@ public class ApplicationSchemaXSDEncoder {
                 if ( !contentTypeBegin ) {
                     writer.writeStartElement( "xs", "complexContent", XSNS );
                 }
-                contentTypeBegin = true;                
+                contentTypeBegin = true;
                 writer.writeStartElement( "xs", "restriction", XSNS );
                 writer.writeAttribute( "base", prefix + base.getName() );
                 derivationBegin = true;
             }
             break;
         case DERIVATION_SUBSTITUTION:
-            LOG.warn( "Exporting derivation by substitution is not implemented. Occured for complex element " + complex.getName() );
+            LOG.warn( "Exporting derivation by substitution is not implemented. Occured for complex element "
+                      + complex.getName() );
             break;
         case DERIVATION_UNION:
-            LOG.warn( "Exporting derivation by union is not implemented. Occured for complex element " + complex.getName() );
+            LOG.warn( "Exporting derivation by union is not implemented. Occured for complex element "
+                      + complex.getName() );
             break;
         }
 
@@ -829,7 +860,7 @@ public class ApplicationSchemaXSDEncoder {
                             throws XMLStreamException {
 
         LOG.debug( "Exporting generic element " + element.getNamespace() + "/" + element.getName() );
-        
+
         writer.writeStartElement( "xs", "element", XSNS );
         writer.writeAttribute( "name", element.getName() );
         if ( minOccurs != 1 ) {
