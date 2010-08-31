@@ -107,7 +107,7 @@ public class FormatHelper {
      * 
      * @param input
      *            - {@link ComplexInput}, can be created with the {@link ProcessletInputs}.
-     * @return It's the {@link GMLVersion} of the input data.
+     * @return The {@link GMLVersion} of the input data.
      */
     public static GMLVersion determineGMLVersion( ComplexInput input ) {
         GMLSchema schema = ALL_SCHEMAS.get( input.getSchema() );
@@ -126,7 +126,7 @@ public class FormatHelper {
      * 
      * @param output
      *            - {@link ComplexOutput}, can be created with the {@link ProcessletOutputs}.
-     * @return It's the {@link GMLVersion} of the output data.
+     * @return The {@link GMLVersion} of the output data.
      */
     public static GMLVersion determineGMLVersion( ComplexOutput output ) {
         GMLSchema schema = ALL_SCHEMAS.get( output.getRequestedSchema() );
@@ -145,7 +145,7 @@ public class FormatHelper {
      * 
      * @param input
      *            - {@link ComplexInput}, can be created with the {@link ProcessletInputs}.
-     * @return It's the {@link GMLType} of the input data.
+     * @return The {@link GMLType} of the input data.
      */
     public static GMLType determineGMLType( ComplexInput input ) {
         GMLSchema schema = ALL_SCHEMAS.get( input.getSchema() );
@@ -164,7 +164,7 @@ public class FormatHelper {
      * 
      * @param output
      *            - {@link ComplexOutput}, can be created with the {@link ProcessletOutputs}
-     * @return It's the GML {@link GMLType} of the output data.
+     * @return The GML {@link GMLType} of the output data.
      */
     public static GMLType determineGMLType( ComplexOutput output ) {
         GMLSchema schema = ALL_SCHEMAS.get( output.getRequestedSchema() );
@@ -181,7 +181,7 @@ public class FormatHelper {
     /**
      * Returns the {@link ComplexFormatType} of the default input schema.
      * 
-     * @return {@link ComplexFormatType} of the default input schema
+     * @return The {@link ComplexFormatType} of the default input schema
      */
     public static ComplexFormatType getDefaultInputFormat() {
 
@@ -196,7 +196,7 @@ public class FormatHelper {
     /**
      * Returns the {@link ComplexFormatType} of the default output schema.
      * 
-     * @return {@link ComplexFormatType} of the default output schema
+     * @return The {@link ComplexFormatType} of the default output schema
      */
     public static ComplexFormatType getDefaultOutputFormat() {
         return getDefaultInputFormat();
@@ -205,7 +205,7 @@ public class FormatHelper {
     /**
      * Returns the {@link ComplexFormatType}s of all input schemas without the default schema.
      * 
-     * @return {@link ComplexFormatType} of all input schemas without the default schema.
+     * @return The {@link ComplexFormatType} of all input schemas without the default schema.
      */
     public static LinkedList<ComplexFormatType> getInputFormatsWithoutDefault() {
 
@@ -233,7 +233,7 @@ public class FormatHelper {
     /**
      * Returns the {@link ComplexFormatType}s of all output schemas without the default schema.
      * 
-     * @return {@link ComplexFormatType} of all output schemas without the default schema.
+     * @return The {@link ComplexFormatType} of all output schemas without the default schema.
      */
     public static LinkedList<ComplexFormatType> getOutputFormatsWithoutDefault() {
         return getInputFormatsWithoutDefault();
@@ -244,7 +244,7 @@ public class FormatHelper {
      * 
      * @param schema
      *            - URL schema.
-     * @return {@link GMLSchema} based on the schema URL
+     * @return The {@link GMLSchema} based on the schema URL
      */
     public static GMLSchema getGMLSchema( String schema ) {
         GMLSchema foundSchema = ALL_SCHEMAS.get( schema );
