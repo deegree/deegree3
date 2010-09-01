@@ -53,8 +53,6 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-@ManagedBean
-@ApplicationScoped
 public class StyleConfigManager extends XMLConfigManager<StyleConfig> {
 
     private static final Logger LOG = LoggerFactory.getLogger( StyleConfigManager.class );

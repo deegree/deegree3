@@ -9,28 +9,21 @@
 </h:head>
 <h:body>
   <pre><h:outputText value="#{applicationBean.logo}" /></pre>
+  <h:outputText value="...has been successfully installed on this server." />
+  <br />
+  <br />
+  [<a href="console/client/client.html" target="_blank">Generic OGC client</a>]
+  [<a href="console/wms/wms.html" target="_blank">OpenLayers WMS client</a>]
+  [<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="deegree Wiki" />]  
 
   <h:panelGroup rendered="#{logBean.loggedIn}">
     <h:form id="reloadForm">
-      <h:outputText value="...has been successfully installed on this server." />
       <br />
-      <br />
-
-      [<a href="console/client/client.html" target="_blank">Generic OGC client</a>]
-      [<a href="console/wms/wms.html" target="_blank">OpenLayers WMS client</a>]
-      [<dg:externalLink target="_blank" href="http://wiki.deegree.org" title="deegree Wiki" />]
-
-      <br />
-      <br />
-      <br />
-
       <h:panelGroup rendered="#{configManager.pendingChanges}">
-        <div class="attention">
-          <h:outputText value="#{configManager.lastMessage}"/>
-          [<h:commandLink value="Apply changes" action="#{configManager.applyChanges}" style="margin:0px 10px;">
-              <f:ajax execute="@this" render="@all" />
-           </h:commandLink>]
-        </div>
+        <div class="attention"><h:outputText value="#{configManager.lastMessage}" /> [<h:commandLink
+          value="Apply changes" action="#{configManager.applyChanges}" style="margin:0px 10px;">
+          <f:ajax execute="@this" render="@all" />
+        </h:commandLink>]</div>
       </h:panelGroup>
       <h:panelGroup rendered="#{!configManager.pendingChanges}">
         <h:outputText value="#{configManager.lastMessage}" />
@@ -81,7 +74,7 @@
       <h:form>
       [<h:commandLink value="Edit metadata" action="#{configManager.serviceMetadataConfig.edit}" />]
       [<h:commandLink value="Edit global config" action="#{configManager.serviceMainConfig.edit}" />]
-												<br />
+        <br />
         <br />
         <ui:repeat value="#{configManager.serviceManager.configs}" var="config">
           <h:outputText value="- #{config.id}:#{config.status}" />
@@ -93,7 +86,7 @@
               <h:outputText value="Capabilities" />
             </h:outputLink>]
 		</h:panelGroup>
-        <br />
+          <br />
         </ui:repeat>
       </h:form>
     </dgc:collapsiblePanel>
@@ -102,21 +95,18 @@
       <f:facet name="header">
       ------------------------------------------------------------------------------  
       <br />
-       Render styles
+       Render style definitions
       <br />
       ------------------------------------------------------------------------------
       </f:facet>
       <h:form>
         <ui:repeat value="#{configManager.styleManager.configs}" var="config">
-          <h:outputText value="- #{config.id}: #{config.status}" />
-        [<h:commandLink rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}" />
-          <h:commandLink rendered="#{config.deactivated}" value="Activate" action="#{config.activate}" />]
-        [<h:commandLink value="Edit" action="#{config.edit}" />]                
+          <h:outputText value="- #{config.id}:#{config.status}" />
+          [<h:commandLink value="Edit" action="#{config.edit}" />]                
         <br />
         </ui:repeat>
-        
-        Deletion / adding not implemented in GUI yet.
-
+        <br />
+        Deletion/adding of style definitions not implemented in GUI yet.
       </h:form>
     </dgc:collapsiblePanel>
 

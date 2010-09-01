@@ -48,8 +48,6 @@ import org.deegree.console.XMLConfigManager;
  * 
  * @version $Revision: $, $Date: $
  */
-@ManagedBean
-@ApplicationScoped
 public class ServiceConfigManager extends XMLConfigManager<ServiceConfig> {
 
     @Override

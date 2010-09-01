@@ -35,7 +35,6 @@
 package org.deegree.console.featurestore;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -45,8 +44,8 @@ import java.util.TreeSet;
 
 import javax.faces.context.FacesContext;
 
-import org.deegree.console.SQLExecution;
 import org.deegree.console.ManagedXMLConfig;
+import org.deegree.console.SQLExecution;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreProvider;

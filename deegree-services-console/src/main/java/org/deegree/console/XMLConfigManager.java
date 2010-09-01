@@ -73,7 +73,6 @@ public abstract class XMLConfigManager<T extends ManagedXMLConfig> {
     }
 
     public void scan() {
-        System.out.println( "Scanning: " + this );
         idToConfig.clear();
         File wsDir = OGCFrontController.getServiceWorkspace().getLocation();
         File baseDir = new File( wsDir, getBaseDir() );

@@ -49,8 +49,6 @@ import org.deegree.console.XMLConfigManager;
  * 
  * @version $Revision: $, $Date: $
  */
-@ManagedBean
-@ApplicationScoped
 public class ConnectionConfigManager extends XMLConfigManager<ConnectionConfig> {
 
     @Override
