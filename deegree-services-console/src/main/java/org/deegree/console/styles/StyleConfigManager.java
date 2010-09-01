@@ -71,15 +71,15 @@ public class StyleConfigManager extends XMLConfigManager<StyleConfig> {
     protected void add( String id, String namespace, boolean ignore ) {
 
         String schema = null;
-        if ( namespace.equals( SE_NAMESPACE ) ) {
-            schema = SE_SCHEMA;
-        } else if ( namespace.equals( SLD_NAMESPACE ) ) {
-            schema = SLD_SCHEMA;
-        }
+//        if ( namespace.equals( SE_NAMESPACE ) ) {
+//            schema = SE_SCHEMA;
+//        } else if ( namespace.equals( SLD_NAMESPACE ) ) {
+//            schema = SLD_SCHEMA;
+//        }
 
         // TODO still using null
         
-        if ( schema != null ) {
+//        if ( schema != null ) {
             StyleConfig config = null;
             try {
                 config = new StyleConfig( id, !ignore, ignore, this, new URL( schema ) );
@@ -88,9 +88,9 @@ public class StyleConfigManager extends XMLConfigManager<StyleConfig> {
                 e.printStackTrace();
             }
             idToConfig.put( id, config );
-        } else {
-            LOG.warn( "Skipping style file with id '" + id + "' -- neither in SLD nor in SE namespace." );
-        }
+//        } else {
+//            LOG.warn( "Skipping style file with id '" + id + "' -- neither in SLD nor in SE namespace." );
+//        }
     }
 
     @Override
