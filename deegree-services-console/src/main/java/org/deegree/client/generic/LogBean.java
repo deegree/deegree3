@@ -35,9 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.generic;
 
+import java.io.Serializable;
+
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
 /**
@@ -49,8 +51,10 @@ import javax.faces.context.FacesContext;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
-@SessionScoped
-public class LogBean {
+@RequestScoped
+public class LogBean implements Serializable {
+
+    private static final long serialVersionUID = -4865071415988778817L;
 
     private static String serverName;
 
