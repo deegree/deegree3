@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.memory;
 
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -102,10 +103,9 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
             Unmarshaller u = jc.createUnmarshaller();
             MemoryFeatureStoreConfig config = (MemoryFeatureStoreConfig) u.unmarshal( configURL );
 
+            ApplicationSchema schema = null;
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
-
-            ApplicationSchema schema = null;
             try {
                 String[] schemaURLs = new String[config.getGMLSchemaFileURL().size()];
                 int i = 0;
@@ -115,10 +115,16 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                     // TODO what about different versions at the same time?
                     gmlVersionType = jaxbSchemaURL.getGmlVersion();
                 }
-                ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
-                                                                                       GMLVersion.valueOf( gmlVersionType.name() ),
-                                                                                       getHintMap( config.getNamespaceHint() ),
-                                                                                       schemaURLs );
+
+                ApplicationSchemaXSDDecoder decoder = null;
+                if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
+                    File file = new File( new URL( schemaURLs[0] ).toURI() );
+                    decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                               getHintMap( config.getNamespaceHint() ), file );
+                } else {
+                    decoder = new ApplicationSchemaXSDDecoder( GMLVersion.valueOf( gmlVersionType.name() ),
+                                                               getHintMap( config.getNamespaceHint() ), schemaURLs );
+                }
                 schema = decoder.extractFeatureTypeSchema();
             } catch ( Exception e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
