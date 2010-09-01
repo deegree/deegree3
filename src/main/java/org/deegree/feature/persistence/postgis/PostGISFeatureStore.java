@@ -309,10 +309,10 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         sql.append( column );
         sql.append( ") FROM " );
         sql.append( blobMapping.getTable() );
-        sql.append (" WHERE ");
+        sql.append( " WHERE " );
         sql.append( blobMapping.getTypeColumn() );
-        sql.append ("=");
-        sql.append (ftId);
+        sql.append( "=" );
+        sql.append( ftId );
 
         Connection conn = null;
         Statement stmt = null;
@@ -577,17 +577,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
                 String msg = "Feature type '" + ftName + "' is not served by this feature store.";
                 throw new FeatureStoreException( msg );
             }
-            Connection conn = null;
-            try {
-                conn = ConnectionManager.getConnection( jdbcConnId );
-                result = queryByOperatorFilter( conn, query, ftName, (OperatorFilter) filter );
-            } catch ( SQLException e ) {
-                throw new FeatureStoreException( e.getMessage(), e );
-            } finally {
-                if ( conn != null ) {
-                    close( conn );
-                }
-            }
+            result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter );
         } else {
             // must be an id filter based query
             if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
@@ -662,12 +652,13 @@ public class PostGISFeatureStore implements SQLFeatureStore {
      * @return
      * @throws FeatureStoreException
      */
-    FeatureResultSet queryByOperatorFilter( Connection conn, Query query, QName ftName, OperatorFilter filter )
+    FeatureResultSet queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
                             throws FeatureStoreException {
 
         LOG.debug( "Performing query by operator filter" );
 
         PostGISWhereBuilder wb = null;
+        Connection conn = null;
         FeatureResultSet result = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -675,6 +666,8 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         try {
             FeatureType ft = schema.getFeatureType( ftName );
             FeatureTypeMapping ftMapping = getMapping( ftName );
+
+            conn = ConnectionManager.getConnection( jdbcConnId );
 
             PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( schema, ft, ftMapping, this );
             wb = new PostGISWhereBuilder( pgMapping, filter, query.getSortProperties(), useLegacyPredicates );
@@ -684,8 +677,6 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             BlobMapping blobMapping = schema.getBlobMapping();
             String ftTableAlias = wb.getAliasManager().getRootTableAlias();
             String blobTableAlias = wb.getAliasManager().generateNew();
-
-            conn = ConnectionManager.getConnection( jdbcConnId );
 
             StringBuilder sql = new StringBuilder( "SELECT " );
             if ( blobMapping != null ) {
@@ -854,7 +845,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             }
             result = new IteratorResultSet( new PostGISResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, null, LOG );
+            close( rs, stmt, conn, LOG );
             String msg = "Error performing query by operator filter: " + e.getMessage();
             LOG.info( msg, e );
             throw new FeatureStoreException( msg, e );

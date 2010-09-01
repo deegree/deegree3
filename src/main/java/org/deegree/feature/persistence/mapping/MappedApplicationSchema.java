@@ -124,7 +124,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
         short ftId = 0;
         for ( String ftName : ftNames.keySet() ) {
             QName qName = ftNames.get( ftName );
-            LOG.info( "Feature type [{}]:'{}'", ftId, qName );
+            LOG.debug( "Feature type [{}]:'{}'", ftId, qName );
             ftNameToId.put( qName, ftId );
             ftIdToName.put( ftId++, qName );
         }
@@ -176,8 +176,8 @@ public class MappedApplicationSchema extends ApplicationSchema {
     public QName getFtName( short ftId ) {
         return ftIdToName.get( ftId );
     }
-    
-    public short getFts () {
+
+    public short getFts() {
         return (short) ftIdToName.size();
     }
 
