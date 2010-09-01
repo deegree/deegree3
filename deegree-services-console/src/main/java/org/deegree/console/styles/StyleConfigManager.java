@@ -70,7 +70,7 @@ public class StyleConfigManager extends XMLConfigManager<StyleConfig> {
     @Override
     protected void add( String id, String namespace, boolean ignore ) {
 
-        String schema = null;
+        URL schema = null;
 //        if ( namespace.equals( SE_NAMESPACE ) ) {
 //            schema = SE_SCHEMA;
 //        } else if ( namespace.equals( SLD_NAMESPACE ) ) {
@@ -82,7 +82,7 @@ public class StyleConfigManager extends XMLConfigManager<StyleConfig> {
 //        if ( schema != null ) {
             StyleConfig config = null;
             try {
-                config = new StyleConfig( id, !ignore, ignore, this, new URL( schema ) );
+                config = new StyleConfig( id, !ignore, ignore, this, schema );
             } catch ( MalformedURLException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
