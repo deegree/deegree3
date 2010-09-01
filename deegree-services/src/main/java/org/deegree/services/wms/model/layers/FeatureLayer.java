@@ -183,11 +183,15 @@ public class FeatureLayer extends Layer {
 
     @Override
     public Envelope getBbox() {
+        if ( datastore == null || !datastore.isAvailable() ) {
+            return null;
+        }
+
         // always use up-to-date envelope
         Envelope bbox = null;
         ApplicationSchema schema = datastore.getSchema();
 
-        for ( FeatureType t : schema.getFeatureTypes() ) {
+        for ( FeatureType t : schema.getFeatureTypes( null, false, false ) ) {
             Envelope thisBox = null;
             try {
                 thisBox = datastore.getEnvelope( t.getName() );
@@ -322,9 +326,9 @@ public class FeatureLayer extends Layer {
     @Override
     public boolean isAvailable() {
         if ( datastore == null ) {
-            LOG.debug( "Layer '{}' is not available, since its data store could not be loaded." );
+            LOG.debug( "Layer '{}' is not available, since its data store could not be loaded.", getName() );
         } else if ( !datastore.isAvailable() ) {
-            LOG.debug( "Layer '{}' is not available, since its data store is unavailable." );
+            LOG.debug( "Layer '{}' is not available, since its data store is unavailable.", getName() );
         }
         return datastore != null && datastore.isAvailable();
     }
