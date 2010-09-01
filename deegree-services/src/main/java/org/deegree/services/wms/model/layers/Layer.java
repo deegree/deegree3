@@ -297,28 +297,28 @@ public abstract class Layer {
 
         LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = s.evaluate( f );
         for ( Triple<Styling, LinkedList<Geometry>, String> evald : evalds ) {
-            boolean invisible = true;
+            // boolean invisible = true;
 
-            inner: for ( Geometry g : evald.second ) {
-                if ( g instanceof Point || g instanceof MultiPoint ) {
-                    invisible = false;
-                    break inner;
-                }
-                if ( !( g.getEnvelope().getSpan0() < resolution && g.getEnvelope().getSpan1() < resolution ) ) {
-                    invisible = false;
-                    break inner;
-                }
-            }
+            // inner: for ( Geometry g : evald.second ) {
+            // if ( g instanceof Point || g instanceof MultiPoint ) {
+            // invisible = false;
+            // break inner;
+            // }
+            // if ( !( g.getEnvelope().getSpan0() < resolution && g.getEnvelope().getSpan1() < resolution ) ) {
+            // invisible = false;
+            // break inner;
+            // }
+            // }
 
-            if ( !invisible ) {
-                if ( evald.first instanceof TextStyling ) {
-                    textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );
-                } else {
-                    renderer.render( evald.first, evald.second );
-                }
+            // if ( !invisible ) {
+            if ( evald.first instanceof TextStyling ) {
+                textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );
             } else {
-                LOG.debug( "Skipping invisible feature." );
+                renderer.render( evald.first, evald.second );
             }
+            // } else {
+            // LOG.debug( "Skipping invisible feature." );
+            // }
         }
     }
 
