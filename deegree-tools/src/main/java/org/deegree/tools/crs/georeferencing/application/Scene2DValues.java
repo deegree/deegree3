@@ -41,6 +41,8 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
+import jj2000.j2k.NotImplementedError;
+
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -264,6 +266,84 @@ public class Scene2DValues {
     }
 
     /**
+     * Sets the points <i>xCoord</i> and <i>yCoord</i> as the centroid of the envelope with specified spans in x- and
+     * y-direction. These parameters will be corrected if there is a mismatch regarding to the proportion of the
+     * requested envelope.
+     * 
+     * @param xCoord
+     *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * @param yCoord
+     *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * @param spanX
+     *            x-dimension that should be the width of the envelope, if not specified use
+     *            {@link #setCentroidWorldEnvelopePosition(double, double)} instead.
+     * @param spanY
+     *            y-dimension that should be the height of the envelope, if not specified use
+     *            {@link #setCentroidWorldEnvelopePosition(double, double)} instead.
+     */
+    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, double spanX, double spanY,
+                                                  PointType type ) {
+
+        double halfSpanXWorld;
+        double halfSpanYWorld;
+
+        switch ( type ) {
+        case GeoreferencedPoint:
+            if ( spanX != -1 && spanY != -1 ) {
+                if ( ratioGeoref < 1 ) {
+                    halfSpanYWorld = spanY / 2;
+                    halfSpanXWorld = halfSpanYWorld * ratioGeoref;
+
+                } else {
+
+                    halfSpanXWorld = spanX / 2;
+                    halfSpanYWorld = halfSpanXWorld * 1 / ratioGeoref;
+
+                }
+
+            } else {
+                halfSpanXWorld = this.envelopeGeoref.getSpan0() / 2;
+                halfSpanYWorld = this.envelopeGeoref.getSpan1() / 2;
+
+            }
+
+            double minX = xCoord - halfSpanXWorld;
+            double minY = yCoord - halfSpanYWorld;
+            double maxX = xCoord + halfSpanXWorld;
+            double maxY = yCoord + halfSpanYWorld;
+            envelopeGeoref = geom.createEnvelope( minX, minY, maxX, maxY, crs );
+
+            System.out.println( "[Scene2DValues] newCenteredEnvelope: " + envelopeGeoref );
+            break;
+        case FootprintPoint:
+            // halfSpanXWorld = spanX / 2;
+            // halfSpanYWorld = spanY / 2;
+            // double minXF = xCoord - halfSpanXWorld;
+            // double minYF = yCoord - halfSpanYWorld;
+            // double maxYF = yCoord + halfSpanYWorld;
+            // double maxXF = xCoord + halfSpanXWorld;
+            // Envelope e = geom.createEnvelope( minXF, minYF, maxXF, maxYF, envelopeFootprint.getCoordinateSystem() );
+            // transformProportionFootprint( e );
+            // break;
+            throw new NotImplementedError();
+        }
+    }
+
+    /**
+     * 
+     * Sets the point as the centroid of the envelope.
+     * 
+     * @param xCoord
+     *            x-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * @param yCoord
+     *            y-coordiante in worldCoordinate-representation, not be <Code>null</Code>.
+     * 
+     */
+    public void setCentroidWorldEnvelopePosition( double xCoord, double yCoord, PointType type ) {
+        this.setCentroidWorldEnvelopePosition( xCoord, yCoord, -1, -1, type );
+    }
+
+    /**
      * Computes the translation of the envelope for the georeferencing scene or the footprint scene.
      * 
      * @param mouseChange
@@ -348,7 +428,7 @@ public class Scene2DValues {
      *            in worldCoordinates where the zoom should orient on, not <Code>null</Code>
      * @return the zoomed envelope.
      */
-    private Envelope createZoomedEnv( Envelope env, double newSize, AbstractGRPoint center ) {
+    public Envelope createZoomedEnv( Envelope env, double newSize, AbstractGRPoint center ) {
 
         Point2d percentP = computePercentWorld( env, center );
         double spanX = env.getSpan0() * newSize;

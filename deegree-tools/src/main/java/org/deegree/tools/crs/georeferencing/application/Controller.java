@@ -36,6 +36,7 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import static java.lang.Math.max;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.JTEXTFIELD_COORDINATE_JUMPER;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_HELMERT;
 
 import java.awt.Rectangle;
@@ -43,6 +44,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -61,6 +64,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JTree;
 import javax.swing.event.TableModelEvent;
@@ -92,7 +96,7 @@ import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 import org.deegree.tools.crs.georeferencing.communication.checkboxlist.CheckboxListTransformation;
 import org.deegree.tools.crs.georeferencing.communication.dialog.ButtonPanel;
-import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperSpinnerDialog;
+import org.deegree.tools.crs.georeferencing.communication.dialog.coordinatejump.CoordinateJumperTextfieldDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.error.ErrorDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.OpenWMS;
 import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.WMSParameterChooser;
@@ -113,6 +117,7 @@ import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.Scene2DImplShape;
 import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
 import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
+import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
@@ -188,7 +193,8 @@ public class Controller {
 
     private OptionDialog optionDialog;
 
-    private CoordinateJumperSpinnerDialog jumperDialog;
+    // private CoordinateJumperSpinnerDialog jumperDialog;
+    private CoordinateJumperTextfieldDialog jumperDialog;
 
     private OpenWMS wmsStartDialog;
 
@@ -311,8 +317,9 @@ public class Controller {
         } else if ( t == buttonCoord ) {
             buttonCoord.setSelected( checkSelected );
             if ( checkSelected == true ) {
-                jumperDialog = new CoordinateJumperSpinnerDialog( view );
-                // jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
+                // jumperDialog = new CoordinateJumperSpinnerDialog( view );
+                jumperDialog = new CoordinateJumperTextfieldDialog( view );
+                jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
                 jumperDialog.addListeners( new ButtonListener() );
                 jumperDialog.setVisible( true );
             }
@@ -423,14 +430,9 @@ public class Controller {
      */
     private void initGeoReferencingScene( Scene2D scene2d ) {
         mouseGeoRef = new GeoReferencedMouseModel();
-        // if ( filePath == null ) {
-        //
-        // init();
-        // targetCRS = sceneValues.getCrs();
-        //
-        // } else {
+        scene2d.init( sceneValues );
         init();
-        // }
+
         panel.addScene2DMouseListener( new Scene2DMouseListener() );
         panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
         panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
@@ -481,6 +483,16 @@ public class Controller {
 
                     transformationType = TransformationType.Affine;
                     view.activateTransformationCheckbox( selectedCheckbox );
+                }
+
+            }
+            if ( source instanceof JTextField ) {
+                JTextField tF = (JTextField) source;
+                if ( tF.getName().startsWith( JTEXTFIELD_COORDINATE_JUMPER ) ) {
+                    System.out.println( "[Controller] put something in the textfield: " + tF.getText() );
+
+                    fireTextfieldJumperDialog();
+
                 }
 
             }
@@ -686,37 +698,7 @@ public class Controller {
                         }
                     } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
 
-                        // try {
-                        // textFieldModel.setTextInput( jumperDialog.getCoordinateJumper().getText() );
-                        // if ( sceneValues.getTransformedBounds() != null ) {
-                        // System.out.println( textFieldModel.toString() );
-                        // if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
-                        //
-                        // sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
-                        // textFieldModel.getyCoordiante(),
-                        // textFieldModel.getSpanX(),
-                        // textFieldModel.getSpanY(),
-                        // PointType.GeoreferencedPoint );
-                        //
-                        // } else {
-                        // sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
-                        // textFieldModel.getyCoordiante(),
-                        // PointType.GeoreferencedPoint );
-                        //
-                        // }
-                        // jumperDialog.setVisible( false );
-                        // selectedGeoref = false;
-                        // buttonModel.setSelected( false );
-                        // isHorizontalRefGeoref = true;
-                        // panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getSubRaster() ) );
-                        // panel.updatePoints( sceneValues );
-                        // panel.repaint();
-                        //
-                        // }
-                        // } catch ( NumberException e1 ) {
-                        //
-                        // new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
-                        // }
+                        fireTextfieldJumperDialog();
                     } else if ( wmsStartDialog != null && wmsStartDialog.isVisible() == true ) {
                         String mapURLString = wmsStartDialog.getTextField().getText();
                         wmsStartDialog.setVisible( false );
@@ -848,6 +830,39 @@ public class Controller {
                     }
                 }
 
+            }
+
+        }
+
+        private void fireTextfieldJumperDialog() {
+            try {
+                textFieldModel.setTextInput( jumperDialog.getCoordinateJumper().getText() );
+
+                System.out.println( textFieldModel.toString() );
+                if ( textFieldModel.getSpanX() != -1 && textFieldModel.getSpanY() != -1 ) {
+
+                    sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                  textFieldModel.getyCoordiante(),
+                                                                  textFieldModel.getSpanX(), textFieldModel.getSpanY(),
+                                                                  PointType.GeoreferencedPoint );
+
+                } else {
+                    sceneValues.setCentroidWorldEnvelopePosition( textFieldModel.getxCoordinate(),
+                                                                  textFieldModel.getyCoordiante(),
+                                                                  PointType.GeoreferencedPoint );
+
+                }
+                jumperDialog.setVisible( false );
+                selectedGeoref = false;
+                buttonModel.setSelected( false );
+                isHorizontalRefGeoref = true;
+                panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                panel.updatePoints( sceneValues );
+                panel.repaint();
+
+            } catch ( NumberException e1 ) {
+
+                new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
             }
 
         }
@@ -1040,85 +1055,26 @@ public class Controller {
         }
     }
 
-    // class Scene2DActionKeyListener implements KeyListener {
-    //
-    // @Override
-    // public void keyPressed( KeyEvent e ) {
-    // if ( e.getKeyCode() == 17 ) {
-    // char c = e.getKeyChar();
-    // boolean isControl = e.isControlDown();
-    // int control = KeyEvent.VK_CONTROL;
-    //
-    // System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
-    // }
-    // if ( mouseGeoRef.isMouseInside() ) {
-    // char c = e.getKeyChar();
-    // boolean isControl = e.isControlDown();
-    // int control = KeyEvent.VK_CONTROL;
-    //
-    // System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
-    // }
-    // if ( mouseFootprint.isMouseInside() ) {
-    // char c = e.getKeyChar();
-    // boolean isControl = e.isControlDown();
-    // int control = KeyEvent.VK_CONTROL;
-    //
-    // System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
-    // }
-    // }
-    //
-    // @Override
-    // public void keyReleased( KeyEvent e ) {
-    // if ( e.getKeyCode() == 17 ) {
-    // char c = e.getKeyChar();
-    // boolean isControl = e.isControlDown();
-    // int control = KeyEvent.VK_CONTROL;
-    //
-    // System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
-    // }
-    // if ( mouseGeoRef.isMouseInside() ) {
-    // char c = e.getKeyChar();
-    // boolean isControl = e.isControlDown();
-    // int control = KeyEvent.VK_CONTROL;
-    //
-    // System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
-    // }
-    // if ( mouseFootprint.isMouseInside() ) {
-    // char c = e.getKeyChar();
-    // boolean isControl = e.isControlDown();
-    // int control = KeyEvent.VK_CONTROL;
-    //
-    // System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
-    // }
-    //
-    // }
-    //
-    // @Override
-    // public void keyTyped( KeyEvent e ) {
-    // if ( e.getKeyCode() == 17 ) {
-    // char c = e.getKeyChar();
-    // boolean isControl = e.isControlDown();
-    // int control = KeyEvent.VK_CONTROL;
-    //
-    // System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
-    // }
-    // if ( mouseGeoRef.isMouseInside() ) {
-    // char c = e.getKeyChar();
-    // boolean isControl = e.isControlDown();
-    // int control = KeyEvent.VK_CONTROL;
-    //
-    // System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
-    // }
-    // if ( mouseFootprint.isMouseInside() ) {
-    // char c = e.getKeyChar();
-    // boolean isControl = e.isControlDown();
-    // int control = KeyEvent.VK_CONTROL;
-    //
-    // System.out.println( "[Controller] " + c + "  " + isControl + " " + control );
-    // }
-    // }
-    //
-    // }
+    class Scene2DActionKeyListener implements KeyListener {
+
+        @Override
+        public void keyPressed( KeyEvent e ) {
+            int code = e.getKeyCode();
+            System.out.println( "[Controller] " + code );
+
+        }
+
+        @Override
+        public void keyReleased( KeyEvent e ) {
+
+        }
+
+        @Override
+        public void keyTyped( KeyEvent e ) {
+
+        }
+
+    }
 
     /**
      * 
@@ -1570,6 +1526,7 @@ public class Controller {
                     init();
 
                     if ( sceneValues != null ) {
+
                         sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width,
                                                                           footPanel.getBounds().height ) );
                         footPanel.updatePoints( sceneValues );
@@ -1595,7 +1552,7 @@ public class Controller {
     private void init() {
 
         if ( model != null ) {
-            model.init( sceneValues );
+
             sceneValues.setImageDimension( new Rectangle( panel.getWidth(), panel.getHeight() ) );
             panel.setImageDimension( sceneValues.getImageDimension() );
             panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
