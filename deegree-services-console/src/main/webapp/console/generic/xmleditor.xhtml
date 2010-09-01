@@ -8,7 +8,7 @@
 </h:head>
 <h:body>
 				<div style="width: 940px;">Editing: ${editConfig.location} <h:link value="Display schema" outcome="schema"
-								target="_blank" style="margin-left:auto; float:right; text-align:right;" /> <h:form>
+								target="_blank" style="margin-left:auto; float:right; text-align:right;" rendered="${editConfig.schemaURL != null}" /> <h:form>
 								<dg:inputConfigurationXML id="inputXML" value="${editConfig.content}" schemaURLS="${editConfig.schemaURL}"
 												cols="120" rows="30" />
 								<br />
