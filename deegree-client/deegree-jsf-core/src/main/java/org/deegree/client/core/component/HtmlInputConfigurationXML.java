@@ -105,23 +105,23 @@ public class HtmlInputConfigurationXML extends HtmlInputTextarea {
             String[] schemas = null;
             if ( s != null && s.length() > 0 ) {
                 schemas = s.split( "," );
-            }
-            List<String> results;
-            results = SchemaValidator.validate( xml, schemas );
-            if ( results.size() > 0 ) {
-                FacesMessage message = MessageUtils.getFacesMessage(
-                                                                     null,
-                                                                     FacesMessage.SEVERITY_ERROR,
-                                                                     "org.deegree.client.core.component.HtmlInputConfiguration.VALIDATION_FAILED",
-                                                                     results );
-                context.addMessage( getClientId(), message );
-                setValid( false );
-            } else {
-                setValid( true );
+                List<String> results;
+                results = SchemaValidator.validate( xml, schemas );
+                if ( results.size() > 0 ) {
+                    FacesMessage message = MessageUtils.getFacesMessage(
+                                                                         null,
+                                                                         FacesMessage.SEVERITY_ERROR,
+                                                                         "org.deegree.client.core.component.HtmlInputConfiguration.VALIDATION_FAILED",
+                                                                         results );
+                    context.addMessage( getClientId(), message );
+                    setValid( false );
+                    return;
+                }
             }
         } catch ( UnsupportedEncodingException e ) {
             LOG.error( "UTF-8 is not supported!" );
+            return;
         }
-
+        setValid( true );
     }
 }
