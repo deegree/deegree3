@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <wfs:FeatureCollection numberOfFeatures='4'
 	xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:app="http://www.deegree.org/app"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
-	xsi:schemaLocation="http://www.deegree.org/app wfs-deegree-schema.xsd http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+	xsi:schemaLocation="http://www.deegree.org/app file:///home/pabel/workspace/deegree-wps-sextante/src/test/resources/org/deegree/protocol/wps/wfs-deegree-schema.xsd http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
 	<gml:boundedBy>
 		<gml:Envelope srsName='EPSG:4326'>
 			<gml:lowerCorner>-8.171666145324707 41.364925384521484</gml:lowerCorner>

@@ -35,7 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
 import org.deegree.gml.GMLVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Describes a GML schema with URL, version and type.
@@ -46,6 +54,9 @@ import org.deegree.gml.GMLVersion;
  * @version $Revision: $, $Date: $
  */
 public class GMLSchema {
+
+    // logger
+    private static final Logger LOG = LoggerFactory.getLogger( GMLSchema.class );
 
     /**
      * Describes the type of the GML data.
@@ -58,6 +69,46 @@ public class GMLSchema {
     public enum GMLType {
         GEOMETRY, FEATURE_COLLECTION;
     }
+
+    // GML schemas as map
+    private static final Map<String, GMLSchema> ALL_SCHEMAS = new HashMap<String, GMLSchema>();
+
+    // GML schemas individual
+    public static final GMLSchema GML_2_GEOMETRY_SCHEMA = new GMLSchema(
+                                                                         "http://schemas.opengis.net/gml/2.1.2/geometry.xsd",
+                                                                         GMLVersion.GML_2, GMLType.GEOMETRY );
+
+    public static final GMLSchema GML_30_GEOMETRY_SCHEMA = new GMLSchema(
+                                                                          "http://schemas.opengis.net/gml/3.0.1/base/geometryComplexes.xsd",
+                                                                          GMLVersion.GML_30, GMLType.GEOMETRY );
+
+    public static final GMLSchema GML_31_GEOMETRY_SCHEMA = new GMLSchema(
+                                                                          "http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd",
+                                                                          GMLVersion.GML_31, GMLType.GEOMETRY );
+
+    public static final GMLSchema GML_32_GEOMETRY_SCHEMA = new GMLSchema(
+                                                                          "http://schemas.opengis.net/gml/3.2.1/geometryComplexes.xsd",
+                                                                          GMLVersion.GML_32, GMLType.GEOMETRY );
+
+    public static final GMLSchema GML_2_FEATURE_COLLECTION_SCHEMA = new GMLSchema(
+                                                                                   "http://schemas.opengis.net/gml/2.1.2/feature.xsd",
+                                                                                   GMLVersion.GML_2,
+                                                                                   GMLType.FEATURE_COLLECTION );
+
+    public static final GMLSchema GML_30_FEATURE_COLLECTION_SCHEMA = new GMLSchema(
+                                                                                    "http://schemas.opengis.net/gml/3.0.1/base/feature.xsd",
+                                                                                    GMLVersion.GML_30,
+                                                                                    GMLType.FEATURE_COLLECTION );
+
+    public static final GMLSchema GML_31_FEATURE_COLLECTION_SCHEMA = new GMLSchema(
+                                                                                    "http://schemas.opengis.net/gml/3.1.1/base/feature.xsd",
+                                                                                    GMLVersion.GML_31,
+                                                                                    GMLType.FEATURE_COLLECTION );
+
+    public static final GMLSchema GML_32_FEATURE_COLLECTION_SCHEMA = new GMLSchema(
+                                                                                    "http://schemas.opengis.net/gml/3.2.1/feature.xsd",
+                                                                                    GMLVersion.GML_32,
+                                                                                    GMLType.FEATURE_COLLECTION );
 
     private final GMLType type;
 
@@ -80,7 +131,7 @@ public class GMLSchema {
         this.schema = schema;
         this.version = version;
         this.type = type;
-        FormatHelper.ALL_SCHEMAS.put( this.schema, this );
+        ALL_SCHEMAS.put( this.schema, this );
     }
 
     /**
@@ -108,5 +159,36 @@ public class GMLSchema {
      */
     public GMLType getGMLType() {
         return type;
+    }
+
+    /**
+     * Returns a {@link GMLSchema} based on the schema URL.
+     * 
+     * @param schema
+     *            - URL schema.
+     * @return The {@link GMLSchema} based on the schema URL
+     */
+    public static GMLSchema getGMLSchema( String schema ) {
+        GMLSchema foundSchema = ALL_SCHEMAS.get( schema );
+
+        if ( foundSchema != null ) {
+            return foundSchema;
+        } else {
+            LOG.error( "\"" + schema + " \" is a not supported GML schema." );
+            // TODO throw Exception
+            return null;
+        }
+    }
+
+    public static LinkedList<GMLSchema> getAllSchemas() {
+
+        LinkedList<GMLSchema> schemas = new LinkedList<GMLSchema>();
+
+        Set<String> keys = ALL_SCHEMAS.keySet();
+        for ( String key : keys ) {
+            schemas.add( ALL_SCHEMAS.get( key ) );
+        }
+
+        return schemas;
     }
 }

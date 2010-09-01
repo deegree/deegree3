@@ -40,9 +40,7 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import junit.framework.Assert;
-
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.property.PropertyType;
@@ -56,20 +54,14 @@ import org.deegree.services.wps.provider.IVectorLayerAdapter;
 import org.deegree.services.wps.provider.OutputFactoryImpl;
 import org.deegree.services.wps.provider.VectorLayerImpl;
 import org.junit.Test;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
-
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
 import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.IVectorLayer;
-import es.unex.sextante.exceptions.GeoAlgorithmExecutionException;
-import es.unex.sextante.exceptions.WrongOutputIDException;
-import es.unex.sextante.exceptions.WrongParameterIDException;
 import es.unex.sextante.outputs.Output;
-import es.unex.sextante.outputs.StreamOutputChannel;
 import es.unex.sextante.vectorTools.centroids.CentroidsAlgorithm;
 
 /**
@@ -210,8 +202,8 @@ public class IVectorAdapterTest {
                             throws Exception {
 
         LinkedList<FeatureCollection> colls = new LinkedList<FeatureCollection>();
-        colls.add( readFeatureCollection( "GML31_FeatureCollection_Deegree.xml" ) );
-        colls.add( readFeatureCollection( "GML31_FeatureCollection_GeoServer.xml" ) );
+        colls.add( readFeatureCollection( "GML31_FeatureCollection_Deegree_Polygons.xml" ) );
+        colls.add( readFeatureCollection( "GML31_FeatureCollection_GeoServer_Polygons.xml" ) );
 
         return colls;
     }
@@ -226,8 +218,8 @@ public class IVectorAdapterTest {
                             throws Exception {
 
         LinkedList<Feature> fs = new LinkedList<Feature>();
-        FeatureCollection fc1 = readFeatureCollection( "GML31_FeatureCollection_Deegree.xml" );
-        FeatureCollection fc2 = readFeatureCollection( "GML31_FeatureCollection_GeoServer.xml" );
+        FeatureCollection fc1 = readFeatureCollection( "GML31_FeatureCollection_Deegree_Polygons.xml" );
+        FeatureCollection fc2 = readFeatureCollection( "GML31_FeatureCollection_GeoServer_Polygons.xml" );
         fs.add( fc2 );
 
         Iterator<Feature> it = fc1.iterator();
@@ -411,8 +403,7 @@ public class IVectorAdapterTest {
             OutputObjectsSet outputParams = alg.getOutputObjects();
             Output output = outputParams.getOutput( CentroidsAlgorithm.RESULT );
             IVectorLayer outputLayer = (IVectorLayer) output.getOutputObject();
-            
-            
+
         } catch ( Exception e ) {
             e.printStackTrace();
         }

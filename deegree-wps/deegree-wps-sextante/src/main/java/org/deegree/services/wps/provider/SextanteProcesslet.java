@@ -62,6 +62,7 @@ import es.unex.sextante.dataObjects.ITable;
 import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.GeoAlgorithmExecutionException;
 import es.unex.sextante.exceptions.IteratorException;
+import es.unex.sextante.exceptions.NullParameterValueException;
 import es.unex.sextante.exceptions.WrongOutputIDException;
 import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
@@ -113,17 +114,36 @@ public class SextanteProcesslet implements Processlet {
             // write all output values
             writeResult( alg, out );
 
-        } catch ( WrongOutputIDException e ) {
+        } catch ( NullParameterValueException e ) { // false input data
             e.printStackTrace();
-            throw new ProcessletException( e.getLocalizedMessage() );
-        } catch ( GeoAlgorithmExecutionException e ) {
+            throw new ProcessletException( "'" + alg.getCommandLineName() + "' algorithm found false input data. ("
+                                           + e.getLocalizedMessage() + ")" );
+
+        } catch ( ArrayIndexOutOfBoundsException e ) { // false input data
             e.printStackTrace();
-            throw new ProcessletException( e.getLocalizedMessage() );
-        } catch ( ClassNotFoundException e ) {
+
+            String message = "'" + alg.getCommandLineName() + "' algorithm, " + e.getLocalizedMessage();
+
+            if ( alg.getCommandLineName().equals( "delaunay" ) )
+                message = "'" + alg.getCommandLineName() + "' algorithm found false input data. ("
+                          + e.getLocalizedMessage() + ")";
+
+            throw new ProcessletException( message );
+
+        } catch ( NullPointerException e ) { // false input data
             e.printStackTrace();
-            throw new ProcessletException( e.getLocalizedMessage() );
+
+            String message = "'" + alg.getCommandLineName() + "' algorithm, " + e.getLocalizedMessage();
+
+            if ( alg.getCommandLineName().equals( "exportvector" ) )
+                message = "'" + alg.getCommandLineName() + "' algorithm found false input data. ("
+                          + e.getLocalizedMessage() + ")";
+
+            throw new ProcessletException( message );
+
         } catch ( Exception e ) {
             e.printStackTrace();
+            throw new ProcessletException( e.getLocalizedMessage() );
         }
 
     }

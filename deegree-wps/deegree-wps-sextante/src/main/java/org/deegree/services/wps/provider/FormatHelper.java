@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -62,46 +63,6 @@ public class FormatHelper {
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( FormatHelper.class );
 
-    // GML schemas as map
-    static final Map<String, GMLSchema> ALL_SCHEMAS = new HashMap<String, GMLSchema>();
-
-    // GML schemas individual
-    public static final GMLSchema GML_2_GEOMETRY_SCHEMA = new GMLSchema(
-                                                                         "http://schemas.opengis.net/gml/2.1.2/geometry.xsd",
-                                                                         GMLVersion.GML_2, GMLType.GEOMETRY );
-
-    public static final GMLSchema GML_30_GEOMETRY_SCHEMA = new GMLSchema(
-                                                                          "http://schemas.opengis.net/gml/3.0.1/base/geometryComplexes.xsd",
-                                                                          GMLVersion.GML_30, GMLType.GEOMETRY );
-
-    public static final GMLSchema GML_31_GEOMETRY_SCHEMA = new GMLSchema(
-                                                                          "http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd",
-                                                                          GMLVersion.GML_31, GMLType.GEOMETRY );
-
-    public static final GMLSchema GML_32_GEOMETRY_SCHEMA = new GMLSchema(
-                                                                          "http://schemas.opengis.net/gml/3.2.1/geometryComplexes.xsd",
-                                                                          GMLVersion.GML_32, GMLType.GEOMETRY );
-
-    public static final GMLSchema GML_2_FEATURE_COLLECTION_SCHEMA = new GMLSchema(
-                                                                                   "http://schemas.opengis.net/gml/2.1.2/feature.xsd",
-                                                                                   GMLVersion.GML_2,
-                                                                                   GMLType.FEATURE_COLLECTION );
-
-    public static final GMLSchema GML_30_FEATURE_COLLECTION_SCHEMA = new GMLSchema(
-                                                                                    "http://schemas.opengis.net/gml/3.0.1/base/feature.xsd",
-                                                                                    GMLVersion.GML_30,
-                                                                                    GMLType.FEATURE_COLLECTION );
-
-    public static final GMLSchema GML_31_FEATURE_COLLECTION_SCHEMA = new GMLSchema(
-                                                                                    "http://schemas.opengis.net/gml/3.1.1/base/feature.xsd",
-                                                                                    GMLVersion.GML_31,
-                                                                                    GMLType.FEATURE_COLLECTION );
-
-    public static final GMLSchema GML_32_FEATURE_COLLECTION_SCHEMA = new GMLSchema(
-                                                                                    "http://schemas.opengis.net/gml/3.2.1/feature.xsd",
-                                                                                    GMLVersion.GML_32,
-                                                                                    GMLType.FEATURE_COLLECTION );;
-
     /**
      * Returns the {@link GMLVersion} of the input data. <br>
      * 
@@ -110,7 +71,7 @@ public class FormatHelper {
      * @return The {@link GMLVersion} of the input data.
      */
     public static GMLVersion determineGMLVersion( ComplexInput input ) {
-        GMLSchema schema = ALL_SCHEMAS.get( input.getSchema() );
+        GMLSchema schema = GMLSchema.getGMLSchema( input.getSchema() );
 
         if ( schema != null ) {
             return schema.getGMLVersion();
@@ -129,7 +90,7 @@ public class FormatHelper {
      * @return The {@link GMLVersion} of the output data.
      */
     public static GMLVersion determineGMLVersion( ComplexOutput output ) {
-        GMLSchema schema = ALL_SCHEMAS.get( output.getRequestedSchema() );
+        GMLSchema schema = GMLSchema.getGMLSchema( output.getRequestedSchema() );
 
         if ( schema != null ) {
             return schema.getGMLVersion();
@@ -137,7 +98,7 @@ public class FormatHelper {
             LOG.error( "OUTPUT: \"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
             // TODO throw Exception?
 
-            GMLSchema defaultSchema = getGMLSchema( getDefaultOutputFormat().getSchema() );
+            GMLSchema defaultSchema = GMLSchema.getGMLSchema( getDefaultOutputFormat().getSchema() );
             LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchema() + "\" is in use." );
             return defaultSchema.getGMLVersion();
         }
@@ -151,7 +112,7 @@ public class FormatHelper {
      * @return The {@link GMLType} of the input data.
      */
     public static GMLType determineGMLType( ComplexInput input ) {
-        GMLSchema schema = ALL_SCHEMAS.get( input.getSchema() );
+        GMLSchema schema = GMLSchema.getGMLSchema( input.getSchema() );
 
         if ( schema != null ) {
             return schema.getGMLType();
@@ -170,15 +131,15 @@ public class FormatHelper {
      * @return The GML {@link GMLType} of the output data.
      */
     public static GMLType determineGMLType( ComplexOutput output ) {
-        GMLSchema schema = ALL_SCHEMAS.get( output.getRequestedSchema() );
+        GMLSchema schema = GMLSchema.getGMLSchema( output.getRequestedSchema() );
 
         if ( schema != null ) {
             return schema.getGMLType();
         } else {
             LOG.error( "OUTPUT: \"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
             // TODO throw Exception
-            
-            GMLSchema defaultSchema = getGMLSchema( getDefaultOutputFormat().getSchema() );
+
+            GMLSchema defaultSchema = GMLSchema.getGMLSchema( getDefaultOutputFormat().getSchema() );
             LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchema() + "\" is in use." );
             return defaultSchema.getGMLType();
         }
@@ -194,7 +155,7 @@ public class FormatHelper {
         ComplexFormatType cft = new ComplexFormatType();
         cft.setEncoding( "UTF-8" );
         cft.setMimeType( "text/xml" );
-        cft.setSchema( GML_2_GEOMETRY_SCHEMA.getSchema() );
+        cft.setSchema( GMLSchema.GML_2_GEOMETRY_SCHEMA.getSchema() );
 
         return cft;
     }
@@ -220,11 +181,10 @@ public class FormatHelper {
 
         // notice other schemas
         LinkedList<ComplexFormatType> inputCft = new LinkedList<ComplexFormatType>();
-        Set<String> keys = ALL_SCHEMAS.keySet();
-        for ( String key : keys ) {
 
-            if ( !defaultKey.equals( key ) ) {
-                GMLSchema gmlSchema = ALL_SCHEMAS.get( key );
+        LinkedList<GMLSchema> schemas = GMLSchema.getAllSchemas();
+        for ( GMLSchema gmlSchema : schemas ) {
+            if ( !defaultKey.equals( gmlSchema.getSchema() ) ) {
                 ComplexFormatType cft = new ComplexFormatType();
                 cft.setEncoding( "UTF-8" );
                 cft.setMimeType( "text/xml" );
@@ -243,26 +203,6 @@ public class FormatHelper {
      */
     public static LinkedList<ComplexFormatType> getOutputFormatsWithoutDefault() {
         return getInputFormatsWithoutDefault();
-    }
-
-    /**
-     * Returns a {@link GMLSchema} based on the schema URL.
-     * 
-     * @param schema
-     *            - URL schema.
-     * @return The {@link GMLSchema} based on the schema URL
-     */
-    public static GMLSchema getGMLSchema( String schema ) {
-        GMLSchema foundSchema = ALL_SCHEMAS.get( schema );
-
-        if ( foundSchema != null ) {
-            return foundSchema;
-        } else {
-            LOG.error( "\"" + schema + " \" is a not supported GML schema." );
-            // TODO throw Exception
-            return null;
-        }
-
     }
 
     public static String getApplicationSchema( ComplexInput input ) {

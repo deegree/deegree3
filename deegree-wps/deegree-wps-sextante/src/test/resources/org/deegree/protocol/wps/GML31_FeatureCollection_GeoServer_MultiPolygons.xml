@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <wfs:FeatureCollection numberOfFeatures="4"
 	timeStamp="2010-08-24T07:28:09.678+02:00"
-	xsi:schemaLocation="http://www.openplans.org/topp wfs-geoserver-schema.xsd http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"
+	xsi:schemaLocation="http://www.openplans.org/topp file:///home/pabel/workspace/deegree-wps-sextante/src/test/resources/org/deegree/protocol/wps/wfs-geoserver-schema.xsd http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"
 	xmlns:ogc="http://www.opengis.net/ogc" xmlns:tiger="http://www.census.gov"
 	xmlns:cite="http://www.opengeospatial.net/cite" xmlns:nurc="http://www.nurc.nato.int"
 	xmlns:sde="http://geoserver.sf.net" xmlns:wfs="http://www.opengis.net/wfs"
