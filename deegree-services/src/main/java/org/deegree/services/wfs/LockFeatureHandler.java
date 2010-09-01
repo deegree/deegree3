@@ -53,6 +53,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.services.controller.ows.OWSException;
@@ -90,10 +91,12 @@ class LockFeatureHandler extends GetFeatureHandler {
      * @param checkInputDomain
      *            true, if geometries in query constraints should be checked agains validity domain of the SRS (needed
      *            for CITE 1.1.0 compliance)
+     * @param formatter
+     *            coordinate formatter to use, must not be <code>null</code>
      */
     LockFeatureHandler( WFSController master, WFService service, boolean streamMode, int featureLimit,
-                        boolean checkInputDomain ) {
-        super( master, service, streamMode, featureLimit, checkInputDomain );
+                        boolean checkInputDomain, CoordinateFormatter formatter ) {
+        super( master, service, streamMode, featureLimit, checkInputDomain, formatter );
     }
 
     /**

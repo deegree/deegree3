@@ -82,7 +82,7 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.io.DoubleCoordinateFormatter;
+import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
@@ -126,6 +126,8 @@ class GetFeatureHandler {
 
     private final boolean checkAreaOfUse;
 
+    private final CoordinateFormatter formatter;
+
     /**
      * Creates a new {@link GetFeatureHandler} instance that uses the given service to lookup requested
      * {@link FeatureType}s.
@@ -142,14 +144,17 @@ class GetFeatureHandler {
      * @param checkAreaOfUse
      *            true, if geometries in query constraints should be checked agains validity domain of the SRS (needed
      *            for CITE 1.1.0 compliance)
+     * @param formatter
+     *            coordinate formatter to use, must not be <code>null</code>
      */
     GetFeatureHandler( WFSController master, WFService service, boolean streamMode, int featureLimit,
-                       boolean checkAreaOfUse ) {
+                       boolean checkAreaOfUse, CoordinateFormatter formatter ) {
         this.master = master;
         this.service = service;
         this.streamMode = streamMode;
         this.featureLimit = featureLimit;
         this.checkAreaOfUse = checkAreaOfUse;
+        this.formatter = formatter;
     }
 
     /**
@@ -258,8 +263,7 @@ class GetFeatureHandler {
 
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( outputFormat, xmlStream );
         gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
-        // TODO make this configurable
-        gmlStream.setCoordinateFormatter( new DoubleCoordinateFormatter() );
+        gmlStream.setCoordinateFormatter( formatter );
         gmlStream.setFeatureProperties( analyzer.getRequestedProps() );
         gmlStream.setLocalXLinkTemplate( xLinkTemplate );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
@@ -393,9 +397,7 @@ class GetFeatureHandler {
         gmlStream.setXLinkFeatureProperties( analyzer.getXLinkProps() );
         gmlStream.setFeatureProperties( analyzer.getRequestedProps() );
         gmlStream.setOutputCRS( analyzer.getRequestedCRS() );
-        // TODO make the coordinate formatter configurable,
-        // but don't use DoubleCoordinateFormatter (1.2122E7 may be the result)
-//        gmlStream.setCoordinateFormatter( new DoubleCoordinateFormatter() );
+        gmlStream.setCoordinateFormatter( formatter );
 
         bindFeatureTypePrefixes( xmlStream, analyzer.getFeatureTypes() );
 

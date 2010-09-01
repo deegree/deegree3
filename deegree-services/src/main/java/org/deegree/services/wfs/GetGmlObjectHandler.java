@@ -54,7 +54,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.io.DoubleCoordinateFormatter;
+import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
@@ -80,9 +80,11 @@ public class GetGmlObjectHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( GetGmlObjectHandler.class );
 
-    private WFSController master;
+    private final WFSController master;
 
-    private WFService service;
+    private final WFService service;
+
+    private final CoordinateFormatter formatter;
 
     /**
      * Creates a new {@link GetGmlObjectHandler} instance that uses the given service to lookup requested
@@ -92,10 +94,13 @@ public class GetGmlObjectHandler {
      * 
      * @param service
      *            WFS instance used to lookup the feature types
+     * @param formatter
+     *            coordinate formatter to use, must not be <code>null</code>
      */
-    GetGmlObjectHandler( WFSController master, WFService service ) {
+    GetGmlObjectHandler( WFSController master, WFService service, CoordinateFormatter formatter ) {
         this.master = master;
         this.service = service;
+        this.formatter = formatter;
     }
 
     /**
@@ -162,8 +167,7 @@ public class GetGmlObjectHandler {
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( outputFormat, xmlStream );
         gmlStream.setLocalXLinkTemplate( master.getObjectXlinkTemplate( request.getVersion(), outputFormat ) );
         gmlStream.setXLinkDepth( traverseXLinkDepth );
-        // TODO make this configurable
-        gmlStream.setCoordinateFormatter( new DoubleCoordinateFormatter() );
+        gmlStream.setCoordinateFormatter( formatter );
         try {
             gmlStream.write( o );
         } catch ( UnknownCRSException e ) {

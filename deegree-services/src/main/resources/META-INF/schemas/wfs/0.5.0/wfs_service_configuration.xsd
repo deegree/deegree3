@@ -3,7 +3,13 @@
   elementFormDefault="qualified">
   <element name="ServiceConfiguration">
     <complexType>
-      <sequence />
+      <sequence>
+        <element name="CoordinateFormatter" minOccurs="0">
+          <complexType>
+            <attribute name="javaClass" use="required" type="string" />
+          </complexType>
+        </element>
+      </sequence>
     </complexType>
   </element>
 </schema>

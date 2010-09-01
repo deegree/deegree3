@@ -81,6 +81,8 @@ import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.wfs.WFSConstants;
@@ -123,6 +125,7 @@ import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.PublishedInformation;
+import org.deegree.services.jaxb.wfs.ServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -244,16 +247,25 @@ public class WFSController extends AbstractOGCServiceController {
             ftNameToFtMetadata.put( ftMd.getName(), ftMd );
         }
 
+        CoordinateFormatter formatter = new DecimalCoordinateFormatter( 8 );
         service = new WFService();
         try {
-            service.init( jaxbConfig.getServiceConfiguration(), controllerConf.getSystemId() );
+            ServiceConfiguration serviceConfig = jaxbConfig.getServiceConfiguration();
+            if ( serviceConfig.getCoordinateFormatter() != null ) {
+                LOG.info( "Using coordinate formatter class '" + formatter + "'." );
+                String formatterClass = serviceConfig.getCoordinateFormatter().getJavaClass();
+                formatter = (CoordinateFormatter) Class.forName( formatterClass ).newInstance();
+            }
+            service.init( serviceConfig, controllerConf.getSystemId() );
         } catch ( Exception e ) {
             throw new ControllerInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
         }
         dftHandler = new DescribeFeatureTypeHandler( service );
-        getFeatureHandler = new GetFeatureHandler( this, service, enableStreaming, maxFeatures, checkAreaOfUse );
-        getGmlObjectHandler = new GetGmlObjectHandler( this, service );
-        lockFeatureHandler = new LockFeatureHandler( this, service, enableStreaming, maxFeatures, checkAreaOfUse );
+        getFeatureHandler = new GetFeatureHandler( this, service, enableStreaming, maxFeatures, checkAreaOfUse,
+                                                   formatter );
+        getGmlObjectHandler = new GetGmlObjectHandler( this, service, formatter );
+        lockFeatureHandler = new LockFeatureHandler( this, service, enableStreaming, maxFeatures, checkAreaOfUse,
+                                                     formatter );
     }
 
     @Override
