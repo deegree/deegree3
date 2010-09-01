@@ -159,7 +159,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
     public String getConnId() {
         return jdbcConnId;
     }
-    
+
     /**
      * Returns the relational mapping for the given feature type name.
      * 
@@ -189,9 +189,10 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         FeatureType ft = schema.getFeatureType( ftName );
         if ( ft != null ) {
             // TODO bbox caching
-            BBoxTableMapping bboxMapping = schema.getBBoxMapping();
-            if ( bboxMapping != null ) {
-                env = getEnvelope( ft.getName(), bboxMapping );
+            // BBoxTableMapping bboxMapping = schema.getBBoxMapping();
+            BlobMapping blobMapping = schema.getBlobMapping();
+            if ( blobMapping != null ) {
+                env = getEnvelope( ft.getName(), blobMapping );
             } else {
                 env = getEnvelope( schema.getMapping( ft.getName() ) );
             }
@@ -279,6 +280,53 @@ public class PostGISFeatureStore implements SQLFeatureStore {
                     org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT() );
                     env = new DefaultEnvelope( null, storageCRS, null, min, max );
                 }
+            }
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new FeatureStoreException( e.getMessage(), e );
+        } finally {
+            close( rs, stmt, conn, LOG );
+        }
+        return env;
+    }
+
+    private Envelope getEnvelope( QName ftName, BlobMapping blobMapping )
+                            throws FeatureStoreException {
+
+        LOG.info( "Determining BBOX for feature type '{}' (BLOB mode)", ftName );
+
+        int ftId = getFtId( ftName );
+        String column = blobMapping.getBBoxColumn();
+
+        Envelope env = null;
+        StringBuilder sql = new StringBuilder( "SELECT " );
+        if ( useLegacyPredicates ) {
+            sql.append( "extent" );
+        } else {
+            sql.append( "ST_Extent" );
+        }
+        sql.append( "(" );
+        sql.append( column );
+        sql.append( ") FROM " );
+        sql.append( blobMapping.getTable() );
+        sql.append (" WHERE ");
+        sql.append( blobMapping.getTypeColumn() );
+        sql.append ("=");
+        sql.append (ftId);
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionManager.getConnection( jdbcConnId );
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( sql.toString() );
+            rs.next();
+            PGboxbase pgBox = (PGboxbase) rs.getObject( 1 );
+            if ( pgBox != null ) {
+                org.deegree.geometry.primitive.Point min = getPoint( pgBox.getLLB() );
+                org.deegree.geometry.primitive.Point max = getPoint( pgBox.getURT() );
+                env = new DefaultEnvelope( null, storageCRS, null, min, max );
             }
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
