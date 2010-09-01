@@ -169,7 +169,7 @@ public class ConfigManager {
         return lastMessage;
     }
 
-    public Object applyChanges() {
+    public String applyChanges() {
         try {
             OGCFrontController.getInstance().reload();
         } catch ( Exception e ) {
@@ -184,6 +184,6 @@ public class ConfigManager {
         fsManager.scan();
         connManager.scan();
         lastMessage = "Workspace changes have been applied.";
-        return "";
+        return "/console";
     }
 }
