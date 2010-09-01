@@ -80,13 +80,7 @@ public class StyleConfigManager extends XMLConfigManager<StyleConfig> {
         // TODO still using null
         
 //        if ( schema != null ) {
-            StyleConfig config = null;
-            try {
-                config = new StyleConfig( id, !ignore, ignore, this, schema );
-            } catch ( MalformedURLException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            StyleConfig config = new StyleConfig( id, !ignore, ignore, this, schema );
             idToConfig.put( id, config );
 //        } else {
 //            LOG.warn( "Skipping style file with id '" + id + "' -- neither in SLD nor in SE namespace." );
