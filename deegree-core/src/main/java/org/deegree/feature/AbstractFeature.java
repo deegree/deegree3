@@ -42,6 +42,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
@@ -123,21 +124,31 @@ public abstract class AbstractFeature implements Feature {
     protected Envelope calcEnvelope() {
         Envelope featureBBox = null;
         for ( Property prop : this.getProperties() ) {
-            Object propValue = prop.getValue();
-            Envelope propBBox = null;
-            if ( propValue instanceof Geometry ) {
-                Geometry geom = (Geometry) propValue;
-                propBBox = geom.getEnvelope();
-            }
-            if ( propBBox != null ) {
-                if ( featureBBox != null ) {
-                    featureBBox = featureBBox.merge( propBBox );
-                } else {
-                    featureBBox = propBBox;
-                }
-            }
+            featureBBox = mergeEnvelope( prop, featureBBox );
         }
         return featureBBox;
+    }
+
+    private Envelope mergeEnvelope( TypedObjectNode node, Envelope env ) {
+        if ( node instanceof Property ) {
+            Property prop = (Property) node;
+            if ( prop.getValue() != null ) {
+                env = mergeEnvelope( prop.getValue(), env );
+            }
+        } else if ( node instanceof Geometry ) {
+            Geometry g = (Geometry) node;
+            if ( env != null ) {
+                env = env.merge( g.getEnvelope() );
+            } else {
+                env = g.getEnvelope();
+            }
+        } else if ( node instanceof GenericXMLElementContent ) {
+            GenericXMLElementContent xml = (GenericXMLElementContent) node;
+            for (TypedObjectNode child : xml.getChildren()) {
+                env = mergeEnvelope( child, env );
+            }
+        }
+        return env;
     }
 
     @Override
