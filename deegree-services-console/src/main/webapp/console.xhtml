@@ -28,7 +28,7 @@
         <div class="attention">
           <h:outputText value="#{configManager.lastMessage}"/>
           [<h:commandLink value="Apply changes" action="#{configManager.applyChanges}" style="margin:0px 10px;">
-              <f:ajax execute="@this" render="@form :workspacePanel" />
+              <f:ajax execute="@this" render="@all" />
            </h:commandLink>]
         </div>
       </h:panelGroup>
