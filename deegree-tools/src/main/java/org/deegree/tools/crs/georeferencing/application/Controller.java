@@ -44,8 +44,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -767,7 +765,9 @@ public class Controller {
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
                     FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
-                    initFootprintScene( fileChooser.getSelectedFilePath() );
+                    if ( fileChooser.getSelectedFilePath() != null ) {
+                        initFootprintScene( fileChooser.getSelectedFilePath() );
+                    }
 
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_SHAPEFILE ) ) {
@@ -870,7 +870,7 @@ public class Controller {
 
     /**
      * 
-     * TODO add class documentation here
+     * Controls if there is a change inside the table
      * 
      * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
      * @author last edited by: $Author$
@@ -1053,27 +1053,6 @@ public class Controller {
             }
 
         }
-    }
-
-    class Scene2DActionKeyListener implements KeyListener {
-
-        @Override
-        public void keyPressed( KeyEvent e ) {
-            int code = e.getKeyCode();
-            System.out.println( "[Controller] " + code );
-
-        }
-
-        @Override
-        public void keyReleased( KeyEvent e ) {
-
-        }
-
-        @Override
-        public void keyTyped( KeyEvent e ) {
-
-        }
-
     }
 
     /**
@@ -1552,7 +1531,6 @@ public class Controller {
     private void init() {
 
         if ( model != null ) {
-
             sceneValues.setImageDimension( new Rectangle( panel.getWidth(), panel.getHeight() ) );
             panel.setImageDimension( sceneValues.getImageDimension() );
             panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );

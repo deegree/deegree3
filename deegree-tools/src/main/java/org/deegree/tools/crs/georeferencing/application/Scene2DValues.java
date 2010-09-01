@@ -44,6 +44,7 @@ import javax.vecmath.Point2d;
 import jj2000.j2k.NotImplementedError;
 
 import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
@@ -456,25 +457,22 @@ public class Scene2DValues {
      * @return
      */
     public void createZoomedEnvWithMinPoint( PointType type, Rectangle rect ) {
-        double minXRaster = rect.getX();
-        double maxYRaster = rect.getY();
-        double maxXRaster = minXRaster + rect.getWidth();
-        double minYRaster = maxYRaster - rect.getHeight();
+        Envelope env = transformRectangleToEnvelope( rect );
         AbstractGRPoint minPoint = null;
         AbstractGRPoint maxPoint = null;
 
         switch ( type ) {
         case GeoreferencedPoint:
-            minPoint = getWorldPoint( new GeoReferencedPoint( minXRaster, minYRaster ) );
-            maxPoint = getWorldPoint( new GeoReferencedPoint( maxXRaster, maxYRaster ) );
+            minPoint = getWorldPoint( new GeoReferencedPoint( env.getMin().get0(), env.getMin().get1() ) );
+            maxPoint = getWorldPoint( new GeoReferencedPoint( env.getMax().get0(), env.getMax().get1() ) );
 
             transformProportionGeorefPartialOrientation( geom.createEnvelope( minPoint.getX(), minPoint.getY(),
                                                                               maxPoint.getX(), maxPoint.getY(), crs ) );
             break;
 
         case FootprintPoint:
-            minPoint = getWorldPoint( new FootprintPoint( minXRaster, minYRaster ) );
-            maxPoint = getWorldPoint( new FootprintPoint( maxXRaster, maxYRaster ) );
+            minPoint = getWorldPoint( new FootprintPoint( env.getMin().get0(), env.getMin().get1() ) );
+            maxPoint = getWorldPoint( new FootprintPoint( env.getMax().get0(), env.getMax().get1() ) );
 
             transformProportionPartialOrientationFoot( geom.createEnvelope( minPoint.getX(), minPoint.getY(),
                                                                             maxPoint.getX(), maxPoint.getY(), null ) );
@@ -482,6 +480,14 @@ public class Scene2DValues {
             break;
         }
 
+    }
+
+    private Envelope transformRectangleToEnvelope( Rectangle rect ) {
+        double minXRaster = rect.getX();
+        double maxYRaster = rect.getY();
+        double maxXRaster = minXRaster + rect.getWidth();
+        double minYRaster = maxYRaster - rect.getHeight();
+        return geom.createEnvelope( minXRaster, minYRaster, maxXRaster, maxYRaster, crs );
     }
 
     /**
@@ -498,6 +504,7 @@ public class Scene2DValues {
      *            to be transformed, must be not <Code>null</Code>.
      */
     public void transformProportionGeorefPartialOrientation( Envelope envelope ) {
+        System.out.println( "[Scene2DValues] transformed PARTIAL bevore: " + envelope );
         double w = dimensionGeoreference.width;
         double h = dimensionGeoreference.height;
 
@@ -514,7 +521,7 @@ public class Scene2DValues {
             newHeight = newWidth * 1 / ratioGeoref;
         }
         this.envelopeGeoref = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
-        System.out.println( "[Scene2DValues] radioEnvGeoref " + envelopeGeoref );
+        System.out.println( "[Scene2DValues] transformed PARTIAL " + envelopeGeoref );
     }
 
     /**
@@ -542,7 +549,7 @@ public class Scene2DValues {
             newWidth = newHeight * ratioGeoref;
         }
         this.envelopeGeoref = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
-        System.out.println( "[Scene2DValues] radioEnvGeoref " + envelopeGeoref );
+        System.out.println( "[Scene2DValues] transformed FULL " + envelopeGeoref );
     }
 
     /**
@@ -572,7 +579,7 @@ public class Scene2DValues {
         }
 
         this.envelopeFootprint = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
-        System.out.println( "[Scene2DValues] radioEnvFootprint " + envelopeFootprint );
+        System.out.println( "[Scene2DValues] transformed PARTIAL Foot " + envelopeFootprint );
     }
 
     public void transformProportionFullOrientationFoot( Envelope envelope ) {
@@ -594,15 +601,15 @@ public class Scene2DValues {
         }
 
         this.envelopeFootprint = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
-        System.out.println( "[Scene2DValues] radioEnvFootprint " + envelopeFootprint );
+        System.out.println( "[Scene2DValues] transformed FULL Foot " + envelopeFootprint );
     }
 
     public CRS getCrs() {
         return crs;
     }
 
-    public void setCrs( CRS crs ) {
-        this.crs = crs;
+    public void setCrs( CoordinateSystem crs ) {
+        this.crs = new CRS( crs );
     }
 
     public void setEnvelopeFootprint( Envelope createEnvelope ) {
@@ -611,6 +618,10 @@ public class Scene2DValues {
 
     public void setEnvelopeGeoref( Envelope envelopeGeoref ) {
         this.envelopeGeoref = envelopeGeoref;
+    }
+
+    public void setEnvelopeGeoref( double[] c ) {
+        this.envelopeGeoref = geom.createEnvelope( c[0], c[1], c[2], c[3], crs );
     }
 
     public URL getGeorefURL() {

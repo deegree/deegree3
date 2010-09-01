@@ -36,6 +36,10 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
@@ -96,6 +100,28 @@ public class ParameterStore {
 
     public Envelope getBbox() {
         return bbox;
+    }
+
+    public double[] getBboxAsArray() {
+        double[] d = new double[4];
+        d[0] = bbox.getMin().get0();
+        d[1] = bbox.getMin().get1();
+        d[2] = bbox.getMax().get0();
+        d[3] = bbox.getMax().get1();
+        // d[0] = bbox.getMin().get1();
+        // d[1] = bbox.getMin().get0();
+        // d[2] = bbox.getMax().get1();
+        // d[3] = bbox.getMax().get0();
+        return d;
+    }
+
+    public List<Point3d> getBboxAsPoint3d() {
+        List<Point3d> pointsList = new ArrayList<Point3d>();
+        Point3d pMin = new Point3d( bbox.getMin().get0(), bbox.getMin().get1(), Double.NaN );
+        Point3d pMax = new Point3d( bbox.getMax().get0(), bbox.getMax().get1(), Double.NaN );
+        pointsList.add( pMin );
+        pointsList.add( pMax );
+        return pointsList;
     }
 
     public int getQor() {
