@@ -50,7 +50,56 @@ import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
- * TODO add class documentation here
+ * Implementation of the <b>affine transformation</b> with 6 parameters.
+ * <p>
+ * 
+ * <li>Build an array of balanced points calculated from the passpoints.</li>
+ * <li>Calculate the coodinates to the balancedPoints.</li>
+ * <li>Calculate the coodinates to the balancedPoints(the points for E, N, X, Y, dX, dY).</li>
+ * <li>Calculate helpers for the caluculation of the needed transformation constants(SumY''X'', mSubtrahend, X''²sum,
+ * Y''²sum).</li>
+ * <li>Calculate the transformation constants applied to the helpers.</li>
+ * <li>Finally caluculate the coordinates of the footprint polygons.</li>
+ * <p>
+ * 
+ * <table border="1">
+ * <tr>
+ * <th></th>
+ * <th>GeoRefPointsX-Dimension</th>
+ * <th>GeoRefPointsY-Dimension</th>
+ * <th>FootprintPointsX-Dimension</th>
+ * <th>FootprintPointsY-Dimension</th>
+ * </tr>
+ * <tr>
+ * <td>terminology</td>
+ * <td>N</td>
+ * <td>E</td>
+ * <td>X</td>
+ * <td>Y</td>
+ * </tr>
+ * <tr>
+ * <td>passPoints</td>
+ * <td>passPointsSrcN</td>
+ * <td>passPointsSrcE</td>
+ * <td>passPointsDstX</td>
+ * <td>passPointsDstY</td>
+ * </tr>
+ * <tr>
+ * <td>balancedPoints</td>
+ * <td>balancedPointN</td>
+ * <td>balancedPointE</td>
+ * <td>balancedPointDstX</td>
+ * <td>balancedPointDstY</td>
+ * </tr>
+ * <tr>
+ * <td>resultingPoints</td>
+ * <td>passPointsN_one</td>
+ * <td>passPointsE_one</td>
+ * <td>calculatedN_one</td>
+ * <td>calculatedE_one</td>
+ * </tr>
+ * </table>
+ * 
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -72,8 +121,8 @@ public class AffineTransformation extends AbstractTransformation implements Tran
 
         if ( arraySize > 0 ) {
 
-            double[] passPointsSrcX = new double[arraySize];
-            double[] passPointsSrcY = new double[arraySize];
+            double[] passPointsSrcE = new double[arraySize];
+            double[] passPointsSrcN = new double[arraySize];
             double[] passPointsDstX = new double[arraySize];
             double[] passPointsDstY = new double[arraySize];
             double cumulatedPointsE = 0;
@@ -94,13 +143,13 @@ public class AffineTransformation extends AbstractTransformation implements Tran
                 Point4Values pValue = p.second;
 
                 // this is strange why is this perverted?? 1/2 later is the second one...
-                x = pValue.getWorldCoords().getY();
-                y = pValue.getWorldCoords().getX();
+                y = pValue.getWorldCoords().getY();
+                x = pValue.getWorldCoords().getX();
 
-                cumulatedPointsE += x;
-                passPointsSrcX[counterSrc] = x;
-                cumulatedPointsN += y;
-                passPointsSrcY[counterSrc] = y;
+                cumulatedPointsE += y;
+                passPointsSrcE[counterSrc] = y;
+                cumulatedPointsN += x;
+                passPointsSrcN[counterSrc] = x;
                 counterSrc++;
 
             }
@@ -126,14 +175,14 @@ public class AffineTransformation extends AbstractTransformation implements Tran
             double[] dX = new double[arraySize];
 
             int counter = 0;
-            for ( double point : passPointsSrcY ) {
+            for ( double point : passPointsSrcN ) {
                 passPointsN_two[counter] = point - balancedPointN;
                 System.out.println( "[AffineTransformation] related BalancedCoords -->  \nN\'\': "
                                     + passPointsN_two[counter] );
                 counter++;
             }
             counter = 0;
-            for ( double point : passPointsSrcX ) {
+            for ( double point : passPointsSrcE ) {
                 passPointsE_two[counter] = point - balancedPointE;
                 System.out.println( "[AffineTransformation] related BalancedCoords -->  \nE\'\': "
                                     + passPointsE_two[counter] );
@@ -241,10 +290,10 @@ public class AffineTransformation extends AbstractTransformation implements Tran
                     double newX_two = x - balancedPointDstX;
                     double newY_two = y - balancedPointDstY;
 
+                    double calculatedE_one = balancedPointE + ( a21 * newX_two ) + ( a22 * newY_two );
+                    double calculatedN_one = balancedPointN + ( a11 * newX_two ) + ( a12 * newY_two );
                     // and pervert it back... 2/2
-                    double calculatedN_one = balancedPointE + ( a21 * newX_two ) + ( a22 * newY_two );
-                    double calculatedE_one = balancedPointN + ( a11 * newX_two ) + ( a12 * newY_two );
-                    pointList.add( geom.createPoint( "point", calculatedE_one, calculatedN_one, null ) );
+                    pointList.add( geom.createPoint( "point", calculatedN_one, calculatedE_one, null ) );
 
                 }
                 Points points = new PointsList( pointList );

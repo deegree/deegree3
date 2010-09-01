@@ -50,7 +50,56 @@ import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
 /**
- * Implementation of the Helmert-Transformation with 4 parameters
+ * Implementation of the <b>helmert transformation</b> with 4 parameters.
+ * <p>
+ * 
+ * <li>Build an array of balanced points calculated from the passpoints.</li>
+ * <li>Calculate the coodinates to the balancedPoints.</li>
+ * <li>Calculate the coodinates to the balancedPoints(the points for E, N, X, Y).</li>
+ * <li>Calculate helpers for the caluculation of the needed transformation constants(oMinuend, aMinuend, oSubtrahend,
+ * aSubtrahend, divisor).</li>
+ * <li>Calculate the transformation constants applied to the helpers.</li>
+ * <li>Finally caluculate the coordinates of the footprint polygons.</li>
+ * <p>
+ * 
+ * <table border="1">
+ * <tr>
+ * <th></th>
+ * <th>GeoRefPointsX-Dimension</th>
+ * <th>GeoRefPointsY-Dimension</th>
+ * <th>FootprintPointsX-Dimension</th>
+ * <th>FootprintPointsY-Dimension</th>
+ * </tr>
+ * <tr>
+ * <td>terminology</td>
+ * <td>N</td>
+ * <td>E</td>
+ * <td>X</td>
+ * <td>Y</td>
+ * </tr>
+ * <tr>
+ * <td>passPoints</td>
+ * <td>passPointsSrcN</td>
+ * <td>passPointsSrcE</td>
+ * <td>passPointsDstX</td>
+ * <td>passPointsDstY</td>
+ * </tr>
+ * <tr>
+ * <td>balancedPoints</td>
+ * <td>balancedPointN</td>
+ * <td>balancedPointE</td>
+ * <td>balancedPointDstX</td>
+ * <td>balancedPointDstY</td>
+ * </tr>
+ * <tr>
+ * <td>resultingPoints</td>
+ * <td>passPointsN_one</td>
+ * <td>passPointsE_one</td>
+ * <td>calculatedN_one</td>
+ * <td>calculatedE_one</td>
+ * </tr>
+ * </table>
+ * 
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -72,8 +121,8 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
 
         if ( arraySize > 0 ) {
 
-            double[] passPointsSrcX = new double[arraySize];
-            double[] passPointsSrcY = new double[arraySize];
+            double[] passPointsSrcE = new double[arraySize];
+            double[] passPointsSrcN = new double[arraySize];
             double[] passPointsDstX = new double[arraySize];
             double[] passPointsDstY = new double[arraySize];
             double cumulatedPointsE = 0;
@@ -94,13 +143,13 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
                 Point4Values pValue = p.second;
 
                 // this is strange why is this perverted?? 1/2 later is the second one...
-                x = pValue.getWorldCoords().getY();
-                y = pValue.getWorldCoords().getX();
+                y = pValue.getWorldCoords().getY();
+                x = pValue.getWorldCoords().getX();
 
-                cumulatedPointsE += x;
-                passPointsSrcX[counterSrc] = x;
-                cumulatedPointsN += y;
-                passPointsSrcY[counterSrc] = y;
+                cumulatedPointsE += y;
+                passPointsSrcE[counterSrc] = y;
+                cumulatedPointsN += x;
+                passPointsSrcN[counterSrc] = x;
                 counterSrc++;
 
             }
@@ -124,13 +173,13 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
             double[] passPointsDstY_two = new double[arraySize];
 
             int counter = 0;
-            for ( double point : passPointsSrcY ) {
+            for ( double point : passPointsSrcN ) {
                 passPointsN_two[counter] = point - balancedPointN;
                 System.out.println( "[Helmert4] related BalancedCoords -->  \nN\'\': " + passPointsN_two[counter] );
                 counter++;
             }
             counter = 0;
-            for ( double point : passPointsSrcX ) {
+            for ( double point : passPointsSrcE ) {
                 passPointsE_two[counter] = point - balancedPointE;
                 System.out.println( "[Helmert4] related BalancedCoords -->  \nE\'\': " + passPointsE_two[counter] );
                 counter++;
@@ -211,9 +260,9 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
                     // double calculatedY_one = balancedPointN + ( a * newX_two ) - ( o * newY_two );
                     // and pervert it back... 2/2
 
-                    double calculatedN_one = balancedPointE + ( a * newY_two ) + ( o * newX_two );
-                    double calculatedE_one = balancedPointN + ( a * newX_two ) - ( o * newY_two );
-                    pointList.add( geom.createPoint( "point", calculatedE_one, calculatedN_one, null ) );
+                    double calculatedE_one = balancedPointE + ( a * newY_two ) + ( o * newX_two );
+                    double calculatedN_one = balancedPointN + ( a * newX_two ) - ( o * newY_two );
+                    pointList.add( geom.createPoint( "point", calculatedN_one, calculatedE_one, null ) );
 
                 }
                 Points points = new PointsList( pointList );
