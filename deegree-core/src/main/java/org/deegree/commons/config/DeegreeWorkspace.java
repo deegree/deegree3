@@ -92,6 +92,8 @@ public class DeegreeWorkspace {
 
     private CoverageBuilderManager coverageBuilderManager;
 
+    private Actions currentAction = Actions.NotInited;
+
     private DeegreeWorkspace( String workspaceName, File dir ) throws IOException {
         this.dir = new File( dir.getCanonicalPath() );
         this.name = workspaceName + "(external)";
@@ -204,14 +206,51 @@ public class DeegreeWorkspace {
      * Initializes all managed configurations.
      */
     public synchronized void initAll() {
+        currentAction = Actions.Proxy;
         ProxyUtils.setupProxyParameters( new File( dir, "proxy.xml" ) );
+        currentAction = Actions.ConnectionManager;
         ConnectionManager.init( new File( dir, "jdbc" ) );
+        currentAction = Actions.ObservationManager;
         ObservationStoreManager.init( new File( dir, "datasources" + separator + "observation" ) );
+        currentAction = Actions.FeatureManager;
         FeatureStoreManager.init( new File( dir, "datasources" + separator + "feature" ) );
+        currentAction = Actions.CoverageManager;
         getCoverageBuilderManager().init();
+        currentAction = Actions.RecordManager;
         RecordStoreManager.init( new File( dir, "datasources" + separator + "record" ) );
+        currentAction = Actions.RenderableManager;
         RenderableStoreManager.init( new File( dir, "datasources" + separator + "renderable" ) );
+        currentAction = Actions.BatchedMTManager;
         BatchedMTStoreManager.init( new File( dir, "datasources" + separator + "batchedmt" ) );
+        currentAction = Actions.Inited;
+    }
+
+    /**
+     * @return one of the actions defined in the enum, depending of the state of the workspace.
+     */
+    public Actions getCurrentAction() {
+        return currentAction;
+    }
+
+    /**
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static enum Actions {
+        /***/
+        NotInited, /***/
+        Proxy, /***/
+        ConnectionManager, /***/
+        ObservationManager, /***/
+        FeatureManager, /***/
+        CoverageManager, /***/
+        RecordManager, /***/
+        RenderableManager, /***/
+        BatchedMTManager, /***/
+        Inited
     }
 
     /**
