@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -44,7 +45,9 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SQLExecution {
+public class SQLExecution implements Serializable {
+
+    private static final long serialVersionUID = -5784976166723417648L;
 
     private static Logger LOG = LoggerFactory.getLogger( SQLExecution.class );
 

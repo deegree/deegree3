@@ -38,6 +38,7 @@ package org.deegree.console.jdbc;
 import java.io.IOException;
 
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
 import lombok.Getter;
@@ -54,6 +55,7 @@ import org.deegree.console.ConfigManager;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
+@RequestScoped
 public class NewConnectionConfig {
 
     @Getter

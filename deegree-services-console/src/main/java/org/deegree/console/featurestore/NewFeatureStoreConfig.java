@@ -38,6 +38,7 @@ package org.deegree.console.featurestore;
 import java.io.IOException;
 
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
 import lombok.Getter;
@@ -55,6 +56,7 @@ import org.deegree.feature.persistence.FeatureStoreProvider;
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
+@RequestScoped
 public class NewFeatureStoreConfig {
 
     @Getter
