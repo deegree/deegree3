@@ -702,6 +702,7 @@ public class Controller {
                         wmsStartDialog.setVisible( false );
                         try {
                             wmsParameter = new WMSParameterChooser( wmsStartDialog, mapURLString );
+                            wmsParameter.addCheckBoxListener( new ButtonListener() );
                         } catch ( MalformedURLException e1 ) {
                             new ErrorDialog( wmsStartDialog, JDialog.ERROR,
                                              "The requested URL is malformed! There is no response gotten from the server. " );
@@ -720,15 +721,15 @@ public class Controller {
                     if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
 
                         URL mapURL = wmsParameter.getMapURL();
-                        CRS CRS = wmsParameter.getCheckBoxSRS();
+                        CRS crs = wmsParameter.getCheckBoxSRS();
                         String layers = wmsParameter.getCheckBoxListAsString().toString();
-                        List<String> layerList = wmsParameter.getCheckBoxListLayer();
+                        List<String> layerList = wmsParameter.getCheckBoxListLayerText();
                         String format = wmsParameter.getCheckBoxFormatAsString().toString();
-                        Envelope env = wmsParameter.getEnvelope( CRS, layerList );
+                        Envelope env = wmsParameter.getEnvelope( crs, layerList );
                         if ( env != null ) {
                             int qor = max( panel.getWidth(), panel.getHeight() );
                             sceneValues.setGeorefURL( mapURL );
-                            store = new ParameterStore( mapURL, CRS, format, layers, env, qor );
+                            store = new ParameterStore( mapURL, crs, format, layers, env, qor );
                             model = new Scene2DImplWMS( store );
                             initGeoReferencingScene( model );
                             wmsParameter.setVisible( false );
@@ -738,6 +739,19 @@ public class Controller {
 
                     }
                 }
+            }
+
+            if ( source instanceof JCheckBox ) {
+
+                List<String> crsList = new ArrayList<String>();
+                String layerName = null;
+
+                for ( String s : wmsParameter.getCheckBoxListLayerText() ) {
+
+                    wmsParameter.fillSRSList( s );
+
+                }
+
             }
             if ( source instanceof JMenuItem ) {
 

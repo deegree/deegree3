@@ -39,13 +39,14 @@ import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -62,6 +63,7 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.AbstractGRDialo
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @param <E>
  */
 public class WMSParameterChooser extends AbstractGRDialog {
 
@@ -76,13 +78,21 @@ public class WMSParameterChooser extends AbstractGRDialog {
 
     private ButtonGroup groupSRS;
 
+    // private JComboBox comboSRS;
+
     private List<JCheckBox> checkBoxListFormat;
 
     private List<JCheckBox> checkBoxSRSList;
 
+    private List<String> srsList;
+
+    private List<List<String>> listOfSrsList;
+
     private WMSClient111 wmsClient;
 
     private URL url;
+
+    private JLabel labelC;
 
     public WMSParameterChooser( Component parent, String urlString ) throws MalformedURLException, NullPointerException {
         super( parent, new Dimension( 300, 600 ) );
@@ -98,14 +108,31 @@ public class WMSParameterChooser extends AbstractGRDialog {
         List<String> allFormats = wmsClient.getFormats( GetMap );
         this.setCheckBoxListLayer( allLayers );
         this.setCheckBoxListFormat( allFormats );
+        this.srsList = new ArrayList<String>();
+        this.listOfSrsList = new ArrayList<List<String>>();
 
     }
 
-    public List<String> getCheckBoxListLayer() {
+    public List<String> getCheckBoxListLayerText() {
         List<String> selectedLayer = new ArrayList<String>();
         for ( JCheckBox check : checkBoxListLayer ) {
             if ( check.isSelected() ) {
                 selectedLayer.add( check.getText() );
+            }
+        }
+        if ( selectedLayer.size() == 0 ) {
+            removeAllElementsFromGroup( groupSRS );
+            labelC.setVisible( false );
+        }
+
+        return selectedLayer;
+    }
+
+    public List<String> getCheckBoxListLayerName() {
+        List<String> selectedLayer = new ArrayList<String>();
+        for ( JCheckBox check : checkBoxListLayer ) {
+            if ( check.isSelected() ) {
+                selectedLayer.add( check.getName() );
             }
         }
 
@@ -134,14 +161,16 @@ public class WMSParameterChooser extends AbstractGRDialog {
         this.getPanel().add( label );
         checkBoxListLayer = new ArrayList<JCheckBox>();
         for ( String s : checkBoxList ) {
-            checkBoxListLayer.add( new JCheckBox( s ) );
+            JCheckBox box = new JCheckBox( s );
+            box.setName( s );
+            checkBoxListLayer.add( box );
         }
         if ( checkBoxListLayer != null ) {
             for ( JCheckBox check : checkBoxListLayer ) {
                 this.getPanel().add( check );
             }
         }
-        setSRSList( checkBoxList );
+
     }
 
     public StringBuilder getCheckBoxFormatAsString() {
@@ -169,33 +198,62 @@ public class WMSParameterChooser extends AbstractGRDialog {
                 this.getPanel().add( check );
             }
         }
+        labelC = new JLabel( "Coordinatesystems" );
+        this.getPanel().add( labelC );
+        labelC.setVisible( false );
+    }
+
+    public void fillSRSList( String layerName ) {
+        labelC.setVisible( true );
+
+        List<String> srsListTemp = wmsClient.getCoordinateSystems( layerName );
+        listOfSrsList.add( srsListTemp );
+        this.checkBoxSRSList = new ArrayList<JCheckBox>();
+
+        if ( listOfSrsList.size() > 1 ) {
+            for ( List<String> l : listOfSrsList ) {
+                srsList = mergeLists( srsList, l );
+            }
+        } else {
+            srsList.addAll( srsListTemp );
+        }
+
+        for ( String s : srsList ) {
+            checkBoxSRSList.add( new JCheckBox( s ) );
+        }
+        removeAllElementsFromGroup( groupSRS );
+        if ( checkBoxSRSList != null ) {
+            for ( JCheckBox check : checkBoxSRSList ) {
+
+                groupSRS.add( check );
+                this.getPanel().add( check );
+
+            }
+        }
+        // comboSRS.removeAllItems();
+        // for ( String s : srsList ) {
+        // comboSRS.addItem( s );
+        // }
 
     }
 
-    private void setSRSList( List<String> layerList ) {
-        JLabel label = new JLabel( "Coordinatesystems" );
-        this.getPanel().add( label );
-        checkBoxSRSList = new ArrayList<JCheckBox>();
-        List<String> srsList = null;
-        Set<String> srsSet = new HashSet<String>();
-
-        for ( String layerName : layerList ) {
-            srsList = wmsClient.getCoordinateSystems( layerName );
-            for ( String s : srsList ) {
-                srsSet.add( s );
-            }
-
+    private void removeAllElementsFromGroup( ButtonGroup group ) {
+        while ( group.getElements().hasMoreElements() ) {
+            AbstractButton b = group.getElements().nextElement();
+            this.getPanel().remove( b );
+            group.remove( b );
         }
-        for ( String s : srsSet ) {
-            checkBoxSRSList.add( new JCheckBox( s ) );
-        }
-        if ( checkBoxSRSList != null ) {
-            for ( JCheckBox check : checkBoxSRSList ) {
-                groupSRS.add( check );
-                this.getPanel().add( check );
+        this.getPanel().revalidate();
+    }
+
+    private <E> List<E> mergeLists( Collection<? extends E> c1, Collection<? extends E> c2 ) {
+        List<E> list = new ArrayList<E>();
+        for ( E e : c2 ) {
+            if ( c1.contains( e ) ) {
+                list.add( e );
             }
         }
-
+        return list;
     }
 
     public CRS getCheckBoxSRS() {
@@ -217,6 +275,44 @@ public class WMSParameterChooser extends AbstractGRDialog {
 
     public URL getMapURL() {
         return url;
+    }
+
+    public ButtonGroup getGroupSRS() {
+        return groupSRS;
+    }
+
+    // public JComboBox getComboSRS() {
+    // return comboSRS;
+    // }
+    //
+    // /**
+    // *
+    // * @return the comboBox as a CRS, can be <Code>null</Code>.
+    // */
+    // public CRS getComboCRS() {
+    // CRS crs = null;
+    //
+    // // crs = new CRS( comboSRS.getSelectedItem().toString() );
+    //
+    // return crs;
+    // }
+    //
+    // public void setComboSRS( JComboBox comboSRS ) {
+    // this.comboSRS = comboSRS;
+    // }
+    //
+    // public void addComboActionListener( ActionListener l ) {
+    // comboSRS.addActionListener( l );
+    // }
+
+    public void addCheckBoxListener( ActionListener l ) {
+        for ( JCheckBox c : checkBoxListLayer ) {
+            c.addActionListener( l );
+        }
+    }
+
+    public WMSClient111 getWmsClient() {
+        return wmsClient;
     }
 
 }
