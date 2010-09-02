@@ -119,8 +119,9 @@ public abstract class AbstractPanel2D extends JPanel {
         return selectedPoints;
     }
 
-    public void setSelectedPoints( List<Point4Values> selectedPoints ) {
+    public void setSelectedPoints( List<Point4Values> selectedPoints, Scene2DValues sceneValues ) {
         this.selectedPoints = selectedPoints;
+        updatePoints( sceneValues );
     }
 
     public Point4Values getLastAbstractPoint() {
