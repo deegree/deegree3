@@ -203,6 +203,11 @@ public class WMSParameterChooser extends AbstractGRDialog {
         labelC.setVisible( false );
     }
 
+    /**
+     * 
+     * @param layerName
+     *            of which the coordinateSystems should be taken to fill the list of srs.
+     */
     public void fillSRSList( String layerName ) {
         labelC.setVisible( true );
 

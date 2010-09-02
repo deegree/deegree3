@@ -159,22 +159,29 @@ public class PointTableFrame extends JFrame {
     }
 
     /**
-     * Removes the specified row from the view.
+     * Removes the specified rows from the view. It removed one element from the dataVector of the underlying tableModel
+     * and after that it fires a dataChanged event to notify all the listeners only once. That is better practice
+     * instead of calling the removeRow() method which notify all listeners every time one row is deleted.
      * 
-     * @param rowNumber
+     * @param rowsNumber
+     *            , not <Code>null</Code>.
      */
-    public void removeRow( int rowNumber ) {
-        model.removeRow( rowNumber );
+    public void removeRow( int[] rowsNumber ) {
+
+        int counter = 0;
+        for ( int i : rowsNumber ) {
+            model.getDataVector().remove( i - counter );
+            counter++;
+        }
+        model.fireTableDataChanged();
     }
 
     /**
      * Removes all rows of the table.
      */
     public void removeAllRows() {
-        int length = model.getRowCount();
-        for ( int row = 0; row < length; row++ ) {
-            this.removeRow( 0 );
-        }
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
     }
 
     public DefaultTableModel getModel() {

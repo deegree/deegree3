@@ -104,12 +104,15 @@ public class Point4Values {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append( "<OldValue, InitialValue, NewValue, WorldCoordinates>\n" );
-        sb.append( "<" ).append( oldValue ).append( ", " ).append( initialValue ).append( ", " ).append( newValue ).append(
-                                                                                                                            ", " ).append(
-                                                                                                                                           worldCoords ).append(
-                                                                                                                                                                 ">" );
+        sb.append( "<OldValue, InitialValue, NewValue, WorldCoordinates, Row, ColX, ColY>\n" );
+        sb.append( "<" ).append( oldValue );
+        sb.append( ", " ).append( initialValue );
+        sb.append( ", " ).append( newValue );
+        sb.append( ", " ).append( worldCoords );
+        sb.append( ", " ).append( rc.getRow() );
+        sb.append( ", " ).append( rc.getColumnX() );
+        sb.append( ", " ).append( rc.getColumnY() );
+        sb.append( ">" );
         return sb.toString();
     }
-
 }

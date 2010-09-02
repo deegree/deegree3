@@ -148,9 +148,9 @@ public abstract class AbstractPanel2D extends JPanel {
 
     }
 
-    public void removeFromSelectedPoints( Point4Values point ) {
-        selectedPoints.remove( point );
-    }
+    // public void removeFromSelectedPoints( Point4Values point ) {
+    // selectedPoints.remove( point );
+    // }
 
     public void removeAllFromSelectedPoints() {
         selectedPoints = new ArrayList<Point4Values>();

@@ -74,7 +74,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -149,8 +148,6 @@ public class Controller {
 
     private PointTableFrame tablePanel;
 
-    private RasterIOOptions options;
-
     private ParameterStore store;
 
     private Footprint footPrint;
@@ -178,8 +175,6 @@ public class Controller {
     private TransformationType transformationType;
 
     private TransformationMethod transform;
-
-    // private ParameterStore store;
 
     private NavigationPanel optionNavPanel;
 
@@ -209,26 +204,19 @@ public class Controller {
 
     private CheckBoxListModel modelTransformation;
 
-    private CheckBoxListModel modelFormats;
-
-    private CheckBoxListModel modelCRS;
-
     private RowColumn rc;
 
     public Controller( GRViewerGUI view ) {
 
         geom = new GeometryFactory();
-        // options = new RasterOptions( store ).getOptions();
         sceneValues = new Scene2DValues( geom );
         this.view = view;
-        // this.model = model;
         this.panel = view.getScenePanel2D();
         this.footPanel = view.getFootprintPanel();
 
         this.start = false;
 
         this.glHandler = view.getOpenGLEventListener();
-        // this.store = store;
         this.textFieldModel = new CoordinateJumperModel();
         this.dialogModel = new OptionDialogModel();
         AbstractPanel2D.selectedPointSize = this.dialogModel.getSelectionPointSize().first;
@@ -236,9 +224,7 @@ public class Controller {
 
         this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
 
-        // model.init( options, sceneValues );
         view.addListeners( new ButtonListener() );
-        // view.addChangeListener( new ChangeActionListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
 
         initToggleButtons();
@@ -367,13 +353,8 @@ public class Controller {
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
         footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
         footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
-        // footPanel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
-        // footPanel.addScene2DFocusListener( new Scene2DFocusListener() );
 
-        // sceneValues.setDimenstionFootpanel( footPanel.getBounds() );
         mouseFootprint = new FootprintMouseModel();
-
-        // List<WorldRenderableObject> rese = File3dImporter.open( view, store.getFilename() );
         List<WorldRenderableObject> rese = File3dImporter.open( view, filePath );
         sourceCRS = null;
         for ( WorldRenderableObject res : rese ) {
@@ -434,8 +415,6 @@ public class Controller {
         panel.addScene2DMouseListener( new Scene2DMouseListener() );
         panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
         panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
-        // panel.addScene2DActionKeyListener( new Scene2DActionKeyListener() );
-        // panel.addScene2DFocusListener( new Scene2DFocusListener() );
     }
 
     /**
@@ -548,38 +527,34 @@ public class Controller {
 
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
-
                     for ( int tableRow : tableRows ) {
-                        FootprintPoint pointFromTable = new FootprintPoint(
-                                                                            new Double(
-                                                                                        tablePanel.getModel().getValueAt(
-                                                                                                                          tableRow,
-                                                                                                                          2 ).toString() ).doubleValue(),
-                                                                            new Double(
-                                                                                        tablePanel.getModel().getValueAt(
-                                                                                                                          tableRow,
 
-                                                                                                                          3 ).toString() ).doubleValue() );
                         boolean contained = false;
                         for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
-                            double x = p.first.getWorldCoords().getX();
-                            double y = p.first.getWorldCoords().getY();
-                            if ( pointFromTable.getX() == x && pointFromTable.getY() == y ) {
-                                removeFromMappedPoints( p );
+                            if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
+
                                 contained = true;
-                                panel.removeFromSelectedPoints( p.second );
-                                footPanel.removeFromSelectedPoints( p.first );
+                                removeFromMappedPoints( p );
                                 break;
                             }
+
                         }
                         if ( contained == false ) {
                             footPanel.setLastAbstractPoint( null, null, null );
                             panel.setLastAbstractPoint( null, null, null );
                         }
 
-                        tablePanel.removeRow( tableRow );
-
                     }
+                    updateMappedPoints();
+                    List<Point4Values> panelList = new ArrayList<Point4Values>();
+                    List<Point4Values> footPanelList = new ArrayList<Point4Values>();
+                    for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+                        panelList.add( p.second );
+                        footPanelList.add( p.first );
+                    }
+                    panel.setSelectedPoints( panelList );
+                    footPanel.setSelectedPoints( footPanelList );
+                    tablePanel.removeRow( tableRows );
 
                     panel.repaint();
                     footPanel.repaint();
@@ -594,10 +569,6 @@ public class Controller {
                     if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
                         setValues();
                     }
-
-                    // view.getMenuTransformation().setSelected( false );
-                    // view.getMenuTransformation().getPopupMenu().setVisible( false );
-                    // System.out.println( sourceCRS + " " + targetCRS );
 
                     switch ( transformationType ) {
 
@@ -743,9 +714,6 @@ public class Controller {
 
             if ( source instanceof JCheckBox ) {
 
-                List<String> crsList = new ArrayList<String>();
-                String layerName = null;
-
                 for ( String s : wmsParameter.getCheckBoxListLayerText() ) {
 
                     wmsParameter.fillSRSList( s );
@@ -779,8 +747,9 @@ public class Controller {
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
                     FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
-                    if ( fileChooser.getSelectedFilePath() != null ) {
-                        initFootprintScene( fileChooser.getSelectedFilePath() );
+                    String fileChoosed = fileChooser.getSelectedFilePath();
+                    if ( fileChoosed != null ) {
+                        initFootprintScene( fileChoosed );
                     }
 
                 }
@@ -793,8 +762,9 @@ public class Controller {
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
                     FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
-                    if ( fileChooser.getSelectedFilePath() != null ) {
-                        model = new Scene2DImplShape( fileChooser.getSelectedFilePath(), panel.getG2() );
+                    String fileChoosed = fileChooser.getSelectedFilePath();
+                    if ( fileChoosed != null ) {
+                        model = new Scene2DImplShape( fileChoosed, panel.getG2() );
                         initGeoReferencingScene( model );
                     }
 
@@ -1577,11 +1547,22 @@ public class Controller {
         if ( pointFromTable != null ) {
             mappedPoints.remove( pointFromTable );
         }
+
     }
 
+    /**
+     * Updates the rowNumber of the remained mappedPoints
+     */
     private void updateMappedPoints() {
-
-        // mappedPoints.set( index, element );
+        int counter = 0;
+        for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+            p.first = new Point4Values( p.first.getInitialValue(), p.first.getWorldCoords(),
+                                        new RowColumn( counter, p.first.getRc().getColumnX(),
+                                                       p.first.getRc().getColumnY() ) );
+            p.second = new Point4Values( p.second.getInitialValue(), p.second.getWorldCoords(),
+                                         new RowColumn( counter++, p.second.getRc().getColumnX(),
+                                                        p.second.getRc().getColumnY() ) );
+        }
     }
 
     /**
