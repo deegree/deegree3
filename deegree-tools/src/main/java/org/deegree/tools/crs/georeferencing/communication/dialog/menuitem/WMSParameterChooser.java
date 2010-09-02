@@ -263,11 +263,13 @@ public class WMSParameterChooser extends AbstractGRDialog {
 
     public CRS getCheckBoxSRS() {
         CRS crs = null;
-        for ( JCheckBox check : checkBoxSRSList ) {
+        if ( checkBoxSRSList != null ) {
+            for ( JCheckBox check : checkBoxSRSList ) {
 
-            if ( check.isSelected() ) {
-                crs = new CRS( check.getText() );
-                break;
+                if ( check.isSelected() ) {
+                    crs = new CRS( check.getText() );
+                    break;
+                }
             }
         }
         return crs;

@@ -696,16 +696,26 @@ public class Controller {
                         String layers = wmsParameter.getCheckBoxListAsString().toString();
                         List<String> layerList = wmsParameter.getCheckBoxListLayerText();
                         String format = wmsParameter.getCheckBoxFormatAsString().toString();
-                        Envelope env = wmsParameter.getEnvelope( crs, layerList );
-                        if ( env != null ) {
-                            int qor = max( panel.getWidth(), panel.getHeight() );
-                            sceneValues.setGeorefURL( mapURL );
-                            store = new ParameterStore( mapURL, crs, format, layers, env, qor );
-                            model = new Scene2DImplWMS( store );
-                            initGeoReferencingScene( model );
-                            wmsParameter.setVisible( false );
+
+                        if ( layers == null || layers.length() == 0 ) {
+                            new ErrorDialog( wmsParameter, JDialog.ERROR,
+                                             "There is no Layer selected. Please selected at least one. " );
+                        } else if ( format == null || format.equals( "" ) ) {
+                            new ErrorDialog( wmsParameter, JDialog.ERROR, "There is no format selected. " );
+                        } else if ( crs == null ) {
+                            new ErrorDialog( wmsParameter, JDialog.ERROR, "There is no CRS selected. " );
                         } else {
-                            new ErrorDialog( wmsParameter, JDialog.ERROR, "There is no Envelope for this request. " );
+                            Envelope env = wmsParameter.getEnvelope( crs, layerList );
+                            if ( env != null ) {
+                                int qor = max( panel.getWidth(), panel.getHeight() );
+                                sceneValues.setGeorefURL( mapURL );
+                                store = new ParameterStore( mapURL, crs, format, layers, env, qor );
+                                model = new Scene2DImplWMS( store );
+                                initGeoReferencingScene( model );
+                                wmsParameter.setVisible( false );
+                            } else {
+                                new ErrorDialog( wmsParameter, JDialog.ERROR, "There is no Envelope for this request. " );
+                            }
                         }
 
                     }

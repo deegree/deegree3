@@ -116,6 +116,8 @@ public class GUIConstants {
 
     public static final Dimension DIM_COORDINATEJUMPER = new Dimension( 200, 100 );
 
+    public static final Dimension DIM_OPEN_WMS = new Dimension( 700, 150 );
+
     public static final Dimension DIALOG_DIMENSION = new Dimension( 500, 300 );
 
     public static final Dimension DIM_NAVIGATION_BUTTONS = new Dimension( 20, 20 );

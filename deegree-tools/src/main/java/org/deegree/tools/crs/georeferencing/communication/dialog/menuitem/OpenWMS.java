@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.communication.dialog.menuitem;
 
-import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DIM_COORDINATEJUMPER;
-
-import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.dialog.AbstractGRDialog;
 
 /**
@@ -62,13 +62,21 @@ public class OpenWMS extends AbstractGRDialog {
     private JTextField textField;
 
     public OpenWMS( Component parent ) {
-        super( parent, DIM_COORDINATEJUMPER );
+        super( parent, GUIConstants.DIM_OPEN_WMS );
 
-        textField = new JTextField( 18 );
+        textField = new JTextField( 50 );
         textField.setText( "http://localhost:8080/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
-
-        this.getPanel().add( textField, BorderLayout.CENTER );
-
+        JLabel label = new JLabel( "Please insert a valid WMS Capabilities URL: " );
+        JLabel spaceB = new JLabel( " " );
+        JLabel spaceA = new JLabel( " " );
+        Font font = new Font( "Serif", Font.BOLD, 15 );
+        label.setFont( font );
+        spaceB.setFont( font );
+        spaceA.setFont( font );
+        this.getPanel().add( spaceB );
+        this.getPanel().add( label );
+        this.getPanel().add( spaceA );
+        this.getPanel().add( textField );
     }
 
     public JTextField getTextField() {
