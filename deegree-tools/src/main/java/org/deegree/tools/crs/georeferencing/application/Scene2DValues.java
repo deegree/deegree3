@@ -501,7 +501,7 @@ public class Scene2DValues {
      * The partial orientation orients on the minimal span dimension.
      * 
      * @param envelope
-     *            to be transformed, must be not <Code>null</Code>.
+     *            to be transformed, mustn't be <Code>null</Code>.
      */
     public void transformProportionGeorefPartialOrientation( Envelope envelope ) {
         System.out.println( "[Scene2DValues] transformed PARTIAL bevore: " + envelope );
@@ -520,7 +520,8 @@ public class Scene2DValues {
         } else if ( ratioGeoref > 1 ) {
             newHeight = newWidth * 1 / ratioGeoref;
         }
-        this.envelopeGeoref = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY, crs );
+        this.envelopeGeoref = geom.createEnvelope( minX, maxY - newHeight, minX + newWidth, maxY,
+                                                   envelope.getCoordinateSystem() );
         System.out.println( "[Scene2DValues] transformed PARTIAL " + envelopeGeoref );
     }
 
@@ -618,6 +619,7 @@ public class Scene2DValues {
 
     public void setEnvelopeGeoref( Envelope envelopeGeoref ) {
         this.envelopeGeoref = envelopeGeoref;
+        this.crs = envelopeGeoref.getCoordinateSystem();
     }
 
     public void setEnvelopeGeoref( double[] c ) {

@@ -105,6 +105,7 @@ public class Scene2DImplShape implements Scene2D {
                                            null );
 
             store.init();
+            srs = store.getStorageSRS();
 
         } catch ( FeatureStoreException e1 ) {
             // TODO Auto-generated catch block
@@ -132,7 +133,10 @@ public class Scene2DImplShape implements Scene2D {
         try {
             if ( imageBoundingbox == null ) {
                 imageBoundingbox = store.getEnvelope( schema.getFeatureTypes()[0].getName() );
+                imageBoundingbox.setCoordinateSystem( srs );
                 sceneValues.setEnvelopeGeoref( imageBoundingbox );
+                sceneValues.transformProportionGeorefPartialOrientation( imageBoundingbox );
+                imageBoundingbox = sceneValues.getEnvelopeGeoref();
             }
         } catch ( FeatureStoreException e1 ) {
             // TODO Auto-generated catch block
@@ -144,7 +148,7 @@ public class Scene2DImplShape implements Scene2D {
 
         Query query = new Query( schema.getFeatureTypes()[0].getName(), imageBoundingbox, null, -1, -1, -1 );
         double resolution = max( imageBoundingbox.getSpan0() / imageWidth, imageBoundingbox.getSpan1() / imageHeight );
-        srs = store.getStorageSRS();
+
         try {
             FeatureResultSet fs = store.query( query );
             for ( Feature f : fs ) {
