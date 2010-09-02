@@ -189,7 +189,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             latlon = lookup( "CRS:84" );
             Envelope layerEnv = layer.getBbox();
             if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
-                Envelope bbox = (Envelope) new GeometryTransformer( latlon ).transform( layerEnv );
+                Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
                 writer.writeStartElement( "LatLonBoundingBox" );
                 writer.writeAttribute( "minx", Double.toString( bbox.getMin().get0() ) );
                 writer.writeAttribute( "miny", Double.toString( bbox.getMin().get1() ) );
@@ -207,7 +207,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                             envelope = (Envelope) new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv,
                                                                                                             latlon );
                         } else {
-                            envelope = (Envelope) new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv );
+                            envelope = new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv );
                         }
                     } catch ( IllegalArgumentException e ) {
                         LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );

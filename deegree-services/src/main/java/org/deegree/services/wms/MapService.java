@@ -833,6 +833,9 @@ public class MapService {
             }
         }
         for ( Layer c : l.getChildren() ) {
+            if ( c.getName() != null ) {
+                s = registry.getDefault( c.getName() );
+            }
             warnings.addAll( getFeatures( feats, c, fi, s ) );
         }
         return warnings;

@@ -69,8 +69,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.multi.MultiPoint;
-import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.wms.dims.DimensionLexer;
 import org.deegree.protocol.wms.dims.parser;
 import org.deegree.rendering.r2d.Renderer;
@@ -399,7 +397,7 @@ public abstract class Layer {
                 bbox = null;
             }
             if ( bbox != null && bbox.getCoordinateSystem() != CRS.EPSG_4326 ) {
-                bbox = (Envelope) new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() ).transform( bbox );
+                bbox = new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() ).transform( bbox );
             }
             if ( children != null && !children.isEmpty() ) {
                 for ( Layer l : children ) {
@@ -408,7 +406,7 @@ public abstract class Layer {
                         lbox = null;
                     }
                     if ( lbox != null ) {
-                        lbox = (Envelope) new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() ).transform( lbox );
+                        lbox = new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() ).transform( lbox );
                         if ( bbox == null ) {
                             bbox = lbox;
                         } else {

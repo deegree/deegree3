@@ -139,7 +139,7 @@ public class RemoteWMSLayer extends Layer {
             try {
                 Envelope bbox = client.getBoundingBox( defaultSRS, layers );
                 GeometryTransformer trans = new GeometryTransformer( WGS84 );
-                setBbox( (Envelope) trans.transform( bbox ) );
+                setBbox( trans.transform( bbox ) );
             } catch ( UnknownCRSException e ) {
                 LOG.warn( "The coordinate system " + defaultSRS + " could not be found." );
             } catch ( TransformationException e ) {

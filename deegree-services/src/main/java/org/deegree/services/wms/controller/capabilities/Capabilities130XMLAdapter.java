@@ -203,7 +203,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
             latlon = lookup( "CRS:84" );
             Envelope layerEnv = layer.getBbox();
             if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
-                Envelope bbox = (Envelope) new GeometryTransformer( latlon ).transform( layerEnv );
+                Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
                 writer.writeStartElement( WMSNS, "EX_GeographicBoundingBox" );
                 Point min = bbox.getMin();
                 Point max = bbox.getMax();
@@ -232,7 +232,7 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                         if ( src.getCoordinateSystem() == null ) {
                             envelope = (Envelope) transformer.transform( layerEnv, latlon );
                         } else {
-                            envelope = (Envelope) transformer.transform( layerEnv );
+                            envelope = transformer.transform( layerEnv );
                         }
                     } catch ( IllegalArgumentException e ) {
                         LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );

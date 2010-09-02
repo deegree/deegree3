@@ -49,6 +49,7 @@ import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.wms.controller.ops.GetMap.parseDimensionValues;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -125,6 +126,29 @@ public class GetFeatureInfo {
         }
     }
 
+    /**
+     * @param layers
+     * @param styles
+     * @param radius
+     * @param envelope
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    public GetFeatureInfo( Collection<Layer> layers, Collection<Style> styles, int radius, Envelope envelope, int x,
+                           int y, int width, int height ) {
+        this.layers.addAll( layers );
+        this.styles.addAll( styles );
+        this.bbox = envelope;
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
+        crs = bbox.getCoordinateSystem();
+        calcClickBox( radius );
+    }
+
     private void parse111( Map<String, String> map )
                             throws OWSException {
         double[] vals = handleCommon( map );
@@ -199,9 +223,7 @@ public class GetFeatureInfo {
         calcClickBox( map );
     }
 
-    private void calcClickBox( Map<String, String> map ) {
-        int radius = map.get( "RADIUS" ) == null ? service.getFeatureInfoRadius() : parseInt( map.get( "RADIUS" ) );
-
+    private void calcClickBox( int radius ) {
         double dw = bbox.getSpan0() / width;
         double dh = bbox.getSpan1() / height;
         int r2 = radius / 2;
@@ -210,7 +232,11 @@ public class GetFeatureInfo {
                                                      bbox.getMax().get1() - ( y + r2 ) * dh },
                                        new double[] { bbox.getMin().get0() + ( x + r2 ) * dw,
                                                      bbox.getMax().get1() - ( y - r2 ) * dh }, crs );
+    }
 
+    private void calcClickBox( Map<String, String> map ) {
+        int radius = map.get( "RADIUS" ) == null ? service.getFeatureInfoRadius() : parseInt( map.get( "RADIUS" ) );
+        calcClickBox( radius );
     }
 
     // returns the bbox

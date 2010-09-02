@@ -171,7 +171,7 @@ public class RasterLayer extends Layer {
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( GetFeatureInfo fi, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
         try {
-            Envelope bbox = (Envelope) trans.transform( fi.getClickBox() );
+            Envelope bbox = trans.transform( fi.getClickBox() );
             AbstractRaster raster = this.raster;
             if ( raster == null ) {
                 raster = multiraster.getRaster( bbox.getSpan0() );
@@ -244,7 +244,7 @@ public class RasterLayer extends Layer {
             Envelope bbox = gm.getBoundingBox();
             AbstractRaster raster = this.raster;
             if ( raster == null ) {
-                raster = multiraster.getRaster( ( (Envelope) trans.transform( bbox ) ).getSpan0() / gm.getWidth() );
+                raster = multiraster.getRaster( trans.transform( bbox ).getSpan0() / gm.getWidth() );
             }
 
             Pair<RangeSet, LinkedList<String>> p = getDimensionFilter( gm.getDimensions() );
