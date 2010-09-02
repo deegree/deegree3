@@ -23,37 +23,43 @@ import es.unex.sextante.parameters.Parameter;
 
 public class AlgorithmTest {
 
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
 
     private static Logger LOG = LoggerFactory.getLogger( AlgorithmTest.class );
 
     private LinkedList<TestAlgorithm> getAlgorithms() {
         LinkedList<TestAlgorithm> algs = new LinkedList<TestAlgorithm>();
 
-        // only one algorithm
-        // Sextante.initialize();
-        // HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
-        // GeoAlgorithm geoAlg = sextanteAlgs.get( "geometriestopoints" );
-        // TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
-        // testAlg.addAllInputData( getInputData( geoAlg ) );
-        // algs.add( testAlg );
+        // test all algorithms?
+        boolean all = false;
 
-        // all vector algorithms
-        GeoAlgorithm[] geoalgs = SextanteProcessProvider.getVectorLayerAlgorithms();
-        for ( int i = 0; i < geoalgs.length; i++ ) {
-            GeoAlgorithm geoAlg = geoalgs[i];
+        if ( !all ) {
+            // only one algorithm
+            Sextante.initialize();
+            HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
+            GeoAlgorithm geoAlg = sextanteAlgs.get( "polylinestopolygons" );
+            TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
+            testAlg.addAllInputData( getInputData( geoAlg ) );
+            algs.add( testAlg );
 
-            if ( !geoAlg.getCommandLineName().equals( "cleanpointslayer" )
-                 && !geoAlg.getCommandLineName().equals( "polylinestopolygons" )
-                 && !geoAlg.getCommandLineName().equals( "pointcoordinates" )
-                 && !geoAlg.getCommandLineName().equals( "removeholes" )
-                 && !geoAlg.getCommandLineName().equals( "exportvector" )
-                 && !geoAlg.getCommandLineName().equals( "polygonize" ) ) {
+        } else {
 
-                TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
-                testAlg.addAllInputData( getInputData( geoAlg ) );
-                algs.add( testAlg );
+            // all vector algorithms
+            GeoAlgorithm[] geoalgs = SextanteProcessProvider.getVectorLayerAlgorithms();
+            for ( int i = 0; i < geoalgs.length; i++ ) {
+                GeoAlgorithm geoAlg = geoalgs[i];
 
+                if ( !geoAlg.getCommandLineName().equals( "polylinestopolygons" )
+                     && !geoAlg.getCommandLineName().equals( "pointcoordinates" )
+                     && !geoAlg.getCommandLineName().equals( "removeholes" )
+                     && !geoAlg.getCommandLineName().equals( "exportvector" )
+                     && !geoAlg.getCommandLineName().equals( "polygonize" ) ) {
+
+                    TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
+                    testAlg.addAllInputData( getInputData( geoAlg ) );
+                    algs.add( testAlg );
+
+                }
             }
         }
 
@@ -66,7 +72,7 @@ public class AlgorithmTest {
         LinkedList<LinkedList<ExampleData>> allData = new LinkedList<LinkedList<ExampleData>>();
 
         // example data in categories
-        LinkedList<ExampleData> layers = getLayerInput();
+        LinkedList<ExampleData> layers = getLayerInput( alg );
         LinkedList<ExampleData> lines = getLinesInput();
         LinkedList<ExampleData> points = getPointsInput();
 
@@ -74,7 +80,6 @@ public class AlgorithmTest {
         Iterator<ExampleData> layersIterator = layers.iterator();
         Iterator<ExampleData> linesIterator = lines.iterator();
         Iterator<ExampleData> pointsIterator = points.iterator();
-        Iterator<ExampleData> inputIterator = layers.iterator();
 
         // traverse input parameter of one execution
         ParametersSet paramSet = alg.getParameters();
@@ -135,28 +140,53 @@ public class AlgorithmTest {
         return allData;
     }
 
-    private LinkedList<ExampleData> getLayerInput() {
+    private LinkedList<ExampleData> getLayerInput( GeoAlgorithm alg ) {
         LinkedList<ExampleData> layers = new LinkedList<ExampleData>();
 
-        layers.add( ExampleData.GML_31_MULTILPOLYGON );
-        layers.add( ExampleData.GML_31_MULTILINESTRING );
-        layers.add( ExampleData.GML_31_MULTIPOINT );
-        layers.add( ExampleData.GML_31_POLYGON );
-        layers.add( ExampleData.GML_31_LINESTRING );
-        layers.add( ExampleData.GML_31_POINT );
-        layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS_1 );
-        layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS_2 );
-        layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS_1 );
-        layers.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS_1 );
-        layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOINTS_1 );
-        layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS_1 );
+        // cleanpointslayer algorithm
+        if ( alg.getCommandLineName().equals( "cleanpointslayer" ) ) {
+
+            layers.add( ExampleData.GML_31_POINT );
+            layers.add( ExampleData.GML_31_MULTIPOINT );
+            layers.add( ExampleData.GML_31_LINESTRING );
+            layers.add( ExampleData.GML_31_POLYGON );
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS_1 );
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOINTS_1 );
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS_1 );
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POLYGONS_1 );
+            // use no MultiPolygon oder MultiLineString
+
+        } else {
+
+            // polylinestopolygons algorithm
+            if ( alg.getCommandLineName().equals( "polylinestopolygons" ) ) {
+
+
+
+            } else {// all algorithms
+                layers.add( ExampleData.GML_31_MULTILPOLYGON );
+                layers.add( ExampleData.GML_31_MULTILINESTRING );
+                layers.add( ExampleData.GML_31_MULTIPOINT );
+                layers.add( ExampleData.GML_31_POLYGON );
+                layers.add( ExampleData.GML_31_LINESTRING );
+                layers.add( ExampleData.GML_31_POINT );
+                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS_1 );
+                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS_2 );
+                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POLYGONS_1 );
+                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS_1 );
+                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS_1 );
+                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOINTS_1 );
+                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS_1 );
+
+            }
+        }
 
         return layers;
     }
 
     private LinkedList<ExampleData> getLinesInput() {
         LinkedList<ExampleData> lines = new LinkedList<ExampleData>();
-        // lines.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS_1 );
+        lines.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS_1 );
         lines.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS_1 );
         return lines;
     }
