@@ -82,6 +82,8 @@ import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+import org.deegree.tools.crs.georeferencing.application.handler.FileInputHandler;
+import org.deegree.tools.crs.georeferencing.application.handler.FileOutputHandler;
 import org.deegree.tools.crs.georeferencing.application.transformation.AffineTransformation;
 import org.deegree.tools.crs.georeferencing.application.transformation.Helmert4Transform;
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
@@ -558,12 +560,33 @@ public class Controller {
                     panel.setSelectedPoints( panelList, sceneValues );
                     footPanel.setSelectedPoints( footPanelList, sceneValues );
                     tablePanel.removeRow( tableRows );
-                    // panel.updatePoints( );
-                    // footPanel.updatePoints( sceneValues );
                     panel.repaint();
                     footPanel.repaint();
                 }
 
+                if ( ( (JButton) source ).getText().startsWith( PointTableFrame.LOAD_POINTTABLE ) ) {
+                    System.out.println( "[Controller] clicked on load!" );
+
+                    List<String> list = new ArrayList<String>();
+                    list.add( "cvs" );
+
+                    String desc = "(*.cvs) Comma-Separated Values";
+                    Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
+                    List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
+                    supportedOpenFiles.add( supportedFiles );
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
+                    String fileChoosed = fileChooser.getSelectedFilePath();
+                    if ( fileChoosed != null ) {
+                        new FileInputHandler( fileChoosed, tablePanel );
+                    }
+
+                }
+                if ( ( (JButton) source ).getText().startsWith( PointTableFrame.SAVE_POINTTABLE ) ) {
+                    System.out.println( "[Controller] clicked on save!" );
+
+                    new FileOutputHandler( tablePanel );
+
+                }
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
                     removeAllFromMappedPoints();
 
