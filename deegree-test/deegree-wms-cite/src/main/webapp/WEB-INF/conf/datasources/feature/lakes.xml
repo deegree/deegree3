@@ -3,4 +3,5 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape http://schemas.deegree.org/datasource/0.5.0/feature/shape.xsd">
   <File>../../../data/cite/Lakes.shp</File>
+  <Namespace>http://www.deegree.org/app</Namespace>
 </ShapeFeatureStore>
