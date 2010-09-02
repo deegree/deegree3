@@ -45,6 +45,8 @@ import java.util.List;
 
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
+import org.deegree.tools.crs.georeferencing.model.RowColumn;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 
@@ -153,13 +155,15 @@ public class Scene2DPanel extends AbstractPanel2D {
         }
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {
-
-            int[] p = sceneValues.getPixelCoord( lastAbstractPoint.getWorldCoords() );
+            AbstractGRPoint worldCoords = lastAbstractPoint.getWorldCoords();
+            AbstractGRPoint initialValue = lastAbstractPoint.getInitialValue();
+            RowColumn rc = lastAbstractPoint.getRc();
+            int[] p = sceneValues.getPixelCoord( worldCoords );
             double x = p[0];
             double y = p[1];
 
             GeoReferencedPoint pi = new GeoReferencedPoint( x, y );
-            lastAbstractPoint.setNewValue( new GeoReferencedPoint( pi.getX(), pi.getY() ) );
+            lastAbstractPoint = new Point4Values( pi, initialValue, pi, worldCoords, rc );
         }
 
     }

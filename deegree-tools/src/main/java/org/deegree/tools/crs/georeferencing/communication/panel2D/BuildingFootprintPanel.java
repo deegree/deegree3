@@ -49,6 +49,7 @@ import javax.vecmath.Point2d;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
+import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
@@ -241,12 +242,15 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
         selectedPoints = selectedPointsTemp;
         if ( lastAbstractPoint != null ) {
 
-            int[] pValues = sceneValues.getPixelCoord( lastAbstractPoint.getWorldCoords() );
+            AbstractGRPoint worldCoords = lastAbstractPoint.getWorldCoords();
+            AbstractGRPoint initialValue = lastAbstractPoint.getInitialValue();
+            RowColumn rc = lastAbstractPoint.getRc();
+            int[] pValues = sceneValues.getPixelCoord( worldCoords );
             double x = pValues[0];
             double y = pValues[1];
 
             FootprintPoint pi = new FootprintPoint( x, y );
-            lastAbstractPoint.setNewValue( new FootprintPoint( pi.getX(), pi.getY() ) );
+            lastAbstractPoint = new Point4Values( pi, initialValue, pi, worldCoords, rc );
 
             System.out.println( "[BuildingFootprintPanel] " + lastAbstractPoint );
         }

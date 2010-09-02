@@ -40,7 +40,7 @@ import org.deegree.tools.crs.georeferencing.model.RowColumn;
 /**
  * Datastructure for every information needed to manipulate a point.
  * <p>
- * &lt;oldValue, initialValue, newValue&gt;
+ * &lt;oldValue, initialValue, newValue, worldCoordinates, rowColumns&gt;
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -59,6 +59,14 @@ public class Point4Values {
 
     private RowColumn rc;
 
+    /**
+     * 
+     * @param oldValue
+     * @param initialValue
+     * @param newValue
+     * @param worldCoords
+     * @param rc
+     */
     public Point4Values( AbstractGRPoint oldValue, AbstractGRPoint initialValue, AbstractGRPoint newValue,
                          AbstractGRPoint worldCoords, RowColumn rc ) {
         this.oldValue = oldValue;
@@ -68,6 +76,12 @@ public class Point4Values {
         this.rc = rc;
     }
 
+    /**
+     * 
+     * @param initialValue
+     * @param worldCoords
+     * @param rc
+     */
     public Point4Values( AbstractGRPoint initialValue, AbstractGRPoint worldCoords, RowColumn rc ) {
         this.oldValue = initialValue;
         this.initialValue = initialValue;
@@ -86,11 +100,6 @@ public class Point4Values {
 
     public AbstractGRPoint getNewValue() {
         return newValue;
-    }
-
-    public void setNewValue( AbstractGRPoint newValue ) {
-        this.oldValue = this.newValue;
-        this.newValue = newValue;
     }
 
     public AbstractGRPoint getWorldCoords() {
