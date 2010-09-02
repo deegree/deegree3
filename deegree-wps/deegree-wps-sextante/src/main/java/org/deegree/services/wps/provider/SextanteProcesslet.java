@@ -101,12 +101,12 @@ public class SextanteProcesslet implements Processlet {
         try {
 
             SextanteWPSProcess.logAlgorithm( alg );
-            LOG.info( "SET INPUT PARAMETERS" );
+            // LOG.info( "SET INPUT PARAMETERS" );
 
             // sets all input values
             setInputValues( alg, in );
 
-            LOG.info( "GET OUTPUT PARAMETERS" );
+            // LOG.info( "GET OUTPUT PARAMETERS" );
 
             // execute the algorithm
             alg.execute( null, new OutputFactoryImpl() );
@@ -124,7 +124,7 @@ public class SextanteProcesslet implements Processlet {
 
             String message = "'" + alg.getCommandLineName() + "' algorithm, " + e.getLocalizedMessage();
 
-            if ( alg.getCommandLineName().equals( "delaunay" ) )
+            if ( alg.getCommandLineName().equals( "delaunay" ) || alg.getCommandLineName().equals( "polygonize" ) )
                 message = "'" + alg.getCommandLineName() + "' algorithm found false input data. ("
                           + e.getLocalizedMessage() + ")";
 
@@ -296,7 +296,7 @@ public class SextanteProcesslet implements Processlet {
      *            - Input parameter of {@link GeoAlgorithm}
      */
     private void setBooleanInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.warn( "Using boolean input data is not supported." );
+        LOG.error( "Using boolean input data is not supported." );
     }
 
     /**
@@ -324,7 +324,7 @@ public class SextanteProcesslet implements Processlet {
      *            - Input parameter set of {@link GeoAlgorithm}.
      */
     private void setMultipleInputInputValue( ProcessletInputs in, Parameter param, ParametersSet paramSet ) {
-        LOG.warn( "Using multiple input input data is not supported." );
+        LOG.error( "Using multiple input input data is not supported." );
     }
 
     /**
@@ -557,7 +557,7 @@ public class SextanteProcesslet implements Processlet {
      *            - {@link ProcessletOutputs}
      */
     private void writeRasterLayer( Output obj, ProcessletOutputs out ) {
-        LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
+        LOG.error( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
         // TODO implement this output parameter type
     }
 
@@ -570,7 +570,7 @@ public class SextanteProcesslet implements Processlet {
      *            - {@link ProcessletOutputs}
      */
     private void writeTable( Output obj, ProcessletOutputs out ) {
-        LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
+        LOG.error( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
         // TODO implement this output parameter type
     }
 
@@ -583,7 +583,7 @@ public class SextanteProcesslet implements Processlet {
      *            - {@link ProcessletOutputs}
      */
     private void writeText( Output obj, ProcessletOutputs out ) {
-        LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
+        LOG.error( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
         // TODO implement this output parameter type
     }
 
@@ -596,7 +596,7 @@ public class SextanteProcesslet implements Processlet {
      *            - {@link ProcessletOutputs}
      */
     private void writeChart( Output obj, ProcessletOutputs out ) {
-        LOG.warn( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
+        LOG.error( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
         // TODO implement this output parameter type
     }
 

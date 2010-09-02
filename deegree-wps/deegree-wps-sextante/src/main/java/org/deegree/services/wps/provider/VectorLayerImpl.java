@@ -248,7 +248,7 @@ public class VectorLayerImpl extends AbstractVectorLayer {
     private void setShapeType( Geometry geom ) {
 
         // LOGGING: type of this geometry
-        LOG.info( "SHAPE TYPE (geometry): " + geom.getGeometryType() );
+        //LOG.info( "SHAPE TYPE (geometry): " + geom.getGeometryType() );
 
         try {
 
@@ -299,7 +299,7 @@ public class VectorLayerImpl extends AbstractVectorLayer {
 
                 // Unknown shape type
                 setNewShapeType( IVectorLayer.SHAPE_TYPE_WRONG );
-                LOG.warn( "Unknown shape type: " + geom.getGeometryType() );
+                LOG.error( "Unknown shape type: " + geom.getGeometryType() );
 
             }
 

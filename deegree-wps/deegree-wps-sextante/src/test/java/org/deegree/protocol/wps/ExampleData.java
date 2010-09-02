@@ -38,9 +38,15 @@ package org.deegree.protocol.wps;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 import org.deegree.services.wps.input.ComplexInputImpl;
 import org.deegree.services.wps.provider.GMLSchema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -52,53 +58,74 @@ import org.deegree.services.wps.provider.GMLSchema;
  */
 public class ExampleData {
 
+    private static Logger LOG = LoggerFactory.getLogger( ExampleData.class );
+
+    public enum ExampleDataType {
+        POINT, LINE, POLYGON, MIX
+    }
+
+    // all example data
+    private static final HashMap<String, ExampleData> ALL_EXAMPLE_DATA = new HashMap<String, ExampleData>();
+
     // example data
     public static final ExampleData GML_31_MULTILPOLYGON = new ExampleData(
                                                                             ExampleData.class.getResource( "GML31_MultiPolygon.xml" ),
+                                                                            ExampleDataType.POLYGON,
                                                                             GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
     public static final ExampleData GML_31_MULTILINESTRING = new ExampleData(
                                                                               ExampleData.class.getResource( "GML31_MultiLineString.xml" ),
+                                                                              ExampleDataType.LINE,
                                                                               GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
     public static final ExampleData GML_31_MULTIPOINT = new ExampleData(
                                                                          ExampleData.class.getResource( "GML31_MultiPoint.xml" ),
+                                                                         ExampleDataType.POINT,
                                                                          GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
     public static final ExampleData GML_31_POLYGON = new ExampleData(
                                                                       ExampleData.class.getResource( "GML31_Polygon.xml" ),
+                                                                      ExampleDataType.POLYGON,
                                                                       GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
     public static final ExampleData GML_31_LINESTRING = new ExampleData(
                                                                          ExampleData.class.getResource( "GML31_LineString.xml" ),
+                                                                         ExampleDataType.LINE,
                                                                          GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
     public static final ExampleData GML_31_POINT = new ExampleData( ExampleData.class.getResource( "GML31_Point.xml" ),
+                                                                    ExampleDataType.POINT,
                                                                     GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
-    public static final ExampleData GML_31_FEATURE_COLLECTION_MULTIPOLYGONS_1 = new ExampleData(
-                                                                                                 ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_MultiPolygons.xml" ),
-                                                                                                 GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
-
-    public static final ExampleData GML_31_FEATURE_COLLECTION_MULTIPOLYGONS_2 = new ExampleData(
-                                                                                                 ExampleData.class.getResource( "GML31_FeatureCollection_GeoServer_MultiPolygons.xml" ),
-                                                                                                 GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
-
-    public static final ExampleData GML_31_FEATURE_COLLECTION_MULTILINESTRINGS_1 = new ExampleData(
-                                                                                                    ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_MultiLineStrings.xml" ),
-                                                                                                    GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
-
-    public static final ExampleData GML_31_FEATURE_COLLECTION_LINESTRINGS_1 = new ExampleData(
-                                                                                               ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_LineStrings.xml" ),
+    public static final ExampleData GML_31_FEATURE_COLLECTION_MULTIPOLYGONS = new ExampleData(
+                                                                                               ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_MultiPolygons.xml" ),
+                                                                                               ExampleDataType.POLYGON,
                                                                                                GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
-    public static final ExampleData GML_31_FEATURE_COLLECTION_MULTIPOINTS_1 = new ExampleData(
-                                                                                               ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_MultiPoints.xml" ),
-                                                                                               GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
-
-    public static final ExampleData GML_31_FEATURE_COLLECTION_POINTS_1 = new ExampleData(
-                                                                                          ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_Points.xml" ),
+    public static final ExampleData GML_31_FEATURE_COLLECTION_POLYGONS = new ExampleData(
+                                                                                          ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_Polygons.xml" ),
+                                                                                          ExampleDataType.POLYGON,
                                                                                           GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+
+    public static final ExampleData GML_31_FEATURE_COLLECTION_MULTILINESTRINGS = new ExampleData(
+                                                                                                  ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_MultiLineStrings.xml" ),
+                                                                                                  ExampleDataType.LINE,
+                                                                                                  GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+
+    public static final ExampleData GML_31_FEATURE_COLLECTION_LINESTRINGS = new ExampleData(
+                                                                                             ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_LineStrings.xml" ),
+                                                                                             ExampleDataType.LINE,
+                                                                                             GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+
+    public static final ExampleData GML_31_FEATURE_COLLECTION_MULTIPOINTS = new ExampleData(
+                                                                                             ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_MultiPoints.xml" ),
+                                                                                             ExampleDataType.POINT,
+                                                                                             GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+
+    public static final ExampleData GML_31_FEATURE_COLLECTION_POINTS = new ExampleData(
+                                                                                        ExampleData.class.getResource( "GML31_FeatureCollection_Deegree_Points.xml" ),
+                                                                                        ExampleDataType.POINT,
+                                                                                        GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     private final URL url;
 
@@ -108,13 +135,16 @@ public class ExampleData {
 
     private final String encoding;
 
-    private ExampleData( URL url, GMLSchema schema ) {
-        this( url, schema, null, null );
+    private final ExampleDataType type;
+
+    private ExampleData( URL url, ExampleDataType type, GMLSchema schema ) {
+        this( url, type, schema, null, null );
     }
 
-    private ExampleData( URL url, GMLSchema schema, String mimeType, String encoding ) {
+    private ExampleData( URL url, ExampleDataType type, GMLSchema schema, String mimeType, String encoding ) {
         this.url = url;
         this.schema = schema;
+        this.type = type;
 
         if ( mimeType != null )
             this.mimeType = mimeType;
@@ -125,6 +155,8 @@ public class ExampleData {
             this.encoding = encoding;
         else
             this.encoding = "UTF-8";
+
+        ALL_EXAMPLE_DATA.put( this.getFilename(), this );
     }
 
     public String getSchema() {
@@ -150,4 +182,51 @@ public class ExampleData {
             return url.getFile();
         }
     }
+
+    public static LinkedList<ExampleData> getAllData() {
+        return getAllData( null );
+    }
+
+    public static LinkedList<ExampleData> getAllData( ExampleData[] without ) {
+        return getData( null, without );
+    }
+
+    public static LinkedList<ExampleData> getData( ExampleDataType type ) {
+        return ( getData( type, null ) );
+    }
+
+    public static LinkedList<ExampleData> getData( ExampleDataType type, ExampleData[] without ) {
+
+        LinkedList<ExampleData> allAsList = new LinkedList<ExampleData>();
+
+        Set<String> allKeySet = ALL_EXAMPLE_DATA.keySet();
+
+        // remove unwanted data
+        Set<String> modifiedKeySet = new HashSet<String>();
+        modifiedKeySet.addAll( allKeySet );
+        if ( without != null )
+            for ( int i = 0; i < without.length; i++ ) {
+                modifiedKeySet.remove( without[i].getFilename() );
+            }
+
+        if ( type != null )
+            // notice wanted data by type
+            for ( String key : modifiedKeySet ) {
+
+                ExampleData data = ALL_EXAMPLE_DATA.get( key );
+
+                if ( data.type.equals( type ) ) {
+                    allAsList.add( data );
+                }
+
+            }
+        else
+            // notice all wanted data
+            for ( String key : modifiedKeySet ) {
+                allAsList.add( ALL_EXAMPLE_DATA.get( key ) );
+            }
+
+        return allAsList;
+    }
+
 }

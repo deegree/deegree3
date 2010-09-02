@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import org.deegree.protocol.wps.ExampleData.ExampleDataType;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.output.ExecutionOutput;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
@@ -23,7 +25,7 @@ import es.unex.sextante.parameters.Parameter;
 
 public class AlgorithmTest {
 
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     private static Logger LOG = LoggerFactory.getLogger( AlgorithmTest.class );
 
@@ -37,7 +39,7 @@ public class AlgorithmTest {
             // only one algorithm
             Sextante.initialize();
             HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
-            GeoAlgorithm geoAlg = sextanteAlgs.get( "polylinestopolygons" );
+            GeoAlgorithm geoAlg = sextanteAlgs.get( "exportvector" );
             TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
             testAlg.addAllInputData( getInputData( geoAlg ) );
             algs.add( testAlg );
@@ -49,17 +51,15 @@ public class AlgorithmTest {
             for ( int i = 0; i < geoalgs.length; i++ ) {
                 GeoAlgorithm geoAlg = geoalgs[i];
 
-                if ( !geoAlg.getCommandLineName().equals( "polylinestopolygons" )
-                     && !geoAlg.getCommandLineName().equals( "pointcoordinates" )
-                     && !geoAlg.getCommandLineName().equals( "removeholes" )
-                     && !geoAlg.getCommandLineName().equals( "exportvector" )
-                     && !geoAlg.getCommandLineName().equals( "polygonize" ) ) {
+                // if ( !geoAlg.getCommandLineName().equals( "geometricproperties" ) )
+                {
 
                     TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
                     testAlg.addAllInputData( getInputData( geoAlg ) );
                     algs.add( testAlg );
 
                 }
+
             }
         }
 
@@ -144,56 +144,46 @@ public class AlgorithmTest {
         LinkedList<ExampleData> layers = new LinkedList<ExampleData>();
 
         // cleanpointslayer algorithm
-        if ( alg.getCommandLineName().equals( "cleanpointslayer" ) ) {
-
-            layers.add( ExampleData.GML_31_POINT );
-            layers.add( ExampleData.GML_31_MULTIPOINT );
-            layers.add( ExampleData.GML_31_LINESTRING );
-            layers.add( ExampleData.GML_31_POLYGON );
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS_1 );
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOINTS_1 );
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS_1 );
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POLYGONS_1 );
-            // use no MultiPolygon oder MultiLineString
-
-        } else {
-
-            // polylinestopolygons algorithm
-            if ( alg.getCommandLineName().equals( "polylinestopolygons" ) ) {
-
-
-
-            } else {// all algorithms
-                layers.add( ExampleData.GML_31_MULTILPOLYGON );
-                layers.add( ExampleData.GML_31_MULTILINESTRING );
-                layers.add( ExampleData.GML_31_MULTIPOINT );
-                layers.add( ExampleData.GML_31_POLYGON );
-                layers.add( ExampleData.GML_31_LINESTRING );
-                layers.add( ExampleData.GML_31_POINT );
-                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS_1 );
-                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS_2 );
-                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POLYGONS_1 );
-                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS_1 );
-                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS_1 );
-                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOINTS_1 );
-                layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS_1 );
-
-            }
-        }
+        if ( alg.getCommandLineName().equals( "cleanpointslayer" ) )
+            layers.addAll( ExampleData.getData( ExampleDataType.POINT ) );
+        else
+        // polylinestopolygons algorithm
+        if ( alg.getCommandLineName().equals( "polylinestopolygons" ) )
+            layers.addAll( ExampleData.getData( ExampleDataType.LINE ) );
+        else
+        // pointcoordinates algorithm
+        if ( alg.getCommandLineName().equals( "pointcoordinates" ) )
+            layers.addAll( ExampleData.getData( ExampleDataType.POINT ) );
+        else
+        // removeholes algorithm
+        if ( alg.getCommandLineName().equals( "removeholes" ) )
+            layers.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
+        else
+        // exportvector algorithm
+        if ( alg.getCommandLineName().equals( "exportvector" ) )
+            LOG.warn( "No test data for '" + alg.getCommandLineName() + "' available." );
+        else
+        // polygonize algorithm
+        if ( alg.getCommandLineName().equals( "polygonize" ) ) {
+            layers.add( ExampleData.GML_31_MULTILINESTRING );
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
+        } else
+            // all algorithms
+            layers.addAll( ExampleData.getAllData() );
 
         return layers;
     }
 
     private LinkedList<ExampleData> getLinesInput() {
         LinkedList<ExampleData> lines = new LinkedList<ExampleData>();
-        lines.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS_1 );
-        lines.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS_1 );
+        lines.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
+        lines.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
         return lines;
     }
 
     private LinkedList<ExampleData> getPointsInput() {
         LinkedList<ExampleData> points = new LinkedList<ExampleData>();
-        points.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS_1 );
+        points.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS );
         return points;
     }
 

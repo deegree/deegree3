@@ -125,7 +125,7 @@ public class IVectorLayerAdapter {
 
                 if ( feature.getType().equals( fType ) ) {// check feature type
 
-                    LOG.info( "FEATURE: " + feature.getId() );
+                    //LOG.info( "FEATURE: " + feature.getId() );
 
                     // create properties
                     Object[] values = createPropertiesForVectorLayerGeometry( feature, vectorLayerPropertyDeclarations );
@@ -511,7 +511,7 @@ public class IVectorLayerAdapter {
      */
     private static Field[] createPropertyDeclarationsForVectorLayer( FeatureType type ) {
 
-        LOG.info( "FEATURE TYP: " + type.getName().toString() );
+       // LOG.info( "FEATURE TYP: " + type.getName().toString() );
 
         // list of property declaration for vector layer
         LinkedList<Field> vectoLayerPropertyDeclarations = new LinkedList<Field>();
@@ -534,7 +534,7 @@ public class IVectorLayerAdapter {
                 // notice name and class as field
                 vectoLayerPropertyDeclarations.add( new Field( pName.toString(), pClass ) );
 
-                LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
+               // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
             }
         }
 
@@ -600,7 +600,7 @@ public class IVectorLayerAdapter {
                         geomProperties[i] = null;
                     }
 
-                    LOG.info( "  PROPERTY: " + propertyDeclarations[i].getName() + ": " + geomProperties[i] );
+                    //LOG.info( "  PROPERTY: " + propertyDeclarations[i].getName() + ": " + geomProperties[i] );
                 }
             }
 

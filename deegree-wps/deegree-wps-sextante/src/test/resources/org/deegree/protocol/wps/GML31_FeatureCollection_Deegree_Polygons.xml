@@ -1,0 +1,121 @@
+<wfs:FeatureCollection numberOfFeatures='3'
+	xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:app="http://www.deegree.org/app"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.deegree.org/app file:///home/pabel/workspace/deegree-wps-sextante/src/test/resources/org/deegree/protocol/wps/wfs-deegree-schema.xsd http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+	<gml:boundedBy>
+		<gml:Envelope srsName='EPSG:4326'>
+			<gml:lowerCorner>-8.171666145324707 41.364925384521484</gml:lowerCorner>
+			<gml:upperCorner>15.033818244934082 60.84333038330078</gml:upperCorner>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<gml:featureMember>
+		<app:Country gml:id="COUNTRY_14">
+			<gml:boundedBy>
+				<gml:Envelope srsName='EPSG:4326'>
+					<gml:lowerCorner>-4.790278434753418 41.364925384521484</gml:lowerCorner>
+					<gml:upperCorner>9.56222152709961 51.09111022949219</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<app:name>France</app:name>
+			<app:upperName>FRANCE</app:upperName>
+			<app:dataOrigin>Imported from shapefile.</app:dataOrigin>
+			<app:area>64.3483226450664</app:area>
+			<app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
+			<app:geom>
+				<gml:Polygon srsName='EPSG:4326'>
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList srsDimension='2' count='10'>-3.576666831970215
+								48.80388641357422 -3.5822224617004395 48.80388641357422
+								-3.582777976989746 48.807220458984375 -3.5797224044799805
+								48.809715270996094 -3.5755558013916016 48.81249237060547
+								-3.570833683013916 48.812774658203125 -3.5652780532836914
+								48.81166076660156 -3.563333511352539 48.80860900878906
+								-3.5661115646362305 48.80583190917969 -3.576666831970215
+								48.80388641357422</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+			</app:geom>
+		</app:Country>
+	</gml:featureMember>
+	<gml:featureMember>
+		<app:Country gml:id="COUNTRY_5">
+			<gml:boundedBy>
+				<gml:Envelope srsName='EPSG:4326'>
+					<gml:lowerCorner>5.864999294281006 47.27471923828125</gml:lowerCorner>
+					<gml:upperCorner>15.033818244934082 55.05652618408203</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<app:name>Germany</app:name>
+			<app:upperName>GERMANY</app:upperName>
+			<app:dataOrigin>Imported from shapefile.</app:dataOrigin>
+			<app:area>45.87205763302518</app:area>
+			<app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
+			<app:geom>
+
+				<gml:Polygon srsName='EPSG:4326'>
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList srsDimension='2' count='17'>11.273926734924316
+								54.458736419677734 11.302221298217773 54.42402267456055
+								11.312499046325684 54.40833282470703 11.139165878295898
+								54.40666198730469 11.12388801574707 54.406944274902344
+								11.021048545837402 54.438758850097656 11.009026527404785
+								54.44721603393555 11.006110191345215 54.45763397216797
+								11.011388778686523 54.47694396972656 11.018610000610352
+								54.49082946777344 11.028749465942383 54.50457763671875
+								11.043888092041016 54.51832580566406 11.066804885864258
+								54.53458023071289 11.184165954589844 54.519996643066406
+								11.232221603393555 54.5030517578125 11.243748664855957
+								54.494441986083984 11.273926734924316 54.458736419677734
+							</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+
+
+			</app:geom>
+		</app:Country>
+	</gml:featureMember>
+	<gml:featureMember>
+		<app:Country gml:id="COUNTRY_12">
+			<gml:boundedBy>
+				<gml:Envelope srsName='EPSG:4326'>
+					<gml:lowerCorner>5.967013359069824 45.829437255859375</gml:lowerCorner>
+					<gml:upperCorner>10.488205909729004 47.806663513183594</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<app:name>Switzerland</app:name>
+			<app:upperName>SWITZERLAND</app:upperName>
+			<app:dataOrigin>Imported from shapefile.</app:dataOrigin>
+			<app:area>4.889274569378358</app:area>
+			<app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
+			<app:geom>
+
+
+				<gml:Polygon srsName='EPSG:4326'>
+					<gml:exterior>
+						<gml:LinearRing>
+							<gml:posList srsDimension='2' count='16'>-1.104722261428833
+								60.48554992675781 -1.127500057220459 60.48638153076172
+								-1.141389012336731 60.490966796875 -1.1702778339385986
+								60.5272216796875 -1.1830556392669678 60.59888458251953
+								-1.1813890933990479 60.62360382080078 -1.1783334016799927
+								60.63458251953125 -1.1100001335144043 60.725830078125
+								-1.0986111164093018 60.72999572753906 -1.0886112451553345
+								60.73152542114258 -1.0569446086883545 60.73082733154297
+								-0.9938889145851135 60.722354888916016 -0.982638955116272
+								60.653465270996094 -1.0184723138809204 60.51721954345703
+								-1.0254167318344116 60.50020217895508 -1.104722261428833
+								60.48554992675781</gml:posList>
+						</gml:LinearRing>
+					</gml:exterior>
+				</gml:Polygon>
+
+
+			</app:geom>
+		</app:Country>
+	</gml:featureMember>
+</wfs:FeatureCollection>
