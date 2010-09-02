@@ -531,12 +531,14 @@ public class Controller {
 
                         boolean contained = false;
                         for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+                            System.out.println( "[Controller] beforeRemoving: " + p.second + "\n" );
                             if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
 
                                 contained = true;
                                 removeFromMappedPoints( p );
                                 break;
                             }
+                            System.out.println( "[Controller] afterRemoving: " + p.second + "\n\n" );
 
                         }
                         if ( contained == false ) {
@@ -552,10 +554,12 @@ public class Controller {
                         panelList.add( p.second );
                         footPanelList.add( p.first );
                     }
-                    panel.setSelectedPoints( panelList );
-                    footPanel.setSelectedPoints( footPanelList );
-                    tablePanel.removeRow( tableRows );
 
+                    panel.setSelectedPoints( panelList, sceneValues );
+                    footPanel.setSelectedPoints( footPanelList, sceneValues );
+                    tablePanel.removeRow( tableRows );
+                    // panel.updatePoints( );
+                    // footPanel.updatePoints( sceneValues );
                     panel.repaint();
                     footPanel.repaint();
                 }
@@ -895,8 +899,8 @@ public class Controller {
                             listPS.add( m.second );
                             listPF.add( m.first );
                         }
-                        panel.setSelectedPoints( listPS );
-                        footPanel.setSelectedPoints( listPF );
+                        panel.setSelectedPoints( listPS, sceneValues );
+                        footPanel.setSelectedPoints( listPF, sceneValues );
                         panel.repaint();
                         footPanel.repaint();
 
@@ -1563,15 +1567,25 @@ public class Controller {
      * Updates the rowNumber of the remained mappedPoints
      */
     private void updateMappedPoints() {
+
+        List<Pair<Point4Values, Point4Values>> temp = new ArrayList<Pair<Point4Values, Point4Values>>();
+
         int counter = 0;
         for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
-            p.first = new Point4Values( p.first.getInitialValue(), p.first.getWorldCoords(),
-                                        new RowColumn( counter, p.first.getRc().getColumnX(),
-                                                       p.first.getRc().getColumnY() ) );
-            p.second = new Point4Values( p.second.getInitialValue(), p.second.getWorldCoords(),
-                                         new RowColumn( counter++, p.second.getRc().getColumnX(),
-                                                        p.second.getRc().getColumnY() ) );
+            System.out.println( "[Controller] before: " + p.second );
+            Point4Values f = new Point4Values( p.first.getOldValue(), p.first.getInitialValue(), p.first.getNewValue(),
+                                               p.first.getWorldCoords(), new RowColumn( counter,
+                                                                                        p.first.getRc().getColumnX(),
+                                                                                        p.first.getRc().getColumnY() ) );
+            Point4Values s = new Point4Values( p.second.getOldValue(), p.second.getInitialValue(),
+                                               p.second.getNewValue(), p.second.getWorldCoords(),
+                                               new RowColumn( counter++, p.second.getRc().getColumnX(),
+                                                              p.second.getRc().getColumnY() ) );
+            System.out.println( "\n[Controller] after: " + s );
+            temp.add( new Pair<Point4Values, Point4Values>( f, s ) );
         }
+        mappedPoints.clear();
+        mappedPoints.addAll( temp );
     }
 
     /**
