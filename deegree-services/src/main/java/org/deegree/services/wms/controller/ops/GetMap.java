@@ -197,7 +197,8 @@ public class GetMap {
         this.height = height;
         this.bbox = boundingBox;
         this.crs = boundingBox.getCoordinateSystem();
-        this.bgcolor = Color.red;
+        format = "image/png";
+        transparent = true;
         handleVSPs( service, new HashMap<String, String>() );
     }
 
