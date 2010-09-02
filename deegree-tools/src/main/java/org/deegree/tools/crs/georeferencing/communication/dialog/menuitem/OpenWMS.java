@@ -45,7 +45,7 @@ import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
 import org.deegree.tools.crs.georeferencing.communication.dialog.AbstractGRDialog;
 
 /**
- * Dialog that handles the communication of a WMS-request.
+ * Dialog that provides a textfield to request to a WMS.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$

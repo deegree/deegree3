@@ -57,13 +57,14 @@ import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.tools.crs.georeferencing.communication.dialog.AbstractGRDialog;
 
 /**
- * TODO add class documentation here
+ * Dialog that handles the communication of a WMS-request.
+ * <p>
+ * TODO this should be more abstracted by the MVC-Pattern
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * @param <E>
  */
 public class WMSParameterChooser extends AbstractGRDialog {
 
@@ -251,6 +252,16 @@ public class WMSParameterChooser extends AbstractGRDialog {
         this.getPanel().revalidate();
     }
 
+    /**
+     * Merges two Collections by checking the contained elements to be in both of the collections.
+     * 
+     * @param <E>
+     * @param c1
+     *            , not <Code>null</Code>.
+     * @param c2
+     *            , not <Code>null</Code>.
+     * @return a typeGeneric list.
+     */
     private <E> List<E> mergeLists( Collection<? extends E> c1, Collection<? extends E> c2 ) {
         List<E> list = new ArrayList<E>();
         for ( E e : c2 ) {

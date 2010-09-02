@@ -38,7 +38,6 @@ package org.deegree.tools.crs.georeferencing.model;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -86,16 +85,14 @@ public class Scene2DImplWMS implements Scene2D {
 
     private ParameterStore store;
 
-    public Scene2DImplWMS( ParameterStore store ) {
+    public Scene2DImplWMS( ParameterStore store, WMSClient111 wmsClient ) {
         this.store = store;
+        this.wmsClient = wmsClient;
     }
 
     @Override
     public void init( Scene2DValues values ) {
-        URL url = null;
         this.sceneValues = values;
-
-        url = this.store.getMapURL();
 
         CRSConfiguration crsConfig = CRSConfiguration.getInstance( "org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider" );
         TransformationFactory fac = crsConfig.getTransformationFactory();
@@ -122,11 +119,7 @@ public class Scene2DImplWMS implements Scene2D {
         }
 
         trans.setDefaultAreaOfUse( d );
-        this.sceneValues.setEnvelopeGeoref( trans.getAreaOfUseBBox() );
-
-        this.sceneValues.setCrs( trans.getTargetCRS() );
-
-        wmsClient = new WMSClient111( url );
+        this.sceneValues.setEnvelopeGeoref( trans.getAreaOfUseBBox(), trans.getTargetCRS() );
 
         lays = getLayers( store.getLayers() );
         format = store.getFormat();

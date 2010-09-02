@@ -36,7 +36,6 @@
 package org.deegree.tools.crs.georeferencing.application;
 
 import java.awt.Rectangle;
-import java.net.URL;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -78,11 +77,7 @@ public class Scene2DValues {
 
     private double ratioFoot;
 
-    private URL georefURL;
-
     private List<String> selectedLayers;
-
-    private String format;
 
     /**
      * Creates a new instance of <Code>Scene2DValues</Code>
@@ -206,7 +201,6 @@ public class Scene2DValues {
         case FootprintPoint:
 
             percentPoint = computePercentWorld( this.envelopeFootprint, abstractGRPoint );
-            // transformPropFoot();
             pixelPointX = new Double( ( percentPoint.x * dimensionFootprint.width ) ).intValue();
             pixelPointY = new Double( ( 1 - percentPoint.y ) * dimensionFootprint.height ).intValue();
             return new int[] { pixelPointX, pixelPointY };
@@ -250,12 +244,12 @@ public class Scene2DValues {
         return new Point2d( abstractGRPoint.getX() / spanX, abstractGRPoint.getY() / spanY );
     }
 
-    public Rectangle getImageDimension() {
+    public Rectangle getGeorefDimension() {
         return dimensionGeoreference;
     }
 
-    public void setImageDimension( Rectangle imageDimension ) {
-        this.dimensionGeoreference = imageDimension;
+    public void setGeorefDimension( Rectangle georefDimension ) {
+        this.dimensionGeoreference = georefDimension;
     }
 
     public void setDimensionFootpanel( Rectangle dimension ) {
@@ -609,10 +603,6 @@ public class Scene2DValues {
         return crs;
     }
 
-    public void setCrs( CoordinateSystem crs ) {
-        this.crs = new CRS( crs );
-    }
-
     public void setEnvelopeFootprint( Envelope createEnvelope ) {
         this.envelopeFootprint = createEnvelope;
     }
@@ -622,31 +612,14 @@ public class Scene2DValues {
         this.crs = envelopeGeoref.getCoordinateSystem();
     }
 
-    public void setEnvelopeGeoref( double[] c ) {
-        this.envelopeGeoref = geom.createEnvelope( c[0], c[1], c[2], c[3], crs );
-    }
-
-    public URL getGeorefURL() {
-        return georefURL;
-    }
-
-    public void setGeorefURL( URL mapURL ) {
-        this.georefURL = mapURL;
-
+    public void setEnvelopeGeoref( double[] c, CoordinateSystem crs ) {
+        this.envelopeGeoref = geom.createEnvelope( c[0], c[1], c[2], c[3], new CRS( crs ) );
+        this.crs = envelopeGeoref.getCoordinateSystem();
     }
 
     public List<String> getSelectedLayers() {
 
         return this.selectedLayers;
-    }
-
-    public void setFormat( String format ) {
-        this.format = format;
-
-    }
-
-    public String getFormat() {
-        return format;
     }
 
     public GeometryFactory getGeom() {

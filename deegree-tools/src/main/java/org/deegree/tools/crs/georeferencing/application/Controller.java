@@ -708,9 +708,8 @@ public class Controller {
                             Envelope env = wmsParameter.getEnvelope( crs, layerList );
                             if ( env != null ) {
                                 int qor = max( panel.getWidth(), panel.getHeight() );
-                                sceneValues.setGeorefURL( mapURL );
                                 store = new ParameterStore( mapURL, crs, format, layers, env, qor );
-                                model = new Scene2DImplWMS( store );
+                                model = new Scene2DImplWMS( store, wmsParameter.getWmsClient() );
                                 initGeoReferencingScene( model );
                                 wmsParameter.setVisible( false );
                             } else {
@@ -1525,9 +1524,9 @@ public class Controller {
     private void init() {
 
         if ( model != null ) {
-            sceneValues.setImageDimension( new Rectangle( panel.getWidth(), panel.getHeight() ) );
-            panel.setImageDimension( sceneValues.getImageDimension() );
-            panel.setImageToDraw( model.generateSubImage( sceneValues.getImageDimension() ) );
+            sceneValues.setGeorefDimension( new Rectangle( panel.getWidth(), panel.getHeight() ) );
+            panel.setImageDimension( sceneValues.getGeorefDimension() );
+            panel.setImageToDraw( model.generateSubImage( sceneValues.getGeorefDimension() ) );
             panel.updatePoints( sceneValues );
             panel.repaint();
         }

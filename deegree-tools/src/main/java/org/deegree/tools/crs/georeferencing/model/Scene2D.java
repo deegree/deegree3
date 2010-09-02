@@ -40,7 +40,6 @@ import java.awt.image.BufferedImage;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 
@@ -62,23 +61,18 @@ public interface Scene2D {
     public BufferedImage getGeneratedImage();
 
     /**
-     * Initializes the image generation from a rasterinput. There will be generated the information that is needed for
-     * every image generation like the {@link RasterGeoReference}.
+     * Initializes the Scene2D with the parameters of the Scene2DValues helper class.
      * 
-     * @param options
-     *            for the request, must not be <Code>null</Code>
-     * 
+     * @param values
+     *            the Scene2DValues
      */
     public void init( Scene2DValues values );
 
     /**
-     * Generates everything that is needed for a subImage, so the subRaster can be generated, as well.
      * 
-     * @param startPoint
-     *            can be <Code>null</Code>. If not specified the defaultValue of initialisation will be taken.
      * @param bounds
-     *            of the size of the scene, must not be <Code>null</Code>
-     * @return
+     *            in which the BufferedImage should be drawn into.
+     * @return a BufferedImage from the underlying implementation.
      */
     public BufferedImage generateSubImage( Rectangle bounds );
 
