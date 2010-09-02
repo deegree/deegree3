@@ -80,22 +80,26 @@
 	  ------------------------------------------------------------------------------
   	  </f:facet>
       <h:form>
-      <h:commandButton value="Edit metadata" action="#{configManager.serviceMetadataConfig.edit}" />
-      <h:commandButton value="Edit global config" action="#{configManager.serviceMainConfig.edit}" />
+        <table border="0">
+          <ui:repeat value="#{configManager.serviceManager.configs}" var="config">
+            <tr align="center">
+              <td><h:outputText value="- #{config.id}" /></td>
+              <td>&nbsp;<h:outputText value="#{config.status}" />&nbsp;</td>
+              <td><h:commandButton rendered="#{!config.deactivated}" value="Deactivate"
+                action="#{config.deactivate}" /> <h:commandButton rendered="#{config.deactivated}" value="Activate"
+                action="#{config.activate}" /></td>
+              <td><h:commandButton value="Edit" action="#{config.edit}" /></td>
+              <td><h:panelGroup rendered="#{config.active}">      
+              [<h:outputLink value="#{config.capabilitiesURL}">
+                  <h:outputText value="Capabilities" />
+                </h:outputLink>]
+            </h:panelGroup></td>
+            </tr>
+          </ui:repeat>
+        </table>
         <br />
-        <br />
-        <ui:repeat value="#{configManager.serviceManager.configs}" var="config">
-          <h:outputText value="- #{config.id}:#{config.status}" />
-	    &nbsp;&nbsp;<h:commandButton rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}" />
-          <h:commandButton rendered="#{config.deactivated}" value="Activate" action="#{config.activate}" />
-	    <h:commandButton value="Edit" action="#{config.edit}" />
-        <h:panelGroup rendered="#{config.active}">	    
-	    &nbsp;[<h:outputLink value="#{config.capabilitiesURL}">
-            <h:outputText value="Capabilities" />
-        </h:outputLink>]
-		</h:panelGroup>
-          <br />
-        </ui:repeat>
+        <h:commandButton value="Edit metadata" action="#{configManager.serviceMetadataConfig.edit}" />
+        <h:commandButton value="Edit global config" action="#{configManager.serviceMainConfig.edit}" />
       </h:form>
     </dgc:collapsiblePanel>
 
@@ -108,13 +112,16 @@
       ------------------------------------------------------------------------------
       </f:facet>
       <h:form>
-        <ui:repeat value="#{configManager.styleManager.configs}" var="config">
-          <h:outputText value="- #{config.id}:#{config.status}" />
-          &nbsp;&nbsp;<h:commandButton value="Edit" action="#{config.edit}" />                
+        <table border="0">
+          <ui:repeat value="#{configManager.styleManager.configs}" var="config">
+            <tr align="center">
+              <td align="left"><h:outputText value="- #{config.id}" />&nbsp;</td>
+              <td><h:commandButton value="Edit" action="#{config.edit}" /></td>
+            </tr>
+          </ui:repeat>
+        </table>
         <br />
-        </ui:repeat>
-        <br />
-        Deletion/adding of style definitions not implemented in GUI yet.
+        NOTE: Deleting/adding of style definition files not available via UI yet.
       </h:form>
     </dgc:collapsiblePanel>
 
@@ -127,30 +134,31 @@
 	  ------------------------------------------------------------------------------
   	  </f:facet>
       <h:form>
-        <ui:repeat value="#{configManager.fsManager.configs}" var="config">
-          <h:outputText value="- #{config.id}: #{config.status}" />
-	    &nbsp;&nbsp;<h:commandButton rendered="#{!config.deactivated}" value="Deactivate" action="#{config.deactivate}" />
-          <h:commandButton rendered="#{config.deactivated}" value="Activate" action="#{config.activate}" />
-	    <h:commandButton value="Edit" action="#{config.edit}" />
-	    <h:commandButton value="Delete" action="#{config.delete}" />
-	            
-        <h:panelGroup rendered="#{config.active}">
-		  			<h:commandButton value="Info" action="#{config.showInfo}" />        
-          	<h:panelGroup rendered="#{config.sql}">
-            	<h:commandButton value="Setup tables" action="#{config.createTables}" />
-          	</h:panelGroup>
-          </h:panelGroup>
-          <br />
-        </ui:repeat>
+        <table border="0">
+          <ui:repeat value="#{configManager.fsManager.configs}" var="config">
+            <tr align="center">
+              <td align="left"><h:outputText value="- #{config.id}" /></td>
+              <td>&nbsp;<h:outputText value="#{config.status}" />&nbsp;</td>
+              <td><h:commandButton rendered="#{!config.deactivated}" value="Deactivate"
+                action="#{config.deactivate}" /> <h:commandButton rendered="#{config.deactivated}" value="Activate"
+                action="#{config.activate}" /></td>
+              <td><h:commandButton value="Edit" action="#{config.edit}" /></td>
+              <td><h:commandButton value="Delete" action="#{config.delete}" /></td>
+              <td><h:commandButton rendered="#{config.active}" value="Info" action="#{config.showInfo}" /></td>
+              <td><h:commandButton rendered="#{config.active &amp;&amp; config.sql}" value="Setup tables"
+                action="#{config.createTables}" /></td>
+            </tr>
+          </ui:repeat>
+        </table>
         <br />
-        <h:panelGroup>
-          <h:outputLabel for="newFSBt" value="Add: " />
-          <h:inputText id="newFSBt" value="#{newFeatureStoreConfig.id}" size="16" />
-          <h:selectOneMenu value="#{newFeatureStoreConfig.type}">
-            <f:selectItems value="#{configManager.fsManager.fsTypes}" />
-          </h:selectOneMenu>
-          <h:commandButton value="OK" action="#{newFeatureStoreConfig.create}" />
-        </h:panelGroup>
+      </h:form>
+      <h:form>
+        <h:outputLabel for="newFSBt" value="Name: " />
+        <h:inputText id="newFSBt" value="#{newFeatureStoreConfig.id}" size="16" />
+        <h:selectOneMenu value="#{newFeatureStoreConfig.type}">
+          <f:selectItems value="#{configManager.fsManager.fsTypes}" />
+        </h:selectOneMenu>
+        <h:commandButton value="Create new" action="#{newFeatureStoreConfig.create}" />
       </h:form>
     </dgc:collapsiblePanel>
 
@@ -163,16 +171,22 @@
 	  ------------------------------------------------------------------------------
   	  </f:facet>
       <h:form>
-        <ui:repeat value="#{configManager.connManager.configs}" var="config">
-          <h:outputText value="- #{config.id}" />: <h:outputText value="#{config.connectionStatus}" />
-	    &nbsp;&nbsp;<h:commandButton value="Edit" action="#{config.edit}" />
-	    <h:commandButton value="Delete" action="#{config.delete}" />
-		<br />
-        </ui:repeat>
+        <table border="0">
+          <ui:repeat value="#{configManager.connManager.configs}" var="config">
+            <tr align="center">
+              <td><h:outputText value="- #{config.id}" /></td>
+              <td>&nbsp;<h:outputText value="#{config.connectionStatus}" />&nbsp;</td>
+              <td><h:commandButton value="Edit" action="#{config.edit}" /></td>
+              <td><h:commandButton value="Delete" action="#{config.delete}" /></td>
+            </tr>
+          </ui:repeat>
+        </table>
         <br />
-        <h:outputLabel for="newJDBCBt" value="Add: " />
+      </h:form>
+      <h:form>
+        <h:outputLabel for="newJDBCBt" value="Name: " />
         <h:inputText id="newJDBCBt" value="#{newConnectionConfig.id}" size="16" />
-        <h:commandButton value="OK" action="#{newConnectionConfig.create}" />
+        <h:commandButton value="Create new" action="#{newConnectionConfig.create}" />
       </h:form>
     </dgc:collapsiblePanel>
   </h:panelGroup>
