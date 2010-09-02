@@ -110,9 +110,9 @@ public class SextanteProcessProvider implements ProcessProvider {
                     answer = false;
 
                 // Vector Layer (only 1)
-                if ( alg.getNumberOfVectorLayers( false ) > 1 ) {
-                    answer = false;
-                    // LOG.info( "MORE VECTOR LAYERS: " + alg.getCommandLineName() );
+                if ( alg.getNumberOfVectorLayers( false ) > 1 && answer ) {
+                    //LOG.info( "MORE VECTOR LAYERS: " + alg.getCommandLineName() );
+                    SextanteWPSProcess.logAlgorithm( alg );
                 }
 
                 // Output Paramerter Raster and Vector Layer

@@ -43,6 +43,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
@@ -125,7 +126,7 @@ public class IVectorLayerAdapter {
 
                 if ( feature.getType().equals( fType ) ) {// check feature type
 
-                    //LOG.info( "FEATURE: " + feature.getId() );
+                    // LOG.info( "FEATURE: " + feature.getId() );
 
                     // create properties
                     Object[] values = createPropertiesForVectorLayerGeometry( feature, vectorLayerPropertyDeclarations );
@@ -338,7 +339,7 @@ public class IVectorLayerAdapter {
         propDecls.add( gpt );
 
         // creatre feature type
-        GenericFeatureType fty = new GenericFeatureType( new QName( "SextanteFeatureType" ), propDecls, false );
+        GenericFeatureType fty = new GenericFeatureType( new QName( "SextanteFeature" ), propDecls, false );
 
         // create properties
         LinkedList<Property> props = new LinkedList<Property>();
@@ -354,7 +355,7 @@ public class IVectorLayerAdapter {
         }
         if ( it.hasNext() ) {
 
-            Geometry geom = createGeometry( f.getGeometry() );
+            Geometry geom = createGeometry( id, f.getGeometry() );
 
             GenericProperty gp = new GenericProperty( it.next(), geom );
             props.add( gp );
@@ -397,7 +398,9 @@ public class IVectorLayerAdapter {
             com.vividsolutions.jts.geom.Geometry[] gArrayJTS = new com.vividsolutions.jts.geom.Geometry[l.getShapesCount()];
             int k = 0;
             while ( it.hasNext() ) {
-                gArrayJTS[k] = it.next().getGeometry();
+
+                com.vividsolutions.jts.geom.Geometry geom = it.next().getGeometry();
+                gArrayJTS[k] = geom;
                 k++;
             }
 
@@ -406,7 +409,7 @@ public class IVectorLayerAdapter {
         }
 
         // create a deegree geometry
-        Geometry g = createGeometry( gJTS );
+        Geometry g = createGeometry( "SextanteGeometry", gJTS );
 
         return g;
     }
@@ -490,14 +493,12 @@ public class IVectorLayerAdapter {
      *            - {@link com.vividsolutions.jts.geom.Geometry}
      * @return {@link Geometry}
      */
-    private static Geometry createGeometry( com.vividsolutions.jts.geom.Geometry gJTS ) {
+    private static Geometry createGeometry( String id, com.vividsolutions.jts.geom.Geometry gJTS ) {
 
         // default deegree geometry to create a deegree geometry from JTS geometry
         GeometryFactory gFactory = new GeometryFactory();
-        AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint(
-                                                                                           "GeometryFromIVectorLayerAdapter",
-                                                                                           0, 0, CRS.EPSG_4326 );
-
+        AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( id, 0, 0, CRS.EPSG_4326 );
+        
         return gDefault.createFromJTS( gJTS );
 
     }
@@ -511,7 +512,7 @@ public class IVectorLayerAdapter {
      */
     private static Field[] createPropertyDeclarationsForVectorLayer( FeatureType type ) {
 
-       // LOG.info( "FEATURE TYP: " + type.getName().toString() );
+        // LOG.info( "FEATURE TYP: " + type.getName().toString() );
 
         // list of property declaration for vector layer
         LinkedList<Field> vectoLayerPropertyDeclarations = new LinkedList<Field>();
@@ -529,12 +530,13 @@ public class IVectorLayerAdapter {
                 QName pName = spt.getName();
 
                 // class
-                Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                // Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                Class<?> pClass = String.class;
 
                 // notice name and class as field
                 vectoLayerPropertyDeclarations.add( new Field( pName.toString(), pClass ) );
 
-               // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
+                // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
             }
         }
 
@@ -590,7 +592,7 @@ public class IVectorLayerAdapter {
                         TypedObjectNode probNode = properties[0].getValue();
 
                         if ( probNode instanceof PrimitiveValue ) {
-                            geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() ).getValue();
+                            geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() ).getAsText();
                         } else {
                             LOG.warn( "Property '" + properties[0].getName() + "' is not supported." );
                             geomProperties[i] = null;
@@ -600,7 +602,7 @@ public class IVectorLayerAdapter {
                         geomProperties[i] = null;
                     }
 
-                    //LOG.info( "  PROPERTY: " + propertyDeclarations[i].getName() + ": " + geomProperties[i] );
+                    // LOG.info( "  PROPERTY: " + propertyDeclarations[i].getName() + ": " + geomProperties[i] );
                 }
             }
 

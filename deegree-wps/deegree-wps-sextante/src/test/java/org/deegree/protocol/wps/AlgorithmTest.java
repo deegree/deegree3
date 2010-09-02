@@ -25,7 +25,7 @@ import es.unex.sextante.parameters.Parameter;
 
 public class AlgorithmTest {
 
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
 
     private static Logger LOG = LoggerFactory.getLogger( AlgorithmTest.class );
 
@@ -33,13 +33,13 @@ public class AlgorithmTest {
         LinkedList<TestAlgorithm> algs = new LinkedList<TestAlgorithm>();
 
         // test all algorithms?
-        boolean all = false;
+        boolean all = true;
 
         if ( !all ) {
             // only one algorithm
             Sextante.initialize();
             HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
-            GeoAlgorithm geoAlg = sextanteAlgs.get( "exportvector" );
+            GeoAlgorithm geoAlg = sextanteAlgs.get( "difference" );
             TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
             testAlg.addAllInputData( getInputData( geoAlg ) );
             algs.add( testAlg );
@@ -51,8 +51,11 @@ public class AlgorithmTest {
             for ( int i = 0; i < geoalgs.length; i++ ) {
                 GeoAlgorithm geoAlg = geoalgs[i];
 
-                // if ( !geoAlg.getCommandLineName().equals( "geometricproperties" ) )
-                {
+                if ( !geoAlg.getCommandLineName().equals( "difference" )
+                     && !geoAlg.getCommandLineName().equals( "union" ) && !geoAlg.getCommandLineName().equals( "clip" )
+                     && !geoAlg.getCommandLineName().equals( "intersection" )
+                     && !geoAlg.getCommandLineName().equals( "countpoints" )
+                     && !geoAlg.getCommandLineName().equals( "symdifference" ) ) {
 
                     TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
                     testAlg.addAllInputData( getInputData( geoAlg ) );
@@ -95,7 +98,9 @@ public class AlgorithmTest {
                 Parameter param = paramSet.getParameter( j );
 
                 // add a layer
-                if ( param.getParameterName().equals( "LAYER" ) || param.getParameterName().equals( "INPUT" ) ) {
+                if ( param.getParameterName().equals( "LAYER" ) || param.getParameterName().equals( "INPUT" )
+                     || param.getParameterName().equals( "CLIPLAYER" ) || param.getParameterName().equals( "LAYER2" )
+                     || param.getParameterName().equals( "LAYER1" ) ) {
 
                     if ( layersIterator.hasNext() ) {
                         dataList.add( layersIterator.next() );
@@ -176,8 +181,10 @@ public class AlgorithmTest {
 
     private LinkedList<ExampleData> getLinesInput() {
         LinkedList<ExampleData> lines = new LinkedList<ExampleData>();
-        lines.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
-        lines.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
+
+        lines.addAll( ExampleData.getData( ExampleDataType.LINE ) );
+        lines.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
+
         return lines;
     }
 
