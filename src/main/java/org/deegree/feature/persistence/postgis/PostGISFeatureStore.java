@@ -293,7 +293,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
     private Envelope getEnvelope( QName ftName, BlobMapping blobMapping )
                             throws FeatureStoreException {
 
-        LOG.info( "Determining BBOX for feature type '{}' (BLOB mode)", ftName );
+        LOG.debug( "Determining BBOX for feature type '{}' (BLOB mode)", ftName );
 
         int ftId = getFtId( ftName );
         String column = blobMapping.getBBoxColumn();
@@ -438,7 +438,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             }
         } catch ( Exception e ) {
             String msg = "Error retrieving object by id (relational mode): " + e.getMessage();
-            LOG.info( msg, e );
+            LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         } finally {
             close( rs, stmt, conn, LOG );
@@ -812,7 +812,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
             LOG.debug( "SQL: {}", sql );
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
-            LOG.info( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             int i = 1;
             if ( blobMapping != null ) {
@@ -835,7 +835,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
 
             begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
-            LOG.info( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             FeatureBuilder builder = null;
             if ( blobMapping != null ) {
@@ -847,7 +847,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
             String msg = "Error performing query by operator filter: " + e.getMessage();
-            LOG.info( msg, e );
+            LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         }
 
