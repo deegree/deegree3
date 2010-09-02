@@ -41,7 +41,7 @@
 <%@page import="java.util.Arrays"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="org.deegree.services.wps.ProcessExecution.ExecutionState"%>
+<%@page import="org.deegree.protocol.wps.WPSConstants.ExecutionState"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <html>
 <head>
@@ -91,7 +91,7 @@ deegree 3 WPS process status
   <tr align="center">
     <td><%=p.getProcessId().toString()%></td>
     <td><%=p.getExecutionState().toString()%></td>
-    <td><%=p.getExecutionState() == ProcessExecution.ExecutionState.SUCCEEDED ? 100
+    <td><%=p.getExecutionState() == ExecutionState.SUCCEEDED ? 100
                                                                                                     : p.getPercentCompleted()%>%</td>
     <td><%=df.format( p.getStartTime() )%></td>
     <td><%=p.getFinishTime() > 0 ? df.format( p.getFinishTime() ) : "-"%></td>
