@@ -35,61 +35,34 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing.model.points;
 
-import javax.vecmath.Point2d;
 
 /**
- * Abstract class for special points in the georeferencing tool.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class AbstractGRPoint extends Point2d {
+public class PointResidual extends AbstractGRPoint {
+    private double x;
 
-    /**
-     * Creates a new instance of <Code>AbstractPoint</Code>.
-     * 
-     * @param x
-     *            the X-axis value of the point
-     * @param y
-     *            the Y-axis value of the point
-     */
-    public AbstractGRPoint( double x, double y ) {
+    private double y;
+
+    public PointResidual( double x, double y ) {
         super( x, y );
+        this.x = x;
+        this.y = y;
     }
 
-    /**
-     * 
-     * Enumeration for the specified types that are used in this component.
-     * 
-     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public enum PointType {
+    @Override
+    public String toString() {
+        return x + "," + y;
 
-        /**
-         * points that are identified as footprint
-         */
-        FootprintPoint,
-
-        /**
-         * points that are identified as georeference
-         */
-        GeoreferencedPoint,
-
-        /**
-         * 
-         */
-        ResidualPoint
     }
 
-    /**
-     * 
-     * @return the type of the point
-     */
-    public abstract PointType getPointType();
-
+    @Override
+    public PointType getPointType() {
+        return PointType.ResidualPoint;
+    }
 }

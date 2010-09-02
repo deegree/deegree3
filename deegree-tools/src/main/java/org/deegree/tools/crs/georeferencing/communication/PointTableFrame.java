@@ -39,6 +39,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -67,9 +68,25 @@ public class PointTableFrame extends JFrame {
 
     public final static String BUTTON_DELETE_ALL = "Delete all";
 
+    public static final String SAVE_POINTTABLE = "Save";
+
+    public static final String LOAD_POINTTABLE = "Load";
+
+    public final static String BUTTON_DELETE_SELECTED_NAME = "Delete selected name";
+
+    public final static String BUTTON_DELETE_ALL_NAME = "Delete all name";
+
+    public static final String SAVE_POINTTABLE_NAME = "Save name";
+
+    public static final String LOAD_POINTTABLE_NAME = "Load name";
+
     private JButton deleteSingleButton = new JButton( BUTTON_DELETE_SELECTED );
 
     private JButton deleteAllButton = new JButton( BUTTON_DELETE_ALL );
+
+    private JButton saveButton = new JButton( SAVE_POINTTABLE );
+
+    private JButton loadButton = new JButton( LOAD_POINTTABLE );
 
     private String[] columnNames = { "X-Ref", "Y-Ref", "X-Building", "Y-Building", "X-Residual", "Y-Residual" };
 
@@ -91,8 +108,16 @@ public class PointTableFrame extends JFrame {
         this.setLayout( new BorderLayout( 5, 5 ) );
         buttonPanel.setLayout( new FlowLayout() );
         buttonPanel.setBorder( BorderFactory.createLineBorder( Color.black ) );
+
+        deleteAllButton.setName( BUTTON_DELETE_ALL_NAME );
+        deleteSingleButton.setName( BUTTON_DELETE_SELECTED_NAME );
+        saveButton.setName( SAVE_POINTTABLE_NAME );
+        loadButton.setName( LOAD_POINTTABLE_NAME );
+
         buttonPanel.add( deleteSingleButton, BorderLayout.LINE_START );
-        buttonPanel.add( deleteAllButton, BorderLayout.LINE_END );
+        buttonPanel.add( deleteAllButton, BorderLayout.LINE_START );
+        buttonPanel.add( saveButton, BorderLayout.LINE_START );
+        buttonPanel.add( loadButton, BorderLayout.LINE_START );
         this.getContentPane().add( buttonPanel, BorderLayout.NORTH );
 
         tablePanel.setLayout( new BorderLayout() );
@@ -104,11 +129,14 @@ public class PointTableFrame extends JFrame {
         setVisible( true );
         toFront();
         setAlwaysOnTop( true );
+
     }
 
     public void addActionButtonListener( ActionListener c ) {
         deleteSingleButton.addActionListener( c );
         deleteAllButton.addActionListener( c );
+        saveButton.addActionListener( c );
+        loadButton.addActionListener( c );
 
     }
 
@@ -123,28 +151,34 @@ public class PointTableFrame extends JFrame {
         }
         Object[] rowData = new Object[] { point.x, point.y };
         int rowCount = model.getRowCount();
+        int row = rowCount - 1;
+        int colX = 0;
+        int colY = 0;
         switch ( point.getPointType() ) {
 
         case GeoreferencedPoint:
-            int row = rowCount - 1;
-            int columnX = 0;
-            int columnY = 1;
-            model.setValueAt( rowData[0], row, columnX );
-            model.setValueAt( rowData[1], row, columnY );
 
-            return new RowColumn( row, columnX, columnY );
+            colX = 0;
+            colY = 1;
+            model.setValueAt( rowData[0], row, colX );
+            model.setValueAt( rowData[1], row, colY );
+
+            break;
         case FootprintPoint:
 
-            int rowF = rowCount - 1;
-            int columnXF = 2;
-            int columnYF = 3;
-            model.setValueAt( rowData[0], rowCount - 1, 2 );
-            model.setValueAt( rowData[1], rowCount - 1, 3 );
-            return new RowColumn( rowF, columnXF, columnYF );
-
+            colX = 2;
+            colY = 3;
+            model.setValueAt( rowData[0], row, colX );
+            model.setValueAt( rowData[1], row, colY );
+            break;
+        case ResidualPoint:
+            colX = 4;
+            colY = 5;
+            model.setValueAt( "", row, colX );
+            model.setValueAt( "", row, colY );
         }
 
-        return null;
+        return new RowColumn( row, colX, colY );
 
     }
 
@@ -190,6 +224,18 @@ public class PointTableFrame extends JFrame {
 
     public JTable getTable() {
         return table;
+    }
+
+    public String[] getColumnNames() {
+        return columnNames;
+    }
+
+    public Vector<String> getColumnNamesAsVector() {
+        Vector<String> v = new Vector<String>();
+        for ( String s : columnNames ) {
+            v.add( s );
+        }
+        return v;
     }
 
 }
