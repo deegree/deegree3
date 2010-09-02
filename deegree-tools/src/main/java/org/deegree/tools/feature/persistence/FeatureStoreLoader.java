@@ -35,12 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.feature.persistence;
 
-import static org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode.GENERATE_NEW;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.FactoryConfigurationError;
@@ -58,6 +57,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -87,6 +87,8 @@ public class FeatureStoreLoader {
 
     private static final String OPT_INPUT_FORMAT = "format";
 
+    private static final String OPT_IDGEN_MODE = "idgen";
+
     private enum Action {
         insert, stats
     }
@@ -110,20 +112,28 @@ public class FeatureStoreLoader {
         return fs;
     }
 
-    private static void insert( FeatureStore fs, String datasetFile, GMLVersion gmlVersion )
+    private static void insert( FeatureStore fs, String datasetFile, GMLVersion gmlVersion, IDGenMode mode )
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, FeatureStoreException {
 
         File f = new File( datasetFile );
         URL url = f.toURI().toURL();
+        System.out.print( "- Reading dataset: '" + datasetFile + "'..." );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, url );
+        gmlReader.setApplicationSchema( fs.getSchema() );
         FeatureCollection fc = gmlReader.readFeatureCollection();
+        System.out.println( "done." );
 
         FeatureStoreTransaction ta = null;
         try {
             ta = fs.acquireTransaction();
-            ta.performInsert( fc, GENERATE_NEW );
-            System.out.println( "Insert succeeded. Committing transaction." );
+            System.out.print( "- Inserting features..." );
+            List<String> fids = ta.performInsert( fc, mode );
+            System.out.println( "done." );
+            for ( String fid : fids ) {
+                System.out.println( "- Inserted: " + fid );
+            }
+            System.out.println( "\n- Insert succeeded (" + fids.size() + " features). Committing transaction." );
             ta.commit();
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -180,19 +190,33 @@ public class FeatureStoreLoader {
                 System.exit( 0 );
             }
 
+            IDGenMode idGenMode = null;
+            try {
+                idGenMode = IDGenMode.valueOf( options.getOption( OPT_IDGEN_MODE ).getValue() );
+                if ( idGenMode == IDGenMode.REPLACE_DUPLICATE ) {
+                    throw new IllegalArgumentException();
+                }
+            } catch ( IllegalArgumentException e ) {
+                System.out.println( "Unknown id generation mode '" + options.getOption( OPT_IDGEN_MODE ).getValue()
+                                    + "'. Call with '-help' for displaying valid modes." );
+                System.exit( 0 );
+            }
+
             String inputFileName = options.getOption( OPT_DATASET_FILE ).getValue();
 
             if ( jdbcConfigFileName != null ) {
                 initJDBCConnections( jdbcConfigFileName );
             }
+            System.out.print( "Initializing feature store..." );
             FeatureStore fs = initFeatureStore( fsConfigFileName );
+            System.out.println( "done." );
 
             switch ( action ) {
             case insert:
-                insert( fs, inputFileName, format );
+                insert( fs, inputFileName, format, idGenMode );
                 break;
             case stats:
-                System.out.println( "Stats..." );
+                System.out.println( "TODO: Stats..." );
                 break;
             }
         } catch ( ParseException exp ) {
@@ -232,6 +256,10 @@ public class FeatureStoreLoader {
         opts.addOption( opt );
 
         opt = new Option( OPT_INPUT_FORMAT, true, "input format, one of: " + formatsList + "" );
+        opt.setRequired( true );
+        opts.addOption( opt );
+
+        opt = new Option( OPT_IDGEN_MODE, true, "id generation mode, one of: GENERATE_NEW,USE_EXISTING" );
         opt.setRequired( true );
         opts.addOption( opt );
 
