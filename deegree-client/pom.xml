@@ -39,10 +39,4 @@
       </snapshots>
     </repository>
   </repositories>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>deegree-repository</id>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
 </project>
