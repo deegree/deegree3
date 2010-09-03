@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-tomcat</artifactId>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0-pre8</version>
   <name>deegree Tomcat</name>
   <url>http://maven.apache.org</url>
   <scm>
