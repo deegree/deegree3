@@ -1,0 +1,847 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:Transaction version="1.1.0" service="WFS" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2"
+  xmlns:CP="urn:x-inspire:specification:gmlas:CadastralParcels:3.0" xmlns:app="http://www.deegree.org/app" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:wfs="http://www.opengis.net/wfs" xmlns:AD="urn:x-inspire:specification:gmlas:Addresses:3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:GN="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" gml:id="NL.KAD.BAG"
+  xsi:schemaLocation="urn:x-inspire:specification:gmlas:Addresses:3.0 http://schemas.kademo.nl/inspire/v3.0/Addresses.xsd urn:x-inspire:specification:gmlas:CadastralParcels:3.0 http://schemas.kademo.nl/inspire/v3.0/CadastralParcels.xsd http://www.opengis.net/wfs http://schemas.kademo.nl/ogc/wfs/1.1.0-gml3.2.1/wfs.xsd">
+  <wfs:Insert handle="insert" idgen="UseExisting">
+    <wfs:FeatureCollection xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0"
+      xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:wfs="http://www.opengis.net/wfs" numberOfFeatures="2"
+      xsi:schemaLocation="urn:cgi:xmlns:CGI:GeoSciML:2.0 http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000003">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000003</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000003_P">
+                  <gml:pos>5.246345245309804 52.68961794947077</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611ZP" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000077" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000007">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000007</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000007_P">
+                  <gml:pos>5.244091931272281 52.69122392342882</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611ZH" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000064" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000011">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000011</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000011_P">
+                  <gml:pos>5.251198597540931 52.69846671697543</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611CZ" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000084" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000013">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000013</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000013_P">
+                  <gml:pos>5.235763213505224 52.700281424150305</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611KA" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000045" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000014">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000014</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000014_P">
+                  <gml:pos>5.246060860867943 52.690669083345426</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611ZL" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000125" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000015">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000015</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000015_P">
+                  <gml:pos>5.240617983239744 52.69067149636178</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611HA" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000066" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000017">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000017</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000017_P">
+                  <gml:pos>5.234514684466063 52.70196936845571</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611KD" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000041" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000022">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000022</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000022_P">
+                  <gml:pos>5.2540758176641 52.69114563058528</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611MB" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000198" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000024">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000024</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000024_P">
+                  <gml:pos>5.250599265627573 52.6913933284404</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611ED" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000101" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:Address gml:id="NL.KAD.BAG.0532200000000026">
+          <AD:inspireId>
+            <base:Identifier>
+              <base:localId>0532200000000026</base:localId>
+              <base:namespace>NL.KAD.BAG</base:namespace>
+
+            </base:Identifier>
+          </AD:inspireId>
+          <AD:position>
+            <AD:GeographicPosition>
+              <AD:geometry>
+                <gml:Point srsName="EPSG:4258" gml:id="NL.KAD.BAG.0532200000000026_P">
+                  <gml:pos>5.245312475319377 52.711751467641456</gml:pos>
+                </gml:Point>
+              </AD:geometry>
+              <AD:specification>entrance</AD:specification>
+              <AD:method>byOtherParty</AD:method>
+              <AD:default>true</AD:default>
+            </AD:GeographicPosition>
+
+          </AD:position>
+          <AD:locator>
+            <AD:AddressLocator>
+              <AD:designator xmlns:gml="http://www.opengis.net/gml">
+                <AD:LocatorDesignator>
+                  <AD:designator>1</AD:designator>
+                  <AD:type>2</AD:type>
+                </AD:LocatorDesignator>
+              </AD:designator>
+              <AD:level>unitLevel</AD:level>
+            </AD:AddressLocator>
+          </AD:locator>
+          <AD:validFrom xmlns:gml="http://www.opengis.net/gml">2009-01-05T23:00:00.000</AD:validFrom>
+
+          <AD:validTo xmlns:gml="http://www.opengis.net/gml">2299-12-30T23:00:00.000</AD:validTo>
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:component xlink:href="#NL.KAD.AA.1102" />
+          <AD:component xlink:href="#NL.KAD.PD.1611BT" />
+          <AD:component xlink:href="#NL.KAD.TN.0532300000000062" />
+        </AD:Address>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611CZ">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:postCode>1611CZ</AD:postCode>
+
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611ZH">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:postCode>1611ZH</AD:postCode>
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000084">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+              <GN:spelling>
+                <GN:SpellingOfName>
+
+                  <GN:text>Kardinaal Willebrandshof</GN:text>
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611BT">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+
+          <AD:postCode>1611BT</AD:postCode>
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000198">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+              <GN:spelling>
+                <GN:SpellingOfName>
+                  <GN:text>Houtstraat</GN:text>
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611KD">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:postCode>1611KD</AD:postCode>
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000041">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+              <GN:spelling>
+                <GN:SpellingOfName>
+                  <GN:text>De Roos</GN:text>
+
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611HA">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:postCode>1611HA</AD:postCode>
+
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000101">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+              <GN:spelling>
+                <GN:SpellingOfName>
+                  <GN:text>Madame Curiestraat</GN:text>
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000066">
+
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+
+              <GN:spelling>
+                <GN:SpellingOfName>
+                  <GN:text>Graaf Willemstraat</GN:text>
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000077">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+              <GN:spelling>
+                <GN:SpellingOfName>
+                  <GN:text>Hugo de Grootsingel</GN:text>
+
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611ED">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:postCode>1611ED</AD:postCode>
+
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611ZP">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:postCode>1611ZP</AD:postCode>
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:AddressAreaName gml:id="NL.KAD.AA.1102">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+              <GN:spelling>
+                <GN:SpellingOfName>
+
+                  <GN:text>Bovenkarspel</GN:text>
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+          <AD:namedPlace xsi:nil="true" nilReason="UNKNOWN" />
+        </AD:AddressAreaName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611MB">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:postCode>1611MB</AD:postCode>
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000064">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+              <GN:spelling>
+                <GN:SpellingOfName>
+                  <GN:text>Gerard Boedijnweg</GN:text>
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000125">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+              <GN:spelling>
+                <GN:SpellingOfName>
+                  <GN:text>Piet van Egmondweg</GN:text>
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000062">
+
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+
+              <GN:spelling>
+                <GN:SpellingOfName>
+                  <GN:text>Geerling</GN:text>
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:ThoroughfareName gml:id="NL.KAD.TN.0532300000000045">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:name>
+            <GN:GeographicalName>
+              <GN:language>nld</GN:language>
+              <GN:nativeness>Endonym</GN:nativeness>
+              <GN:nameStatus>Official</GN:nameStatus>
+              <GN:sourceOfName>Het Kadaster, Nederland</GN:sourceOfName>
+              <GN:pronunciation>
+                <GN:PronunciationOfName />
+              </GN:pronunciation>
+              <GN:spelling>
+                <GN:SpellingOfName>
+                  <GN:text>De Veer</GN:text>
+
+                  <GN:script>Latn</GN:script>
+                </GN:SpellingOfName>
+              </GN:spelling>
+            </GN:GeographicalName>
+          </AD:name>
+        </AD:ThoroughfareName>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611ZL">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:postCode>1611ZL</AD:postCode>
+
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+      <gml:featureMember>
+        <AD:PostalDescriptor gml:id="NL.KAD.PD.1611KA">
+          <AD:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:status />
+          <AD:validFrom xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:validTo xsi:nil="true" nilReason="UNKNOWN" />
+          <AD:postCode>1611KA</AD:postCode>
+        </AD:PostalDescriptor>
+      </gml:featureMember>
+
+
+    </wfs:FeatureCollection>
+  </wfs:Insert>
+</wfs:Transaction>
