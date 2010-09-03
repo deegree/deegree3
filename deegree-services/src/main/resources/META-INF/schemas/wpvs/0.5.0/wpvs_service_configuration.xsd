@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
+  targetNamespace="http://www.deegree.org/services/wpvs" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.6.0/metadata.xsd" />
+  <element name="ServiceConfiguration">
+    <annotation>
+      <documentation>
+        Root element of the service configuration, defines available datasets, rendering parameters and get
+        view request restrictions.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <!-- options for the caching -->
+        <!-- Maximum number of textures stored in GPU (Graphic Processing Unit) memory -->
+        <element name="TexturesInGPUMem" type="int" default="300" minOccurs="0" />
+        <!-- Maximum number of texture tiles (a dataset texture for a dem fragment) to be cached -->
+        <element name="CachedTextureTiles" type="int" default="400" minOccurs="0" />
+        <!-- Maximum amount of direct memory (in MegaBytes) to be allocated for texture coordinates -->
+        <element name="DirectTextureMemory" type="int" default="400" minOccurs="0" />
+        <!--
+          Maximum number of DEM fragments stored in memory, this value depends on following variables: width/height of
+          the elevation model, the number of levels in a macro triangle, the number of rows in a macrotriangle. For a
+          DEM of 32768*32768 meters, 18 levels and 64 rows per macro triangle, 1000 is reasonable value. For a DEM of
+          32768*32768 meters, with 16 levels and 128 rows per macro triangle, 300 is sufficient. In general, the higher
+          the value, the more memory is needed, the less IO is needed.
+        -->
+        <element name="NumberOfDEMFragmentsCached" type="int" default="1000" minOccurs="0" />
+        <!-- Maximum amount of direct memory (in MegaBytes) to be allocated for reading mesh fragments from the disk -->
+        <element name="DirectIOMemory" type="int" default="500" minOccurs="0" />
+        <!-- How many direct buffers should be held in cache, they will be used for the result images -->
+        <element name="NumberOfResultImageBuffers" type="int" default="25" minOccurs="0" />
+        <!-- the approximate latitude of the scene in WGS84 degrees -->
+        <element name="LatitudeOfScene" type="double" default="51.7" minOccurs="0" />
+        <!-- maximum view width that can be requested. default = 1200 -->
+        <element name="MaxViewWidth" type="int" default="1200" minOccurs="0" />
+        <!-- maximum view height that can be requested. default = 1000 -->
+        <element name="MaxViewHeight" type="int" default="1000" minOccurs="0" />
+        <!--
+          maximum value of the farclipping plane which might be requested. default = 15000 (units)
+        -->
+        <element name="MaxRequestFarClippingPlane" type="double" default="100000" minOccurs="0" />
+        <!--
+          The value of the near clipping plane independent of the request, default = 0.1 (units)
+        -->
+        <element name="NearClippingPlane" type="double" default="0.1" minOccurs="0" />
+        <element ref="wpvs:Copyright" minOccurs="0" />
+        <element ref="wpvs:SkyImages" />
+        <!-- A file which contains information for the initialization of opengl (rb: the format is yet to be defined.) -->
+        <element name="OpenGLInitConfigFile" type="string" minOccurs="0" />
+        <!-- Available datasets -->
+        <element ref="wpvs:DatasetDefinitions" />
+      </sequence>
+    </complexType>
+  </element>
+  <element name="SkyImages">
+    <annotation>
+      <documentation>List of images which can be selected as the background of the scene, usually the sky.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="SkyImage" maxOccurs="unbounded">
+          <complexType>
+            <attribute name="name" type="string" />
+            <attribute name="file" type="anyURI" />
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="Copyright">
+    <annotation>
+      <documentation>Image which is rendered on top of the scene.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Text" type="string" default="Made by deegree WPVS" />
+        <element name="Image">
+          <complexType>
+            <attribute name="url" type="anyURI" />
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="percentageOfResult" type="double" default="10" />
+    </complexType>
+  </element>
+  <complexType name="AbstractDataType" abstract="true">
+    <annotation>
+      <documentation>
+        Base definition for all data sets. Defines metadata properties like name, title and descriptions.
+      </documentation>
+    </annotation>
+    <sequence>
+      <!--
+        The title defines the request name of a data set, similar to the WMS 1.3.0 specification.
+      -->
+      <element name="Title" type="string" />
+      <element name="Name" type="string" minOccurs="0" />
+      <element name="MetadataURL" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Abstract" type="string" minOccurs="0" />
+      <element ref="md:Keywords" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+  <element name="DatasetDefinitions">
+    <annotation>
+      <documentation>A dataset not visible through the capabilities and can not be requested by a client.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Title" type="string" />
+        <element name="MetadataURL" type="string" minOccurs="0" maxOccurs="unbounded" />
+        <element name="Abstract" type="string" minOccurs="0" />
+        <element ref="md:Keywords" minOccurs="0" />
+        <element name="BaseCRS" type="string" />
+        <element ref="wpvs:TranslationToLocalCRS" />
+        <!--
+          Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This parameter
+          determines when geometry LODs or objects are to be rendered are switched.
+        -->
+        <element name="MaxPixelError" type="double" default="5.0" minOccurs="0" />
+        <element ref="wpvs:DEMDataset" />
+        <element ref="wpvs:DEMTextureDataset" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="wpvs:ColormapDataset" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="wpvs:RenderableDataset" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+  <element name="TranslationToLocalCRS">
+    <complexType>
+      <attribute name="x" type="double" />
+      <attribute name="y" type="double" />
+    </complexType>
+  </element>
+  <element name="DEMDataset">
+    <annotation>
+      <documentation>
+        An elevation model is visible through the capabilities and can be requested by a client. Normally
+        it will define a DEM (Digital Elevation Model) but it might as well have a more semantic character (using for
+        example rent prices of houses).
+      </documentation>
+      <appinfo>
+        <jaxb:class name="DEMDatasetConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="wpvs:AbstractDataType">
+          <sequence>
+            <!--
+              Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This
+              parameter determines when geometry LODs or objects are to be rendered are switched.
+            -->
+            <element name="MaxPixelError" type="double" default="5.0" minOccurs="0" />
+            <element name="BatchedMTStoreId" type="string" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="ColormapDataset">
+    <annotation>
+      <documentation>
+        An colormap which can be applied to an elevation model and can be requested by a client. The colors
+        will be lineary interpreted between the min and max color.
+      </documentation>
+      <appinfo>
+        <jaxb:class name="ColormapDatasetConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="wpvs:AbstractDataType">
+          <sequence>
+            <!-- a hex decimal rgb string starting with a '#' if failing red will be used-->
+            <element name="MinColor" type="string" minOccurs="0" />
+            <!-- a hex decimal rgb string starting with a '#', if failing green will be used-->
+            <element name="MaxColor" type="string" minOccurs="0" />
+            <!-- a hex decimal rgb string starting with a '#', if failing a brownish color will be used-->
+            <element name="HeightISOColor" type="string" minOccurs="0" />
+            <!--the minimum value to which colors will be mapped, if failing the dem min bbox will be used-->
+            <element name="MinZValue" type="double" minOccurs="0" />
+            <!--the maximum value to which colors will be mapped, if failing the dem min bbox will be used-->
+            <element name="MaxZValue" type="double" minOccurs="0" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <group name="TextureProviders">
+    <annotation>
+      <documentation>A group of texture providers, which can be requested to receive textures from.
+      </documentation>
+    </annotation>
+    <choice>
+      <element name="CoverageStoreId" type="string" />
+      <element ref="wpvs:StyledGeometryProvider" />
+    </choice>
+  </group>
+  <element name="DEMTextureDataset">
+    <annotation>
+      <documentation>
+        A data type defines some properties like name, title and descriptions. A data type can have a
+        bounding box, defining it's validity. The scale denominators are used to define the scales for which a data
+        instance is valid.
+      </documentation>
+      <appinfo>
+        <jaxb:class name="DEMTextureDatasetConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="wpvs:AbstractDataType">
+          <sequence>
+            <!--
+              Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This
+              parameter determines when geometry LODs or objects are to be rendered are switched.
+            -->
+            <element name="MaxPixelError" type="double" default="5.0" minOccurs="0" />
+            <!--
+              Maximum acceptable size (in pixels) that a texel of a lower-quality texture may cover in the rendered
+              image. This parameter determines when texture LODs are switched.
+            -->
+            <element name="MaxProjectedTexelSize" type="double" default="5.0" minOccurs="0" />
+            <group ref="wpvs:TextureProviders" />
+          </sequence>
+          <attribute name="RequestTimeout" type="int" default="30" />
+        </extension>
+        <!-- number of seconds to time out request to the datasource. -->
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="StyledGeometryProvider">
+    <annotation>
+      <documentation>
+        Defines a texture for very closed up views of the terrain, for this purpose an SE-Style file will
+        be evaluated, containing information about a data source having geometries and style information.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="TextureCacheDir" minOccurs="0">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="CacheSize" type="double" use="optional" default="5" />
+              </extension>
+              <!-- The size in gigabytes -->
+            </simpleContent>
+          </complexType>
+        </element>
+        <element name="StyleId" type="string" />
+        <element name="FeatureStoreId" type="string" />
+      </sequence>
+      <attribute name="MinimumUnitsPerPixel" type="double" use="optional" default="0.1" />
+      <!--
+        The number of units one texture pixel (texel) must have before this texture dataset becomes active. Normally
+        this should be rather small number, smaller then the fines multiresolution level of 'normal' textures.
+      -->
+    </complexType>
+  </element>
+  <group name="FeatureDataSources">
+    <annotation>
+      <documentation>A group of datasources which can be requested to receive features (buildings, trees etc.) from.
+      </documentation>
+    </annotation>
+    <choice>
+      <element name="ConstrainedDatabaseDataSourceId" type="string" />
+      <element name="GeospatialFileSystemDataSourceId" type="string" />
+    </choice>
+  </group>
+  <element name="RenderableDataset">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="RenderableDatasetConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="wpvs:AbstractDataType">
+          <sequence>
+            <element name="RenderableStoreId" type="string" />
+            <!--
+              Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This
+              parameter determines when geometry LODs or objects are to be rendered are switched.
+            -->
+            <element name="MaxPixelError" type="double" default="5.0" minOccurs="0" />
+            <element ref="wpvs:SwitchLevels" minOccurs="0" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="SwitchLevels">
+    <annotation>
+      <documentation>
+        Defines the number of pixels one meter of a building must have, before switching to the next level
+        of detail. Each level defines a quality level (starting with 0) where 0 is the most coarse level.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Level" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <attribute name="min" type="double" use="required" />
+            <attribute name="max" type="double" use="required" />
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>
