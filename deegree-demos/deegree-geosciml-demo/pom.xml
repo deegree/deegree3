@@ -4,13 +4,13 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-geosciml-demo</artifactId>
   <packaging>war</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0-pre8</version>
   <name>deegree 3 GeoSciML Demo</name>
   <url>http://www.deegree.org</url>
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-demos</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0-pre8</version>
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,13 +39,13 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-pre8</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-pre8</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
       <scope>compile</scope>
@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-pre8</version>
       <type>zip</type>
       <scope>compile</scope>
     </dependency>
