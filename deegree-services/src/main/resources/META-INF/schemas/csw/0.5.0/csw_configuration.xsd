@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:csw="http://www.deegree.org/services/csw" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/services/csw" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.csw" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <include schemaLocation="csw_published_information.xsd" />
+  <include schemaLocation="csw_service_configuration.xsd" />
+  <element name="deegreeCSW">
+    <complexType>
+      <sequence>
+        <element ref="csw:ServiceConfiguration" />
+        <element ref="csw:PublishedInformation" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+    </complexType>
+  </element>
+</schema> 
