@@ -1,0 +1,24 @@
+<OracleFeatureStore configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/oracle"
+  xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/oracle http://schemas.deegree.org/datasource/0.5.0/feature/oracle.xsd">
+
+  <!--[0...n]  -->
+  <NamespaceHint prefix="app" namespaceURI="http://www.deegree.org/app" />
+
+  <StorageSRS>EPSG:4326</StorageSRS>
+  
+  <JDBCConnId>okzagg-db</JDBCConnId>
+
+  <!--[0...n] Feature type defininition-->
+  <FeatureType name="app:Country" mapping="COUNTRY" fidMapping="GMLID">
+
+    <!-- [0...n] property definitions -->
+
+    <!-- Example: Simple property definition -->    
+    <SimpleProperty name="app:name" minOccurs="0" type="string" />
+    <!-- Example: Geometry property definition -->
+    <GeometryProperty name="app:position" minOccurs="0" type="Point" srid="0" />
+
+  </FeatureType>
+
+</OracleFeatureStore>
