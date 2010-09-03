@@ -5,7 +5,7 @@
     <groupId>org.deegree.mdeditor</groupId>
     <artifactId>deegree-mdeditor</artifactId>
     <packaging>war</packaging>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0-pre8</version>
     <name>deegree MDEditor</name>
     <url>http://www.deegree.org</url>
     <repositories>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.deegree</groupId>
             <artifactId>deegree-services</artifactId>
-            <version>3.0-SNAPSHOT</version>
+            <version>3.0-pre8</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.mortbay.jetty</groupId>
