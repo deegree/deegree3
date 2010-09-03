@@ -1,5 +1,0 @@
-SERVICE=WFS
-VERSION=1.1.0
-REQUEST=GetFeature
-NAMESPACE=xmlns(myns=http://www.someserver.com),xmlns(yourns=http://www.someotherserver.com)
-TYPENAME=myns:InWaterA_1M,yourns:BuiltUpA_1M
