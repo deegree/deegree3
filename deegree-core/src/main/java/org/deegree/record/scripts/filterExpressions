@@ -1,0 +1,72 @@
+--
+SELECT rb.data
+FROM datasets AS ds INNER JOIN recordbrief AS rb ON (ds.id = rb.fk_datasets)
+		INNER JOIN isoqp_topiccategory AS tc ON (ds.id = tc.fk_datasets)
+WHERE tc.topiccategory = 'DC';
+
+--BoundingBox query
+SELECT bbox.fk_datasets, rb.data
+FROM datasets AS ds INNER JOIN recordbrief AS rb ON (ds.id = rb.fk_datasets)
+		INNER JOIN isoqp_boundingbox AS bbox ON (ds.id = bbox.fk_datasets)
+AND bbox.bbox && SetSRID('BOX3D(170 -80,170 -78)'::box3d,4326);
+
+--or in this way
+SELECT isoqp_boundingbox.fk_datasets, recordbrief.data
+FROM datasets, recordbrief, isoqp_boundingbox 
+WHERE datasets.id = recordbrief.fk_datasets
+AND datasets.id = isoqp_boundingbox.fk_datasets
+AND isoqp_boundingbox.bbox && SetSRID('BOX3D(170 -80,170 -78)'::box3d,4326);
+
+--query on modified attribute with timestamp
+SELECT ds.id, rb.data
+FROM recordbrief AS rb INNER JOIN datasets AS ds ON (ds.id = rb.fk_datasets)
+WHERE ds.modified > '2007-03-31T19:13:30'::timestamp;
+
+--query to get a simple expression
+SELECT ds.id, rb.data
+FROM recordbrief AS rb INNER JOIN datasets AS ds ON (ds.id = rb.fk_datasets)
+INNER JOIN isoqp_title AS t ON (ds.id = t.fk_datasets)
+WHERE t.title = 'Template for Dublin Core';
+
+--query to select a title in the efficient way
+select ds.id
+from recordbrief AS rb 
+INNER JOIN (datasets AS ds 
+INNER JOIN isoqp_title AS t 
+ON (t.title = 'Template for Dublin Core') AND (ds.id = t.fk_datasets))
+ON (rb.fk_datasets = ds.id);
+
+--counting
+SELECT  COUNT(rb.fk_datasets) 
+FROM datasets, recordbrief AS rb, isoqp_title 
+WHERE rb.fk_datasets = datasets.id 
+AND isoqp_title.fk_datasets = datasets.id
+AND (isoqp_title.title = 'Template for Dublin Core') 
+AND (datasets.language LIKE '%n%')
+GROUP BY rb.fk_datasets;
+
+--alternative
+SELECT  rb.data
+FROM recordbrief AS rb 
+INNER JOIN  datasets ON rb.fk_datasets = datasets.id
+INNER JOIN isoqp_title ON isoqp_title.fk_datasets = datasets.id
+AND (isoqp_title.title = 'Template for Dublin Core' )
+AND (datasets.language LIKE '%n%');
+
+
+
+--comparing of geometries !!NOT WORKING at the moment
+Select * from isoqp_BoundingBox where 
+ST_Distance(transform('POINT( 0.0 52.0 )', 4326),transform(SetSRID('BOX3D(54 80,52.0 78)'::box3d,4326)))
+< 1
+
+
+
+
+SELECT datasets.id, astext(isoqp_BoundingBox.bbox) ,recordfull.data 
+FROM datasets, recordfull, isoqp_BoundingBox 
+WHERE recordfull.fk_datasets = datasets.id  
+AND isoqp_BoundingBox.fk_datasets = datasets.id 
+AND (DISTANCE(GeomFromText(AsText(isoqp_BoundingBox.bbox)),GeomFromText('POINT(0.0 52.0)')) <=100 
+AND DISJOINT(GeomFromText(AsText(isoqp_BoundingBox.bbox)),GeomFromText('POINT(0.0 52.0)'))) 
+LIMIT 10

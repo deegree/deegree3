@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+    This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+  -->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/renderable/sql" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.rendering.r3d.jaxb.renderable" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="RenderableSQLStore">
+    <annotation>
+      <documentation>RenderableStore that is backed by an SQL database (currently only PostGIS).</documentation>
+      <appinfo>
+        <jaxb:class name="RenderableSQLStoreConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="JDBCConnId" type="string" />
+        <element name="EntityTable" type="string" />
+        <element name="PrototypeTable" type="string" minOccurs="0" />
+        <element name="TextureDirectory" type="string" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="isBillboard" type="boolean" use="optional" default="false" />
+    </complexType>
+  </element>
+</schema>

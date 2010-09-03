@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+  This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+-->
+<schema xmlns:ds="http://www.deegree.org/datasource/record/iso19115" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/record/iso19115" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.record.persistence.iso19115.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="ISORecordStore">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="ISORecordStoreConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="RequireInspireCompliance" minOccurs="0" type="boolean"/>
+        <element name="GenerateFileIdentifiers" minOccurs="0" type="boolean"/>
+      </sequence>
+      <attribute name="connId" type="string" use="required" />
+      <attribute name="configVersion" use="required" fixed="0.5.0" />      
+    </complexType>
+  </element>
+</schema>

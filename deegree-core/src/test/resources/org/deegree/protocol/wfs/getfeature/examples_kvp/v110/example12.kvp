@@ -1,0 +1,5 @@
+SERVICE=WFS
+VERSION=1.1.0
+REQUEST=GetFeature
+PROPERTYNAME=(InWaterA_1M/wkbGeom,InWaterA_1M/tileId)(BuiltUpA_1M/wkbGeom)
+FEATUREID=InWaterA_1M.1013,BuiltUpA_1M.3456
