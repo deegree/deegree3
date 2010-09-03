@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sos="http://www.deegree.org/services/sos" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://www.deegree.org/services/sos"
+  elementFormDefault="qualified">
+  <element name="ServiceConfiguration">
+    <complexType>
+      <sequence>
+        <element name="Offering" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <element name="name" type="string" />
+              <element name="srsName" type="string" />
+              <element name="ObservationStoreId" type="string" />
+              <element name="Procedure" maxOccurs="unbounded">
+                <complexType>
+                  <sequence>
+                    <element name="Location">
+                      <complexType>
+                        <attribute name="lat" type="string" />
+                        <attribute name="lon" type="string" />
+                      </complexType>
+                    </element>
+                    <element name="FeatureOfInterest">
+                      <complexType>
+                        <attribute name="href" type="string" />
+                      </complexType>
+                    </element>
+                    <element name="Sensor">
+                      <complexType>
+                        <attribute name="id" type="string" />
+                        <attribute name="name" type="string" />
+                        <attribute name="href" type="string" />
+                      </complexType>
+                    </element>
+                  </sequence>
+                  <attribute name="href" type="string" />
+                </complexType>
+              </element>
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>
