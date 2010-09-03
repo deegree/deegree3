@@ -1,0 +1,5 @@
+org.deegree.coverage.raster.io.imageio.IIORasterIOProvider
+org.deegree.coverage.raster.io.xyz.XYZRasterIOProvider
+org.deegree.coverage.raster.io.asc.ASCRasterIOProvider
+org.deegree.coverage.raster.io.grid.GridRasterIOProvider
+org.deegree.protocol.wms.raster.WMSIOProvider

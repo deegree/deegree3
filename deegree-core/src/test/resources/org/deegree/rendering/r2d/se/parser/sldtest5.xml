@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<LineSymbolizer xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <Geometry>
+    <ogc:PropertyName>app:someGeometryProp</ogc:PropertyName>
+  </Geometry>
+  <Stroke>
+    <GraphicFill>
+      <Graphic>
+        <Mark>
+          <WellKnownName>square</WellKnownName>
+        </Mark>
+      </Graphic>
+    </GraphicFill>
+    <CssParameter name="stroke">#ff<ogc:PropertyName>app:someProp</ogc:PropertyName><ogc:PropertyName>app:someProp</ogc:PropertyName></CssParameter>
+    <CssParameter name="stroke-opacity">1</CssParameter>
+    <CssParameter name="stroke-width">2</CssParameter>
+    <CssParameter name="stroke-linejoin">round</CssParameter>
+    <CssParameter name="stroke-linecap">butt</CssParameter>
+    <CssParameter name="stroke-dasharray">2 4</CssParameter>
+    <CssParameter name="stroke-dashoffset">2</CssParameter>
+  </Stroke>
+</LineSymbolizer>
