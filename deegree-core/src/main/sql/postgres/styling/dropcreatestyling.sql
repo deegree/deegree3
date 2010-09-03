@@ -85,7 +85,7 @@ symbolfield varchar
 );
 
 create table styles (
-id integer not null default nextval('layers_seq'),
+id integer not null default nextval('styles_seq'),
 type varchar, -- should be one of 'point', 'line', 'polygon'
 name varchar,
 fk integer,
