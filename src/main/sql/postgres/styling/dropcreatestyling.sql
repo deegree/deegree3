@@ -2,6 +2,22 @@
 --  DBMS       : PostgreSQL 
 --  -------------------------------------------------- 
 
+-- indexes
+drop index pk_id_layers;
+drop index pk_id_styles;
+
+drop index pk_id_fills;
+drop index pk_id_strokes;
+drop index pk_id_graphics;
+drop index pk_id_fonts;
+drop index pk_id_lineplacements;
+drop index pk_id_halos;
+
+drop index pk_id_points;
+drop index pk_id_lines;
+drop index pk_id_polygons;
+drop index pk_id_texts;
+
 -- main tables
 drop table layers;
 drop table styles;
@@ -80,7 +96,7 @@ sld varchar
 
 -- component tables
 create table fills (
-id integer not null default nextval('strokes_seq'),
+id integer not null default nextval('fills_seq'),
 color varchar,
 graphic_id integer
 );
@@ -178,17 +194,17 @@ lineplacement_id integer,
 halo_id integer
 );
 
-create index pk_id_layers on layers(id);
-create index pk_id_styles on styles(id);
+create unique index pk_id_layers on layers(id);
+create unique index pk_id_styles on styles(id);
 
-create index pk_id_fills on fills(id);
-create index pk_id_strokes on strokes(id);
-create index pk_id_graphics on graphics(id);
-create index pk_id_fonts on fonts(id);
-create index pk_id_lineplacements on lineplacements(id);
-create index pk_id_halos on halos(id);
+create unique index pk_id_fills on fills(id);
+create unique index pk_id_strokes on strokes(id);
+create unique index pk_id_graphics on graphics(id);
+create unique index pk_id_fonts on fonts(id);
+create unique index pk_id_lineplacements on lineplacements(id);
+create unique index pk_id_halos on halos(id);
 
-create index pk_id_points on points(id);
-create index pk_id_lines on lines(id);
-create index pk_id_polygons on polygons(id);
-create index pk_id_texts on texts(id);
+create unique index pk_id_points on points(id);
+create unique index pk_id_lines on lines(id);
+create unique index pk_id_polygons on polygons(id);
+create unique index pk_id_texts on texts(id);
