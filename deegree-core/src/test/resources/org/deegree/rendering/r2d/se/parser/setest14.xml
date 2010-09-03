@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+  <Rule>
+    <PointSymbolizer />
+    <TextSymbolizer>
+      <Label>
+        <Interpolate fallbackValue="#dddddd">
+          <LookupValue>Rasterdata</LookupValue>
+          <InterpolationPoint>
+            <Data>0</Data>
+            <Value>10.9</Value>
+          </InterpolationPoint>
+          <InterpolationPoint>
+            <Data>255</Data>
+            <Value>1000.245</Value>
+          </InterpolationPoint>
+        </Interpolate>
+      </Label>
+      <Font>
+        <SvgParameter name="font-size">20</SvgParameter>
+      </Font>
+    </TextSymbolizer>
+  </Rule>
+</FeatureTypeStyle>
