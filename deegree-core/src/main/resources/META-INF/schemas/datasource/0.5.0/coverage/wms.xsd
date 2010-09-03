@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:wms="http://www.deegree.org/datasource/coverage/wms" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/coverage/wms" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.protocol.wms.raster.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="WMSDataSource">
+    <annotation>
+      <documentation>A wms raster datasource with a configuration version.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="wms:WMSDataSourceType">
+          <attribute name="configVersion" use="required" fixed="0.5.0" />
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <complexType name="WMSDataSourceType">
+    <annotation>
+      <documentation>
+        A WMS datasource defines the access to a 'remote' WMS. For this purpose, it holds information
+        about
+        the request type (GetMap, GetFeatureInfo) and the layers.
+      </documentation>
+    </annotation>
+    <sequence>
+      <element name="CapabilitiesDocumentLocation">
+        <complexType>
+          <attribute name="location" type="string" use="required" />
+          <attribute name="refreshTime" type="int" default="-1" />
+          <!-- attribute name="refresh" type="boolean" default="false" /-->
+          <!-- In seconds -->
+        </complexType>
+      </element>
+      <element name="RequestedLayers" type="string" minOccurs="0"/>
+      <element name="MaxScale" type="double" minOccurs="0" default="0.1" />
+      <element name="RequestedFormat" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="transparent" type="boolean" default="false" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="RequestTimeout" type="integer" minOccurs="0" default="60" />
+      <element name="MaxMapDimensions" minOccurs="0">
+        <complexType>
+          <attribute name="width" type="integer" />
+          <attribute name="height" type="integer" />
+        </complexType>
+      </element>
+      <element name="RestrictedRequestParameter" type="wms:RestrictedRequestParameterType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </sequence>
+    <attribute name="defaultSRS" type="string" use="optional" />
+  </complexType>
+
+  <element name="MultiResolutionRaster">
+    <annotation>
+      <documentation>A multi resolution raster wraps (single) rasters and adds a resolution of each raster.
+      </documentation>
+      <appinfo>
+        <jaxb:class name="MultiResolutionRasterConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Resolution" maxOccurs="unbounded">
+          <complexType>
+            <complexContent>
+              <extension base="wms:WMSDataSourceType">
+                <attribute name="res" type="double" />
+              </extension>
+            </complexContent>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="defaultSRS" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+  <complexType name="RestrictedRequestParameterType">
+    <annotation>
+      <documentation>
+        Defines the parameters for a single request. The attribute and value parameters can be used to
+        supply additional information to the request.
+      </documentation>
+    </annotation>
+    <attribute name="request" type="wms:RequestNamesType" />
+    <attribute name="attribute" type="string" />
+    <attribute name="value" type="string" />
+  </complexType>
+
+  <simpleType name="RequestNamesType">
+    <annotation>
+      <documentation>The WMS datasource allows the cascading of GetMap and GetFeatureInfo requests.</documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="GetMap" />
+      <enumeration value="GetFeatureInfo" />
+    </restriction>
+  </simpleType>
+
+</schema>
