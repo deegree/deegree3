@@ -1,0 +1,4 @@
+CURVE()?? <--(UNDONE) pre-implemented till the segments 
+COMPOUNDCURVE ( CIRCULARSTRING( 2 0, 0 2, -2 0), LINESTRING (-2 0, 0 -2)) <--(UNDONE) thows unimplementedException
+MULTILINESTRING((2 0, ..., 0 2, ..., -2 0), (-2 0, 0 -2, 2 0)) <-- not considered
+LINESTRING(2 0, ..., 0 2, ..., -2 0, -2 0, 0 -2, 2 0) <--(DONE) implemented 
