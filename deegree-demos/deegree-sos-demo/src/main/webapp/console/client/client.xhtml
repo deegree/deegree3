@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:dg="http://deegree.org/jsf">
+
+<h:head>
+  <title>Generic OGC Web Service Client</title>
+  <h:outputStylesheet name="styles.css" />
+</h:head>
+<h:body>
+
+  <h:form id="requestForm">
+    <h:panelGroup style="width: 95%; margin-left: 2%; margin-right: 2%;">
+
+      <h:panelGrid>
+        <h:column>
+          <h:outputText value="Filter requests:" />
+          <h:inputText id="requestFilter" value="#{requestBean.requestFilter}">
+            <f:ajax listener="#{requestBean.applyRequestFilter}" render="kvpRequestSel" />
+          </h:inputText>
+        </h:column>
+        <h:column>
+          <h:selectOneMenu id="kvpRequestSel" value="#{requestBean.kvpRequestSel}">
+            <f:selectItems value="#{requestBean.kvpRequests}" />
+          </h:selectOneMenu>
+        </h:column>
+        <h:column>
+          <h:selectOneMenu id="servicesSel" value="#{requestBean.selectedService}">
+            <f:selectItems value="#{requestBean.services}" var="service" itemLabel="#{service}" itemValue="#{service}" />
+            <f:ajax render="requestProfilesSel requestsSel requestArea" />
+          </h:selectOneMenu>
+          <h:outputText value="Choose:" />
+          <h:selectOneMenu id="requestProfilesSel" value="#{requestBean.selectedReqProfile}" style="margin-right: 20px;">
+            <f:selectItems value="#{requestBean.requestProfiles}" var="requestProfile" itemLabel="#{requestProfile}"
+              itemValue="#{requestProfile}" />
+            <f:ajax render="requestsSel requestArea" />
+          </h:selectOneMenu>
+          <h:selectOneMenu id="requestsSel" value="#{requestBean.selectedRequest}">
+            <f:selectItems value="#{requestBean.requests}" />
+            <f:ajax render="requestArea" />
+          </h:selectOneMenu>
+        </h:column>
+        <h:column>
+          <h:inputTextarea id="requestArea" value="#{requestBean.request}" styleClass="textarea">
+            <f:validator validatorId="org.deegree.XMLValidator" />
+          </h:inputTextarea>
+        </h:column>
+        <h:column>
+          <h:outputLabel value="URL: " for="url" />
+          <h:inputText id="url" value="#{requestBean.targetUrl}" style="width: 550px; margin-right: 20px;"
+            required="true" requiredMessage="Enter a valid URL">
+            <f:validator validatorId="org.deegree.URLValidator" />
+          </h:inputText>
+
+          <h:commandButton id="sendBt" value="send" action="#{requestBean.sendRequest}" style="text-align: right;">
+            <f:ajax execute="url requestArea" render="sendMgs result" />
+          </h:commandButton>
+
+          <h:commandButton id="sendKvpBt" value="Send selected KVP request" action="#{requestBean.sendKVPRequest}" />
+        </h:column>
+        <h:messages id="sendMgs" errorClass="errorMsg" />
+
+        <h:column style="width: 95%; margin-top: 20px; border-top: 1px solid black; padding-top: 20px;">
+        	<h:panelGroup id="result" >
+	          <dg:outputXML id="response" value="#{requestBean.response}" downloadable="true" downloadDir="download" minutesUntilDelete="30" rendered="#{requestBean.response != null}"/>
+	          <h:outputText id="hint" value="Select or enter a request above and click the 'SEND' button. After processing, the service response will be displayed below." rendered="#{requestBean.response == null}"/>
+	        </h:panelGroup>
+        </h:column>
+        <h:column>
+          <h:graphicImage id="mapImage" value="#{requestBean.targetUrl}?#{requestBean.kvpRequestSel}"
+            render="#{requestBean.kvpRequestIsImage}" />
+        </h:column>
+
+      </h:panelGrid>
+    </h:panelGroup>
+  </h:form>
+
+</h:body>
+</html>
