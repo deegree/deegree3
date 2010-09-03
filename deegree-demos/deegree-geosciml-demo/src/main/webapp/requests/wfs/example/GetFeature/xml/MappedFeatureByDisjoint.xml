@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0" xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs
+http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <wfs:Query typeName="gsml:MappedFeature">
+    <ogc:Filter>
+      <ogc:Disjoint>
+        <ogc:PropertyName>gsml:shape</ogc:PropertyName>
+        <gml:Envelope srsName="EPSG:4283">
+          <gml:lowerCorner>144.29845292499965 -37.102386575000295</gml:lowerCorner>
+          <gml:upperCorner>144.34267849999978 -37.07151790000026</gml:upperCorner>
+        </gml:Envelope>
+      </ogc:Disjoint>
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>

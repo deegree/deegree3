@@ -1,0 +1,1956 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<base:SpatialDataSet gml:id="NL.KAD.CP"
+					 xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2"
+					 xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
+					 xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0"
+					 xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0"
+					 xmlns:xlink="http://www.w3.org/1999/xlink"
+					 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					 xmlns:gml="http://www.opengis.net/gml/3.2">
+	<!--
+  ~ Copyright (C) 2010  Het Kadaster - The Netherlands
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+	<gml:boundedBy>
+		<gml:Envelope srsName="EPSG:4258">
+			<gml:lowerCorner>5.242390282601511 52.68919838176954</gml:lowerCorner>
+			<gml:upperCorner>5.247587459110986 52.6950739287921</gml:upperCorner>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<base:identifier>
+		<base:Identifier>
+			<base:localId>0</base:localId>
+			<base:namespace>NL.KAD.CP</base:namespace>
+		</base:Identifier>
+	</base:identifier>
+	<base:metadata xsi:nil="true"/>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04130G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04130G0000_G">
+					<gml:surfaceMember>
+
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04130G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="17" srsDimension="2">5.247204444219612 52.69016248941145
+												5.247236388417168 52.690163335775004 5.247236080600871
+												52.690167109920836 5.247279102299578 52.69016807713223 5.247319343618939
+												52.69016898714135 5.2473600139693435 52.69016986169287 5.247400388346472
+												52.6901707898046 5.247441058414587 52.69017175419736 5.2474839322777695
+												52.69017270318734 5.247484103535094 52.69017000731142 5.247580675245066
+												52.69017268182128 5.247587459110986 52.69008103214758 5.247415625730237
+												52.69007664271032 5.247276312016989 52.690073513452425 5.247211536915839
+												52.69007163995738 5.247208450725508 52.69011189774491 5.247204444219612
+												52.69016248941145
+											</gml:posList>
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+
+					<base:localId>SDE02C 04130G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04130G0000</cp:label>
+			<cp:nationalCadastralReference>SDE02C 04130G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 02327G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 02327G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 02327G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="8" srsDimension="2">5.242551949784307 52.68983167550195
+												5.242418739432012 52.68982589682424 5.242416272373026 52.68984748041756
+												5.242404241750259 52.6899526936879 5.242399098397837 52.690005494600506
+												5.242390282601511 52.69008659985725 5.242523480369619 52.69009194717813
+												5.242551949784307 52.68983167550195
+											</gml:posList>
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 02327G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 02327G0000</cp:label>
+			<cp:nationalCadastralReference>SDE02C 02327G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01269G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01269G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01269G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="12" srsDimension="2">5.246640409472639
+												52.690512494864606 5.2467301796416095 52.690514757626076
+												5.246731542056785 52.69050496348776 5.246732788718393 52.690485103860134
+												5.246740017141607 52.69039838858503 5.246744971893763 52.69032892551775
+												5.24674998652829 52.69025460059451 5.246659034363053 52.690252120766594
+												5.246653871270559 52.690326571327894 5.246648768184885
+												52.690396124085744 5.246641180296303 52.69050270002913 5.246640409472639
+												52.690512494864606
+											</gml:posList>
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01269G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01269G0000</cp:label>
+			<cp:nationalCadastralReference>SDE02C 01269G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01272G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01272G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01272G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="12" srsDimension="2">5.246908684687046 52.69051928172647
+												5.2469978635586925 52.690521453720315 5.246998781919201
+												52.69051174892556 5.2470003242658585 52.69049188964325 5.24700622103923
+												52.690405172785155 5.247011175657685 52.69033561983789 5.247016202799387
+												52.690261870081684 5.246927321060528 52.69025944681711 5.246922293253902
+												52.69033335833353 5.246917782202547 52.69040291179969 5.2469096033539016
+												52.6905094870635 5.246908684687046 52.69051928172647
+											</gml:posList>
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01272G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01272G0000</cp:label>
+			<cp:nationalCadastralReference>SDE02C 01272G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01891G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01891G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01891G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="8" srsDimension="2">5.2433592145989465 52.69044497716464
+												5.243454914679481 52.69044745625792 5.243459858842989 52.690378298866534
+												5.243464105442823 52.69031892739116 5.243468114845358 52.69026424680241
+												5.243471644329746 52.69021611710074 5.2433775583228455
+												52.690213199610064 5.2433592145989465 52.69044497716464
+											</gml:posList>
+										</gml:LinearRing>
+									</gml:exterior>
+
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01891G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01891G0000</cp:label>
+			<cp:nationalCadastralReference>SDE02C 01891G0000</cp:nationalCadastralReference>
+
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01281G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01281G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01281G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="8" srsDimension="2">5.246681170169924 52.68997602367516
+												5.24666344965634 52.69021728367687 5.2467538101707545 52.69021975381697
+												5.246757460830448 52.69016960210555 5.246762859233398 52.6901001395567
+												5.24677084684023 52.6900072241896 5.246773010147056 52.6899781989781
+												5.246681170169924 52.68997602367516
+											</gml:posList>
+										</gml:LinearRing>
+
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01281G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01281G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01281G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01268G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01268G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01268G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="15" srsDimension="2">5.247087337958768 52.69052371586416
+												5.247086714850853 52.69053360074535 5.247085171969104 52.69055363976628
+												5.247077501064111 52.69064017479946 5.247072398612306 52.690709727570244
+												5.247068866704217 52.69075984347628 5.247159672154874 52.69076228686955
+												5.247163204245724 52.6907120810919 5.2471647425187795 52.690693479972815
+												5.247168602360719 52.69064252866495 5.247170917345854 52.690612245460336
+												5.247174936522399 52.690557699569844 5.247176632989241 52.69053586334394
+												5.247177256076955 52.69052597846231 5.247087337958768 52.69052371586416
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01268G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01268G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01268G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01896G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01896G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01896G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="6" srsDimension="2">5.243476412002985 52.69015116537189
+												5.2438506155084745 52.69016145700058 5.243855104613487 52.69010465606049
+												5.243481346293808 52.69009405942709 5.243478888657738 52.69011744043663
+												5.243476412002985 52.69015116537189
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01896G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01896G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01896G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01522G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01522G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01522G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.245507237323349 52.69020798741172
+												5.245597139199087 52.69021047585861 5.245614472835212 52.689971758849815
+												5.2455260659136345 52.68996906549443 5.245507237323349 52.69020798741172
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01522G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01522G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01522G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01903G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01903G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01903G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.243217965290264 52.68992600938967
+												5.243308842456531 52.68992854567999 5.243327809878138 52.68969601395489
+												5.243236370347608 52.68969372863267 5.243217965290264 52.68992600938967
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01903G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01903G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01903G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01894G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01894G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01894G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="6" srsDimension="2">5.243471644329746 52.69021611710074
+												5.243468114845358 52.69026424680241 5.243841913740921 52.6902719137876
+												5.243846295733948 52.69021621811201 5.243472294390406 52.690207283739596
+												5.243471644329746 52.69021611710074
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01894G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01894G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01894G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 02297G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 02297G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 02297G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.243250323313885 52.69071758073703
+												5.2433431256893135 52.69071986769216 5.243359628598531 52.69049475622953
+												5.243266649096775 52.69049250502033 5.243250323313885 52.69071758073703
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 02297G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 02297G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 02297G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 02299G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 02299G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 02299G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="6" srsDimension="2">5.243448472604335 52.690893397539064
+												5.2436008903973095 52.69089732893772 5.243795454493917
+												52.690903279026976 5.2437998757733455 52.6908446446857 5.243452712689686
+												52.690836039134375 5.243448472604335 52.690893397539064
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 02299G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 02299G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 02299G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 02301G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 02301G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 02301G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.243461037432754 52.690723613799584
+												5.243456859409619 52.69078009156276 5.243804019267994 52.69078955085619
+												5.243808317102646 52.69073248008871 5.243461037432754 52.690723613799584
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 02301G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 02301G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 02301G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01514G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01514G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01514G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.245840680175513 52.69072431382656
+												5.245854728216386 52.690504321661074 5.245766852195934
+												52.690501772906565 5.245751694178675 52.69072184462639 5.245840680175513
+												52.69072431382656
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01514G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01514G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01514G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01534G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01534G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01534G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.24622854997525 52.69008113911557
+												5.246232566787055 52.69002768066362 5.2459456201813195 52.6900191805911
+												5.245941615992643 52.690073205224856 5.24622854997525 52.69008113911557
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01534G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01534G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01534G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04075G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04075G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04075G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="7" srsDimension="2">5.245470948401667 52.68996738227669
+												5.2455260659136345 52.68996906549443 5.245534885325004 52.68985748535392
+												5.245544074101614 52.68973223653756 5.245492535290458 52.689730800232574
+												5.245471667672554 52.68995530470736 5.245470948401667 52.68996738227669
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04075G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04075G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04075G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04098G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04098G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04098G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="6" srsDimension="2">5.245466826661303 52.690713939010095
+												5.2454850634084975 52.69049358340649 5.245434559141675 52.69049211236051
+												5.245422736992587 52.6906495401781 5.245417993075344 52.69071258677532
+												5.245466826661303 52.690713939010095
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04098G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04098G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04098G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01234G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01234G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01234G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.244406427111588 52.690327025680205
+												5.2444025350629 52.69038236248477 5.244489851505585 52.6903840578192
+												5.244492767289473 52.690328719842185 5.244406427111588
+												52.690327025680205
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01234G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01234G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01234G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04009G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04009G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04009G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.244637923682592 52.69033644268263
+												5.244595094937907 52.69033523210043 5.244591555046578 52.69038694760265
+												5.244634398835767 52.69038809529562 5.244637923682592 52.69033644268263
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04009G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04009G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04009G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04128G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04128G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04128G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.247441058414587 52.69017175419736
+												5.247400388346472 52.6901707898046 5.247397269124886 52.69022149036119
+												5.247437939582601 52.6902223469123 5.247441058414587 52.69017175419736
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04128G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04128G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04128G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 03992G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 03992G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 03992G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="15" srsDimension="2">5.246716691655176 52.69117195527347
+												5.246716844153751 52.691170517546055 5.246952882085374 52.69117663719424
+												5.2469539684371655 52.69116064175482 5.2469870965963645
+												52.69116148957847 5.246989407436324 52.691132554414395 5.246956131680519
+												52.69113161654831 5.246969428381953 52.69095072548715 5.246747293522876
+												52.690944981741914 5.246748071793043 52.690932850316116
+												5.246667026548289 52.690930777601736 5.2466560471321655 52.6910803968811
+												5.246589643332871 52.69107861099671 5.246582996349585 52.69116838248763
+												5.246716691655176 52.69117195527347
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 03992G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 03992G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 03992G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01818G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01818G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01818G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="7" srsDimension="2">5.244891946847345 52.68919838176954
+												5.244874881077077 52.689435472409066 5.2451708455170785
+												52.68944398582212 5.245177990885473 52.689360991104714 5.245183371769656
+												52.68928853594447 5.245190765788395 52.6892063862906 5.244891946847345
+												52.68919838176954
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01818G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01818G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01818G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 02242G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 02242G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 02242G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="7" srsDimension="2">5.245190765788395 52.6892063862906
+												5.245183371769656 52.68928853594447 5.245177990885473 52.689360991104714
+												5.2451708455170785 52.68944398582212 5.245465079795261 52.68945245150533
+												5.245482634187827 52.6892142020529 5.245190765788395 52.6892063862906
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 02242G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 02242G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 02242G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 02295G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 02295G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 02295G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="27" srsDimension="2">5.243075147739561 52.6905409376392
+												5.2430651662864864 52.6907208167868 5.243067902208143 52.6907209099667
+												5.243067963814358 52.690720164126745 5.243104448652629 52.69072111594986
+												5.2431036196638585 52.69072585105499 5.2431605861831345
+												52.69072773531665 5.24325326784018 52.69073075912349 5.243344692388039
+												52.69073376336601 5.243438660655954 52.69073684250382 5.2434296163951215
+												52.69082955864855 5.243424780267425 52.69089278479299 5.243448472604335
+												52.690893397539064 5.243452712689686 52.690836039134375
+												5.243456859409619 52.69078009156276 5.243461037432754 52.690723613799584
+												5.243465168812254 52.69066782797222 5.243469408266268 52.690610649301405
+												5.243473617129917 52.690553776148015 5.243449318455942 52.69055319862271
+												5.243436016787263 52.69072216366892 5.2433431256893135 52.69071986769216
+												5.243250323313885 52.69071758073703 5.243157003315157 52.6907152840966
+												5.243173314637875 52.69049025330931 5.243078071712411 52.69048816098046
+												5.243075147739561 52.6905409376392
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 02295G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 02295G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 02295G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01431G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01431G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01431G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="11" srsDimension="2">5.247174354530408 52.68920759338548
+												5.2471689480185 52.68927984190504 5.247162647512987 52.6893541563647
+												5.2471556955777405 52.689447252728726 5.247168709858788
+												52.689447537637285 5.247296929415601 52.689450564123845
+												5.247298810271121 52.68941722484357 5.2473014620660425
+												52.689374000851544 5.247307281766284 52.6893112789532 5.247314698207119
+												52.68921153279859 5.247174354530408 52.68920759338548
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01431G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01431G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01431G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01915G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01915G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01915G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="6" srsDimension="2">5.243097887452128 52.6896902719554
+												5.243236370347608 52.68969372863267 5.243254744629088 52.68946175337772
+												5.243114711316605 52.689457746643 5.2430992199380535 52.6896717964506
+												5.243097887452128 52.6896902719554
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01915G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01915G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01915G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01902G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01902G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01902G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.243097887452128 52.6896902719554
+												5.243081109751879 52.68992219518392 5.243217965290264 52.68992600938967
+												5.243236370347608 52.68969372863267 5.243097887452128 52.6896902719554
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01902G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01902G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01902G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04659G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04659G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04659G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.244444962401229 52.68999238986366
+												5.244566053415023 52.68999575225089 5.244582075595261 52.68978004033019
+												5.2444613244998575 52.689776938986775 5.244444962401229
+												52.68999238986366
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04659G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04659G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04659G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01287G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01287G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01287G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="9" srsDimension="2">5.246681170169924 52.68997602367516
+												5.246773010147056 52.6899781989781 5.246775026123926 52.689948993854195
+												5.2467807865584595 52.6898587719343 5.246786185172799 52.68978921950996
+												5.246791309903963 52.68971742901738 5.246700210977051 52.68971494005974
+												5.246695085666616 52.6897868653518 5.246681170169924 52.68997602367516
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01287G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01287G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01287G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01274G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01274G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01274G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="15" srsDimension="2">5.247087337958768 52.69052371586416
+												5.247177256076955 52.69052597846231 5.247178026781156 52.69051618362341
+												5.247178953113669 52.690503962498425 5.247179568760798 52.69049641420767
+												5.247182969981165 52.69045013555728 5.247186056791157 52.690409698036135
+												5.247186987983245 52.690395949139734 5.247191159313831 52.69034005538627
+												5.247191469996341 52.690335382551815 5.247196643076717 52.69026680044023
+												5.2471049218558425 52.690264293088525 5.2471000583570095
+												52.69033779140692 5.2470878128771705 52.69051392067789 5.247087337958768
+												52.69052371586416
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01274G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01274G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01274G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01280G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01280G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01280G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="10" srsDimension="2">5.247191469996341
+												52.690335382551815 5.247191159313831 52.69034005538627 5.247186987983245
+												52.690395949139734 5.2472193777740985 52.69039625681607
+												5.247252061654496 52.6903971040445 5.247391374106598 52.690400952282054
+												5.247505401529586 52.69040279358219 5.247565548552721 52.69040441884437
+												5.247569491062067 52.69034590961554 5.247191469996341 52.690335382551815
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01280G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01280G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01280G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01518G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01518G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01518G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="6" srsDimension="2">5.2455927052032205 52.69024626550106
+												5.245504727167517 52.690243410875695 5.245494158137715
+												52.690383836943276 5.2454850634084975 52.69049358340649
+												5.2455739893903885 52.69049616956522 5.2455927052032205
+												52.69024626550106
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01518G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01518G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01518G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01286G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01286G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01286G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="13" srsDimension="2">5.24710831633058 52.69022943680824
+												5.247199431138084 52.69023192547083 5.247204444219612 52.69016248941145
+												5.247208450725508 52.69011189774491 5.247211536915839 52.69007163995738
+												5.247215701318548 52.690017903051995 5.247217097364768 52.68999750437728
+												5.247217865190127 52.68998860822573 5.247129278707464 52.68998652696145
+												5.247126820405644 52.69001537209382 5.247117498715015 52.69010945421503
+												5.247111952111089 52.690179186212774 5.24710831633058 52.69022943680824
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01286G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01286G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01286G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01911G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01911G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01911G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="6" srsDimension="2">5.243529601463747 52.6895207249195
+												5.243525093185859 52.689578757041495 5.243895284797311
+												52.689588720166604 5.243899751672833 52.68952962752415 5.243697116658834
+												52.689524180129276 5.243529601463747 52.6895207249195
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01911G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01911G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01911G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01423G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01423G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01423G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="11" srsDimension="2">5.2470609392030525
+												52.68968764035762 5.247149952873938 52.68969007266573 5.2471534656970364
+												52.68963660459892 5.247160884259763 52.6895363192487 5.247164096031606
+												52.68950307140518 5.247168709858788 52.689447537637285
+												5.2471556955777405 52.689447252728726 5.247079237360088
+												52.68944536542367 5.247069994005078 52.68956128587245 5.2470644365138455
+												52.68963443289589 5.2470609392030525 52.68968764035762
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01423G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01423G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01423G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01266G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01266G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01266G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="10" srsDimension="2">5.246908684687046 52.69051928172647
+												5.2469074705005685 52.690528986172154 5.246906371246279 52.6905490257134
+												5.246891840475835 52.69075507871241 5.246980264857289 52.69075745652937
+												5.246989062037128 52.69063782399803 5.246995845697736 52.69055128792602
+												5.246997092527715 52.690531338426936 5.2469978635586925
+												52.690521453720315 5.246908684687046 52.69051928172647
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01266G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01266G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01266G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01541G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01541G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01541G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="6" srsDimension="2">5.246112909806106 52.689660243420185
+												5.2462001646833265 52.689662260957185 5.24620690453132 52.68955753532123
+												5.246216137751718 52.689422418854676 5.246128618630605 52.68941993369582
+												5.246112909806106 52.689660243420185
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01541G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01541G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01541G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01907G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01907G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01907G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.2438784373974165 52.68981156663265
+												5.24388265663656 52.6897558617666 5.2435101120928405 52.68974586880454
+												5.243505034588785 52.68980156363561 5.2438784373974165 52.68981156663265
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01907G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01907G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01907G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01524G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01524G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01524G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.2456861537316275
+												52.690212945209474 5.245773645029254 52.690215367750504
+												5.245790591604865 52.68997713555148 5.245704003700242 52.68997448942243
+												5.2456861537316275 52.690212945209474
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01524G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01524G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01524G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01889G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01889G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01889G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.243177545698613 52.69044026417417
+												5.243265082179664 52.690442535836446 5.243283989926218 52.69021030064425
+												5.243195967302279 52.690207579061415 5.243177545698613 52.69044026417417
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01889G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01889G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01889G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04651G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04651G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04651G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.245188589960066 52.690013014077316
+												5.2452778258920345 52.690015492985054 5.2452895754222455
+												52.68979817620963 5.245204835118929 52.689796008225116 5.245188589960066
+												52.690013014077316
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04651G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04651G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04651G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01547G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01547G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01547G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.245446466930854 52.68967947501322
+												5.2454508093828 52.689621631350036 5.245128591117392 52.68961319516577
+												5.245124320275811 52.68967163204006 5.245446466930854 52.68967947501322
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01547G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01547G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01547G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01548G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01548G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01548G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.245442449078788 52.6897329693905
+												5.245446466930854 52.68967947501322 5.245124320275811 52.68967163204006
+												5.245120436913498 52.68972457836494 5.245442449078788 52.6897329693905
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01548G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01548G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01548G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04105G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04105G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04105G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="9" srsDimension="2">5.246640409472639 52.690512494864606
+												5.246610860743652 52.69051175002483 5.246608889749341 52.690540721535065
+												5.246599693091454 52.690669331505305 5.246587876584861 52.6906690120012
+												5.246582209205112 52.690748476658676 5.246623713049167 52.69074787859016
+												5.246638392231067 52.69054205945756 5.246640409472639 52.690512494864606
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04105G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04105G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04105G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04126G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04126G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04126G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.2473162245898 52.69021959782684
+												5.24735689475838 52.69022054427455 5.2473600139693435 52.69016986169287
+												5.247319343618939 52.69016898714135 5.2473162245898 52.69021959782684
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04126G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04126G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04126G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04653G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04653G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04653G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.245013208970843 52.69000814962008
+												5.245101113888272 52.69001059112375 5.245117344107596 52.68979376500362
+												5.245025874902457 52.68979141811319 5.245013208970843 52.69000814962008
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04653G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04653G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04653G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01536G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01536G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01536G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.245949685945179 52.68996440112793
+												5.246236738086749 52.68997216438822 5.246240801726029 52.689917933114565
+												5.245953658628677 52.68991096959202 5.245949685945179 52.68996440112793
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01536G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01536G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01536G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 04011G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 04011G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 04011G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="5" srsDimension="2">5.244759769728632 52.69033987767067
+												5.244720357229192 52.69033876108814 5.244715901130289 52.69039027778561
+												5.244754870172166 52.69039133093075 5.244759769728632 52.69033987767067
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 04011G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 04011G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 04011G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+	<base:member>
+		<cp:CadastralParcel gml:id="NL.KAD.CP.SDE02C 01454G0000">
+			<cp:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN"/>
+			<cp:geometry>
+				<gml:MultiSurface gml:id="NL.KAD.CP.SDE02C 01454G0000_G">
+					<gml:surfaceMember>
+						<gml:Surface gml:id="NL.KAD.CP.SDE02C 01454G0000_GS">
+							<gml:patches>
+								<gml:PolygonPatch>
+									<gml:exterior>
+										<gml:LinearRing>
+											<gml:posList count="41" srsDimension="2">5.2464887043629185
+												52.69079463090726 5.246352865302321 52.690791154185185 5.246316369537619
+												52.69125524954438 5.24629726275475 52.6914898394821 5.246283095731836
+												52.69196910411991 5.2462243976293585 52.692497582286556
+												5.2462049098055905 52.69266155249079 5.246176998726256 52.69283691711072
+												5.246140610364766 52.69292520642987 5.246133091747532 52.69299583469066
+												5.24612326251566 52.69307666935017 5.246120494521385 52.693234053935
+												5.246115409828404 52.69328828395046 5.246096666162481 52.69357043292373
+												5.246084869111968 52.69382191776419 5.24607613119554 52.69393594237123
+												5.246037578285276 52.69412219542195 5.245985036799995 52.69441294068609
+												5.2459586817886885 52.694554534204876 5.245938179741353
+												52.69466066330922 5.245932217395049 52.69470710060362 5.24592089082693
+												52.694830180912135 5.245942705509617 52.695061404085415
+												5.246149117795229 52.69506862252098 5.246236003077889 52.6950739287921
+												5.246147076817704 52.69502702867593 5.246136036473372 52.69492273147463
+												5.246149960402349 52.6946860596493 5.24617553744105 52.6943118299345
+												5.246198445821072 52.69395784453859 5.246222794371924 52.69361128400349
+												5.24624654329621 52.69332246365832 5.2462365880213975 52.69322579759721
+												5.246295288118476 52.692706189610114 5.246325997942729
+												52.692432682139255 5.246374224230705 52.69203309091159 5.24639888706071
+												52.69180471752253 5.246447433882454 52.6916003045077 5.246458722758898
+												52.69145130572952 5.246477410844195 52.691051472759064
+												5.2464887043629185 52.69079463090726
+											</gml:posList>
+
+										</gml:LinearRing>
+									</gml:exterior>
+								</gml:PolygonPatch>
+							</gml:patches>
+						</gml:Surface>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cp:geometry>
+			<cp:inspireId>
+				<base:Identifier>
+					<base:localId>SDE02C 01454G0000</base:localId>
+					<base:namespace>NL.KAD.CP</base:namespace>
+				</base:Identifier>
+			</cp:inspireId>
+			<cp:label>SDE02C 01454G0000</cp:label>
+
+			<cp:nationalCadastralReference>SDE02C 01454G0000</cp:nationalCadastralReference>
+		</cp:CadastralParcel>
+	</base:member>
+
+
+</base:SpatialDataSet>
+
