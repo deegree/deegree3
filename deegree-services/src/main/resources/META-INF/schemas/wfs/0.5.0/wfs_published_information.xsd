@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.deegree.org/services/wfs" xmlns:xlink="http://www.w3.org/1999/xlink"
+  targetNamespace="http://www.deegree.org/services/wfs" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <element name="PublishedInformation">
+    <complexType>
+      <sequence>
+        <element name="SupportedVersions">
+          <complexType>
+            <sequence>
+              <element name="Version" type="wfs:WFSVersionType" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+        <element name="EnableTransactions" type="boolean" minOccurs="0" default="false" />
+        <element name="EnableStreaming" type="boolean" minOccurs="0" default="true" />
+        <element name="QuerySRS" type="string" minOccurs="0" default="EPSG:4326" />
+        <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
+        <element name="CheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
+        <!-- element name="OutputFormat" type="cm:GMLVersionType" minOccurs="0" maxOccurs="unbounded"/-->
+        <element ref="wfs:FeatureTypeMetadata" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+  <element name="FeatureTypeMetadata">
+    <complexType>
+      <sequence>
+        <element name="Name" type="QName" />
+        <element name="Title" type="string" minOccurs="0" />
+        <element name="Abstract" type="string" minOccurs="0" />
+      </sequence>
+    </complexType>
+  </element>
+  <simpleType name="WFSVersionType">
+    <restriction base="string">
+      <enumeration value="1.0.0" />
+      <enumeration value="1.1.0" />
+      <!-- enumeration value="2.0.0" /-->
+    </restriction>
+  </simpleType>
+</schema>
