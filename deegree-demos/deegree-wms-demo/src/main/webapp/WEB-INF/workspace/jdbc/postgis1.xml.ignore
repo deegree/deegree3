@@ -1,7 +1,0 @@
-<PooledConnection xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="0.5.0" xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/0.5.0/jdbc.xsd">
-  <Url>jdbc:postgresql://localhost:5432/mydbname</Url>
-  <User>MYUSER</User>
-  <Password>MYPASSWORD</Password>
-  <PoolMinSize>5</PoolMinSize>
-  <PoolMaxSize>20</PoolMaxSize>
-</PooledConnection>

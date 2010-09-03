@@ -1,4 +1,0 @@
-SERVICE=WFS
-VERSION=1.1.0
-REQUEST=DescribeFeatureType
-TYPENAME=TreesA_1M
