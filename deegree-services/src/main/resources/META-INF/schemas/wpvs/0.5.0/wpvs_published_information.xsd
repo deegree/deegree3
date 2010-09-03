@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wpvs="http://www.deegree.org/services/wpvs"
+  targetNamespace="http://www.deegree.org/services/wpvs">
+  <element name="PublishedInformation">
+    <complexType>
+      <sequence>
+        <!-- define the operations visible in the capabilities -->
+        <element name="AllowedOperations" minOccurs="0">
+          <complexType>
+            <group ref="wpvs:AllowedOperations" />
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <group name="AllowedOperations">
+    <annotation>
+      <documentation>A simple type defining the possible operations of a wpvs</documentation>
+    </annotation>
+    <sequence>
+      <element name="GetCapabilities">
+        <complexType />
+      </element>
+      <element name="GetView">
+        <complexType />
+      </element>
+      <!--  currently not supported -->
+      <element name="GetDescription" minOccurs="0">
+        <complexType />
+      </element>
+      <element name="GetLegendGraphic" minOccurs="0">
+        <complexType />
+      </element>
+    </sequence>
+  </group>
+  <complexType name="empty" />
+</schema>

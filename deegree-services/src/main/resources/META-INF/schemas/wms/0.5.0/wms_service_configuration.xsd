@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:wms="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ds="http://www.deegree.org/datasource"
+  xmlns:ws="http://www.deegree.org/webservices" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/wms"
+  elementFormDefault="qualified">
+
+  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.6.0/metadata.xsd" />
+
+  <!--  copied from commons: -->
+  <!-- =========================================================== -->
+  <element name="ScaleDenominators" type="wms:ScaleDenominatorsType" />
+  <!-- =========================================================== -->
+  <complexType name="ScaleDenominatorsType">
+    <annotation>
+      <documentation>
+        The scale denominators define the map resolution to
+        which the datasets are valid. TODO define exact
+        value calculation here!
+      </documentation>
+    </annotation>
+    <attribute name="min" type="double" use="required" />
+    <attribute name="max" type="double" use="required" />
+    <attribute name="native" type="double" use="optional" />
+  </complexType>
+  <!-- ========================================================== -->
+  <element name="BoundingBox" type="wms:BoundingBoxType" />
+  <!-- =========================================================== -->
+  <complexType name="BoundingBoxType">
+    <annotation>
+      <documentation>XML encoded minimum rectangular bounding box (or
+        region) parameter, surrounding all the associated
+        data.</documentation>
+      <documentation>
+        This type is adapted from the EnvelopeType of GML 3.1,
+        with modified contents and documentation for
+        encoding a MINIMUM size box
+        SURROUNDING
+        all associated data.
+      </documentation>
+    </annotation>
+    <sequence>
+      <element name="LowerCorner" type="wms:PositionType">
+        <annotation>
+          <documentation>
+            Position of the bounding box corner at which the
+            value of each coordinate normally is the
+            algebraic minimum within
+            this bounding box. In
+            some cases, this position is normally displayed
+            at the top, such
+            as the top left for some image coordinates. For
+            more information, see
+            Subclauses 10.2.5 and C.13.
+          </documentation>
+        </annotation>
+      </element>
+      <element name="UpperCorner" type="wms:PositionType">
+        <annotation>
+          <documentation>
+            Position of the bounding box corner at which the
+            value of each coordinate normally is the
+            algebraic maximum within
+            this bounding box. In
+            some cases, this position is normally displayed
+            at the bottom,
+            such as the bottom right for some image coordinates.
+            For more information,
+            see Subclauses 10.2.5 and C.13.
+          </documentation>
+        </annotation>
+      </element>
+    </sequence>
+    <attribute name="crs" type="anyURI" use="optional">
+      <annotation>
+        <documentation>
+          Usually references the definition of a CRS, as
+          specified in [OGC Topic 2]. Such a CRS definition
+          can be XML encoded
+          using the
+          gml:CoordinateReferenceSystemType in [GML 3.1]. For well
+          known references, it is not
+          required that a CRS definition exist at
+          the location
+          the URI points to. If no anyURI value is included, the
+          applicable CRS must be either: a) Specified outside the bounding box,
+          but inside a
+          data structure that includes
+          this bounding box, as
+          specified for a specific OWS use of this bounding box type. b) Fixed
+          and specified in the
+          Implementation Specification for a specific OWS
+          use of the bounding box type.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="dimensions" type="int" use="optional">
+      <annotation>
+        <documentation>
+          The number of dimensions in this CRS (the length of a
+          coordinate sequence in this use of the
+          PositionType). This number is
+          specified by the
+          CRS definition, but can also be specified here.
+        </documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <simpleType name="PositionType">
+    <annotation>
+      <documentation>
+        Position instances hold the coordinates of a position in
+        a coordinate reference system (CRS)
+        referenced by the related "crs"
+        attribute or
+        elsewhere. For an angular coordinate axis that is physically
+        continuous for multiple revolutions, but whose recorded values can be
+        discontinuous, special conditions apply
+        when the bounding box is
+        continuous across the value discontinuity: a) If the bounding box is
+        continuous clear
+        around this angular axis, then ordinate values of minus
+        and plus infinity shall be used. b) If the bounding box
+        is continuous
+        across the value discontinuity but is not continuous clear around this
+        angular axis, then some
+        non-normal value can be used if specified for a
+        specific OWS use of the BoundingBoxType. For more information,
+        see
+        Subclauses 10.2.5 and C.13.
+      </documentation>
+      <documentation>
+        This type is adapted from DirectPositionType and
+        doubleList of GML 3.1. The adaptations include
+        omission of all the
+        attributes, since the
+        needed information is included in the
+        BoundingBoxType.
+      </documentation>
+    </annotation>
+    <list itemType="double" />
+  </simpleType>
+  <!-- end copied from commons -->
+
+  <element name="ServiceConfiguration">
+    <complexType>
+      <sequence>
+        <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+        <element name="FeatureInfoRadius" type="string" minOccurs="0" />
+        <element name="SecurityManager" type="wms:SecurityManagerType" minOccurs="0" />
+        <element ref="wms:AbstractLayer" minOccurs="0" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <complexType name="SupportedFeaturesType">
+    <sequence>
+      <element name="AntiAliasing" type="string" minOccurs="0" />
+      <element name="RenderingQuality" type="string" minOccurs="0" />
+      <element name="Interpolation" type="string" minOccurs="0" />
+      <element name="MaxFeatures" type="int" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <complexType name="SecurityManagerType">
+    <sequence>
+      <element name="DummySecurityManager" minOccurs="0">
+        <complexType />
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="BaseAbstractLayerType" />
+
+  <element name="AbstractLayer" type="wms:BaseAbstractLayerType" abstract="true" />
+
+  <complexType name="DirectStyleType">
+    <sequence>
+      <element name="File" type="string" />
+      <element name="Name" type="string" minOccurs="0" />
+      <element name="LegendConfigurationFile" type="string" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <complexType name="SLDStyleType">
+    <sequence>
+      <element name="File" type="string" />
+      <element name="NamedLayer" type="string" />
+      <sequence minOccurs="0" maxOccurs="unbounded">
+        <element name="Name" type="string" minOccurs="0" />
+        <element name="UserStyle" type="string" />
+        <element name="LegendConfigurationFile" type="string" minOccurs="0" />
+      </sequence>
+    </sequence>
+  </complexType>
+
+  <complexType name="DimensionType">
+    <sequence>
+      <element name="Name" type="string" minOccurs="0" />
+      <element name="Property" type="QName" />
+      <element name="DefaultValue" type="string" minOccurs="0" />
+      <element name="MultipleValues" type="boolean" default="0" minOccurs="0" />
+      <element name="NearestValue" type="boolean" default="0" minOccurs="0" />
+      <element name="Current" type="boolean" default="0" minOccurs="0" />
+      <element name="Units" type="string" minOccurs="0" />
+      <element name="UnitSymbol" type="string" minOccurs="0" />
+      <element name="Extent" type="string" />
+    </sequence>
+    <attribute name="isTime" type="boolean" use="optional" default="false" />
+    <attribute name="isElevation" type="boolean" use="optional" default="false" />
+  </complexType>
+
+  <complexType name="AbstractLayerType">
+    <complexContent>
+      <extension base="wms:BaseAbstractLayerType">
+        <sequence>
+          <element name="Name" type="string" minOccurs="0" />
+          <element name="Title" type="string" minOccurs="0" />
+          <element name="Abstract" type="string" minOccurs="0" />
+          <element ref="ws:Keywords" minOccurs="0" />
+          <element ref="wms:BoundingBox" minOccurs="0" />
+          <element name="CRS" type="string" minOccurs="0" />
+          <element name="Dimension" type="wms:DimensionType" minOccurs="0" maxOccurs="unbounded" />
+          <choice>
+            <element ref="wms:ScaleDenominators" minOccurs="0" />
+            <element name="ScaleUntil" type="double" minOccurs="0" />
+            <element name="ScaleAbove" type="double" minOccurs="0" />
+          </choice>
+          <element ref="wms:AbstractLayer" minOccurs="0" maxOccurs="unbounded" />
+          <choice minOccurs="0">
+            <element name="FeatureStoreId" type="string" />
+            <element name="CoverageStoreId" type="string" />
+          </choice>
+          <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+        </sequence>
+        <attribute name="queryable" type="boolean" use="optional" />
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="RequestableLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <restriction base="wms:AbstractLayerType">
+          <sequence>
+            <element name="Name" type="string" />
+            <element name="Title" type="string" />
+            <element name="Abstract" type="string" minOccurs="0" />
+            <element ref="ws:Keywords" minOccurs="0" />
+            <element ref="wms:BoundingBox" minOccurs="0" />
+            <element name="CRS" type="string" minOccurs="0" />
+            <element name="Dimension" type="wms:DimensionType" minOccurs="0" maxOccurs="unbounded" />
+            <choice>
+              <element ref="wms:ScaleDenominators" minOccurs="0" />
+              <element name="ScaleUntil" type="double" minOccurs="0" />
+              <element name="ScaleAbove" type="double" minOccurs="0" />
+            </choice>
+            <element ref="wms:AbstractLayer" minOccurs="0" maxOccurs="unbounded" />
+            <choice minOccurs="0">
+              <element name="FeatureStoreId" type="string" />
+              <element name="CoverageStoreId" type="string" />
+            </choice>
+            <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+          </sequence>
+          <attribute name="queryable" type="boolean" use="optional" />
+        </restriction>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="UnrequestableLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <restriction base="wms:AbstractLayerType">
+          <sequence>
+            <element name="Title" type="string" />
+            <element name="Abstract" type="string" minOccurs="0" />
+            <element ref="ws:Keywords" minOccurs="0" />
+            <element ref="wms:BoundingBox" minOccurs="0" />
+            <element name="CRS" type="string" minOccurs="0" />
+            <choice>
+              <element ref="wms:ScaleDenominators" minOccurs="0" />
+              <element name="ScaleUntil" type="double" minOccurs="0" />
+              <element name="ScaleAbove" type="double" minOccurs="0" />
+            </choice>
+            <element ref="wms:AbstractLayer" minOccurs="0" maxOccurs="unbounded" />
+            <choice minOccurs="0">
+              <element name="FeatureStoreId" type="string" />
+              <element name="CoverageStoreId" type="string" />
+            </choice>
+            <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+          </sequence>
+          <attribute name="queryable" type="boolean" use="optional" />
+        </restriction>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="LogicalLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <restriction base="wms:AbstractLayerType">
+          <sequence>
+            <element ref="wms:BoundingBox" minOccurs="0" />
+            <choice>
+              <element ref="wms:ScaleDenominators" minOccurs="0" />
+              <element name="ScaleUntil" type="double" minOccurs="0" />
+              <element name="ScaleAbove" type="double" minOccurs="0" />
+            </choice>
+            <element ref="wms:AbstractLayer" minOccurs="0" maxOccurs="unbounded" />
+            <choice minOccurs="0">
+              <element name="FeatureStoreId" type="string" />
+              <element name="CoverageStoreId" type="string" />
+            </choice>
+            <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+          </sequence>
+          <attribute name="queryable" type="boolean" use="optional" />
+        </restriction>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="DynamicLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <extension base="wms:BaseAbstractLayerType">
+          <choice>
+            <element name="ShapefileDirectory" type="string" />
+            <element name="PostGIS" type="string" />
+          </choice>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="StatisticsLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <extension base="wms:BaseAbstractLayerType" />
+      </complexContent>
+    </complexType>
+  </element>
+
+</schema>
