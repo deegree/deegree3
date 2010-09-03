@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:GetObservation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:sos="http://www.opengis.net/sos/1.0" xmlns:om="http://www.opengis.net/om/1.0"
+  xsi:schemaLocation="http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+  service="SOS" version="1.0.0" srsName="EPSG:4326">
+  <sos:offering>urn:MyOrg:offering:3</sos:offering>
+  <sos:observedProperty>urn:ogc:def:property:MyOrg:AggregateChemicalPresence</sos:observedProperty>
+  <sos:featureOfInterest>
+    <ogc:BBOX>
+      <ogc:PropertyName>gml:location</ogc:PropertyName>
+      <gml:Envelope>
+        <gml:lowerCorner>38.11 -78.6</gml:lowerCorner>
+        <gml:upperCorner>38.14 -78.4</gml:upperCorner>
+      </gml:Envelope>
+    </ogc:BBOX>
+  </sos:featureOfInterest>
+  <sos:responseFormat>text/xml; subtype=&quot;om/1.0.0&quot;</sos:responseFormat>
+  <sos:resultModel>om:Observation</sos:resultModel>
+  <sos:responseMode>inline</sos:responseMode>
+</sos:GetObservation>

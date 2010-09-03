@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:raster="http://www.deegree.org/datasource/coverage/raster" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/coverage/raster" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.coverage.raster.io.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="Raster">
+    <annotation>
+      <documentation>A raster datasource must define a crs in which the rasterfile(s) is/are defined.</documentation>
+      <appinfo>
+        <jaxb:class name="RasterConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="raster:AbstractRasterType">
+          <attribute name="configVersion" use="required" fixed="0.6.0" />
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="MultiResolutionRaster">
+    <annotation>
+      <documentation>A multi resolution raster wraps (single) rasters and adds a resolution of each raster.
+      </documentation>
+      <appinfo>
+        <jaxb:class name="MultiResolutionRasterConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="StorageCRS" minOccurs="0" type="string" />
+        <element name="Resolution" maxOccurs="unbounded">
+          <complexType>
+            <complexContent>
+              <extension base="raster:AbstractRasterType">
+                <attribute name="res" type="double" />
+              </extension>
+            </complexContent>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="originLocation" default="center" type="raster:OriginLocation" />
+      <attribute name="readWorldFiles" default="true" type="boolean" />
+      <attribute name="nodata" type="decimal" />
+      <attribute name="configVersion" use="required" fixed="0.6.0" />
+    </complexType>
+  </element>
+
+  <complexType name="AbstractRasterType" abstract="true">
+    <sequence>
+      <element name="StorageCRS" minOccurs="0" type="string" />
+      <choice minOccurs="0">
+        <element name="RasterFile" type="string" />
+        <element name="RasterDirectory">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="recursive" type="boolean" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <element name="url" type="string" />
+      </choice>
+    </sequence>
+    <attribute name="readWorldFiles" default="true" type="boolean" />
+    <attribute name="originLocation" default="center" type="raster:OriginLocation" />
+    <attribute name="nodata" type="decimal" />
+  </complexType>
+
+  <simpleType name="OriginLocation">
+    <restriction base="string">
+      <enumeration value="center" />
+      <enumeration value="outer" />
+    </restriction>
+  </simpleType>
+
+</schema>

@@ -1,0 +1,23 @@
+<ShapeFeatureStore configVersion="0.6.0" xmlns="http://www.deegree.org/datasource/feature/shape"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape http://schemas.deegree.org/datasource/feature/shape/0.6.0/shape.xsd">
+
+  <!-- [0...1] CRS for storing geometries -->
+  <StorageCRS>EPSG:4326</StorageCRS>
+
+  <!-- [0...1] Namespace for the feature type -->
+  <Namespace>http://www.deegree.org/app</Namespace>
+  
+  <!-- [0...1] Name of the feature type -->
+  <FeatureTypeName>Shape</FeatureTypeName>
+  
+  <!-- [1] Name of the shape file -->
+  <File>...</File>
+  
+  <!-- [0...1] Encoding of the text fields -->
+  <Encoding>ISO-8859</Encoding>  
+
+  <!-- [0...1] Should an index for alphanumeric fields be generated -->
+  <GenerateAlphanumericIndexes>false</GenerateAlphanumericIndexes>
+
+</ShapeFeatureStore>

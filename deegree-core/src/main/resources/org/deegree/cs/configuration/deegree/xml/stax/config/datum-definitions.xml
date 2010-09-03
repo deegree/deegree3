@@ -1,0 +1,1523 @@
+<?xml version="1.0" ?>
+<crs:DatumDefinitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/0.5.0/crsdefinition.xsd" version="0.5.0">
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6005</crs:Id>
+      <crs:Name>Not specified (based on Bessel Modified ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7005</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6010</crs:Id>
+      <crs:Name>Not specified (based on Clarke 1880 (Benoit) ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7010</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6014</crs:Id>
+      <crs:Name>Not specified (based on Clarke 1880 (SGA 1922) ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7014</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6018</crs:Id>
+      <crs:Name>Not specified (based on Everest 1830 Modified ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7018</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6021</crs:Id>
+      <crs:Name>Not specified (based on Indonesian National Spheroid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7021</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6027</crs:Id>
+      <crs:Name>Not specified (based on Plessis 1817 ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7027</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6028</crs:Id>
+      <crs:Name>Not specified (based on Struve 1860 ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7028</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6032</crs:Id>
+      <crs:Name>Not specified (based on OSU86F ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7032</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6033</crs:Id>
+      <crs:Name>Not specified (based on OSU91A ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7033</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6035</crs:Id>
+      <crs:Name>Not specified (based on Authalic Sphere)</crs:Name>
+      <crs:Version>2001-06-05</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown. Deprecated and replaced by 6047.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7035</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6041</crs:Id>
+      <crs:Name>Not specified (based on Average Terrestrial System 1977 ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7041</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6043</crs:Id>
+      <crs:Name>Not specified (based on WGS 72 ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7043</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6045</crs:Id>
+      <crs:Name>Not specified (based on Everest 1830 (1975 Definition) ellipsoid)</crs:Name>
+      <crs:Version>2000-05-03</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7045</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6047</crs:Id>
+      <crs:Name>Not specified (based on GRS 1980 Authalic Sphere)</crs:Name>
+      <crs:Version>2004-04-27</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7048</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6052</crs:Id>
+      <crs:Name>Not specified (based on Clarke 1866 Authalic Sphere)</crs:Name>
+      <crs:Version>2004-04-27</crs:Version>
+      <crs:Description>Included for coordinate reference systems where datum is unknown.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7052</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6121</crs:Id>
+      <crs:Name>Greek Geodetic Reference System 1987</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced (old) Greek datum.  Oil industry work based on ED50.</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6123</crs:Id>
+      <crs:Name>Finnish datum</crs:Name>
+      <crs:Version>2008-1-16T9:49</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6125</crs:Id>
+      <crs:Name>Samboja</crs:Name>
+      <crs:Version>1997-11-13</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6133</crs:Id>
+      <crs:Name>Estonia 1992</crs:Name>
+      <crs:Version>2005-09-06</crs:Version>
+      <crs:Description>Based on ETRS89 as established during the 1992 Baltic campaign. Replaced by Estonia 1997 adjustment (code 6180).</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6135</crs:Id>
+      <crs:Name>Old Hawaiian</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Hawaiian Islands were never on NAD27 but rather on Old Hawaiian Datum.  NADCON conversion program provides transformation from Old Hawaiian Datum to NAD83 (original 1986 realization) but making the transformation appear to user as if from NAD27.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6139</crs:Id>
+      <crs:Name>Puerto Rico</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>NADCON conversion program provides transformation from Puerto Rico Datum to NAD83 (original 1986 realization) but making the transformation appear to user as if from NAD27.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6141</crs:Id>
+      <crs:Name>Israel</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6142</crs:Id>
+      <crs:Name>Locodjo 1965</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6143</crs:Id>
+      <crs:Name>Abidjan 1987</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6145</crs:Id>
+      <crs:Name>Kalianpur 1962</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>1937 adjustment rescaled by ratio metric conversions of Indian foot (1937) to Indian foot (1962).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7044</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6146</crs:Id>
+      <crs:Name>Kalianpur 1975</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>1937 adjustment rescaled by ratio metric conversions of Indian foot (1937) to Indian foot (1975).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7045</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6147</crs:Id>
+      <crs:Name>Hanoi 1972</crs:Name>
+      <crs:Version>1999-10-20</crs:Version>
+      <crs:UsedEllipsoid>urn:ogc:def:crs:epsg::7024</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6149</crs:Id>
+      <crs:Name>CH1903</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6153</crs:Id>
+      <crs:Name>Rassadiran</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6155</crs:Id>
+      <crs:Name>Dabola 1981</crs:Name>
+      <crs:Version>1999-12-09</crs:Version>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6161</crs:Id>
+      <crs:Name>Pampa del Castillo</crs:Name>
+      <crs:Version>2000-03-07</crs:Version>
+      <crs:Description>Used in Comodoro Rivadavia area.  Replaced by Campo Inchauspe (code 6221).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6162</crs:Id>
+      <crs:Name>Korean Datum 1985</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6164</crs:Id>
+      <crs:Name>South Yemen</crs:Name>
+      <crs:Version>2000-03-07</crs:Version>
+      <crs:UsedEllipsoid>urn:ogc:def:crs:epsg::7024</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6165</crs:Id>
+      <crs:Name>Bissau</crs:Name>
+      <crs:Version>2005-09-05</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6168</crs:Id>
+      <crs:Name>Accra</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced in 1978 by Leigon datum (code 6250).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7029</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6169</crs:Id>
+      <crs:Name>American Samoa 1962</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6174</crs:Id>
+      <crs:Name>Sierra Leone Colony 1924</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7029</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6175</crs:Id>
+      <crs:Name>Sierra Leone 1968</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Extension and readjustment with additional observations of 1960 network.  Coordinates of 1960 stations change by less than 3 metres.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6178</crs:Id>
+      <crs:Name>Pulkovo 1942/83</crs:Name>
+      <crs:Version>2008-1-16T9:49</crs:Version>
+      <crs:Description>Fundamental point: Pulkovo observatory. Latitude: 59�46'18.550"N, longitude: 30�19'42.090"E (of Greenwich).</crs:Description>
+      <crs:UsedEllipsoid>urn:ogc:def:crs:epsg::7024</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6179</crs:Id>
+      <crs:Name>Pulkovo 1942(58)</crs:Name>
+      <crs:Version>2008-09-24</crs:Version>
+      <crs:Description>1956 international adjustment of Uniform Astro-Geodetic Network of countries of central and eastern Europe. Locally densified during 1957 and 1958.</crs:Description>
+      <crs:UsedEllipsoid>urn:ogc:def:crs:epsg::7024</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6181</crs:Id>
+      <crs:Name>Luxembourg 1930</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6183</crs:Id>
+      <crs:Name>Azores Central Islands 1948</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by 1995 adjustment (datum code 6665).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6184</crs:Id>
+      <crs:Name>Azores Oriental Islands 1940</crs:Name>
+      <crs:Version>2003-08-14</crs:Version>
+      <crs:Description>Replaced by 1995 adjustment (datum code 6664).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6188</crs:Id>
+      <crs:Name>OSNI 1952</crs:Name>
+      <crs:Version>2001-11-06</crs:Version>
+      <crs:Description>Replaced by Geodetic Datum of 1965 alias 1975 Mapping Adjustment or TM75 (datum code 6300).</crs:Description>
+      <crs:UsedEllipsoid>urn:ogc:def:crs:epsg::7001</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6192</crs:Id>
+      <crs:Name>Douala 1948</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced  by Manoca 1962 datum (code 6193).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6193</crs:Id>
+      <crs:Name>Manoca 1962</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>The intent of the Bukavu 1953 conference was to adopt the Clarke 1880 (RGS) ellipsoid (code 7012) but in practice this datum has used the IGN version.  Replaces Douala 1948 (code 6192).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6195</crs:Id>
+      <crs:Name>Scoresbysund 1952</crs:Name>
+      <crs:Version>2002-01-18</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6196</crs:Id>
+      <crs:Name>Ammassalik 1958</crs:Name>
+      <crs:Version>2002-01-18</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6197</crs:Id>
+      <crs:Name>Garoua</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6200</crs:Id>
+      <crs:Name>Pulkovo 1995</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:ogc:def:crs:epsg::7024</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6202</crs:Id>
+      <crs:Name>Australian Geodetic Datum 1966</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7003</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6205</crs:Id>
+      <crs:Name>Afgooye</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>urn:ogc:def:crs:epsg::7024</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6212</crs:Id>
+      <crs:Name>Barbados 1938</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6213</crs:Id>
+      <crs:Name>Beduaram</crs:Name>
+      <crs:Version>2004-09-01</crs:Version>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6216</crs:Id>
+      <crs:Name>Bermuda 1957</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6218</crs:Id>
+      <crs:Name>Bogota 1975</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaces 1951 adjustment. Replaced by MAGNA-SIRGAS (datum code 6685).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6219</crs:Id>
+      <crs:Name>Bukit Rimpah</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6222</crs:Id>
+      <crs:Name>Cape</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7013</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6224</crs:Id>
+      <crs:Name>Chua</crs:Name>
+      <crs:Version>2009-06-02</crs:Version>
+      <crs:Description>The Chua origin and associated network is in Brazil with a connecting traverse through northern Paraguay. It was used in Brazil only as input into the Corrego Allegre adjustment and for government work in Distrito Federal.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6225</crs:Id>
+      <crs:Name>Corrego Alegre</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>NIMA gives coordinates of origin as latitude: 19Â°50'15.140"S, longitude: 48Â°57'42.750"W.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6236</crs:Id>
+      <crs:Name>Hu Tzu Shan 1950</crs:Name>
+      <crs:Version>2008-08-12</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6237</crs:Id>
+      <crs:Name>Hungarian Datum 1972</crs:Name>
+      <crs:Version>2008-08-02</crs:Version>
+      <crs:Description>Replaced Hungarian Datum 1909 (EPSG datum code 1024).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7036</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6239</crs:Id>
+      <crs:Name>Indian 1954</crs:Name>
+      <crs:Version>2003-12-31</crs:Version>
+      <crs:UsedEllipsoid>epsg:7015</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6240</crs:Id>
+      <crs:Name>Indian 1975</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>epsg:7015</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6243</crs:Id>
+      <crs:Name>Kalianpur 1880</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Includes 1916 extension into Burma (Myanmar).  Replaced by 1937 adjustment.</crs:Description>
+      <crs:UsedEllipsoid>ellipsoid_81</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6244</crs:Id>
+      <crs:Name>Kandawala</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>epsg:7015</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6245</crs:Id>
+      <crs:Name>Kertau 1968</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaces MRT48 and earlier adjustments. Adopts metric conversion of 39.370113 inches per metre. Not used for 1969 metrication of RSO grid - see Kertau (RSO) (code 6751).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7018</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6246</crs:Id>
+      <crs:Name>Kuwait Oil Company</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6247</crs:Id>
+      <crs:Name>La Canoa</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Origin also adopted for PSAD56.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6250</crs:Id>
+      <crs:Name>Leigon</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced Accra datum (code 6168) from 1978.  Coordinates at Leigon fundamental point defined as Accra datum values for that point.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6251</crs:Id>
+      <crs:Name>Liberia 1964</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6252</crs:Id>
+      <crs:Name>Lome</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6255</crs:Id>
+      <crs:Name>Herat North</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6256</crs:Id>
+      <crs:Name>Mahe 1971</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6257</crs:Id>
+      <crs:Name>Makassar</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6260</crs:Id>
+      <crs:Name>Manoca</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6261</crs:Id>
+      <crs:Name>Merchich</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6262</crs:Id>
+      <crs:Name>Massawa</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6264</crs:Id>
+      <crs:Name>Mhast</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6268</crs:Id>
+      <crs:Name>NAD Michigan</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7009</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6269</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6269</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::6269</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6269</crs:Id>
+      <crs:Name>North_American_Datum_1983</crs:Name>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6273</crs:Id>
+      <crs:Name>NGO 1948</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7005</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6275</crs:Id>
+      <crs:Name>Nouvelle Triangulation Francaise</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6276</crs:Id>
+      <crs:Name>NSWC 9Z-2</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:Description>Transit precise ephemeris before 1991.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7025</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6279</crs:Id>
+      <crs:Name>OS (SN) 1980</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:ogc:def:crs:epsg::7001</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6281</crs:Id>
+      <crs:Name>Palestine 1923</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7010</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6287</crs:Id>
+      <crs:Name>Qornoq</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6289</crs:Id>
+      <crs:Name>Amersfoort</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6292</crs:Id>
+      <crs:Name>Sapper Hill 1943</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6293</crs:Id>
+      <crs:Name>Schwarzeck</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7046</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6297</crs:Id>
+      <crs:Name>Tananarive 1925</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6298</crs:Id>
+      <crs:Name>Timbalai 1948</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>In 1968, the original adjustment was densified in Sarawak and extended to Sabah.</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7016</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6300</crs:Id>
+      <crs:Name>Geodetic Datum of 1965</crs:Name>
+      <crs:Version>2003-06-27</crs:Version>
+      <crs:Description>Differences from the 1965 adjustment (datum code 6299) are: average difference in Eastings 0.092m; average difference in Northings 0.108m; maximum vector difference 0.548m.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7002</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6302</crs:Id>
+      <crs:Name>Trinidad 1903</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7007</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6303</crs:Id>
+      <crs:Name>Trucial Coast 1948</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7020</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6304</crs:Id>
+      <crs:Name>Voirol 1875</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by Voirol 1879 (code 6671).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6309</crs:Id>
+      <crs:Name>Yacare</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6311</crs:Id>
+      <crs:Name>Zanderij</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6312</crs:Id>
+      <crs:Name>Militar-Geographische Institut</crs:Name>
+      <crs:Version>2009-06-02</crs:Version>
+      <crs:Description>The longitude of the datum origin equates to a value for the Ferro meridian of 17Â°40' exactly west of Greenwich.</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6315</crs:Id>
+      <crs:Name>Conakry 1905</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6318</crs:Id>
+      <crs:Name>National Geodetic Network</crs:Name>
+      <crs:Version>2004-06-16</crs:Version>
+      <crs:Description>Replaces 1984 adjustment which used the WGS72 ellipsoid.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7030</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6324</crs:Id>
+      <crs:Name>WGS 72 Transit Broadcast Ephemeris</crs:Name>
+      <crs:Version>2006-08-24</crs:Version>
+      <crs:Description>Alleged datum for use with Transit broadcast ephemeris prior to 1989. Relationship to WGS 72 has changed over time.</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7043</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6326</crs:Id>
+      <crs:Name>WGS_1984</crs:Name>
+      <crs:UsedEllipsoid>epsg:7030</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6602</crs:Id>
+      <crs:Name>Dominica 1945</crs:Name>
+      <crs:Version>1999-04-22</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6603</crs:Id>
+      <crs:Name>Grenada 1953</crs:Name>
+      <crs:Version>2006-02-09</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6604</crs:Id>
+      <crs:Name>Montserrat 1958</crs:Name>
+      <crs:Version>1999-04-22</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6606</crs:Id>
+      <crs:Name>St. Lucia 1955</crs:Name>
+      <crs:Version>1999-04-22</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6607</crs:Id>
+      <crs:Name>St. Vincent 1945</crs:Name>
+      <crs:Version>2006-02-09</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6610</crs:Id>
+      <crs:Name>Xian 1980</crs:Name>
+      <crs:Version>2009-11-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7049</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6611</crs:Id>
+      <crs:Name>Hong Kong 1980</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaces Hong Kong 1963 and Hong Kong 1963(67).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6614</crs:Id>
+      <crs:Name>Qatar National Datum 1995</crs:Name>
+      <crs:Version>2002-06-28</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6615</crs:Id>
+      <crs:Name>Porto Santo 1936</crs:Name>
+      <crs:Version>2003-08-14</crs:Version>
+      <crs:Description>Replaced by 1995 adjustment (datum code 6663). For Selvagens see Selvagem Grande (code 6616).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6620</crs:Id>
+      <crs:Name>Point 58</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Used as the basis for computation of the 12th Parallel traverse conducted 1966-70 from Senegal to Chad and connecting to the Adindan triangulation in Sudan.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6621</crs:Id>
+      <crs:Name>Fort Marigot</crs:Name>
+      <crs:Version>2009-11-24</crs:Version>
+      <crs:Description>Replaced by RRAF 1991 (datum code 1047).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6623</crs:Id>
+      <crs:Name>Centre Spatial Guyanais 1967</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by RGFG95 (code 6624).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6624</crs:Id>
+      <crs:Name>Reseau Geodesique Francais Guyane 1995</crs:Name>
+      <crs:Version>2002-11-29</crs:Version>
+      <crs:Description>Replaces CSG67 (datum code 6623).</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6628</crs:Id>
+      <crs:Name>Tahiti 52</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by Tahiti 79 (datum code 6690) in Tahiti and Moorea 87 (code 6691) in Moorea.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6631</crs:Id>
+      <crs:Name>K0 1949</crs:Name>
+      <crs:Version>2002-11-29</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6632</crs:Id>
+      <crs:Name>Combani 1950</crs:Name>
+      <crs:Version>2009-10-29</crs:Version>
+      <crs:Description>Replaced by RGM04 and Cadastre 1997 (datum codes 1036-37).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6635</crs:Id>
+      <crs:Name>ST87 Ouvea</crs:Name>
+      <crs:Version>2002-11-29</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6636</crs:Id>
+      <crs:Name>Petrels 1972</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6637</crs:Id>
+      <crs:Name>Pointe Geologie Perroud 1950</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6638</crs:Id>
+      <crs:Name>Saint Pierre et Miquelon 1950</crs:Name>
+      <crs:Version>2009-10-29</crs:Version>
+      <crs:Description>Replaced by RGSPM06 (datum code 1038).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6643</crs:Id>
+      <crs:Name>ST71 Belep</crs:Name>
+      <crs:Version>2002-11-29</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6657</crs:Id>
+      <crs:Name>Reykjavik 1900</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7051</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6658</crs:Id>
+      <crs:Name>Hjorsey 1955</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6660</crs:Id>
+      <crs:Name>Helle 1954</crs:Name>
+      <crs:Version>2003-06-27</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6668</crs:Id>
+      <crs:Name>European Datum 1979</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by 1987 adjustment.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6672</crs:Id>
+      <crs:Name>Chatham Islands Datum 1971</crs:Name>
+      <crs:Version>2004-02-17</crs:Version>
+      <crs:Description>Replaced by Chatham Islands Datum 1979 (code 6673).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6673</crs:Id>
+      <crs:Name>Chatham Islands Datum 1979</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaces Chatham Islands Datum 1971 (code 6672). Replaced by New Zealand Geodetic Datum 2000 (code 6167) from March 2000.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6675</crs:Id>
+      <crs:Name>Guam 1963</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by NAD83(HARN)</crs:Description>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6678</crs:Id>
+      <crs:Name>Lao National Datum 1997</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaces Lao 1993.</crs:Description>
+      <crs:UsedEllipsoid>urn:ogc:def:crs:epsg::7024</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6679</crs:Id>
+      <crs:Name>Jouik 1961</crs:Name>
+      <crs:Version>2006-06-12</crs:Version>
+      <crs:Description>Replaced by Mauritania 1999 (datum code 6702).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6680</crs:Id>
+      <crs:Name>Nouakchott 1965</crs:Name>
+      <crs:Version>2006-06-12</crs:Version>
+      <crs:Description>Triangulation limited to environs of Nouakchott. Extended in 1982 by satellite translocation from a single station "Ruines" to support Syledis chain for offshore operations. Replaced by Mauritania 1999 (datum code 6602).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6683</crs:Id>
+      <crs:Name>Philippine Reference System 1992</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaces Luzon 1911 datum (code 6253).</crs:Description>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6684</crs:Id>
+      <crs:Name>Gan 1970</crs:Name>
+      <crs:Version>2005-04-14</crs:Version>
+      <crs:Description>In some references incorrectly named "Gandajika 1970". See datum code 6685.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6688</crs:Id>
+      <crs:Name>Fatu Iva 72</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Recomputed by IGN in 1972 using origin and observations of 1953-1955 Mission Hydrographique des Establissements Francais d'Oceanie (MHEFO 55). Replaced by RGPF (datum code 6687).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6691</crs:Id>
+      <crs:Name>Moorea 87</crs:Name>
+      <crs:Version>2005-08-12</crs:Version>
+      <crs:Description>Replaces Tahiti 52 (datum code 6628) in Moorea. Replaced by RGPF (datum code 6687).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6692</crs:Id>
+      <crs:Name>Maupiti 83</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by RGPF (datum code 6687).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6693</crs:Id>
+      <crs:Name>Nakhl-e Ghanem</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7030</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6699</crs:Id>
+      <crs:Name>Le Pouce 1934</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6701</crs:Id>
+      <crs:Name>Institut Geographique du Congo Belge 1955</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by IGC 1962 Arc of the 6th Parallel South, except for oil industry activities.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6704</crs:Id>
+      <crs:Name>Mhast (onshore)</crs:Name>
+      <crs:Version>2006-01-03</crs:Version>
+      <crs:Description>Adopted by oil industry with intention of being Mhast 1951 (code 6703) but incorrectly (for Mhast 1951) used the International 1924 ellipsoid. This datum differs by about 400 metres from the Portuguese Mhast 1951 and Camacupa datums.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6706</crs:Id>
+      <crs:Name>Egypt Gulf of Suez S-650 TL</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>A coherent set of stations bordering the Gulf of Suez coordinated by Transit translocation ("TL") between 1980 and 1984. Based on incorrect Egypt 1907 values for origin station S-650. Differs from true Egypt 1907 by approximately 20m.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7020</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6707</crs:Id>
+      <crs:Name>Tern Island 1961</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:Description>Two independent astronomic determinations considered to be consistent through adoption of common transformation to WGS 84 (see tfm code 15795).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6708</crs:Id>
+      <crs:Name>Cocos Islands 1965</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>epsg:7003</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6709</crs:Id>
+      <crs:Name>Iwo Jima 1945</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6710</crs:Id>
+      <crs:Name>St. Helena 1971</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6711</crs:Id>
+      <crs:Name>Marcus Island 1952</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6712</crs:Id>
+      <crs:Name>Ascension Island 1958</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6713</crs:Id>
+      <crs:Name>Ayabelle Lighthouse</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6714</crs:Id>
+      <crs:Name>Bellevue</crs:Name>
+      <crs:Version>2006-07-29</crs:Version>
+      <crs:Description>Datum covers all the major islands of Vanuatu in two different adjustment blocks, but practical usage is as given in the area of use.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6715</crs:Id>
+      <crs:Name>Camp Area Astro</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6716</crs:Id>
+      <crs:Name>Phoenix Islands 1966</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6717</crs:Id>
+      <crs:Name>Cape Canaveral</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6719</crs:Id>
+      <crs:Name>Easter Island 1967</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6721</crs:Id>
+      <crs:Name>Fiji 1956</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>For topographic mapping replaces Viti Levu 1912 and Vanua Levu 1915. Replaced by Fiji Geodetic Datum 1986.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6722</crs:Id>
+      <crs:Name>South Georgia 1968</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6723</crs:Id>
+      <crs:Name>Grand Cayman 1959</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6724</crs:Id>
+      <crs:Name>Diego Garcia 1969</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6725</crs:Id>
+      <crs:Name>Johnston Island 1961</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6728</crs:Id>
+      <crs:Name>Pico de las Nieves 1984</crs:Name>
+      <crs:Version>2009-06-02</crs:Version>
+      <crs:Description>Replaces Pico de las Nieves 1968 (PN68). Replaced by REGCAN95.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6729</crs:Id>
+      <crs:Name>Pitcairn 1967</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by Pitcairn 2006.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6730</crs:Id>
+      <crs:Name>Santo 1965</crs:Name>
+      <crs:Version>2006-07-29</crs:Version>
+      <crs:Description>Datum covers all the major islands of Vanuatu in two different adjustment blocks, but practical usage is as given in the area of use.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6731</crs:Id>
+      <crs:Name>Viti Levu 1916</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6732</crs:Id>
+      <crs:Name>Marshall Islands 1960</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>epsg:7053</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6733</crs:Id>
+      <crs:Name>Wake Island 1952</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6734</crs:Id>
+      <crs:Name>Tristan 1968</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6735</crs:Id>
+      <crs:Name>Kusaie 1951</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6736</crs:Id>
+      <crs:Name>Deception Island</crs:Name>
+      <crs:Version>2006-01-26</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6739</crs:Id>
+      <crs:Name>Hong Kong 1963(67)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaces Hong Kong 1963 for military purposes only in 1967.  Replaced by Hong Kong 1980.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6740</crs:Id>
+      <crs:Name>Parametrop Zemp 1990</crs:Name>
+      <crs:Version>2006-02-03</crs:Version>
+      <crs:Description>Derived through satellite tracking techniques.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7054</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6743</crs:Id>
+      <crs:Name>Karbala 1979</crs:Name>
+      <crs:Version>2009-06-02</crs:Version>
+      <crs:Description>National geodetic network established by Polservice consortium.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6746</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6746</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::6746</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6746</crs:Id>
+      <crs:Name>Potsdam Rauenberg 1950 DHDN</crs:Name>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6750</crs:Id>
+      <crs:Name>ST87 Ouvea</crs:Name>
+      <crs:Version>2006-07-21</crs:Version>
+      <crs:UsedEllipsoid>epsg:7030</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6751</crs:Id>
+      <crs:Name>Kertau (RSO)</crs:Name>
+      <crs:Version>2006-07-24</crs:Version>
+      <crs:Description>Adopts metric conversion of 0.914398 metres per yard exactly. This is a truncation of the Sears 1922 ratio.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7056</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6752</crs:Id>
+      <crs:Name>Viti Levu 1912</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>For topographic mapping, replaced by Fiji 1956. For other purposes, replaced by Fiji 1986.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7055</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6754</crs:Id>
+      <crs:Name>Libyan Geodetic Datum 2006</crs:Name>
+      <crs:Version>2006-08-25</crs:Version>
+      <crs:Description>Replaces ELD79.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6801</crs:Id>
+      <crs:Name>CH1903 (Bern)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:ogc:def:crs:epsg::8907</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6802</crs:Id>
+      <crs:Name>Bogota 1975 (Bogota)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8904</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6803</crs:Id>
+      <crs:Name>Lisbon 1937 (Lisbon)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaces Lisbon 1890 adjustment (which used Bessel 1841 ellipsoid).</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8902</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6804</crs:Id>
+      <crs:Name>Makassar (Jakarta)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>epsg:8908</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6805</crs:Id>
+      <crs:Name>Militar-Geographische Institut (Ferro)</crs:Name>
+      <crs:Version>2009-06-02</crs:Version>
+      <crs:Description>Replaced by MGI in Austria and MGI 1901 in former Yugoslavia.</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>epsg:8909</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6806</crs:Id>
+      <crs:Name>Monte Mario (Rome)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced Genova datum, Bessel 1841 ellipsoid, from 1940.</crs:Description>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:ogc:def:crs:epsg::8906</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6807</crs:Id>
+      <crs:Name>Nouvelle Triangulation Francaise (Paris)</crs:Name>
+      <crs:Version>2004-01-07</crs:Version>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8903</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6808</crs:Id>
+      <crs:Name>Padang 1884 (Jakarta)</crs:Name>
+      <crs:Version>1995-06-02</crs:Version>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>epsg:8908</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6809</crs:Id>
+      <crs:Name>Reseau National Belge 1950 (Brussels)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8910</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6810</crs:Id>
+      <crs:Name>Tananarive 1925 (Paris)</crs:Name>
+      <crs:Version>2003-12-31</crs:Version>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8903</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6811</crs:Id>
+      <crs:Name>Voirol 1875 (Paris)</crs:Name>
+      <crs:Version>2004-01-07</crs:Version>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8903</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6814</crs:Id>
+      <crs:Name>Stockholm 1938 (Stockholm)</crs:Name>
+      <crs:Version>1996-04-12</crs:Version>
+      <crs:Description>Replaced by RT90 adjustment (datum code 6124)</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8911</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6815</crs:Id>
+      <crs:Name>Greek (Athens)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>See geodetic datum alias 6404.  Used as basis of topographic mapping based on Hatt projection.</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:ogc:def:crs:epsg::8912</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6816</crs:Id>
+      <crs:Name>Carthage (Paris)</crs:Name>
+      <crs:Version>2004-01-15</crs:Version>
+      <crs:Description>Fundamental point astronomic coordinates determined in 1878.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7011</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8903</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6817</crs:Id>
+      <crs:Name>NGO 1948 (Oslo)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:UsedEllipsoid>epsg:7005</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8913</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6819</crs:Id>
+      <crs:Name>Nord Sahara 1959 (Paris)</crs:Name>
+      <crs:Version>2000-06-23</crs:Version>
+      <crs:UsedEllipsoid>epsg:7034</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8903</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6901</crs:Id>
+      <crs:Name>Ancienne Triangulation Francaise (Paris)</crs:Name>
+      <crs:Version>2007-11-01</crs:Version>
+      <crs:Description>Uses the RGS value for the Paris meridian.  In Alsace, data suspected to be transformation of German network into ATF. Replaced by Nouvelle Triangulation Francaise (Paris) (code 6807) which uses the 1936 IGN value for the Paris meridian.</crs:Description>
+      <crs:UsedEllipsoid>epsg:7027</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8903</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6903</crs:Id>
+      <crs:Name>Madrid 1870 (Madrid)</crs:Name>
+      <crs:Version>1998-11-11</crs:Version>
+      <crs:UsedEllipsoid>epsg:7028</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8905</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6904</crs:Id>
+      <crs:Name>Lisbon 1890 (Lisbon)</crs:Name>
+      <crs:Version>2008-06-24</crs:Version>
+      <crs:Description>Replaced by Lisbon 1937 adjustment (which uses International 1924 ellipsoid).</crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>http://www.opengis.net/gml/srs/epsg.xml#8902</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>google_maps_datum</crs:Id>
+      <crs:Name>Google maps WGS_1984 datum</crs:Name>
+      <crs:Version>2009-12-09T13:39</crs:Version>
+      <crs:UsedEllipsoid>google_maps_sphere</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6258</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6258</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::6258</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6258</crs:Id>
+      <crs:Name>European Terrestrial Reference System 1989</crs:Name>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6272</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6272</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::6272</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6272</crs:Id>
+      <crs:Name>New Zealand Geodetic Datum 1949</crs:Name>
+      <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6314</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6314</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::6314</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6314</crs:Id>
+      <crs:Name>Deutsches Hauptdreiecksnetz</crs:Name>
+      <crs:Version>2006-06-12</crs:Version>
+      <crs:Description>
+      Fundamental point: Rauenberg. Latitude: 52 deg 27 min 12.021 sec N; Longitude: 13 deg 22 min 04.928 sec E (of Greenwich). This station was
+      destroyed in 1910 and the station at Potsdam substituted as the fundamental point.
+    </crs:Description>
+      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+    <crs:GeodeticDatum>
+      <crs:Id>epsg:6267</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6267</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::6267</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6267</crs:Id>
+      <crs:Name>North_American_Datum_1927</crs:Name>
+      <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
+      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
+    </crs:GeodeticDatum>
+  </crs:DatumDefinitions>
