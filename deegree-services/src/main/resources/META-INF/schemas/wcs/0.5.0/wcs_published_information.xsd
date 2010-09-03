@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:wcs="http://www.deegree.org/services/wcs" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:md="http://www.deegree.org/webservices" targetNamespace="http://www.deegree.org/services/wcs"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.6.0/metadata.xsd" />
+
+  <xs:element name="PublishedInformation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="md:ServiceIdentification" minOccurs="0" />
+        <xs:element ref="md:ServiceProvider" minOccurs="0" />
+        <!-- define the versions allowed supported -->
+        <xs:element name="SupportedVersions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="wcs:Version" minOccurs="1" maxOccurs="2" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <!-- define the operations visible in the capabilities -->
+        <xs:element name="AllowedOperations" minOccurs="0">
+          <xs:complexType>
+            <xs:group ref="wcs:AllowedOperations" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Version">
+    <xs:annotation>
+      <xs:documentation>A simple type defining the possible versions of a wcs instance</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:pattern value="1\.0\.0|1\.1\.0" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:group name="AllowedOperations">
+    <xs:annotation>
+      <xs:documentation>A simple type defining the possible operations of a wcs</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GetCapabilities">
+        <xs:complexType />
+      </xs:element>
+      <xs:element name="DescribeCoverage">
+        <xs:complexType />
+      </xs:element>
+      <xs:element name="GetCoverage">
+        <xs:complexType />
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

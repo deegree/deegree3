@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.deegree.org/services/wcs" xmlns:deegreewcs="http://www.deegree.org/services/wcs"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ds="http://www.deegree.org/datasource" targetNamespace="http://www.deegree.org/services/wcs" elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+
+  <xs:element name="ServiceConfiguration">
+    <xs:annotation>
+      <xs:documentation>Comment describing your root element</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="SupportOptions" />
+        <xs:element name="Coverage" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Name" type="xs:string" />
+              <xs:element name="Label" type="xs:string" />
+              <xs:element name="Abstract" type="xs:string" minOccurs="0" />
+              <xs:element name="CoverageStoreId" type="xs:string" />
+              <xs:element name="RangeSet" type="deegreewcs:RangeSetType" minOccurs="0" />
+              <xs:element ref="SupportOptions" minOccurs="0" />
+            </xs:sequence>
+            <xs:attribute name="nativeFormat" type="xs:string" use="optional" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SupportOptions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="OutputFormat" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="Interpolation" type="deegreewcs:interpolation" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="SupportedCRS" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="extend" type="xs:boolean" default="false" />
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="RangeSetType">
+    <xs:annotation>
+      <xs:documentation>Defines the range set of the given coverage.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string" />
+      <xs:element name="Label" type="xs:string" minOccurs="0" />
+      <xs:element name="AxisDescription" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="deegreewcs:AxisValue" />
+          </xs:sequence>
+          <xs:attribute name="name" type="xs:string" use="required" />
+          <xs:attribute name="label" type="xs:string" use="optional" />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="NullValue" type="deegreewcs:TypedType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="AxisValue">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>The value(s) of a given axis, either the nullvalue</xs:documentation>
+      </xs:annotation>
+      <xs:choice>
+        <xs:element name="SingleValue" type="deegreewcs:TypedType" maxOccurs="unbounded" />
+        <xs:element name="Interval" type="deegreewcs:IntervalType" maxOccurs="unbounded" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="TypedType">
+    <xs:annotation>
+      <xs:documentation>The type of a given value</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="IntervalType">
+    <xs:annotation>
+      <xs:documentation>The type of a given value</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="min" type="deegreewcs:TypedType" />
+      <xs:element name="max" type="deegreewcs:TypedType" />
+      <xs:element name="type" type="xs:string" />
+    </xs:sequence>
+    <xs:attribute ref="deegreewcs:closure" use="optional" />
+  </xs:complexType>
+  <xs:attribute name="closure" default="closed">
+    <xs:annotation>
+      <xs:documentation>
+        Specifies which of the minimum and maximum values are included in the range. Note that plus and
+        minus infinity are considered closed bounds.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:NMTOKENS">
+        <xs:enumeration value="closed">
+          <xs:annotation>
+            <xs:documentation>The specified minimum and maximum values are included in this range.</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="open">
+          <xs:annotation>
+            <xs:documentation>The specified minimum and maximum values are NOT included in this range.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="open-closed">
+          <xs:annotation>
+            <xs:documentation>
+              The specified minimum value is NOT included in this range, and the specified maximum value
+              IS included in this range.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="closed-open">
+          <xs:annotation>
+            <xs:documentation>
+              The specified minimum value IS included in this range, and the specified maximum value is
+              NOT included in this range.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+  <xs:simpleType name="interpolation">
+    <xs:annotation>
+      <xs:documentation>
+        Enum over the currently supported interpolation types in the raster api see
+        org.deegree.coverage.raster.interpolation.InterpolationType for
+        more details.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Nearest-Neighbor" />
+      <xs:enumeration value="Bilinear" />
+      <xs:enumeration value="None" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

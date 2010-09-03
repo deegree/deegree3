@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.deegree.org/services/wfs" targetNamespace="http://www.deegree.org/services/wfs"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.wfs" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <include schemaLocation="wfs_published_information.xsd" />
+  <include schemaLocation="wfs_service_configuration.xsd" />
+  <element name="deegreeWFS">
+    <complexType>
+      <sequence>
+        <element ref="wfs:ServiceConfiguration" />
+        <element ref="wfs:PublishedInformation" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+    </complexType>
+  </element>
+</schema>
