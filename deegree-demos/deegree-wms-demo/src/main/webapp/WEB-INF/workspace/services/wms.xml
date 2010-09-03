@@ -227,7 +227,13 @@
           <File>../styles/utah_cities.se</File>
         </DirectStyle>
       </RequestableLayer>
-      
+      <!-- 
+      <RequestableLayer>
+        <Name>simplesql_postgis_example</Name>
+        <Title>Simplesql PostGIS example</Title>
+        <FeatureStoreId>simplesql_postgis_example</FeatureStoreId>
+      </RequestableLayer>
+      -->
       <RequestableLayer>
         <Name>WeatherStations</Name>
         <Title>Weatherstations in Utah County</Title>
