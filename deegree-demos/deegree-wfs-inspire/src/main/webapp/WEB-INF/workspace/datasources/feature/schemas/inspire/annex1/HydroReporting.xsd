@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:hy="urn:x-inspire:specification:gmlas:HydroBase:3.0" xmlns:hy-r="urn:x-inspire:specification:gmlas:HydroReporting:3.0" xmlns:wfd="urn:x-inspire:specification:gmlas:WaterFrameworkDirective:0.0" elementFormDefault="qualified" targetNamespace="urn:x-inspire:specification:gmlas:HydroReporting:3.0" version="3.0">
-  <annotation>
-    <documentation>-- Definition --&#13;
-The Reporting application schema contains spatial objects associated with reporting under European environmental directives. It satisfies the requirements of the 'reporting' Use Case. The emphasis is on the Water Framework Directive.</documentation>
-  </annotation>
-  <import namespace="urn:x-inspire:specification:gmlas:HydroBase:3.0" schemaLocation="HydroBase.xsd"/>
-  <import namespace="urn:x-inspire:specification:gmlas:WaterFrameworkDirective:0.0" schemaLocation="WaterFrameworkDirective.xsd"/>
-  <!--XML Schema document created by ShapeChange-->
-</schema>
