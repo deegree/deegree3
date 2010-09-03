@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<wfs:GetFeature service="WFS" version="1.0.0"
+	xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc"
+	xmlns:myns="http://www.someserver.com/myns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd">
+	<wfs:Query typeName="myns:INWATERA_1M">
+		<ogc:PropertyName>myns:WKB_GEOM</ogc:PropertyName>
+		<ogc:PropertyName>myns:TILE_ID</ogc:PropertyName>
+		<ogc:PropertyName>myns:FAC_ID</ogc:PropertyName>
+		<ogc:Filter>
+			<ogc:FeatureId fid="INWATERA_1M.1013" />
+		</ogc:Filter>
+	</wfs:Query>
+</wfs:GetFeature>
