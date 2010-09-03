@@ -4,13 +4,13 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-wpvs-demo</artifactId>
   <packaging>war</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0-pre8</version>
   <name>deegree 3 WPVS Demo</name>
   <url>http://maven.apache.org</url>
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-demos</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0-pre8</version>
   </parent>  
   <repositories>
     <repository>
@@ -25,7 +25,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-pre8</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
