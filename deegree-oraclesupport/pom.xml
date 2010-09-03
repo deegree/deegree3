@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-oraclesupport</artifactId>
   <packaging>jar</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0-pre8</version>
   <name>deegree-oraclesupport</name>
   <url>http://www.deegree.org</url>
   <scm>
@@ -67,7 +67,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-pre8</version>
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
