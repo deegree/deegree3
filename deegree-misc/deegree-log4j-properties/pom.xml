@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-log4j-properties</artifactId>
   <packaging>jar</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0-pre8</version>
   <name>log4j-properties generator module</name>
   <url>http://www.deegree.org</url>
   <properties>
@@ -112,7 +112,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0-pre8</version>
     </dependency>
 
     <dependency>
