@@ -1,0 +1,33 @@
+<SimpleSQLFeatureStore configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/feature/simplesql"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql http://schemas.deegree.org/datasource/0.5.0/feature/simplesql.xsd">
+
+  <!-- [1] CRS for storing geometries -->
+  <StorageSRS>EPSG:4326</StorageSRS>
+
+  <!-- [1] database connection -->
+  <ConnectionPoolId>connid</ConnectionPoolId>
+  
+  <!-- [1] query statement -->
+  <SQLStatement>
+            SELECT name, title, asbinary(the_geom) FROM some_table
+            WHERE the_geom &amp;&amp; st_geomfromtext(?, -1)
+  </SQLStatement>
+  
+  <!-- [1] bounding box statement -->
+  <BBoxStatement>SELECT astext(ST_Estimated_Extent('some_table', 'the_geom')) as bbox</BBoxStatement>
+  
+  <!-- [0..n] different statements for specific WMS scale ranges -->
+  <LODStatement aboveScale="3000">
+            SELECT name, title, asbinary(st_simplifypreservetopology(the_geom, 1)) FROM some_table
+            WHERE the_geom &amp;&amp; st_geomfromtext(?, -1)
+  </LODStatement>
+  <LODStatement aboveScale="6000">
+            SELECT name, title, asbinary(st_simplify(the_geom, 30)) FROM some_table
+            WHERE the_geom &amp;&amp; st_geomfromtext(?, -1) and not st_isempty(st_simplify(the_geom, 30))
+  </LODStatement>
+
+  <!-- [0..1] target namespace -->
+  <Namespace>http://www.deegree.org/app</Namespace>
+
+</SimpleSQLFeatureStore>
