@@ -1,8 +1,0 @@
-<Filter xmlns="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.0.0/filter.xsd">
-	<PropertyIsBetween>
-		<PropertyName>DEPTH</PropertyName>
-		<LowerBoundary><Literal>100</Literal></LowerBoundary>
-		<UpperBoundary><Literal>200</Literal></UpperBoundary>
-	</PropertyIsBetween>
-</Filter>
