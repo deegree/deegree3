@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/services/wps" targetNamespace="http://www.deegree.org/services/wps"
+  elementFormDefault="qualified">
+  <element name="ServiceConfiguration">
+    <complexType>
+      <sequence>
+        <element name="ProcessesDirectory" type="string" />
+      </sequence>
+    </complexType>
+  </element>
+</schema>

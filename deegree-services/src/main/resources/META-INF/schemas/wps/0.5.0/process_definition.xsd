@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/services/wps" targetNamespace="http://www.deegree.org/services/wps"
+  elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <!--
+    === PROCESS DEFINITION ===
+  -->
+  <element name="ProcessDefinition">
+    <complexType>
+      <sequence>
+        <element name="Identifier" type="wps:CodeType" />
+        <element name="JavaClass" type="string" />
+        <element name="Title" type="wps:LanguageStringType" />
+        <element name="Abstract" type="wps:LanguageStringType" minOccurs="0" />
+        <element name="Metadata" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>Optional unordered list of additional metadata.</documentation>
+          </annotation>
+          <complexType>
+            <complexContent>
+              <restriction base="anyType">
+                <attribute name="href" type="anyURI" use="optional" />
+                <attribute name="about" type="anyURI" use="optional" />
+              </restriction>
+            </complexContent>
+          </complexType>
+        </element>
+        <element name="Profile" type="anyURI" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>Optional unordered list of application profiles to which this process complies.</documentation>
+          </annotation>
+        </element>
+        <element name="WSDL" type="anyURI" minOccurs="0">
+          <annotation>
+            <documentation>Location of a WSDL document which describes this process.</documentation>
+          </annotation>
+        </element>
+        <element name="InputParameters" minOccurs="0">
+          <annotation>
+            <documentation>
+              List of the inputs to this process. In almost all cases, at least one process input is
+              required. However, no process inputs may be
+              identified when all the inputs are predetermined fixed
+              resources. In this case, those resources shall be identified in the Abstract
+              element that describes the
+              process.
+            </documentation>
+          </annotation>
+          <complexType>
+            <sequence>
+              <element ref="wps:ProcessInput" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+        <element name="OutputParameters">
+          <annotation>
+            <documentation>List of outputs which will or can result from executing the process.</documentation>
+          </annotation>
+          <complexType>
+            <sequence>
+              <element ref="wps:ProcessOutput" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="processVersion" type="string" use="required">
+        <annotation>
+          <documentation>
+            Release version of this Process, included when a process version needs to be included for
+            clarification about the process to be used. It
+            is possible that a WPS supports a process with different
+            versions due to reasons such as modifications of process algorithms. Notice that
+            this is the version
+            identifier for the process, not the version of the WPS interface. The processVersion is informative only.
+            Version
+            negotiation for processVersion is not available. Requests to Execute a process do not include a
+            processVersion identifier.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="storeSupported" type="boolean" use="optional" default="false">
+        <annotation>
+          <documentation>
+            Indicates if ComplexData outputs from this process can be stored by the WPS server as
+            web-accessible resources. If "storeSupported" is
+            "true", the Execute operation request may include
+            "asReference" equals "true" for any complex output, directing that the output of the
+            process be stored so
+            that the client can retrieve it as required. By default for this process, storage is not supported and all
+            outputs
+            are returned encoded in the Execute response.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="statusSupported" type="boolean" use="optional" default="false">
+        <annotation>
+          <documentation>
+            Indicates if ongoing status information can be provided for this process. If "true", the Status
+            element of the stored Execute response
+            document shall be kept up to date. If "false" then the Status element
+            shall not be updated until processing is complete. By default,
+            status information is not provided for this
+            process.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <!--
+    === INPUT PARAMETERS ===
+  -->
+  <element name="ProcessInput" type="wps:ProcessInputType" abstract="true" />
+  <complexType name="ProcessInputType" abstract="true">
+    <annotation>
+      <documentation>Description of an input parameter to the process.</documentation>
+      <appinfo>
+        <jaxb:class name="ProcessletInputDefinition" />
+      </appinfo>
+    </annotation>
+    <sequence>
+      <element name="Identifier" type="wps:CodeType" />
+      <element name="Title" type="wps:LanguageStringType" />
+      <element name="Abstract" type="wps:LanguageStringType" minOccurs="0" />
+      <element name="Metadata" minOccurs="0" maxOccurs="unbounded">
+        <annotation>
+          <documentation>Optional unordered list of additional metadata.</documentation>
+        </annotation>
+        <complexType>
+          <complexContent>
+            <restriction base="anyType">
+              <attribute name="href" type="anyURI" use="optional" />
+              <attribute name="about" type="anyURI" use="optional" />
+            </restriction>
+          </complexContent>
+        </complexType>
+      </element>
+      <!--      <group ref="wps:InputFormChoice"/>-->
+    </sequence>
+    <attribute name="minOccurs" type="nonNegativeInteger" use="optional">
+      <annotation>
+        <documentation>
+          The minimum number of times that values for this parameter are required in an Execute request. If
+          "0", this data input is optional. If
+          greater than "0" then this process input is required.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="maxOccurs" type="positiveInteger" use="optional">
+      <annotation>
+        <documentation>
+          The maximum number of times that values for this parameter are permitted in an Execute request.
+          If "1" then this parameter may appear only
+          once in an Execute request. If greater than "1", then this input
+          parameter may appear that many times in an Execute request.
+        </documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <!-- Input parameter with a literal value -->
+  <element name="LiteralInput" substitutionGroup="wps:ProcessInput">
+    <complexType>
+      <annotation>
+        <documentation>Description of a literal input parameter to the process.</documentation>
+        <appinfo>
+          <jaxb:class name="LiteralInputDefinition" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="wps:ProcessInputType">
+          <sequence>
+            <element name="DataType" minOccurs="0">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="reference" use="optional" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+            <element name="DefaultUOM" minOccurs="0">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="reference" use="optional" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+            <element name="OtherUOM" minOccurs="0" maxOccurs="unbounded">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="reference" use="optional" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+            <element name="DefaultValue" type="string" minOccurs="0" />
+            <choice minOccurs="0">
+              <element ref="wps:AllowedValues" />
+              <element ref="wps:ValidValueReference" />
+            </choice>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="AllowedValues">
+    <complexType>
+      <choice maxOccurs="unbounded">
+        <element name="Value" type="string" />
+        <element ref="wps:Range" />
+      </choice>
+    </complexType>
+  </element>
+  <element name="Range">
+    <complexType>
+      <sequence>
+        <element name="MinimumValue" type="string" minOccurs="0" />
+        <element name="MaximumValue" type="string" minOccurs="0" />
+        <element name="Spacing" type="string" minOccurs="0" />
+      </sequence>
+      <attribute name="rangeClosure" default="closed">
+        <annotation>
+          <documentation>
+            Specifies which of the minimum and maximum values are included in the range. Note that plus and
+            minus infinity are considered closed
+            bounds.
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="NMTOKENS">
+            <enumeration value="closed">
+              <annotation>
+                <documentation>The specified minimum and maximum values are included in this range.</documentation>
+              </annotation>
+            </enumeration>
+            <enumeration value="open">
+              <annotation>
+                <documentation>The specified minimum and maximum values are NOT included in this range.</documentation>
+              </annotation>
+            </enumeration>
+            <enumeration value="open-closed">
+              <annotation>
+                <documentation>
+                  The specified minimum value is NOT included in this range, and the specified maximum
+                  value IS included in this range.
+                </documentation>
+              </annotation>
+            </enumeration>
+            <enumeration value="closed-open">
+              <annotation>
+                <documentation>
+                  The specified minimum value IS included in this range, and the specified maximum value is
+                  NOT included in this range.
+                </documentation>
+              </annotation>
+            </enumeration>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="ValidValueReference">
+    <complexType>
+      <complexContent>
+        <restriction base="anyType">
+          <attribute name="reference" type="anyURI" use="optional" />
+          <attribute name="valuesForm" type="anyURI" use="optional" />
+        </restriction>
+      </complexContent>
+    </complexType>
+  </element>
+  <!-- Input parameter with a bounding box value -->
+  <element name="BoundingBoxInput" substitutionGroup="wps:ProcessInput">
+    <complexType>
+      <annotation>
+        <documentation>Description of a bounding box input parameter to the process.</documentation>
+        <appinfo>
+          <jaxb:class name="BoundingBoxInputDefinition" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="wps:ProcessInputType">
+          <sequence>
+            <element name="DefaultCRS" type="anyURI" />
+            <element name="OtherCRS" type="anyURI" minOccurs="0" maxOccurs="unbounded" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!-- Input parameter with a complex value -->
+  <element name="ComplexInput" substitutionGroup="wps:ProcessInput">
+    <complexType>
+      <annotation>
+        <documentation>Description of a complex input parameter (XML or binary) to the process.</documentation>
+        <appinfo>
+          <jaxb:class name="ComplexInputDefinition" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="wps:ProcessInputType">
+          <sequence>
+            <element name="DefaultFormat" type="wps:ComplexFormatType" />
+            <element name="OtherFormats" type="wps:ComplexFormatType" minOccurs="0" maxOccurs="unbounded" />
+          </sequence>
+          <attribute name="maximumMegabytes" type="integer" use="optional">
+            <annotation>
+              <documentation>
+                The maximum file size, in megabytes, of this input. If the input exceeds this size, the
+                server will return an error instead of
+                processing the inputs.
+              </documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!-- Input parameter with an XML value -->
+  <!-- Input parameter with a raw (binary) value -->
+  <!--
+    === OUTPUT PARAMETERS ===
+  -->
+  <element name="ProcessOutput" type="wps:ProcessOutputType" abstract="true" />
+  <complexType name="ProcessOutputType" abstract="true">
+    <annotation>
+      <documentation>Description of an output parameter of the process.</documentation>
+      <appinfo>
+        <jaxb:class name="ProcessletOutputDefinition" />
+      </appinfo>
+    </annotation>
+    <sequence>
+      <element name="Identifier" type="wps:CodeType" />
+      <element name="Title" type="wps:LanguageStringType" />
+      <element name="Abstract" type="wps:LanguageStringType" minOccurs="0" />
+      <element name="Metadata" minOccurs="0" maxOccurs="unbounded">
+        <annotation>
+          <documentation>Optional unordered list of additional metadata.</documentation>
+        </annotation>
+        <complexType>
+          <complexContent>
+            <restriction base="anyType">
+              <attribute name="href" type="anyURI" use="optional" />
+              <attribute name="about" type="anyURI" use="optional" />
+            </restriction>
+          </complexContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+  <!-- Output parameter with a literal value -->
+  <element name="LiteralOutput" substitutionGroup="wps:ProcessOutput">
+    <complexType>
+      <annotation>
+        <documentation>Description of a literal output parameter of the process.</documentation>
+        <appinfo>
+          <jaxb:class name="LiteralOutputDefinition" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="wps:ProcessOutputType">
+          <sequence>
+            <element name="DataType" minOccurs="0">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="reference" use="optional" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+            <element name="DefaultUOM" minOccurs="0">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="reference" use="optional" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+            <element name="OtherUOM" minOccurs="0" maxOccurs="unbounded">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="reference" use="optional" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!-- Output parameter with a bounding box value -->
+  <element name="BoundingBoxOutput" substitutionGroup="wps:ProcessOutput">
+    <complexType>
+      <annotation>
+        <documentation>Description of a bounding box output parameter of the process.</documentation>
+        <appinfo>
+          <jaxb:class name="BoundingBoxOutputDefinition" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="wps:ProcessOutputType">
+          <sequence>
+            <element name="DefaultCRS" type="anyURI" />
+            <element name="OtherCRS" type="anyURI" minOccurs="0" maxOccurs="unbounded" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!-- Output parameter with a complex value -->
+  <element name="ComplexOutput" substitutionGroup="wps:ProcessOutput">
+    <complexType>
+      <annotation>
+        <documentation>Description of an xml output parameter (XML or binary) of the process.</documentation>
+        <appinfo>
+          <jaxb:class name="ComplexOutputDefinition" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="wps:ProcessOutputType">
+          <sequence>
+            <element name="DefaultFormat" type="wps:ComplexFormatType" />
+            <element name="OtherFormats" type="wps:ComplexFormatType" minOccurs="0" maxOccurs="unbounded" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!--
+    === GENERAL TYPES ===
+  -->
+  <complexType name="ComplexFormatType">
+    <complexContent>
+      <restriction base="anyType">
+        <attribute name="mimeType" type="anyURI" use="optional" />
+        <attribute name="encoding" type="anyURI" use="optional" />
+        <attribute name="schema" type="anyURI" use="optional" />
+      </restriction>
+    </complexContent>
+  </complexType>
+  <complexType name="CodeType">
+    <annotation>
+      <documentation>
+        Name or code with an (optional) authority. If the codeSpace attribute is present, its value shall
+        reference a dictionary, thesaurus, or
+        authority for the name or code, such as the organisation who assigned the
+        value, or the dictionary from which it is taken.
+      </documentation>
+      <documentation>
+        Type copied from basicTypes.xsd of GML 3 with documentation edited, for possible use outside the
+        ServiceIdentification section of a service
+        metadata document.
+      </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="codeSpace" type="anyURI" use="optional" />
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="LanguageStringType">
+    <annotation>
+      <documentation>
+        Text string with the language of the string identified as recommended in the XML 1.0 W3C
+        Recommendation, section 2.12.
+      </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="lang" type="string" use="optional" />
+      </extension>
+    </simpleContent>
+  </complexType>
+</schema>
