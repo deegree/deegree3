@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://www.w3.org/2001/XMLSchema" 
+           xmlns:xplanNDS="http://www.xplanung.de/4/0/NDS_ADE" 
+           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+           xmlns:gml="http://www.opengis.net/gml/3.2"
+           xmlns:xplan="http://www.xplanung.de/xplangml/4/0"
+           targetNamespace="http://www.xplanung.de/4/0/NDS_ADE"
+            version="4.0 NDS ADE">
+    <xs:import namespace="http://www.xplanung.de/xplangml/4/0" schemaLocation="XPlanung-Operationen.xsd"/>
+  <xs:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="gml/3.2.1/gml.xsd"/>
+    
+    <!-- Erweiterung RP_Forstwirtschaft ========================================================================== -->
+  <element name="zweckbestimmungFW" type="xplanNDS:RP_NDS_ZweckbestimmungForstwirtschaftType" substitutionGroup="xplan:_GenericApplicationPropertyOfRP_Forstwirtschaft"/>
+    <simpleType name="RP_NDS_ZweckbestimmungForstwirtschaftType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+	<enumeration value="2000"/>
+	<enumeration value="3000"/>
+	<enumeration value="4000"/>
+      </restriction>
+    </simpleType> 
+    
+    <!-- Erweiterung RP_Landwirtschaft =========================================================================== -->
+  <element name="typ" type="xplanNDS:RP_NDS_LandwirtschaftTypenType" substitutionGroup="xplan:_GenericApplicationPropertyOfRP_Landwirtschaft"/>
+    <simpleType name="RP_NDS_LandwirtschaftTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+    	<enumeration value="2000"/>
+      </restriction>
+    </simpleType> 
+    
+    <!-- Erweiterung RP_Bodenschutz ============================================================================== -->
+  <element name="zweckbestimmung" type="xplanNDS:RP_NDS_ZweckbestimmungBodenschutzType" substitutionGroup="xplan:_GenericApplicationPropertyOfRP_Bodenschutz"/>
+    <simpleType name="RP_NDS_ZweckbestimmungBodenschutzType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+      </restriction>
+    </simpleType> 
+    
+    <!-- Erweiterung RP_VorbHochwasserschutz ===================================================================== -->
+  <element name="zweckbestimmungNDS" type="xplanNDS:RP_NDS_HochwasserschutzTypenType" substitutionGroup="xplan:_GenericApplicationPropertyOfRP_VorbHochwasserschutz"/>
+    <simpleType name="RP_NDS_HochwasserschutzTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+        <enumeration value="5000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_Naturschutz ==================================================================-->
+    <element name="RP_NDS_Naturschutz" substitutionGroup="xplan:RP_NaturLandschaft" type="xplanNDS:RP_NDS_NaturschutzType"/>
+    <annotation>
+      <documentation>Naturschutz</documentation>
+    </annotation>
+    <complexType name="RP_NDS_NaturschutzType">
+      <complexContent>
+    	<extension base="xplan:RP_NaturLandschaftType">
+    	  <sequence>
+    	    <element maxOccurs="1" minOccurs="0" name="typ" type="xplanNDS:RP_NDS_NaturschutzTypenType"/>
+    	  </sequence>
+    	</extension>
+      </complexContent>
+    </complexType>
+	
+    <simpleType name="RP_NDS_NaturschutzTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_Landschaftsschutz ============================================================-->
+    <element name="RP_NDS_Landschaftsschutz" substitutionGroup="xplan:RP_NaturLandschaft" type="xplanNDS:RP_NDS_LandschaftsschutzType"/>
+    <annotation>
+      <documentation>Landschaftsschutz</documentation>
+    </annotation>
+    <complexType name="RP_NDS_LandschaftsschutzType">
+      <complexContent>
+        <extension base="xplan:RP_NaturLandschaftType">
+    	  <sequence>
+    	    <element maxOccurs="1" minOccurs="0" name="typ" type="xplanNDS:RP_NDS_LandschaftsschutzTypenType"/>
+    	  </sequence>
+    	</extension>
+      </complexContent>
+    </complexType>
+    
+    <simpleType name="RP_NDS_LandschaftsschutzTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_Erholung =====================================================================-->
+    <element name="RP_NDS_Erholung" substitutionGroup="xplan:RP_FreizeitErholung" type="xplanNDS:RP_NDS_ErholungType"/>
+    <annotation>
+      <documentation>Erholung</documentation>
+    </annotation>
+    <complexType name="RP_NDS_ErholungType">
+      <complexContent>
+    	<extension base="xplan:RP_FreizeitErholungType">
+          <sequence>
+    	    <element maxOccurs="1" minOccurs="0" name="typ" type="xplanNDS:RP_NDS_ErholungTypenType"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    
+    <simpleType name="RP_NDS_ErholungTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+        <enumeration value="5000"/>
+        <enumeration value="6000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_RegionalBedeutsameSportanlage ================================================-->
+    <element name="RP_NDS_RegionalBedeutsameSportanlage" substitutionGroup="xplan:RP_FreizeitErholung" type="xplanNDS:RP_NDS_RegionalBedeutsameSportanlageType"/>
+    <annotation>
+      <documentation>regional bedeutsame Sportanlagen</documentation>
+    </annotation>
+    <complexType name="RP_NDS_RegionalBedeutsameSportanlageType">
+      <complexContent>
+    	<extension base="xplan:RP_FreizeitErholungType">
+    	  <sequence>
+    	    <element maxOccurs="1" minOccurs="0" name="typ" type="xplanNDS:RP_NDS_RegionalBedeutsameSportanlageTypenType"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    
+    <simpleType name="RP_NDS_RegionalBedeutsameSportanlageTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+        <enumeration value="5000"/>
+        <enumeration value="6000"/>
+        <enumeration value="7000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_RegionalBedeutsamerWanderweg =================================================-->
+    <element name="RP_NDS_RegionalBedeutsamerWanderweg" substitutionGroup="xplan:RP_FreizeitErholung" type="xplanNDS:RP_NDS_RegionalBedeutsamerWanderwegType"/>
+    <annotation>
+      <documentation>regional bedeutsame Wanderwege</documentation>
+    </annotation>
+    <complexType name="RP_NDS_RegionalBedeutsamerWanderwegType">
+      <complexContent>
+        <extension base="xplan:RP_FreizeitErholungType">
+          <sequence>
+            <element maxOccurs="1" minOccurs="0" name="typ" type="xplanNDS:RP_NDS_RegionalBedeutsamerWanderwegTypenType"/>
+	  </sequence>
+	</extension>
+      </complexContent>
+    </complexType>
+    
+    <simpleType name="RP_NDS_RegionalBedeutsamerWanderwegTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+        <enumeration value="5000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_OberflaechennaheBodenschaetze ================================================-->
+    <element name="RP_NDS_OberflaechennaheBodenschaetze" substitutionGroup="xplan:RP_Rohstoffsicherung" type="xplanNDS:RP_NDS_OberflaechennaheBodenschaetzeType"/>
+    <annotation>
+      <documentation>oberflaechennahe Bodenschaetze</documentation>
+    </annotation>
+    <complexType name="RP_NDS_OberflaechennaheBodenschaetzeType">
+      <complexContent>
+    	<extension base="xplan:RP_RohstoffsicherungType">
+    	  <sequence>
+    	    <element maxOccurs="1" minOccurs="0" name="folgenutzung" type="xplanNDS:RP_NDS_TagebauFolgenutzungTypenType"/>
+    	    <element maxOccurs="1" minOccurs="0" name="folgenutzungText" type="string"/>
+            <element maxOccurs="1" minOccurs="0" name="zeitstufe" type="xplanNDS:RP_NDS_ZeitstufeType"/>
+    	    <element maxOccurs="1" minOccurs="0" name="zeitstufeText" type="string"/>	
+    	  </sequence>
+    	</extension>
+      </complexContent>
+    </complexType>
+    
+    <simpleType name="RP_NDS_TagebauFolgenutzungTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+        <enumeration value="5000"/>
+        <enumeration value="6000"/>
+        <enumeration value="9999"/>
+      </restriction>
+    </simpleType>
+    
+    <simpleType name="RP_NDS_ZeitstufeType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_TiefliegendeRohstoffe ========================================================-->
+    <element name="RP_NDS_TiefliegendeRohstoffe" substitutionGroup="xplan:RP_Rohstoffsicherung" type="xplanNDS:RP_NDS_TiefliegendeRohstoffeType"/>
+    <annotation>
+      <documentation>tiefliegende Rohstoffe</documentation>
+    </annotation>
+    <complexType name="RP_NDS_TiefliegendeRohstoffeType">
+      <complexContent>
+        <extension base="xplan:RP_RohstoffsicherungType">
+          <sequence/>
+        </extension>
+      </complexContent>
+    </complexType>
+    
+    <!-- Erweiterung RP_ZentralerOrt ==============================================================================-->
+    <element name="detailFunktion" type="xplanNDS:RP_NDS_ZentralerOrtFunktionenType" substitutionGroup="xplan:_GenericApplicationPropertyOfRP_ZentralerOrt"/>
+    <simpleType name="RP_NDS_ZentralerOrtFunktionenType">
+      <restriction base="string">
+        <enumeration value="20001"/>
+        <enumeration value="30001"/>
+        <enumeration value="99991"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Erweiterung RP_GemeindeFunktionSiedlungsentwicklung =======================================================-->
+    <element name="zweckbindung" type="xplanNDS:RP_NDS_GIB_ZweckbindungenType" substitutionGroup="xplan:_GenericApplicationPropertyOfRP_GemeindeFunktionSiedlungsentwicklung"/>
+    <simpleType name="RP_NDS_GIB_ZweckbindungenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+      </restriction>
+    </simpleType>
+
+    <!-- Erweiterung RP_Laermschutzbereich ========================================================================-->
+    <element name="typLsNDS" type="xplanNDS:RP_NDS_LaermschutzTypenType" substitutionGroup="xplan:_GenericApplicationPropertyOfRP_Laermschutzbereich"/>
+    <simpleType name="RP_NDS_LaermschutzTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Erweiterung RP_Energieversorgung =========================================================================-->
+        <element name="typEvNDS" type="xplanNDS:RP_NDS_EnergieversorgungTypenType" substitutionGroup="xplan:_GenericApplicationPropertyOfRP_Energieversorgung"/>
+        <simpleType name="RP_NDS_EnergieversorgungTypenType">
+          <restriction base="string">
+            <enumeration value="10000"/>
+	    <enumeration value="10001"/>
+	    <enumeration value="10002"/>
+	    <enumeration value="10003"/>
+	    <enumeration value="10004"/>
+	    <enumeration value="20001"/>
+	    <enumeration value="20002"/>
+	    <enumeration value="20003"/>
+	    <enumeration value="20004"/>
+	    <enumeration value="30001"/>
+	    <enumeration value="30002"/>
+	    <enumeration value="30003"/>
+	    <enumeration value="30004"/>
+	    <enumeration value="30005"/>
+	    <enumeration value="30006"/>
+	    <enumeration value="30007"/>
+	    <enumeration value="30008"/>
+	    <enumeration value="30009"/>
+	    <enumeration value="300010"/>
+	    <enumeration value="300011"/>
+	    <enumeration value="300012"/>
+	    <enumeration value="300013"/>
+	    <enumeration value="300014"/>
+	    <enumeration value="300015"/>
+	    <enumeration value="300016"/>
+	    <enumeration value="300017"/>
+	    <enumeration value="300018"/>
+	    <enumeration value="300019"/>
+	    <enumeration value="40001"/>
+	    <enumeration value="40002"/>
+	    <enumeration value="40003"/>
+	    <enumeration value="99991"/>
+	    <enumeration value="99992"/>
+          </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_Strassenverkehr ==============================================================-->
+    <element name="RP_NDS_Strassenverkehr" substitutionGroup="xplan:RP_Verkehr" type="xplanNDS:RP_NDS_StrassenverkehrType"/>
+    <annotation>
+      <documentation>Strassenverkehr</documentation>
+    </annotation>
+    <complexType name="RP_NDS_StrassenverkehrType">
+      <complexContent>
+        <extension base="xplan:RP_VerkehrType">
+          <sequence>
+       	    <element maxOccurs="1" minOccurs="0" name="strassenverkehrTyp" type="xplanNDS:RP_NDS_StrassenverkehrTypenType"/>
+    	    <element maxOccurs="1" minOccurs="0" name="sonstTyp" type="gml:CodeType"/>
+    	    <element maxOccurs="1" minOccurs="0" name="bezeichnung" type="string"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    
+    <simpleType name="RP_NDS_StrassenverkehrTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+        <enumeration value="5000"/>
+        <enumeration value="6000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_Schienenverkehr ==============================================================-->
+    <element name="RP_NDS_Schienenverkehr" substitutionGroup="xplan:RP_Verkehr" type="xplanNDS:RP_NDS_SchienenverkehrType"/>
+    <annotation>
+      <documentation>Schienenverkehr</documentation>
+    </annotation>
+    <complexType name="RP_NDS_SchienenverkehrType">
+      <complexContent>
+        <extension base="xplan:RP_VerkehrType">
+          <sequence>
+            <element maxOccurs="1" minOccurs="0" name="schienenverkehrTyp" type="xplanNDS:RP_NDS_SchienenverkehrTypenType"/>
+       	    <element maxOccurs="1" minOccurs="0" name="sonstTyp" type="gml:CodeType"/>
+            <element maxOccurs="1" minOccurs="0" name="bezeichnung" type="string"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  
+    <simpleType name="RP_NDS_SchienenverkehrTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+      	<enumeration value="5000"/>
+      	<enumeration value="6000"/>
+      	<enumeration value="7000"/>
+      	<enumeration value="8000"/>
+	<enumeration value="9000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_Wasserverkehr ================================================================-->
+    <element name="RP_NDS_Wasserverkehr" substitutionGroup="xplan:RP_Verkehr" type="xplanNDS:RP_NDS_WasserverkehrType"/>
+    <annotation>
+      <documentation>Wasserverkehr</documentation>
+    </annotation>
+    <complexType name="RP_NDS_WasserverkehrType">
+      <complexContent>
+        <extension base="xplan:RP_VerkehrType">
+          <sequence>
+            <element maxOccurs="1" minOccurs="0" name="wasserverkehrTyp" type="xplanNDS:RP_NDS_WasserverkehrTypenType"/>
+    	    <element maxOccurs="1" minOccurs="0" name="sonstTyp" type="gml:CodeType"/>
+    	    <element maxOccurs="1" minOccurs="0" name="bezeichnung" type="string"/>
+    	  </sequence>
+    	</extension>
+      </complexContent>
+    </complexType>
+    
+    <simpleType name="RP_NDS_WasserverkehrTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+        <enumeration value="5000"/>
+        <enumeration value="6000"/>
+        <enumeration value="7000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_Luftverkehr ==================================================================-->
+    <element name="RP_NDS_Luftverkehr" substitutionGroup="xplan:RP_Verkehr" type="xplanNDS:RP_NDS_LuftverkehrType"/>
+    <annotation>
+      <documentation>Luftverkehr</documentation>
+    </annotation>
+    <complexType name="RP_NDS_LuftverkehrType">
+      <complexContent>
+        <extension base="xplan:RP_VerkehrType">
+          <sequence>
+    	    <element maxOccurs="1" minOccurs="0" name="luftverkehrTyp" type="xplanNDS:RP_NDS_LuftverkehrTypenType"/>
+    	    <element maxOccurs="1" minOccurs="0" name="sonstTyp" type="gml:CodeType"/>
+    	    <element maxOccurs="1" minOccurs="0" name="bezeichnung" type="string"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    
+    <simpleType name="RP_NDS_LuftverkehrTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_SonstVerkehr =================================================================-->
+    <element name="RP_NDS_SonstVerkehr" substitutionGroup="xplan:RP_Verkehr" type="xplanNDS:RP_NDS_SonstVerkehrType"/>
+    <annotation>
+      <documentation>sonstiger Verkehr</documentation>
+    </annotation>
+    <complexType name="RP_NDS_SonstVerkehrType">
+      <complexContent>
+        <extension base="xplan:RP_VerkehrType">
+          <sequence>
+       	    <element maxOccurs="1" minOccurs="0" name="sonstVerkehrTyp" type="xplanNDS:RP_NDS_SonstVerkehrTypenType"/>
+       	    <element maxOccurs="1" minOccurs="0" name="bezeichnung" type="string"/>	
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    
+    <simpleType name="RP_NDS_SonstVerkehrTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_Abwasser =====================================================================-->
+    <element name="RP_NDS_Abwasser" substitutionGroup="xplan:RP_Entsorgung" type="xplanNDS:RP_NDS_AbwasserType"/>
+    <annotation>
+      <documentation>Abwasserentsorgung</documentation>
+    </annotation>
+    <complexType name="RP_NDS_AbwasserType">
+      <complexContent>
+        <extension base="xplan:RP_EntsorgungType">
+          <sequence>
+            <element maxOccurs="1" minOccurs="0" name="typ" type="xplanNDS:RP_NDS_AbwasserTypenType"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    	
+    <simpleType name="RP_NDS_AbwasserTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2000"/>
+        <enumeration value="3000"/>
+      </restriction>
+    </simpleType>
+    
+    <!-- Neue Klasse xplanNDS:RP_NDS_Abfallentsorgung =============================================================-->
+    <element name="RP_NDS_Abfallentsorgung" substitutionGroup="xplan:RP_Entsorgung" type="xplanNDS:RP_NDS_AbfallentsorgungType"/>
+    <annotation>
+      <documentation>Abfallentsorgung</documentation>
+    </annotation>
+    <complexType name="RP_NDS_AbfallentsorgungType">
+      <complexContent>
+        <extension base="xplan:RP_EntsorgungType">
+          <sequence>
+    	    <element maxOccurs="1" minOccurs="0" name="typ" type="xplanNDS:RP_NDS_AbfallentsorgungTypenType"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    	
+    <simpleType name="RP_NDS_AbfallentsorgungTypenType">
+      <restriction base="string">
+        <enumeration value="1000"/>
+        <enumeration value="2100"/>
+        <enumeration value="2110"/>
+        <enumeration value="2120"/>
+        <enumeration value="2200"/>
+        <enumeration value="2300"/>
+        <enumeration value="2400"/>
+        <enumeration value="2500"/>
+        <enumeration value="3000"/>
+        <enumeration value="4000"/>
+      </restriction>
+    </simpleType>	
+
+</xs:schema>
