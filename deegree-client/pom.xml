@@ -13,8 +13,19 @@
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-client</url>
   </scm>
   <modules>
-    <module>deegree-sos-webclient</module>    
+    <!-- <module>deegree-sos-webclient</module> -->
+    <module>deegree-jsf-core</module>
   </modules>
+  <distributionManagement>
+    <repository>
+      <id>deegree-releases</id>
+      <url>http://artefacts.deegree.org/libs-releases-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>deegree-snapshots</id>
+      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+    </snapshotRepository>
+  </distributionManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
