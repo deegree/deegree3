@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<TextSymbolizer xmlns="http://www.opengis.net/se"
+                 xmlns:ogc="http://www.opengis.net/ogc"
+                 xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+  <Name>My Name</Name>
+  <Geometry>
+    <ogc:PropertyName>app:someGeometryProp</ogc:PropertyName>
+  </Geometry>
+  <Label>sometext</Label>
+  <Font>
+    <SvgParameter name="font-family">times</SvgParameter>
+    <SvgParameter name="font-weight">bold</SvgParameter>
+    <SvgParameter name="font-size">8</SvgParameter>
+    <SvgParameter name="font-style">italic</SvgParameter>
+  </Font>
+  <LabelPlacement>
+    <LinePlacement>
+      <PerpendicularOffset>786</PerpendicularOffset>
+      <IsRepeated>true</IsRepeated>
+      <InitialGap>8</InitialGap>
+      <Gap>7.3</Gap>
+      <IsAligned>false</IsAligned>
+      <GeneralizeLine>true</GeneralizeLine>
+    </LinePlacement>
+  </LabelPlacement>
+</TextSymbolizer>

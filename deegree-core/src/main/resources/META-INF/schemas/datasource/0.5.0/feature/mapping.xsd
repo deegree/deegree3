@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:ft="http://www.deegree.org/datasource/feature/mapping" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/feature/mapping" elementFormDefault="qualified"
+  attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.feature.persistence.mapping.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <!--
+    === Root element (container for all feature type declarations) ===
+  -->
+  <element name="Mapping">
+    <annotation>
+      <documentation>Root element (container for all feature type declarations)</documentation>
+      <appinfo>
+        <jaxb:class name="Mapping" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="ft:FeatureType" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.5.0" />
+    </complexType>
+  </element>
+  <!--
+    === Feature type definition ===
+  -->
+  <element name="FeatureType">
+    <complexType>
+      <annotation>
+        <documentation>Declaration of a feature type of the schema.</documentation>
+        <appinfo>
+          <jaxb:class name="FeatureTypeDecl" />
+        </appinfo>
+      </annotation>
+      <sequence>
+        <element ref="ft:AbstractProperty" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="QName">
+        <annotation>
+          <documentation>Qualified name of the feature type.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="mapping" type="string" use="optional">
+        <annotation>
+          <documentation>Mapping of the feature type (currently, this can only be the name of a table).</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="fidMapping" type="string" use="optional">
+        <annotation>
+          <documentation>Mapping of the feature id (currently, this can only be the name of a column).</documentation>
+        </annotation>
+      </attribute>      
+      <attribute name="abstract" type="boolean" use="optional">
+        <annotation>
+          <documentation>If true, the feature type is abstract and cannot be instantiated.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="substitutionGroup" type="QName" use="optional">
+        <annotation>
+          <documentation>
+            Name of the feature type that this feature type may substitute, i.e. features of this type may
+            be used wherever the other type is requested.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <!--
+    === Abstract property definition ===
+  -->
+  <element name="AbstractProperty" type="ft:AbstractPropertyType" abstract="true" />
+  <complexType name="AbstractPropertyType" abstract="true">
+    <annotation>
+      <documentation>Declaration of a property of a feature type.</documentation>
+      <appinfo>
+        <jaxb:class name="AbstractPropertyDecl" />
+      </appinfo>
+    </annotation>
+    <attribute name="name" type="QName">
+      <annotation>
+        <documentation>
+          Qualified name of the property.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="minOccurs" type="nonNegativeInteger" use="optional">
+      <annotation>
+        <documentation>The minimum number of times that this property is required in feature instances.</documentation>
+      </annotation>
+    </attribute>
+    <attribute name="maxOccurs" use="optional">
+      <annotation>
+        <documentation>The maximum number of times that this property is permitted in feature instances.</documentation>
+      </annotation>
+      <simpleType>
+        <union memberTypes="positiveInteger">
+          <simpleType>
+            <restriction base="token">
+              <enumeration value="unbounded" />
+            </restriction>
+          </simpleType>
+        </union>
+      </simpleType>
+    </attribute>
+    <attribute name="mapping" type="string" use="optional">
+      <annotation>
+        <documentation>Mapping of the property (currently, this can only be the name of a column).</documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <!--
+    === Simple property definition ===
+  -->
+  <element name="SimpleProperty" substitutionGroup="ft:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Declaration of a simple property of a feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="SimplePropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="ft:AbstractPropertyType">
+          <attribute name="type" type="ft:PrimitiveType">
+            <annotation>
+              <documentation>Type of the property.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <simpleType name="PrimitiveType">
+    <restriction base="string">
+      <enumeration value="string">
+        <annotation>
+          <documentation>String-valued property (=xs:string)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="boolean">
+        <annotation>
+          <documentation>Boolean-valued property (=xs:boolean)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="decimal">
+        <annotation>
+          <documentation>Decimal-valued property (=xs:decimal)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="double">
+        <annotation>
+          <documentation>Double-valued property (=xs:double)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="integer">
+        <annotation>
+          <documentation>Integer-valued property (=xs:integer)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="date">
+        <annotation>
+          <documentation>Date-valued property (=xs:date)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="dateTime">
+        <annotation>
+          <documentation>Date-valued property (=xs:dateTime)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="time">
+        <annotation>
+          <documentation>Time-valued property (=xs:time)</documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+  <!--
+    === Geometry property definition ===
+  -->
+  <element name="GeometryProperty" substitutionGroup="ft:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a geometry-valued property of a feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="GeometryPropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="ft:AbstractPropertyType">
+          <attribute name="type" type="ft:GeometryType">
+            <annotation>
+              <documentation>Allowed geometry type.</documentation>
+            </annotation>
+          </attribute>
+          <attribute name="coordinateDimension" use="optional">
+            <annotation>
+              <documentation>Dimensionality of the geometry coordinates.</documentation>
+            </annotation>
+            <simpleType>
+              <restriction base="NMTOKENS">
+                <enumeration value="2D" />
+                <enumeration value="3D" />
+                <enumeration value="2D or 3D" />
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <simpleType name="GeometryType">
+    <restriction base="string">
+      <enumeration value="Geometry" />
+      <enumeration value="PrimitiveGeometry" />
+      <enumeration value="CompositeGeometry" />
+      <!--  Primitive types (0D) -->
+      <enumeration value="Point" />
+      <!--  Primitive types (1D) -->
+      <enumeration value="Curve" />
+      <enumeration value="LineString" />
+      <enumeration value="Ring" />
+      <enumeration value="LinearRing" />
+      <enumeration value="OrientableCurve" />
+      <enumeration value="CompositeCurve" />
+      <!--  Primitive types (2D) -->
+      <enumeration value="Surface" />
+      <enumeration value="PolyhedralSurface" />
+      <enumeration value="TriangulatedSurface" />
+      <enumeration value="Tin" />
+      <enumeration value="Polygon" />
+      <enumeration value="OrientableSurface" />
+      <enumeration value="CompositeSurface" />
+      <!--  Primitive types (3D) -->
+      <enumeration value="Solid" />
+      <enumeration value="CompositeSolid" />
+      <!-- Aggregate types -->
+      <enumeration value="MultiGeometry" />
+      <enumeration value="MultiPoint" />
+      <enumeration value="MultiCurve" />
+      <enumeration value="MultiLineString" />
+      <enumeration value="MultiSurface" />
+      <enumeration value="MultiPolygon" />
+      <enumeration value="MultiSolid" />
+    </restriction>
+  </simpleType>
+</schema>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetObservation service="SOS" version="1.0.0" xmlns="http://www.opengis.net/sos/1.0"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:om="http://www.opengis.net/om/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosAll.xsd">
+  <offering>urn:MyOrg:offering:3</offering>
+  <eventTime>
+    <ogc:TM_After>
+      <ogc:PropertyName>om:samplingTime</ogc:PropertyName>
+      <gml:TimeInstant>
+        <gml:timePosition indeterminatePosition="now"/>
+      </gml:TimeInstant>
+    </ogc:TM_After>
+  </eventTime>
+  <procedure>urn:ogc:object:Sensor:MyOrg:12349</procedure>
+  <observedProperty>urn:ogc:def:property:MyOrg:WindSpeed</observedProperty>
+  <featureOfInterest>
+    <ogc:BBOX>
+      <ogc:PropertyName>gml:boundedBy</ogc:PropertyName>
+      <gml:Envelope>
+        <gml:lowerCorner>38.11 -78.6</gml:lowerCorner>
+        <gml:upperCorner>38.14 -78.4</gml:upperCorner>
+      </gml:Envelope>
+    </ogc:BBOX>
+  </featureOfInterest>
+  <responseFormat>text/xml; subtype=&quot;om/1.0.0&quot;</responseFormat>
+  <resultModel>om:Observation</resultModel>
+  <responseMode>resultTemplate</responseMode>
+</GetObservation>
