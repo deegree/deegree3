@@ -1,0 +1,2 @@
+org.deegree.services.wpvs.io.file.RenderableFileStoreProvider
+org.deegree.services.wpvs.io.db.RenderableSQLStoreProvider

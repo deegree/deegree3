@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:csw="http://www.deegree.org/services/csw"
+  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/csw" elementFormDefault="qualified"
+  attributeFormDefault="unqualified" xmlns:md="http://www.deegree.org/webservices">
+  <element name="PublishedInformation">
+    <complexType>
+      <sequence>
+        <element name="AcceptVersions" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element name="Version" type="string" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>
