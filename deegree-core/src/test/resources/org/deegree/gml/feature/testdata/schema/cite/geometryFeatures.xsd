@@ -1,0 +1,83 @@
+<xsd:schema targetNamespace="http://www.opengis.net/cite/geometry" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cgf="http://www.opengis.net/cite/geometry" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.1">
+  <xsd:annotation>
+    <xsd:appinfo source="urn:opengis:cite:geometry:v0.1"/>
+  </xsd:annotation>
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>  
+  <xsd:element name="GeometryFeatureCollection" type="cgf:GeometryFeatureCollectionType" substitutionGroup="gml:_FeatureCollection"/>
+  <xsd:element name="id" type="xsd:string"/>
+  <xsd:element name="_SimpleFeature" type="cgf:AbstractSimpleFeatureType" abstract="true" substitutionGroup="gml:_Feature"/>
+  <xsd:element name="Points" type="cgf:PointFeatureType" substitutionGroup="gml:_Feature"/>
+  <xsd:element name="Lines" type="cgf:LineStringFeatureType" substitutionGroup="cgf:_SimpleFeature"/>
+  <xsd:element name="Polygons" type="cgf:PolygonFeatureType" substitutionGroup="cgf:_SimpleFeature"/>
+  <xsd:element name="MPoints" type="cgf:MultiPointFeatureType" substitutionGroup="cgf:_SimpleFeature"/>
+  <xsd:element name="MLines" type="cgf:MultiLineStringFeatureType" substitutionGroup="cgf:_SimpleFeature"/>
+  <xsd:element name="MPolygons" type="cgf:MultiPolygonFeatureType" substitutionGroup="cgf:_SimpleFeature"/>
+  <xsd:complexType name="GeometryFeatureCollectionType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureCollectionType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="AbstractSimpleFeatureType" abstract="true">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element ref="cgf:id"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="PointFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="cgf:AbstractSimpleFeatureType">
+        <xsd:sequence>
+          <xsd:element ref="gml:pointProperty" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="LineStringFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="cgf:AbstractSimpleFeatureType">
+        <xsd:sequence>
+          <xsd:element ref="gml:lineStringProperty" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="PolygonFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="cgf:AbstractSimpleFeatureType">
+        <xsd:sequence>
+          <xsd:element ref="gml:polygonProperty" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="MultiPointFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="cgf:AbstractSimpleFeatureType">
+        <xsd:sequence>
+          <xsd:element ref="gml:multiPointProperty" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="MultiLineStringFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="cgf:AbstractSimpleFeatureType">
+        <xsd:sequence>
+          <xsd:element ref="gml:multiLineStringProperty" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="MultiPolygonFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="cgf:AbstractSimpleFeatureType">
+        <xsd:sequence>
+          <xsd:element ref="gml:multiPolygonProperty" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>
