@@ -26,8 +26,12 @@
     </repository>
   </repositories>
   <distributionManagement>
+    <repository>
+      <id>deegree-releases</id>
+      <url>http://artefacts.deegree.org/libs-releases-local</url>
+    </repository>
     <snapshotRepository>
-      <id>deegree-repository</id>
+      <id>deegree-snapshots</id>
       <url>http://artefacts.deegree.org/libs-snapshots-local</url>
     </snapshotRepository>
   </distributionManagement>
