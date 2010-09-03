@@ -1,0 +1,11 @@
+.add {
+	height: 16px;
+	width: 16px;
+	background-image:url('../resources/deegree/components/add.png');
+}
+
+.delete {
+	height: 16px;
+	width: 16px;
+	background-image:url('../resources/deegree/components/delete.png');
+}
