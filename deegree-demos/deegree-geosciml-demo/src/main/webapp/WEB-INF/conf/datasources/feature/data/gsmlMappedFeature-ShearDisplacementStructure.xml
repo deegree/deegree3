@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:FeatureCollection xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wfs="http://www.opengis.net/wfs" numberOfFeatures="2" xsi:schemaLocation="urn:cgi:xmlns:CGI:GeoSciML:2.0 http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/feature.xsd">
+	<gml:boundedBy>
+		<gml:Envelope srsName="EPSG:4283">
+			<gml:lowerCorner>143.49249389166638 -38.761329625000286</gml:lowerCorner>
+			<gml:upperCorner>144.40314635833298 -37.599746075000304</gml:upperCorner>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<gml:featureMember>
+		<gsml:MappedFeature gml:id="gsml.mappedfeature.186037">
+			<gml:boundedBy>
+				<gml:Envelope srsName="EPSG:4283">
+					<gml:lowerCorner>143.49249389166638 -38.761329625000286</gml:lowerCorner>
+					<gml:upperCorner>143.55429184999977 -38.73849990833365</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<gsml:observationMethod>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:InterpretationMethod">previous mapping</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:observationMethod>
+			<gsml:positionalAccuracy>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:PositionalAccuracy">accurate</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:positionalAccuracy>
+			<gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface"/>
+			<gsml:specification>
+				<gsml:ShearDisplacementStructure gml:id="gsml.sheardisplacementstructure.46188">
+					<gml:name codeSpace="http://www.dpi.vic.gov.au/earth-resources">Castle Cove Fault</gml:name>
+					<gml:name codeSpace="http://www.ietf.org/rfc/rfc2141">urn:cgi:feature:GSV:ShearDisplacementStructure:46188</gml:name>
+					<gsml:observationMethod>
+						<gsml:CGI_TermValue>
+							<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+						</gsml:CGI_TermValue>
+					</gsml:observationMethod>
+					<gsml:purpose>typicalNorm</gsml:purpose>
+					<gsml:preferredAge xlink:href="#gsml.displacementevent.1000021"/>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000018">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Holocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Pliocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">NW</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">reverse</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000020">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Eocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:UpperCretaceous</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">SE</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">normal</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000021">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:LowerCretaceous</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:LowerCretaceous</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">SE</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">normal</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+				</gsml:ShearDisplacementStructure>
+			</gsml:specification>
+			<gsml:shape>
+				<gml:MultiCurve srsName="EPSG:4283">
+					<gml:curveMembers>
+						<gml:Curve>
+							<gml:segments>
+								<gml:LineStringSegment>
+									<gml:posList count="20" srsDimension="2">143.49249389166638 -38.761329625000286 143.49426366666628 -38.76073755833366 143.4977761916663 -38.75912695000038 143.4998427166664 -38.75817069166697 143.50124798333306 -38.75752042500032 143.50323263333297 -38.756602050000275 143.50793418333305 -38.75456912500029 143.5088760833331 -38.75414179166704 143.5090047916663 -38.754083391667 143.51084559999964 -38.75324818333367 143.51120789999968 -38.75308379166698 143.5133007666663 -38.75213415833368 143.51394875833304 -38.751840116667026 143.51503083333304 -38.75134909166698 143.51543116666636 -38.751208416666984 143.51610691666642 -38.750970958333625 143.52298272499968 -38.74855449166695 143.533219983333 -38.74531240833369 143.54212424999974 -38.74243035000036 143.55429184999977 -38.73849990833365</gml:posList>
+								</gml:LineStringSegment>
+							</gml:segments>
+						</gml:Curve>
+					</gml:curveMembers>
+				</gml:MultiCurve>
+			</gsml:shape>
+		</gsml:MappedFeature>
+	</gml:featureMember>
+	<gml:featureMember>
+		<gsml:MappedFeature gml:id="gsml.mappedfeature.185969">
+			<gml:boundedBy>
+				<gml:Envelope srsName="EPSG:4283">
+					<gml:lowerCorner>144.2364237333331 -38.13991570000029</gml:lowerCorner>
+					<gml:upperCorner>144.2415325499997 -38.139133550000324</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<gsml:observationMethod>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:InterpretationMethod">previous mapping</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:observationMethod>
+			<gsml:positionalAccuracy>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:PositionalAccuracy">accurate</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:positionalAccuracy>
+			<gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface"/>
+			<gsml:specification>
+				<gsml:ShearDisplacementStructure gml:id="gsml.sheardisplacementstructure.46181">
+					<gml:name codeSpace="http://www.dpi.vic.gov.au/earth-resources">Barrabool Fault</gml:name>
+					<gml:name codeSpace="http://www.ietf.org/rfc/rfc2141">urn:cgi:feature:GSV:ShearDisplacementStructure:46181</gml:name>
+					<gsml:observationMethod>
+						<gsml:CGI_TermValue>
+							<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+						</gsml:CGI_TermValue>
+					</gsml:observationMethod>
+					<gsml:purpose>typicalNorm</gsml:purpose>
+					<gsml:preferredAge xlink:href="#gsml.displacementevent.1000007"/>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000007">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Cenomanian</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Cenomanian</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">N</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">normal</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000008">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Miocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Miocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">S</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">reverse</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+				</gsml:ShearDisplacementStructure>
+			</gsml:specification>
+			<gsml:shape>
+				<gml:MultiCurve srsName="EPSG:4283">
+					<gml:curveMembers>
+						<gml:Curve>
+							<gml:segments>
+								<gml:LineStringSegment>
+									<gml:posList count="2" srsDimension="2">144.2364237333331 -38.139133550000324 144.2415325499997 -38.13991570000029</gml:posList>
+								</gml:LineStringSegment>
+							</gml:segments>
+						</gml:Curve>
+					</gml:curveMembers>
+				</gml:MultiCurve>
+			</gsml:shape>
+		</gsml:MappedFeature>
+	</gml:featureMember>
+	<gml:featureMember>
+		<gsml:MappedFeature gml:id="gsml.mappedfeature.185911">
+			<gml:boundedBy>
+				<gml:Envelope srsName="EPSG:4283">
+					<gml:lowerCorner>144.22339961666626 -38.024453325000316</gml:lowerCorner>
+					<gml:upperCorner>144.2307882083331 -38.00655813333368</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<gsml:observationMethod>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:InterpretationMethod">previous mapping</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:observationMethod>
+			<gsml:positionalAccuracy>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:PositionalAccuracy">accurate</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:positionalAccuracy>
+			<gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface"/>
+			<gsml:specification>
+				<gsml:ShearDisplacementStructure gml:id="gsml.sheardisplacementstructure.46216">
+					<gml:name codeSpace="http://www.dpi.vic.gov.au/earth-resources">Rowsley Fault</gml:name>
+					<gml:name codeSpace="http://www.ietf.org/rfc/rfc2141">urn:cgi:feature:GSV:ShearDisplacementStructure:46216</gml:name>
+					<gsml:observationMethod>
+						<gsml:CGI_TermValue>
+							<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+						</gsml:CGI_TermValue>
+					</gsml:observationMethod>
+					<gsml:purpose>typicalNorm</gsml:purpose>
+					<gsml:preferredAge xlink:href="#gsml.displacementevent.1000053"/>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000053">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Pliocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Pliocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">E</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">normal</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+				</gsml:ShearDisplacementStructure>
+			</gsml:specification>
+			<gsml:shape>
+				<gml:MultiCurve srsName="EPSG:4283">
+					<gml:curveMembers>
+						<gml:Curve>
+							<gml:segments>
+								<gml:LineStringSegment>
+									<gml:posList count="7" srsDimension="2">144.2307882083331 -38.00655813333368 144.22882277499968 -38.012618233333626 144.22796537499963 -38.014876883333635 144.22676587499967 -38.01769510833367 144.22539719166636 -38.02061249166698 144.22479951666637 -38.02188646666696 144.22339961666626 -38.024453325000316</gml:posList>
+								</gml:LineStringSegment>
+							</gml:segments>
+						</gml:Curve>
+					</gml:curveMembers>
+				</gml:MultiCurve>
+			</gsml:shape>
+		</gsml:MappedFeature>
+	</gml:featureMember>
+	<gml:featureMember>
+		<gsml:MappedFeature gml:id="gsml.mappedfeature.185817">
+			<gml:boundedBy>
+				<gml:Envelope srsName="EPSG:4283">
+					<gml:lowerCorner>144.36533876666644 -37.61285214166699</gml:lowerCorner>
+					<gml:upperCorner>144.40314635833298 -37.599746075000304</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<gsml:observationMethod>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:InterpretationMethod">previous mapping</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:observationMethod>
+			<gsml:positionalAccuracy>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:PositionalAccuracy">accurate</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:positionalAccuracy>
+			<gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface"/>
+			<gsml:specification>
+				<gsml:ShearDisplacementStructure gml:id="gsml.sheardisplacementstructure.46199">
+					<gml:name codeSpace="http://www.dpi.vic.gov.au/earth-resources">Greendale Fault</gml:name>
+					<gml:name codeSpace="http://www.ietf.org/rfc/rfc2141">urn:cgi:feature:GSV:ShearDisplacementStructure:46199</gml:name>
+					<gsml:observationMethod>
+						<gsml:CGI_TermValue>
+							<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+						</gsml:CGI_TermValue>
+					</gsml:observationMethod>
+					<gsml:purpose>typicalNorm</gsml:purpose>
+					<gsml:preferredAge xlink:href="#gsml.displacementevent.1000037"/>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000037">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Permian</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Permian</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">S</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">normal</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+				</gsml:ShearDisplacementStructure>
+			</gsml:specification>
+			<gsml:shape>
+				<gml:MultiCurve srsName="EPSG:4283">
+					<gml:curveMembers>
+						<gml:Curve>
+							<gml:segments>
+								<gml:LineStringSegment>
+									<gml:posList count="19" srsDimension="2">144.40314635833298 -37.61285214166699 144.40159376666637 -37.611867308333714 144.39824804166636 -37.610178541667025 144.39245532499976 -37.60786234166696 144.3881467916663 -37.60597291666695 144.38781026666632 -37.60589530000034 144.38693431666633 -37.60588004166699 144.3837167916664 -37.60636798333362 144.38272275833305 -37.60634348333363 144.38171347499969 -37.606104308333656 144.3803321249997 -37.605288775000346 144.37948337499967 -37.604984250000285 144.37721901666637 -37.60393265000032 144.37664058333306 -37.60338269166695 144.37401698333312 -37.60143430000036 144.37100107499967 -37.60101266666696 144.3682544749997 -37.60097625833364 144.3660630916664 -37.600279266666945 144.36533876666644 -37.599746075000304</gml:posList>
+								</gml:LineStringSegment>
+							</gml:segments>
+						</gml:Curve>
+					</gml:curveMembers>
+				</gml:MultiCurve>
+			</gsml:shape>
+		</gsml:MappedFeature>
+	</gml:featureMember>
+	<gml:featureMember>
+		<gsml:MappedFeature gml:id="gsml.mappedfeature.179239">
+			<gml:boundedBy>
+				<gml:Envelope srsName="EPSG:4283">
+					<gml:lowerCorner>143.86545265833303 -38.410785700000325</gml:lowerCorner>
+					<gml:upperCorner>143.86857949166634 -38.40925703333365</gml:upperCorner>
+				</gml:Envelope>
+			</gml:boundedBy>
+			<gsml:observationMethod>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:InterpretationMethod">previous mapping</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:observationMethod>
+			<gsml:positionalAccuracy>
+				<gsml:CGI_TermValue>
+					<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:PositionalAccuracy">accurate</gsml:value>
+				</gsml:CGI_TermValue>
+			</gsml:positionalAccuracy>
+			<gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface"/>
+			<gsml:specification>
+				<gsml:ShearDisplacementStructure gml:id="gsml.sheardisplacementstructure.46179">
+					<gml:name codeSpace="http://www.dpi.vic.gov.au/earth-resources">Bambra Fault</gml:name>
+					<gml:name codeSpace="http://www.ietf.org/rfc/rfc2141">urn:cgi:feature:GSV:ShearDisplacementStructure:46179</gml:name>
+					<gsml:observationMethod>
+						<gsml:CGI_TermValue>
+							<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+						</gsml:CGI_TermValue>
+					</gsml:observationMethod>
+					<gsml:purpose>typicalNorm</gsml:purpose>
+					<gsml:preferredAge xlink:href="#gsml.displacementevent.1000005"/>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000003">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Holocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Eocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">SSE</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">reverse</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000004">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:Eocene</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:UpperCretaceous</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">NNW</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">normal</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+					<gsml:geologicHistory>
+						<gsml:DisplacementEvent gml:id="gsml.displacementevent.1000005">
+							<gsml:eventAge>
+								<gsml:CGI_TermRange>
+									<gsml:lower>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:LowerCretaceous</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:lower>
+									<gsml:upper>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:ICS:StratChart:2008">urn:cgi:classifier:ICS:StratChart:2008:LowerCretaceous</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:upper>
+								</gsml:CGI_TermRange>
+							</gsml:eventAge>
+							<gsml:eventProcess>
+								<gsml:CGI_TermValue>
+									<gsml:value codeSpace="http://urn.opengis.net/">urn:ogc:def:nil:OGC::missing</gsml:value>
+								</gsml:CGI_TermValue>
+							</gsml:eventProcess>
+							<gsml:incrementalDisplacement>
+								<gsml:DisplacementValue>
+									<gsml:hangingWallDirection>
+										<gsml:CGI_LinearOrientation>
+											<gsml:descriptiveOrientation>
+												<gsml:CGI_TermValue>
+													<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:GmlCompassPointEnumeration">NNW</gsml:value>
+												</gsml:CGI_TermValue>
+											</gsml:descriptiveOrientation>
+										</gsml:CGI_LinearOrientation>
+									</gsml:hangingWallDirection>
+									<gsml:movementSense>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementSense">normal</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementSense>
+									<gsml:movementType>
+										<gsml:CGI_TermValue>
+											<gsml:value codeSpace="urn:cgi:classifierScheme:GSV:Provisional:MovementType">dip-slip</gsml:value>
+										</gsml:CGI_TermValue>
+									</gsml:movementType>
+								</gsml:DisplacementValue>
+							</gsml:incrementalDisplacement>
+						</gsml:DisplacementEvent>
+					</gsml:geologicHistory>
+				</gsml:ShearDisplacementStructure>
+			</gsml:specification>
+			<gsml:shape>
+				<gml:MultiCurve srsName="EPSG:4283">
+					<gml:curveMembers>
+						<gml:Curve>
+							<gml:segments>
+								<gml:LineStringSegment>
+									<gml:posList count="2" srsDimension="2">143.86545265833303 -38.410785700000325 143.86857949166634 -38.40925703333365</gml:posList>
+								</gml:LineStringSegment>
+							</gml:segments>
+						</gml:Curve>
+					</gml:curveMembers>
+				</gml:MultiCurve>
+			</gsml:shape>
+		</gsml:MappedFeature>
+	</gml:featureMember>
+</gml:FeatureCollection>
