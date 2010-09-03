@@ -1,0 +1,9 @@
+<Filter xmlns="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.0.0/filter.xsd">
+	<FeatureId fid="TREESA_1M.1234" />
+	<FeatureId fid="TREESA_1M.5678" />
+	<FeatureId fid="TREESA_1M.9012" />
+	<FeatureId fid="INWATERA_1M.3456" />
+	<FeatureId fid="INWATERA_1M.7890" />
+	<FeatureId fid="BUILTUPA_1M.4321" />
+</Filter>
