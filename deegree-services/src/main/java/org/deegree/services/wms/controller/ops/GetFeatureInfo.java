@@ -36,7 +36,6 @@
 
 package org.deegree.services.wms.controller.ops;
 
-import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
@@ -136,9 +135,10 @@ public class GetFeatureInfo {
      * @param y
      * @param width
      * @param height
+     * @param maxFeatures
      */
     public GetFeatureInfo( Collection<Layer> layers, Collection<Style> styles, int radius, Envelope envelope, int x,
-                           int y, int width, int height ) {
+                           int y, int width, int height, int maxFeatures ) {
         this.layers.addAll( layers );
         this.styles.addAll( styles );
         this.bbox = envelope;
@@ -146,7 +146,7 @@ public class GetFeatureInfo {
         this.height = height;
         this.x = x;
         this.y = y;
-        this.featureCount = MAX_VALUE;
+        this.featureCount = maxFeatures;
         crs = bbox.getCoordinateSystem();
         calcClickBox( radius );
     }
