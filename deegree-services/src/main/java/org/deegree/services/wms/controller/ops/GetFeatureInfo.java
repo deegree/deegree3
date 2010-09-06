@@ -145,6 +145,7 @@ public class GetFeatureInfo {
         this.height = height;
         this.x = x;
         this.y = y;
+        this.featureCount = -1;
         crs = bbox.getCoordinateSystem();
         calcClickBox( radius );
     }
