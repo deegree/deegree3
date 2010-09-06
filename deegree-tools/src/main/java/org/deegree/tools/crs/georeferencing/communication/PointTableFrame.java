@@ -238,4 +238,16 @@ public class PointTableFrame extends JFrame {
         return v;
     }
 
+    public JButton getSaveButton() {
+        return saveButton;
+    }
+
+    public JButton getLoadButton() {
+        return loadButton;
+    }
+
+    public JPanel getButtonPanel() {
+        return buttonPanel;
+    }
+
 }

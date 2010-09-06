@@ -48,7 +48,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.tools.rendering.viewer.ViewerFileFilter;
 
 /**
- * TODO add class documentation here
+ * Provides a convenient procedure to build a fileChooser dialog.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -100,7 +100,7 @@ public class FileChooser {
         JFileChooser fileChooser = new JFileChooser( lastFile );
         fileChooser.setMultiSelectionEnabled( false );
         if ( fileFilter != null && fileFilter.size() > 0 ) {
-            // the *.* file fileter is off
+            // the *.* file filter is off
             fileChooser.setAcceptAllFileFilterUsed( false );
             String lastExtension = prefs.get( LAST_EXTENSION, "*" );
             FileFilter selected = fileFilter.get( 0 );
@@ -130,6 +130,19 @@ public class FileChooser {
             }
         }
         return path;
+    }
+
+    /**
+     * 
+     * @return the selected file, could be <Code>null</Code>.
+     */
+    public File getSelectedFile() {
+        File selectedFile = null;
+        int result = fileChooser.showSaveDialog( parent );
+        if ( JFileChooser.APPROVE_OPTION == result ) {
+            selectedFile = fileChooser.getSelectedFile();
+        }
+        return selectedFile;
     }
 
 }
