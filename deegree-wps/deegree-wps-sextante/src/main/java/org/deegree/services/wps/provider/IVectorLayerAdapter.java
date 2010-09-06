@@ -491,16 +491,17 @@ public class IVectorLayerAdapter {
      * 
      * @param gJTS
      *            - {@link com.vividsolutions.jts.geom.Geometry}
-     * @return {@link Geometry}
+     * @return {@link Geometry} or <code>null</code> if the given geometry is an empty collection.
      */
     private static Geometry createGeometry( String id, com.vividsolutions.jts.geom.Geometry gJTS ) {
 
         // default deegree geometry to create a deegree geometry from JTS geometry
         GeometryFactory gFactory = new GeometryFactory();
         AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( id, 0, 0, CRS.EPSG_4326 );
-        
-        return gDefault.createFromJTS( gJTS );
 
+        Geometry g = gDefault.createFromJTS( gJTS );
+
+        return g;
     }
 
     /**

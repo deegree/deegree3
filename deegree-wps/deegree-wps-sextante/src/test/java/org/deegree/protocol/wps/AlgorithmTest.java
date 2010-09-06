@@ -25,7 +25,7 @@ import es.unex.sextante.parameters.Parameter;
 
 public class AlgorithmTest {
 
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     private static Logger LOG = LoggerFactory.getLogger( AlgorithmTest.class );
 
@@ -39,7 +39,7 @@ public class AlgorithmTest {
             // only one algorithm
             Sextante.initialize();
             HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
-            GeoAlgorithm geoAlg = sextanteAlgs.get( "difference" );
+            GeoAlgorithm geoAlg = sextanteAlgs.get( "countpoints" );
             TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
             testAlg.addAllInputData( getInputData( geoAlg ) );
             algs.add( testAlg );
@@ -51,11 +51,7 @@ public class AlgorithmTest {
             for ( int i = 0; i < geoalgs.length; i++ ) {
                 GeoAlgorithm geoAlg = geoalgs[i];
 
-                if ( !geoAlg.getCommandLineName().equals( "difference" )
-                     && !geoAlg.getCommandLineName().equals( "union" ) && !geoAlg.getCommandLineName().equals( "clip" )
-                     && !geoAlg.getCommandLineName().equals( "intersection" )
-                     && !geoAlg.getCommandLineName().equals( "countpoints" )
-                     && !geoAlg.getCommandLineName().equals( "symdifference" ) ) {
+                if ( !geoAlg.getCommandLineName().equals( "no algorithm" ) ) {
 
                     TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
                     testAlg.addAllInputData( getInputData( geoAlg ) );
@@ -76,12 +72,14 @@ public class AlgorithmTest {
 
         // example data in categories
         LinkedList<ExampleData> layers = getLayerInput( alg );
+        LinkedList<ExampleData> poylgons = getPolygonsInput();
         LinkedList<ExampleData> lines = getLinesInput();
         LinkedList<ExampleData> points = getPointsInput();
 
         // example data iterators
         Iterator<ExampleData> layersIterator = layers.iterator();
         Iterator<ExampleData> linesIterator = lines.iterator();
+        Iterator<ExampleData> poylgonsIterator = poylgons.iterator();
         Iterator<ExampleData> pointsIterator = points.iterator();
 
         // traverse input parameter of one execution
@@ -131,9 +129,21 @@ public class AlgorithmTest {
 
                         } else {
 
-                            // add nothing
-                            LOG.error( "Unknown input parameter \"" + param.getParameterName()
-                                       + "\" of SEXTANTE algorithm." );
+                            // add polygons
+                            if ( param.getParameterName().equals( "POLYGONS" ) ) {
+                                if ( poylgonsIterator.hasNext() ) {
+                                    dataList.add( poylgonsIterator.next() );
+                                } else {
+                                    addMoreData = false;
+                                    break;
+                                }
+
+                            } else {
+
+                                // add nothing
+                                LOG.error( "Unknown input parameter \"" + param.getParameterName()
+                                           + "\" of SEXTANTE algorithm." );
+                            }
                         }
                     }
                 }
@@ -173,18 +183,65 @@ public class AlgorithmTest {
             layers.add( ExampleData.GML_31_MULTILINESTRING );
             layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
         } else
+        // difference and intersection algorithm
+        if ( alg.getCommandLineName().equals( "difference" ) || alg.getCommandLineName().equals( "intersection" ) ) {
+            layers.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
+            layers.addAll( ExampleData.getData( ExampleDataType.LINE ) );
+            layers.addAll( ExampleData.getData( ExampleDataType.POINT ) );
+        } else
+        // union algorithm
+        if ( alg.getCommandLineName().equals( "union" ) ) {
+            LOG.warn( "No test data for '" + alg.getCommandLineName() + "' available." );
+        } else
+        // clip algorithm
+        if ( alg.getCommandLineName().equals( "clip" ) ) {
+            layers.add( ExampleData.GML_31_POINT );
+            layers.add( ExampleData.GML_31_MULTILPOLYGON );
+
+            layers.add( ExampleData.GML_31_LINESTRING );
+            layers.add( ExampleData.GML_31_MULTILINESTRING );
+
+            layers.add( ExampleData.GML_31_MULTILPOLYGON );
+            layers.add( ExampleData.GML_31_LINESTRING );
+
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOINTS );
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS );
+
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
+
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS );
+            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POLYGONS );
+        } else
+        // symdifference algorithm
+        if ( alg.getCommandLineName().equals( "symdifference" ) ) {
+            layers.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
+        } else
+        // countpoints algorithm
+        if ( alg.getCommandLineName().equals( "countpoints" ) ) {
+
+            layers.add( ExampleData.GML_31_POLYGON );
+            layers.add( ExampleData.GML_31_POINT );
+
+            // TODO why the algorithm returns a IVectorLayer and not a ITable?
+
+        } else
             // all algorithms
             layers.addAll( ExampleData.getAllData() );
 
         return layers;
     }
 
+    private LinkedList<ExampleData> getPolygonsInput() {
+        LinkedList<ExampleData> polygons = new LinkedList<ExampleData>();
+        polygons.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
+        return polygons;
+    }
+
     private LinkedList<ExampleData> getLinesInput() {
         LinkedList<ExampleData> lines = new LinkedList<ExampleData>();
-
         lines.addAll( ExampleData.getData( ExampleDataType.LINE ) );
         lines.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
-
         return lines;
     }
 

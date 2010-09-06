@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd">
 
 	<gml:coord>
-		<gml:X>10</gml:X>
-		<gml:Y>10</gml:Y>
+		<gml:X>23</gml:X>
+		<gml:Y>15</gml:Y>
 	</gml:coord>
 
 </gml:Point>

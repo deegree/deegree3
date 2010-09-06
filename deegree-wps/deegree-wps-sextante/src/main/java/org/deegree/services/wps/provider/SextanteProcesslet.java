@@ -111,6 +111,8 @@ public class SextanteProcesslet implements Processlet {
             // execute the algorithm
             alg.execute( null, new OutputFactoryImpl() );
 
+            LOG.info( "HUHU" );
+
             // write all output values
             writeResult( alg, out );
 
@@ -122,7 +124,7 @@ public class SextanteProcesslet implements Processlet {
         } catch ( ArrayIndexOutOfBoundsException e ) { // false input data
             e.printStackTrace();
 
-            String message = "'" + alg.getCommandLineName() + "' algorithm, " + e.getLocalizedMessage();
+            String message = "'" + alg.getCommandLineName() + "' algorithm, " + e.getMessage();
 
             if ( alg.getCommandLineName().equals( "delaunay" ) || alg.getCommandLineName().equals( "polygonize" ) )
                 message = "'" + alg.getCommandLineName() + "' algorithm found false input data. ("
@@ -133,9 +135,9 @@ public class SextanteProcesslet implements Processlet {
         } catch ( NullPointerException e ) { // false input data
             e.printStackTrace();
 
-            String message = "'" + alg.getCommandLineName() + "' algorithm, " + e.getLocalizedMessage();
+            String message = "'" + alg.getCommandLineName() + "' algorithm, " + e.getMessage();
 
-            if ( alg.getCommandLineName().equals( "exportvector" ) )
+            if ( alg.getCommandLineName().equals( "exportvector" ) || alg.getCommandLineName().equals( "union" ) )
                 message = "'" + alg.getCommandLineName() + "' algorithm found false input data. ("
                           + e.getLocalizedMessage() + ")";
 
@@ -239,7 +241,7 @@ public class SextanteProcesslet implements Processlet {
             param.setParameterValue( layer );
 
         } else {// unknown payload
-            LOG.error( "Payload of schema \"" + gmlInput.getSchema() + "\" is unknown." );
+            LOG.error( "Type (GEOMETRY OR FEATURE COLLECTION) of schema \"" + gmlInput.getSchema() + "\" is unknown." );
             // TODO throw exception
         }
 
@@ -539,10 +541,17 @@ public class SextanteProcesslet implements Processlet {
             // geometry output
             if ( FormatHelper.determineGMLType( gmlOutput ).equals( GMLType.GEOMETRY ) ) {
                 Geometry g = IVectorLayerAdapter.createGeometry( result );
-                writeGeometry( gmlOutput, g );
+
+                if ( g != null ) {
+                    writeGeometry( gmlOutput, g );
+                } else {
+
+                    LOG.warn( "The " + gmlOutput.getIdentifier().getCode() + " is an empty collection." );
+                }
 
             } else {// unknown payload
-                LOG.error( "Payload of schema \"" + gmlOutput.getRequestedSchema() + "\" is unknown." );
+                LOG.error( "Type (GEOMETRY OR FEATURE COLLECTION) of schema \"" + gmlOutput.getRequestedSchema()
+                           + "\" is unknown." );
                 // TODO throw exception
             }
         }
