@@ -74,6 +74,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -115,6 +116,7 @@ import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
 import org.deegree.tools.crs.georeferencing.model.Scene2DImplShape;
 import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
+import org.deegree.tools.crs.georeferencing.model.datatransformer.VectorTransformer;
 import org.deegree.tools.crs.georeferencing.model.dialog.OptionDialogModel;
 import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
@@ -123,6 +125,7 @@ import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
+import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.deegree.tools.crs.georeferencing.model.textfield.AbstractCoordinateJumperModel;
 import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
@@ -168,11 +171,13 @@ public class Controller {
 
     private boolean isZoomInGeoref, isZoomInFoot, isZoomOutGeoref, isZoomOutFoot;
 
+    private boolean isInitGeoref, isInitFoot;
+
     private GeometryFactory geom;
 
     private CRS sourceCRS, targetCRS;
 
-    private List<Pair<Point4Values, Point4Values>> mappedPoints;
+    private List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
     private TransformationType transformationType;
 
@@ -224,7 +229,7 @@ public class Controller {
         AbstractPanel2D.selectedPointSize = this.dialogModel.getSelectionPointSize().first;
         AbstractPanel2D.zoomValue = this.dialogModel.getResizeValue().first;
 
-        this.mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
+        this.mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
 
         view.addListeners( new ButtonListener() );
         view.addHoleWindowListener( new HoleWindowListener() );
@@ -239,6 +244,8 @@ public class Controller {
 
         // init the transformation method
         this.tablePanel = new PointTableFrame();
+        this.tablePanel.getSaveButton().setEnabled( false );
+        this.tablePanel.getLoadButton().setEnabled( false );
         this.tablePanel.addTableModelListener( new TableChangedEventListener() );
         this.tablePanel.addActionButtonListener( new ButtonListener() );
         transform = null;
@@ -351,6 +358,14 @@ public class Controller {
      * Initializes the footprint scene.
      */
     private void initFootprintScene( String filePath ) {
+        isInitFoot = true;
+        if ( isInitGeoref ) {
+
+            tablePanel.getSaveButton().setEnabled( true );
+            tablePanel.getLoadButton().setEnabled( true );
+
+        }
+
         this.footPrint = new Footprint( sceneValues, geom );
         footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
         footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
@@ -410,6 +425,14 @@ public class Controller {
      * Initializes the georeferenced scene.
      */
     private void initGeoReferencingScene( Scene2D scene2d ) {
+        isInitGeoref = true;
+        if ( isInitFoot ) {
+
+            tablePanel.getSaveButton().setEnabled( true );
+            tablePanel.getLoadButton().setEnabled( true );
+
+        }
+
         mouseGeoRef = new GeoReferencedMouseModel();
         scene2d.init( sceneValues );
         init();
@@ -532,7 +555,7 @@ public class Controller {
                     for ( int tableRow : tableRows ) {
 
                         boolean contained = false;
-                        for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+                        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
                             System.out.println( "[Controller] beforeRemoving: " + p.second + "\n" );
                             if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
 
@@ -550,35 +573,18 @@ public class Controller {
 
                     }
                     updateMappedPoints();
-                    List<Point4Values> panelList = new ArrayList<Point4Values>();
-                    List<Point4Values> footPanelList = new ArrayList<Point4Values>();
-                    for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
-                        panelList.add( p.second );
-                        footPanelList.add( p.first );
-                    }
-
-                    panel.setSelectedPoints( panelList, sceneValues );
-                    footPanel.setSelectedPoints( footPanelList, sceneValues );
                     tablePanel.removeRow( tableRows );
-                    panel.repaint();
-                    footPanel.repaint();
+                    updateDrawingPanels();
                 }
 
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.LOAD_POINTTABLE ) ) {
                     System.out.println( "[Controller] clicked on load!" );
 
-                    List<String> list = new ArrayList<String>();
-                    list.add( "cvs" );
-
-                    String desc = "(*.cvs) Comma-Separated Values";
-                    Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
-                    List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
-                    supportedOpenFiles.add( supportedFiles );
-                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
-                    String fileChoosed = fileChooser.getSelectedFilePath();
-                    if ( fileChoosed != null ) {
-                        new FileInputHandler( fileChoosed, tablePanel );
-                    }
+                    FileInputHandler in = new FileInputHandler( tablePanel );
+                    VectorTransformer vt = new VectorTransformer( in.getData(), sceneValues );
+                    mappedPoints.clear();
+                    mappedPoints.addAll( vt.getMappedPoints() );
+                    updateDrawingPanels();
 
                 }
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.SAVE_POINTTABLE ) ) {
@@ -621,6 +627,9 @@ public class Controller {
                         break;
                     }
                     List<Ring> polygonRing = transform.computeRingList();
+
+                    // TODO update the table with the residuals and update the mappedPoints
+                    transform.getResiduals();
 
                     panel.setPolygonList( polygonRing, sceneValues );
 
@@ -854,6 +863,22 @@ public class Controller {
 
         }
 
+        private void updateDrawingPanels() {
+            List<Point4Values> panelList = new ArrayList<Point4Values>();
+            List<Point4Values> footPanelList = new ArrayList<Point4Values>();
+            for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+                panelList.add( p.second );
+                footPanelList.add( p.first );
+            }
+
+            panel.setSelectedPoints( panelList, sceneValues );
+            footPanel.setSelectedPoints( footPanelList, sceneValues );
+
+            panel.repaint();
+            footPanel.repaint();
+
+        }
+
         private void fireTextfieldJumperDialog() {
             try {
                 textFieldModel.setTextInput( jumperDialog.getCoordinateJumper().getText() );
@@ -912,13 +937,13 @@ public class Controller {
 
                 System.out.println( "[Controller] TableEvent row: " + row + " col: " + column + " colName: "
                                     + columnName + " data: " + data );
-                for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+                for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
                     boolean changed = changePointLocation( p, data, row, column );
                     if ( changed ) {
 
                         List<Point4Values> listPS = new ArrayList<Point4Values>();
                         List<Point4Values> listPF = new ArrayList<Point4Values>();
-                        for ( Pair<Point4Values, Point4Values> m : mappedPoints ) {
+                        for ( Triple<Point4Values, Point4Values, PointResidual> m : mappedPoints ) {
                             listPS.add( m.second );
                             listPF.add( m.first );
                         }
@@ -931,9 +956,16 @@ public class Controller {
                 }
 
                 if ( row == e.getLastRow() ) {
-                    Pair<Point4Values, Point4Values> newLastPair = new Pair<Point4Values, Point4Values>(
-                                                                                                         footPanel.getLastAbstractPoint(),
-                                                                                                         panel.getLastAbstractPoint() );
+                    Triple<Point4Values, Point4Values, PointResidual> newLastPair = new Triple<Point4Values, Point4Values, PointResidual>(
+                                                                                                                                           footPanel.getLastAbstractPoint(),
+                                                                                                                                           panel.getLastAbstractPoint(),
+                                                                                                                                           new PointResidual(
+                                                                                                                                                              (Double) model.getValueAt(
+                                                                                                                                                                                         row,
+                                                                                                                                                                                         4 ),
+                                                                                                                                                              (Double) model.getValueAt(
+                                                                                                                                                                                         row,
+                                                                                                                                                                                         5 ) ) );
                     if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
                         boolean changed = changePointLocation( newLastPair, data, row, column );
                         if ( changed ) {
@@ -969,7 +1001,8 @@ public class Controller {
      * @param column
      *            the column to be changed, not <Code>null</Code>.
      */
-    private boolean changePointLocation( Pair<Point4Values, Point4Values> p, Object data, int row, int column ) {
+    private boolean changePointLocation( Triple<Point4Values, Point4Values, PointResidual> p, Object data, int row,
+                                         int column ) {
         boolean changed = false;
         AbstractGRPoint pixelValue = null;
         AbstractGRPoint worldCoords = null;
@@ -1330,7 +1363,8 @@ public class Controller {
     private void setValues() {
         footPanel.addToSelectedPoints( footPanel.getLastAbstractPoint() );
         panel.addToSelectedPoints( panel.getLastAbstractPoint() );
-        addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint() );
+
+        addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint(), null );
         footPanel.setLastAbstractPoint( null, null, null );
         panel.setLastAbstractPoint( null, null, null );
 
@@ -1566,9 +1600,10 @@ public class Controller {
      * @param mappedPointKey
      * @param mappedPointValue
      */
-    private void addToMappedPoints( Point4Values mappedPointKey, Point4Values mappedPointValue ) {
+    private void addToMappedPoints( Point4Values mappedPointKey, Point4Values mappedPointValue, PointResidual residual ) {
         if ( mappedPointKey != null && mappedPointValue != null ) {
-            this.mappedPoints.add( new Pair<Point4Values, Point4Values>( mappedPointKey, mappedPointValue ) );
+            this.mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>( mappedPointKey,
+                                                                                          mappedPointValue, residual ) );
         }
 
     }
@@ -1579,7 +1614,7 @@ public class Controller {
      * @param pointFromTable
      *            that should be removed, could be <Code>null</Code>
      */
-    private void removeFromMappedPoints( Pair<Point4Values, Point4Values> pointFromTable ) {
+    private void removeFromMappedPoints( Triple<Point4Values, Point4Values, PointResidual> pointFromTable ) {
         if ( pointFromTable != null ) {
             mappedPoints.remove( pointFromTable );
         }
@@ -1591,10 +1626,10 @@ public class Controller {
      */
     private void updateMappedPoints() {
 
-        List<Pair<Point4Values, Point4Values>> temp = new ArrayList<Pair<Point4Values, Point4Values>>();
+        List<Triple<Point4Values, Point4Values, PointResidual>> temp = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
 
         int counter = 0;
-        for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
             System.out.println( "[Controller] before: " + p.second );
             Point4Values f = new Point4Values( p.first.getOldValue(), p.first.getInitialValue(), p.first.getNewValue(),
                                                p.first.getWorldCoords(), new RowColumn( counter,
@@ -1604,8 +1639,9 @@ public class Controller {
                                                p.second.getNewValue(), p.second.getWorldCoords(),
                                                new RowColumn( counter++, p.second.getRc().getColumnX(),
                                                               p.second.getRc().getColumnY() ) );
+            PointResidual r = new PointResidual( p.third.getX(), p.third.getY() );
             System.out.println( "\n[Controller] after: " + s );
-            temp.add( new Pair<Point4Values, Point4Values>( f, s ) );
+            temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, r ) );
         }
         mappedPoints.clear();
         mappedPoints.addAll( temp );
@@ -1615,7 +1651,7 @@ public class Controller {
      * Removes everything after a complete deletion of the points.
      */
     private void removeAllFromMappedPoints() {
-        mappedPoints = new ArrayList<Pair<Point4Values, Point4Values>>();
+        mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
         tablePanel.removeAllRows();
         panel.removeAllFromSelectedPoints();
         footPanel.removeAllFromSelectedPoints();
