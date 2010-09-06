@@ -48,6 +48,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.protocol.ows.exception.OWSException;
 import org.deegree.protocol.ows.metadata.ServiceMetadata;
+import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.ProcessInfo;
 import org.deegree.protocol.wps.client.wps100.WPS100CapabilitiesAdapter;
@@ -272,10 +273,10 @@ public class WPSClient {
     private final URL[] executeURLs = new URL[2];
 
     // using LinkedHashMap because it keeps insertion order
-    private final Map<CodeType, org.deegree.protocol.wps.client.process.Process> processIdToProcess = new LinkedHashMap<CodeType, org.deegree.protocol.wps.client.process.Process>();
+    private final Map<CodeType, Process> processIdToProcess = new LinkedHashMap<CodeType, Process>();
 
     // using LinkedHashMap because it keeps insertion order
-    private final Map<String, org.deegree.protocol.wps.client.process.Process> processIdSimpleToProcess = new LinkedHashMap<String, org.deegree.protocol.wps.client.process.Process>();
+    private final Map<String, Process> processIdSimpleToProcess = new LinkedHashMap<String, Process>();
 
     /**
      * Creates a new {@link WPSClient} instance.
@@ -301,9 +302,7 @@ public class WPSClient {
         metadata = capabilitiesDoc.parseMetadata();
 
         for ( ProcessInfo processInfo : capabilitiesDoc.getProcesses() ) {
-            org.deegree.protocol.wps.client.process.Process process = new org.deegree.protocol.wps.client.process.Process(
-                                                                                                                           this,
-                                                                                                                           processInfo );
+            Process process = new Process( this, processInfo );
             processIdToProcess.put( process.getId(), process );
             processIdSimpleToProcess.put( process.getId().getCode(), process );
         }
@@ -324,6 +323,7 @@ public class WPSClient {
         }
 
         OMElement root = capabilitiesDoc.getRootElement();
+        System.out.println(root.toString());
         String protocolVersion = root.getAttributeValue( new QName( "version" ) );
         if ( !"1.0.0".equals( protocolVersion ) ) {
             String msg = "Capabilities document has unsupported version " + protocolVersion + ".";
@@ -382,7 +382,7 @@ public class WPSClient {
      * @return process instance, can be <code>null</code> (if no process with the specified identifier and code space is
      *         offered by the services)
      */
-    public org.deegree.protocol.wps.client.process.Process getProcess( String id ) {
+    public Process getProcess( String id ) {
         return processIdSimpleToProcess.get( id );
     }
 
@@ -397,7 +397,7 @@ public class WPSClient {
      * @return process instance, can be <code>null</code> (if no process with the specified identifier and code space is
      *         offered by the services)
      */
-    public org.deegree.protocol.wps.client.process.Process getProcess( String id, String idCodeSpace ) {
+    public Process getProcess( String id, String idCodeSpace ) {
         return processIdToProcess.get( new CodeType( id, idCodeSpace ) );
     }
 
