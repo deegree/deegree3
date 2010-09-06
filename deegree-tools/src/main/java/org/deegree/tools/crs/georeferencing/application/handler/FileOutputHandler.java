@@ -40,11 +40,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JFileChooser;
-
+import org.deegree.commons.utils.Pair;
+import org.deegree.tools.crs.georeferencing.communication.FileChooser;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 
 /**
@@ -59,43 +61,48 @@ public class FileOutputHandler {
 
     public FileOutputHandler( PointTableFrame tablePanel ) {
 
-        JFileChooser fc = new JFileChooser();
-        File file = null;
-        int returnVal = fc.showSaveDialog( tablePanel );
-        if ( returnVal == JFileChooser.APPROVE_OPTION ) {
-            file = fc.getSelectedFile();
+        List<String> list = new ArrayList<String>();
+        list.add( "cvs" );
 
-        }
+        String desc = " Comma-Separated Values";
+        Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
+        List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
+        supportedOpenFiles.add( supportedFiles );
+        FileChooser fileChooser = new FileChooser( supportedOpenFiles, tablePanel );
+        File file = fileChooser.getSelectedFile();
+
         Writer fout = null;
-        try {
-            fout = new FileWriter( file.getAbsolutePath() );
+        if ( file != null ) {
+            try {
+                fout = new FileWriter( file.getAbsolutePath() );
 
-            BufferedWriter out = new BufferedWriter( fout );
-            Enumeration<?> vector = tablePanel.getModel().getDataVector().elements();
-            System.out.println( "[FileOutputHandler] " + file.getAbsolutePath() );
-            while ( vector.hasMoreElements() ) {
-                Enumeration<?> v = ( (Vector<?>) vector.nextElement() ).elements();
-                while ( v.hasMoreElements() ) {
-                    Object o = v.nextElement();
-                    if ( o != null ) {
-                        System.out.println( "[FileOutputHandler] " + o );
+                BufferedWriter out = new BufferedWriter( fout );
+                Enumeration<?> vector = tablePanel.getModel().getDataVector().elements();
+                System.out.println( "[FileOutputHandler] " + file.getAbsolutePath() );
+                while ( vector.hasMoreElements() ) {
+                    Enumeration<?> v = ( (Vector<?>) vector.nextElement() ).elements();
+                    while ( v.hasMoreElements() ) {
+                        Object o = v.nextElement();
+                        if ( o != null ) {
+                            System.out.println( "[FileOutputHandler] " + o );
 
-                        out.write( o.toString() );
-                    } else {
-                        out.write( " " );
+                            out.write( o.toString() );
+                        } else {
+                            out.write( " " );
+                        }
+                        if ( v.hasMoreElements() ) {
+                            out.write( ", " );
+                        }
+
                     }
-                    if ( v.hasMoreElements() ) {
-                        out.write( ", " );
-                    }
+                    out.newLine();
 
                 }
-                out.newLine();
-
+                out.close();
+            } catch ( IOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-            out.close();
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
     }

@@ -39,8 +39,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import org.deegree.commons.utils.Pair;
+import org.deegree.tools.crs.georeferencing.communication.FileChooser;
 import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
 
 /**
@@ -53,37 +57,57 @@ import org.deegree.tools.crs.georeferencing.communication.PointTableFrame;
  */
 public class FileInputHandler {
 
-    private Vector data;
+    private Vector<Vector<Double>> data;
 
-    public FileInputHandler( String choosedFile, PointTableFrame tablePanel ) {
-        data = new Vector();
+    public FileInputHandler( PointTableFrame tablePanel ) {
 
-        FileReader fr = null;
-        try {
-            fr = new FileReader( choosedFile );
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        BufferedReader br = new BufferedReader( fr );
-        String s = "";
-        try {
-            while ( ( s = br.readLine() ) != null ) {
-                Vector v = new Vector();
-                String[] a = s.split( ", " );
-                for ( String splitted : a ) {
-                    v.add( splitted );
-                }
-                data.add( v );
-                // System.out.println( "[FileInputHandler] dataWhile " + data );
+        List<String> list = new ArrayList<String>();
+        list.add( "cvs" );
+
+        String desc = "(*.cvs) Comma-Separated Values";
+        Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
+        List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
+        supportedOpenFiles.add( supportedFiles );
+        FileChooser fileChooser = new FileChooser( supportedOpenFiles, tablePanel );
+        String fileChoosed = fileChooser.getSelectedFilePath();
+        if ( fileChoosed != null ) {
+
+            data = new Vector<Vector<Double>>();
+
+            FileReader fr = null;
+            try {
+                fr = new FileReader( fileChoosed );
+            } catch ( FileNotFoundException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // System.out.println( "[FileInputHandler] data " + data );
-        tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
-        tablePanel.getModel().fireTableDataChanged();
+            BufferedReader br = new BufferedReader( fr );
+            String s = "";
+            try {
+                while ( ( s = br.readLine() ) != null ) {
+                    Vector<Double> v = new Vector<Double>();
+                    String[] a = s.split( ", " );
+                    for ( String splitted : a ) {
 
+                        double d = !splitted.trim().isEmpty() ? Double.parseDouble( splitted ) : 0;
+                        v.add( d );
+                    }
+                    data.add( v );
+                    // System.out.println( "[FileInputHandler] dataWhile " + data );
+                }
+            } catch ( IOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            // System.out.println( "[FileInputHandler] data " + data );
+            tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
+            tablePanel.getModel().fireTableDataChanged();
+
+        }
     }
+
+    public Vector<Vector<Double>> getData() {
+        return data;
+    }
+
 }
