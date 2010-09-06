@@ -37,7 +37,7 @@ package org.deegree.tools.crs.georeferencing.application.transformation;
 
 import java.util.List;
 
-import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
@@ -45,6 +45,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
+import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 
 /**
  * Abstract base class for all transformation methods.
@@ -56,7 +57,7 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  */
 public abstract class AbstractTransformation {
 
-    protected List<Pair<Point4Values, Point4Values>> mappedPoints;
+    protected List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
     protected Footprint footPrint;
 
@@ -68,8 +69,9 @@ public abstract class AbstractTransformation {
 
     protected final int order;
 
-    public AbstractTransformation( List<Pair<Point4Values, Point4Values>> mappedPoints, Footprint footPrint,
-                                   Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS, final int order ) {
+    public AbstractTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
+                                   Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
+                                   final int order ) {
         this.mappedPoints = mappedPoints;
         this.footPrint = footPrint;
         this.sceneValues = sceneValues;

@@ -38,7 +38,7 @@ package org.deegree.tools.crs.georeferencing.application.transformation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
@@ -48,6 +48,7 @@ import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
+import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 
 /**
  * Implementation of the <b>helmert transformation</b> with 4 parameters.
@@ -59,6 +60,7 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  * <li>Calculate helpers for the caluculation of the needed transformation constants(oMinuend, aMinuend, oSubtrahend,
  * aSubtrahend, divisor).</li>
  * <li>Calculate the transformation constants applied to the helpers.</li>
+ * <li>Calculate the residuals for each coordiante.</li>
  * <li>Finally caluculate the coordinates of the footprint polygons.</li>
  * <p>
  * 
@@ -108,8 +110,9 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  */
 public class Helmert4Transform extends AbstractTransformation implements TransformationMethod {
 
-    public Helmert4Transform( List<Pair<Point4Values, Point4Values>> mappedPoints, Footprint footPrint,
-                              Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS, final int order ) {
+    public Helmert4Transform( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
+                              Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
+                              final int order ) {
         super( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS, order );
     }
 
@@ -132,7 +135,7 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
             int counterSrc = 0;
             int counterDst = 0;
 
-            for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+            for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
                 double x = p.first.getWorldCoords().getX();
                 double y = p.first.getWorldCoords().getY();
                 cumulatedPointsDstX += x;
@@ -245,6 +248,10 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
             GeometryFactory geom = new GeometryFactory();
 
             /*
+             * Caluculate the residuals TODO
+             */
+
+            /*
              * calculate the new coordinates in the target coordinate system
              */
             for ( Ring ring : footPrint.getWorldCoordinateRingList() ) {
@@ -280,6 +287,12 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
     public TransformationType getType() {
 
         return TransformationType.Helmert_4;
+    }
+
+    @Override
+    public PointResidual[] getResiduals() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

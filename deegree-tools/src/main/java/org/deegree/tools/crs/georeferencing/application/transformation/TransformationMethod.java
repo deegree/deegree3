@@ -38,6 +38,7 @@ package org.deegree.tools.crs.georeferencing.application.transformation;
 import java.util.List;
 
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 
 /**
  * TODO add class documentation here
@@ -62,6 +63,8 @@ public interface TransformationMethod {
     public TransformationType getType();
 
     public List<Ring> computeRingList();
+
+    public PointResidual[] getResiduals();
 
     // public int getOrder();
 

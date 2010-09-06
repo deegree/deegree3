@@ -37,12 +37,13 @@ package org.deegree.tools.crs.georeferencing.application.transformation;
 
 import java.util.List;
 
-import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
+import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +59,9 @@ public class LeastSquarePolynomial extends AbstractTransformation implements Tra
 
     private static Logger log = LoggerFactory.getLogger( LeastSquarePolynomial.class );
 
-    public LeastSquarePolynomial( List<Pair<Point4Values, Point4Values>> mappedPoints, Footprint footPrint,
-                                  Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS, final int order ) {
+    public LeastSquarePolynomial( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
+                                  Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
+                                  final int order ) {
         super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
 
     }
@@ -156,6 +158,12 @@ public class LeastSquarePolynomial extends AbstractTransformation implements Tra
     public TransformationType getType() {
 
         return TransformationType.PolynomialFirstOrder;
+    }
+
+    @Override
+    public PointResidual[] getResiduals() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

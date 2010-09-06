@@ -41,7 +41,7 @@ import java.util.List;
 
 import javax.media.jai.WarpPolynomial;
 
-import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
@@ -51,6 +51,7 @@ import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
+import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 
 /**
  * TODO add class documentation here
@@ -62,7 +63,7 @@ import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
  */
 public class Polynomial extends AbstractTransformation implements TransformationMethod {
 
-    public Polynomial( List<Pair<Point4Values, Point4Values>> mappedPoints, Footprint footPrint,
+    public Polynomial( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints, Footprint footPrint,
                        Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS, int order ) {
         super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
 
@@ -77,7 +78,7 @@ public class Polynomial extends AbstractTransformation implements Transformation
             int counterSrc = 0;
             int counterDst = 0;
 
-            for ( Pair<Point4Values, Point4Values> p : mappedPoints ) {
+            for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
                 double x = p.first.getWorldCoords().getX();
                 double y = p.first.getWorldCoords().getY();
 
@@ -109,6 +110,10 @@ public class Polynomial extends AbstractTransformation implements Transformation
                 ryLocal += ( p.getY() - passPointsSrc[i + 1] );
 
             }
+
+            /*
+             * Caluculate the residuals TODO
+             */
 
             rxLocal /= ( passPointsSrc.length / 2 );
             ryLocal /= ( passPointsSrc.length / 2 );
@@ -145,6 +150,12 @@ public class Polynomial extends AbstractTransformation implements Transformation
     public TransformationType getType() {
 
         return TransformationType.PolynomialFirstOrder;
+    }
+
+    @Override
+    public PointResidual[] getResiduals() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
