@@ -36,6 +36,7 @@
 
 package org.deegree.services.wms.controller.ops;
 
+import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
@@ -145,7 +146,7 @@ public class GetFeatureInfo {
         this.height = height;
         this.x = x;
         this.y = y;
-        this.featureCount = -1;
+        this.featureCount = MAX_VALUE;
         crs = bbox.getCoordinateSystem();
         calcClickBox( radius );
     }
