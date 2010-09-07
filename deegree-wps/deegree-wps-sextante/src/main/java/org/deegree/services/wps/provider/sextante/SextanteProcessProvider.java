@@ -112,7 +112,7 @@ public class SextanteProcessProvider implements ProcessProvider {
 
                 // Vector Layer (only 1)
                 if ( alg.getNumberOfVectorLayers( false ) > 1 && answer ) {
-                    //LOG.info( "MORE VECTOR LAYERS: " + alg.getCommandLineName() );
+                    // LOG.info( "MORE VECTOR LAYERS: " + alg.getCommandLineName() );
                     SextanteWPSProcess.logAlgorithm( alg );
                 }
 
@@ -165,28 +165,19 @@ public class SextanteProcessProvider implements ProcessProvider {
         LOG.info( "Sextante initialized" );
 
         // initialize WPS processes
-        initWPSProcesses();
-    }
-
-    /**
-     * Initializes the processes based on Sextante.
-     */
-    private void initWPSProcesses() {
-
-        // collect SEXTANTE algorithms
         GeoAlgorithm[] algs = getVectorLayerAlgorithms();
 
         for ( int i = 0; i < algs.length; i++ ) {
             // SEXTANTE algorithm
             GeoAlgorithm alg = algs[i];
 
-            LOG.info( "Initializing process with id '" + alg.getCommandLineName() + "'" );
-
             // create WPS process code type
             CodeType codeType = new CodeType( alg.getCommandLineName() );
 
-            // add process
-            idToProcess.put( codeType, new SextanteWPSProcess( alg ) );
+            // add and initialize process
+            SextanteWPSProcess process = new SextanteWPSProcess( alg );
+            process.getProcesslet().init();
+            idToProcess.put( codeType, process );
         }
     }
 

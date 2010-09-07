@@ -89,10 +89,12 @@ public class SextanteProcesslet implements Processlet {
 
     @Override
     public void destroy() {
+        // LOG.info( "Destroying process with id '" + alg.getCommandLineName() + "'" );
     }
 
     @Override
     public void init() {
+        LOG.info( "Initializing process with id '" + alg.getCommandLineName() + "'" );
     }
 
     @Override
