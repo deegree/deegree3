@@ -11,7 +11,7 @@ import org.deegree.protocol.wps.client.output.ExecutionOutput;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
-import org.deegree.services.wps.provider.SextanteProcessProvider;
+import org.deegree.services.wps.provider.sextante.SextanteProcessProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
