@@ -55,6 +55,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -408,11 +409,41 @@ public class WMSController extends AbstractOGCServiceController {
             case GetLegendGraphic:
                 getLegendGraphic( map, response );
                 break;
+            case DTD:
+                getDtd( response );
+                break;
             }
         } catch ( MissingDimensionValue e ) {
             throw new OWSException( get( "WMS.DIMENSION_VALUE_MISSING", e.name ), "MissingDimensionValue" );
         } catch ( InvalidDimensionValue e ) {
             throw new OWSException( get( "WMS.DIMENSION_VALUE_INVALID", e.value, e.name ), "InvalidDimensionValue" );
+        }
+    }
+
+    /**
+     * @param response
+     */
+    private void getDtd( HttpResponseBuffer response ) {
+        InputStream in = WMSController.class.getResourceAsStream( "WMS_MS_Capabilities.dtd" );
+        try {
+            OutputStream out = response.getOutputStream();
+            byte[] buf = new byte[65536];
+            int read;
+            while ( ( read = in.read( buf ) ) != -1 ) {
+                out.write( buf, 0, read );
+            }
+        } catch ( IOException e ) {
+            LOG.trace( "Could not read/write the internal DTD:", e );
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            try {
+                in.close();
+            } catch ( IOException e ) {
+                LOG.trace( "Error while closing DTD input stream:", e );
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -563,14 +594,14 @@ public class WMSController extends AbstractOGCServiceController {
         try {
             response.setContentType( "text/xml" );
             XMLStreamWriter writer = response.getXMLWriter();
-            
+
             // TODO handle multiple namespaces
             String namespace = "http://www.deegree.org/app";
             if ( !schema.isEmpty() ) {
                 namespace = schema.get( 0 ).getName().getNamespaceURI();
             }
-            Map<String,String> nsToPrefix = new HashMap<String,String>();
-            nsToPrefix.put ("app", namespace);
+            Map<String, String> nsToPrefix = new HashMap<String, String>();
+            nsToPrefix.put( "app", namespace );
             new ApplicationSchemaXSDEncoder( GMLVersion.GML_2, namespace, null, nsToPrefix ).export( writer, schema );
             writer.writeEndDocument();
         } catch ( XMLStreamException e ) {

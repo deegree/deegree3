@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.model.layers;
 
 /**
@@ -45,5 +45,6 @@ package org.deegree.services.wms.model.layers;
  */
 public class SLDUserLayer {
 
-}
+    // not implemented yet
 
+}

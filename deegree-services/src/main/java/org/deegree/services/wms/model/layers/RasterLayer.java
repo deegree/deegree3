@@ -229,6 +229,9 @@ public class RasterLayer extends Layer {
 
     @Override
     public Envelope getBbox() {
+        if ( raster == null && multiraster == null ) {
+            return null;
+        }
         return raster == null ? multiraster.getEnvelope() : raster.getEnvelope();
     }
 

@@ -129,7 +129,10 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
     public void export( XMLStreamWriter writer )
                             throws XMLStreamException {
 
-        writer.writeDTD( "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd\" [<!ELEMENT VendorSpecificCapabilities EMPTY>]>\n" );
+        String dtdrequest = getUrl + "?request=DTD";
+
+        writer.writeDTD( "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"" + dtdrequest
+                         + "\" [<!ELEMENT VendorSpecificCapabilities EMPTY>]>\n" );
         writer.writeStartElement( "WMT_MS_Capabilities" );
         writer.writeAttribute( "version", "1.1.1" );
         writer.writeAttribute( "updateSequence", "" + service.updateSequence );

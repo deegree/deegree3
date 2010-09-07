@@ -52,18 +52,48 @@ import org.deegree.services.wms.controller.ops.GetMap;
  */
 public interface WMSSecurityManager {
 
+    /**
+     * @param getMap
+     * @param creds
+     * @return a modified GetMap request according to rights
+     * @throws SecurityException
+     */
     GetMap preprocess( GetMap getMap, Credentials creds )
                             throws SecurityException;
 
+    /**
+     * @param gfi
+     * @param creds
+     * @return a modified GetFeatureInfo request according to rights
+     * @throws SecurityException
+     */
     GetFeatureInfo preprocess( GetFeatureInfo gfi, Credentials creds )
                             throws SecurityException;
 
+    /**
+     * @param getCapas
+     * @param creds
+     * @return a modified GetCapabilities request according to rights
+     * @throws SecurityException
+     */
     GetCapabilities preprocess( GetCapabilities getCapas, Credentials creds )
                             throws SecurityException;
 
+    /**
+     * @param glg
+     * @param creds
+     * @return a modified GetLegendGraphic request according to rights
+     * @throws SecurityException
+     */
     GetLegendGraphic preprocess( GetLegendGraphic glg, Credentials creds )
                             throws SecurityException;
 
+    /**
+     * @param getFeatureInfoSchema
+     * @param creds
+     * @return a modified GetFeatureInfoSchema request according to rights
+     * @throws SecurityException
+     */
     GetFeatureInfoSchema preprocess( GetFeatureInfoSchema getFeatureInfoSchema, Credentials creds )
                             throws SecurityException;
 
