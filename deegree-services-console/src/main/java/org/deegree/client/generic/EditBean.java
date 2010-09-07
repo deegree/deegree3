@@ -133,7 +133,7 @@ public class EditBean implements Serializable {
                     writer.write( xml );
                     writer.close();
                 } catch ( IOException e ) {
-                    FacesMessage msg = MessageUtils.getFacesMessage( null, FacesMessage.SEVERITY_ERROR,
+                    FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
                                                                      "org.deegree.guiEditBean.WRITE_FILE_FAILED",
                                                                      xmlFile.getName(), e.getMessage() );
                     FacesContext.getCurrentInstance().addMessage( null, msg );
