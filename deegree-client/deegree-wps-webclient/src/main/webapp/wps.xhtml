@@ -13,7 +13,7 @@
 	<div id="container">
 
 		<div id="header" align="center">
-			<h:outputText value="WPS CLient" />
+			<h:outputText value="WPS Webclient" />
 		</div>
 
 		<div id="content">
@@ -41,7 +41,7 @@
 									<f:param value="#{clientBean.url}" />
 								</h:outputFormat>
 				  			<h:selectOneMenu id="processList" value="#{clientBean.process}">
-									<f:ajax render=":emptyForm :messagePanel" listener="#{clientBean.selectProcess}"/>
+									<f:ajax render=":emptyForm :messagePanel :responsePanel" listener="#{clientBean.selectProcess}"/>
 									<f:selectItem itemLabel="#{labels['noProcess']}"/>
 				  				<f:selectItems value="#{clientBean.processes}" var="p" itemLabel="#{p.title}" itemValue="#{p.id}" itemDescription="#{p.abstract}"/>
 				  			</h:selectOneMenu>
@@ -54,13 +54,13 @@
 		  	</div>
 		  	
 		  	<div>
-		  	<h:form id="emptyForm" enctype="multipart/form-data"/>
+		  	<h:form id="emptyForm" enctype="multipart/form-data" styleClass="form"/>
 		  	</div>
 	  	</fieldset>
   	
 	  	<div>
 		  	<h:panelGroup id="responsePanel">
-		  		<h:panelGroup id="response" style="text-align: left;"  rendered="#{!empty executeBean.literalOutputs or !empty executeBean.bboxOutputs or !empty executeBean.xmlOutputs or !empty executeBean.binaryOutputs}">
+		  		<h:panelGroup id="response"  rendered="#{!empty executeBean.literalOutputs or !empty executeBean.bboxOutputs or !empty executeBean.xmlOutputs or !empty executeBean.binaryOutputs}">
 			  		<fieldset class="field">
 					  	<legend><h:outputText value="#{labels['responseFS']}" id="responseFS"/></legend>
 					  		<h:panelGrid columns="2" rendered="#{!empty executeBean.literalOutputs}">
