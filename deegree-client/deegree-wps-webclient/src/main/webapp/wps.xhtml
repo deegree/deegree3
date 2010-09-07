@@ -1,0 +1,130 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:dg="http://deegree.org/jsf"
+	xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+<h:head>
+	<h:outputStylesheet name="style.css" library="wpsclient"/>
+</h:head>
+<h:body>
+	<f:loadBundle basename="org.deegree.wpsclient.gui.labels"   var="labels"  />
+	<f:loadBundle basename="org.deegree.wpsclient.gui.messages" var="messages" />
+	<div id="container">
+
+		<div id="header" align="center">
+			<h:outputText value="WPS CLient" />
+		</div>
+
+		<div id="content">
+		
+			<fieldset class="field">
+  			<legend><h:outputText value="#{labels['wpsFS']}" /></legend>		
+				<h:form id="selectWPS">
+						<h:outputText id="wpsUrlLabel" value="#{labels['wpsURL']}"/>
+						<h:inputText id="wpsUrl" value="#{clientBean.url}" required="true" />
+						<h:commandButton value="#{labels['wpsURLSubmit']}" id="wpsUrlBt">
+							<f:ajax render=":selectProcess :emptyForm :messagePanel :responsePanel" execute="@form" listener="#{clientBean.selectWPS}"/>
+						</h:commandButton>
+						<br/>
+				</h:form>
+			</fieldset>
+		
+			<fieldset class="field">
+	  		<legend><h:outputText value="#{labels['processFS']}" /></legend>
+	  		
+		  	<div>
+		  		<h:form id="selectProcess">
+		  			<h:panelGroup rendered="#{!empty clientBean.processes}">
+							<h:panelGrid columns="1" id="selectProcessPG">
+								<h:outputFormat value="#{labels['wpsSelectedURL']}" style="width:400px;"  id="selectProcessLabel">
+									<f:param value="#{clientBean.url}" />
+								</h:outputFormat>
+				  			<h:selectOneMenu id="processList" value="#{clientBean.process}">
+									<f:ajax render=":emptyForm :messagePanel" listener="#{clientBean.selectProcess}"/>
+									<f:selectItem itemLabel="#{labels['noProcess']}"/>
+				  				<f:selectItems value="#{clientBean.processes}" var="p" itemLabel="#{p.title}" itemValue="#{p.id}" itemDescription="#{p.abstract}"/>
+				  			</h:selectOneMenu>
+			  			</h:panelGrid>	
+						</h:panelGroup>
+						<h:panelGroup rendered="#{!!empty clientBean.processes}">
+							<h:outputText value="#{labels['noProcesses']}"/>
+						</h:panelGroup>
+		  		</h:form>
+		  	</div>
+		  	
+		  	<div>
+		  	<h:form id="emptyForm" enctype="multipart/form-data"/>
+		  	</div>
+	  	</fieldset>
+  	
+	  	<div>
+		  	<h:panelGroup id="responsePanel">
+		  		<h:panelGroup id="response" style="text-align: left;"  rendered="#{!empty executeBean.literalOutputs or !empty executeBean.bboxOutputs or !empty executeBean.xmlOutputs or !empty executeBean.binaryOutputs}">
+			  		<fieldset class="field">
+					  	<legend><h:outputText value="#{labels['responseFS']}" id="responseFS"/></legend>
+					  		<h:panelGrid columns="2" rendered="#{!empty executeBean.literalOutputs}">
+										<ui:repeat value="#{executeBean.literalOutputs}" var="out">
+											<h:outputFormat value="#{labels['literalOutput']}" styleClass="outputHead">
+												<f:param value="#{out.id}"/>
+											</h:outputFormat><br/>
+											<h:outputFormat value="#{labels['literalOutput_Value']}" styleClass="output">
+												<f:param value="#{out.value}"/>
+												<f:param value="#{out.uom}"/>
+											</h:outputFormat><br />
+											<h:outputFormat value="#{labels['literalOutput_Datatype']}" styleClass="output">
+												<f:param value="#{out.dataType}"/>
+											</h:outputFormat>
+										</ui:repeat>
+					  		</h:panelGrid>
+					  	  <h:panelGrid columns="2" rendered="#{!empty executeBean.bboxOutputs}">
+											<ui:repeat value="#{executeBean.bboxOutputs}" var="out">
+											<h:outputFormat value="#{labels['bboxOutput']}" styleClass="outputHead">
+												<f:param value="#{out.id}"/>
+											</h:outputFormat><br/>
+											<h:outputFormat value="#{labels['bboxOutput_coords']}" styleClass="output">
+												<f:param value="#{out.lower[0]}"/>
+												<f:param value="#{out.lower[1]}"/>
+												<f:param value="#{out.upper[0]}"/>
+												<f:param value="#{out.upper[1]}"/>
+											</h:outputFormat><br/>
+											<h:outputFormat value="#{labels['bboxOutput_crs']}" styleClass="output">
+												<f:param value="#{out.crs}"/>
+											</h:outputFormat><br/>
+										</ui:repeat>
+					  		</h:panelGrid>
+					  		<h:panelGrid columns="2">
+					  			<ui:repeat value="#{executeBean.xmlOutputs}" var="out">
+											<h:outputFormat value="#{labels['complexOutput']}" styleClass="outputHead">
+												<f:param value="#{out.id}"/>
+											</h:outputFormat><br/>
+			  							<dg:externalLink href="#{out.webAccessibleURL}" target="_blank" id="responseLinkXML" styleClass="output"/>
+					  			</ui:repeat>
+					  		</h:panelGrid>
+					  		<h:panelGrid columns="2">
+					  			<ui:repeat value="#{executeBean.binaryOutputs}" var="out">
+											<h:outputFormat value="#{labels['complexOutput']}" styleClass="outputHead">
+												<f:param value="#{out.id}"/>
+											</h:outputFormat><br/>
+			  						<dg:externalLink href="#{out.webAccessibleURL}" target="_blank" id="responseLinkBINARY" styleClass="output"/>
+					  			</ui:repeat>
+					  		</h:panelGrid>
+					  							  	
+		  			</fieldset>
+		  		</h:panelGroup>
+	  		</h:panelGroup>
+	  	</div>
+			  	
+			<h:panelGroup id="messagePanel" >
+				<h:panelGroup rendered="#{!empty facesContext.messageList}">
+			  	<fieldset class="field">
+			  		<legend><h:outputText value="#{labels['statusFS']}" id="statusFS"/></legend>
+						<h:messages styleClass="msg" globalOnly="false" errorClass="msgError" fatalClass="msgFatal" infoClass="msgInfo" warnClass="msgWarn" showSummary="true" showDetail="true" id="msg"/>
+			  	</fieldset>
+		  	</h:panelGroup>
+	  	</h:panelGroup>
+
+		</div>
+	</div>
+</h:body>
+</html>
