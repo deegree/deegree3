@@ -109,7 +109,7 @@ public class SextanteProcesslet implements Processlet {
             // LOG.info( "GET OUTPUT PARAMETERS" );
 
             // execute the algorithm
-            alg.execute( null, new OutputFactoryImpl() );
+            alg.execute( null, new OutputFactoryExt() );
 
             LOG.info( "HUHU" );
 

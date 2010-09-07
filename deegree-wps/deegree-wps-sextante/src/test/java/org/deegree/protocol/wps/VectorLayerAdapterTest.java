@@ -51,7 +51,7 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.services.wps.provider.sextante.VectorLayerAdapter;
-import org.deegree.services.wps.provider.sextante.OutputFactoryImpl;
+import org.deegree.services.wps.provider.sextante.OutputFactoryExt;
 import org.deegree.services.wps.provider.sextante.VectorLayerImpl;
 import org.junit.Test;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -397,7 +397,7 @@ public class VectorLayerAdapterTest {
             inputParams.getParameter( CentroidsAlgorithm.LAYER ).setParameterValue( inputLayer );
 
             // execute algorithm
-            alg.execute( null, new OutputFactoryImpl() );
+            alg.execute( null, new OutputFactoryExt() );
 
             // create vector layer with output data
             OutputObjectsSet outputParams = alg.getOutputObjects();

@@ -65,10 +65,10 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class OutputFactoryImpl extends OutputFactory {
+public class OutputFactoryExt extends OutputFactory {
 
     // logger
-    private static final Logger LOG = LoggerFactory.getLogger( OutputFactoryImpl.class );
+    private static final Logger LOG = LoggerFactory.getLogger( OutputFactoryExt.class );
 
     @Override
     public Object getDefaultCRS() {
