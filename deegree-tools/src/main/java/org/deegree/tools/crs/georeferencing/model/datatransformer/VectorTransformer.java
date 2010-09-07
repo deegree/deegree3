@@ -139,7 +139,6 @@ public class VectorTransformer {
                 double d = e2.get( i + 3 );
                 double f = e2.get( i + 4 );
                 double g = e2.get( i + 5 );
-                // double z = e2.get( i + 6 );
                 AbstractGRPoint pFootWorld = new FootprintPoint( c, d );
                 int initValueFootArray[] = values.getPixelCoord( pFootWorld );
                 AbstractGRPoint initValueFoot = new FootprintPoint( initValueFootArray[0], initValueFootArray[1] );
