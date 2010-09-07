@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider;
+package org.deegree.services.wps.provider.sextante;
 
 /**
  * Manages a column of a attribute table. <br>

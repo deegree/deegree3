@@ -33,10 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider;
+package org.deegree.services.wps.provider.sextante;
 
 import java.net.URL;
 
+import org.deegree.services.wps.provider.ProcessProvider;
+import org.deegree.services.wps.provider.ProcessProviderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

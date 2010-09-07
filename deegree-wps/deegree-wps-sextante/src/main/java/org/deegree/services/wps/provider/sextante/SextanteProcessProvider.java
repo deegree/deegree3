@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider;
+package org.deegree.services.wps.provider.sextante;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,6 +42,7 @@ import java.util.Set;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.wps.WPSProcess;
+import org.deegree.services.wps.provider.ProcessProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import es.unex.sextante.core.GeoAlgorithm;

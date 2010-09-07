@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wps.provider;
+package org.deegree.services.wps.provider.sextante;
 
 import es.unex.sextante.core.ITaskMonitor;
 import es.unex.sextante.core.OutputFactory;
