@@ -34,18 +34,19 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.tools.crs.georeferencing.communication;
+package org.deegree.tools.crs.georeferencing;
 
 import java.io.IOException;
 
 import org.deegree.tools.annotations.Tool;
 import org.deegree.tools.crs.georeferencing.application.Controller;
+import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * 
- * Main class that calls all the relevant objects to build the georeferencing viewer.
+ * Initialisation class that opens a GUI to transform non-georeferenced buildings into a georeferencing map.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
