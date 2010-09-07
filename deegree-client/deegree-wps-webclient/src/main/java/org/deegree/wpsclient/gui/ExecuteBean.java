@@ -63,7 +63,7 @@ import org.deegree.wpsclient.controller.ProcessExecuter;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * <code>ExecuteBean</code> receives the parameters to execute the WPS and holds the response.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -77,6 +77,8 @@ public class ExecuteBean implements Serializable {
     private static final long serialVersionUID = 5702665270758227972L;
 
     private static final Logger LOG = getLogger( ExecuteBean.class );
+
+    public static final String PROCESS_ATTRIBUTE_KEY = "process";
 
     private Map<String, String> literalInputs = new HashMap<String, String>();
 
@@ -96,10 +98,16 @@ public class ExecuteBean implements Serializable {
 
     private List<String> outputs = new ArrayList<String>();
 
+    /**
+     * ajax listener to execute the process (the source component of this event must contain an attribute with key
+     * {@link PROCESS_ATTRIBUTE_KEY} from type {@link Process} containing the selected process.
+     * 
+     * @param event
+     */
     public void executeProcess( ActionEvent event ) {
 
         if ( event.getComponent() instanceof HtmlCommandButton ) {
-            Process selectedProcess = (Process) event.getComponent().getAttributes().get( "process" );
+            Process selectedProcess = (Process) event.getComponent().getAttributes().get( PROCESS_ATTRIBUTE_KEY );
 
             if ( selectedProcess != null ) {
                 FacesContext fc = FacesContext.getCurrentInstance();

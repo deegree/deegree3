@@ -58,7 +58,7 @@ import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * <code>ProcessExecuter</code> is the executer of a process, with the given user entries.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -69,21 +69,38 @@ public class ProcessExecuter {
 
     private static final Logger LOG = getLogger( ProcessExecuter.class );
 
-    public ExecutionOutput[] execute( Process selectedProcess, Map<String, String> literalInputs,
+    /**
+     * Executes the given process. After this, the uploaded files (xmlInputs and binaryInputs) will be deleted.
+     * 
+     * @param processToExecute
+     *            the process to execute
+     * @param literalInputs
+     *            all literalInputs; must not be null!
+     * @param bboxInputs
+     *            all bboxInputs; must not be null!
+     * @param xmlInputs
+     *            all xmlInputs; must not be null!
+     * @param binaryInputs
+     *            all binaryInputs; must not be null!
+     * @param outputs
+     *            the outputs
+     * @return the response of the WPS request
+     */
+    public ExecutionOutput[] execute( Process processToExecute, Map<String, String> literalInputs,
                                       Map<String, BBox> bboxInputs, Map<String, UploadedFile> xmlInputs,
                                       Map<String, UploadedFile> binaryInputs, List<String> outputs ) {
 
         FacesContext fc = FacesContext.getCurrentInstance();
         try {
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "execute selected process " + selectedProcess.getId() );
+                LOG.debug( "execute selected process " + processToExecute.getId() );
                 LOG.debug( "input parameters (LITERAL): " + literalInputs );
                 LOG.debug( "input parameters (XML): " + xmlInputs );
                 LOG.debug( "input parameters (BINARY): " + binaryInputs );
                 LOG.debug( "input parameters (BBOX): " + bboxInputs );
             }
-            ProcessExecution execution = selectedProcess.prepareExecution();
-            InputType[] inputDescription = selectedProcess.getInputTypes();
+            ProcessExecution execution = processToExecute.prepareExecution();
+            InputType[] inputDescription = processToExecute.getInputTypes();
             for ( int i = 0; i < inputDescription.length; i++ ) {
                 InputType input = inputDescription[i];
                 if ( input instanceof LiteralInputType ) {

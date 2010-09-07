@@ -80,7 +80,7 @@ import org.deegree.protocol.wps.client.output.type.OutputType;
 import org.deegree.protocol.wps.client.process.Process;
 
 /**
- * TODO add class documentation here
+ * <code>ClientBean</code> handles all selections/entries made in the GUI which leads to changes in the GUI.
  * 
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
@@ -105,31 +105,16 @@ public class ClientBean implements Serializable {
 
     private Process selectedProcess;
 
-    public void setUrl( String url ) {
-        processes.clear();
-        this.url = url;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public List<Process> getProcesses() {
-        return processes;
-    }
-
-    public void setProcess( CodeType process ) {
-        this.process = process;
-
-    }
-
-    public CodeType getProcess() {
-        return process;
-    }
-
+    /**
+     * change the URL of the WPS and update the list of processes
+     * 
+     * @param event
+     * @throws AbortProcessingException
+     */
     public void selectWPS( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
         FacesContext fc = FacesContext.getCurrentInstance();
+        processes.clear();
         try {
             URL capUrl = new URL( url + "?service=WPS&version=1.0.0&request=GetCapabilities" );
             wpsClient = new WPSClient( capUrl );
@@ -146,6 +131,12 @@ public class ClientBean implements Serializable {
         }
     }
 
+    /**
+     * updates the gui, which depends on the selected process
+     * 
+     * @param event
+     * @throws AbortProcessingException
+     */
     public void selectProcess( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
         FacesContext fc = FacesContext.getCurrentInstance();
@@ -198,7 +189,7 @@ public class ClientBean implements Serializable {
                                                                                                      buttonEL,
                                                                                                      null,
                                                                                                      new Class<?>[] { ActionEvent.class } );
-        button.getAttributes().put( "process", process );
+        button.getAttributes().put( ExecuteBean.PROCESS_ATTRIBUTE_KEY, process );
         MethodExpressionActionListener listener = new MethodExpressionActionListener( action );
 
         button.addActionListener( listener );
@@ -357,6 +348,46 @@ public class ClientBean implements Serializable {
 
     private static String getUniqueId() {
         return "id_" + UUID.randomUUID();
+    }
+
+    /******************* GETTER / SETTER ******************/
+
+    /**
+     * @param url
+     *            the URL of the WPS
+     */
+    public void setUrl( String url ) {
+        this.url = url;
+    }
+
+    /**
+     * @return the URL of the WPS
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * @param process
+     *            the process to execute
+     */
+    public void setProcess( CodeType process ) {
+        this.process = process;
+
+    }
+
+    /**
+     * @return the process to execute
+     */
+    public CodeType getProcess() {
+        return process;
+    }
+
+    /**
+     * @return a list of available processes
+     */
+    public List<Process> getProcesses() {
+        return processes;
     }
 
 }
