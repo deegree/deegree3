@@ -64,7 +64,7 @@ public interface TransformationMethod {
 
     public List<Ring> computeRingList();
 
-    public PointResidual[] getResiduals();
+    PointResidual[] calculateResiduals();
 
     // public int getOrder();
 

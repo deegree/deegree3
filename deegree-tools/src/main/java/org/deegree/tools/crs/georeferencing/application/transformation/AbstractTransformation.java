@@ -69,7 +69,9 @@ public abstract class AbstractTransformation {
 
     protected final int order;
 
-    protected PointResidual[] residuals;
+    private final PointResidual[] residuals;
+
+    private final int arraySize;
 
     public AbstractTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
                                    Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
@@ -80,6 +82,16 @@ public abstract class AbstractTransformation {
         this.sourceCRS = sourceCRS;
         this.targetCRS = targetCRS;
         this.order = order;
+        arraySize = mappedPoints.size();
+        residuals = new PointResidual[arraySize];
+    }
+
+    public PointResidual[] getResiduals() {
+        return residuals;
+    }
+
+    public int getArraySize() {
+        return arraySize;
     }
 
     public CRSIdentifiable getIdentifiable() {
@@ -109,10 +121,6 @@ public abstract class AbstractTransformation {
             countT++;
         }
         return codeTypes;
-    }
-
-    public PointResidual[] getResiduals() {
-        return residuals;
     }
 
 }

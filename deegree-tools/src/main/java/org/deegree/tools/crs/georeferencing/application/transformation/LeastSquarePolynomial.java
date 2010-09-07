@@ -161,7 +161,7 @@ public class LeastSquarePolynomial extends AbstractTransformation implements Tra
     }
 
     @Override
-    public PointResidual[] getResiduals() {
+    public PointResidual[] calculateResiduals() {
         // TODO Auto-generated method stub
         return null;
     }

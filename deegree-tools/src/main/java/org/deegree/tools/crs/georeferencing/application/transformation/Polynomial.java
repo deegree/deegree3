@@ -153,7 +153,7 @@ public class Polynomial extends AbstractTransformation implements Transformation
     }
 
     @Override
-    public PointResidual[] getResiduals() {
+    public PointResidual[] calculateResiduals() {
         // TODO Auto-generated method stub
         return null;
     }

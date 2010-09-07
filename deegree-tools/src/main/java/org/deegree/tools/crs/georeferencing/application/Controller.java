@@ -443,6 +443,10 @@ public class Controller {
         panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
     }
 
+    /**
+     * Updates the panels that are responsible for drawing the georeferenced points so that the once clicked points are
+     * drawn into the right position.
+     */
     private void updateDrawingPanels() {
         List<Point4Values> panelList = new ArrayList<Point4Values>();
         List<Point4Values> footPanelList = new ArrayList<Point4Values>();
@@ -590,7 +594,7 @@ public class Controller {
 
                     }
                     updateMappedPoints();
-                    updateResiduals();
+                    updateResiduals( transformationType );
                     tablePanel.removeRow( tableRows );
                     updateDrawingPanels();
                 }
@@ -621,33 +625,10 @@ public class Controller {
                         setValues();
                     }
 
-                    switch ( transformationType ) {
-
-                    case PolynomialFirstOrder:
-                        // transform = new PolynomialFirstOrder( mappedPoints, footPrint, sceneValues, sourceCRS,
-                        // targetCRS, 1 );
-                        // transform = new LeastSquarePolynomial( mappedPoints, footPrint, sceneValues, sourceCRS,
-                        // targetCRS, order );
-                        order = 1;
-                        transform = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
-                        break;
-                    case Helmert_4:
-                        order = 1;
-                        transform = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
-                                                           order );
-
-                        break;
-                    case Affine:
-                        order = 1;
-                        transform = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS,
-                                                              targetCRS, order );
-
-                        break;
-                    }
+                    transform = determineTransformationType( transformationType );
                     List<Ring> polygonRing = transform.computeRingList();
 
-                    // TODO update the table with the residuals and update the mappedPoints
-                    transform.getResiduals();
+                    updateResiduals( transformationType );
 
                     panel.setPolygonList( polygonRing, sceneValues );
 
@@ -942,17 +923,6 @@ public class Controller {
                 for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
                     boolean changed = changePointLocation( p, data, row, column );
                     if ( changed ) {
-
-                        // List<Point4Values> listPS = new ArrayList<Point4Values>();
-                        // List<Point4Values> listPF = new ArrayList<Point4Values>();
-                        // for ( Triple<Point4Values, Point4Values, PointResidual> m : mappedPoints ) {
-                        // listPS.add( m.second );
-                        // listPF.add( m.first );
-                        // }
-                        // panel.setSelectedPoints( listPS, sceneValues );
-                        // footPanel.setSelectedPoints( listPF, sceneValues );
-                        // panel.repaint();
-                        // footPanel.repaint();
 
                         updateDrawingPanels();
 
@@ -1363,7 +1333,7 @@ public class Controller {
         panel.addToSelectedPoints( panel.getLastAbstractPoint() );
         if ( mappedPoints != null && mappedPoints.size() >= 1 ) {
             addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint(), null );
-            updateResiduals();
+            updateResiduals( transformationType );
         } else {
             addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint(), null );
         }
@@ -1372,12 +1342,42 @@ public class Controller {
 
     }
 
-    private void updateResiduals() {
+    /**
+     * Determines the transformationMethod by means of the type.
+     * 
+     * @param type
+     *            of the transformationMethod, not <Code>null</Code>.
+     * @return the transformationMethod to be used.
+     */
+    private TransformationMethod determineTransformationType( TransformationType type ) {
+        TransformationMethod t = null;
+        switch ( type ) {
+        case PolynomialFirstOrder:
+            t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
+            break;
+        case Helmert_4:
+            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, 1 );
+            break;
 
-        TransformationMethod defHelmertT = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS,
-                                                                  targetCRS, 1 );
-        defHelmertT.computeRingList();
-        PointResidual[] r = defHelmertT.getResiduals();
+        case Affine:
+            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
+            break;
+        }
+
+        return t;
+    }
+
+    /**
+     * Updates the model of the table to show the residuals of the already stored mappedPoints. It is based on the
+     * Helmert transformation.
+     * 
+     * @param type
+     * 
+     */
+    private void updateResiduals( TransformationType type ) {
+
+        TransformationMethod t = determineTransformationType( type );
+        PointResidual[] r = t.calculateResiduals();
         int counter = 0;
         for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
             Vector element = new Vector( 6 );
