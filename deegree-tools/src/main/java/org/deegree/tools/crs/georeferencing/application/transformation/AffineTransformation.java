@@ -311,8 +311,8 @@ public class AffineTransformation extends AbstractTransformation implements Tran
     }
 
     private void transformCoordinates() {
-        double[] passPointsE_one = new double[arraySize];
-        double[] passPointsN_one = new double[arraySize];
+        passPointsE_one = new double[arraySize];
+        passPointsN_one = new double[arraySize];
 
         for ( int i = 0; i < arraySize; i++ ) {
             passPointsN_one[i] = balancedPointN + ( a11 * passPointsDstX_two[i] ) + ( a12 * passPointsDstY_two[i] );
@@ -364,8 +364,22 @@ public class AffineTransformation extends AbstractTransformation implements Tran
 
     @Override
     public PointResidual[] calculateResiduals() {
-        // TODO Auto-generated method stub
-        return null;
+        /*
+         * Caluculate the residuals
+         */
+        double[] residualE = new double[arraySize];
+        double[] residualN = new double[arraySize];
+        // residuals = new PointResidual[arraySize];
+
+        for ( int i = 0; i < arraySize; i++ ) {
+            residualE[i] = passPointsSrcE[i] - passPointsE_one[i];
+            System.out.println( "[AffineTransformation] residualE -->  \nv(E): " + residualE[i] );
+            residualN[i] = passPointsSrcN[i] - passPointsN_one[i];
+            System.out.println( "[AffineTransformation] residualN -->  \nv(N): " + residualN[i] );
+            getResiduals()[i] = new PointResidual( residualE[i], residualN[i] );
+
+        }
+        return getResiduals();
     }
 
 }

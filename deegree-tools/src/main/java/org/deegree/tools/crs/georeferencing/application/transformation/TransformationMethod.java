@@ -51,11 +51,9 @@ import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 public interface TransformationMethod {
 
     public enum TransformationType {
-        PolynomialFirstOrder,
+        Polynomial,
 
         Helmert_4,
-
-        LeastSquarePolynomial,
 
         Affine
     }
