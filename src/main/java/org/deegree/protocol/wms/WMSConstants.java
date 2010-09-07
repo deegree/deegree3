@@ -90,7 +90,8 @@ public class WMSConstants {
         map,
         /** Retrieve a XSD application schema for given layers. deegree specific request. */
         GetFeatureInfoSchema, /***/
-        GetLegendGraphic
+        GetLegendGraphic, /** Invented request to output the WMS 1.1.1 DTD. */
+        DTD
 
     }
 }
