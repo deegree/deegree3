@@ -65,7 +65,7 @@ import org.deegree.client.core.model.UploadedFile;
  * 
  * @version $Revision: $, $Date: $
  */
-@ResourceDependencies( { @ResourceDependency(library = "deegree", name = "css/inputFile.css") })
+@ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/inputFile.css") })
 @FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputFile")
 public class InputFileRenderer extends Renderer {
 
@@ -92,7 +92,6 @@ public class InputFileRenderer extends Renderer {
 
     @Override
     public void decode( FacesContext context, UIComponent component ) {
-        System.out.println("decode input file");
         ExternalContext external = context.getExternalContext();
         HttpServletRequest request = (HttpServletRequest) external.getRequest();
         String clientId = component.getClientId( context );
@@ -102,18 +101,16 @@ public class InputFileRenderer extends Renderer {
         HtmlInputFile fileComponent = (HtmlInputFile) component;
         UploadedFile uploadedFile = new UploadedFile();
         if ( item != null ) {
-            String target = fileComponent.getTarget();
             try {
+                String target = fileComponent.getTarget();
                 URL url = getUrl( request, target, item.getName() );
                 ServletContext sc = (ServletContext) external.getContext();
                 String absPath = getAbsolutePath( sc, target, item.getName() );
-                if ( target != null ) {
-                    File file = new File( absPath );
-                    item.write( file );
-                    uploadedFile.setFileItem( item );
-                    uploadedFile.setUrl( url );
-                    uploadedFile.setAbsolutePath( absPath );
-                }
+                File file = new File( absPath );
+                item.write( file );
+                uploadedFile.setFileItem( item );
+                uploadedFile.setUrl( url );
+                uploadedFile.setAbsolutePath( absPath );
             } catch ( MalformedURLException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

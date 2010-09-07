@@ -58,28 +58,54 @@ import org.deegree.client.core.utils.MessageUtils;
 @FacesComponent(value = "HtmlInputFile")
 public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
 
-    private String styleClass;
+    /**
+     * <p>
+     * The standard component type for this component.
+     * </p>
+     */
+    public static final String COMPONENT_TYPE = "HtmlInputFile";
 
-    private String target;
+    private static enum AdditionalPropertyKeys {
+        styleClass, target
+    }
 
     public HtmlInputFile() {
         setRendererType( "org.deegree.InputFile" );
     }
 
-    public void setStyleClass( String styleClass ) {
-        this.styleClass = styleClass;
-    }
-
+    /**
+     * @return A comma seperated list of available styleClasses. Default value is "outputXML".
+     */
     public String getStyleClass() {
-        return styleClass;
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, "outputXML" );
+
     }
 
-    public void setTarget( String target ) {
-        this.target = target;
+    /**
+     * @param styleClass
+     *            A comma sepereated list of available style classes, passed through the class attribute of the
+     *            component.
+     */
+    public void setStyleClass( String styleClass ) {
+        getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
     }
 
+    /**
+     * @return Location where to write the downloaded file, must begin at the webapp directory. If null, the file will
+     *         be stored in the webapp directory
+     */
     public String getTarget() {
-        return target;
+        return (String) getStateHelper().eval( AdditionalPropertyKeys.target, null );
+
+    }
+
+    /**
+     * @param target
+     *            Location where to write the downloaded file, beginning at the webapp directory. Can be null, if the
+     *            file should be stored in the webapp directory
+     */
+    public void setTarget( String styleClass ) {
+        getStateHelper().put( AdditionalPropertyKeys.target, styleClass );
     }
 
     @Override
@@ -89,7 +115,6 @@ public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
         }
         if ( isRequired() && isUploadedFileEmpty( value ) ) {
             FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 null,
                                                                  FacesMessage.SEVERITY_ERROR,
                                                                  "org.deegree.client.core.component.HtmlInputFile.REQUIRED",
                                                                  getClientId() );
