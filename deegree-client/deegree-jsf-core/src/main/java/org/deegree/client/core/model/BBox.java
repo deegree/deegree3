@@ -47,25 +47,42 @@ public class BBox {
 
     private String crs;
 
-    private double[] lower;
+    private double maxy;
 
-    private double[] upper;
+    private double miny;
 
-    public BBox( String crs, double[] lower, double[] upper ) {
+    private double maxx;
+
+    private double minX;
+
+    public BBox() {
+    }
+
+    public BBox( String crs, double minx, double miny, double maxx, double maxy ) {
         this.crs = crs;
-        this.lower = lower;
-        this.upper = upper;
+        this.minX = minx;
+        this.miny = miny;
+        this.maxx = maxx;
+        this.maxy = maxy;
     }
 
     public String getCrs() {
         return crs;
     }
 
-    public double[] getLower() {
-        return lower;
+    public double getMaxY() {
+        return maxy;
     }
 
-    public double[] getUpper() {
-        return upper;
+    public double getMinY() {
+        return miny;
+    }
+
+    public double getMaxX() {
+        return maxx;
+    }
+
+    public double getMinx() {
+        return minX;
     }
 }

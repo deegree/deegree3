@@ -48,7 +48,6 @@ import javax.faces.render.FacesRenderer;
 
 import org.deegree.client.core.component.HtmlInputBBox;
 import org.deegree.client.core.model.BBox;
-import org.deegree.client.core.utils.MessageUtils;
 
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.MenuRenderer;
@@ -103,7 +102,7 @@ public class InputBBoxRenderer extends MenuRenderer {
                 // NOTHING TO DO
             }
         }
-        bbox.setSubmittedValue( new BBox( crs, new double[] { minx, miny }, new double[] { maxx, maxy } ) );
+        bbox.setSubmittedValue( new BBox( crs, minx, miny, maxx, maxy ) );
     }
 
     @Override
@@ -140,7 +139,6 @@ public class InputBBoxRenderer extends MenuRenderer {
         writer.startElement( "td", null );
         String crsText = bbox.getCrsLabel();
         if ( crsText == null ) {
-            crsText = MessageUtils.getResourceText( null, "org.deegree.client.core.renderer.InputBBoxRenderer.CRSLABEL" );
         }
         writer.writeText( crsText, null );
         writer.endElement( "td" );
@@ -166,52 +164,32 @@ public class InputBBoxRenderer extends MenuRenderer {
                             throws IOException {
         BBox value = bbox.getValue();
         // min X
-        double minx = 0;
-        if ( value != null && value.getLower() != null && value.getLower().length > 0 ) {
-            minx = value.getLower()[0];
+        double minx = -180;
+        if ( value != null && !Double.isNaN( value.getMinx() ) ) {
+            minx = value.getMinx();
         }
-        String minxLabel = bbox.getMinxLabel();
-        if ( minxLabel == null ) {
-            minxLabel = MessageUtils.getResourceText( null,
-                                                      "org.deegree.client.core.renderer.InputBBoxRenderer.MINXLABEL" );
-        }
-        addFieldRow( writer, clientId + ":" + MINX_ID_SUFFIX, minxLabel, minx );
+        addFieldRow( writer, clientId + ":" + MINX_ID_SUFFIX, bbox.getMinxLabel(), minx );
 
         // min y
-        double minY = 0;
-        if ( value != null && value.getLower() != null && value.getLower().length > 1 ) {
-            minY = value.getLower()[1];
+        double minY = -90;
+        if ( value != null && !Double.isNaN( value.getMinY() ) ) {
+            minY = value.getMinY();
         }
-        String minyLabel = bbox.getMinyLabel();
-        if ( minyLabel == null ) {
-            minyLabel = MessageUtils.getResourceText( null,
-                                                      "org.deegree.client.core.renderer.InputBBoxRenderer.MINYLABEL" );
-        }
-        addFieldRow( writer, clientId + ":" + MINY_ID_SUFFIX, minyLabel, minY );
+        addFieldRow( writer, clientId + ":" + MINY_ID_SUFFIX, bbox.getMinyLabel(), minY );
 
         // max x
-        double maxx = 0;
-        if ( value != null && value.getUpper() != null && value.getUpper().length > 0 ) {
-            maxx = value.getLower()[0];
+        double maxx = 180;
+        if ( value != null && Double.isNaN( value.getMaxX() ) ) {
+            maxx = value.getMaxX();
         }
-        String maxxLabel = bbox.getMaxxLabel();
-        if ( maxxLabel == null ) {
-            maxxLabel = MessageUtils.getResourceText( null,
-                                                      "org.deegree.client.core.renderer.InputBBoxRenderer.MAXXLABEL" );
-        }
-        addFieldRow( writer, clientId + ":" + MAXX_ID_SUFFIX, maxxLabel, maxx );
+        addFieldRow( writer, clientId + ":" + MAXX_ID_SUFFIX, bbox.getMaxxLabel(), maxx );
 
         // max y
-        double maxy = 0;
-        if ( value != null && value.getUpper() != null && value.getUpper().length > 1 ) {
-            maxy = value.getLower()[1];
+        double maxy = 90;
+        if ( value != null && Double.isNaN( value.getMaxY() ) ) {
+            maxy = value.getMaxY();
         }
-        String maxyLabel = bbox.getMaxxLabel();
-        if ( maxyLabel == null ) {
-            maxyLabel = MessageUtils.getResourceText( null,
-                                                      "org.deegree.client.core.renderer.InputBBoxRenderer.MAXYLABEL" );
-        }
-        addFieldRow( writer, clientId + ":" + MAXY_ID_SUFFIX, maxyLabel, maxy );
+        addFieldRow( writer, clientId + ":" + MAXY_ID_SUFFIX, bbox.getMaxyLabel(), maxy );
     }
 
     private void addFieldRow( ResponseWriter writer, String id, String label, double value )
