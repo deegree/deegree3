@@ -48,7 +48,6 @@ import java.util.UUID;
 
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
-import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -165,7 +164,6 @@ public class ClientBean implements Serializable {
 
     private void createForm( Process process ) {
         FacesContext fc = FacesContext.getCurrentInstance();
-        Application app = fc.getApplication();
         UIComponent executeForm = fc.getViewRoot().findComponent( "emptyForm" );
         executeForm.getChildren().clear();
 
@@ -179,7 +177,6 @@ public class ClientBean implements Serializable {
             FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_WARN, "WARN.IOEXCEPTION", e.getMessage() );
             fc.addMessage( "WPSBean.selectProcess.IOEXCEPTION", msg );
         }
-        app.createComponent( HtmlCommandButton.COMPONENT_TYPE );
         HtmlCommandButton button = new HtmlCommandButton();
         button.setId( "executeButton" );
         button.setValue( "Execute" );
@@ -329,7 +326,6 @@ public class ClientBean implements Serializable {
                                                                                                         fc.getELContext(),
                                                                                                         valueEL,
                                                                                                         List.class );
-
             cb.setValueExpression( "value", valueVE );
             cb.setRequired( true );
             for ( int i = 0; i < outputs.length; i++ ) {

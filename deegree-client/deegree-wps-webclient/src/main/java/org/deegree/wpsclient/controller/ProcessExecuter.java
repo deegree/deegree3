@@ -98,6 +98,7 @@ public class ProcessExecuter {
                 LOG.debug( "input parameters (XML): " + xmlInputs );
                 LOG.debug( "input parameters (BINARY): " + binaryInputs );
                 LOG.debug( "input parameters (BBOX): " + bboxInputs );
+                LOG.debug( "outputs: " + outputs );
             }
             ProcessExecution execution = processToExecute.prepareExecution();
             InputType[] inputDescription = processToExecute.getInputTypes();
@@ -123,8 +124,9 @@ public class ProcessExecuter {
                 } else if ( input instanceof BBoxInputType ) {
                     BBox bbox = bboxInputs.get( input.getId().toString() );
                     if ( bbox != null ) {
-                        execution.addBBoxInput( input.getId().getCode(), input.getId().getCodeSpace(), bbox.getLower(),
-                                                bbox.getUpper(), bbox.getCrs() );
+                        execution.addBBoxInput( input.getId().getCode(), input.getId().getCodeSpace(),
+                                                new double[] { bbox.getMinx(), bbox.getMinY() },
+                                                new double[] { bbox.getMaxX(), bbox.getMaxY() }, bbox.getCrs() );
                     }
                 }
             }
