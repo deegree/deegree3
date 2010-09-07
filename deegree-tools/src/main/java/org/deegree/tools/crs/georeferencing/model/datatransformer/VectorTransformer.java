@@ -147,14 +147,12 @@ public class VectorTransformer {
                 int initValueGeoArray[] = values.getPixelCoord( pGeoWorld );
                 AbstractGRPoint initValueGeo = new GeoReferencedPoint( initValueGeoArray[0], initValueGeoArray[1] );
 
-                pFirst = new Point4Values( initValueFoot, pFootWorld, new RowColumn( counterE1,
-                                                                                     new Double( c ).intValue(),
-                                                                                     new Double( d ).intValue() ) );
-                pSec = new Point4Values( initValueGeo, pGeoWorld, new RowColumn( counterE1, new Double( a ).intValue(),
-                                                                                 new Double( b ).intValue() ) );
+                pFirst = new Point4Values( initValueFoot, pFootWorld, new RowColumn( counterE1, 2, 3 ) );
+                pSec = new Point4Values( initValueGeo, pGeoWorld, new RowColumn( counterE1, 0, 1 ) );
                 pr = new PointResidual( f, g );
 
                 mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>( pFirst, pSec, pr ) );
+                counterE1++;
             }
         }
     }

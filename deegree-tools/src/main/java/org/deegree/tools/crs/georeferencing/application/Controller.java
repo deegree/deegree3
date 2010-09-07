@@ -493,7 +493,29 @@ public class Controller {
                 }
                 if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
 
-                    transformationType = TransformationType.PolynomialFirstOrder;
+                    transformationType = TransformationType.Polynomial;
+                    order = 1;
+
+                    view.activateTransformationCheckbox( selectedCheckbox );
+                }
+                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_SECOND ) ) {
+
+                    transformationType = TransformationType.Polynomial;
+                    order = 2;
+
+                    view.activateTransformationCheckbox( selectedCheckbox );
+                }
+                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_THIRD ) ) {
+
+                    transformationType = TransformationType.Polynomial;
+                    order = 3;
+
+                    view.activateTransformationCheckbox( selectedCheckbox );
+                }
+                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FOURTH ) ) {
+
+                    transformationType = TransformationType.Polynomial;
+                    order = 4;
 
                     view.activateTransformationCheckbox( selectedCheckbox );
                 }
@@ -573,18 +595,21 @@ public class Controller {
 
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
-
+                    int[] deleteableRows = new int[tableRows.length];
+                    int i = 0;
                     for ( int tableRow : tableRows ) {
                         boolean contained = false;
+
                         for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
                             System.out.println( "[Controller] beforeRemoving: " + p.second + "\n" );
                             if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
 
                                 contained = true;
-                                removeFromMappedPoints( tableRow );
+                                deleteableRows[i++] = tableRow;
+
+                                System.out.println( "[Controller] afterRemoving: " + p.second + "\n\n" );
                                 break;
                             }
-                            System.out.println( "[Controller] afterRemoving: " + p.second + "\n\n" );
 
                         }
                         if ( contained == false ) {
@@ -593,6 +618,7 @@ public class Controller {
                             panel.setLastAbstractPoint( null, null, null );
                         }
                     }
+                    removeFromMappedPoints( tableRows );
                     updateResidualsWithLastAbstractPoint();
                     updateDrawingPanels();
                 }
@@ -1357,7 +1383,7 @@ public class Controller {
     private TransformationMethod determineTransformationType( TransformationType type ) {
         TransformationMethod t = null;
         switch ( type ) {
-        case PolynomialFirstOrder:
+        case Polynomial:
             t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
             break;
         case Helmert_4:
@@ -1365,7 +1391,7 @@ public class Controller {
             break;
 
         case Affine:
-            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
+            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, 1 );
             break;
         }
 
@@ -1412,6 +1438,7 @@ public class Controller {
             // remove the last element...should be the before inserted value
             mappedPoints.remove( mappedPoints.size() - 1 );
         } else {
+            updateMappedPoints();
             updateResiduals( transformationType );
         }
     }
@@ -1660,9 +1687,10 @@ public class Controller {
      * @param pointFromTable
      *            that should be removed, could be <Code>null</Code>
      */
-    private void removeFromMappedPoints( int tableRow ) {
-
-        mappedPoints.remove( tableRow );
+    private void removeFromMappedPoints( int[] tableRows ) {
+        for ( int i = tableRows.length - 1; i >= 0; i-- ) {
+            mappedPoints.remove( tableRows[i] );
+        }
 
     }
 
