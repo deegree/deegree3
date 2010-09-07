@@ -61,7 +61,7 @@ import org.deegree.tools.crs.CoordinateTransform;
 import org.deegree.tools.crs.EPSGDBSynchronizer;
 import org.deegree.tools.crs.PolynomialParameterCreator;
 import org.deegree.tools.crs.XMLCoordinateTransform;
-import org.deegree.tools.crs.georeferencing.communication.GRViewer;
+import org.deegree.tools.crs.georeferencing.GRViewer;
 import org.deegree.tools.feature.gml.ApplicationSchemaTool;
 import org.deegree.tools.feature.gml.GMLSchemaAnalyzer;
 import org.deegree.tools.feature.gml.GMLSchemaComparator;
