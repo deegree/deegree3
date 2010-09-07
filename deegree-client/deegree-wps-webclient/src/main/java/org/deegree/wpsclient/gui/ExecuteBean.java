@@ -53,18 +53,13 @@ import javax.faces.event.ActionEvent;
 
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.model.UploadedFile;
-import org.deegree.protocol.wps.client.input.type.BBoxInputType;
-import org.deegree.protocol.wps.client.input.type.ComplexInputType;
-import org.deegree.protocol.wps.client.input.type.InputType;
-import org.deegree.protocol.wps.client.input.type.LiteralInputType;
 import org.deegree.protocol.wps.client.output.BBoxOutput;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
 import org.deegree.protocol.wps.client.output.ExecutionOutput;
 import org.deegree.protocol.wps.client.output.LiteralOutput;
 import org.deegree.protocol.wps.client.param.ComplexFormat;
 import org.deegree.protocol.wps.client.process.Process;
-import org.deegree.protocol.wps.client.process.ProcessExecution;
-import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
+import org.deegree.wpsclient.controller.ProcessExecuter;
 import org.slf4j.Logger;
 
 /**
@@ -102,63 +97,31 @@ public class ExecuteBean implements Serializable {
     private List<String> outputs = new ArrayList<String>();
 
     public void executeProcess( ActionEvent event ) {
-        if ( event.getComponent() instanceof HtmlCommandButton ) {
-            boolean selectedOutput = true;
-            clearResponse();
-            FacesContext fc = FacesContext.getCurrentInstance();
-            Process selectedProcess = (Process) event.getComponent().getAttributes().get( "process" );
-            try {
-                if ( selectedProcess != null ) {
-                    if ( LOG.isDebugEnabled() ) {
-                        LOG.debug( "execute selected process " + selectedProcess.getId() );
-                        LOG.debug( "input parameters (LITERAL): " + literalInputs );
-                        LOG.debug( "input parameters (XML): " + xmlInputs );
-                        LOG.debug( "input parameters (BINARY): " + binaryInputs );
-                        LOG.debug( "input parameters (BBOX): " + bboxInputs );
-                    }
-                    ProcessExecution execution = selectedProcess.prepareExecution();
-                    InputType[] inputDescription = selectedProcess.getInputTypes();
-                    for ( int i = 0; i < inputDescription.length; i++ ) {
-                        InputType input = inputDescription[i];
-                        if ( input instanceof LiteralInputType ) {
-                            String literal = literalInputs.get( input.getId().toString() );
-                            if ( literal != null ) {
-                                execution.addLiteralInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                           literal, null, null );
-                            }
-                        } else if ( input instanceof ComplexInputType ) {
-                            UploadedFile xml = xmlInputs.get( input.getId().toString() );
-                            if ( xml != null ) {
-                                execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                       xml.getUrl(), false, null, null, null );
-                            }
-                            UploadedFile binary = binaryInputs.get( input.getId().toString() );
-                            if ( binary != null ) {
-                                execution.addBinaryInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                          binary.getUrl(), false, null, null );
-                            }
-                        } else if ( input instanceof BBoxInputType ) {
-                            BBox bbox = getBboxInputs().get( input.getId().toString() );
-                            if ( bbox != null ) {
-                                execution.addBBoxInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                        bbox.getLower(), bbox.getUpper(), bbox.getCrs() );
-                            }
-                        }
-                    }
-                    if ( outputs.size() == 0 ) {
-                        outputs.add( selectedProcess.getOutputTypes()[0].getId().toString() );
-                        selectedOutput = false;
-                    }
-                    for ( String out : outputs ) {
-                        execution.addOutput( out, null, null, true, null, null, null );
-                    }
-                    ExecutionOutputs response = execution.execute();
-                    // // OR, not yet finished
-                    // execution.startAsync();
 
-                    ExecutionOutput[] outputs = response.getAll();
-                    for ( int i = 0; i < outputs.length; i++ ) {
-                        ExecutionOutput output = response.get( i );
+        if ( event.getComponent() instanceof HtmlCommandButton ) {
+            Process selectedProcess = (Process) event.getComponent().getAttributes().get( "process" );
+
+            if ( selectedProcess != null ) {
+                FacesContext fc = FacesContext.getCurrentInstance();
+                if ( outputs.size() == 0 ) {
+                    try {
+                        outputs.add( selectedProcess.getOutputTypes()[0].getId().toString() );
+                    } catch ( Exception e ) {
+                        if ( LOG.isDebugEnabled() ) {
+                            e.printStackTrace();
+                        }
+                        FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.REQUEST_WPS",
+                                                            e.getMessage() );
+                        fc.addMessage( "ExecuteBean.execute.ERROR_REQUEST", msg );
+                    }
+                }
+                ProcessExecuter executer = new ProcessExecuter();
+                ExecutionOutput[] executionOutput = executer.execute( selectedProcess, literalInputs, bboxInputs,
+                                                                      xmlInputs, binaryInputs, outputs );
+
+                if ( executionOutput != null ) {
+                    for ( int i = 0; i < executionOutput.length; i++ ) {
+                        ExecutionOutput output = executionOutput[i];
                         if ( output instanceof LiteralOutput ) {
                             literalOutputs.add( (LiteralOutput) output );
                         } else if ( output instanceof BBoxOutput ) {
@@ -175,25 +138,8 @@ public class ExecuteBean implements Serializable {
                     FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_INFO, "INFO.REQUEST_SUCCESS" );
                     fc.addMessage( "ExecuteBean.execute.REQUEST", msg );
                 }
-            } catch ( Exception e ) {
-                if ( LOG.isDebugEnabled() ) {
-                    e.printStackTrace();
-                }
-                FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.REQUEST_WPS",
-                                                    e.getMessage() );
-                fc.addMessage( "ExecuteBean.execute.ERROR_REQUEST", msg );
-            }
-            if ( !selectedOutput ) {
-                outputs.clear();
             }
         }
-    }
-
-    private void clearResponse() {
-        literalOutputs.clear();
-        bboxOutputs.clear();
-        xmlOutputs.clear();
-        binaryOutputs.clear();
     }
 
     /******************* GETTER / SETTER ******************/
