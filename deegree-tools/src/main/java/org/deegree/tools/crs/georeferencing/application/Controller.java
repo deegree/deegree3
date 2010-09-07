@@ -573,29 +573,27 @@ public class Controller {
 
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
-                    for ( int tableRow : tableRows ) {
 
+                    for ( int tableRow : tableRows ) {
                         boolean contained = false;
                         for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
                             System.out.println( "[Controller] beforeRemoving: " + p.second + "\n" );
                             if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
 
                                 contained = true;
-                                removeFromMappedPoints( p );
+                                removeFromMappedPoints( tableRow );
                                 break;
                             }
                             System.out.println( "[Controller] afterRemoving: " + p.second + "\n\n" );
 
                         }
                         if ( contained == false ) {
+
                             footPanel.setLastAbstractPoint( null, null, null );
                             panel.setLastAbstractPoint( null, null, null );
                         }
-
                     }
-                    updateMappedPoints();
-                    updateResiduals( transformationType );
-                    tablePanel.removeRow( tableRows );
+                    updateResidualsWithLastAbstractPoint();
                     updateDrawingPanels();
                 }
 
@@ -1151,6 +1149,7 @@ public class Controller {
         @Override
         public void mouseReleased( MouseEvent m ) {
             Object source = m.getSource();
+            boolean isFirstNumber = false;
             if ( source instanceof JPanel ) {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
@@ -1212,6 +1211,7 @@ public class Controller {
                                 if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
                                      && panel.getFocus() == true ) {
                                     tablePanel.addRow();
+                                    isFirstNumber = true;
                                 }
 
                                 double x = m.getX();
@@ -1220,7 +1220,9 @@ public class Controller {
                                 GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                                 rc = tablePanel.setCoords( g );
                                 panel.setLastAbstractPoint( geoReferencedPoint, g, rc );
-
+                                if ( isFirstNumber == false ) {
+                                    updateResidualsWithLastAbstractPoint();
+                                }
                             } else {
                                 // just pan
                                 mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
@@ -1292,6 +1294,7 @@ public class Controller {
                             if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
                                  && footPanel.getFocus() == true ) {
                                 tablePanel.addRow();
+                                isFirstNumber = true;
                             }
                             double x = m.getX();
                             double y = m.getY();
@@ -1307,6 +1310,9 @@ public class Controller {
                             }
                             rc = tablePanel.setCoords( point.second );
                             footPanel.setLastAbstractPoint( point.first, point.second, rc );
+                            if ( isFirstNumber == false ) {
+                                updateResidualsWithLastAbstractPoint();
+                            }
 
                         } else {
                             mouseFootprint.setMouseChanging( new FootprintPoint(
@@ -1322,7 +1328,6 @@ public class Controller {
                 }
             }
         }
-
     }
 
     /**
@@ -1378,6 +1383,7 @@ public class Controller {
 
         TransformationMethod t = determineTransformationType( type );
         PointResidual[] r = t.calculateResiduals();
+        Vector<Vector<Double>> data = new Vector<Vector<Double>>();
         int counter = 0;
         for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
             Vector element = new Vector( 6 );
@@ -1387,13 +1393,27 @@ public class Controller {
             element.add( point.first.getWorldCoords().getY() );
             element.add( r[counter].getX() );
             element.add( r[counter].getY() );
-            tablePanel.getModel().getDataVector().set( counter, element );
-            tablePanel.getModel().fireTableDataChanged();
+            data.add( element );
 
             point.third = r[counter++];
 
         }
+        tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
+        tablePanel.getModel().fireTableDataChanged();
+    }
 
+    private void updateResidualsWithLastAbstractPoint() {
+        if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
+            mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>( footPanel.getLastAbstractPoint(),
+                                                                                     panel.getLastAbstractPoint(), null ) );
+            updateMappedPoints();
+            updateResiduals( transformationType );
+
+            // remove the last element...should be the before inserted value
+            mappedPoints.remove( mappedPoints.size() - 1 );
+        } else {
+            updateResiduals( transformationType );
+        }
     }
 
     /**
@@ -1640,10 +1660,9 @@ public class Controller {
      * @param pointFromTable
      *            that should be removed, could be <Code>null</Code>
      */
-    private void removeFromMappedPoints( Triple<Point4Values, Point4Values, PointResidual> pointFromTable ) {
-        if ( pointFromTable != null ) {
-            mappedPoints.remove( pointFromTable );
-        }
+    private void removeFromMappedPoints( int tableRow ) {
+
+        mappedPoints.remove( tableRow );
 
     }
 
@@ -1656,7 +1675,7 @@ public class Controller {
 
         int counter = 0;
         for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
-            System.out.println( "[Controller] before: " + p.second );
+            System.out.println( "[Controller] before: " + p );
             Point4Values f = new Point4Values( p.first.getOldValue(), p.first.getInitialValue(), p.first.getNewValue(),
                                                p.first.getWorldCoords(), new RowColumn( counter,
                                                                                         p.first.getRc().getColumnX(),
@@ -1665,9 +1684,14 @@ public class Controller {
                                                p.second.getNewValue(), p.second.getWorldCoords(),
                                                new RowColumn( counter++, p.second.getRc().getColumnX(),
                                                               p.second.getRc().getColumnY() ) );
-            PointResidual r = new PointResidual( p.third.getX(), p.third.getY() );
-            System.out.println( "\n[Controller] after: " + s );
-            temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, r ) );
+            if ( p.third != null ) {
+
+                PointResidual r = new PointResidual( p.third.getX(), p.third.getY() );
+                System.out.println( "\n[Controller] after: " + s );
+                temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, r ) );
+            } else {
+                temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, null ) );
+            }
         }
         mappedPoints.clear();
         mappedPoints.addAll( temp );
