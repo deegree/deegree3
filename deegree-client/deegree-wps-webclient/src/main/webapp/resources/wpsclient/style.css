@@ -1,4 +1,37 @@
+#container {
+	max-width: 800px;
+	margin: 0px auto;
+	text-align: left;
+}
+
+#header {
+	font-size: larger;
+}
 
 .field {
 	margin: 10px 0px;
+}
+
+fieldset.field legend {
+	font-style: italic;
+	font-weight: bold;
+}
+
+.paramBody {
+	margin-bottom: 10px;
+}
+
+.paramHeader {
+	text-align: left;
+	text-decoration: underline;
+	font-style: normal;
+	font-weight: normal;
+}
+
+.form {
+	margin-left: 25px;
+}
+
+.msgError, .msgFatal {
+	color: red;
 }
