@@ -69,6 +69,8 @@ public abstract class AbstractTransformation {
 
     protected final int order;
 
+    protected PointResidual[] residuals;
+
     public AbstractTransformation( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints,
                                    Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
                                    final int order ) {
@@ -107,6 +109,10 @@ public abstract class AbstractTransformation {
             countT++;
         }
         return codeTypes;
+    }
+
+    public PointResidual[] getResiduals() {
+        return residuals;
     }
 
 }

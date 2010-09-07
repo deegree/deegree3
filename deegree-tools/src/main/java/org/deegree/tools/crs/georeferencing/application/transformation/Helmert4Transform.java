@@ -114,6 +114,7 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
                               Footprint footPrint, Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS,
                               final int order ) {
         super( mappedPoints, footPrint, sceneValues, targetCRS, targetCRS, order );
+
     }
 
     @Override
@@ -250,6 +251,18 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
             /*
              * Caluculate the residuals TODO
              */
+            double[] residualE = new double[arraySize];
+            double[] residualN = new double[arraySize];
+            residuals = new PointResidual[arraySize];
+
+            for ( int i = 0; i < arraySize; i++ ) {
+                residualE[i] = passPointsSrcE[i] - passPointsE_one[i];
+                System.out.println( "[Helmert4] residualE -->  \nv(E): " + residualE[i] );
+                residualN[i] = passPointsSrcN[i] - passPointsN_one[i];
+                System.out.println( "[Helmert4] residualN -->  \nv(N): " + residualN[i] );
+                residuals[i] = new PointResidual( residualE[i], residualN[i] );
+
+            }
 
             /*
              * calculate the new coordinates in the target coordinate system
@@ -287,12 +300,6 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
     public TransformationType getType() {
 
         return TransformationType.Helmert_4;
-    }
-
-    @Override
-    public PointResidual[] getResiduals() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

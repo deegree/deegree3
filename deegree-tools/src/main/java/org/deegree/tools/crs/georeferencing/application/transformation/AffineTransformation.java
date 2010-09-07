@@ -318,10 +318,4 @@ public class AffineTransformation extends AbstractTransformation implements Tran
         return TransformationType.Affine;
     }
 
-    @Override
-    public PointResidual[] getResiduals() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

@@ -53,6 +53,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.ButtonModel;
 import javax.swing.JButton;
@@ -442,6 +443,22 @@ public class Controller {
         panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
     }
 
+    private void updateDrawingPanels() {
+        List<Point4Values> panelList = new ArrayList<Point4Values>();
+        List<Point4Values> footPanelList = new ArrayList<Point4Values>();
+        for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
+            panelList.add( p.second );
+            footPanelList.add( p.first );
+        }
+
+        panel.setSelectedPoints( panelList, sceneValues );
+        footPanel.setSelectedPoints( footPanelList, sceneValues );
+
+        panel.repaint();
+        footPanel.repaint();
+
+    }
+
     /**
      * 
      * Controls the ActionListener
@@ -573,6 +590,7 @@ public class Controller {
 
                     }
                     updateMappedPoints();
+                    updateResiduals();
                     tablePanel.removeRow( tableRows );
                     updateDrawingPanels();
                 }
@@ -863,22 +881,6 @@ public class Controller {
 
         }
 
-        private void updateDrawingPanels() {
-            List<Point4Values> panelList = new ArrayList<Point4Values>();
-            List<Point4Values> footPanelList = new ArrayList<Point4Values>();
-            for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
-                panelList.add( p.second );
-                footPanelList.add( p.first );
-            }
-
-            panel.setSelectedPoints( panelList, sceneValues );
-            footPanel.setSelectedPoints( footPanelList, sceneValues );
-
-            panel.repaint();
-            footPanel.repaint();
-
-        }
-
         private void fireTextfieldJumperDialog() {
             try {
                 textFieldModel.setTextInput( jumperDialog.getCoordinateJumper().getText() );
@@ -941,16 +943,18 @@ public class Controller {
                     boolean changed = changePointLocation( p, data, row, column );
                     if ( changed ) {
 
-                        List<Point4Values> listPS = new ArrayList<Point4Values>();
-                        List<Point4Values> listPF = new ArrayList<Point4Values>();
-                        for ( Triple<Point4Values, Point4Values, PointResidual> m : mappedPoints ) {
-                            listPS.add( m.second );
-                            listPF.add( m.first );
-                        }
-                        panel.setSelectedPoints( listPS, sceneValues );
-                        footPanel.setSelectedPoints( listPF, sceneValues );
-                        panel.repaint();
-                        footPanel.repaint();
+                        // List<Point4Values> listPS = new ArrayList<Point4Values>();
+                        // List<Point4Values> listPF = new ArrayList<Point4Values>();
+                        // for ( Triple<Point4Values, Point4Values, PointResidual> m : mappedPoints ) {
+                        // listPS.add( m.second );
+                        // listPF.add( m.first );
+                        // }
+                        // panel.setSelectedPoints( listPS, sceneValues );
+                        // footPanel.setSelectedPoints( listPF, sceneValues );
+                        // panel.repaint();
+                        // footPanel.repaint();
+
+                        updateDrawingPanels();
 
                     }
                 }
@@ -959,13 +963,7 @@ public class Controller {
                     Triple<Point4Values, Point4Values, PointResidual> newLastPair = new Triple<Point4Values, Point4Values, PointResidual>(
                                                                                                                                            footPanel.getLastAbstractPoint(),
                                                                                                                                            panel.getLastAbstractPoint(),
-                                                                                                                                           new PointResidual(
-                                                                                                                                                              (Double) model.getValueAt(
-                                                                                                                                                                                         row,
-                                                                                                                                                                                         4 ),
-                                                                                                                                                              (Double) model.getValueAt(
-                                                                                                                                                                                         row,
-                                                                                                                                                                                         5 ) ) );
+                                                                                                                                           null );
                     if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
                         boolean changed = changePointLocation( newLastPair, data, row, column );
                         if ( changed ) {
@@ -1363,10 +1361,38 @@ public class Controller {
     private void setValues() {
         footPanel.addToSelectedPoints( footPanel.getLastAbstractPoint() );
         panel.addToSelectedPoints( panel.getLastAbstractPoint() );
-
-        addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint(), null );
+        if ( mappedPoints != null && mappedPoints.size() >= 1 ) {
+            addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint(), null );
+            updateResiduals();
+        } else {
+            addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint(), null );
+        }
         footPanel.setLastAbstractPoint( null, null, null );
         panel.setLastAbstractPoint( null, null, null );
+
+    }
+
+    private void updateResiduals() {
+
+        TransformationMethod defHelmertT = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS,
+                                                                  targetCRS, 1 );
+        defHelmertT.computeRingList();
+        PointResidual[] r = defHelmertT.getResiduals();
+        int counter = 0;
+        for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
+            Vector element = new Vector( 6 );
+            element.add( point.second.getWorldCoords().getX() );
+            element.add( point.second.getWorldCoords().getY() );
+            element.add( point.first.getWorldCoords().getX() );
+            element.add( point.first.getWorldCoords().getY() );
+            element.add( r[counter].getX() );
+            element.add( r[counter].getY() );
+            tablePanel.getModel().getDataVector().set( counter, element );
+            tablePanel.getModel().fireTableDataChanged();
+
+            point.third = r[counter++];
+
+        }
 
     }
 
