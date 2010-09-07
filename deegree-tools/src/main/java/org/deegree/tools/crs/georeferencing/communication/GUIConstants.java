@@ -75,6 +75,8 @@ public class GUIConstants {
 
     public static final String MENUITEM_TRANS_POLYNOM_THIRD = "Polynomial 3";
 
+    public static final String MENUITEM_TRANS_POLYNOM_FOURTH = "Polynomial 4";
+
     public static final String MENUITEM_TRANS_HELMERT = "Helmert Transformation";
 
     public static final String MENUITEM_TRANS_AFFINE = "Affine Transformation";

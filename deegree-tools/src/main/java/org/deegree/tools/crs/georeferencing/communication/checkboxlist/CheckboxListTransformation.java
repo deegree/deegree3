@@ -38,6 +38,9 @@ package org.deegree.tools.crs.georeferencing.communication.checkboxlist;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_AFFINE;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_HELMERT;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_POLYNOM_FOURTH;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_POLYNOM_SECOND;
+import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_POLYNOM_THIRD;
 
 import java.awt.event.ActionListener;
 
@@ -55,8 +58,9 @@ import org.deegree.tools.crs.georeferencing.model.CheckBoxListModel;
  */
 public class CheckboxListTransformation {
 
-    private final String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_HELMERT,
-                                                  MENUITEM_TRANS_AFFINE };
+    private final String[] sArray = new String[] { MENUITEM_TRANS_POLYNOM_FIRST, MENUITEM_TRANS_POLYNOM_SECOND,
+                                                  MENUITEM_TRANS_POLYNOM_THIRD, MENUITEM_TRANS_POLYNOM_FOURTH,
+                                                  MENUITEM_TRANS_HELMERT, MENUITEM_TRANS_AFFINE };
 
     private final CheckBoxListModel model;
 
