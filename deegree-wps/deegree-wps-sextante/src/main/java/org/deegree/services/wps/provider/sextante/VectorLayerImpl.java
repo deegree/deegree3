@@ -248,7 +248,7 @@ public class VectorLayerImpl extends AbstractVectorLayer {
     private void setShapeType( Geometry geom ) {
 
         // LOGGING: type of this geometry
-        //LOG.info( "SHAPE TYPE (geometry): " + geom.getGeometryType() );
+        // LOG.info( "SHAPE TYPE (geometry): " + geom.getGeometryType() );
 
         try {
 

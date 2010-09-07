@@ -226,13 +226,13 @@ public class SextanteProcesslet implements Processlet {
         // feature collection input
         if ( FormatHelper.determineGMLType( gmlInput ).equals( GMLType.FEATURE_COLLECTION ) ) {
             FeatureCollection coll = readFeatureCollection( gmlInput );
-            layer = IVectorLayerAdapter.createVectorLayer( coll );
+            layer = VectorLayerAdapter.createVectorLayer( coll );
         } else {
 
             // geometry input
             if ( FormatHelper.determineGMLType( gmlInput ).equals( GMLType.GEOMETRY ) ) {
                 Geometry geometry = readGeometry( gmlInput );
-                layer = IVectorLayerAdapter.createVectorLayer( geometry );
+                layer = VectorLayerAdapter.createVectorLayer( geometry );
             }
         }
 
@@ -534,13 +534,13 @@ public class SextanteProcesslet implements Processlet {
 
         // feature collection output
         if ( FormatHelper.determineGMLType( gmlOutput ).equals( GMLType.FEATURE_COLLECTION ) ) {
-            FeatureCollection fc = IVectorLayerAdapter.createFeatureCollection( result );
+            FeatureCollection fc = VectorLayerAdapter.createFeatureCollection( result );
             writeFeatureCollection( gmlOutput, fc );
         } else {
 
             // geometry output
             if ( FormatHelper.determineGMLType( gmlOutput ).equals( GMLType.GEOMETRY ) ) {
-                Geometry g = IVectorLayerAdapter.createGeometry( result );
+                Geometry g = VectorLayerAdapter.createGeometry( result );
 
                 if ( g != null ) {
                     writeGeometry( gmlOutput, g );

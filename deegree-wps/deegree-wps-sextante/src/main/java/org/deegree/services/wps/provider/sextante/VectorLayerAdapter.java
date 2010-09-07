@@ -43,7 +43,6 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.CRS;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
@@ -73,7 +72,7 @@ import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.IteratorException;
 
 /**
- * The {@link IVectorLayerAdapter} has methods to create a {@link IVectorLayer} from a {@link Geometry}, <br>
+ * The {@link VectorLayerAdapter} has methods to create a {@link IVectorLayer} from a {@link Geometry}, <br>
  * {@link Feature} or {@link FeatureCollection} and methods to create a {@link Geometry}, {@link Feature} or
  * {@link FeatureCollection} from a {@link IVectorLayer} .
  * 
@@ -83,10 +82,10 @@ import es.unex.sextante.exceptions.IteratorException;
  * 
  * @version $Revision: $, $Date: $
  */
-public class IVectorLayerAdapter {
+public class VectorLayerAdapter {
 
     // logger
-    private static final Logger LOG = LoggerFactory.getLogger( IVectorLayerAdapter.class );
+    private static final Logger LOG = LoggerFactory.getLogger( VectorLayerAdapter.class );
 
     /**
      * Creates an {@link IVectorLayer} from a {@link FeatureCollection}.

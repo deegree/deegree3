@@ -50,7 +50,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.services.wps.provider.sextante.IVectorLayerAdapter;
+import org.deegree.services.wps.provider.sextante.VectorLayerAdapter;
 import org.deegree.services.wps.provider.sextante.OutputFactoryImpl;
 import org.deegree.services.wps.provider.sextante.VectorLayerImpl;
 import org.junit.Test;
@@ -72,7 +72,7 @@ import es.unex.sextante.vectorTools.centroids.CentroidsAlgorithm;
  * 
  * @version $Revision: $, $Date: $
  */
-public class IVectorAdapterTest {
+public class VectorLayerAdapterTest {
 
     /**
      * Tests the IVectorAdapter with geometries.
@@ -86,10 +86,10 @@ public class IVectorAdapterTest {
             for ( Geometry gIn : geoms ) {
 
                 // create vector layer
-                IVectorLayer layer = IVectorLayerAdapter.createVectorLayer( gIn );
+                IVectorLayer layer = VectorLayerAdapter.createVectorLayer( gIn );
 
                 // create geometry
-                Geometry gOut = IVectorLayerAdapter.createGeometry( layer );
+                Geometry gOut = VectorLayerAdapter.createGeometry( layer );
 
                 // check geometry
                 Assert.assertTrue( gIn.equals( gOut ) );
@@ -111,8 +111,8 @@ public class IVectorAdapterTest {
 
             for ( Feature f : fs ) {
 
-                IVectorLayer layer = IVectorLayerAdapter.createVectorLayer( f );
-                Feature fOut = IVectorLayerAdapter.createFeature( layer );
+                IVectorLayer layer = VectorLayerAdapter.createVectorLayer( f );
+                Feature fOut = VectorLayerAdapter.createFeature( layer );
 
                 if ( f instanceof FeatureCollection ) {
 
@@ -162,10 +162,10 @@ public class IVectorAdapterTest {
             for ( FeatureCollection fcIn : fcs ) {
 
                 // create vector layer
-                IVectorLayer layer = IVectorLayerAdapter.createVectorLayer( fcIn );
+                IVectorLayer layer = VectorLayerAdapter.createVectorLayer( fcIn );
 
                 // create feature collection
-                FeatureCollection fcOut = IVectorLayerAdapter.createFeatureCollection( layer );
+                FeatureCollection fcOut = VectorLayerAdapter.createFeatureCollection( layer );
 
                 checkFeatureCollection( fcIn, fcOut );
 
@@ -186,7 +186,7 @@ public class IVectorAdapterTest {
     private static FeatureCollection readFeatureCollection( String filename )
                             throws Exception {
 
-        URL url = IVectorAdapterTest.class.getResource( filename );
+        URL url = VectorLayerAdapterTest.class.getResource( filename );
         GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, url );
         FeatureCollection fc = gmlStreamReader.readFeatureCollection();
         return fc;
@@ -244,17 +244,17 @@ public class IVectorAdapterTest {
         File geom = null;
 
         if ( type.equals( GeometryType.POINT ) )
-            geom = new File( IVectorAdapterTest.class.getResource( "GML31_Point.xml" ).getPath() );
+            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_Point.xml" ).getPath() );
         else if ( type.equals( GeometryType.LINE_STRING ) )
-            geom = new File( IVectorAdapterTest.class.getResource( "GML31_LineString.xml" ).getPath() );
+            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_LineString.xml" ).getPath() );
         else if ( type.equals( GeometryType.POLYGON ) )
-            geom = new File( IVectorAdapterTest.class.getResource( "GML31_Polygon.xml" ).getPath() );
+            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_Polygon.xml" ).getPath() );
         else if ( type.equals( GeometryType.MULTI_POINT ) )
-            geom = new File( IVectorAdapterTest.class.getResource( "GML31_MultiPoint.xml" ).getPath() );
+            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_MultiPoint.xml" ).getPath() );
         else if ( type.equals( GeometryType.MULTI_LINE_STRING ) )
-            geom = new File( IVectorAdapterTest.class.getResource( "GML31_MultiLineString.xml" ).getPath() );
+            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_MultiLineString.xml" ).getPath() );
         else if ( type.equals( GeometryType.MULTI_POLYGON ) )
-            geom = new File( IVectorAdapterTest.class.getResource( "GML31_MultiPolygon.xml" ).getPath() );
+            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_MultiPolygon.xml" ).getPath() );
 
         GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31,
                                                                                  geom.toURI().toURL() );
