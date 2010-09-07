@@ -110,37 +110,34 @@ public class MessageUtils {
     }
 
     /**
-     * 
-     * @param bundleName
-     *            the name of the resource bundle, can be <code>null</code>, in this case the deegree properties or JSF
-     *            properties will be used as fallback
      * @param severity
      *            the severity level of the message, must not be <code>null</code>
      * @param key
      *            the message key, must not be <code>null</code>
      * @param args
      *            a list of arguments
-     * @return A faces message with the given severity. The message summary will be created from the key in the message
-     *         bundles of the application. The message detail from key 'KEY_detail'.
+     * @return A faces message with the given severity. The text of the FacesMessage will be searched in three
+     *         locations: 1. in the application bundle 2. in the the deegree bundle 3. in the JSF bundle The first of
+     *         the undle conatining the KEY will be choosed to take the message summary (KEY) and message detail
+     *         (KEY_detail).
      */
-    public static FacesMessage getFacesMessage( String bundleName, FacesMessage.Severity severity, String key,
-                                                Object... args ) {
+    public static FacesMessage getFacesMessage( FacesMessage.Severity severity, String key, Object... args ) {
         FacesContext context = FacesContext.getCurrentInstance();
+        Locale locale = context.getViewRoot().getLocale();
         ResourceBundle bundle = null;
         String msgSummary = null;
         String msgDetail = null;
-        if ( bundleName != null ) {
-            bundle = context.getApplication().getResourceBundle( context, bundleName );
-            try {
-                msgSummary = bundle.getString( key );
-            } catch ( Exception e ) {
-                // nothing to do - try to get from deegree bundle
-            }
+        // try to get form application bundle
+        try {
+            String appBundle = context.getApplication().getMessageBundle();
+            bundle = ResourceBundle.getBundle( appBundle, locale );
+            msgSummary = bundle.getString( key );
+        } catch ( Exception e ) {
+            // nothing to do - try to get from deegree bundle
         }
 
         if ( msgSummary == null ) {
             try {
-                Locale locale = context.getViewRoot().getLocale();
                 bundle = ResourceBundle.getBundle( DEEGREE_RESOURCE_BUNDLE, locale );
                 msgSummary = bundle.getString( key );
             } catch ( MissingResourceException e ) {
@@ -150,7 +147,6 @@ public class MessageUtils {
 
         if ( msgSummary == null ) {
             try {
-                Locale locale = context.getViewRoot().getLocale();
                 bundle = ResourceBundle.getBundle( JSF_BUNDLE_BASENAME, locale );
                 msgSummary = bundle.getString( key );
             } catch ( MissingResourceException e ) {

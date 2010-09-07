@@ -75,7 +75,6 @@ public class FileMimeTypeValidator implements Validator {
             if ( !mimeTypes.contains( mimeType ) ) {
                 uploadedFile.delete();
                 FacesMessage message = MessageUtils.getFacesMessage(
-                                                                     null,
                                                                      FacesMessage.SEVERITY_ERROR,
                                                                      "org.deegree.client.core.validator.FileMimeTypeValidator.invalidMimeType",
                                                                      mimeType, mimeTypes );

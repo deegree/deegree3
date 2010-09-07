@@ -151,10 +151,8 @@ public class HtmlInputBBox extends UISelectOne {
 
         if ( isRequired() && isBBoxEmpty( value ) ) {
             FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 null,
-                                                                 FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.REQUIRED",
-                                                                 getClientId() );
+
+            FacesMessage.SEVERITY_ERROR, "org.deegree.client.core.component.HtmlInputBBox.REQUIRED", getClientId() );
             context.addMessage( getClientId( context ), message );
             setValid( false );
             return;
@@ -164,19 +162,16 @@ public class HtmlInputBBox extends UISelectOne {
 
         if ( bbox.getCrs() == null ) {
             FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 null,
-                                                                 FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_CRS",
-                                                                 getClientId() );
+
+            FacesMessage.SEVERITY_ERROR, "org.deegree.client.core.component.HtmlInputBBox.INVALID_CRS", getClientId() );
             context.addMessage( getClientId( context ), message );
             setValid( false );
         }
         if ( bbox.getLower() == null || bbox.getLower().length != 2 || Double.isNaN( bbox.getLower()[0] )
              || Double.isNaN( bbox.getLower()[1] ) ) {
             FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 null,
-                                                                 FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_MINVALUES",
+
+            FacesMessage.SEVERITY_ERROR, "org.deegree.client.core.component.HtmlInputBBox.INVALID_MINVALUES",
                                                                  getClientId() );
             context.addMessage( getClientId( context ), message );
             setValid( false );
@@ -184,9 +179,8 @@ public class HtmlInputBBox extends UISelectOne {
         if ( bbox.getUpper() == null || bbox.getUpper().length != 2 || Double.isNaN( bbox.getUpper()[0] )
              || Double.isNaN( bbox.getUpper()[1] ) ) {
             FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 null,
-                                                                 FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_MAXVALUES",
+
+            FacesMessage.SEVERITY_ERROR, "org.deegree.client.core.component.HtmlInputBBox.INVALID_MAXVALUES",
                                                                  getClientId() );
             context.addMessage( getClientId( context ), message );
             setValid( false );
@@ -196,10 +190,8 @@ public class HtmlInputBBox extends UISelectOne {
              && bbox.getUpper().length == 2 && bbox.getLower()[0] < bbox.getUpper()[0]
              && bbox.getLower()[1] < bbox.getUpper()[1] ) {
             FacesMessage message = MessageUtils.getFacesMessage(
-                                                                 null,
-                                                                 FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_BBOX",
-                                                                 getClientId() );
+
+            FacesMessage.SEVERITY_ERROR, "org.deegree.client.core.component.HtmlInputBBox.INVALID_BBOX", getClientId() );
             context.addMessage( getClientId( context ), message );
             setValid( false );
         }
