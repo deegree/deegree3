@@ -468,18 +468,6 @@ public class Controller {
         @Override
         public void actionPerformed( ActionEvent e ) {
             Object source = e.getSource();
-            if ( source instanceof JCheckBox ) {
-                JCheckBox selectedCheckbox = (JCheckBox) source;
-
-                new JCheckboxHandler( selectedCheckbox, conModel );
-
-                for ( String s : wmsParameter.getCheckBoxListLayerText() ) {
-
-                    wmsParameter.fillSRSList( s );
-
-                }
-
-            }
             if ( source instanceof JTextField ) {
                 JTextField tF = (JTextField) source;
                 if ( tF.getName().startsWith( JTEXTFIELD_COORDINATE_JUMPER ) ) {
@@ -488,58 +476,96 @@ public class Controller {
 
                 }
 
-            }
+            } else if ( source instanceof JToggleButton ) {
+                if ( source instanceof JRadioButton ) {
+                    if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TWO ) ) {
 
-            if ( source instanceof JToggleButton ) {
-                JToggleButton tb = (JToggleButton) source;
+                        conModel.getDialogModel().setSelectionPointSize( 2 );
+                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.THREE ) ) {
 
-                if ( tb.getName().startsWith( GUIConstants.JBUTTON_PAN ) ) {
+                        conModel.getDialogModel().setSelectionPointSize( 3 );
+                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.DEFAULT ) ) {
 
-                    if ( tb == buttonPanGeoref ) {
-                        selectGeorefToggleButton( tb );
-                        isZoomInGeoref = false;
-                        isZoomOutGeoref = false;
-                    } else {
-                        selectFootprintToggleButton( tb );
-                        isZoomInFoot = false;
-                        isZoomOutFoot = false;
+                        conModel.getDialogModel().setSelectionPointSize( 5 );
+
+                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.SEVEN ) ) {
+
+                        conModel.getDialogModel().setSelectionPointSize( 7 );
+                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TEN ) ) {
+
+                        conModel.getDialogModel().setSelectionPointSize( 10 );
+                    } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.CUSTOM ) ) {
+                        if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" ) ) {
+                            conModel.getDialogModel().setTextFieldKeyString(
+                                                                             ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
+                            int i;
+                            try {
+                                i = Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second );
+                                conModel.getDialogModel().setSelectionPointSize( i );
+                            } catch ( NumberFormatException ex ) {
+                                new ErrorDialog( optionDialog, JDialog.ERROR, "This is not a number" );
+                            }
+
+                        }
+                    }
+
+                } else if ( source instanceof JCheckBox ) {
+                    JCheckBox selectedCheckbox = (JCheckBox) source;
+
+                    new JCheckboxHandler( selectedCheckbox, conModel );
+
+                    for ( String s : wmsParameter.getCheckBoxListLayerText() ) {
+
+                        wmsParameter.fillSRSList( s );
+
+                    }
+
+                } else {
+                    JToggleButton tb = (JToggleButton) source;
+
+                    if ( tb.getName().startsWith( GUIConstants.JBUTTON_PAN ) ) {
+
+                        if ( tb == buttonPanGeoref ) {
+                            selectGeorefToggleButton( tb );
+                            isZoomInGeoref = false;
+                            isZoomOutGeoref = false;
+                        } else {
+                            selectFootprintToggleButton( tb );
+                            isZoomInFoot = false;
+                            isZoomOutFoot = false;
+                        }
+                    } else if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
+
+                        if ( tb == buttonCoord ) {
+                            selectGeorefToggleButton( tb );
+                        } else {
+                            selectFootprintToggleButton( tb );
+                        }
+                    } else if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_IN ) ) {
+
+                        if ( tb == buttonZoomInGeoref ) {
+                            selectGeorefToggleButton( tb );
+                            isZoomInGeoref = true;
+                            isZoomOutGeoref = false;
+                        } else {
+                            selectFootprintToggleButton( tb );
+                            isZoomInFoot = true;
+                            isZoomOutFoot = false;
+                        }
+                    } else if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_OUT ) ) {
+
+                        if ( tb == buttonZoomoutGeoref ) {
+                            selectGeorefToggleButton( tb );
+                            isZoomInGeoref = false;
+                            isZoomOutGeoref = true;
+                        } else {
+                            selectFootprintToggleButton( tb );
+                            isZoomInFoot = true;
+                            isZoomOutFoot = false;
+                        }
                     }
                 }
-                if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_COORD ) ) {
-
-                    if ( tb == buttonCoord ) {
-                        selectGeorefToggleButton( tb );
-                    } else {
-                        selectFootprintToggleButton( tb );
-                    }
-                }
-                if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_IN ) ) {
-
-                    if ( tb == buttonZoomInGeoref ) {
-                        selectGeorefToggleButton( tb );
-                        isZoomInGeoref = true;
-                        isZoomOutGeoref = false;
-                    } else {
-                        selectFootprintToggleButton( tb );
-                        isZoomInFoot = true;
-                        isZoomOutFoot = false;
-                    }
-                }
-                if ( tb.getName().startsWith( GUIConstants.JBUTTON_ZOOM_OUT ) ) {
-
-                    if ( tb == buttonZoomoutGeoref ) {
-                        selectGeorefToggleButton( tb );
-                        isZoomInGeoref = false;
-                        isZoomOutGeoref = true;
-                    } else {
-                        selectFootprintToggleButton( tb );
-                        isZoomInFoot = true;
-                        isZoomOutFoot = false;
-                    }
-                }
-            }
-
-            if ( source instanceof JButton ) {
+            } else if ( source instanceof JButton ) {
 
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
@@ -569,9 +595,7 @@ public class Controller {
                     removeFromMappedPoints( tableRows );
                     updateResidualsWithLastAbstractPoint();
                     updateDrawingPanels();
-                }
-
-                if ( ( (JButton) source ).getText().startsWith( PointTableFrame.LOAD_POINTTABLE ) ) {
+                } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.LOAD_POINTTABLE ) ) {
 
                     FileInputHandler in = new FileInputHandler( tablePanel );
                     if ( in.getData() != null ) {
@@ -581,17 +605,14 @@ public class Controller {
                         updateDrawingPanels();
                     }
 
-                }
-                if ( ( (JButton) source ).getText().startsWith( PointTableFrame.SAVE_POINTTABLE ) ) {
+                } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.SAVE_POINTTABLE ) ) {
 
                     new FileOutputHandler( tablePanel );
 
-                }
-                if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
+                } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
                     removeAllFromMappedPoints();
 
-                }
-                if ( ( (JButton) source ).getText().startsWith( GUIConstants.COMPUTE_BUTTON_TEXT ) ) {
+                } else if ( ( (JButton) source ).getText().startsWith( GUIConstants.COMPUTE_BUTTON_TEXT ) ) {
                     // swap the tempPoints into the map now
                     if ( conModel.getFootPanel().getLastAbstractPoint() != null
                          && conModel.getPanel().getLastAbstractPoint() != null ) {
@@ -608,8 +629,7 @@ public class Controller {
                     conModel.getPanel().repaint();
 
                     reset();
-                }
-                if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
+                } else if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
                     if ( optionDialog != null && optionDialog.isVisible() == true ) {
                         conModel.getDialogModel().transferOldToNew();
                         AbstractPanel2D.selectedPointSize = conModel.getDialogModel().getSelectionPointSize().first;
@@ -631,8 +651,7 @@ public class Controller {
                         wmsStartDialog.setVisible( true );
                     }
 
-                }
-                if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_OK ) ) {
+                } else if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_OK ) ) {
                     if ( optionDialog != null && optionDialog.isVisible() == true ) {
 
                         if ( optionSettingPanel != null ) {
@@ -658,8 +677,7 @@ public class Controller {
                                     }
 
                                 }
-                            }
-                            if ( optionSettingPanel instanceof GeneralPanel ) {
+                            } else if ( optionSettingPanel instanceof GeneralPanel ) {
                                 String p = ( (GeneralPanel) optionSettingPanel ).getTextField(
                                                                                                ( (GeneralPanel) optionSettingPanel ).getZoomValue() ).getText();
                                 String p1 = p.replace( ',', '.' );
@@ -697,8 +715,7 @@ public class Controller {
                             wmsParameter.setVisible( true );
                         }
 
-                    }
-                    if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
+                    } else if ( wmsParameter != null && wmsParameter.isVisible() == true ) {
 
                         URL mapURL = wmsParameter.getMapURL();
                         CRS crs = wmsParameter.getCheckBoxSRS();
@@ -728,9 +745,7 @@ public class Controller {
 
                     }
                 }
-            }
-
-            if ( source instanceof JMenuItem ) {
+            } else if ( source instanceof JMenuItem ) {
 
                 if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_EDIT_OPTIONS ) ) {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
@@ -746,8 +761,7 @@ public class Controller {
 
                     optionDialog.setVisible( true );
 
-                }
-                if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_BUILDING ) ) {
+                } else if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_BUILDING ) ) {
                     List<String> list = new ArrayList<String>();
                     list.add( "gml" );
                     list.add( "xml" );
@@ -761,8 +775,7 @@ public class Controller {
                         initFootprintScene( fileChoosed );
                     }
 
-                }
-                if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_SHAPEFILE ) ) {
+                } else if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_SHAPEFILE ) ) {
                     List<String> list = new ArrayList<String>();
                     list.add( "shp" );
 
@@ -777,51 +790,12 @@ public class Controller {
                         initGeoReferencingScene( model );
                     }
 
-                }
-                if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_WMS_LAYER ) ) {
+                } else if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_WMS_LAYER ) ) {
 
                     wmsStartDialog = new OpenWMS( conModel.getView() );
                     wmsStartDialog.addListeners( new ButtonListener() );
                     wmsStartDialog.setVisible( true );
 
-                }
-
-            }
-            if ( source instanceof JRadioButton ) {
-                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TWO ) ) {
-
-                    conModel.getDialogModel().setSelectionPointSize( 2 );
-                }
-                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.THREE ) ) {
-
-                    conModel.getDialogModel().setSelectionPointSize( 3 );
-                }
-                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.DEFAULT ) ) {
-
-                    conModel.getDialogModel().setSelectionPointSize( 5 );
-
-                }
-                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.SEVEN ) ) {
-
-                    conModel.getDialogModel().setSelectionPointSize( 7 );
-                }
-                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TEN ) ) {
-
-                    conModel.getDialogModel().setSelectionPointSize( 10 );
-                }
-                if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.CUSTOM ) ) {
-                    if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" ) ) {
-                        conModel.getDialogModel().setTextFieldKeyString(
-                                                                         ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
-                        int i;
-                        try {
-                            i = Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second );
-                            conModel.getDialogModel().setSelectionPointSize( i );
-                        } catch ( NumberFormatException ex ) {
-                            new ErrorDialog( optionDialog, JDialog.ERROR, "This is not a number" );
-                        }
-
-                    }
                 }
 
             }
