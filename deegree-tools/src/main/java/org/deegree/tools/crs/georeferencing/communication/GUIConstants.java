@@ -107,6 +107,8 @@ public class GUIConstants {
 
     public static final String COMPUTE_BUTTON_TEXT = "Compute";
 
+    public static final String RESET_VIEW_BUTTON_TEXT = "Reset view";
+
     /*
      * Bounds
      */

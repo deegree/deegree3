@@ -172,6 +172,8 @@ public class Controller {
 
     private GeometryFactory geom;
 
+    private String fileChoosed;
+
     private CRS sourceCRS, targetCRS;
 
     private List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
@@ -612,6 +614,16 @@ public class Controller {
                 } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_ALL ) ) {
                     removeAllFromMappedPoints();
 
+                } else if ( ( (JButton) source ).getText().startsWith( GUIConstants.RESET_VIEW_BUTTON_TEXT ) ) {
+
+                    initGeoReferencingScene( model );
+                    initFootprintScene( fileChoosed );
+
+                    conModel.getFootPanel().updatePoints( sceneValues );
+                    conModel.getFootPanel().repaint();
+                    conModel.getPanel().updatePoints( sceneValues );
+                    conModel.getPanel().repaint();
+
                 } else if ( ( (JButton) source ).getText().startsWith( GUIConstants.COMPUTE_BUTTON_TEXT ) ) {
                     // swap the tempPoints into the map now
                     if ( conModel.getFootPanel().getLastAbstractPoint() != null
@@ -770,7 +782,7 @@ public class Controller {
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
                     FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView() );
-                    String fileChoosed = fileChooser.getSelectedFilePath();
+                    fileChoosed = fileChooser.getSelectedFilePath();
                     if ( fileChoosed != null ) {
                         initFootprintScene( fileChoosed );
                     }

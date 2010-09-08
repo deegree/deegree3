@@ -67,7 +67,9 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
 
     public final static String NAVIGATIONBAR_PANEL_NAME_GEOREF = "NavigationBarPanelGeoref";
 
-    private JButton computeTransform = new JButton( GUIConstants.COMPUTE_BUTTON_TEXT );
+    private final JButton computeTransform = new JButton( GUIConstants.COMPUTE_BUTTON_TEXT );
+
+    private final JButton resetView = new JButton( GUIConstants.RESET_VIEW_BUTTON_TEXT );
 
     private static final String COORD = "/org/deegree/tools/crs/georeferencing/communication/icons/zoombycoord.png";
 
@@ -89,9 +91,11 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
             buttonZoomCoord.setPreferredSize( DIM_NAVIGATION_BUTTONS );
 
             computeTransform.setName( GUIConstants.COMPUTE_BUTTON_TEXT );
+            resetView.setName( GUIConstants.RESET_VIEW_BUTTON_TEXT );
 
             this.add( buttonZoomCoord );
             this.add( computeTransform, Component.RIGHT_ALIGNMENT );
+            this.add( resetView, Component.RIGHT_ALIGNMENT );
             inCoord.close();
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
@@ -108,6 +112,7 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
     public void addCoordListener( ActionListener c ) {
         buttonZoomCoord.addActionListener( c );
         computeTransform.addActionListener( c );
+        resetView.addActionListener( c );
 
     }
 
