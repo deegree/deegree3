@@ -41,7 +41,7 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
 
 /**
- * TODO add class documentation here
+ * Base interface for all the transformationmethod implementations.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -58,16 +58,24 @@ public interface TransformationMethod {
         Affine
     }
 
+    /**
+     * 
+     * @return the TransformationType for this transformationmethod.
+     */
     public TransformationType getType();
 
+    /**
+     * Calculates the Polygons for the transformation.
+     * 
+     * @return a list of RingPolygons, can be <Code>null</Code>.
+     */
     public List<Ring> computeRingList();
 
+    /**
+     * Calculates the Residuals for the mappedPoints
+     * 
+     * @return a PointResidual object array, can be <Code>null</Code>.
+     */
     PointResidual[] calculateResiduals();
-
-    // public int getOrder();
-
-    // public void setSourceCRS( CRS sourceCRS );
-    //
-    // public void setTargetCRS( CRS targetCRS );
 
 }

@@ -563,8 +563,8 @@ public class Controller {
 
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.BUTTON_DELETE_SELECTED ) ) {
                     int[] tableRows = tablePanel.getTable().getSelectedRows();
-                    int[] deleteableRows = new int[tableRows.length];
-                    int i = 0;
+                    List<Integer> deleteableRows = new ArrayList<Integer>();
+
                     for ( int tableRow : tableRows ) {
                         boolean contained = false;
 
@@ -573,7 +573,7 @@ public class Controller {
                             if ( p.first.getRc().getRow() == tableRow || p.second.getRc().getRow() == tableRow ) {
 
                                 contained = true;
-                                deleteableRows[i++] = tableRow;
+                                deleteableRows.add( tableRow );
 
                                 System.out.println( "[Controller] afterRemoving: " + p.second + "\n\n" );
                                 break;
@@ -586,7 +586,13 @@ public class Controller {
                             conModel.getPanel().setLastAbstractPoint( null, null, null );
                         }
                     }
-                    removeFromMappedPoints( tableRows );
+                    if ( deleteableRows != null || deleteableRows.size() != 0 ) {
+                        int[] temp = new int[deleteableRows.size()];
+                        for ( int i = 0; i < temp.length; i++ ) {
+                            temp[i] = deleteableRows.get( i );
+                        }
+                        removeFromMappedPoints( temp );
+                    }
                     updateResidualsWithLastAbstractPoint();
                     updateDrawingPanels();
                 } else if ( ( (JButton) source ).getText().startsWith( PointTableFrame.LOAD_POINTTABLE ) ) {
@@ -1537,7 +1543,9 @@ public class Controller {
         TransformationMethod t = null;
         switch ( type ) {
         case Polynomial:
+
             t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
+
             break;
         case Helmert_4:
             t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, 1 );
@@ -1562,23 +1570,25 @@ public class Controller {
 
         TransformationMethod t = determineTransformationType( type );
         PointResidual[] r = t.calculateResiduals();
-        Vector<Vector<Double>> data = new Vector<Vector<Double>>();
-        int counter = 0;
-        for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
-            Vector element = new Vector( 6 );
-            element.add( point.second.getWorldCoords().getX() );
-            element.add( point.second.getWorldCoords().getY() );
-            element.add( point.first.getWorldCoords().getX() );
-            element.add( point.first.getWorldCoords().getY() );
-            element.add( r[counter].getX() );
-            element.add( r[counter].getY() );
-            data.add( element );
+        if ( r != null ) {
+            Vector<Vector<Double>> data = new Vector<Vector<Double>>();
+            int counter = 0;
+            for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
+                Vector element = new Vector( 6 );
+                element.add( point.second.getWorldCoords().getX() );
+                element.add( point.second.getWorldCoords().getY() );
+                element.add( point.first.getWorldCoords().getX() );
+                element.add( point.first.getWorldCoords().getY() );
+                element.add( r[counter].getX() );
+                element.add( r[counter].getY() );
+                data.add( element );
 
-            point.third = r[counter++];
+                point.third = r[counter++];
 
+            }
+            tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
+            tablePanel.getModel().fireTableDataChanged();
         }
-        tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
-        tablePanel.getModel().fireTableDataChanged();
     }
 
     private void updateResidualsWithLastAbstractPoint() {

@@ -37,7 +37,9 @@ package org.deegree.tools.crs.georeferencing.application.transformation;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.media.jai.WarpPolynomial;
 
@@ -79,6 +81,15 @@ public class Polynomial extends AbstractTransformation implements Transformation
 
     private double ryLocal;
 
+    private static final Map<Integer, Integer> requiredPoints = new HashMap<Integer, Integer>();
+
+    static {
+        requiredPoints.put( 1, 3 );
+        requiredPoints.put( 2, 6 );
+        requiredPoints.put( 3, 10 );
+        requiredPoints.put( 4, 15 );
+    }
+
     public Polynomial( List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints, Footprint footPrint,
                        Scene2DValues sceneValues, CRS sourceCRS, CRS targetCRS, int order ) {
         super( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
@@ -108,42 +119,48 @@ public class Polynomial extends AbstractTransformation implements Transformation
 
             }
 
-            warp = WarpPolynomial.createWarp( passPointsSrc, 0, passPointsDst, 0, passPointsSrc.length, 1f, 1f, 1f, 1f,
-                                              order );
-
+            if ( mappedPoints.size() >= requiredPoints.get( order ) ) {
+                warp = WarpPolynomial.createWarp( passPointsSrc, 0, passPointsDst, 0, passPointsSrc.length, 1f, 1f, 1f,
+                                                  1f, order );
+            }
         }
 
     }
 
+    @Override
     public List<Ring> computeRingList() {
-        calculateResiduals();
-        // mean square residual
-        rxLocal /= ( passPointsSrc.length / 2 );
-        ryLocal /= ( passPointsSrc.length / 2 );
+        if ( warp != null ) {
+            calculateResiduals();
+            // mean square residual
+            rxLocal /= ( passPointsSrc.length / 2 );
+            ryLocal /= ( passPointsSrc.length / 2 );
 
-        List<Ring> transformedRingList = new ArrayList<Ring>();
-        List<Point> pointList;
-        GeometryFactory geom = new GeometryFactory();
+            List<Ring> transformedRingList = new ArrayList<Ring>();
+            List<Point> pointList;
+            GeometryFactory geom = new GeometryFactory();
 
-        for ( Ring ring : footPrint.getWorldCoordinateRingList() ) {
-            pointList = new ArrayList<Point>();
-            for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
-                double x = ring.getControlPoints().getX( i );
-                double y = ring.getControlPoints().getY( i );
+            for ( Ring ring : footPrint.getWorldCoordinateRingList() ) {
+                pointList = new ArrayList<Point>();
+                for ( int i = 0; i < ring.getControlPoints().size(); i++ ) {
+                    double x = ring.getControlPoints().getX( i );
+                    double y = ring.getControlPoints().getY( i );
 
-                Point2D p = warp.mapDestPoint( new Point2D.Double( x, y ) );
-                double rx = ( p.getX() - rxLocal );
-                double ry = ( p.getY() - ryLocal );
+                    Point2D p = warp.mapDestPoint( new Point2D.Double( x, y ) );
+                    double rx = ( p.getX() - rxLocal );
+                    double ry = ( p.getY() - ryLocal );
 
-                pointList.add( geom.createPoint( "point", rx, ry, null ) );
+                    pointList.add( geom.createPoint( "point", rx, ry, null ) );
+
+                }
+                Points points = new PointsList( pointList );
+                transformedRingList.add( geom.createLinearRing( "ring", null, points ) );
 
             }
-            Points points = new PointsList( pointList );
-            transformedRingList.add( geom.createLinearRing( "ring", null, points ) );
 
+            return transformedRingList;
+        } else {
+            return null;
         }
-
-        return transformedRingList;
 
     }
 
@@ -155,17 +172,21 @@ public class Polynomial extends AbstractTransformation implements Transformation
 
     @Override
     public PointResidual[] calculateResiduals() {
-        rxLocal = 0;
-        ryLocal = 0;
-        int counter = 0;
-        for ( int i = 0; i < passPointsDst.length; i += 2 ) {
-            Point2D p = warp.mapDestPoint( new Point2D.Float( passPointsDst[i], passPointsDst[i + 1] ) );
-            rxLocal += ( p.getX() - passPointsSrc[i] );
-            ryLocal += ( p.getY() - passPointsSrc[i + 1] );
-            System.out.println( "[Polynomial] " + rxLocal + " " + ryLocal );
-            getResiduals()[counter++] = new PointResidual( rxLocal, ryLocal );
+        if ( warp != null ) {
+            rxLocal = 0;
+            ryLocal = 0;
+            int counter = 0;
+            for ( int i = 0; i < passPointsDst.length; i += 2 ) {
+                Point2D p = warp.mapDestPoint( new Point2D.Float( passPointsDst[i], passPointsDst[i + 1] ) );
+                rxLocal += ( p.getX() - passPointsSrc[i] );
+                ryLocal += ( p.getY() - passPointsSrc[i + 1] );
+                System.out.println( "[Polynomial] " + rxLocal + " " + ryLocal );
+                getResiduals()[counter++] = new PointResidual( rxLocal, ryLocal );
+            }
+            return getResiduals();
+        } else {
+            return null;
         }
-        return getResiduals();
     }
 
 }
