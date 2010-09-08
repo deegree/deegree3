@@ -86,6 +86,7 @@ import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.tools.crs.georeferencing.application.handler.FileInputHandler;
 import org.deegree.tools.crs.georeferencing.application.handler.FileOutputHandler;
+import org.deegree.tools.crs.georeferencing.application.handler.JCheckboxHandler;
 import org.deegree.tools.crs.georeferencing.application.transformation.AffineTransformation;
 import org.deegree.tools.crs.georeferencing.application.transformation.Helmert4Transform;
 import org.deegree.tools.crs.georeferencing.application.transformation.Polynomial;
@@ -112,6 +113,7 @@ import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
 import org.deegree.tools.crs.georeferencing.model.CheckBoxListModel;
+import org.deegree.tools.crs.georeferencing.model.ControllerModel;
 import org.deegree.tools.crs.georeferencing.model.Footprint;
 import org.deegree.tools.crs.georeferencing.model.RowColumn;
 import org.deegree.tools.crs.georeferencing.model.Scene2D;
@@ -142,15 +144,9 @@ import org.deegree.tools.rendering.viewer.File3dImporter;
  */
 public class Controller {
 
-    private GRViewerGUI view;
-
     private Scene2D model;
 
-    private Scene2DPanel panel;
-
     private Scene2DValues sceneValues;
-
-    private BuildingFootprintPanel footPanel;
 
     private PointTableFrame tablePanel;
 
@@ -180,13 +176,9 @@ public class Controller {
 
     private List<Triple<Point4Values, Point4Values, PointResidual>> mappedPoints;
 
-    private TransformationType transformationType;
-
-    private TransformationMethod transform;
+    private ControllerModel conModel;
 
     private NavigationPanel optionNavPanel;
-
-    private OptionDialogModel dialogModel;
 
     public int order;
 
@@ -218,17 +210,14 @@ public class Controller {
 
         geom = new GeometryFactory();
         sceneValues = new Scene2DValues( geom );
-        this.view = view;
-        this.panel = view.getScenePanel2D();
-        this.footPanel = view.getFootprintPanel();
+        conModel = new ControllerModel( view, view.getFootprintPanel(), view.getScenePanel2D(), new OptionDialogModel() );
 
         this.start = false;
 
         this.glHandler = view.getOpenGLEventListener();
         this.textFieldModel = new CoordinateJumperModel();
-        this.dialogModel = new OptionDialogModel();
-        AbstractPanel2D.selectedPointSize = this.dialogModel.getSelectionPointSize().first;
-        AbstractPanel2D.zoomValue = this.dialogModel.getResizeValue().first;
+        AbstractPanel2D.selectedPointSize = conModel.getDialogModel().getSelectionPointSize().first;
+        AbstractPanel2D.zoomValue = conModel.getDialogModel().getResizeValue().first;
 
         this.mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
 
@@ -249,12 +238,12 @@ public class Controller {
         this.tablePanel.getLoadButton().setEnabled( false );
         this.tablePanel.addTableModelListener( new TableChangedEventListener() );
         this.tablePanel.addActionButtonListener( new ButtonListener() );
-        transform = null;
-        if ( transformationType == null ) {
+        // transform = null;
+        if ( conModel.getTransformationType() == null ) {
             order = 1;
             for ( JCheckBox box : modelTransformation.getList() ) {
                 if ( ( box ).getText().startsWith( MENUITEM_TRANS_HELMERT ) ) {
-                    transformationType = TransformationType.Helmert_4;
+                    conModel.setTransformationType( TransformationType.Helmert_4 );
                     view.activateTransformationCheckbox( box );
                     break;
                 }
@@ -271,13 +260,13 @@ public class Controller {
      * Initializes the navigation buttons that are registered for each map.
      */
     private void initToggleButtons() {
-        buttonPanGeoref = view.getNavigationPanelGeoref().getButtonPan();
-        buttonPanFoot = view.getNaviPanelFoot().getButtonPan();
-        buttonZoomInGeoref = view.getNavigationPanelGeoref().getButtonZoomIn();
-        buttonZoominFoot = view.getNaviPanelFoot().getButtonZoomIn();
-        buttonZoomoutGeoref = view.getNavigationPanelGeoref().getButtonZoomOut();
-        buttonZoomoutFoot = view.getNaviPanelFoot().getButtonZoomOut();
-        buttonCoord = view.getNavigationPanelGeoref().getButtonZoomCoord();
+        buttonPanGeoref = conModel.getView().getNavigationPanelGeoref().getButtonPan();
+        buttonPanFoot = conModel.getView().getNaviPanelFoot().getButtonPan();
+        buttonZoomInGeoref = conModel.getView().getNavigationPanelGeoref().getButtonZoomIn();
+        buttonZoominFoot = conModel.getView().getNaviPanelFoot().getButtonZoomIn();
+        buttonZoomoutGeoref = conModel.getView().getNavigationPanelGeoref().getButtonZoomOut();
+        buttonZoomoutFoot = conModel.getView().getNaviPanelFoot().getButtonZoomOut();
+        buttonCoord = conModel.getView().getNavigationPanelGeoref().getButtonZoomCoord();
     }
 
     /**
@@ -312,7 +301,7 @@ public class Controller {
             buttonCoord.setSelected( checkSelected );
             if ( checkSelected == true ) {
                 // jumperDialog = new CoordinateJumperSpinnerDialog( view );
-                jumperDialog = new CoordinateJumperTextfieldDialog( view );
+                jumperDialog = new CoordinateJumperTextfieldDialog( conModel.getView() );
                 jumperDialog.getCoordinateJumper().setToolTipText( textFieldModel.getTooltipText() );
                 jumperDialog.addListeners( new ButtonListener() );
                 jumperDialog.setVisible( true );
@@ -368,12 +357,12 @@ public class Controller {
         }
 
         this.footPrint = new Footprint( sceneValues, geom );
-        footPanel.addScene2DMouseListener( new Scene2DMouseListener() );
-        footPanel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-        footPanel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+        conModel.getFootPanel().addScene2DMouseListener( new Scene2DMouseListener() );
+        conModel.getFootPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+        conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
 
         mouseFootprint = new FootprintMouseModel();
-        List<WorldRenderableObject> rese = File3dImporter.open( view, filePath );
+        List<WorldRenderableObject> rese = File3dImporter.open( conModel.getView(), filePath );
         sourceCRS = null;
         for ( WorldRenderableObject res : rese ) {
 
@@ -413,12 +402,13 @@ public class Controller {
 
         footPrint.generateFootprints( geometryThatIsTaken );
 
-        sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width, footPanel.getBounds().height ) );
-        footPanel.updatePoints( sceneValues );
+        sceneValues.setDimensionFootpanel( new Rectangle( conModel.getFootPanel().getBounds().width,
+                                                          conModel.getFootPanel().getBounds().height ) );
+        conModel.getFootPanel().updatePoints( sceneValues );
 
-        footPanel.setPolygonList( footPrint.getWorldCoordinateRingList(), sceneValues );
+        conModel.getFootPanel().setPolygonList( footPrint.getWorldCoordinateRingList(), sceneValues );
 
-        footPanel.repaint();
+        conModel.getFootPanel().repaint();
 
     }
 
@@ -438,9 +428,9 @@ public class Controller {
         scene2d.init( sceneValues );
         init();
 
-        panel.addScene2DMouseListener( new Scene2DMouseListener() );
-        panel.addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
-        panel.addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+        conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener() );
+        conModel.getPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
+        conModel.getPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
     }
 
     /**
@@ -455,11 +445,11 @@ public class Controller {
             footPanelList.add( p.first );
         }
 
-        panel.setSelectedPoints( panelList, sceneValues );
-        footPanel.setSelectedPoints( footPanelList, sceneValues );
+        conModel.getPanel().setSelectedPoints( panelList, sceneValues );
+        conModel.getFootPanel().setSelectedPoints( footPanelList, sceneValues );
 
-        panel.repaint();
-        footPanel.repaint();
+        conModel.getPanel().repaint();
+        conModel.getFootPanel().repaint();
 
     }
 
@@ -480,61 +470,19 @@ public class Controller {
             Object source = e.getSource();
             if ( source instanceof JCheckBox ) {
                 JCheckBox selectedCheckbox = (JCheckBox) source;
-                if ( ( selectedCheckbox ).getText().startsWith( GeneralPanel.SNAPPING_TEXT ) ) {
 
-                    boolean isSnappingOn = false;
-                    if ( dialogModel.getSnappingOnOff().second == false ) {
-                        isSnappingOn = true;
+                new JCheckboxHandler( selectedCheckbox, conModel );
 
-                    } else {
-                        isSnappingOn = false;
-                    }
-                    dialogModel.setSnappingOnOff( isSnappingOn );
-                }
-                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FIRST ) ) {
+                for ( String s : wmsParameter.getCheckBoxListLayerText() ) {
 
-                    transformationType = TransformationType.Polynomial;
-                    order = 1;
+                    wmsParameter.fillSRSList( s );
 
-                    view.activateTransformationCheckbox( selectedCheckbox );
-                }
-                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_SECOND ) ) {
-
-                    transformationType = TransformationType.Polynomial;
-                    order = 2;
-
-                    view.activateTransformationCheckbox( selectedCheckbox );
-                }
-                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_THIRD ) ) {
-
-                    transformationType = TransformationType.Polynomial;
-                    order = 3;
-
-                    view.activateTransformationCheckbox( selectedCheckbox );
-                }
-                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_POLYNOM_FOURTH ) ) {
-
-                    transformationType = TransformationType.Polynomial;
-                    order = 4;
-
-                    view.activateTransformationCheckbox( selectedCheckbox );
-                }
-                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_HELMERT ) ) {
-
-                    transformationType = TransformationType.Helmert_4;
-                    view.activateTransformationCheckbox( selectedCheckbox );
-                }
-                if ( ( selectedCheckbox ).getText().startsWith( GUIConstants.MENUITEM_TRANS_AFFINE ) ) {
-
-                    transformationType = TransformationType.Affine;
-                    view.activateTransformationCheckbox( selectedCheckbox );
                 }
 
             }
             if ( source instanceof JTextField ) {
                 JTextField tF = (JTextField) source;
                 if ( tF.getName().startsWith( JTEXTFIELD_COORDINATE_JUMPER ) ) {
-                    System.out.println( "[Controller] put something in the textfield: " + tF.getText() );
 
                     fireTextfieldJumperDialog();
 
@@ -614,8 +562,8 @@ public class Controller {
                         }
                         if ( contained == false ) {
 
-                            footPanel.setLastAbstractPoint( null, null, null );
-                            panel.setLastAbstractPoint( null, null, null );
+                            conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+                            conModel.getPanel().setLastAbstractPoint( null, null, null );
                         }
                     }
                     removeFromMappedPoints( tableRows );
@@ -624,17 +572,17 @@ public class Controller {
                 }
 
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.LOAD_POINTTABLE ) ) {
-                    System.out.println( "[Controller] clicked on load!" );
 
                     FileInputHandler in = new FileInputHandler( tablePanel );
-                    VectorTransformer vt = new VectorTransformer( in.getData(), sceneValues );
-                    mappedPoints.clear();
-                    mappedPoints.addAll( vt.getMappedPoints() );
-                    updateDrawingPanels();
+                    if ( in.getData() != null ) {
+                        VectorTransformer vt = new VectorTransformer( in.getData(), sceneValues );
+                        mappedPoints.clear();
+                        mappedPoints.addAll( vt.getMappedPoints() );
+                        updateDrawingPanels();
+                    }
 
                 }
                 if ( ( (JButton) source ).getText().startsWith( PointTableFrame.SAVE_POINTTABLE ) ) {
-                    System.out.println( "[Controller] clicked on save!" );
 
                     new FileOutputHandler( tablePanel );
 
@@ -645,27 +593,28 @@ public class Controller {
                 }
                 if ( ( (JButton) source ).getText().startsWith( GUIConstants.COMPUTE_BUTTON_TEXT ) ) {
                     // swap the tempPoints into the map now
-                    if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
+                    if ( conModel.getFootPanel().getLastAbstractPoint() != null
+                         && conModel.getPanel().getLastAbstractPoint() != null ) {
                         setValues();
                     }
 
-                    transform = determineTransformationType( transformationType );
-                    List<Ring> polygonRing = transform.computeRingList();
+                    conModel.setTransform( determineTransformationType( conModel.getTransformationType() ) );
+                    List<Ring> polygonRing = conModel.getTransform().computeRingList();
 
-                    updateResiduals( transformationType );
+                    updateResiduals( conModel.getTransformationType() );
 
-                    panel.setPolygonList( polygonRing, sceneValues );
+                    conModel.getPanel().setPolygonList( polygonRing, sceneValues );
 
-                    panel.repaint();
+                    conModel.getPanel().repaint();
 
                     reset();
                 }
                 if ( ( (JButton) source ).getText().startsWith( ButtonPanel.BUTTON_TEXT_CANCEL ) ) {
                     if ( optionDialog != null && optionDialog.isVisible() == true ) {
-                        dialogModel.transferOldToNew();
-                        AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize().first;
-                        panel.repaint();
-                        footPanel.repaint();
+                        conModel.getDialogModel().transferOldToNew();
+                        AbstractPanel2D.selectedPointSize = conModel.getDialogModel().getSelectionPointSize().first;
+                        conModel.getPanel().repaint();
+                        conModel.getFootPanel().repaint();
                         optionDialog.setVisible( false );
                     } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
                         jumperDialog.setVisible( false );
@@ -698,8 +647,9 @@ public class Controller {
 
                                     String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
                                     if ( AbstractCoordinateJumperModel.validateInt( textInput ) ) {
-                                        dialogModel.setTextFieldKeyString( textInput );
-                                        dialogModel.setSelectionPointSize( Integer.parseInt( dialogModel.getTextFieldKeyString().second ) );
+                                        conModel.getDialogModel().setTextFieldKeyString( textInput );
+                                        conModel.getDialogModel().setSelectionPointSize(
+                                                                                         Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second ) );
                                         isRunIntoTrouble = false;
                                     } else {
                                         new ErrorDialog( optionDialog, JDialog.ERROR,
@@ -713,15 +663,15 @@ public class Controller {
                                 String p = ( (GeneralPanel) optionSettingPanel ).getTextField(
                                                                                                ( (GeneralPanel) optionSettingPanel ).getZoomValue() ).getText();
                                 String p1 = p.replace( ',', '.' );
-                                dialogModel.setResizeValue( new Double( p1 ).doubleValue() );
+                                conModel.getDialogModel().setResizeValue( new Double( p1 ).doubleValue() );
                                 isRunIntoTrouble = false;
                             }
                         }
                         if ( isRunIntoTrouble == false ) {
-                            dialogModel.transferNewToOld();
-                            AbstractPanel2D.selectedPointSize = dialogModel.getSelectionPointSize().first;
-                            panel.repaint();
-                            footPanel.repaint();
+                            conModel.getDialogModel().transferNewToOld();
+                            AbstractPanel2D.selectedPointSize = conModel.getDialogModel().getSelectionPointSize().first;
+                            conModel.getPanel().repaint();
+                            conModel.getFootPanel().repaint();
                             optionDialog.setVisible( false );
                         }
                     } else if ( jumperDialog != null && jumperDialog.isVisible() == true ) {
@@ -766,7 +716,7 @@ public class Controller {
                         } else {
                             Envelope env = wmsParameter.getEnvelope( crs, layerList );
                             if ( env != null ) {
-                                int qor = max( panel.getWidth(), panel.getHeight() );
+                                int qor = max( conModel.getPanel().getWidth(), conModel.getPanel().getHeight() );
                                 store = new ParameterStore( mapURL, crs, format, layers, env, qor );
                                 model = new Scene2DImplWMS( store, wmsParameter.getWmsClient() );
                                 initGeoReferencingScene( model );
@@ -780,22 +730,13 @@ public class Controller {
                 }
             }
 
-            if ( source instanceof JCheckBox ) {
-
-                for ( String s : wmsParameter.getCheckBoxListLayerText() ) {
-
-                    wmsParameter.fillSRSList( s );
-
-                }
-
-            }
             if ( source instanceof JMenuItem ) {
 
                 if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_EDIT_OPTIONS ) ) {
                     DefaultMutableTreeNode root = new DefaultMutableTreeNode( "Options" );
 
-                    dialogModel.createNodes( root );
-                    optionDialog = new OptionDialog( view, root );
+                    conModel.getDialogModel().createNodes( root );
+                    optionDialog = new OptionDialog( conModel.getView(), root );
                     optionDialog.getButtonPanel().addListeners( new ButtonListener() );
                     optionNavPanel = optionDialog.getNavigationPanel();
                     optionSettPanel = optionDialog.getSettingsPanel();
@@ -814,7 +755,7 @@ public class Controller {
                     Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
-                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView() );
                     String fileChoosed = fileChooser.getSelectedFilePath();
                     if ( fileChoosed != null ) {
                         initFootprintScene( fileChoosed );
@@ -829,17 +770,17 @@ public class Controller {
                     Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
                     List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
                     supportedOpenFiles.add( supportedFiles );
-                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, view );
+                    FileChooser fileChooser = new FileChooser( supportedOpenFiles, conModel.getView() );
                     String fileChoosed = fileChooser.getSelectedFilePath();
                     if ( fileChoosed != null ) {
-                        model = new Scene2DImplShape( fileChoosed, panel.getG2() );
+                        model = new Scene2DImplShape( fileChoosed, conModel.getPanel().getG2() );
                         initGeoReferencingScene( model );
                     }
 
                 }
                 if ( ( (JMenuItem) source ).getText().startsWith( GUIConstants.MENUITEM_OPEN_WMS_LAYER ) ) {
 
-                    wmsStartDialog = new OpenWMS( view );
+                    wmsStartDialog = new OpenWMS( conModel.getView() );
                     wmsStartDialog.addListeners( new ButtonListener() );
                     wmsStartDialog.setVisible( true );
 
@@ -849,32 +790,33 @@ public class Controller {
             if ( source instanceof JRadioButton ) {
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TWO ) ) {
 
-                    dialogModel.setSelectionPointSize( 2 );
+                    conModel.getDialogModel().setSelectionPointSize( 2 );
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.THREE ) ) {
 
-                    dialogModel.setSelectionPointSize( 3 );
+                    conModel.getDialogModel().setSelectionPointSize( 3 );
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.DEFAULT ) ) {
 
-                    dialogModel.setSelectionPointSize( 5 );
+                    conModel.getDialogModel().setSelectionPointSize( 5 );
 
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.SEVEN ) ) {
 
-                    dialogModel.setSelectionPointSize( 7 );
+                    conModel.getDialogModel().setSelectionPointSize( 7 );
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.TEN ) ) {
 
-                    dialogModel.setSelectionPointSize( 10 );
+                    conModel.getDialogModel().setSelectionPointSize( 10 );
                 }
                 if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.CUSTOM ) ) {
                     if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" ) ) {
-                        dialogModel.setTextFieldKeyString( ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
+                        conModel.getDialogModel().setTextFieldKeyString(
+                                                                         ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
                         int i;
                         try {
-                            i = Integer.parseInt( dialogModel.getTextFieldKeyString().second );
-                            dialogModel.setSelectionPointSize( i );
+                            i = Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second );
+                            conModel.getDialogModel().setSelectionPointSize( i );
                         } catch ( NumberFormatException ex ) {
                             new ErrorDialog( optionDialog, JDialog.ERROR, "This is not a number" );
                         }
@@ -908,13 +850,13 @@ public class Controller {
                 selectedGeoref = false;
                 buttonModel.setSelected( false );
                 isHorizontalRefGeoref = true;
-                panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
-                panel.updatePoints( sceneValues );
-                panel.repaint();
+                conModel.getPanel().setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                conModel.getPanel().updatePoints( sceneValues );
+                conModel.getPanel().repaint();
 
             } catch ( NumberException e1 ) {
 
-                new ErrorDialog( view, JDialog.ERROR, e1.getMessage() );
+                new ErrorDialog( conModel.getView(), JDialog.ERROR, e1.getMessage() );
             }
 
         }
@@ -955,23 +897,25 @@ public class Controller {
 
                 if ( row == e.getLastRow() ) {
                     Triple<Point4Values, Point4Values, PointResidual> newLastPair = new Triple<Point4Values, Point4Values, PointResidual>(
-                                                                                                                                           footPanel.getLastAbstractPoint(),
-                                                                                                                                           panel.getLastAbstractPoint(),
+                                                                                                                                           conModel.getFootPanel().getLastAbstractPoint(),
+                                                                                                                                           conModel.getPanel().getLastAbstractPoint(),
                                                                                                                                            null );
-                    if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
+                    if ( conModel.getFootPanel().getLastAbstractPoint() != null
+                         && conModel.getPanel().getLastAbstractPoint() != null ) {
                         boolean changed = changePointLocation( newLastPair, data, row, column );
                         if ( changed ) {
 
-                            if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
-                                panel.setLastAbstractPoint( newLastPair.second.getNewValue(),
-                                                            newLastPair.second.getWorldCoords(),
-                                                            newLastPair.second.getRc() );
-                                footPanel.setLastAbstractPoint( newLastPair.first.getNewValue(),
-                                                                newLastPair.first.getWorldCoords(),
-                                                                newLastPair.first.getRc() );
+                            if ( conModel.getFootPanel().getLastAbstractPoint() != null
+                                 && conModel.getPanel().getLastAbstractPoint() != null ) {
+                                conModel.getPanel().setLastAbstractPoint( newLastPair.second.getNewValue(),
+                                                                          newLastPair.second.getWorldCoords(),
+                                                                          newLastPair.second.getRc() );
+                                conModel.getFootPanel().setLastAbstractPoint( newLastPair.first.getNewValue(),
+                                                                              newLastPair.first.getWorldCoords(),
+                                                                              newLastPair.first.getRc() );
                             }
-                            panel.repaint();
-                            footPanel.repaint();
+                            conModel.getPanel().repaint();
+                            conModel.getFootPanel().repaint();
 
                         }
                     }
@@ -983,6 +927,7 @@ public class Controller {
     }
 
     /**
+     * If there is a user change in the pointsTable like modifying a single point.
      * 
      * @param p
      *            that is viewed to be changed, not <Code>null</Code>.
@@ -1077,12 +1022,12 @@ public class Controller {
                     case GeneralPanel:
                         optionSettingPanel = new GeneralPanel( optionSettPanel );
                         ( (GeneralPanel) optionSettingPanel ).addCheckboxListener( new ButtonListener() );
-                        ( (GeneralPanel) optionSettingPanel ).setSnappingOnOff( dialogModel.getSnappingOnOff().second );
-                        ( (GeneralPanel) optionSettingPanel ).setInitialZoomValue( dialogModel.getResizeValue().second );
+                        ( (GeneralPanel) optionSettingPanel ).setSnappingOnOff( conModel.getDialogModel().getSnappingOnOff().second );
+                        ( (GeneralPanel) optionSettingPanel ).setInitialZoomValue( conModel.getDialogModel().getResizeValue().second );
                         break;
                     case ViewPanel:
                         optionSettingPanel = new ViewPanel();
-                        ( (ViewPanel) optionSettingPanel ).setPointSize( dialogModel.getSelectionPointSize().second );
+                        ( (ViewPanel) optionSettingPanel ).setPointSize( conModel.getDialogModel().getSelectionPointSize().second );
                         ( (ViewPanel) optionSettingPanel ).addRadioButtonListener( new ButtonListener() );
 
                         break;
@@ -1196,7 +1141,9 @@ public class Controller {
 
                             if ( isZoomInGeoref ) {
                                 if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
-                                    sceneValues.computeZoomedEnvelope( true, dialogModel.getResizeValue().second,
+                                    sceneValues.computeZoomedEnvelope(
+                                                                       true,
+                                                                       conModel.getDialogModel().getResizeValue().second,
                                                                        new GeoReferencedPoint( minPoint.getX(),
                                                                                                minPoint.getY() ) );
                                 } else {
@@ -1212,30 +1159,34 @@ public class Controller {
 
                                 }
                             } else if ( isZoomOutGeoref ) {
-                                sceneValues.computeZoomedEnvelope( false, dialogModel.getResizeValue().second,
+                                sceneValues.computeZoomedEnvelope( false,
+                                                                   conModel.getDialogModel().getResizeValue().second,
                                                                    new GeoReferencedPoint( maxPoint.getX(),
                                                                                            maxPoint.getY() ) );
                             }
 
-                            panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
-                            panel.updatePoints( sceneValues );
-                            panel.setZoomRect( null );
-                            panel.repaint();
+                            conModel.getPanel().setImageToDraw(
+                                                                model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                            conModel.getPanel().updatePoints( sceneValues );
+                            conModel.getPanel().setZoomRect( null );
+                            conModel.getPanel().repaint();
                         }
 
                         else {
                             if ( isHorizontalRefGeoref == true ) {
                                 if ( start == false ) {
                                     start = true;
-                                    footPanel.setFocus( false );
-                                    panel.setFocus( true );
+                                    conModel.getFootPanel().setFocus( false );
+                                    conModel.getPanel().setFocus( true );
                                 }
-                                if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
-                                     && panel.getFocus() == true ) {
+                                if ( conModel.getFootPanel().getLastAbstractPoint() != null
+                                     && conModel.getPanel().getLastAbstractPoint() != null
+                                     && conModel.getPanel().getFocus() == true ) {
                                     setValues();
                                 }
-                                if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
-                                     && panel.getFocus() == true ) {
+                                if ( conModel.getFootPanel().getLastAbstractPoint() == null
+                                     && conModel.getPanel().getLastAbstractPoint() == null
+                                     && conModel.getPanel().getFocus() == true ) {
                                     tablePanel.addRow();
                                     isFirstNumber = true;
                                 }
@@ -1245,7 +1196,7 @@ public class Controller {
                                 GeoReferencedPoint geoReferencedPoint = new GeoReferencedPoint( x, y );
                                 GeoReferencedPoint g = (GeoReferencedPoint) sceneValues.getWorldPoint( geoReferencedPoint );
                                 rc = tablePanel.setCoords( g );
-                                panel.setLastAbstractPoint( geoReferencedPoint, g, rc );
+                                conModel.getPanel().setLastAbstractPoint( geoReferencedPoint, g, rc );
                                 if ( isFirstNumber == false ) {
                                     updateResidualsWithLastAbstractPoint();
                                 }
@@ -1256,11 +1207,12 @@ public class Controller {
                                                                                       ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
 
                                 sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
-                                panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
-                                panel.updatePoints( sceneValues );
+                                conModel.getPanel().setImageToDraw(
+                                                                    model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                                conModel.getPanel().updatePoints( sceneValues );
                             }
 
-                            panel.repaint();
+                            conModel.getPanel().repaint();
                         }
 
                     }
@@ -1286,7 +1238,7 @@ public class Controller {
                             if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
                                 sceneValues.computeZoomedEnvelope(
                                                                    true,
-                                                                   dialogModel.getResizeValue().second,
+                                                                   conModel.getDialogModel().getResizeValue().second,
                                                                    new FootprintPoint( minPoint.getX(), minPoint.getY() ) );
                             } else {
                                 Rectangle r = new Rectangle(
@@ -1298,35 +1250,38 @@ public class Controller {
                                 sceneValues.createZoomedEnvWithMinPoint( PointType.FootprintPoint, r );
                             }
                         } else if ( isZoomOutFoot ) {
-                            sceneValues.computeZoomedEnvelope( false, dialogModel.getResizeValue().second,
+                            sceneValues.computeZoomedEnvelope( false,
+                                                               conModel.getDialogModel().getResizeValue().second,
                                                                new FootprintPoint( maxPoint.getX(), maxPoint.getY() ) );
                         }
-                        footPanel.setZoomRect( null );
-                        footPanel.updatePoints( sceneValues );
-                        footPanel.repaint();
+                        conModel.getFootPanel().setZoomRect( null );
+                        conModel.getFootPanel().updatePoints( sceneValues );
+                        conModel.getFootPanel().repaint();
 
                     } else {
                         if ( isHorizontalRefFoot == true ) {
 
                             if ( start == false ) {
                                 start = true;
-                                footPanel.setFocus( true );
-                                panel.setFocus( false );
+                                conModel.getFootPanel().setFocus( true );
+                                conModel.getPanel().setFocus( false );
                             }
-                            if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null
-                                 && footPanel.getFocus() == true ) {
+                            if ( conModel.getFootPanel().getLastAbstractPoint() != null
+                                 && conModel.getPanel().getLastAbstractPoint() != null
+                                 && conModel.getFootPanel().getFocus() == true ) {
                                 setValues();
                             }
-                            if ( footPanel.getLastAbstractPoint() == null && panel.getLastAbstractPoint() == null
-                                 && footPanel.getFocus() == true ) {
+                            if ( conModel.getFootPanel().getLastAbstractPoint() == null
+                                 && conModel.getPanel().getLastAbstractPoint() == null
+                                 && conModel.getFootPanel().getFocus() == true ) {
                                 tablePanel.addRow();
                                 isFirstNumber = true;
                             }
                             double x = m.getX();
                             double y = m.getY();
                             Pair<AbstractGRPoint, FootprintPoint> point = null;
-                            if ( dialogModel.getSnappingOnOff().first ) {
-                                point = footPanel.getClosestPoint( new FootprintPoint( x, y ) );
+                            if ( conModel.getDialogModel().getSnappingOnOff().first ) {
+                                point = conModel.getFootPanel().getClosestPoint( new FootprintPoint( x, y ) );
                             } else {
                                 point = new Pair<AbstractGRPoint, FootprintPoint>(
                                                                                    new FootprintPoint( x, y ),
@@ -1335,7 +1290,7 @@ public class Controller {
                                                                                                                                                    y ) ) );
                             }
                             rc = tablePanel.setCoords( point.second );
-                            footPanel.setLastAbstractPoint( point.first, point.second, rc );
+                            conModel.getFootPanel().setLastAbstractPoint( point.first, point.second, rc );
                             if ( isFirstNumber == false ) {
                                 updateResidualsWithLastAbstractPoint();
                             }
@@ -1346,100 +1301,13 @@ public class Controller {
                                                                                  ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
 
                             sceneValues.moveEnvelope( mouseFootprint.getMouseChanging() );
-                            footPanel.updatePoints( sceneValues );
+                            conModel.getFootPanel().updatePoints( sceneValues );
                         }
-                        footPanel.repaint();
+                        conModel.getFootPanel().repaint();
                     }
 
                 }
             }
-        }
-    }
-
-    /**
-     * Sets values to the JTableModel.
-     */
-    private void setValues() {
-        footPanel.addToSelectedPoints( footPanel.getLastAbstractPoint() );
-        panel.addToSelectedPoints( panel.getLastAbstractPoint() );
-        if ( mappedPoints != null && mappedPoints.size() >= 1 ) {
-            addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint(), null );
-            updateResiduals( transformationType );
-        } else {
-            addToMappedPoints( footPanel.getLastAbstractPoint(), panel.getLastAbstractPoint(), null );
-        }
-        footPanel.setLastAbstractPoint( null, null, null );
-        panel.setLastAbstractPoint( null, null, null );
-
-    }
-
-    /**
-     * Determines the transformationMethod by means of the type.
-     * 
-     * @param type
-     *            of the transformationMethod, not <Code>null</Code>.
-     * @return the transformationMethod to be used.
-     */
-    private TransformationMethod determineTransformationType( TransformationType type ) {
-        TransformationMethod t = null;
-        switch ( type ) {
-        case Polynomial:
-            t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
-            break;
-        case Helmert_4:
-            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, 1 );
-            break;
-
-        case Affine:
-            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, 1 );
-            break;
-        }
-
-        return t;
-    }
-
-    /**
-     * Updates the model of the table to show the residuals of the already stored mappedPoints. It is based on the
-     * Helmert transformation.
-     * 
-     * @param type
-     * 
-     */
-    private void updateResiduals( TransformationType type ) {
-
-        TransformationMethod t = determineTransformationType( type );
-        PointResidual[] r = t.calculateResiduals();
-        Vector<Vector<Double>> data = new Vector<Vector<Double>>();
-        int counter = 0;
-        for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
-            Vector element = new Vector( 6 );
-            element.add( point.second.getWorldCoords().getX() );
-            element.add( point.second.getWorldCoords().getY() );
-            element.add( point.first.getWorldCoords().getX() );
-            element.add( point.first.getWorldCoords().getY() );
-            element.add( r[counter].getX() );
-            element.add( r[counter].getY() );
-            data.add( element );
-
-            point.third = r[counter++];
-
-        }
-        tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
-        tablePanel.getModel().fireTableDataChanged();
-    }
-
-    private void updateResidualsWithLastAbstractPoint() {
-        if ( footPanel.getLastAbstractPoint() != null && panel.getLastAbstractPoint() != null ) {
-            mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>( footPanel.getLastAbstractPoint(),
-                                                                                     panel.getLastAbstractPoint(), null ) );
-            updateMappedPoints();
-            updateResiduals( transformationType );
-
-            // remove the last element...should be the before inserted value
-            mappedPoints.remove( mappedPoints.size() - 1 );
-        } else {
-            updateMappedPoints();
-            updateResiduals( transformationType );
         }
     }
 
@@ -1498,8 +1366,8 @@ public class Controller {
                         int width = new Double( m.getX() - mouseGeoRef.getPointMousePressed().getX() ).intValue();
                         int height = new Double( m.getY() - mouseGeoRef.getPointMousePressed().getY() ).intValue();
                         Rectangle rec = new Rectangle( x, y, width, height );
-                        panel.setZoomRect( rec );
-                        panel.repaint();
+                        conModel.getPanel().setZoomRect( rec );
+                        conModel.getPanel().repaint();
                     }
                 }
                 // footprintPanel
@@ -1510,8 +1378,8 @@ public class Controller {
                         int width = new Double( m.getX() - mouseFootprint.getPointMousePressed().getX() ).intValue();
                         int height = new Double( m.getY() - mouseFootprint.getPointMousePressed().getY() ).intValue();
                         Rectangle rec = new Rectangle( x, y, width, height );
-                        footPanel.setZoomRect( rec );
-                        footPanel.repaint();
+                        conModel.getFootPanel().setZoomRect( rec );
+                        conModel.getFootPanel().repaint();
                     }
                 }
             }
@@ -1574,10 +1442,12 @@ public class Controller {
                         } else {
                             zoomIn = false;
                         }
-                        sceneValues.computeZoomedEnvelope( zoomIn, dialogModel.getResizeValue().second, mouseOver );
-                        panel.setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
-                        panel.updatePoints( sceneValues );
-                        panel.repaint();
+                        sceneValues.computeZoomedEnvelope( zoomIn, conModel.getDialogModel().getResizeValue().second,
+                                                           mouseOver );
+                        conModel.getPanel().setImageToDraw(
+                                                            model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                        conModel.getPanel().updatePoints( sceneValues );
+                        conModel.getPanel().repaint();
                     }
                 }
                 // footprintPanel
@@ -1590,9 +1460,10 @@ public class Controller {
                     } else {
                         zoomIn = false;
                     }
-                    sceneValues.computeZoomedEnvelope( zoomIn, dialogModel.getResizeValue().second, mouseOver );
-                    footPanel.updatePoints( sceneValues );
-                    footPanel.repaint();
+                    sceneValues.computeZoomedEnvelope( zoomIn, conModel.getDialogModel().getResizeValue().second,
+                                                       mouseOver );
+                    conModel.getFootPanel().updatePoints( sceneValues );
+                    conModel.getFootPanel().repaint();
                 }
             }
 
@@ -1633,10 +1504,10 @@ public class Controller {
 
                     if ( sceneValues != null ) {
 
-                        sceneValues.setDimensionFootpanel( new Rectangle( footPanel.getBounds().width,
-                                                                          footPanel.getBounds().height ) );
-                        footPanel.updatePoints( sceneValues );
-                        footPanel.repaint();
+                        sceneValues.setDimensionFootpanel( new Rectangle( conModel.getFootPanel().getBounds().width,
+                                                                          conModel.getFootPanel().getBounds().height ) );
+                        conModel.getFootPanel().updatePoints( sceneValues );
+                        conModel.getFootPanel().repaint();
                     }
 
                 }
@@ -1658,13 +1529,106 @@ public class Controller {
     private void init() {
 
         if ( model != null ) {
-            sceneValues.setGeorefDimension( new Rectangle( panel.getWidth(), panel.getHeight() ) );
-            panel.setImageDimension( sceneValues.getGeorefDimension() );
-            panel.setImageToDraw( model.generateSubImage( sceneValues.getGeorefDimension() ) );
-            panel.updatePoints( sceneValues );
-            panel.repaint();
+            sceneValues.setGeorefDimension( new Rectangle( conModel.getPanel().getWidth(),
+                                                           conModel.getPanel().getHeight() ) );
+            conModel.getPanel().setImageDimension( sceneValues.getGeorefDimension() );
+            conModel.getPanel().setImageToDraw( model.generateSubImage( sceneValues.getGeorefDimension() ) );
+            conModel.getPanel().updatePoints( sceneValues );
+            conModel.getPanel().repaint();
         }
 
+    }
+
+    /**
+     * Sets values to the JTableModel.
+     */
+    private void setValues() {
+        conModel.getFootPanel().addToSelectedPoints( conModel.getFootPanel().getLastAbstractPoint() );
+        conModel.getPanel().addToSelectedPoints( conModel.getPanel().getLastAbstractPoint() );
+        if ( mappedPoints != null && mappedPoints.size() >= 1 ) {
+            addToMappedPoints( conModel.getFootPanel().getLastAbstractPoint(),
+                               conModel.getPanel().getLastAbstractPoint(), null );
+            updateResiduals( conModel.getTransformationType() );
+        } else {
+            addToMappedPoints( conModel.getFootPanel().getLastAbstractPoint(),
+                               conModel.getPanel().getLastAbstractPoint(), null );
+        }
+        conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+        conModel.getPanel().setLastAbstractPoint( null, null, null );
+
+    }
+
+    /**
+     * Determines the transformationMethod by means of the type.
+     * 
+     * @param type
+     *            of the transformationMethod, not <Code>null</Code>.
+     * @return the transformationMethod to be used.
+     */
+    private TransformationMethod determineTransformationType( TransformationType type ) {
+        TransformationMethod t = null;
+        switch ( type ) {
+        case Polynomial:
+            t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
+            break;
+        case Helmert_4:
+            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, 1 );
+            break;
+
+        case Affine:
+            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, 1 );
+            break;
+        }
+
+        return t;
+    }
+
+    /**
+     * Updates the model of the table to show the residuals of the already stored mappedPoints. It is based on the
+     * Helmert transformation.
+     * 
+     * @param type
+     * 
+     */
+    private void updateResiduals( TransformationType type ) {
+
+        TransformationMethod t = determineTransformationType( type );
+        PointResidual[] r = t.calculateResiduals();
+        Vector<Vector<Double>> data = new Vector<Vector<Double>>();
+        int counter = 0;
+        for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
+            Vector element = new Vector( 6 );
+            element.add( point.second.getWorldCoords().getX() );
+            element.add( point.second.getWorldCoords().getY() );
+            element.add( point.first.getWorldCoords().getX() );
+            element.add( point.first.getWorldCoords().getY() );
+            element.add( r[counter].getX() );
+            element.add( r[counter].getY() );
+            data.add( element );
+
+            point.third = r[counter++];
+
+        }
+        tablePanel.getModel().setDataVector( data, tablePanel.getColumnNamesAsVector() );
+        tablePanel.getModel().fireTableDataChanged();
+    }
+
+    private void updateResidualsWithLastAbstractPoint() {
+        if ( conModel.getFootPanel().getLastAbstractPoint() != null
+             && conModel.getPanel().getLastAbstractPoint() != null ) {
+            mappedPoints.add( new Triple<Point4Values, Point4Values, PointResidual>(
+                                                                                     conModel.getFootPanel().getLastAbstractPoint(),
+                                                                                     conModel.getPanel().getLastAbstractPoint(),
+                                                                                     null ) );
+            updateMappedPoints();
+            updateResiduals( conModel.getTransformationType() );
+
+            // remove the last element...should be the before inserted value
+            mappedPoints.remove( mappedPoints.size() - 1 );
+        } else {
+            updateMappedPoints();
+            updateResiduals( conModel.getTransformationType() );
+        }
     }
 
     /**
@@ -1731,13 +1695,13 @@ public class Controller {
     private void removeAllFromMappedPoints() {
         mappedPoints = new ArrayList<Triple<Point4Values, Point4Values, PointResidual>>();
         tablePanel.removeAllRows();
-        panel.removeAllFromSelectedPoints();
-        footPanel.removeAllFromSelectedPoints();
-        footPanel.setLastAbstractPoint( null, null, null );
-        panel.setPolygonList( null, null );
-        panel.setLastAbstractPoint( null, null, null );
-        panel.repaint();
-        footPanel.repaint();
+        conModel.getPanel().removeAllFromSelectedPoints();
+        conModel.getFootPanel().removeAllFromSelectedPoints();
+        conModel.getFootPanel().setLastAbstractPoint( null, null, null );
+        conModel.getPanel().setPolygonList( null, null );
+        conModel.getPanel().setLastAbstractPoint( null, null, null );
+        conModel.getPanel().repaint();
+        conModel.getFootPanel().repaint();
         reset();
 
     }
@@ -1746,10 +1710,14 @@ public class Controller {
      * Resets the focus of the panels and the startPanel.
      */
     private void reset() {
-        panel.setFocus( false );
-        footPanel.setFocus( false );
+        conModel.getPanel().setFocus( false );
+        conModel.getFootPanel().setFocus( false );
         start = false;
 
+    }
+
+    public ControllerModel getConModel() {
+        return conModel;
     }
 
 }

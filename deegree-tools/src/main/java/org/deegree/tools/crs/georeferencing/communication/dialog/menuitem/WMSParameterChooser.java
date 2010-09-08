@@ -79,8 +79,6 @@ public class WMSParameterChooser extends AbstractGRDialog {
 
     private ButtonGroup groupSRS;
 
-    // private JComboBox comboSRS;
-
     private List<JCheckBox> checkBoxListFormat;
 
     private List<JCheckBox> checkBoxSRSList;
@@ -236,10 +234,6 @@ public class WMSParameterChooser extends AbstractGRDialog {
 
             }
         }
-        // comboSRS.removeAllItems();
-        // for ( String s : srsList ) {
-        // comboSRS.addItem( s );
-        // }
 
     }
 
@@ -298,30 +292,6 @@ public class WMSParameterChooser extends AbstractGRDialog {
     public ButtonGroup getGroupSRS() {
         return groupSRS;
     }
-
-    // public JComboBox getComboSRS() {
-    // return comboSRS;
-    // }
-    //
-    // /**
-    // *
-    // * @return the comboBox as a CRS, can be <Code>null</Code>.
-    // */
-    // public CRS getComboCRS() {
-    // CRS crs = null;
-    //
-    // // crs = new CRS( comboSRS.getSelectedItem().toString() );
-    //
-    // return crs;
-    // }
-    //
-    // public void setComboSRS( JComboBox comboSRS ) {
-    // this.comboSRS = comboSRS;
-    // }
-    //
-    // public void addComboActionListener( ActionListener l ) {
-    // comboSRS.addActionListener( l );
-    // }
 
     public void addCheckBoxListener( ActionListener l ) {
         for ( JCheckBox c : checkBoxListLayer ) {
