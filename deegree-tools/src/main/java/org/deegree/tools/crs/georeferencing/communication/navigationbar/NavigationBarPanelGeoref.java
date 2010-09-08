@@ -39,8 +39,10 @@ import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DI
 
 import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
@@ -67,7 +69,7 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
 
     private JButton computeTransform = new JButton( GUIConstants.COMPUTE_BUTTON_TEXT );
 
-    private static final URL ZOOM_BY_COORD = NavigationBarPanelGeoref.class.getResource( "../../icons/zoombycoord.png" );
+    private static final String COORD = "/org/deegree/tools/crs/georeferencing/communication/icons/zoombycoord.png";
 
     private JToggleButton buttonZoomCoord;
 
@@ -77,17 +79,24 @@ public class NavigationBarPanelGeoref extends AbstractNavigationBarPanel {
     public NavigationBarPanelGeoref() {
         super();
         this.setName( NAVIGATIONBAR_PANEL_NAME_GEOREF );
+        try {
+            InputStream inCoord = NavigationBarPanelGeoref.class.getResourceAsStream( COORD );
 
-        ImageIcon iconZoomCoord = new ImageIcon( ZOOM_BY_COORD );
+            ImageIcon iconZoomCoord = new ImageIcon( ImageIO.read( inCoord ) );
 
-        buttonZoomCoord = new JToggleButton( iconZoomCoord );
-        buttonZoomCoord.setName( GUIConstants.JBUTTON_ZOOM_COORD );
-        buttonZoomCoord.setPreferredSize( DIM_NAVIGATION_BUTTONS );
+            buttonZoomCoord = new JToggleButton( iconZoomCoord );
+            buttonZoomCoord.setName( GUIConstants.JBUTTON_ZOOM_COORD );
+            buttonZoomCoord.setPreferredSize( DIM_NAVIGATION_BUTTONS );
 
-        computeTransform.setName( GUIConstants.COMPUTE_BUTTON_TEXT );
+            computeTransform.setName( GUIConstants.COMPUTE_BUTTON_TEXT );
 
-        this.add( buttonZoomCoord );
-        this.add( computeTransform, Component.RIGHT_ALIGNMENT );
+            this.add( buttonZoomCoord );
+            this.add( computeTransform, Component.RIGHT_ALIGNMENT );
+            inCoord.close();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 

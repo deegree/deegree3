@@ -39,13 +39,17 @@ import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.DI
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for all <Code>NavigationBarPanel</Code>s.
@@ -57,16 +61,18 @@ import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
  */
 public abstract class AbstractNavigationBarPanel extends JPanel {
 
+    private static final Logger LOG = LoggerFactory.getLogger( AbstractNavigationBarPanel.class );
+
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    protected static final URL PAN = AbstractNavigationBarPanel.class.getResource( "../../icons/pan.png" );
+    private static final String PAN = "/org/deegree/tools/crs/georeferencing/communication/icons/pan.png";
 
-    protected static final URL ZOOM_IN = AbstractNavigationBarPanel.class.getResource( "../../icons/zoomin.png" );
+    private static final String ZOOM_IN = "/org/deegree/tools/crs/georeferencing/communication/icons/zoomin.png";
 
-    protected static final URL ZOOM_OUT = AbstractNavigationBarPanel.class.getResource( "../../icons/zoomout.png" );
+    private static final String ZOOM_OUT = "/org/deegree/tools/crs/georeferencing/communication/icons/zoomout.png";
 
     protected JToggleButton buttonPan;
 
@@ -76,25 +82,39 @@ public abstract class AbstractNavigationBarPanel extends JPanel {
 
     public AbstractNavigationBarPanel() {
         this.setLayout( new FlowLayout( 10 ) );
+        try {
+            InputStream inPan = this.getClass().getResourceAsStream( PAN );
 
-        ImageIcon iconPan = new ImageIcon( PAN );
-        ImageIcon iconZoomIn = new ImageIcon( ZOOM_IN );
-        ImageIcon iconZoomOut = new ImageIcon( ZOOM_OUT );
+            InputStream inZoomIn = this.getClass().getResourceAsStream( ZOOM_IN );
 
-        buttonPan = new JToggleButton( iconPan );
-        buttonPan.setName( GUIConstants.JBUTTON_PAN );
-        buttonZoomIn = new JToggleButton( iconZoomIn );
-        buttonZoomIn.setName( GUIConstants.JBUTTON_ZOOM_IN );
-        buttonZoomOut = new JToggleButton( iconZoomOut );
-        buttonZoomOut.setName( GUIConstants.JBUTTON_ZOOM_OUT );
+            InputStream inZoomOut = this.getClass().getResourceAsStream( ZOOM_OUT );
 
-        buttonPan.setPreferredSize( DIM_NAVIGATION_BUTTONS );
-        buttonZoomIn.setPreferredSize( DIM_NAVIGATION_BUTTONS );
-        buttonZoomOut.setPreferredSize( DIM_NAVIGATION_BUTTONS );
+            ImageIcon iconPan = new ImageIcon( ImageIO.read( inPan ) );
+            ImageIcon iconZoomIn = new ImageIcon( ImageIO.read( inZoomIn ) );
+            ImageIcon iconZoomOut = new ImageIcon( ImageIO.read( inZoomOut ) );
 
-        this.add( buttonZoomIn );
-        this.add( buttonZoomOut );
-        this.add( buttonPan );
+            buttonPan = new JToggleButton( iconPan );
+            buttonPan.setName( GUIConstants.JBUTTON_PAN );
+            buttonZoomIn = new JToggleButton( iconZoomIn );
+            buttonZoomIn.setName( GUIConstants.JBUTTON_ZOOM_IN );
+            buttonZoomOut = new JToggleButton( iconZoomOut );
+            buttonZoomOut.setName( GUIConstants.JBUTTON_ZOOM_OUT );
+
+            buttonPan.setPreferredSize( DIM_NAVIGATION_BUTTONS );
+            buttonZoomIn.setPreferredSize( DIM_NAVIGATION_BUTTONS );
+            buttonZoomOut.setPreferredSize( DIM_NAVIGATION_BUTTONS );
+
+            this.add( buttonZoomIn );
+            this.add( buttonZoomOut );
+            this.add( buttonPan );
+
+            inPan.close();
+            inZoomIn.close();
+            inZoomOut.close();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         this.repaint();
     }

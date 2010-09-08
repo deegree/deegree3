@@ -45,8 +45,16 @@ package org.deegree.tools.crs.georeferencing.communication.navigationbar;
  */
 public class NavigationBarPanelFootprint extends AbstractNavigationBarPanel {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public final static String NAVIGATIONBAR_PANEL_NAME_FOOT = "NavigationBarPanelFoot";
+
     public NavigationBarPanelFootprint() {
         super();
+        this.setName( NAVIGATIONBAR_PANEL_NAME_FOOT );
     }
 
 }
