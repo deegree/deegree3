@@ -68,7 +68,7 @@ import es.unex.sextante.parameters.Parameter;
  */
 public class AlgorithmTest {
 
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     private static Logger LOG = LoggerFactory.getLogger( AlgorithmTest.class );
 

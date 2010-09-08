@@ -113,8 +113,6 @@ public class SextanteProcesslet implements Processlet {
             // execute the algorithm
             alg.execute( null, new OutputFactoryExt() );
 
-            LOG.info( "HUHU" );
-
             // write all output values
             writeResult( alg, out );
 
@@ -241,6 +239,7 @@ public class SextanteProcesslet implements Processlet {
         if ( layer != null ) {
             // set vector layer
             param.setParameterValue( layer );
+            
 
         } else {// unknown payload
             LOG.error( "Type (GEOMETRY OR FEATURE COLLECTION) of schema \"" + gmlInput.getSchema() + "\" is unknown." );
@@ -570,6 +569,7 @@ public class SextanteProcesslet implements Processlet {
     private void writeRasterLayer( Output obj, ProcessletOutputs out ) {
         LOG.error( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
         // TODO implement this output parameter type
+       
     }
 
     /**
@@ -596,6 +596,7 @@ public class SextanteProcesslet implements Processlet {
     private void writeText( Output obj, ProcessletOutputs out ) {
         LOG.error( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
         // TODO implement this output parameter type
+
     }
 
     /**

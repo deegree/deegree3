@@ -72,9 +72,9 @@ import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.IteratorException;
 
 /**
- * The {@link VectorLayerAdapter} has methods to create a {@link IVectorLayer} from a {@link Geometry}, <br>
- * {@link Feature} or {@link FeatureCollection} and methods to create a {@link Geometry}, {@link Feature} or
- * {@link FeatureCollection} from a {@link IVectorLayer} .
+ * The {@link VectorLayerAdapter} has methods to create a {@link IVectorLayer} from a {@link Geometry}, <br> {@link Feature}
+ * or {@link FeatureCollection} and methods to create a {@link Geometry}, {@link Feature} or {@link FeatureCollection}
+ * from a {@link IVectorLayer} .
  * 
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
@@ -530,8 +530,8 @@ public class VectorLayerAdapter {
                 QName pName = spt.getName();
 
                 // class
-                // Class<?> pClass = spt.getPrimitiveType().getValueClass();
-                Class<?> pClass = String.class;
+                Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                // Class<?> pClass = String.class;
 
                 // notice name and class as field
                 vectoLayerPropertyDeclarations.add( new Field( pName.toString(), pClass ) );
@@ -592,7 +592,8 @@ public class VectorLayerAdapter {
                         TypedObjectNode probNode = properties[0].getValue();
 
                         if ( probNode instanceof PrimitiveValue ) {
-                            geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() ).getAsText();
+                            geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() );
+                            //geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() ).getAsText();
                         } else {
                             LOG.warn( "Property '" + properties[0].getName() + "' is not supported." );
                             geomProperties[i] = null;

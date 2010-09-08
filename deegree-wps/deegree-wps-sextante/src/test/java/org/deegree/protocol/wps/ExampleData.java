@@ -40,16 +40,20 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.deegree.gml.GMLVersion;
 import org.deegree.services.wps.input.ComplexInputImpl;
 import org.deegree.services.wps.provider.sextante.GMLSchema;
+import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * This class contains input data
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -137,6 +141,42 @@ public class ExampleData {
 
     private final ExampleDataType type;
 
+    public static LinkedList<ExampleData> getAllFeatureCollections() {
+        LinkedList<ExampleData> collections = getAllData();
+
+        Iterator<ExampleData> it = collections.iterator();
+
+        while ( it.hasNext() ) {
+
+            ExampleData data = it.next();
+
+            if ( data.schema.getGMLType().equals( GMLType.FEATURE_COLLECTION ) ) {
+                it.remove();
+            }
+
+        }
+
+        return collections;
+    }
+
+    public static LinkedList<ExampleData> getAllGeometryies() {
+        LinkedList<ExampleData> geometries = getAllData();
+
+        Iterator<ExampleData> it = geometries.iterator();
+
+        while ( it.hasNext() ) {
+
+            ExampleData data = it.next();
+
+            if ( data.schema.getGMLType().equals( GMLType.GEOMETRY ) ) {
+                it.remove();
+            }
+
+        }
+
+        return geometries;
+    }
+
     private ExampleData( URL url, ExampleDataType type, GMLSchema schema ) {
         this( url, type, schema, null, null );
     }
@@ -173,6 +213,10 @@ public class ExampleData {
 
     public URL getURL() {
         return url;
+    }
+
+    public GMLVersion getGMLVersion() {
+        return schema.getGMLVersion();
     }
 
     public String getFilename() {
@@ -227,6 +271,16 @@ public class ExampleData {
             }
 
         return allAsList;
+    }
+
+    public String toString() {
+        String s = ExampleData.class.getSimpleName() + ".class: ";
+        s += getFilename();
+        s += " (" + type.name() + ", ";
+        s += schema.getGMLType().name() + ", ";
+        s += schema.getGMLVersion().name();
+        s += ")";
+        return s;
     }
 
 }

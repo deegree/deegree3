@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.sextante;
 
+import org.deegree.protocol.wps.ExampleData;
+
 /**
  * Manages a column of a attribute table. <br>
  * 'Name' is the column name and 'Type' the data type.
@@ -100,4 +102,9 @@ public class Field {
         return m_Type;
     }
 
+    public String toString() {
+        String s = Field.class.getSimpleName() + ".class: ";
+        s += m_Name + ", " + m_Type.getName();
+        return s;
+    }
 }
