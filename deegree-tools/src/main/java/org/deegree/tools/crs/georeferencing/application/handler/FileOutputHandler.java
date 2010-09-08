@@ -62,7 +62,7 @@ public class FileOutputHandler {
     public FileOutputHandler( PointTableFrame tablePanel ) {
 
         List<String> list = new ArrayList<String>();
-        list.add( "cvs" );
+        list.add( "csv" );
 
         String desc = " Comma-Separated Values";
         Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );

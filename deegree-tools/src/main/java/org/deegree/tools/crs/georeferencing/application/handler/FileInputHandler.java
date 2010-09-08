@@ -62,9 +62,9 @@ public class FileInputHandler {
     public FileInputHandler( PointTableFrame tablePanel ) {
 
         List<String> list = new ArrayList<String>();
-        list.add( "cvs" );
+        list.add( "csv" );
 
-        String desc = "(*.cvs) Comma-Separated Values";
+        String desc = " Comma-Separated Values";
         Pair<List<String>, String> supportedFiles = new Pair<List<String>, String>( list, desc );
         List<Pair<List<String>, String>> supportedOpenFiles = new ArrayList<Pair<List<String>, String>>();
         supportedOpenFiles.add( supportedFiles );
@@ -106,6 +106,10 @@ public class FileInputHandler {
         }
     }
 
+    /**
+     * 
+     * @return the data, can be <Code>null</Code>.
+     */
     public Vector<Vector<Double>> getData() {
         return data;
     }
