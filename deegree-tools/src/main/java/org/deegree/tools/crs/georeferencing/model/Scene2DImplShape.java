@@ -45,6 +45,7 @@ import javax.vecmath.Point2d;
 
 import jj2000.j2k.NotImplementedError;
 
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -101,6 +102,7 @@ public class Scene2DImplShape implements Scene2D {
 
         try {
 
+            ConnectionManager.destroy();
             store = new ShapeFeatureStore( filePath, null, null, "http://www.deegree.org/app", "MyFeatureType", true,
                                            null );
 
