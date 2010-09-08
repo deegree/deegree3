@@ -512,13 +512,7 @@ public class Controller {
                 } else if ( source instanceof JCheckBox ) {
                     JCheckBox selectedCheckbox = (JCheckBox) source;
 
-                    new JCheckboxHandler( selectedCheckbox, conModel );
-
-                    for ( String s : wmsParameter.getCheckBoxListLayerText() ) {
-
-                        wmsParameter.fillSRSList( s );
-
-                    }
+                    new JCheckboxHandler( selectedCheckbox, conModel, wmsParameter );
 
                 } else {
                     JToggleButton tb = (JToggleButton) source;

@@ -39,6 +39,7 @@ import javax.swing.JCheckBox;
 
 import org.deegree.tools.crs.georeferencing.application.transformation.TransformationMethod.TransformationType;
 import org.deegree.tools.crs.georeferencing.communication.GUIConstants;
+import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.WMSParameterChooser;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.model.ControllerModel;
 
@@ -52,7 +53,7 @@ import org.deegree.tools.crs.georeferencing.model.ControllerModel;
  */
 public class JCheckboxHandler {
 
-    public JCheckboxHandler( JCheckBox source, ControllerModel cm ) {
+    public JCheckboxHandler( JCheckBox source, ControllerModel cm, WMSParameterChooser wmsParameter ) {
 
         if ( ( source ).getText().startsWith( GeneralPanel.SNAPPING_TEXT ) ) {
 
@@ -104,6 +105,14 @@ public class JCheckboxHandler {
             cm.setTransformationType( TransformationType.Affine );
             cm.setOrder( 1 );
             cm.getView().activateTransformationCheckbox( source );
+        }
+        if ( wmsParameter != null ) {
+            for ( String s : wmsParameter.getCheckBoxListLayerText() ) {
+                if ( ( source ).getText().startsWith( s ) ) {
+                    wmsParameter.fillSRSList( s );
+
+                }
+            }
         }
 
     }
