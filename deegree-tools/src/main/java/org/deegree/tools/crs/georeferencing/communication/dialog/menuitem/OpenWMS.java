@@ -65,7 +65,9 @@ public class OpenWMS extends AbstractGRDialog {
         super( parent, GUIConstants.DIM_OPEN_WMS );
 
         textField = new JTextField( 50 );
-        textField.setText( "http://localhost:8080/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
+
+        // textField.setText( "http://localhost:8080/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS" );
+        textField.setText( "http://www.wms.nrw.de/geobasis/adv_dtk?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1" );
         JLabel label = new JLabel( "Please insert a valid WMS Capabilities URL: " );
         JLabel spaceB = new JLabel( " " );
         JLabel spaceA = new JLabel( " " );
