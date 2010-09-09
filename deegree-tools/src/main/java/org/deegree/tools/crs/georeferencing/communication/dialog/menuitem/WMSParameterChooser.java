@@ -281,8 +281,12 @@ public class WMSParameterChooser extends AbstractGRDialog {
     }
 
     public Envelope getEnvelope( CRS srs, List<String> layerList ) {
+        Envelope env = wmsClient.getBoundingBox( srs.getName(), layerList );
+        if ( env == null ) {
+            env = wmsClient.getLatLonBoundingBox( layerList );
+        }
 
-        return wmsClient.getBoundingBox( srs.getName(), layerList );
+        return env;
     }
 
     public URL getMapURL() {
