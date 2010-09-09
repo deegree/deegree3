@@ -1,23 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-	version="2.4">
-	<display-name>deegree 3 OGC webservices + generic client</display-name>
-	<servlet>
-		<servlet-name>services</servlet-name>
-		<servlet-class>org.deegree.services.controller.OGCFrontController</servlet-class>
-		<!--
-			parameter 'ConfigurationFile' is optional (only needed when a
-			non-default location is used for the 'services_metadata.xml' file)
-		-->
-		<!--
-			init-param> <param-name>ConfigurationFile</param-name>
-			<param-value>conf/services_metadata.xml</param-value> </init-param
-		-->
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>services</servlet-name>
-		<url-pattern>/services</url-pattern>
-	</servlet-mapping>
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
+  <display-name>deegree 3 OGC services console + generic client</display-name>
+
+  <context-param>
+    <param-name>javax.faces.PROJECT_STAGE</param-name>
+    <param-value>Development</param-value>
+  </context-param>
+
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.jsf</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.xhtml</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>services</servlet-name>
+    <servlet-class>org.deegree.services.controller.OGCFrontController</servlet-class>
+    <!--
+      parameter 'ConfigurationFile' is optional (only needed when a non-default location is used for the
+      'services_metadata.xml' file)
+    -->
+    <!--
+      init-param> <param-name>ConfigurationFile</param-name> <param-value>conf/services_metadata.xml</param-value>
+      </init-param
+    -->
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>services</servlet-name>
+    <url-pattern>/services</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>OL4JSF Resources</servlet-name>
+    <servlet-class>org.ol4jsf.resource.ResourceServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>OL4JSF Resources</servlet-name>
+    <url-pattern>/ol4jsf_resource/*</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet>
+    <servlet-name>OL4JSFProxy</servlet-name>
+    <servlet-class>org.ol4jsf.proxy.servlet.OL4JSFProxy</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>OL4JSFProxy</servlet-name>
+    <url-pattern>/OL4JSFProxy/*</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.xhtml</welcome-file>
+    <welcome-file>index.jsf</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>console.xhtml</welcome-file>
+  </welcome-file-list>
+
 </web-app>
