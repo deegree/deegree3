@@ -1,0 +1,7 @@
+Versuch, eine neue Eigenschaft ?\194?\187svn:ignore?\194?\171 mit dem Wert ?\194?\187.classpath
+.project
+.settings
+target
+?\194?\171 anzulegen,
+aber die Eigenschaft existiert bereits mit dem Wert ?\194?\187target
+?\194?\171.
