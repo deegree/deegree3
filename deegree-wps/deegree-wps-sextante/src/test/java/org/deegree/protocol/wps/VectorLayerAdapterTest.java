@@ -41,6 +41,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import junit.framework.Assert;
+
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.property.PropertyType;
@@ -50,10 +53,14 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
+import org.deegree.services.wps.provider.sextante.Field;
 import org.deegree.services.wps.provider.sextante.VectorLayerAdapter;
 import org.deegree.services.wps.provider.sextante.OutputFactoryExt;
 import org.deegree.services.wps.provider.sextante.VectorLayerImpl;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import es.unex.sextante.core.GeoAlgorithm;
@@ -73,6 +80,8 @@ import es.unex.sextante.vectorTools.centroids.CentroidsAlgorithm;
  * @version $Revision: $, $Date: $
  */
 public class VectorLayerAdapterTest {
+
+    private static Logger LOG = LoggerFactory.getLogger( VectorLayerAdapterTest.class );
 
     /**
      * Tests the IVectorAdapter with geometries.
@@ -94,8 +103,9 @@ public class VectorLayerAdapterTest {
                 // check geometry
                 Assert.assertTrue( gIn.equals( gOut ) );
             }
-        } catch ( Exception e ) {
-            e.printStackTrace();
+        } catch ( Throwable t ) {
+            LOG.error( t.getMessage(), t );
+            Assert.fail( t.getLocalizedMessage() );
         }
     }
 
@@ -145,8 +155,9 @@ public class VectorLayerAdapterTest {
 
             }
 
-        } catch ( Exception e ) {
-            e.printStackTrace();
+        } catch ( Throwable t ) {
+            LOG.error( t.getMessage(), t );
+            Assert.fail( t.getLocalizedMessage() );
         }
     }
 
@@ -170,26 +181,10 @@ public class VectorLayerAdapterTest {
                 checkFeatureCollection( fcIn, fcOut );
 
             }
-        } catch ( Exception e ) {
-            e.printStackTrace();
+        } catch ( Throwable t ) {
+            LOG.error( t.getMessage(), t );
+            Assert.fail( t.getLocalizedMessage() );
         }
-    }
-
-    /**
-     * Returns a feature collection.
-     * 
-     * @param filename
-     *            - filename of a feature collection file in the resource dictionary.
-     * @return feature collection
-     * @throws Exception
-     */
-    private static FeatureCollection readFeatureCollection( String filename )
-                            throws Exception {
-
-        URL url = VectorLayerAdapterTest.class.getResource( filename );
-        GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, url );
-        FeatureCollection fc = gmlStreamReader.readFeatureCollection();
-        return fc;
     }
 
     /**
@@ -202,8 +197,17 @@ public class VectorLayerAdapterTest {
                             throws Exception {
 
         LinkedList<FeatureCollection> colls = new LinkedList<FeatureCollection>();
-        colls.add( readFeatureCollection( "GML31_FeatureCollection_Deegree_Polygons.xml" ) );
-        colls.add( readFeatureCollection( "GML31_FeatureCollection_GeoServer_Polygons.xml" ) );
+
+        LinkedList<ExampleData> data = ExampleData.getAllFeatureCollections();
+        for ( ExampleData dataFc : data ) {
+            LOG.info( dataFc.toString() );
+
+            GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataFc.getGMLVersion(),
+                                                                                     dataFc.getURL() );
+
+            FeatureCollection fc = gmlStreamReader.readFeatureCollection();
+            colls.add( fc );
+        }
 
         return colls;
     }
@@ -217,51 +221,23 @@ public class VectorLayerAdapterTest {
     private static LinkedList<Feature> readFeatures()
                             throws Exception {
 
-        LinkedList<Feature> fs = new LinkedList<Feature>();
-        FeatureCollection fc1 = readFeatureCollection( "GML31_FeatureCollection_Deegree_Polygons.xml" );
-        FeatureCollection fc2 = readFeatureCollection( "GML31_FeatureCollection_GeoServer_Polygons.xml" );
-        fs.add( fc2 );
+        LinkedList<Feature> features = new LinkedList<Feature>();
 
-        Iterator<Feature> it = fc1.iterator();
-        for ( Feature f : fc1 ) {
-            fs.add( f );
+        LinkedList<ExampleData> data = ExampleData.getAllFeatureCollections();
+        for ( ExampleData dataFc : data ) {
+            LOG.info( dataFc.toString() );
+
+            GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataFc.getGMLVersion(),
+                                                                                     dataFc.getURL() );
+
+            FeatureCollection fc = gmlStreamReader.readFeatureCollection();
+
+            for ( Feature feature : fc ) {
+                features.add( feature );
+            }
         }
 
-        return fs;
-    }
-
-    /**
-     * Returns a geometry.
-     * 
-     * @param type
-     *            - geometry type
-     * @return geometry
-     * @throws Exception
-     */
-    private static Geometry readGeometry( GeometryType type )
-                            throws Exception {
-
-        File geom = null;
-
-        if ( type.equals( GeometryType.POINT ) )
-            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_Point.xml" ).getPath() );
-        else if ( type.equals( GeometryType.LINE_STRING ) )
-            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_LineString.xml" ).getPath() );
-        else if ( type.equals( GeometryType.POLYGON ) )
-            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_Polygon.xml" ).getPath() );
-        else if ( type.equals( GeometryType.MULTI_POINT ) )
-            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_MultiPoint.xml" ).getPath() );
-        else if ( type.equals( GeometryType.MULTI_LINE_STRING ) )
-            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_MultiLineString.xml" ).getPath() );
-        else if ( type.equals( GeometryType.MULTI_POLYGON ) )
-            geom = new File( VectorLayerAdapterTest.class.getResource( "GML31_MultiPolygon.xml" ).getPath() );
-
-        GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31,
-                                                                                 geom.toURI().toURL() );
-
-        Geometry g = gmlStreamReader.readGeometry();
-
-        return g;
+        return features;
     }
 
     /**
@@ -274,12 +250,16 @@ public class VectorLayerAdapterTest {
                             throws Exception {
 
         LinkedList<Geometry> geoms = new LinkedList<Geometry>();
-        geoms.add( readGeometry( GeometryType.POINT ) );
-        geoms.add( readGeometry( GeometryType.LINE_STRING ) );
-        geoms.add( readGeometry( GeometryType.POLYGON ) );
-        geoms.add( readGeometry( GeometryType.MULTI_POINT ) );
-        geoms.add( readGeometry( GeometryType.MULTI_LINE_STRING ) );
-        geoms.add( readGeometry( GeometryType.MULTI_POLYGON ) );
+
+        LinkedList<ExampleData> data = ExampleData.getAllGeometryies();
+        for ( ExampleData dataGeom : data ) {
+            LOG.info( dataGeom.toString() );
+
+            GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataGeom.getGMLVersion(),
+                                                                                     dataGeom.getURL() );
+            Geometry g = gmlStreamReader.readGeometry();
+            geoms.add( g );
+        }
 
         return geoms;
     }
@@ -330,9 +310,16 @@ public class VectorLayerAdapterTest {
                 if ( sptIn.getName().equals( sptOut.getName() ) ) {
                     found = true;
 
-                    // check value content
-                    Assert.assertTrue( fIn.getProperties( sptIn.getName() )[0].getValue().toString().equals(
-                                                                                                             fOut.getProperties( sptOut.getName() )[0].getValue().toString() ) );
+                    // check value content (only the first property with the same name)
+                    TypedObjectNode valueIn = fIn.getProperties( sptIn.getName() )[0].getValue();
+                    TypedObjectNode valueOut = fOut.getProperties( sptOut.getName() )[0].getValue();
+                    if ( valueIn instanceof PrimitiveValue && valueOut instanceof PrimitiveValue ) {
+                        Assert.assertTrue( ( (PrimitiveValue) valueIn ).getAsText().equals(
+                                                                                            ( (PrimitiveValue) valueIn ).getAsText() ) );
+                    } else {
+                        Assert.fail();
+                    }
+
                 }
             }
 
@@ -343,6 +330,9 @@ public class VectorLayerAdapterTest {
         }
 
         // check geometry content (only first geometry)
+        TypedObjectNode geomIn = fIn.getGeometryProperties()[0].getValue();
+        TypedObjectNode geomOut = fOut.getGeometryProperties()[0].getValue();
+        
         Assert.assertTrue( fIn.getGeometryProperties()[0].getValue().toString().equals(
                                                                                         fOut.getGeometryProperties()[0].getValue().toString() ) );
 

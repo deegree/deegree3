@@ -117,6 +117,37 @@ public class GMLSchema {
     private final GMLVersion version;
 
     /**
+     * Returns a {@link GMLSchema} based on the schema URL.
+     * 
+     * @param schema
+     *            - URL schema.
+     * @return The {@link GMLSchema} based on the schema URL
+     */
+    public static GMLSchema getGMLSchema( String schema ) {
+        GMLSchema foundSchema = ALL_SCHEMAS.get( schema );
+
+        if ( foundSchema != null ) {
+            return foundSchema;
+        } else {
+            LOG.error( "\"" + schema + " \" is a not supported GML schema." );
+            // TODO throw Exception
+            return null;
+        }
+    }
+
+    public static LinkedList<GMLSchema> getAllSchemas() {
+
+        LinkedList<GMLSchema> schemas = new LinkedList<GMLSchema>();
+
+        Set<String> keys = ALL_SCHEMAS.keySet();
+        for ( String key : keys ) {
+            schemas.add( ALL_SCHEMAS.get( key ) );
+        }
+
+        return schemas;
+    }
+
+    /**
      * Creates a new {@link GMLSchema} and add the schema to map from {@link FormatHelper}.
      * 
      * @param schema
@@ -148,7 +179,7 @@ public class GMLSchema {
      * 
      * @return Schema URL.
      */
-    public String getSchema() {
+    public String getSchemaURL() {
         return schema;
     }
 
@@ -161,34 +192,9 @@ public class GMLSchema {
         return type;
     }
 
-    /**
-     * Returns a {@link GMLSchema} based on the schema URL.
-     * 
-     * @param schema
-     *            - URL schema.
-     * @return The {@link GMLSchema} based on the schema URL
-     */
-    public static GMLSchema getGMLSchema( String schema ) {
-        GMLSchema foundSchema = ALL_SCHEMAS.get( schema );
-
-        if ( foundSchema != null ) {
-            return foundSchema;
-        } else {
-            LOG.error( "\"" + schema + " \" is a not supported GML schema." );
-            // TODO throw Exception
-            return null;
-        }
-    }
-
-    public static LinkedList<GMLSchema> getAllSchemas() {
-
-        LinkedList<GMLSchema> schemas = new LinkedList<GMLSchema>();
-
-        Set<String> keys = ALL_SCHEMAS.keySet();
-        for ( String key : keys ) {
-            schemas.add( ALL_SCHEMAS.get( key ) );
-        }
-
-        return schemas;
+    public String toString() {
+        String s = GMLSchema.class.getSimpleName() + "(";
+        s += schema + ", " + type.name() + ", " + version.name() + ")";
+        return s;
     }
 }

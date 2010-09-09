@@ -99,7 +99,7 @@ public class FormatHelper {
             // TODO throw Exception?
 
             GMLSchema defaultSchema = GMLSchema.getGMLSchema( getDefaultOutputFormat().getSchema() );
-            LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchema() + "\" is in use." );
+            LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchemaURL() + "\" is in use." );
             return defaultSchema.getGMLVersion();
         }
     }
@@ -140,7 +140,7 @@ public class FormatHelper {
             // TODO throw Exception
 
             GMLSchema defaultSchema = GMLSchema.getGMLSchema( getDefaultOutputFormat().getSchema() );
-            LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchema() + "\" is in use." );
+            LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchemaURL() + "\" is in use." );
             return defaultSchema.getGMLType();
         }
     }
@@ -155,7 +155,7 @@ public class FormatHelper {
         ComplexFormatType cft = new ComplexFormatType();
         cft.setEncoding( "UTF-8" );
         cft.setMimeType( "text/xml" );
-        cft.setSchema( GMLSchema.GML_2_GEOMETRY_SCHEMA.getSchema() );
+        cft.setSchema( GMLSchema.GML_2_GEOMETRY_SCHEMA.getSchemaURL() );
 
         return cft;
     }
@@ -184,11 +184,11 @@ public class FormatHelper {
 
         LinkedList<GMLSchema> schemas = GMLSchema.getAllSchemas();
         for ( GMLSchema gmlSchema : schemas ) {
-            if ( !defaultKey.equals( gmlSchema.getSchema() ) ) {
+            if ( !defaultKey.equals( gmlSchema.getSchemaURL() ) ) {
                 ComplexFormatType cft = new ComplexFormatType();
                 cft.setEncoding( "UTF-8" );
                 cft.setMimeType( "text/xml" );
-                cft.setSchema( gmlSchema.getSchema() );
+                cft.setSchema( gmlSchema.getSchemaURL() );
                 inputCft.add( cft );
             }
         }

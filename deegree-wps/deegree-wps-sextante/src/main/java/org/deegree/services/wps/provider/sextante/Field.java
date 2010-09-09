@@ -103,8 +103,8 @@ public class Field {
     }
 
     public String toString() {
-        String s = Field.class.getSimpleName() + ".class: ";
-        s += m_Name + ", " + m_Type.getName();
+        String s = Field.class.getSimpleName() + "(";
+        s += m_Name + ", " + m_Type.getName() + ")";
         return s;
     }
 }

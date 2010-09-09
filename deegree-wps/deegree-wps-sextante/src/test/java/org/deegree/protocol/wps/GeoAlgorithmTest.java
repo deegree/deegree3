@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.deegree.protocol.wps.ExampleData.ExampleDataType;
+import org.deegree.protocol.wps.ExampleData.GeometryType;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.output.ExecutionOutput;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
@@ -66,11 +66,11 @@ import es.unex.sextante.parameters.Parameter;
  * 
  * @version $Revision: $, $Date: $
  */
-public class AlgorithmTest {
+public class GeoAlgorithmTest {
 
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
 
-    private static Logger LOG = LoggerFactory.getLogger( AlgorithmTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     private LinkedList<TestAlgorithm> getAlgorithms() {
         LinkedList<TestAlgorithm> algs = new LinkedList<TestAlgorithm>();
@@ -203,19 +203,19 @@ public class AlgorithmTest {
 
         // cleanpointslayer algorithm
         if ( alg.getCommandLineName().equals( "cleanpointslayer" ) )
-            layers.addAll( ExampleData.getData( ExampleDataType.POINT ) );
+            layers.addAll( ExampleData.getData( GeometryType.POINT ) );
         else
         // polylinestopolygons algorithm
         if ( alg.getCommandLineName().equals( "polylinestopolygons" ) )
-            layers.addAll( ExampleData.getData( ExampleDataType.LINE ) );
+            layers.addAll( ExampleData.getData( GeometryType.LINE ) );
         else
         // pointcoordinates algorithm
         if ( alg.getCommandLineName().equals( "pointcoordinates" ) )
-            layers.addAll( ExampleData.getData( ExampleDataType.POINT ) );
+            layers.addAll( ExampleData.getData( GeometryType.POINT ) );
         else
         // removeholes algorithm
         if ( alg.getCommandLineName().equals( "removeholes" ) )
-            layers.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
+            layers.addAll( ExampleData.getData( GeometryType.POLYGON ) );
         else
         // exportvector algorithm
         if ( alg.getCommandLineName().equals( "exportvector" ) )
@@ -228,9 +228,9 @@ public class AlgorithmTest {
         } else
         // difference and intersection algorithm
         if ( alg.getCommandLineName().equals( "difference" ) || alg.getCommandLineName().equals( "intersection" ) ) {
-            layers.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
-            layers.addAll( ExampleData.getData( ExampleDataType.LINE ) );
-            layers.addAll( ExampleData.getData( ExampleDataType.POINT ) );
+            layers.addAll( ExampleData.getData( GeometryType.POLYGON ) );
+            layers.addAll( ExampleData.getData( GeometryType.LINE ) );
+            layers.addAll( ExampleData.getData( GeometryType.POINT ) );
         } else
         // union algorithm
         if ( alg.getCommandLineName().equals( "union" ) ) {
@@ -258,7 +258,7 @@ public class AlgorithmTest {
         } else
         // symdifference algorithm
         if ( alg.getCommandLineName().equals( "symdifference" ) ) {
-            layers.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
+            layers.addAll( ExampleData.getData( GeometryType.POLYGON ) );
         } else
         // countpoints algorithm
         if ( alg.getCommandLineName().equals( "countpoints" ) ) {
@@ -277,14 +277,14 @@ public class AlgorithmTest {
 
     private LinkedList<ExampleData> getPolygonsInput() {
         LinkedList<ExampleData> polygons = new LinkedList<ExampleData>();
-        polygons.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
+        polygons.addAll( ExampleData.getData( GeometryType.POLYGON ) );
         return polygons;
     }
 
     private LinkedList<ExampleData> getLinesInput() {
         LinkedList<ExampleData> lines = new LinkedList<ExampleData>();
-        lines.addAll( ExampleData.getData( ExampleDataType.LINE ) );
-        lines.addAll( ExampleData.getData( ExampleDataType.POLYGON ) );
+        lines.addAll( ExampleData.getData( GeometryType.LINE ) );
+        lines.addAll( ExampleData.getData( GeometryType.POLYGON ) );
         return lines;
     }
 
@@ -309,13 +309,13 @@ public class AlgorithmTest {
                 LinkedList<TestAlgorithm> algs = getAlgorithms();
 
                 // traverse all algorithms
-                for ( TestAlgorithm algTest : algs ) {
+                for ( TestAlgorithm testAlg : algs ) {
 
                     // geoalgorithm
-                    GeoAlgorithm alg = algTest.getAlgorithm();
+                    GeoAlgorithm alg = testAlg.getAlgorithm();
 
                     // input data
-                    LinkedList<LinkedList<ExampleData>> allData = algTest.getAllInputData();
+                    LinkedList<LinkedList<ExampleData>> allData = testAlg.getAllInputData();
                     for ( LinkedList<ExampleData> data : allData ) {
 
                         // set input data for one execution

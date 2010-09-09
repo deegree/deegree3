@@ -451,17 +451,24 @@ public class VectorLayerAdapter {
 
         } else { // more geometries
 
-            com.vividsolutions.jts.geom.GeometryFactory gFactoryJTS = new com.vividsolutions.jts.geom.GeometryFactory(
-                                                                                                                       new PrecisionModel() );
+            geom = createJTSGeometry( (Geometry) fGeometries[0].getValue() );
 
-            // create jts geometry array
-            com.vividsolutions.jts.geom.Geometry[] geoms = new com.vividsolutions.jts.geom.Geometry[fGeometries.length];
-            for ( int i = 0; i < fGeometries.length; i++ ) {
-                geoms[i] = createJTSGeometry( (Geometry) fGeometries[i].getValue() );
-            }
+            LOG.warn( "Feature '" + f.getId() + "' has many geometries, first is in use." );
 
-            // create a JTS geometry collection
-            geom = gFactoryJTS.createGeometryCollection( geoms );
+            // merge all geometries
+            // com.vividsolutions.jts.geom.GeometryFactory gFactoryJTS = new
+            // com.vividsolutions.jts.geom.GeometryFactory(
+            // new PrecisionModel() );
+            //
+            // // create jts geometry array
+            // com.vividsolutions.jts.geom.Geometry[] geoms = new
+            // com.vividsolutions.jts.geom.Geometry[fGeometries.length];
+            // for ( int i = 0; i < fGeometries.length; i++ ) {
+            // geoms[i] = createJTSGeometry( (Geometry) fGeometries[i].getValue() );
+            // }
+            //
+            // // create a JTS geometry collection
+            // geom = gFactoryJTS.createGeometryCollection( geoms );
 
         }
 
@@ -530,8 +537,8 @@ public class VectorLayerAdapter {
                 QName pName = spt.getName();
 
                 // class
-                Class<?> pClass = spt.getPrimitiveType().getValueClass();
-                // Class<?> pClass = String.class;
+                // Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                Class<?> pClass = String.class;
 
                 // notice name and class as field
                 vectoLayerPropertyDeclarations.add( new Field( pName.toString(), pClass ) );
@@ -592,8 +599,8 @@ public class VectorLayerAdapter {
                         TypedObjectNode probNode = properties[0].getValue();
 
                         if ( probNode instanceof PrimitiveValue ) {
-                            geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() );
-                            //geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() ).getAsText();
+                            // geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() );
+                            geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() ).getAsText();
                         } else {
                             LOG.warn( "Property '" + properties[0].getName() + "' is not supported." );
                             geomProperties[i] = null;
