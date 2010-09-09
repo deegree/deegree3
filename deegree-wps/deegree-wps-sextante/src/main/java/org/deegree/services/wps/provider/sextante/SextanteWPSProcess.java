@@ -60,9 +60,9 @@ import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * This class presents a {@link WPSProcess} a SEXTANTE {@link GeoAlgorithm} and creates a {@link ProcessDefinition} for
- * this {@link GeoAlgorithm}. Therefore you must differentiate all input and output parameters of a SEXTANTE
- * {@link GeoAlgorithm}.
+ * This class presents a {@link WPSProcess} with a {@link SextanteProcesslet} and creates the
+ * {@link ProcessDefinition} on the basis of the SEXTANTE {@link GeoAlgorithm}. Therefore this class must differentiates all input and output
+ * parameters of a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $

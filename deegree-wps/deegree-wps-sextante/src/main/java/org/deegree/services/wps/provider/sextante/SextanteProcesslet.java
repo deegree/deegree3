@@ -67,7 +67,9 @@ import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * Presents a {@link Processlet} based on a SEXTANTE {@link GeoAlgorithm}.
+ * This class presents a {@link Processlet} with a SEXTANTE {@link GeoAlgorithm}
+ * Therefore this class must differentiates all input and output
+ * parameters of a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -79,7 +81,7 @@ public class SextanteProcesslet implements Processlet {
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( SextanteProcesslet.class );
 
-    // SEXTANTE {@link GeoAlgorithm}
+    // SEXTANTE algorithm
     private final GeoAlgorithm alg;
 
     SextanteProcesslet( GeoAlgorithm alg ) {
@@ -238,7 +240,6 @@ public class SextanteProcesslet implements Processlet {
         if ( layer != null ) {
             // set vector layer
             param.setParameterValue( layer );
-            
 
         } else {// unknown payload
             LOG.error( "Type (GEOMETRY OR FEATURE COLLECTION) of schema \"" + gmlInput.getSchema() + "\" is unknown." );
@@ -568,7 +569,7 @@ public class SextanteProcesslet implements Processlet {
     private void writeRasterLayer( Output obj, ProcessletOutputs out ) {
         LOG.error( "Writing of \"" + obj.getTypeDescription() + "\" is not supported (but is in implementation)" );
         // TODO implement this output parameter type
-       
+
     }
 
     /**
