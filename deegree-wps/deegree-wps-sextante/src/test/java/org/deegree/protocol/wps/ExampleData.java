@@ -36,24 +36,22 @@
 package org.deegree.protocol.wps;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
-
+import org.deegree.feature.FeatureCollection;
+import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
-import org.deegree.services.wps.input.ComplexInputImpl;
 import org.deegree.services.wps.provider.sextante.GMLSchema;
 import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import es.unex.sextante.core.GeoAlgorithm;
 
 /**
- * This class contains input data
+ * This class wraps all test data as static attributes. <br>
+ * A instance of this class presents one data set of test data.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -62,8 +60,16 @@ import org.slf4j.LoggerFactory;
  */
 public class ExampleData {
 
-    private static Logger LOG = LoggerFactory.getLogger( ExampleData.class );
-
+    /**
+     * 
+     * This enumeration class contains all important geometry types like point, line, polygon, etc. for testing a
+     * SEXTANTE {@link GeoAlgorithm}. Some algorithms need only one type, other all types of data.
+     * 
+     * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
+     * @author last edited by: $Author: pabel $
+     * 
+     * @version $Revision: $, $Date: $
+     */
     public enum GeometryType {
         POINT, LINE, POLYGON, MIX
     }
@@ -131,118 +137,109 @@ public class ExampleData {
                                                                                         GeometryType.POINT,
                                                                                         GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
+    // URL of the data source
     private final URL url;
 
+    // GML schema of the test data
     private final GMLSchema schema;
 
+    // mime type of the test data
     private final String mimeType;
 
+    // encoding of the test data
     private final String encoding;
 
+    // geometry type of the test data
     private final GeometryType type;
 
+    /**
+     * Returns all {@link ExampleData}.
+     * 
+     * @return List of all {@link ExampleData}.
+     */
+    public static LinkedList<ExampleData> getAllData() {
+        return getAllData( null );
+    }
+
+    /**
+     * Returns all {@link ExampleData} without some {@link ExampleData}.
+     * 
+     * @param without
+     *            - Array of unwanted {@link ExampleData}.
+     * @return
+     */
+    public static LinkedList<ExampleData> getAllData( ExampleData[] without ) {
+        return getData( null, without );
+    }
+
+    /**
+     * Returns all {@link ExampleData} with {@link FeatureCollection}s.
+     * 
+     * @return List of {@link ExampleData} with {@link FeatureCollection}s.
+     */
     public static LinkedList<ExampleData> getAllFeatureCollections() {
+
+        // all test data
         LinkedList<ExampleData> collections = getAllData();
 
+        // remove all not feature collection data
         Iterator<ExampleData> it = collections.iterator();
-
         while ( it.hasNext() ) {
-
             ExampleData data = it.next();
-
             if ( !data.schema.getGMLType().equals( GMLType.FEATURE_COLLECTION ) ) {
                 it.remove();
             }
-
         }
 
         return collections;
     }
 
+    /**
+     * Returns all {@link ExampleData} with {@link Geometry}s.
+     * 
+     * @return List of {@link ExampleData} with {@link Geometry}s.
+     */
     public static LinkedList<ExampleData> getAllGeometryies() {
+
+        // all test data
         LinkedList<ExampleData> geometries = getAllData();
 
+        // remove all not geometry data
         Iterator<ExampleData> it = geometries.iterator();
-
         while ( it.hasNext() ) {
-
             ExampleData data = it.next();
-
             if ( !data.schema.getGMLType().equals( GMLType.GEOMETRY ) ) {
                 it.remove();
             }
-
         }
 
         return geometries;
     }
 
-    private ExampleData( URL url, GeometryType type, GMLSchema schema ) {
-        this( url, type, schema, null, null );
-    }
-
-    private ExampleData( URL url, GeometryType type, GMLSchema schema, String mimeType, String encoding ) {
-        this.url = url;
-        this.schema = schema;
-        this.type = type;
-
-        if ( mimeType != null )
-            this.mimeType = mimeType;
-        else
-            this.mimeType = "text/xml";
-
-        if ( encoding != null )
-            this.encoding = encoding;
-        else
-            this.encoding = "UTF-8";
-
-        ALL_EXAMPLE_DATA.put( this.getFilename(), this );
-    }
-
-    public String getSchema() {
-        return schema.getSchemaURL();
-    }
-
-    public String getEncoding() {
-        return encoding;
-    }
-
-    public String getMimeType() {
-        return mimeType;
-    }
-
-    public URL getURL() {
-        return url;
-    }
-
-    public GMLVersion getGMLVersion() {
-        return schema.getGMLVersion();
-    }
-
-    public String getFilename() {
-        try {
-            return new File( url.toURI() ).getName();
-        } catch ( Exception e ) {
-            return url.getFile();
-        }
-    }
-
-    public static LinkedList<ExampleData> getAllData() {
-        return getAllData( null );
-    }
-
-    public static LinkedList<ExampleData> getAllData( ExampleData[] without ) {
-        return getData( null, without );
-    }
-
+    /**
+     * Returns all {@link ExampleData} with the same {@link GeometryType}.
+     * 
+     * @param type
+     *            - {@link GeometryType} of the {@link ExampleData}.
+     * 
+     * @return {@link ExampleData} with the same {@link GeometryType}.
+     */
     public static LinkedList<ExampleData> getData( GeometryType type ) {
         return ( getData( type, null ) );
     }
 
+    /**
+     * Returns all {@link ExampleData} with the same {@link GeometryType} and without some {@link ExampleData}.
+     * 
+     * @param type
+     *            - {@link GeometryType} of the {@link ExampleData}.
+     * @param without
+     *            - Array of unwanted {@link ExampleData}.
+     * @return
+     */
     public static LinkedList<ExampleData> getData( GeometryType type, ExampleData[] without ) {
 
         LinkedList<ExampleData> allAsList = new LinkedList<ExampleData>();
-
         Set<String> allKeySet = ALL_EXAMPLE_DATA.keySet();
 
         // remove unwanted data
@@ -271,6 +268,111 @@ public class ExampleData {
             }
 
         return allAsList;
+    }
+
+    /**
+     * Creates an {@link ExampleData} object. <br>
+     * Encoding will set to "UTF-8" and the mime type to "text/xml".
+     * 
+     * @param url
+     *            - URL of the data source.
+     * @param type
+     *            - {@link GeometryType} of the test data.
+     * @param schema
+     *            - GML schema URL of the data
+     */
+    private ExampleData( URL url, GeometryType type, GMLSchema schema ) {
+        this( url, type, schema, null, null );
+    }
+
+    /**
+     * Creates an {@link ExampleData} object.
+     * 
+     * @param url
+     *            - URL of the data source.
+     * @param type
+     *            - {@link GeometryType} of the test data.
+     * @param schema
+     *            - GML schema URL of the test data.
+     * @param mimeType
+     *            - Mime type of the test data.
+     * @param encoding
+     *            - Encoding of the test data.
+     */
+    private ExampleData( URL url, GeometryType type, GMLSchema schema, String mimeType, String encoding ) {
+        this.url = url;
+        this.schema = schema;
+        this.type = type;
+
+        if ( mimeType != null )
+            this.mimeType = mimeType;
+        else
+            this.mimeType = "text/xml";
+
+        if ( encoding != null )
+            this.encoding = encoding;
+        else
+            this.encoding = "UTF-8";
+
+        ALL_EXAMPLE_DATA.put( this.getFilename(), this );
+    }
+
+    /**
+     * Returns the schema URL of the data.
+     * 
+     * @return Schema URL of the data.
+     */
+    public String getSchemaURL() {
+        return schema.getSchemaURL();
+    }
+
+    /**
+     * Returns the encoding of the data.
+     * 
+     * @return Encoding of the data.
+     */
+    public String getEncoding() {
+        return encoding;
+    }
+
+    /**
+     * Returns the mime type of the data.
+     * 
+     * @return Mime type of the data.
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    /**
+     * Returns the URL of the data file.
+     * 
+     * @return URL of the data file.
+     */
+    public URL getURL() {
+        return url;
+    }
+
+    /**
+     * Returns the {@link GMLVersion} of the data.
+     * 
+     * @return {@link GMLVersion} of the data.
+     */
+    public GMLVersion getGMLVersion() {
+        return schema.getGMLVersion();
+    }
+
+    /**
+     * Returns the filename of the data.
+     * 
+     * @return filename of the data.
+     */
+    public String getFilename() {
+        try {
+            return new File( url.toURI() ).getName();
+        } catch ( Exception e ) {
+            return url.getFile();
+        }
     }
 
     public String toString() {

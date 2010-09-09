@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import es.unex.sextante.core.GeoAlgorithm;
 
 /**
- * TODO add class documentation here
+ * This class wraps a {@link GeoAlgorithm} with his test data.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -48,38 +48,95 @@ import es.unex.sextante.core.GeoAlgorithm;
  */
 public class TestAlgorithm {
 
-    // algorithm
-
+    // SEXTANTE algorithm
     private final GeoAlgorithm alg;
 
-    // data URLs for the algorithm
+    // test data for the algorithm
     private final LinkedList<LinkedList<ExampleData>> data = new LinkedList<LinkedList<ExampleData>>();
 
+    /**
+     * Creates a {@link TestAlgorithm} without test data.
+     * 
+     * @param alg
+     *            - SEXTANTE {@link GeoAlgorithm}.
+     */
     public TestAlgorithm( GeoAlgorithm alg ) {
         this( alg, null );
     }
 
+    /**
+     * Creates a {@link TestAlgorithm} with test data.
+     * 
+     * @param alg
+     *            - SEXTANTE {@link GeoAlgorithm}.
+     * @param data
+     *            - A list of a list of test data. If the algorithm need only one input parameter, you need only one
+     *            list of test data in the list. If the algorithm need more than one input parameter, you need for every
+     *            input parameter a list of test data in the list.
+     */
     public TestAlgorithm( GeoAlgorithm alg, LinkedList<LinkedList<ExampleData>> data ) {
         this.alg = alg;
 
         if ( data != null )
             this.data.addAll( data );
+
     }
 
+    /**
+     * Adds a list of test data for one input parameter.
+     * 
+     * @param data
+     *            - List of test data for one input parameter.
+     */
     public void addInputData( LinkedList<ExampleData> data ) {
         this.data.add( data );
     }
 
+    /**
+     * Adds lists of test data for more than one input parameters.
+     * 
+     * @param data
+     *            - A list of a list of test data. If the algorithm need only one input parameter, you need only one
+     *            list of test data in the list. If the algorithm need more than one input parameter, you need for every
+     *            input parameter a list of test data in the list.
+     */
     public void addAllInputData( LinkedList<LinkedList<ExampleData>> data ) {
         this.data.addAll( data );
     }
 
+    /**
+     * Returns all test data of this algorithm.
+     * 
+     * @return All test data. Every list of {@link ExampleData} contains test data for one input parameter.
+     */
     public LinkedList<LinkedList<ExampleData>> getAllInputData() {
         return data;
     }
 
+    /**
+     * Returns the SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @return SEXTANTE {@link GeoAlgorithm}.
+     */
     public GeoAlgorithm getAlgorithm() {
         return alg;
+    }
+
+    public String toString() {
+        String s = TestAlgorithm.class.getSimpleName() + "(";
+
+        s += alg.getCommandLineName() + ", ";
+
+        // determine number of test data
+        int size = 0;
+        for ( LinkedList<ExampleData> list : data ) {
+            size += list.size();
+        }
+
+        s += size + " test data";
+
+        s += ")";
+        return s;
     }
 
 }
