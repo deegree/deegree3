@@ -177,7 +177,7 @@ public class VectorLayerImpl extends AbstractVectorLayer {
 
     @Override
     public IFeatureIterator iterator() {
-        return new FeatureInteratorImpl( m_Features.iterator() );
+        return new FeatureIteratorImpl( m_Features.iterator() );
     }
 
     @Override

@@ -35,11 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.sextante;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
 import org.deegree.gml.GMLVersion;
 import org.deegree.services.jaxb.wps.ComplexFormatType;
 import org.deegree.services.wps.ProcessletInputs;
@@ -50,8 +46,12 @@ import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.unex.sextante.core.GeoAlgorithm;
+
 /**
- * Manages all supported GML schemas for SEXTANTE algorithms and provide intelligent access method.
+ * This class presents static methods to determine the {@link GMLVersion} and the {@link GMLType} of the input and
+ * output data. Additional the class knows all supported formats of the deegree WPS for SEXTANTE {@link GeoAlgorithm}s
+ * and provides corresponding get methods.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -64,7 +64,7 @@ public class FormatHelper {
     private static final Logger LOG = LoggerFactory.getLogger( FormatHelper.class );
 
     /**
-     * Returns the {@link GMLVersion} of the input data. <br>
+     * Returns the {@link GMLVersion} of the input data.
      * 
      * @param input
      *            - {@link ComplexInput}, can be created with the {@link ProcessletInputs}.
@@ -77,17 +77,18 @@ public class FormatHelper {
             return schema.getGMLVersion();
         } else {
             LOG.error( "INPUT: \"" + input.getSchema() + " \" is a not supported GML schema." );
-            // TODO throw Exception
+            // TODO throw Exception?
             return null;
         }
     }
 
     /**
-     * Returns the {@link GMLVersion} of the output data. <br>
+     * Returns the {@link GMLVersion} of the output data.
      * 
      * @param output
      *            - {@link ComplexOutput}, can be created with the {@link ProcessletOutputs}.
-     * @return The {@link GMLVersion} of the output data.
+     * @return {@link GMLVersion} of the output data. If this method can't determine the {@link GMLVersion}, returns
+     *         default {@link GMLVersion}.
      */
     public static GMLVersion determineGMLVersion( ComplexOutput output ) {
         GMLSchema schema = GMLSchema.getGMLSchema( output.getRequestedSchema() );
@@ -98,6 +99,7 @@ public class FormatHelper {
             LOG.error( "OUTPUT: \"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
             // TODO throw Exception?
 
+            // use default schema
             GMLSchema defaultSchema = GMLSchema.getGMLSchema( getDefaultOutputFormat().getSchema() );
             LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchemaURL() + "\" is in use." );
             return defaultSchema.getGMLVersion();
@@ -118,7 +120,7 @@ public class FormatHelper {
             return schema.getGMLType();
         } else {
             LOG.error( "INPUT: \"" + input.getSchema() + " \" is a not supported GML schema." );
-            // TODO throw Exception
+            // TODO throw Exception?
             return null;
         }
     }
@@ -128,7 +130,8 @@ public class FormatHelper {
      * 
      * @param output
      *            - {@link ComplexOutput}, can be created with the {@link ProcessletOutputs}
-     * @return The GML {@link GMLType} of the output data.
+     * @return The GML {@link GMLType} of the output data. If this method can't determine the {@link GMLVersion},
+     *         returns default {@link GMLVersion}.
      */
     public static GMLType determineGMLType( ComplexOutput output ) {
         GMLSchema schema = GMLSchema.getGMLSchema( output.getRequestedSchema() );
@@ -137,8 +140,9 @@ public class FormatHelper {
             return schema.getGMLType();
         } else {
             LOG.error( "OUTPUT: \"" + output.getRequestedSchema() + " \" is a not supported GML schema." );
-            // TODO throw Exception
+            // TODO throw Exception?
 
+            // use default schema
             GMLSchema defaultSchema = GMLSchema.getGMLSchema( getDefaultOutputFormat().getSchema() );
             LOG.info( "OUTPUT: Default schema \"" + defaultSchema.getSchemaURL() + "\" is in use." );
             return defaultSchema.getGMLType();
@@ -205,13 +209,13 @@ public class FormatHelper {
         return getInputFormatsWithoutDefault();
     }
 
-    public static String getApplicationSchema( ComplexInput input ) {
-        // TODO ???
-        return input.getSchema();
-    }
-
-    public static String getApplicationSchema( ComplexOutput output ) {
-        // TODO ???
-        return output.getRequestedSchema();
-    }
+    // public static String getApplicationSchema( ComplexInput input ) {
+    // // TODO ???
+    // return input.getSchema();
+    // }
+    //
+    // public static String getApplicationSchema( ComplexOutput output ) {
+    // // TODO ???
+    // return output.getRequestedSchema();
+    // }
 }

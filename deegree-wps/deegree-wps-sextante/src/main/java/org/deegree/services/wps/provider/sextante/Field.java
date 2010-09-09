@@ -35,10 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.sextante;
 
-import org.deegree.protocol.wps.ExampleData;
 
 /**
- * Manages a column of a attribute table. <br>
+ * Defines a column of a attribute table. <br>
  * 'Name' is the column name and 'Type' the data type.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>

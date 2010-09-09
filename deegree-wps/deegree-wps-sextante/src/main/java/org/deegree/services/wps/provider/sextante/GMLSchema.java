@@ -35,18 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.sextante;
 
-import java.util.Collection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Describes a GML schema with URL, version and type.
+ * Describes a GML schema with {@link URL}, {@link GMLVersion} and {@link GMLType}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -59,7 +58,7 @@ public class GMLSchema {
     private static final Logger LOG = LoggerFactory.getLogger( GMLSchema.class );
 
     /**
-     * Describes the type of the GML data.
+     * Describes the type (like GEOMETRY or FEATURE_COLLECTION) of the GML data.
      * 
      * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
      * @author last edited by: $Author: pabel $
@@ -110,17 +109,20 @@ public class GMLSchema {
                                                                                     GMLVersion.GML_32,
                                                                                     GMLType.FEATURE_COLLECTION );
 
+    // type
     private final GMLType type;
 
+    // schema URL
     private final String schema;
 
+    // GML version
     private final GMLVersion version;
 
     /**
      * Returns a {@link GMLSchema} based on the schema URL.
      * 
      * @param schema
-     *            - URL schema.
+     *            - Schema URL.
      * @return The {@link GMLSchema} based on the schema URL
      */
     public static GMLSchema getGMLSchema( String schema ) {
@@ -130,11 +132,16 @@ public class GMLSchema {
             return foundSchema;
         } else {
             LOG.error( "\"" + schema + " \" is a not supported GML schema." );
-            // TODO throw Exception
+            // TODO throw Exception?
             return null;
         }
     }
 
+    /**
+     * Returns a list of all {@link GMLSchema}s.
+     * 
+     * @return List of all {@link GMLSchema}s.
+     */
     public static LinkedList<GMLSchema> getAllSchemas() {
 
         LinkedList<GMLSchema> schemas = new LinkedList<GMLSchema>();
@@ -158,7 +165,7 @@ public class GMLSchema {
      *            -{@link GMLType} of the schema URL.
      * 
      */
-    public GMLSchema( String schema, GMLVersion version, GMLType type ) {
+    private GMLSchema( String schema, GMLVersion version, GMLType type ) {
         this.schema = schema;
         this.version = version;
         this.type = type;

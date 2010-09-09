@@ -39,22 +39,29 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
-import es.unex.sextante.dataObjects.IVectorLayer;
 import es.unex.sextante.exceptions.IteratorException;
 
 /**
- * An iterator over a {@link IVectorLayer}.
+ * This is an iterator for {@link IFeature}s. <br>
+ * He will used by {@link VectorLayerImpl}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
  * 
  * @version $Revision: $, $Date: $
  */
-public class FeatureInteratorImpl implements IFeatureIterator {
+public class FeatureIteratorImpl implements IFeatureIterator {
 
+    // java.util.Iterator
     private Iterator<IFeature> it;
 
-    public FeatureInteratorImpl( Iterator<IFeature> it ) {
+    /**
+     * Creates a {@link FeatureIteratorImpl} from a {@link Iterator}.
+     * 
+     * @param it
+     *            - {@link Iterator}.
+     */
+    public FeatureIteratorImpl( Iterator<IFeature> it ) {
         this.it = it;
     }
 
@@ -83,5 +90,5 @@ public class FeatureInteratorImpl implements IFeatureIterator {
 
         return f;
     }
-
+    
 }

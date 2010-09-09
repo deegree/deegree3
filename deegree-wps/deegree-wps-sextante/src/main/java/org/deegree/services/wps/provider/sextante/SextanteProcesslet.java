@@ -60,7 +60,6 @@ import es.unex.sextante.core.ParametersSet;
 import es.unex.sextante.dataObjects.IRasterLayer;
 import es.unex.sextante.dataObjects.ITable;
 import es.unex.sextante.dataObjects.IVectorLayer;
-import es.unex.sextante.exceptions.GeoAlgorithmExecutionException;
 import es.unex.sextante.exceptions.IteratorException;
 import es.unex.sextante.exceptions.NullParameterValueException;
 import es.unex.sextante.exceptions.WrongOutputIDException;

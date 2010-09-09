@@ -84,6 +84,7 @@ public class OutputFactoryExt extends OutputFactory {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ITable getNewTable( String sName, Class[] types, String[] sFields, IOutputChannel channe )
                             throws UnsupportedOutputChannelException {
@@ -92,6 +93,7 @@ public class OutputFactoryExt extends OutputFactory {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public IVectorLayer getNewVectorLayer( String iName, int iShapeType, Class[] types, String[] sFields,
                                            IOutputChannel channel, Object crs )
@@ -100,6 +102,7 @@ public class OutputFactoryExt extends OutputFactory {
         return new VectorLayerImpl( iName, crs.toString(), Field.createFieldArray( sFields, types ) );
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public IVectorLayer getNewVectorLayer( String iName, int iShapeType, Class[] types, String[] sFields,
                                            IOutputChannel channel, Object crs, int[] fieldSize )

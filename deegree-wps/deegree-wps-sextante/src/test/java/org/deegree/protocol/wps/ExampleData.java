@@ -159,18 +159,20 @@ public class ExampleData {
     }
 
     /**
-     * Returns all {@link ExampleData} without some {@link ExampleData}.
+     * Returns list of all {@link ExampleData} without the {@link ExampleData} of the array.
      * 
      * @param without
-     *            - Array of unwanted {@link ExampleData}.
-     * @return
+     *            - Array of unwanted {@link ExampleData}, may be <code>null</code>.
+     * 
+     * @return List of all {@link ExampleData} without the {@link ExampleData} of the array. If the array of unwanted
+     *         {@link ExampleData is <code>null</code>, returns all {@link ExampleData}.
      */
     public static LinkedList<ExampleData> getAllData( ExampleData[] without ) {
         return getData( null, without );
     }
 
     /**
-     * Returns all {@link ExampleData} with {@link FeatureCollection}s.
+     * Returns list of all {@link ExampleData} with {@link FeatureCollection}s.
      * 
      * @return List of {@link ExampleData} with {@link FeatureCollection}s.
      */
@@ -192,7 +194,7 @@ public class ExampleData {
     }
 
     /**
-     * Returns all {@link ExampleData} with {@link Geometry}s.
+     * Returnslist of all {@link ExampleData} with {@link Geometry}s.
      * 
      * @return List of {@link ExampleData} with {@link Geometry}s.
      */
@@ -214,25 +216,31 @@ public class ExampleData {
     }
 
     /**
-     * Returns all {@link ExampleData} with the same {@link GeometryType}.
+     * Returns list of all {@link ExampleData} with the same {@link GeometryType}.
      * 
      * @param type
-     *            - {@link GeometryType} of the {@link ExampleData}.
+     *            - {@link GeometryType} of the {@link ExampleData}, may be <code>null</code>.
      * 
-     * @return {@link ExampleData} with the same {@link GeometryType}.
+     * @return List of {@link ExampleData} with the same {@link GeometryType}. If the {@link GeometryType} is
+     *         <code>null</code>, returns all {@link ExampleData}.
      */
     public static LinkedList<ExampleData> getData( GeometryType type ) {
         return ( getData( type, null ) );
     }
 
     /**
-     * Returns all {@link ExampleData} with the same {@link GeometryType} and without some {@link ExampleData}.
+     * Returns list of all {@link ExampleData} with the same {@link GeometryType} and without some {@link ExampleData}.
      * 
      * @param type
-     *            - {@link GeometryType} of the {@link ExampleData}.
+     *            - {@link GeometryType} of the {@link ExampleData}, may be <code>null</code>.
      * @param without
-     *            - Array of unwanted {@link ExampleData}.
-     * @return
+     *            - Array of unwanted {@link ExampleData}, may be <code>null</code>.
+     * 
+     * @return List of all {@link ExampleData} with the same {@link GeometryType} and without some {@link ExampleData}.
+     *         If the Array of unwanted {@link ExampleData is <code>null</code>, returns all {@link ExampleData} with
+     *         the same {@link GeometryType}. If the {@link GeometryType} is additional <code>null</code>, returns all
+     *         {@link ExampleData}. If the {@link GeometryType} is only <code>null</code>, returns all
+     *         {@link ExampleData} without the {@link ExampleData} of the array.
      */
     public static LinkedList<ExampleData> getData( GeometryType type, ExampleData[] without ) {
 
