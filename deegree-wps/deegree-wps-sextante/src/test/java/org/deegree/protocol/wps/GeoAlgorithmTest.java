@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://pabel@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-wps/deegree-wps-sextante/src/main/java/org/deegree/services/wps/provider/sextante/SextanteProcessProvider.java $
+//$HeadURL: http://svn.wald.intevation.org/svn/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -59,7 +59,7 @@ import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * TODO add class documentation here
+ * This class tests all supported SEXTANTE {@link GeoAlgorithm} of the deegree WPS.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -68,18 +68,26 @@ import es.unex.sextante.parameters.Parameter;
  */
 public class GeoAlgorithmTest {
 
-    private static final boolean ENABLED = false;
-
+    // logger
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
+    // enabled/disabled all tests
+    private static final boolean ENABLED = false;
+
+    /**
+     * Returns a list of all supported {@link GeoAlgorithm} as {@link TestAlgorithm} for testing.
+     * 
+     * @return List of all supported {@link GeoAlgorithm} as {@link TestAlgorithm}.
+     */
+    @SuppressWarnings("unchecked")
     private LinkedList<TestAlgorithm> getAlgorithms() {
         LinkedList<TestAlgorithm> algs = new LinkedList<TestAlgorithm>();
 
         // test all algorithms?
-        boolean all = true;
+        boolean testAll = true;
 
-        if ( !all ) {
-            // only one algorithm
+        if ( !testAll ) {
+            // test only one algorithm
             Sextante.initialize();
             HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
             GeoAlgorithm geoAlg = sextanteAlgs.get( "countpoints" );
@@ -89,17 +97,15 @@ public class GeoAlgorithmTest {
 
         } else {
 
-            // all vector algorithms
+            // test all supported algorithms
             GeoAlgorithm[] geoalgs = SextanteProcessProvider.getVectorLayerAlgorithms();
             for ( int i = 0; i < geoalgs.length; i++ ) {
                 GeoAlgorithm geoAlg = geoalgs[i];
 
                 if ( !geoAlg.getCommandLineName().equals( "no algorithm" ) ) {
-
                     TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
                     testAlg.addAllInputData( getInputData( geoAlg ) );
                     algs.add( testAlg );
-
                 }
 
             }
@@ -108,12 +114,21 @@ public class GeoAlgorithmTest {
         return algs;
     }
 
+    /**
+     * This method determine test data for a SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @param alg
+     *            SEXTANTE {@link GeoAlgorithm}.
+     * @return - A list of a list of test data. If the algorithm need only one input parameter, returns only one list of
+     *         test data in the list. If the algorithm need more than one input parameter, returns for every input
+     *         parameter a list of test data in the list.
+     */
     private LinkedList<LinkedList<ExampleData>> getInputData( GeoAlgorithm alg ) {
 
         // all input data
         LinkedList<LinkedList<ExampleData>> allData = new LinkedList<LinkedList<ExampleData>>();
 
-        // example data in categories
+        // example data in geometry types
         LinkedList<ExampleData> layers = getLayerInput( alg );
         LinkedList<ExampleData> poylgons = getPolygonsInput();
         LinkedList<ExampleData> lines = getLinesInput();
@@ -198,6 +213,14 @@ public class GeoAlgorithmTest {
         return allData;
     }
 
+    /**
+     * Returns a list of all test data for a layer of a SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @param alg
+     *            - SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @return List of all test data for a layer of a SEXTANTE {@link GeoAlgorithm}.
+     */
     private LinkedList<ExampleData> getLayerInput( GeoAlgorithm alg ) {
         LinkedList<ExampleData> layers = new LinkedList<ExampleData>();
 
@@ -275,12 +298,28 @@ public class GeoAlgorithmTest {
         return layers;
     }
 
+    /**
+     * Returns a list of all test data for a polygon layer of a SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @param alg
+     *            - SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @return List of all test data for a polygon layer of a SEXTANTE {@link GeoAlgorithm}.
+     */
     private LinkedList<ExampleData> getPolygonsInput() {
         LinkedList<ExampleData> polygons = new LinkedList<ExampleData>();
         polygons.addAll( ExampleData.getData( GeometryType.POLYGON ) );
         return polygons;
     }
 
+    /**
+     * Returns a list of all test data for a lines layer of a SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @param alg
+     *            - SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @return List of all test data for a lines layer of a SEXTANTE {@link GeoAlgorithm}.
+     */
     private LinkedList<ExampleData> getLinesInput() {
         LinkedList<ExampleData> lines = new LinkedList<ExampleData>();
         lines.addAll( ExampleData.getData( GeometryType.LINE ) );
@@ -288,12 +327,25 @@ public class GeoAlgorithmTest {
         return lines;
     }
 
+    /**
+     * Returns a list of all test data for a point layer of a SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @param alg
+     *            - SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @return List of all test data for a point layer of a SEXTANTE {@link GeoAlgorithm}.
+     */
     private LinkedList<ExampleData> getPointsInput() {
         LinkedList<ExampleData> points = new LinkedList<ExampleData>();
         points.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS );
         return points;
     }
 
+    /**
+     * This method tests all supported SEXTANTE {@link GeoAlgorithm} of the deegree WPS. <br>
+     * It will tested only whether the algorithm runs without errors. <br>
+     * It is not tested whether the algorithm calculated his output values correctly.
+     */
     @Test
     public void testAlgorithms() {
         if ( ENABLED ) {
@@ -339,7 +391,7 @@ public class GeoAlgorithmTest {
 
                                     execution.addXMLInput( inputIndentifier, null, currentData.getURL(), false,
                                                            currentData.getMimeType(), currentData.getEncoding(),
-                                                           currentData.getSchema() );
+                                                           currentData.getSchemaURL() );
                                 }
 
                                 // set all output parameters
@@ -353,17 +405,17 @@ public class GeoAlgorithmTest {
                                                          "http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd" );
                                 }
 
+                                // execute algorithm
                                 ExecutionOutputs outputs = execution.execute();
                                 ExecutionOutput[] allOutputs = outputs.getAll();
 
                                 // check number of output output objects
                                 Assert.assertTrue( allOutputs.length > 0 );
 
-                                // LOG.info( " '" + alg.getCommandLineName() + "' has " + allOutputs.length
-                                // + " ouput objects." );
-
                             } else {
-                                LOG.error( "Wrong number of input data." );
+                                String msg = "Wrong number of input data.";
+                                LOG.error( msg );
+                                Assert.fail( msg );
                             }
 
                     }
@@ -375,102 +427,4 @@ public class GeoAlgorithmTest {
             }
         }
     }
-
-    //
-    // public void testVectorLayerAlgorithms()
-    // throws OWSException, IOException, XMLStreamException {
-    // if ( ENABLED ) {
-    // try {
-    // URL wpsURL = new URL(
-    // "http://localhost:8080/deegree-wps-demo/services?service=WPS&version=1.0.0&request=GetCapabilities" );
-    //
-    // WPSClient client = new WPSClient( wpsURL );
-    //
-    // Assert.assertNotNull( client );
-    //
-    // File gmlPoints = new File( AlgorithmTest.class.getResource( "GML31_MultiPoint.xml" ).getPath() );
-    // File gmlLines = new File( AlgorithmTest.class.getResource( "GML31_MultiLineString.xml" ).getPath() );
-    // File gmlPolygons = new File( AlgorithmTest.class.getResource( "GML31_MultiPolygon.xml" ).getPath() );
-    //
-    // // Process process = client.getProcess( "centroids", null );
-    // // ProcessExecution execution = process.prepareExecution();
-    // // execution.addXMLInput( "LAYER", null, gmlGeometry.toURI().toURL(), false, "text/xml", "UTF-8",
-    // // "http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd" );
-    // //
-    // // execution.addOutput( "RESULT", null, null, false, "text/xml", "UTF-8",
-    // // "http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd" );
-    // //
-    // // ExecutionOutputs response = execution.execute();
-    // // Assert.assertNotNull( response );
-    //
-    // GeoAlgorithm[] algs = SextanteProcessProvider.getVectorLayerAlgorithms();
-    //
-    // // process all vector algorithms
-    // for ( int i = 0; i < algs.length; i++ ) {
-    // GeoAlgorithm alg = algs[i];
-    //
-    // Process process = client.getProcess( alg.getCommandLineName() );
-    // ProcessExecution execution = process.prepareExecution();
-    //
-    // // add all inputs
-    // ParametersSet paramSet = alg.getParameters();
-    // for ( int j = 0; j < paramSet.getNumberOfParameters(); j++ ) {
-    // Parameter param = paramSet.getParameter( j );
-    //
-    // String inputIndentifier = param.getParameterName();
-    //
-    // File geom = null;
-    //
-    // if ( inputIndentifier.equals( "POINTS" ) )
-    // geom = gmlPoints;
-    // else if ( inputIndentifier.equals( "LINES" ) )
-    // geom = gmlLines;
-    // else
-    // geom = gmlLines;
-    //
-    // execution.addXMLInput( inputIndentifier, null, geom.toURI().toURL(), false, "text/xml",
-    // "UTF-8",
-    // "http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd" );
-    // }
-    //
-    // // set all output parameters
-    // OutputObjectsSet outputSet = alg.getOutputObjects();
-    // for ( int j = 0; j < outputSet.getOutputObjectsCount(); j++ ) {
-    // Output outp = outputSet.getOutput( j );
-    //
-    // String outputIdentifier = outp.getName();
-    //
-    // execution.addOutput( outputIdentifier, null, null, false, "text/xml", "UTF-8",
-    // "http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd" );
-    //
-    // }
-    //
-    // ExecutionOutputs outputs = execution.execute();
-    //
-    // }
-    //
-    // // execution
-    // // .addXMLInput("GMLInput", null, gmlPoints.toURI().toURL(),
-    // // false, "text/xml", null,
-    // // "http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd");
-    //
-    // // execution.addOutput("CentroidSextante", null, null, true, null, null,
-    // // null);
-    //
-    // // ExecutionOutputs outputs = execution.execute();
-    //
-    // // access individual output values
-    // // ComplexOutput outputGeometry = (ComplexOutput) outputs.get(
-    // // "CentroidSextante", null);
-    //
-    // // LiteralOutput out = outputs.getLiteral("Data", null);
-    //
-    // // XMLStreamReader xmlStream = outputGeometry.getAsXMLStream();
-    //
-    // // System.out.println(out.getValue());
-    // } catch ( Throwable t ) {
-    // LOG.error( t.getMessage(), t );
-    // }
-    // }
-    // }
 }

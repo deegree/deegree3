@@ -37,11 +37,8 @@ package org.deegree.protocol.wps;
 
 import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Set;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
@@ -75,7 +72,7 @@ public class ExampleData {
     }
 
     // all example data
-    private static final HashMap<String, ExampleData> ALL_EXAMPLE_DATA = new HashMap<String, ExampleData>();
+    private static final LinkedList<ExampleData> ALL_EXAMPLE_DATA = new LinkedList<ExampleData>();
 
     // example data
     public static final ExampleData GML_31_MULTILPOLYGON = new ExampleData(
@@ -239,35 +236,25 @@ public class ExampleData {
      */
     public static LinkedList<ExampleData> getData( GeometryType type, ExampleData[] without ) {
 
-        LinkedList<ExampleData> allAsList = new LinkedList<ExampleData>();
-        Set<String> allKeySet = ALL_EXAMPLE_DATA.keySet();
+        LinkedList<ExampleData> resultData = new LinkedList<ExampleData>();
 
-        // remove unwanted data
-        Set<String> modifiedKeySet = new HashSet<String>();
-        modifiedKeySet.addAll( allKeySet );
-        if ( without != null )
-            for ( int i = 0; i < without.length; i++ ) {
-                modifiedKeySet.remove( without[i].getFilename() );
-            }
-
+        // notice wanted data by type
         if ( type != null )
-            // notice wanted data by type
-            for ( String key : modifiedKeySet ) {
-
-                ExampleData data = ALL_EXAMPLE_DATA.get( key );
-
+            for ( ExampleData data : ALL_EXAMPLE_DATA ) {
                 if ( data.type.equals( type ) ) {
-                    allAsList.add( data );
+                    resultData.add( data );
                 }
-
             }
         else
-            // notice all wanted data
-            for ( String key : modifiedKeySet ) {
-                allAsList.add( ALL_EXAMPLE_DATA.get( key ) );
+            resultData.addAll( ALL_EXAMPLE_DATA );
+
+        // remove unwanted data
+        if ( without != null )
+            for ( int i = 0; i < without.length; i++ ) {
+                resultData.remove( without[i] );
             }
 
-        return allAsList;
+        return resultData;
     }
 
     /**
@@ -314,7 +301,7 @@ public class ExampleData {
         else
             this.encoding = "UTF-8";
 
-        ALL_EXAMPLE_DATA.put( this.getFilename(), this );
+        ALL_EXAMPLE_DATA.add( this );
     }
 
     /**

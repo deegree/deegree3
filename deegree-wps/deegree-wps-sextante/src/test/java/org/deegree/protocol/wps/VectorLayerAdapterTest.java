@@ -49,20 +49,11 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.services.wps.provider.sextante.VectorLayerAdapter;
-import org.deegree.services.wps.provider.sextante.OutputFactoryExt;
 import org.deegree.services.wps.provider.sextante.VectorLayerImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import es.unex.sextante.core.GeoAlgorithm;
-import es.unex.sextante.core.OutputObjectsSet;
-import es.unex.sextante.core.ParametersSet;
-import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.IVectorLayer;
-import es.unex.sextante.outputs.Output;
-import es.unex.sextante.vectorTools.centroids.CentroidsAlgorithm;
 
 /**
  * This class tests the functionality of the {@link VectorLayerAdapter}.
