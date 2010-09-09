@@ -35,32 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps;
 
-import java.io.File;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import junit.framework.Assert;
-
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLVersion;
-import org.deegree.services.wps.provider.sextante.Field;
 import org.deegree.services.wps.provider.sextante.VectorLayerAdapter;
 import org.deegree.services.wps.provider.sextante.OutputFactoryExt;
 import org.deegree.services.wps.provider.sextante.VectorLayerImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import es.unex.sextante.core.GeoAlgorithm;
@@ -72,7 +65,7 @@ import es.unex.sextante.outputs.Output;
 import es.unex.sextante.vectorTools.centroids.CentroidsAlgorithm;
 
 /**
- * Tests the functionality of the IVectorLayerAdapter class.
+ * This class tests the functionality of the {@link VectorLayerAdapter}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -84,14 +77,17 @@ public class VectorLayerAdapterTest {
     private static Logger LOG = LoggerFactory.getLogger( VectorLayerAdapterTest.class );
 
     /**
-     * Tests the IVectorAdapter with geometries.
-     * 
+     * Tests the {@link VectorLayerAdapter} to convert geometries to {@link VectorLayerImpl} and back. <br>
+     * Compares the input geometry with the output geometry.
      */
     @Test
     public void testGeometries() {
         try {
+
+            // read geometries
             LinkedList<Geometry> geoms = readGeometries();
 
+            // traverse all geometries
             for ( Geometry gIn : geoms ) {
 
                 // create vector layer
@@ -110,20 +106,23 @@ public class VectorLayerAdapterTest {
     }
 
     /**
-     * Tests the IVectorAdapter with features.
-     * 
+     * Tests the {@link VectorLayerAdapter} to convert features to {@link VectorLayerImpl} and back. <br>
+     * Compares the input geometry with the output geometry and the input properties with the output properties.
      */
     @Test
     public void testFeatures() {
         try {
 
+            // read features
             LinkedList<Feature> fs = readFeatures();
 
+            // traverse all features
             for ( Feature f : fs ) {
 
                 IVectorLayer layer = VectorLayerAdapter.createVectorLayer( f );
                 Feature fOut = VectorLayerAdapter.createFeature( layer );
 
+                // if feature is a feature collection
                 if ( f instanceof FeatureCollection ) {
 
                     FeatureCollection fcIn = (FeatureCollection) f;
@@ -147,7 +146,7 @@ public class VectorLayerAdapterTest {
 
                     }
 
-                } else {
+                } else { // if feature is a feature
 
                     // check feature
                     checkFeature( f, fOut );
@@ -162,14 +161,17 @@ public class VectorLayerAdapterTest {
     }
 
     /**
-     * Tests the IVectorAdapter with feature collections.
-     * 
+     * Tests the {@link VectorLayerAdapter} to convert feature collections to {@link VectorLayerImpl} and back. <br>
+     * Compares the input geometry with the output geometry and the input properties with the output properties of every
+     * feature.
      */
     @Test
     public void testFeatureCollections() {
-
         try {
+            // read feature collections
             LinkedList<FeatureCollection> fcs = readFeatureCollections();
+
+            // traverse all feature collections
             for ( FeatureCollection fcIn : fcs ) {
 
                 // create vector layer
@@ -178,6 +180,7 @@ public class VectorLayerAdapterTest {
                 // create feature collection
                 FeatureCollection fcOut = VectorLayerAdapter.createFeatureCollection( layer );
 
+                // check feature collection
                 checkFeatureCollection( fcIn, fcOut );
 
             }
@@ -190,7 +193,7 @@ public class VectorLayerAdapterTest {
     /**
      * Returns a list of feature collections with different geometry types.
      * 
-     * @return - list of feature collections
+     * @return - List of feature collections.
      * @throws Exception
      */
     private static LinkedList<FeatureCollection> readFeatureCollections()
@@ -200,12 +203,12 @@ public class VectorLayerAdapterTest {
 
         LinkedList<ExampleData> data = ExampleData.getAllFeatureCollections();
         for ( ExampleData dataFc : data ) {
-            LOG.info( dataFc.toString() );
-
+            // read file
             GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataFc.getGMLVersion(),
                                                                                      dataFc.getURL() );
-
             FeatureCollection fc = gmlStreamReader.readFeatureCollection();
+
+            // notice collection
             colls.add( fc );
         }
 
@@ -215,7 +218,7 @@ public class VectorLayerAdapterTest {
     /**
      * Returns a list of features with different geometry types.
      * 
-     * @return list of features
+     * @return List of features.
      * @throws Exception
      */
     private static LinkedList<Feature> readFeatures()
@@ -225,13 +228,13 @@ public class VectorLayerAdapterTest {
 
         LinkedList<ExampleData> data = ExampleData.getAllFeatureCollections();
         for ( ExampleData dataFc : data ) {
-            LOG.info( dataFc.toString() );
 
+            // read file
             GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataFc.getGMLVersion(),
                                                                                      dataFc.getURL() );
-
             FeatureCollection fc = gmlStreamReader.readFeatureCollection();
 
+            // notice features
             for ( Feature feature : fc ) {
                 features.add( feature );
             }
@@ -243,7 +246,7 @@ public class VectorLayerAdapterTest {
     /**
      * Returns a list of geometries with different types.
      * 
-     * @return list of geometries
+     * @return List of geometries.
      * @throws Exception
      */
     private static LinkedList<Geometry> readGeometries()
@@ -253,11 +256,12 @@ public class VectorLayerAdapterTest {
 
         LinkedList<ExampleData> data = ExampleData.getAllGeometryies();
         for ( ExampleData dataGeom : data ) {
-            LOG.info( dataGeom.toString() );
-
+            // read file
             GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataGeom.getGMLVersion(),
                                                                                      dataGeom.getURL() );
             Geometry g = gmlStreamReader.readGeometry();
+
+            // notice geometry
             geoms.add( g );
         }
 
@@ -265,7 +269,7 @@ public class VectorLayerAdapterTest {
     }
 
     /**
-     * Checks two features of equality properties.
+     * Checks two features of the same properties and geometry.
      * 
      * @param fIn
      *            - input feature
@@ -332,14 +336,12 @@ public class VectorLayerAdapterTest {
         // check geometry content (only first geometry)
         TypedObjectNode geomIn = fIn.getGeometryProperties()[0].getValue();
         TypedObjectNode geomOut = fOut.getGeometryProperties()[0].getValue();
-        
-        Assert.assertTrue( fIn.getGeometryProperties()[0].getValue().toString().equals(
-                                                                                        fOut.getGeometryProperties()[0].getValue().toString() ) );
+        Assert.assertTrue( geomIn.toString().equals( geomOut.toString() ) );
 
     }
 
     /**
-     * Checks two feature collections of equality properties.
+     * Checks two feature collections of number of features and the same properties and geometry of every feature.
      * 
      * @param fcIn
      *            - input feature collection
@@ -361,41 +363,4 @@ public class VectorLayerAdapterTest {
         }
     }
 
-    // @Test
-    public void simpleAlgorithmExample() {
-        try {
-            // geometry
-            GeometryFactory geomFactory = new GeometryFactory();
-            Coordinate[] coords = new Coordinate[3];
-            coords[0] = new Coordinate( 49, 50 );
-            coords[1] = new Coordinate( 100, 100 );
-            coords[2] = new Coordinate( 150, 149 );
-            com.vividsolutions.jts.geom.Geometry geom = geomFactory.createMultiPoint( coords );
-
-            // initialize SEXTANTE
-            Sextante.initialize();
-
-            // create vector layer with input data
-            IVectorLayer inputLayer = new VectorLayerImpl();
-            inputLayer.addFeature( geom, null );
-
-            // create algorithm
-            GeoAlgorithm alg = new CentroidsAlgorithm();
-
-            // commit input data to algorithm
-            ParametersSet inputParams = alg.getParameters();
-            inputParams.getParameter( CentroidsAlgorithm.LAYER ).setParameterValue( inputLayer );
-
-            // execute algorithm
-            alg.execute( null, new OutputFactoryExt() );
-
-            // create vector layer with output data
-            OutputObjectsSet outputParams = alg.getOutputObjects();
-            Output output = outputParams.getOutput( CentroidsAlgorithm.RESULT );
-            IVectorLayer outputLayer = (IVectorLayer) output.getOutputObject();
-
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }
 }
