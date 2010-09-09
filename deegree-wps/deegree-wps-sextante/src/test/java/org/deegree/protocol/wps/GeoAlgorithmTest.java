@@ -90,7 +90,7 @@ public class GeoAlgorithmTest {
             // test only one algorithm
             Sextante.initialize();
             HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
-            GeoAlgorithm geoAlg = sextanteAlgs.get( "countpoints" );
+            GeoAlgorithm geoAlg = sextanteAlgs.get( "union" );
             TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
             testAlg.addAllInputData( getInputData( geoAlg ) );
             algs.add( testAlg );
@@ -257,6 +257,10 @@ public class GeoAlgorithmTest {
         } else
         // union algorithm
         if ( alg.getCommandLineName().equals( "union" ) ) {
+
+            // layers.add( ExampleData.GML_31_POLYGON );
+            // layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POLYGONS );
+
             LOG.warn( "No test data for '" + alg.getCommandLineName() + "' available." );
         } else
         // clip algorithm

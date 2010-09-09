@@ -67,9 +67,8 @@ import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * This class presents a {@link Processlet} with a SEXTANTE {@link GeoAlgorithm}
- * Therefore this class must differentiates all input and output
- * parameters of a SEXTANTE {@link GeoAlgorithm}.
+ * This class presents a {@link Processlet} with a SEXTANTE {@link GeoAlgorithm} Therefore this class must
+ * differentiates all input and output parameters of a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -529,7 +528,7 @@ public class SextanteProcesslet implements Processlet {
                             throws IteratorException, ProcessletException, IllegalArgumentException,
                             InstantiationException, IllegalAccessException {
         // output object
-        VectorLayerImpl result = (VectorLayerImpl) obj.getOutputObject();
+        IVectorLayer result = (IVectorLayer) obj.getOutputObject();
 
         ComplexOutput gmlOutput = (ComplexOutput) out.getParameter( obj.getName() );
 
@@ -550,7 +549,7 @@ public class SextanteProcesslet implements Processlet {
                     LOG.warn( "The " + gmlOutput.getIdentifier().getCode() + " is an empty collection." );
                 }
 
-            } else {// unknown payload
+            } else {// unknown GML type
                 LOG.error( "Type (GEOMETRY OR FEATURE COLLECTION) of schema \"" + gmlOutput.getRequestedSchema()
                            + "\" is unknown." );
                 // TODO throw exception
