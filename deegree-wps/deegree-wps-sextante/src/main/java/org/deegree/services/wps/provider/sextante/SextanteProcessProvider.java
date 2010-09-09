@@ -69,16 +69,14 @@ public class SextanteProcessProvider implements ProcessProvider {
     private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
 
     /**
-     * Returns SEXTANTE algorithms. They need only a vector layer input and have a vector layer output.
+     * Returns an array of SEXTANTE {@link GeoAlgorithm}s, which processing vector data.
      * 
-     * @return SEXTANTE algorithms
+     * @return Array of SEXTANTE {@link GeoAlgorithm}s, which processing vector data.
      */
     public static GeoAlgorithm[] getVectorLayerAlgorithms() {
         Sextante.initialize();
 
-        /**
-         * Filters algorithms (only with a vector layer input and output)
-         */
+        // filter for geoalgorithms
         IGeoAlgorithmFilter algFilter = new IGeoAlgorithmFilter() {
 
             @Override

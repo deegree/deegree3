@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.sextante;
 
+import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.ITaskMonitor;
 import es.unex.sextante.core.OutputFactory;
 import es.unex.sextante.dataObjects.IRasterLayer;
@@ -58,7 +59,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Factory to create output objects.
+ * This class can used from a SEXTANTE {@link GeoAlgorithm}, to create output objects like {@link IVectorLayer},
+ * {@link IRasterLayer} or {@link ITable}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $

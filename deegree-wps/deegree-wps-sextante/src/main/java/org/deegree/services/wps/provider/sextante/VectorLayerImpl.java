@@ -58,7 +58,7 @@ import es.unex.sextante.dataObjects.IFeatureIterator;
 import es.unex.sextante.dataObjects.IVectorLayer;
 
 /**
- * Manage features to execute a SEXTANTE {@link GeoAlgorithm}.
+ * Manages features to execute a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -335,30 +335,6 @@ public class VectorLayerImpl extends AbstractVectorLayer {
                 }
             }
         }
-
-        // LOGGING: current shape type of this layer
-        // switch ( m_ShapeType ) {
-        // case VectorLayerImpl.SHAPE_TYPE_POINT:
-        // LOG.info( "SHAPE TYPE (vector layer): POINT" );
-        // break;
-        //
-        // case VectorLayerImpl.SHAPE_TYPE_LINE:
-        // LOG.info( "SHAPE TYPE (vector layer): LINE" );
-        // break;
-        //
-        // case VectorLayerImpl.SHAPE_TYPE_POLYGON:
-        // LOG.info( "SHAPE TYPE (vector layer): POLYGON" );
-        // break;
-        //
-        // case VectorLayerImpl.SHAPE_TYPE_MIXED:
-        // LOG.info( "SHAPE TYPE (vector layer): MIXED" );
-        // break;
-        //
-        // default:
-        // LOG.info( "SHAPE TYPE (vector layer): WRONG" );
-        // break;
-        // }
-
     }
 
 }
