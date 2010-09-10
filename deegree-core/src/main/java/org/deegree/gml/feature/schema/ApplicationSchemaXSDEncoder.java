@@ -237,7 +237,6 @@ public class ApplicationSchemaXSDEncoder {
         // special treatment needed for GML namespaces
         nsToPrefix.put( GMLNS, "gml" );
         nsToPrefix.put( GML3_2_NS, "gml" );
-        
 
         // TODO get rid of these CITE hacks
         exportedElements.add( "SimpleFeatureCollection" );

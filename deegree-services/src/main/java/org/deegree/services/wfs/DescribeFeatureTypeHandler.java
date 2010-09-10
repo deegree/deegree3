@@ -176,7 +176,7 @@ class DescribeFeatureTypeHandler {
                 // feature types from multiple namespaces -> generate wrapper schema document from all feature stores
                 Set<String> namespaces = new TreeSet<String>();
                 for ( FeatureStore fs : service.getStores() ) {
-                    namespaces.addAll( fs.getSchema().getNamespaces() );
+                    namespaces.addAll( fs.getSchema().getNamespaceBindings().values() );
                 }
                 writeWrapperSchema( writer, request, version, namespaces );
             }
@@ -405,8 +405,7 @@ class DescribeFeatureTypeHandler {
             } else {
                 String ns = request.getNsBindings().values().iterator().next();
                 LOG.debug( "Describing all feature types in namespace '" + ns + "'." );
-                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes(
-                                                                                                                   ns,
+                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes( ns,
                                                                                                                    true,
                                                                                                                    false );
                 for ( FeatureType ft : nsFts ) {

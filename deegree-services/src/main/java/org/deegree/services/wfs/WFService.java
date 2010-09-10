@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -77,11 +78,11 @@ public class WFService {
 
     private final Map<String, String> prefixToNs = new LinkedHashMap<String, String>();
 
+    private Map<String, String> targetNsToPrefix = new LinkedHashMap<String, String>();
+
     private Set<String> hintedNamespaces;
 
     private int indexPrefix = 0;
-
-    private Map<String, String> targetNsToPrefix = new LinkedHashMap<String, String>();
 
     /**
      * @param sc
@@ -91,14 +92,14 @@ public class WFService {
     public void init( ServiceConfiguration sc, String baseURL )
                             throws FeatureStoreException {
 
-        LOG.info( "Adding configured feature stores." );
+        LOG.debug( "Adding configured feature stores." );
 
         // filling prefix map with the provided NamespaceHints
         hintedNamespaces = new HashSet<String>();
 
         for ( FeatureStore fs : FeatureStoreManager.getAll() ) {
             addStore( fs );
-            addNotYetHintedNamespaces( fs.getSchema().getNamespaces() );
+            addNotYetHintedNamespaces( fs.getSchema().getNamespaceBindings().values() );
         }
 
         LOG.debug( "The following prefix-to-namespace and namespace-to-prefix bindings are used for resolution..." );
@@ -229,9 +230,15 @@ public class WFService {
                     throw new IllegalArgumentException( msg );
                 }
             }
+
             schemaToStore.put( fs.getSchema(), fs );
             for ( FeatureType ft : fs.getSchema().getFeatureTypes() ) {
                 ftNameToFt.put( ft.getName(), ft );
+            }
+
+            for ( Entry<String, String> e : fs.getSchema().getNamespaceBindings().entrySet() ) {
+                prefixToNs.put( e.getKey(), e.getValue() );
+                targetNsToPrefix.put( e.getValue(), e.getKey() );
             }
         }
     }

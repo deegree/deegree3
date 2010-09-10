@@ -134,6 +134,8 @@ public class ApplicationSchemaXSDDecoder {
     // after all FeatureTypes have been created
     private List<FeaturePropertyType> featurePropertyTypes = new ArrayList<FeaturePropertyType>();
 
+    private final Map<String, String> prefixToNs = new HashMap<String, String>();
+
     private final Map<String, String> nsToPrefix = new HashMap<String, String>();
 
     private int prefixIndex = 0;
@@ -158,9 +160,11 @@ public class ApplicationSchemaXSDDecoder {
     public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, String... schemaUrls )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
+
         if ( namespaceHints != null ) {
             for ( Entry<String, String> prefixToNs : namespaceHints.entrySet() ) {
                 nsToPrefix.put( prefixToNs.getValue(), prefixToNs.getKey() );
+                this.prefixToNs.put( prefixToNs.getKey(), prefixToNs.getValue() );
             }
         }
 
@@ -200,7 +204,7 @@ public class ApplicationSchemaXSDDecoder {
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws MalformedURLException
-     * @throws UnsupportedEncodingException 
+     * @throws UnsupportedEncodingException
      */
     public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, File schemaFile )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
@@ -257,7 +261,7 @@ public class ApplicationSchemaXSDDecoder {
             }
             ftSubstitution.put( ftNameToFt.get( ftName ), ftNameToFt.get( substitutionFtName ) );
         }
-        return new ApplicationSchema( fts, ftSubstitution, analyzer );
+        return new ApplicationSchema( fts, ftSubstitution, prefixToNs, analyzer );
     }
 
     private void resolveFtReferences() {
@@ -530,8 +534,7 @@ public class ApplicationSchemaXSDDecoder {
             NamespaceContext nsContext = new NamespaceContext();
             nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
             nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
-            codeListId = adapter.getNodeAsString(
-                                                  adapter.getRootElement(),
+            codeListId = adapter.getNodeAsString( adapter.getRootElement(),
                                                   new XPath( "xs:appinfo/adv:referenzierteCodeList/text()", nsContext ),
                                                   null );
             if ( codeListId != null ) {
@@ -700,8 +703,7 @@ public class ApplicationSchemaXSDDecoder {
             XMLAdapter adapter = new XMLAdapter( new StringReader( s ) );
             NamespaceContext nsContext = new NamespaceContext();
             nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
-            QName refElement = adapter.getNodeAsQName(
-                                                       adapter.getRootElement(),
+            QName refElement = adapter.getNodeAsQName( adapter.getRootElement(),
                                                        new XPath(
                                                                   "xs:appinfo[@source='urn:x-gml:targetElement']/text()",
                                                                   nsContext ), null );

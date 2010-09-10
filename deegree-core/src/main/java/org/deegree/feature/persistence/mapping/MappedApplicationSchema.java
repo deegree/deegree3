@@ -87,6 +87,8 @@ public class MappedApplicationSchema extends ApplicationSchema {
      * @param ftToSuperFt
      *            key: feature type A, value: feature type B (A extends B), this must not include any GML base feature
      *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), can be <code>null</code>
+     * @param prefixToNs
+     *            preferred namespace prefixes to use, key: prefix, value: namespace, may be <code>null</code>
      * @param xsModel
      *            the underlying XML schema, may be <code>null</code>
      * @param ftMappings
@@ -102,10 +104,11 @@ public class MappedApplicationSchema extends ApplicationSchema {
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
-                                    GMLSchemaAnalyzer xsModel, FeatureTypeMapping[] ftMappings, CRS storageSRS,
-                                    BBoxTableMapping bboxMapping, BlobMapping blobMapping ) {
+                                    Map<String, String> prefixToNs, GMLSchemaAnalyzer xsModel,
+                                    FeatureTypeMapping[] ftMappings, CRS storageSRS, BBoxTableMapping bboxMapping,
+                                    BlobMapping blobMapping ) {
 
-        super( fts, ftToSuperFt, xsModel );
+        super( fts, ftToSuperFt, prefixToNs, xsModel );
         if ( ftMappings != null ) {
             for ( FeatureTypeMapping ftMapping : ftMappings ) {
                 ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );
