@@ -154,8 +154,10 @@ public class ApplicationSchema {
         }
 
         Map<String, String> nsToPrefix = new HashMap<String, String>();
-        for ( Entry<String, String> e : prefixToNs.entrySet() ) {
-            nsToPrefix.put( e.getValue(), e.getKey() );
+        if ( prefixToNs != null ) {
+            for ( Entry<String, String> e : prefixToNs.entrySet() ) {
+                nsToPrefix.put( e.getValue(), e.getKey() );
+            }
         }
 
         int generatedPrefixId = 1;

@@ -54,15 +54,14 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
@@ -117,9 +116,9 @@ class DescribeFeatureTypeHandler {
      * Performs the given {@link DescribeFeatureType} request.
      * <p>
      * If the request targets feature types in multiple namespaces, a WFS 2.0.0-style wrapper document is generated. The
-     * response document embeds all feature type declarations from one of the namespaces and imports the declarations of
-     * the feature types from the other namespaces using a KVP-<code>DescribeFeatureType</code> request that refers back
-     * to the service.
+     * response document embeds all element and type declarations from one of the namespaces and imports the
+     * declarations from the other namespaces using a KVP-<code>DescribeFeatureType</code> request that refers back to
+     * the service.
      * </p>
      * 
      * @param request
@@ -133,7 +132,6 @@ class DescribeFeatureTypeHandler {
      * @throws IOException
      *             if an IO-error occurs
      */
-    @SuppressWarnings("unchecked")
     void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException {
 
@@ -165,16 +163,25 @@ class DescribeFeatureTypeHandler {
                 exporter.export( writer, nsToFts.get( nsToFts.keySet().iterator().next() ) );
             } else if ( request.getTypeNames() == null && request.getNsBindings() != null ) {
                 // all feature types from a single namespace
-                String namespace = request.getNsBindings().get( "" );
-                Map<String, String> importMap = buildImportMap( request, Collections.singletonList( namespace ) );
+                String ns = request.getNsBindings().get( "" );
+
+                Set<String> otherAppNs = new HashSet<String>();
+                otherAppNs.addAll( service.getStores()[0].getSchema().getNamespaceBindings().values() );
+                otherAppNs.remove( ns );
+
+                Map<String, String> importMap = buildImportMap( request, otherAppNs );
                 Map<String, String> prefixToNs = service.getPrefixToNs();
-                ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, namespace, importMap,
+                ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, ns, importMap,
                                                                                         prefixToNs );
                 // TODO remove hack
                 exporter.export( writer, service.getStores()[0].getSchema() );
             } else {
                 // feature types from multiple namespaces -> generate wrapper schema document from all feature stores
-                Set<String> namespaces = new TreeSet<String>();
+                Set<String> namespaces = new LinkedHashSet<String>();
+                for ( String ns : request.getNsBindings().values() ) {
+                    namespaces.add( ns );
+                }
+
                 for ( FeatureStore fs : service.getStores() ) {
                     namespaces.addAll( fs.getSchema().getNamespaceBindings().values() );
                 }
