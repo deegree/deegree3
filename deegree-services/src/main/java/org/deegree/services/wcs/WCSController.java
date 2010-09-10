@@ -108,7 +108,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <code>WCSController</code> controls the handling of incoming WCS requests.
+ * Implementation of the <a href="http://www.opengeospatial.org/standards/wcs">OpenGIS Web Coverage Service</a> server
+ * protocol.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$

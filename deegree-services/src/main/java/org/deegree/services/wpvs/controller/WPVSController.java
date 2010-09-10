@@ -1,3 +1,4 @@
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -87,8 +88,8 @@ import org.deegree.services.jaxb.main.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.main.ServiceIdentificationType;
 import org.deegree.services.jaxb.main.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.PublishedInformation;
-import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
+import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.capabilities.CapabilitiesXMLAdapter;
 import org.deegree.services.wpvs.controller.getview.GetView;
@@ -98,7 +99,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>WPVSController</code> class currently implements the 1.0.0 draft of the WPVS.
+ * Implementation of the OpenGIS Web Perspective View Service server protocol.
+ * <p>
+ * Supported WPVS protocol versions:
+ * <ul>
+ * <li>1.0.0 (inofficial, unreleased)</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -213,8 +220,8 @@ public class WPVSController extends AbstractOGCServiceController {
     }
 
     @Override
-    protected void doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest request,
-                          HttpResponseBuffer response, List<FileItem> multiParts )
+    public void doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest request,
+                       HttpResponseBuffer response, List<FileItem> multiParts )
                             throws ServletException, IOException {
         WPVSRequestType mappedRequest = null;
         String requestName = null;
@@ -388,8 +395,8 @@ public class WPVSController extends AbstractOGCServiceController {
     }
 
     @Override
-    protected void doXML( XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
-                          List<FileItem> multiParts )
+    public void doXML( XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
+                       List<FileItem> multiParts )
                             throws ServletException, IOException {
 
         sendServiceException( new OWSException( "Currently only Http Get requests with key value pairs are supported.",

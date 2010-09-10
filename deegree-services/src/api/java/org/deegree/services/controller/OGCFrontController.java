@@ -111,8 +111,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Acts as the single communication entry point and dispatcher to all deegree OGC web services (WMS, WFS, WCS, CSW, WPS,
- * SOS...).
+ * Servlet that acts as the single communication entry point and dispatcher to OWS implementations.
  * <p>
  * Calls to {@link #doGet(HttpServletRequest, HttpServletResponse)} and
  * {@link #doPost(HttpServletRequest, HttpServletResponse)} are processed as follows:
@@ -1086,5 +1085,4 @@ public class OGCFrontController extends HttpServlet {
                                                         new OWSException110XMLAdapter(), e, res );
         }
     }
-
 }

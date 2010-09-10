@@ -54,7 +54,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -69,6 +68,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
+import org.deegree.services.OWS;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.ControllerInitException;
@@ -106,7 +106,7 @@ import org.xml.sax.SAXException;
  * 
  * @version $Revision:$, $Date:$
  */
-public abstract class AbstractOGCServiceController {
+public abstract class AbstractOGCServiceController implements OWS {
 
     private ImplementationMetadata<? extends Enum<?>> implementationMetadata;
 
@@ -166,28 +166,6 @@ public abstract class AbstractOGCServiceController {
     }
 
     /**
-     * Called by the {@link OGCFrontController} to indicate to a subcontroller that it is being taken into service.
-     * 
-     * @param controllerConf
-     *            provides access to the (always xml-based) configuration of the controller
-     * @param serviceMetadata
-     *            services metadata from the main service configuration for all services
-     * @param serviceController
-     *            from the main.xml
-     * @throws ControllerInitException
-     *             indicates that the initialization failed
-     */
-    public abstract void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
-                               DeegreeServiceControllerType serviceController )
-                            throws ControllerInitException;
-
-    /**
-     * Called by the {@link OGCFrontController} to indicate to a subcontroller that the subcontroller is being taken out
-     * of service.
-     */
-    public abstract void destroy();
-
-    /**
      * @param requestedVersions
      * @throws ControllerInitException
      */
@@ -202,52 +180,6 @@ public abstract class AbstractOGCServiceController {
             offeredVersions.add( version );
         }
     }
-
-    /**
-     * Called by the {@link OGCFrontController} to allow this <code>AbstractOGCServiceController</code> to handle a KVP
-     * request.
-     * 
-     * @param normalizedKVPParams
-     *            request parameters (keys are uppercased)
-     * @param request
-     *            provides access to all information of the original HTTP request (NOTE: may be GET or POST)
-     * @param response
-     *            response that is sent to the client
-     * @param multiParts
-     *            A list of multiparts contained in the request. If the request was not a multipart request the list
-     *            will be <code>null</code>. If multiparts were found, the requestDoc will be the first (xml-lized)
-     *            {@link FileItem} in the list.
-     * @throws ServletException
-     * @throws IOException
-     * @throws SecurityException
-     */
-    protected abstract void doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest request,
-                                   HttpResponseBuffer response, List<FileItem> multiParts )
-                            throws ServletException, IOException, SecurityException;
-
-    /**
-     * Called by the {@link OGCFrontController} to allow this <code>AbstractOGCServiceController</code> to handle an XML
-     * request.
-     * 
-     * @param xmlStream
-     *            provides access to the XML request, cursor points to the START_ELEMENT event of the root element,
-     *            never <code>null</code>
-     * @param request
-     *            provides access to all information of the original HTTP request (NOTE: may be GET or POST), never
-     *            <code>null</code>
-     * @param response
-     *            response that is sent to the client, never <code>null</code>
-     * @param multiParts
-     *            A list of multiparts contained in the request. If the request was not a multipart request the list
-     *            will be <code>null</code>. If multiparts were found, the xmlStream will provide access to the first
-     *            (xml-lized) {@link FileItem} in the list of multi parts
-     * @throws ServletException
-     * @throws IOException
-     * @throws SecurityException
-     */
-    protected abstract void doXML( XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
-                                   List<FileItem> multiParts )
-                            throws ServletException, IOException, SecurityException;
 
     /**
      * Called by the {@link OGCFrontController} to allow this <code>AbstractOGCServiceController</code> to handle a SOAP
@@ -270,7 +202,8 @@ public abstract class AbstractOGCServiceController {
      *             if an IOException occurred
      * @throws SecurityException
      */
-    protected void doSOAP( SOAPEnvelope soapDoc, HttpServletRequest request, HttpResponseBuffer response,
+    @Override
+    public void doSOAP( SOAPEnvelope soapDoc, HttpServletRequest request, HttpResponseBuffer response,
                            List<FileItem> multiParts, SOAPFactory factory )
                             throws ServletException, IOException, SecurityException {
         sendSOAPException( soapDoc.getHeader(), factory, response, null, null, null,

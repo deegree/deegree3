@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-services/src/main/java/org/deegree/services/wps/WPService.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,7 +36,6 @@
 
 package org.deegree.services.wps;
 
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 import static org.deegree.protocol.wps.WPSConstants.WPS_100_NS;
 import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
@@ -114,7 +113,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles WPS (WebProcessingService) requests.
+ * Implementation of the <a href="http://www.opengeospatial.org/standards/wps">OpenGIS Web Processing Service</a> server
+ * protocol.
  * <p>
  * Supported WPS protocol versions:
  * <ul>
@@ -129,9 +129,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:padberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: mschneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 25786 $, $Date: 2010-08-09 19:55:41 +0200 (Mo, 09 Aug 2010) $
+ * @version $Revision$, $Date$
  */
 public class WPService extends AbstractOGCServiceController {
 
@@ -176,8 +176,7 @@ public class WPService extends AbstractOGCServiceController {
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
             Unmarshaller u = jc.createUnmarshaller();
-            OMElement serviceConfigurationElement = controllerConf.getRequiredElement(
-                                                                                       controllerConf.getRootElement(),
+            OMElement serviceConfigurationElement = controllerConf.getRequiredElement( controllerConf.getRootElement(),
                                                                                        new XPath(
                                                                                                   "wps:ServiceConfiguration",
                                                                                                   nsContext ) );

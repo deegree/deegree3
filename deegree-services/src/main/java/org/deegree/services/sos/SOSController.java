@@ -130,7 +130,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <code>SOSController</code> controls the handling of incoming SOS requests.
+ * Implementation of the <a href="http://www.opengeospatial.org/standards/sos">OpenGIS Sensor Observation Service</a>
+ * server protocol.
  * 
  * <pre>
  * Note: The SOS 1.0.0 specification doesn't define KVP requests. It is an acknowledged flaw in the spec. Regardless of
@@ -228,8 +229,7 @@ public class SOSController extends AbstractOGCServiceController {
         nsContext.addNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
         XMLAdapter sensorXML = new XMLAdapter( sensorFile );
-        OMElement element = sensorXML.getElement(
-                                                  sensorXML.getRootElement(),
+        OMElement element = sensorXML.getElement( sensorXML.getRootElement(),
                                                   new XPath(
                                                              "/sml:SensorML/sml:identification/sml:IdentifierList/sml:identifier[@name=\"URN\"]/sml:Term/sml:value",
                                                              nsContext ) );
@@ -343,8 +343,7 @@ public class SOSController extends AbstractOGCServiceController {
                                   response );
         } catch ( XMLStreamException e ) {
             LOG.error( "an error occured while processing the request", e );
-            sendServiceException(
-                                  new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
+            sendServiceException( new OWSException( "an error occured while processing the request", NO_APPLICABLE_CODE ),
                                   response );
         } catch ( XMLProcessingException e ) {
             LOG.error( "an error occured while processing the request", e );

@@ -130,14 +130,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles WFS (WebFeatureService) protocol communication and acts as the link between the {@link OGCFrontController}
- * and the {@link WFService}.
+ * Implementation of the <a href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web Feature Service</a> server
+ * protocol.
  * <p>
  * Supported WFS protocol versions:
  * <ul>
  * <li>1.0.0 (in implementation, nearly finished)</li>
  * <li>1.1.0 (in implementation, nearly finished)</li>
- * <li>2.0.0 (started, standard is still tentative)</li>
+ * <li>2.0.0 (started)</li>
  * </ul>
  * </p>
  * 
