@@ -80,8 +80,6 @@ public class WFService {
 
     private Map<String, String> targetNsToPrefix = new LinkedHashMap<String, String>();
 
-    private Set<String> hintedNamespaces;
-
     private int indexPrefix = 0;
 
     /**
@@ -93,9 +91,6 @@ public class WFService {
                             throws FeatureStoreException {
 
         LOG.debug( "Adding configured feature stores." );
-
-        // filling prefix map with the provided NamespaceHints
-        hintedNamespaces = new HashSet<String>();
 
         for ( FeatureStore fs : FeatureStoreManager.getAll() ) {
             addStore( fs );
@@ -113,9 +108,8 @@ public class WFService {
 
     private void addNotYetHintedNamespaces( Collection<String> namespaces ) {
         for ( String ns : namespaces ) {
-            if ( !hintedNamespaces.contains( ns ) ) {
+            if ( !targetNsToPrefix.containsKey( ns ) ) {
                 String prefix = "app" + ( indexPrefix++ );
-                hintedNamespaces.add( ns );
                 prefixToNs.put( prefix, ns );
                 targetNsToPrefix.put( ns, prefix );
             }
@@ -230,11 +224,11 @@ public class WFService {
                     throw new IllegalArgumentException( msg );
                 }
             }
-
+            
             schemaToStore.put( fs.getSchema(), fs );
             for ( FeatureType ft : fs.getSchema().getFeatureTypes() ) {
                 ftNameToFt.put( ft.getName(), ft );
-            }
+            }            
 
             for ( Entry<String, String> e : fs.getSchema().getNamespaceBindings().entrySet() ) {
                 prefixToNs.put( e.getKey(), e.getValue() );
