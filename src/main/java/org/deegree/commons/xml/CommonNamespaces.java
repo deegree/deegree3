@@ -278,7 +278,7 @@ public class CommonNamespaces {
     }
 
     /**
-     * Returns whether the given namespace as either a XML core namespace or a GML core namespace.
+     * Returns whether the given namespace is either a XML core namespace or a GML core namespace.
      * 
      * @param ns
      *            namespace to check, may be <code>null</code>
@@ -291,7 +291,25 @@ public class CommonNamespaces {
             return true;
         } else if ( "http://www.w3.org/XML/1998/namespace".equals( ns ) ) {
             return true;
-        } else if ( "http://www.w3.org/2001/XMLSchema".equals( ns ) ) {
+        } else if ( XSNS.equals( ns ) ) {
+            return true;
+        } else if ( XLNNS.equals( ns ) ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns whether the given namespace is a GML core namespace.
+     * 
+     * @param ns
+     *            namespace to check, may be <code>null</code>
+     * @return true, if it is a GML core namespace, false otherwise
+     */
+    public static boolean isGMLNamespace( String ns ) {
+        if ( GMLNS.equals( ns ) ) {
+            return true;
+        } else if ( GML3_2_NS.equals( ns ) ) {
             return true;
         }
         return false;

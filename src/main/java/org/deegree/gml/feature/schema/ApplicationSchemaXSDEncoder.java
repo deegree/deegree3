@@ -69,6 +69,7 @@ import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XS_PREFIX;
@@ -101,6 +102,7 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
@@ -233,14 +235,11 @@ public class ApplicationSchemaXSDEncoder {
         addNsBinding( "gml", gmlNsURI );
         addNsBinding( "xs", XSNS );
         addNsBinding( "xml", XMLNS );
+        addNsBinding( "xlink", XLNNS );
 
         // special treatment needed for GML namespaces
         nsToPrefix.put( GMLNS, "gml" );
         nsToPrefix.put( GML3_2_NS, "gml" );
-
-        // TODO get rid of these CITE hacks
-        exportedElements.add( "SimpleFeatureCollection" );
-        exportedTypes.add( "SimpleFeatureCollectionType" );
     }
 
     private void addNsBinding( String prefix, String ns ) {
@@ -370,7 +369,7 @@ public class ApplicationSchemaXSDEncoder {
 
         exportedElements.add( ft.getName().getLocalPart() );
 
-        // TODO find a better way to do prevent re-exporting of the type
+        // TODO find a better way to prevent re-exporting of the type
         exportedTypes.add( ft.getName().getLocalPart() + "Type" );
 
         // export parent feature types
@@ -386,14 +385,15 @@ public class ApplicationSchemaXSDEncoder {
         }
 
         LOG.debug( "Exporting feature type declaration: " + ft.getName() );
+        LOG.debug( "Parent: " + ft.getSchema().getParentFt( ft ) );
         writer.writeStartElement( XSNS, "element" );
         writer.writeAttribute( "name", ft.getName().getLocalPart() );
 
         // export type name
-        QName typeName = getTypeName( ft, hasSubTypes );
+        QName typeName = getXSTypeName( ft, hasSubTypes );
         if ( typeName != null ) {
-            String prefix = getPrefix( targetNs );
-            writer.writeAttribute( "type", prefix + ":" + ft.getName().getLocalPart() + "Type" );
+            String prefix = getPrefix( typeName.getNamespaceURI() );
+            writer.writeAttribute( "type", prefix + ":" + typeName.getLocalPart() );
         }
 
         if ( ft.isAbstract() ) {
@@ -416,56 +416,8 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeEndElement();
         }
 
-        // ai: not everytime one should write the complexType definition; need to check if the type extends another type
-        // from the same namespace
-        if ( typeName == null || typeName.getNamespaceURI().equals( targetNs ) ) {
-            writer.writeStartElement( XSNS, "complexType" );
-            if ( typeName != null ) {
-                writer.writeAttribute( "name", typeName.getLocalPart() );
-            }
-            if ( ft.isAbstract() ) {
-                writer.writeAttribute( "abstract", "true" );
-            }
-
-            writer.writeStartElement( XSNS, "complexContent" );
-            writer.writeStartElement( XSNS, "extension" );
-
-            if ( parentFt != null ) {
-                String prefix = getPrefix( parentFt.getName().getNamespaceURI() );
-                writer.writeAttribute( "base", prefix + ":" + parentFt.getName().getLocalPart() + "Type" );
-            } else {
-                if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
-                    writer.writeAttribute( "base", "gml:AbstractFeatureCollectionType" );
-                } else {
-                    writer.writeAttribute( "base", "gml:AbstractFeatureType" );
-                }
-            }
-
-            writer.writeStartElement( XSNS, "sequence" );
-
-            // TODO check for GML 2-only properties (gml:pointProperty, ...) and export as "app:gml2PointProperty" for
-            // GML 3
-
-            // export property definitions (only for non-GML ones)
-            if ( schema != null ) {
-                for ( PropertyType pt : schema.getNewPropertyDeclarations( ft ) ) {
-                    if ( pt == null ) {
-                        LOG.warn( "Property type null inside " + ft.getName() );
-                        continue;
-                    }
-                    LOG.debug( "Exporting property type " + pt );
-                    export( writer, pt );
-                }
-            }
-
-            // end 'xs:sequence'
-            writer.writeEndElement();
-            // end 'xs:extension'
-            writer.writeEndElement();
-            // end 'xs:complexContent'
-            writer.writeEndElement();
-            // end 'xs:complexType'
-            writer.writeEndElement();
+        if ( typeName == null || targetNs.equals( typeName.getNamespaceURI() ) ) {
+            exportFeatureComplexType( writer, ft, parentFt, typeName == null ? null : typeName.getLocalPart() );
         }
 
         if ( typeName == null ) {
@@ -474,7 +426,77 @@ public class ApplicationSchemaXSDEncoder {
         }
     }
 
-    private QName getTypeName( FeatureType ft, boolean hasSubTypes ) {
+    private void exportFeatureComplexType( XMLStreamWriter writer, FeatureType ft, FeatureType parentFt, String typeName )
+                            throws XMLStreamException {
+
+        if ( typeName != null ) {
+            if ( exportedTypes.contains( typeName ) ) {
+                return;
+            }
+            exportedTypes.add( typeName );
+        }
+
+        ApplicationSchema schema = ft.getSchema();
+
+        writer.writeStartElement( XSNS, "complexType" );
+        if ( typeName != null ) {
+            writer.writeAttribute( "name", typeName );
+        }
+        if ( ft.isAbstract() ) {
+            writer.writeAttribute( "abstract", "true" );
+        }
+
+        writer.writeStartElement( XSNS, "complexContent" );
+        writer.writeStartElement( XSNS, "extension" );
+
+        if ( parentFt != null ) {
+            String prefix = getPrefix( parentFt.getName().getNamespaceURI() );
+            writer.writeAttribute( "base", prefix + ":" + parentFt.getName().getLocalPart() + "Type" );
+        } else {
+            if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
+                writer.writeAttribute( "base", "gml:AbstractFeatureCollectionType" );
+            } else {
+                writer.writeAttribute( "base", "gml:AbstractFeatureType" );
+            }
+        }
+
+        writer.writeStartElement( XSNS, "sequence" );
+
+        // TODO check for GML 2-only properties (gml:pointProperty, ...) and export as "app:gml2PointProperty" for
+        // GML 3
+
+        // export property definitions (only for non-GML ones)
+        if ( schema != null ) {
+            for ( PropertyType pt : schema.getNewPropertyDeclarations( ft ) ) {
+                if ( pt == null ) {
+                    LOG.warn( "Property type null inside " + ft.getName() );
+                    continue;
+                }
+                LOG.debug( "Exporting property type " + pt );
+                export( writer, pt );
+            }
+        }
+
+        // end 'xs:sequence'
+        writer.writeEndElement();
+        // end 'xs:extension'
+        writer.writeEndElement();
+        // end 'xs:complexContent'
+        writer.writeEndElement();
+        // end 'xs:complexType'
+        writer.writeEndElement();
+    }
+
+    /**
+     * Returns the XML schema type name to use for exporting the complex type for the given {@link FeatureType}.
+     * 
+     * @param ft
+     *            feature type, must not be <code>null</code>
+     * @param hasSubTypes
+     *            true, if the feature type has types that derive it, false otherwise
+     * @return the qualified complex type name or <code>null</code> if the type should be exported anonymously
+     */
+    private QName getXSTypeName( FeatureType ft, boolean hasSubTypes ) {
         QName elName = ft.getName();
         QName typeName = null;
         GMLSchemaAnalyzer analyzer = ft.getSchema().getXSModel();
@@ -487,6 +509,14 @@ public class ApplicationSchemaXSDEncoder {
                                                                                        elName.getNamespaceURI() );
             XSTypeDefinition typeDef = elDecl.getTypeDefinition();
             if ( !typeDef.getAnonymous() ) {
+                if ( CommonNamespaces.isGMLNamespace( typeDef.getNamespace() )
+                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals( "AbstractFeatureCollectionType" ) ) ) {
+                    if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
+                        typeName = new QName( gmlNsURI, "AbstractFeatureCollectionType" );
+                    } else {
+                        typeName = new QName( gmlNsURI, "AbstractFeatureType" );
+                    }
+                }
                 typeName = new QName( typeDef.getNamespace(), typeDef.getName() );
             }
         }
