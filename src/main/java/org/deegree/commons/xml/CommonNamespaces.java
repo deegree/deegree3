@@ -63,7 +63,7 @@ public class CommonNamespaces {
      * The OGCNS namespace is currently bound to: "http://www.opengis.net/ogc"
      */
     public static final String OGCNS = "http://www.opengis.net/ogc";
-    
+
     /**
      * The OWS_11_NS namespace is currently bound to: "http://www.opengis.net/ows/1.1"
      */
@@ -275,6 +275,26 @@ public class CommonNamespaces {
 
         }
         return nsContext;
+    }
+
+    /**
+     * Returns whether the given namespace as either a XML core namespace or a GML core namespace.
+     * 
+     * @param ns
+     *            namespace to check, may be <code>null</code>
+     * @return true, if it is a core namespace, false otherwise
+     */
+    public static boolean isCoreNamespace( String ns ) {
+        if ( GMLNS.equals( ns ) ) {
+            return true;
+        } else if ( GML3_2_NS.equals( ns ) ) {
+            return true;
+        } else if ( "http://www.w3.org/XML/1998/namespace".equals( ns ) ) {
+            return true;
+        } else if ( "http://www.w3.org/2001/XMLSchema".equals( ns ) ) {
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -35,23 +35,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static javax.xml.XMLConstants.NULL_NS_URI;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSNamespaceItemList;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -60,7 +59,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Defines a number of {@link FeatureType}s and their derivation hierarchy.
+ * Defines a number of {@link FeatureType}s and their derivation hierarchy (optionally includes a full XML schema
+ * infoset).
  * <p>
  * Some notes:
  * <ul>
@@ -83,12 +83,14 @@ public class ApplicationSchema {
     // key: feature type A, value: feature type B (A is in substitutionGroup B)
     private final Map<FeatureType, FeatureType> ftToSuperFt = new HashMap<FeatureType, FeatureType>();
 
-    // key: feature type A, value: feature types B0...Bn (A is in
-    // substitutionGroup B0,
-    // B0 is in substitutionGroup B1, ..., B(n-1) is in substitutionGroup Bn)
+    // key: feature type A, value: feature types B0...Bn (A is in substitutionGroup B0, B0 is in substitutionGroup B1,
+    // ..., B(n-1) is in substitutionGroup Bn)
     private final Map<FeatureType, List<FeatureType>> ftToSuperFts = new HashMap<FeatureType, List<FeatureType>>();
 
-    private GMLSchemaAnalyzer xsModel;
+    // key: namespace prefix, value: namespace URI
+    private final Map<String, String> prefixToNs = new HashMap<String, String>();
+
+    private final GMLSchemaAnalyzer xsModel;
 
     /**
      * Creates a new {@link ApplicationSchema} instance from the given {@link FeatureType}s and their derivation
@@ -101,10 +103,15 @@ public class ApplicationSchema {
      * @param ftToSuperFt
      *            key: feature type A, value: feature type B (A extends B), this must not include any GML base feature
      *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), can be <code>null</code>
+     * @param xsModel
+     *            full XML schema infoset (e.g. for custom property type definitions, etc.), may be <code>null</code>
+     * @param prefixToNs
+     *            preferred namespace prefixes to use, key: prefix, value: namespace, may be <code>null</code>
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
-    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt )
+    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
+                              Map<String, String> prefixToNs, GMLSchemaAnalyzer xsModel )
                             throws IllegalArgumentException {
 
         for ( FeatureType ft : fts ) {
@@ -115,7 +122,6 @@ public class ApplicationSchema {
         // build substitution group lookup maps
         if ( ftToSuperFt != null ) {
             this.ftToSuperFt.putAll( ftToSuperFt );
-
             for ( FeatureType ft : fts ) {
                 List<FeatureType> substitutionGroups = new ArrayList<FeatureType>();
                 FeatureType substitutionGroup = ftToSuperFt.get( ft );
@@ -146,10 +152,48 @@ public class ApplicationSchema {
                 }
             }
         }
-    }
 
-    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt, GMLSchemaAnalyzer xsModel ) {
-        this( fts, ftToSuperFt );
+        Map<String, String> nsToPrefix = new HashMap<String, String>();
+        for ( Entry<String, String> e : prefixToNs.entrySet() ) {
+            nsToPrefix.put( e.getValue(), e.getKey() );
+        }
+
+        int generatedPrefixId = 1;
+
+        // add namespaces of feature types
+        for ( FeatureType ft : getFeatureTypes() ) {
+            String ns = ft.getName().getNamespaceURI();
+            if ( !( NULL_NS_URI.equals( ns ) ) ) {
+                if ( !this.prefixToNs.values().contains( ns ) && this.prefixToNs != null ) {
+                    String prefix = nsToPrefix.get( ns );
+                    if ( prefix == null ) {
+                        prefix = ft.getName().getPrefix();
+                        if ( prefix == null ) {
+                            prefix = "app" + ( generatedPrefixId++ );
+                        }
+                    }
+                    this.prefixToNs.put( prefix, ns );
+                }
+            }
+        }
+
+        // add namespaces of other element declarations / type definitions
+        if ( xsModel != null ) {
+            XSNamespaceItemList nsItems = xsModel.getNamespaces();
+            for ( int i = 0; i < nsItems.getLength(); i++ ) {
+                String ns = nsItems.item( i ).getSchemaNamespace();
+                if ( !( NULL_NS_URI.equals( ns ) ) && !( CommonNamespaces.isCoreNamespace( ns ) ) ) {
+                    if ( !this.prefixToNs.values().contains( ns ) && this.prefixToNs != null ) {
+                        String prefix = nsToPrefix.get( ns );
+                        if ( prefix == null ) {
+                            prefix = "app" + ( generatedPrefixId++ );
+                        }
+                        this.prefixToNs.put( prefix, ns );
+                    }
+                }
+            }
+        }
+
         this.xsModel = xsModel;
     }
 
@@ -368,44 +412,20 @@ public class ApplicationSchema {
         return propDecls.subList( firstNewIdx, propDecls.size() );
     }
 
+    /**
+     * 
+     * @return
+     */
     public Map<FeatureType, FeatureType> getFtToSuperFt() {
         return ftToSuperFt;
     }
 
-    public Collection<String> getNamespaces() {
-        Set<String> namespaces = new TreeSet<String>();
-        for ( FeatureType ft : getFeatureTypes() ) {
-            namespaces.add( ft.getName().getNamespaceURI() );
-        }
-        if ( xsModel != null ) {
-            XSNamespaceItemList nsItems = xsModel.getNamespaces();
-            for ( int i = 0; i < nsItems.getLength(); i++ ) {
-                String ns = nsItems.item( i ).getSchemaNamespace();
-                if ( ns.equals( GMLNS ) ) {
-                    continue;
-                } else if ( ns.equals( GML3_2_NS ) ) {
-                    continue;
-                } else if ( ns.equals( "http://www.w3.org/XML/1998/namespace" ) ) {
-                    continue;
-                } else if ( ns.equals( "http://www.w3.org/2001/XMLSchema" ) ) {
-                    continue;
-                }
-                namespaces.add( ns );
-            }
-        }
-        return namespaces;
-    }
-
     /**
-     * TODO implement this properly
+     * Returns the preferred namespace bindings for all namespaces.
      * 
-     * @return
+     * @return the preferred namespace bindings for all namespaces, never <code>null</code>
      */
     public Map<String, String> getNamespaceBindings() {
-        Map<String, String> prefixToNs = new HashMap<String, String>();
-        for ( FeatureType ft : getFeatureTypes() ) {
-            prefixToNs.put( ft.getName().getPrefix(), ft.getName().getNamespaceURI() );
-        }
         return prefixToNs;
     }
 }

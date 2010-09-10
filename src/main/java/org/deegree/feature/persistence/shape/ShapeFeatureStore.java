@@ -268,7 +268,7 @@ public class ShapeFeatureStore implements FeatureStore {
                                                                       GEOMETRY, DIM_2_OR_3, false, null, BOTH );
             ft = new GenericFeatureType( featureTypeName, Collections.<PropertyType> singletonList( geomProp ), false );
         }
-        schema = new ApplicationSchema( new FeatureType[] { ft }, null );
+        schema = new ApplicationSchema( new FeatureType[] { ft }, null, null, null );
     }
 
     private void getCRSFromFile( File prj ) {
@@ -376,7 +376,7 @@ public class ShapeFeatureStore implements FeatureStore {
                         dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes() );
                     }
                     ft = dbf.getFeatureType();
-                    schema = new ApplicationSchema( new FeatureType[] { ft }, null );
+                    schema = new ApplicationSchema( new FeatureType[] { ft }, null, null, null );
                     dbfLastModified = dbfFile.lastModified();
                     cache.clear();
                 }

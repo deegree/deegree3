@@ -60,7 +60,6 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.BlobCodec;
-import org.deegree.feature.persistence.BlobCodec.Compression;
 import org.deegree.feature.persistence.mapping.BBoxTableMapping;
 import org.deegree.feature.persistence.mapping.BlobMapping;
 import org.deegree.feature.persistence.mapping.DBField;
@@ -130,14 +129,14 @@ class PostGISApplicationSchemaBuilder {
             BBoxTableMapping bboxMapping = new BBoxTableMapping();
             BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new BlobCodec( GML_32, NONE ) );
             mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
-                                                        appSchema.getXSModel(), null, storageCRS, bboxMapping,
+                                                        appSchema.getNamespaceBindings(), appSchema.getXSModel(), null, storageCRS, bboxMapping,
                                                         blobMapping );
         } else {
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
                                                                                            dbSchema );
             FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
             FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray( new FeatureTypeMapping[builder.ftNameToMapping.size()] );
-            mappedSchema = new MappedApplicationSchema( fts, null, null, ftMappings, storageCRS, null, null );
+            mappedSchema = new MappedApplicationSchema( fts, null, null, null, ftMappings, storageCRS, null, null );
         }
 
         return mappedSchema;
