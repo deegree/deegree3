@@ -5,6 +5,12 @@
 <h:head>
   <title>Generic XML editor</title>
   <h:outputStylesheet name="styles.css" />
+  <script type="text/javascript" src="editarea/edit_area/edit_area_full.js"></script>
+  <script type="text/javascript">
+    editAreaLoader.init({
+	  id : "j_idt14:inputXML",syntax: "xml",start_highlight: true
+    });
+  </script>  
 </h:head>
 <h:body>
   <div style="width: 940px;">Editing: ${editConfig.location}

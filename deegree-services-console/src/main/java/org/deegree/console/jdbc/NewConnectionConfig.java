@@ -70,6 +70,6 @@ public class NewConnectionConfig {
         configManager.add( config );
         config.create();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
-        return "console/generic/xmleditor.jsf";
+        return "console/generic/xmleditor.jsf?faces-redirect=true";
     }
 }
