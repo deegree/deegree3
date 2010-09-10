@@ -5,10 +5,16 @@
 <h:head>
   <title>Generic SQL executor</title>
   <h:outputStylesheet name="styles.css" />
+  <script type="text/javascript" src="editarea/edit_area/edit_area_full.js"></script>
+  <script type="text/javascript">
+    editAreaLoader.init({
+	  id : "sqlForm:sqlArea",syntax: "sql",start_highlight: true
+    });
+  </script>  
 </h:head>
 <h:body>
-  <h:form>
-    <h:inputTextarea cols="120" rows="30" value="${execution.statements}" />
+  <h:form id="sqlForm">
+    <h:inputTextarea id="sqlArea" cols="120" rows="30" value="${execution.statements}" />
     <br />
     <br />
     <h:outputText value="#{execution.message}" />

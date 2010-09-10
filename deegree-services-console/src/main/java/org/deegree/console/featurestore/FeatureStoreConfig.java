@@ -88,7 +88,7 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
         SQLExecution execution = new SQLExecution( connId, sql );
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
-        return "console/generic/sql.jsf";
+        return "console/generic/sql.jsf?faces-redirect=true";
     }
 
     public String showInfo() {
