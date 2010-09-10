@@ -366,11 +366,7 @@ public class ApplicationSchemaXSDEncoder {
         if ( exportedElements.contains( ft.getName().getLocalPart() ) ) {
             return;
         }
-
         exportedElements.add( ft.getName().getLocalPart() );
-
-        // TODO find a better way to prevent re-exporting of the type
-        exportedTypes.add( ft.getName().getLocalPart() + "Type" );
 
         // export parent feature types
         boolean hasSubTypes = false;
@@ -783,7 +779,7 @@ public class ApplicationSchemaXSDEncoder {
                 }
                 contentTypeBegin = true;
                 writer.writeStartElement( "xs", "restriction", XSNS );
-                writer.writeAttribute( "base", prefix + base.getName() );
+                writer.writeAttribute( "base", prefix + ":" + base.getName() );
                 derivationBegin = true;
             }
             break;
@@ -899,6 +895,12 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeAttribute( "maxOccurs", "unbounded" );
         } else if ( maxOccurs != 1 ) {
             writer.writeAttribute( "maxOccurs", String.valueOf( maxOccurs ) );
+        }
+
+        XSElementDeclaration substGroup = element.getSubstitutionGroupAffiliation();
+        if ( substGroup != null ) {
+            String prefix = getPrefix( substGroup.getNamespace() );
+            writer.writeAttribute( "substitutionGroup", prefix + ":" + substGroup.getName() );
         }
 
         XSTypeDefinition type = element.getTypeDefinition();
