@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetGmlObjectHandler {
+class GetGmlObjectHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( GetGmlObjectHandler.class );
 

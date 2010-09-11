@@ -769,5 +769,4 @@ public class WFSController extends AbstractOGCServiceController {
         }
         return gmlVersion;
     }
-
 }

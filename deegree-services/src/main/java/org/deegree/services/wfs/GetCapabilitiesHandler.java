@@ -35,6 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -43,6 +51,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,6 +78,7 @@ import org.deegree.geometry.SimpleGeometryFactory;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.wfs.WFSConstants.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
@@ -80,7 +90,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Generates WFS <code>GetCapabilities</code> response documents.
+ * Handles {@link GetCapabilities} requests for the {@link WFSController}.
  * <p>
  * Supported WFS protocol versions:
  * <ul>
@@ -95,19 +105,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
+class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private static Logger LOG = LoggerFactory.getLogger( GetCapabilitiesHandler.class );
-
-    private static final String OGC_NS = "http://www.opengis.net/ogc";
-
-    private static final String OGC_PREFIX = "ogc";
-
-    private static final String GML_NS = "http://www.opengis.net/gml";
-
-    private static final String GML_PREFIX = "gml";
-
-    private static final String WFS_PREFIX = "wfs";
 
     private static GeometryTransformer transformer;
 
@@ -140,16 +140,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private List<CRS> querySRS;
 
-    private WFSController master;
-
     private WFService service;
 
-    public GetCapabilitiesHandler( WFSController master, WFService service, Version version, XMLStreamWriter xmlWriter,
+    GetCapabilitiesHandler( WFSController master, WFService service, Version version, XMLStreamWriter xmlWriter,
                                    ServiceIdentificationType serviceId, ServiceProviderType serviceProvider,
                                    Collection<FeatureType> servedFts,
                                    Map<QName, FeatureTypeMetadata> ftNameToFtMetadata, Set<String> sections,
                                    boolean enableTransactions, List<CRS> querySRS ) {
-        this.master = master;
         this.service = service;
         this.version = version;
         this.writer = xmlWriter;
@@ -169,7 +166,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      * @throws IllegalArgumentException
      *             if the specified version is not 1.0.0, 1.1.0 or 2.0.0
      */
-    public void export()
+    void export()
                             throws XMLStreamException {
         if ( VERSION_100.equals( version ) ) {
             export100();
@@ -187,13 +184,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      * 
      * @throws XMLStreamException
      */
-    public void export100()
+    void export100()
                             throws XMLStreamException {
         writer.setPrefix( WFS_PREFIX, WFS_NS );
-        writer.setPrefix( "ows", OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGC_NS );
-        writer.setPrefix( GML_PREFIX, GML_NS );
-        writer.setPrefix( "xlink", XLN_NS );
+        writer.setPrefix( OWS_PREFIX, OWS_NS );
+        writer.setPrefix( OGC_PREFIX, OGCNS );
+        writer.setPrefix( GML_PREFIX, GMLNS );
+        writer.setPrefix( XLINK_PREFIX, XLN_NS );
 
         writer.writeStartElement( WFS_NS, "WFS_Capabilities" );
         writer.writeAttribute( "version", "1.0.0" );
@@ -464,18 +461,18 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      * 
      * @throws XMLStreamException
      */
-    public void export110()
+    void export110()
                             throws XMLStreamException {
 
         writer.setPrefix( WFS_PREFIX, WFS_NS );
         writer.setPrefix( OWS_PREFIX, OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGC_NS );
-        writer.setPrefix( GML_PREFIX, GML_NS );
-        writer.setPrefix( "xlink", XLN_NS );
+        writer.setPrefix( OGC_PREFIX, OGCNS );
+        writer.setPrefix( GML_PREFIX, GMLNS );
+        writer.setPrefix( XLINK_PREFIX, XLNNS );
 
         writer.writeStartElement( WFS_NS, "WFS_Capabilities" );
         writer.writeAttribute( "version", "1.1.0" );
-        writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", WFS_NS + " " + WFS_110_SCHEMA_URL );
+        writer.writeAttribute( XSI_PREFIX, XSINS, "schemaLocation", WFS_NS + " " + WFS_110_SCHEMA_URL );
 
         // ows:ServiceIdentification
         if ( sections == null || sections.contains( "SERVICEIDENTIFICATION" ) ) {
@@ -538,11 +535,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 if ( ftMd != null && ftMd.getTitle() != null ) {
                     writer.writeCharacters( ftMd.getTitle() );
                 } else {
-                    if ( prefix != null ) {
-                        writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
-                    } else {
-                        writer.writeCharacters( ftName.getLocalPart() );
-                    }
+                    writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
                 }
                 writer.writeEndElement();
 
@@ -677,14 +670,14 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      * 
      * @throws XMLStreamException
      */
-    public void export200()
+    void export200()
                             throws XMLStreamException {
 
         writer.setPrefix( WFS_PREFIX, WFS_200_NS );
-        writer.setPrefix( "ows", OWS_NS );
-        writer.setPrefix( OGC_PREFIX, OGC_NS );
-        writer.setPrefix( GML_PREFIX, GML_NS );
-        writer.setPrefix( "xlink", XLN_NS );
+        writer.setPrefix( OWS_PREFIX, OWS_NS );
+        writer.setPrefix( OGC_PREFIX, OGCNS );
+        writer.setPrefix( GML_PREFIX, GMLNS );
+        writer.setPrefix( XLINK_PREFIX, XLN_NS );
 
         writer.writeStartElement( WFS_200_NS, "WFS_Capabilities" );
         writer.writeAttribute( "version", "2.0.0" );
