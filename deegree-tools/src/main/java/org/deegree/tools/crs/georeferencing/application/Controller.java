@@ -39,6 +39,7 @@ import static java.lang.Math.max;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.JTEXTFIELD_COORDINATE_JUMPER;
 import static org.deegree.tools.crs.georeferencing.communication.GUIConstants.MENUITEM_TRANS_HELMERT;
 
+import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,9 +50,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 import java.util.Vector;
 
@@ -357,6 +360,7 @@ public class Controller {
         }
 
         this.footPrint = new Footprint( sceneValues, geom );
+        removeListeners( conModel.getFootPanel() );
         conModel.getFootPanel().addScene2DMouseListener( new Scene2DMouseListener() );
         conModel.getFootPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
         conModel.getFootPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
@@ -427,10 +431,58 @@ public class Controller {
         mouseGeoRef = new GeoReferencedMouseModel();
         scene2d.init( sceneValues );
         init();
-
+        removeListeners( conModel.getPanel() );
         conModel.getPanel().addScene2DMouseListener( new Scene2DMouseListener() );
         conModel.getPanel().addScene2DMouseMotionListener( new Scene2DMouseMotionListener() );
         conModel.getPanel().addScene2DMouseWheelListener( new Scene2DMouseWheelListener() );
+    }
+
+    /**
+     * Removes all the listeners of one component. http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4380536
+     * 
+     * @param comp
+     */
+    private static void removeListeners( Component comp ) {
+        Method[] methods = comp.getClass().getMethods();
+        for ( int i = 0; i < methods.length; i++ ) {
+            Method method = methods[i];
+            String name = method.getName();
+            if ( name.startsWith( "remove" ) && name.endsWith( "Listener" ) ) {
+
+                Class[] params = method.getParameterTypes();
+                if ( params.length == 1 ) {
+                    EventListener[] listeners = null;
+                    try {
+                        listeners = comp.getListeners( params[0] );
+                    } catch ( Exception e ) {
+                        // It is possible that someone could create a listener
+                        // that doesn't extend from EventListener. If so,
+                        // ignore it
+                        System.out.println( "Listener " + params[0] + " does not extend EventListener" );
+                        continue;
+                    }
+                    for ( int j = 0; j < listeners.length; j++ ) {
+                        try {
+                            method.invoke( comp, new Object[] { listeners[j] } );
+                            // System.out.println("removed Listener " + name + "for comp " + comp + "\n");
+                        } catch ( Exception e ) {
+                            System.out.println( "Cannot invoke removeListener method " + e );
+                            // Continue on. The reason for removing all listeners is to
+                            // make sure that we don't have a listener holding on to something
+                            // which will keep it from being garbage collected. We want to
+                            // continue freeing listeners to make sure we can free as much
+                            // memory has possible
+                        }
+                    }
+                } else {
+                    // The only Listener method that I know of that has more than
+                    // one argument is removePropertyChangeListener. If it is
+                    // something other than that, flag it and move on.
+                    if ( !name.equals( "removePropertyChangeListener" ) )
+                        System.out.println( "    Wrong number of Args " + name );
+                }
+            }
+        }
     }
 
     /**
@@ -1557,15 +1609,15 @@ public class Controller {
         case Polynomial:
 
             t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, conModel.getOrder() );
-            System.out.println( "[Controller] order " + conModel.getOrder() );
 
             break;
         case Helmert_4:
-            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, 1 );
+            t = new Helmert4Transform( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, conModel.getOrder() );
             break;
 
         case Affine:
-            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, 1 );
+            t = new AffineTransformation( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS,
+                                          conModel.getOrder() );
             break;
         }
 
@@ -1584,7 +1636,7 @@ public class Controller {
         TransformationMethod t = determineTransformationType( type );
         PointResidual[] r = t.calculateResiduals();
         if ( r != null ) {
-            Vector<Vector<Double>> data = new Vector<Vector<Double>>();
+            Vector<Vector<? extends Double>> data = new Vector<Vector<? extends Double>>();
             int counter = 0;
             for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
                 Vector element = new Vector( 6 );
