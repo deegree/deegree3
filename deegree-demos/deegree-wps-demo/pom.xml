@@ -24,6 +24,11 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-wps-sextante</artifactId>
+      <version>3.0-SNAPSHOT</version>
+    </dependency>  
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
       <version>3.0-SNAPSHOT</version>
       <scope>runtime</scope>
