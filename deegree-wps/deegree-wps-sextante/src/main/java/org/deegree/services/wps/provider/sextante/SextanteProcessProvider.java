@@ -48,8 +48,10 @@ import org.slf4j.LoggerFactory;
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.IGeoAlgorithmFilter;
 import es.unex.sextante.core.OutputObjectsSet;
+import es.unex.sextante.core.ParametersSet;
 import es.unex.sextante.core.Sextante;
 import es.unex.sextante.outputs.Output;
+import es.unex.sextante.parameters.Parameter;
 
 /**
  * {@link ProcessProvider} that provides <a
@@ -84,56 +86,38 @@ public class SextanteProcessProvider implements ProcessProvider {
 
                 boolean answer = true;
 
-                // Raster Layers inclusive Multiple Input
-                if ( alg.getNumberOfRasterLayers( true ) > 0 )
-                    answer = false;
+                // allowed input parameters
+                ParametersSet paramSet = alg.getParameters();
+                for ( int i = 0; i < paramSet.getNumberOfParameters(); i++ ) {
+                    Parameter param = paramSet.getParameter( i );
 
-                // Table Fields
-                if ( alg.getNumberOfTableFieldsParameters() > 0 )
-                    answer = false;
-
-                // Bands
-                if ( alg.getNumberOfBandsParameters() > 0 )
-                    answer = false;
-
-                // Tables
-                if ( alg.getNumberOfTables() > 0 )
-                    answer = false;
-
-                // No Date Parameters like String, Number, Boolean, etc.
-                if ( alg.getNumberOfNoDataParameters() > 0 )
-                    answer = false;
-
-                // Multiple Input - Vector Layer
-                if ( alg.getNumberOfVectorLayers( true ) - alg.getNumberOfVectorLayers( false ) > 0 )
-                    answer = false;
-
-                // Vector Layer (only 1)
-                if ( alg.getNumberOfVectorLayers( false ) > 1 && answer ) {
-                    // LOG.info( "MORE VECTOR LAYERS: " + alg.getCommandLineName() );
-                    SextanteWPSProcess.logAlgorithm( alg );
-                }
-
-                // Output Paramerter Raster and Vector Layer
-                OutputObjectsSet outputObjects = alg.getOutputObjects();
-
-                // only 1 vector layer
-                if ( outputObjects.getOutputObjectsCount() == 1 )
-
-                    for ( int i = 0; i < outputObjects.getOutputObjectsCount(); i++ ) {
-                        Output out = outputObjects.getOutput( i );
-                        if ( out.getTypeDescription().equals( "raster" ) )
-                            answer = false;
-                        else if ( out.getTypeDescription().equals( "table" ) )
-                            answer = false;
-                        else if ( out.getTypeDescription().equals( "text" ) )
-                            answer = false;
-                        else if ( out.getTypeDescription().equals( "chart" ) )
-                            answer = false;
+                    if ( !param.getParameterTypeName().equals( SextanteWPSProcess.VECTOR_LAYER_INPUT )
+                    // && !param.getParameterTypeName().equals( SextanteWPSProcess.NUMERICAL_VALUE_INPUT )
+                    // && !param.getParameterTypeName().equals( SextanteWPSProcess.BOOLEAN_INPUT )
+                    // && !param.getParameterTypeName().equals( SextanteWPSProcess.SELECTION_INPUT )
+                    ) {
+                        answer = false;
+                        break;
                     }
 
-                else
-                    answer = false;
+                }
+
+                // allowed output parameters
+                OutputObjectsSet outputSet = alg.getOutputObjects();
+                for ( int i = 0; i < outputSet.getOutputDataObjectsCount(); i++ ) {
+                    Output output = outputSet.getOutput( i );
+
+                    if ( !output.getTypeDescription().equals( SextanteWPSProcess.VECTOR_LAYER_OUTPUT )
+                    // && !output.getTypeDescription().equals( SextanteWPSProcess.VECTOR_LAYER_OUTPUT )
+                    ) {
+                        answer = false;
+                        break;
+                    }
+
+                }
+
+                if ( answer )
+                    SextanteWPSProcess.logAlgorithm( alg );
 
                 return answer;
             }

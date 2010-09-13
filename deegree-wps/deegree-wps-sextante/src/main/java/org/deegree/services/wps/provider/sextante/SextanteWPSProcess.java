@@ -43,9 +43,11 @@ import org.deegree.services.jaxb.wps.ComplexFormatType;
 import org.deegree.services.jaxb.wps.ComplexInputDefinition;
 import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
 import org.deegree.services.jaxb.wps.LanguageStringType;
+import org.deegree.services.jaxb.wps.LiteralInputDefinition;
 import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
 import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
+import org.deegree.services.jaxb.wps.LiteralInputDefinition.DataType;
 import org.deegree.services.jaxb.wps.ProcessDefinition.InputParameters;
 import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.ExceptionCustomizer;
@@ -60,8 +62,8 @@ import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * This class presents a {@link WPSProcess} with a {@link SextanteProcesslet} and creates the
- * {@link ProcessDefinition} on the basis of the SEXTANTE {@link GeoAlgorithm}. Therefore this class must differentiates all input and output
+ * This class presents a {@link WPSProcess} with a {@link SextanteProcesslet} and creates the {@link ProcessDefinition}
+ * on the basis of the SEXTANTE {@link GeoAlgorithm}. Therefore this class must differentiates all input and output
  * parameters of a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
@@ -78,7 +80,7 @@ public class SextanteWPSProcess implements WPSProcess {
 
     public static final String NUMERICAL_VALUE_INPUT = "Numerical Value";
 
-    public static final String SELECTION_INPUT = "Numerical Value";
+    public static final String SELECTION_INPUT = "Selection";
 
     public static final String FILEPATH_INPUT = "Filepath";
 
@@ -304,32 +306,33 @@ public class SextanteWPSProcess implements WPSProcess {
      */
     private JAXBElement<? extends ProcessletInputDefinition> createNumericalValueInputParameter( Parameter param ) {
 
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
+        // LOG.error( "\"" + param.getParameterTypeName()
+        // + "\" a is not supported input parameter type (but is in implementation)" );
 
-        // // LiteralInput
-        // QName literalInputName = new QName( "LiteralData" );
-        // LiteralInputDefinition literalInputValue = new LiteralInputDefinition();
-        // JAXBElement<LiteralInputDefinition> literalInput = new JAXBElement<LiteralInputDefinition>(
-        // literalInputName,
-        // LiteralInputDefinition.class,
-        // literalInputValue );
-        // // LiteralInput - Identifier
-        // org.deegree.services.jaxb.wps.CodeType literalInputIdentifier = new org.deegree.services.jaxb.wps.CodeType();
-        // literalInputIdentifier.setValue( param.getParameterName() );
-        // literalInputValue.setIdentifier( literalInputIdentifier );
-        //
-        // // LiteralInput - Title
-        // LanguageStringType literalInputTitle = new LanguageStringType();
-        // literalInputTitle.setValue( param.getParameterDescription() );
-        // literalInputValue.setTitle( literalInputTitle );
-        //
-        // // LiteralInput - Format
-        // DataType literalDataType = new DataType();
-        // literalDataType.setValue( "double" );
-        // literalInputValue.setDataType( literalDataType );
+        // LiteralInput
+        QName literalInputName = new QName( "LiteralData" );
+        LiteralInputDefinition literalInputValue = new LiteralInputDefinition();
+        JAXBElement<LiteralInputDefinition> literalInput = new JAXBElement<LiteralInputDefinition>(
+                                                                                                    literalInputName,
+                                                                                                    LiteralInputDefinition.class,
+                                                                                                    literalInputValue );
+        // LiteralInput - Identifier
+        org.deegree.services.jaxb.wps.CodeType literalInputIdentifier = new org.deegree.services.jaxb.wps.CodeType();
+        literalInputIdentifier.setValue( param.getParameterName() );
+        literalInputValue.setIdentifier( literalInputIdentifier );
 
-        return null;
+        // LiteralInput - Title
+        LanguageStringType literalInputTitle = new LanguageStringType();
+        literalInputTitle.setValue( param.getParameterDescription() );
+        literalInputValue.setTitle( literalInputTitle );
+
+        // LiteralInput - Format
+        DataType literalDataType = new DataType();
+        literalDataType.setValue( "double" );
+        literalDataType.setReference( "http://www.w3.org/TR/xmlschema-2/#double" );
+        literalInputValue.setDataType( literalDataType );
+
+        return literalInput;
     }
 
     /**

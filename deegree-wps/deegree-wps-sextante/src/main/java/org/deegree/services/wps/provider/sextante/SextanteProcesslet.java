@@ -50,6 +50,7 @@ import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
+import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
 import org.slf4j.Logger;
@@ -154,9 +155,9 @@ public class SextanteProcesslet implements Processlet {
      * Commits the input data (all supported types) to the {@link GeoAlgorithm} input parameter.
      * 
      * @param alg
-     *            - SEXTANTE {@link GeoAlgorithm}.
+     *            SEXTANTE {@link GeoAlgorithm}.
      * @param in
-     *            - Input data as {@link ProcessletInputs}.
+     *            Input data as {@link ProcessletInputs}.
      * 
      * @throws ProcessletException
      * @throws ClassNotFoundException
@@ -256,9 +257,14 @@ public class SextanteProcesslet implements Processlet {
      *            - Input parameter of {@link GeoAlgorithm}.
      */
     private void setNumericalValueInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
-        // TODO implement this input parameter type
+//        LOG.error( "\"" + param.getParameterTypeName()
+//                   + "\" a is not supported input parameter type (but is in implementation)"
+//                   + in.getClass().getSimpleName() );
+
+        // input object
+        LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
+
+        param.setParameterValue( Double.parseDouble( literalInput.getValue() ) );
     }
 
     /**
@@ -540,7 +546,7 @@ public class SextanteProcesslet implements Processlet {
 
             // geometry output
             if ( FormatHelper.determineGMLType( gmlOutput ).equals( GMLType.GEOMETRY ) ) {
-                Geometry g = VectorLayerAdapter.createGeometry( result );
+                Geometry g = VectorLayerAdapter.createGeometry( result );                
 
                 if ( g != null ) {
                     writeGeometry( gmlOutput, g );

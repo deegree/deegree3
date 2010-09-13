@@ -38,7 +38,9 @@ package org.deegree.services.wps.provider.sextante;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -64,7 +66,9 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.vividsolutions.jts.geom.PrecisionModel;
+
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
@@ -86,6 +90,8 @@ public class VectorLayerAdapter {
 
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( VectorLayerAdapter.class );
+
+    private static long id = 0;
 
     /**
      * Creates an {@link IVectorLayer} from a {@link FeatureCollection}.
@@ -354,7 +360,7 @@ public class VectorLayerAdapter {
         }
         if ( it.hasNext() ) {
 
-            Geometry geom = createGeometry( id, f.getGeometry() );
+            Geometry geom = createGeometry( f.getGeometry() );
 
             GenericProperty gp = new GenericProperty( it.next(), geom );
             props.add( gp );
@@ -408,7 +414,7 @@ public class VectorLayerAdapter {
         }
 
         // create a deegree geometry
-        Geometry g = createGeometry( "SextanteGeometry", gJTS );
+        Geometry g = createGeometry( gJTS );
 
         return g;
     }
@@ -499,11 +505,11 @@ public class VectorLayerAdapter {
      *            - {@link com.vividsolutions.jts.geom.Geometry}
      * @return {@link Geometry} or <code>null</code> if the given geometry is an empty collection.
      */
-    private static Geometry createGeometry( String id, com.vividsolutions.jts.geom.Geometry gJTS ) {
+    private static Geometry createGeometry( com.vividsolutions.jts.geom.Geometry gJTS ) {
 
         // default deegree geometry to create a deegree geometry from JTS geometry
         GeometryFactory gFactory = new GeometryFactory();
-        AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( id, 0, 0, CRS.EPSG_4326 );
+        AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( null, 0, 0, CRS.EPSG_4326 );
 
         Geometry g = gDefault.createFromJTS( gJTS );
 
@@ -620,5 +626,4 @@ public class VectorLayerAdapter {
 
         return geomProperties;
     }
-
 }

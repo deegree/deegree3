@@ -39,14 +39,14 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-import org.deegree.protocol.wps.ExampleData.GeometryType;
+import org.deegree.protocol.wps.GeometryExampleData.GeometryType;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.output.ExecutionOutput;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
 import org.deegree.services.wps.provider.sextante.SextanteProcessProvider;
+import org.deegree.services.wps.provider.sextante.SextanteWPSProcess;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -72,7 +72,7 @@ public class GeoAlgorithmTest {
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     /**
      * Returns a list of all supported {@link GeoAlgorithm} as {@link TestAlgorithm} for testing.
@@ -84,13 +84,13 @@ public class GeoAlgorithmTest {
         LinkedList<TestAlgorithm> algs = new LinkedList<TestAlgorithm>();
 
         // test all algorithms?
-        boolean testAll = true;
+        boolean testAll = false;
 
         if ( !testAll ) {
             // test only one algorithm
             Sextante.initialize();
             HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
-            GeoAlgorithm geoAlg = sextanteAlgs.get( "union" );
+            GeoAlgorithm geoAlg = sextanteAlgs.get( "removerepeatedgeometries" );
             TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
             testAlg.addAllInputData( getInputData( geoAlg ) );
             algs.add( testAlg );
@@ -128,17 +128,13 @@ public class GeoAlgorithmTest {
         // all input data
         LinkedList<LinkedList<ExampleData>> allData = new LinkedList<LinkedList<ExampleData>>();
 
-        // example data in geometry types
-        LinkedList<ExampleData> layers = getLayerInput( alg );
-        LinkedList<ExampleData> poylgons = getPolygonsInput();
-        LinkedList<ExampleData> lines = getLinesInput();
-        LinkedList<ExampleData> points = getPointsInput();
+        // example data
+        LinkedList<ExampleData> vectorLayers = getVectorLayerInput( alg );
+        LinkedList<ExampleData> nummericalValues = getVectorLayerInput( alg );
 
         // example data iterators
-        Iterator<ExampleData> layersIterator = layers.iterator();
-        Iterator<ExampleData> linesIterator = lines.iterator();
-        Iterator<ExampleData> poylgonsIterator = poylgons.iterator();
-        Iterator<ExampleData> pointsIterator = points.iterator();
+        Iterator<ExampleData> vectorLayersIterator = vectorLayers.iterator();
+        Iterator<ExampleData> numericalValuesIterator = nummericalValues.iterator();
 
         // traverse input parameter of one execution
         ParametersSet paramSet = alg.getParameters();
@@ -153,60 +149,29 @@ public class GeoAlgorithmTest {
             for ( int j = 0; j < paramSet.getNumberOfParameters(); j++ ) {
                 Parameter param = paramSet.getParameter( j );
 
-                // add a layer
-                if ( param.getParameterName().equals( "LAYER" ) || param.getParameterName().equals( "INPUT" )
-                     || param.getParameterName().equals( "CLIPLAYER" ) || param.getParameterName().equals( "LAYER2" )
-                     || param.getParameterName().equals( "LAYER1" ) ) {
+                // vector layers
+                if ( param.getParameterTypeName().equals( SextanteWPSProcess.VECTOR_LAYER_INPUT ) )
 
-                    if ( layersIterator.hasNext() ) {
-                        dataList.add( layersIterator.next() );
+                    if ( vectorLayersIterator.hasNext() ) {
+                        dataList.add( vectorLayersIterator.next() );
                     } else {
                         addMoreData = false;
                         break;
                     }
+                else
 
-                } else {
-                    // add lines
-                    if ( param.getParameterName().equals( "LINES" ) ) {
-                        if ( linesIterator.hasNext() ) {
-                            dataList.add( linesIterator.next() );
-                        } else {
-                            addMoreData = false;
-                            break;
-                        }
+                // numerical values
+                if ( param.getParameterTypeName().equals( SextanteWPSProcess.NUMERICAL_VALUE_INPUT ) ) {
 
+                    if ( numericalValuesIterator.hasNext() ) {
+                        dataList.add( numericalValuesIterator.next() );
                     } else {
-                        // add points
-                        if ( param.getParameterName().equals( "POINTS" ) ) {
-                            if ( pointsIterator.hasNext() ) {
-                                dataList.add( pointsIterator.next() );
-                            } else {
-                                addMoreData = false;
-                                break;
-                            }
-
-                        } else {
-
-                            // add polygons
-                            if ( param.getParameterName().equals( "POLYGONS" ) ) {
-                                if ( poylgonsIterator.hasNext() ) {
-                                    dataList.add( poylgonsIterator.next() );
-                                } else {
-                                    addMoreData = false;
-                                    break;
-                                }
-
-                            } else {
-
-                                // add nothing
-                                LOG.error( "Unknown input parameter \"" + param.getParameterName()
-                                           + "\" of SEXTANTE algorithm." );
-                            }
-                        }
+                        addMoreData = false;
+                        break;
                     }
                 }
-            }
 
+            }
             allData.add( dataList );
         }
 
@@ -214,135 +179,129 @@ public class GeoAlgorithmTest {
     }
 
     /**
-     * Returns a list of all test data for a layer of a SEXTANTE {@link GeoAlgorithm}.
+     * Returns a list of all test data for a vector layer of a SEXTANTE {@link GeoAlgorithm}.
      * 
      * @param alg
      *            - SEXTANTE {@link GeoAlgorithm}.
      * 
      * @return List of all test data for a layer of a SEXTANTE {@link GeoAlgorithm}.
      */
-    private LinkedList<ExampleData> getLayerInput( GeoAlgorithm alg ) {
+    private LinkedList<ExampleData> getVectorLayerInput( GeoAlgorithm alg ) {
         LinkedList<ExampleData> layers = new LinkedList<ExampleData>();
 
         // cleanpointslayer algorithm
         if ( alg.getCommandLineName().equals( "cleanpointslayer" ) )
-            layers.addAll( ExampleData.getData( GeometryType.POINT ) );
+            layers.addAll( GeometryExampleData.getData( GeometryType.POINT ) );
         else
         // polylinestopolygons algorithm
         if ( alg.getCommandLineName().equals( "polylinestopolygons" ) )
-            layers.addAll( ExampleData.getData( GeometryType.LINE ) );
+            layers.addAll( GeometryExampleData.getData( GeometryType.LINE ) );
         else
         // pointcoordinates algorithm
         if ( alg.getCommandLineName().equals( "pointcoordinates" ) )
-            layers.addAll( ExampleData.getData( GeometryType.POINT ) );
+            layers.addAll( GeometryExampleData.getData( GeometryType.POINT ) );
         else
         // removeholes algorithm
         if ( alg.getCommandLineName().equals( "removeholes" ) )
-            layers.addAll( ExampleData.getData( GeometryType.POLYGON ) );
+            layers.addAll( GeometryExampleData.getData( GeometryType.POLYGON ) );
         else
         // exportvector algorithm
         if ( alg.getCommandLineName().equals( "exportvector" ) )
+            // TODO
             LOG.warn( "No test data for '" + alg.getCommandLineName() + "' available." );
         else
         // polygonize algorithm
         if ( alg.getCommandLineName().equals( "polygonize" ) ) {
-            layers.add( ExampleData.GML_31_MULTILINESTRING );
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
+            layers.add( GeometryExampleData.GML_31_MULTILINESTRING );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
         } else
         // difference and intersection algorithm
         if ( alg.getCommandLineName().equals( "difference" ) || alg.getCommandLineName().equals( "intersection" ) ) {
-            layers.addAll( ExampleData.getData( GeometryType.POLYGON ) );
-            layers.addAll( ExampleData.getData( GeometryType.LINE ) );
-            layers.addAll( ExampleData.getData( GeometryType.POINT ) );
+            layers.addAll( GeometryExampleData.getData( GeometryType.POLYGON ) );
+            layers.addAll( GeometryExampleData.getData( GeometryType.LINE ) );
+            layers.addAll( GeometryExampleData.getData( GeometryType.POINT ) );
         } else
         // union algorithm
         if ( alg.getCommandLineName().equals( "union" ) ) {
 
-            // layers.add( ExampleData.GML_31_POLYGON );
-            // layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POLYGONS );
+            // TODO
+            // layers.add( GeometryExampleData.GML_31_POLYGON );
+            // layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS );
 
             LOG.warn( "No test data for '" + alg.getCommandLineName() + "' available." );
         } else
         // clip algorithm
         if ( alg.getCommandLineName().equals( "clip" ) ) {
-            layers.add( ExampleData.GML_31_POINT );
-            layers.add( ExampleData.GML_31_MULTILPOLYGON );
+            layers.add( GeometryExampleData.GML_31_POINT );
+            layers.add( GeometryExampleData.GML_31_MULTILPOLYGON );
 
-            layers.add( ExampleData.GML_31_LINESTRING );
-            layers.add( ExampleData.GML_31_MULTILINESTRING );
+            layers.add( GeometryExampleData.GML_31_LINESTRING );
+            layers.add( GeometryExampleData.GML_31_MULTILINESTRING );
 
-            layers.add( ExampleData.GML_31_MULTILPOLYGON );
-            layers.add( ExampleData.GML_31_LINESTRING );
+            layers.add( GeometryExampleData.GML_31_MULTILPOLYGON );
+            layers.add( GeometryExampleData.GML_31_LINESTRING );
 
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOINTS );
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTIPOINTS );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POINTS );
 
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
 
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS );
-            layers.add( ExampleData.GML_31_FEATURE_COLLECTION_POLYGONS );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POLYGONS );
         } else
         // symdifference algorithm
         if ( alg.getCommandLineName().equals( "symdifference" ) ) {
-            layers.addAll( ExampleData.getData( GeometryType.POLYGON ) );
+            layers.addAll( GeometryExampleData.getData( GeometryType.POLYGON ) );
         } else
         // countpoints algorithm
         if ( alg.getCommandLineName().equals( "countpoints" ) ) {
 
-            layers.add( ExampleData.GML_31_POLYGON );
-            layers.add( ExampleData.GML_31_POINT );
+            layers.add( GeometryExampleData.GML_31_POINT );
+            layers.add( GeometryExampleData.GML_31_POLYGON );
 
             // TODO why the algorithm returns a IVectorLayer and not a ITable?
 
         } else
+        // vectormean, changelinedirection, polylinestosinglesegments, splitpolylinesatnodes algorithm
+        if ( alg.getCommandLineName().equals( "vectormean" ) || alg.getCommandLineName().equals( "changelinedirection" )
+             || alg.getCommandLineName().equals( "polylinestosinglesegments" )
+             || alg.getCommandLineName().equals( "splitpolylinesatnodes" )
+             || alg.getCommandLineName().equals( "geometricpropertieslines" ) ) {
+
+            layers.add( GeometryExampleData.GML_31_LINESTRING );
+            layers.add( GeometryExampleData.GML_31_POLYGON );
+        } else
+
+        // delaunay algorithm
+        if ( alg.getCommandLineName().equals( "delaunay" ) ) {
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTIPOINTS );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POINTS );
+        } else
+
+        // removerepeatedgeometries algorithm
+        if ( alg.getCommandLineName().equals( "removerepeatedgeometries" ) ) {
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS );
+
+        } else
+
             // all algorithms
-            layers.addAll( ExampleData.getAllData() );
+            layers.addAll( GeometryExampleData.getAllData() );
 
         return layers;
     }
 
-    /**
-     * Returns a list of all test data for a polygon layer of a SEXTANTE {@link GeoAlgorithm}.
-     * 
-     * @param alg
-     *            - SEXTANTE {@link GeoAlgorithm}.
-     * 
-     * @return List of all test data for a polygon layer of a SEXTANTE {@link GeoAlgorithm}.
-     */
-    private LinkedList<ExampleData> getPolygonsInput() {
-        LinkedList<ExampleData> polygons = new LinkedList<ExampleData>();
-        polygons.addAll( ExampleData.getData( GeometryType.POLYGON ) );
-        return polygons;
-    }
+    private LinkedList<ExampleData> getNumericalValuesInput( GeoAlgorithm alg ) {
+        LinkedList<ExampleData> numbers = new LinkedList<ExampleData>();
 
-    /**
-     * Returns a list of all test data for a lines layer of a SEXTANTE {@link GeoAlgorithm}.
-     * 
-     * @param alg
-     *            - SEXTANTE {@link GeoAlgorithm}.
-     * 
-     * @return List of all test data for a lines layer of a SEXTANTE {@link GeoAlgorithm}.
-     */
-    private LinkedList<ExampleData> getLinesInput() {
-        LinkedList<ExampleData> lines = new LinkedList<ExampleData>();
-        lines.addAll( ExampleData.getData( GeometryType.LINE ) );
-        lines.addAll( ExampleData.getData( GeometryType.POLYGON ) );
-        return lines;
-    }
+        numbers.add( LiteralExampleData.NUMERICAL_VALUE_1 );
+        numbers.add( LiteralExampleData.NUMERICAL_VALUE_2 );
+        numbers.add( LiteralExampleData.NUMERICAL_VALUE_3 );
+        numbers.add( LiteralExampleData.NUMERICAL_VALUE_4 );
+        numbers.add( LiteralExampleData.NUMERICAL_VALUE_1 );
+        numbers.add( LiteralExampleData.NUMERICAL_VALUE_2 );
 
-    /**
-     * Returns a list of all test data for a point layer of a SEXTANTE {@link GeoAlgorithm}.
-     * 
-     * @param alg
-     *            - SEXTANTE {@link GeoAlgorithm}.
-     * 
-     * @return List of all test data for a point layer of a SEXTANTE {@link GeoAlgorithm}.
-     */
-    private LinkedList<ExampleData> getPointsInput() {
-        LinkedList<ExampleData> points = new LinkedList<ExampleData>();
-        points.add( ExampleData.GML_31_FEATURE_COLLECTION_POINTS );
-        return points;
+        return numbers;
     }
 
     /**
@@ -387,15 +346,33 @@ public class GeoAlgorithmTest {
                                     ExampleData currentData = it.next();
 
                                     Parameter param = paramSet.getParameter( j );
-
                                     String inputIndentifier = param.getParameterName();
-
                                     LOG.info( "Testing '" + alg.getCommandLineName() + "' algorithm with "
-                                              + currentData.getFilename() );
+                                              + currentData.toString() );
 
-                                    execution.addXMLInput( inputIndentifier, null, currentData.getURL(), false,
-                                                           currentData.getMimeType(), currentData.getEncoding(),
-                                                           currentData.getSchemaURL() );
+                                    // Geometries
+                                    if ( currentData instanceof GeometryExampleData ) {
+                                        GeometryExampleData currentGeometryData = (GeometryExampleData) currentData;
+
+                                        execution.addXMLInput( inputIndentifier, null, currentGeometryData.getURL(),
+                                                               false, currentGeometryData.getMimeType(),
+                                                               currentGeometryData.getEncoding(),
+                                                               currentGeometryData.getSchemaURL() );
+                                    } else {
+
+                                        // Literals
+                                        if ( currentData instanceof LiteralExampleData ) {
+                                            LiteralExampleData currentLiteralData = (LiteralExampleData) currentData;
+
+                                            execution.addLiteralInput( currentLiteralData.getId(),
+                                                                       currentLiteralData.getIdCodeSpace(),
+                                                                       currentLiteralData.getValue(),
+                                                                       currentLiteralData.getType(),
+                                                                       currentLiteralData.getUOM() );
+
+                                        }
+                                    }
+
                                 }
 
                                 // set all output parameters

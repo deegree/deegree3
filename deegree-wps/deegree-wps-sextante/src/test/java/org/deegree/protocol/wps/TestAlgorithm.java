@@ -107,7 +107,7 @@ public class TestAlgorithm {
     /**
      * Returns all test data of this algorithm.
      * 
-     * @return All test data. Every list of {@link ExampleData} contains test data for one input parameter.
+     * @return All test data. Every list of {@link GeometryExampleData} contains test data for one input parameter.
      */
     public LinkedList<LinkedList<ExampleData>> getAllInputData() {
         return data;
