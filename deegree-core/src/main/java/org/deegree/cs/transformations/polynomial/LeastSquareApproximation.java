@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.transformations.polynomial;
 
@@ -59,13 +59,13 @@ import org.slf4j.LoggerFactory;
 /**
  * <code>LeastSquareApproximation</code> is a polynomial transformation which uses the least square method to
  * approximate a function given by some measured values.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class LeastSquareApproximation extends PolynomialTransformation {
     private static Logger LOG = LoggerFactory.getLogger( LeastSquareApproximation.class );
@@ -139,7 +139,7 @@ public class LeastSquareApproximation extends PolynomialTransformation {
 
     /**
      * Sets the id to EPSG::9645 ( General polynomial of degree 2 ).
-     *
+     * 
      * @param firstParameters
      *            of the polynomial
      * @param secondParameters
@@ -155,7 +155,8 @@ public class LeastSquareApproximation extends PolynomialTransformation {
      */
     public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters,
                                      CoordinateSystem sourceCRS, CoordinateSystem targetCRS, float scaleX, float scaleY ) {
-        this( firstParameters, secondParameters, sourceCRS, targetCRS, scaleX, scaleY, new CRSIdentifiable( new EPSGCode( 9645 ) ) );
+        this( firstParameters, secondParameters, sourceCRS, targetCRS, scaleX, scaleY,
+              new CRSIdentifiable( new EPSGCode( 9645 ) ) );
     }
 
     @Override

@@ -141,10 +141,10 @@ public abstract class AbstractRaster extends AbstractCoverage {
      */
     protected void checkBounds( Envelope envelope ) {
         // rb: following checks are unnecessary because the creation of envelopes should check it.
-        // assert ( envelope.getMin().getX() < envelope.getMax().getX() );
-        // assert ( envelope.getMin().getY() < envelope.getMax().getY() );
-        // assert ( getEnvelope().getMin().getX() < getEnvelope().getMax().getX() );
-        // assert ( getEnvelope().getMin().getY() < getEnvelope().getMax().getY() );
+        // assert ( envelope.getMin().x < envelope.getMax().x );
+        // assert ( envelope.getMin().y < envelope.getMax().y );
+        // assert ( getEnvelope().getMin().x < getEnvelope().getMax().x );
+        // assert ( getEnvelope().getMin().y < getEnvelope().getMax().y );
         if ( !getEnvelope().contains( envelope ) ) {
             throw new IndexOutOfBoundsException();
         }

@@ -153,10 +153,6 @@ public abstract class Projection extends CRSIdentifiable {
         this.scaleFactor = scale * getSemiMajorAxis();
 
         this.naturalOrigin = new Point2d( normalizeLongitude( naturalOrigin.x ), normalizeLatitude( naturalOrigin.y ) );
-
-        // uses different library
-        // this.projectionLongitude = this.naturalOrigin.getX();
-        // this.projectionLatitude = this.naturalOrigin.getY();
         this.projectionLongitude = this.naturalOrigin.x;
         this.projectionLatitude = this.naturalOrigin.y;
 

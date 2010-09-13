@@ -319,7 +319,6 @@ public class RasterGeoReference implements Serializable {
             return new int[] { (int) round( rslt.getX() ), (int) round( rslt.getY() ) };
         }
         return new int[] { (int) floor( rslt.getX() ), (int) floor( rslt.getY() ) };
-
     }
 
     /**

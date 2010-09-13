@@ -695,7 +695,7 @@ public class CurveLinearizer {
         circle.x += minOrd0;
         circle.y += minOrd1;
 
-        return geomFac.createPoint( null, new double[] { circle.getX(), circle.getY() },
+        return geomFac.createPoint( null, new double[] { circle.x, circle.y },
                                     p0Shifted.getCoordinateSystem() );
     }
 

@@ -216,17 +216,17 @@ public class ProviderBasedAccuracyTest {
         tmp.add( new Point3d( sourcePoint ) );
         Point3d result = transformer.transform( sourceCRS, tmp ).get( 0 );
         assertNotNull( result );
-        boolean xFail = Math.abs( result.getX() - targetPoint.x ) > epsilons.x;
-        String xString = createEpsilonString( xFail, result.getX(), targetPoint.x, epsilons.x, targetCRS.getAxis()[0] );
-        boolean yFail = Math.abs( result.getY() - targetPoint.y ) > epsilons.y;
-        String yString = createEpsilonString( yFail, result.getY(), targetPoint.y, epsilons.y, targetCRS.getAxis()[1] );
+        boolean xFail = Math.abs( result.x - targetPoint.x ) > epsilons.x;
+        String xString = createEpsilonString( xFail, result.x, targetPoint.x, epsilons.x, targetCRS.getAxis()[0] );
+        boolean yFail = Math.abs( result.y - targetPoint.y ) > epsilons.y;
+        String yString = createEpsilonString( yFail, result.y, targetPoint.y, epsilons.y, targetCRS.getAxis()[1] );
 
         // Z-Axis if available.
         boolean zFail = false;
         String zString = "";
         if ( targetCRS.getDimension() == 3 ) {
-            zFail = Math.abs( result.getZ() - targetPoint.z ) > epsilons.z;
-            zString = createEpsilonString( zFail, result.getZ(), targetPoint.z, epsilons.z, targetCRS.getAxis()[2] );
+            zFail = Math.abs( result.z - targetPoint.z ) > epsilons.z;
+            zString = createEpsilonString( zFail, result.z, targetPoint.z, epsilons.z, targetCRS.getAxis()[2] );
         }
         StringBuilder sb = new StringBuilder();
         if ( xFail || yFail || zFail ) {
