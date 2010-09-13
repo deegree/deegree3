@@ -90,7 +90,6 @@ public class Scene2DValues {
      */
     public Scene2DValues( GeometryFactory geom ) {
         this.geom = geom;
-        this.grEnv = null;
 
     }
 
@@ -455,22 +454,25 @@ public class Scene2DValues {
      * @return
      */
     public void createZoomedEnvWithMinPoint( PointType type, Rectangle rect ) {
-        Envelope env = transformRectangleToEnvelope( rect );
+        double minXRaster = rect.getMinX();
+        double minYRaster = rect.getMinY();
+        double width = rect.getWidth();
+        double height = rect.getHeight();
         AbstractGRPoint minPoint = null;
-        AbstractGRPoint maxPoint = null;
+        AbstractGRPoint dim = null;
 
         switch ( type ) {
         case GeoreferencedPoint:
-            minPoint = getWorldPoint( new GeoReferencedPoint( env.getMin().get0(), env.getMin().get1() ) );
-            maxPoint = getWorldPoint( new GeoReferencedPoint( env.getMax().get0(), env.getMax().get1() ) );
+            minPoint = getWorldPoint( new GeoReferencedPoint( minXRaster, minYRaster ) );
+            dim = getWorldDimension( new GeoReferencedPoint( width, height ) );
 
-            transformAspectRatioGeorefPartial( geom.createEnvelope( minPoint.getX(), minPoint.getY(), maxPoint.getX(),
-                                                                    maxPoint.getY(), crs ) );
+            transformAspectRatioGeorefPartial( geom.createEnvelope( minPoint.getX(), minPoint.getY() - dim.getY(),
+                                                                    minPoint.getX() + dim.getX(), minPoint.getY(), crs ) );
             break;
 
         case FootprintPoint:
-            minPoint = getWorldPoint( new FootprintPoint( env.getMin().get0(), env.getMin().get1() ) );
-            AbstractGRPoint dim = getWorldDimension( new FootprintPoint( env.getSpan0(), env.getSpan1() ) );
+            minPoint = getWorldPoint( new FootprintPoint( minXRaster, minYRaster ) );
+            dim = getWorldDimension( new FootprintPoint( width, height ) );
 
             transformProportionPartialOrientationFoot( geom.createEnvelope( minPoint.getX(), minPoint.getY()
                                                                                              - dim.getY(),
@@ -480,14 +482,6 @@ public class Scene2DValues {
             break;
         }
 
-    }
-
-    private Envelope transformRectangleToEnvelope( Rectangle rect ) {
-        double minXRaster = rect.getMinX();
-        double minYRaster = rect.getMinY();
-        double maxXRaster = rect.getMaxX();
-        double maxYRaster = rect.getMaxY();
-        return geom.createEnvelope( minXRaster, minYRaster, maxXRaster, maxYRaster, crs );
     }
 
     /**
@@ -513,7 +507,7 @@ public class Scene2DValues {
 
         double w = dimensionGeoreference.width;
         double h = dimensionGeoreference.height;
-        System.out.println( "[Scene2DValues] transformed PARTIAL bevore: " + envelope + " \n w: " + w + " h: " + h );
+        System.out.println( "[Scene2DValues] spanned rectangle: " + envelope );
 
         ratioGeoref = w / h;
 
@@ -577,7 +571,6 @@ public class Scene2DValues {
         double h = dimensionFootprint.height;
 
         ratioFoot = w / h;
-        System.out.println( "[Scene2DValues] transformed PARTIAL Foot before " + envelope );
         if ( ratioFoot < 1 ) {
             double newWidth = envelope.getSpan1() * ratioFoot;
             grEnv = GREnvelopeParameterCalculator.newInstance( envelope.getMin().get0(), envelope.getMax().get1(),
@@ -591,7 +584,6 @@ public class Scene2DValues {
 
         this.envelopeFootprint = geom.createEnvelope( grEnv.getMinX(), grEnv.getMinY(), grEnv.getMaxX(),
                                                       grEnv.getMaxY(), null );
-        System.out.println( "[Scene2DValues] transformed PARTIAL Foot after " + envelopeFootprint );
     }
 
     public void transformProportionFullOrientationFoot( Envelope envelope ) {
@@ -613,7 +605,7 @@ public class Scene2DValues {
 
         this.envelopeFootprint = geom.createEnvelope( grEnv.getMinX(), grEnv.getMinY(), grEnv.getMaxX(),
                                                       grEnv.getMaxY(), crs );
-        System.out.println( "[Scene2DValues] transformed FULL Foot " + envelopeFootprint );
+
     }
 
     public CRS getCrs() {
