@@ -156,8 +156,8 @@ public class WKTParserTest {
         Assert.assertEquals( falseNorthing, lcc.getFalseNorthing() );
         Assert.assertEquals( DTR * stdParallel1, lcc.getFirstParallelLatitude(), 1e-12 );
         Assert.assertEquals( DTR * stdParallel2, lcc.getSecondParallelLatitude(), 1e-12 );
-        Assert.assertEquals( DTR * lonNatOrigin, lcc.getNaturalOrigin().getX() );
-        Assert.assertEquals( DTR * latNatOrigin, lcc.getNaturalOrigin().getY() );
+        Assert.assertEquals( DTR * lonNatOrigin, lcc.getNaturalOrigin().x );
+        Assert.assertEquals( DTR * latNatOrigin, lcc.getNaturalOrigin().y );
         Assert.assertEquals( scaleFactor, lcc.getScale() );
     }
 

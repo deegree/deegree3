@@ -153,25 +153,25 @@ public class TransformationAccuracyTest implements CRSDefines {
         tmp.add( new Point3d( sourcePoint ) );
         Point3d result = transformer.transform( sourceCRS, tmp ).get( 0 );
         assertNotNull( result );
-        boolean xFail = Math.abs( result.getX() - targetPoint.x ) > epsilons.x;
-        String xString = createEpsilonString( xFail, result.getX(), targetPoint.x, epsilons.x, targetCRS.getAxis()[0] );
-        boolean yFail = Math.abs( result.getY() - targetPoint.y ) > epsilons.y;
-        String yString = createEpsilonString( yFail, result.getY(), targetPoint.y, epsilons.y, targetCRS.getAxis()[1] );
+        boolean xFail = Math.abs( result.x - targetPoint.x ) > epsilons.x;
+        String xString = createEpsilonString( xFail, result.x, targetPoint.x, epsilons.x, targetCRS.getAxis()[0] );
+        boolean yFail = Math.abs( result.y - targetPoint.y ) > epsilons.y;
+        String yString = createEpsilonString( yFail, result.y, targetPoint.y, epsilons.y, targetCRS.getAxis()[1] );
 
         // Z-Axis if available
         boolean zFail = false;
         String zString = null;
         if ( targetCRS.getDimension() == 3 ) {
-            zFail = Math.abs( result.getZ() - targetPoint.z ) > epsilons.z;
-            zString = createEpsilonString( zFail, result.getZ(), targetPoint.z, epsilons.z, targetCRS.getAxis()[2] );
+            zFail = Math.abs( result.z - targetPoint.z ) > epsilons.z;
+            zString = createEpsilonString( zFail, result.z, targetPoint.z, epsilons.z, targetCRS.getAxis()[2] );
         } else if ( targetCRS.getDimension() == 2 && sourceCRS.getDimension() == 2
-                    && !Double.isNaN( sourcePoint.getZ() ) ) {
+                    && !Double.isNaN( sourcePoint.z ) ) {
             // 3rd coordinate should be passed
-            double epsilon = result.getZ() - targetPoint.z;
+            double epsilon = result.z - targetPoint.z;
             zFail = Math.abs( epsilon ) > 0;
             StringBuilder sb = new StringBuilder( 400 );
             sb.append( "passed z (result - orig = error [allowedError]): " );
-            sb.append( result.getZ() ).append( " - " ).append( targetPoint.z );
+            sb.append( result.z ).append( " - " ).append( targetPoint.z );
             sb.append( " = " ).append( epsilon );
             sb.append( " [" ).append( 0 ).append( "]" );
             if ( zFail ) {

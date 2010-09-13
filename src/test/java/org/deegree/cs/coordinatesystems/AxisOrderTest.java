@@ -97,9 +97,9 @@ public class AxisOrderTest extends TestCase {
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
-        assertEquals( 46.074, transformedPoints.get( 0 ).getX() );
-        assertEquals( 9.799, transformedPoints.get( 0 ).getY() );
-        assertEquals( Double.NaN, transformedPoints.get( 0 ).getZ() );
+        assertEquals( 46.074, transformedPoints.get( 0 ).x );
+        assertEquals( 9.799, transformedPoints.get( 0 ).y );
+        assertEquals( Double.NaN, transformedPoints.get( 0 ).z );
     }
 
     @Test
@@ -114,9 +114,9 @@ public class AxisOrderTest extends TestCase {
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
-        assertEquals( 46.074, transformedPoints.get( 0 ).getX() );
-        assertEquals( 9.799, transformedPoints.get( 0 ).getY() );
-        assertEquals( Double.NaN, transformedPoints.get( 0 ).getZ() );
+        assertEquals( 46.074, transformedPoints.get( 0 ).x );
+        assertEquals( 9.799, transformedPoints.get( 0 ).y );
+        assertEquals( Double.NaN, transformedPoints.get( 0 ).z );
     }
 
     @Test
@@ -131,9 +131,9 @@ public class AxisOrderTest extends TestCase {
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
-        assertEquals( 9.799, transformedPoints.get( 0 ).getX() );
-        assertEquals( 46.074, transformedPoints.get( 0 ).getY() );
-        assertEquals( Double.NaN, transformedPoints.get( 0 ).getZ() );
+        assertEquals( 9.799, transformedPoints.get( 0 ).x );
+        assertEquals( 46.074, transformedPoints.get( 0 ).y );
+        assertEquals( Double.NaN, transformedPoints.get( 0 ).z );
     }
 
     @Test
@@ -148,9 +148,9 @@ public class AxisOrderTest extends TestCase {
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
-        assertEquals( 9.799, transformedPoints.get( 0 ).getX() );
-        assertEquals( 46.074, transformedPoints.get( 0 ).getY() );
-        assertEquals( Double.NaN, transformedPoints.get( 0 ).getZ() );
+        assertEquals( 9.799, transformedPoints.get( 0 ).x );
+        assertEquals( 46.074, transformedPoints.get( 0 ).y );
+        assertEquals( Double.NaN, transformedPoints.get( 0 ).z );
     }
 
     @Test
@@ -166,9 +166,9 @@ public class AxisOrderTest extends TestCase {
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
-        assertTrue( 3532465.55 < transformedPoints.get( 0 ).getX() && 3532465.6 > transformedPoints.get( 0 ).getX() );
-        assertTrue( 5301523.45 < transformedPoints.get( 0 ).getY() && 5301523.55 > transformedPoints.get( 0 ).getY() );
-        assertEquals( Double.NaN, transformedPoints.get( 0 ).getZ() );
+        assertTrue( 3532465.55 < transformedPoints.get( 0 ).x && 3532465.6 > transformedPoints.get( 0 ).x );
+        assertTrue( 5301523.45 < transformedPoints.get( 0 ).y && 5301523.55 > transformedPoints.get( 0 ).y );
+        assertEquals( Double.NaN, transformedPoints.get( 0 ).z );
     }
 
     @Test
@@ -183,9 +183,9 @@ public class AxisOrderTest extends TestCase {
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
-        assertTrue( 47.825 < transformedPoints.get( 0 ).getX() && 47.875 > transformedPoints.get( 0 ).getX() );
-        assertTrue( 9.4 < transformedPoints.get( 0 ).getY() && 9.45 > transformedPoints.get( 0 ).getY() );
-        assertEquals( 817.0, transformedPoints.get( 0 ).getZ() );
+        assertTrue( 47.825 < transformedPoints.get( 0 ).x && 47.875 > transformedPoints.get( 0 ).x );
+        assertTrue( 9.4 < transformedPoints.get( 0 ).y && 9.45 > transformedPoints.get( 0 ).y );
+        assertEquals( 817.0, transformedPoints.get( 0 ).z );
     }
 
     @Test
@@ -200,9 +200,9 @@ public class AxisOrderTest extends TestCase {
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
-        assertTrue( 3532465.55 < transformedPoints.get( 0 ).getX() && 3532465.6 > transformedPoints.get( 0 ).getX() );
-        assertTrue( 5301523.45 < transformedPoints.get( 0 ).getY() && 5301523.55 > transformedPoints.get( 0 ).getY() );
-        assertEquals( Double.NaN, transformedPoints.get( 0 ).getZ() );
+        assertTrue( 3532465.55 < transformedPoints.get( 0 ).x && 3532465.6 > transformedPoints.get( 0 ).x );
+        assertTrue( 5301523.45 < transformedPoints.get( 0 ).y && 5301523.55 > transformedPoints.get( 0 ).y );
+        assertEquals( Double.NaN, transformedPoints.get( 0 ).z );
     }
 
     @Test
@@ -217,9 +217,9 @@ public class AxisOrderTest extends TestCase {
 
         assertNotNull( transformedPoints );
         assertEquals( 1, transformedPoints.size() );
-        assertTrue( 9.4 < transformedPoints.get( 0 ).getX() && 9.45 > transformedPoints.get( 0 ).getX() );
-        assertTrue( 47.825 < transformedPoints.get( 0 ).getY() && 47.875 > transformedPoints.get( 0 ).getY() );
-        assertEquals( 817.0, transformedPoints.get( 0 ).getZ() );
+        assertTrue( 9.4 < transformedPoints.get( 0 ).x && 9.45 > transformedPoints.get( 0 ).x );
+        assertTrue( 47.825 < transformedPoints.get( 0 ).y && 47.875 > transformedPoints.get( 0 ).y );
+        assertEquals( 817.0, transformedPoints.get( 0 ).z );
     }
 
 }
