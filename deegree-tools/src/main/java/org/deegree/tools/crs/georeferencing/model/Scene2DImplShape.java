@@ -45,12 +45,13 @@ import javax.vecmath.Point2d;
 
 import jj2000.j2k.NotImplementedError;
 
-import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
@@ -91,9 +92,12 @@ public class Scene2DImplShape implements Scene2D {
 
     private ApplicationSchema schema;
 
+    private static DeegreeWorkspace workspace;
+
     public Scene2DImplShape( String filePath, Graphics2D g ) {
         this.filePath = filePath;
         this.g = g;
+
     }
 
     @Override
@@ -101,18 +105,21 @@ public class Scene2DImplShape implements Scene2D {
         this.sceneValues = values;
 
         try {
+            FeatureStore fs = FeatureStoreManager.get( "MyFeatureType" );
+            if ( fs == null ) {
+                store = new ShapeFeatureStore( filePath, null, null, "http://www.deegree.org/app", "MyFeatureType",
+                                               true, null );
 
-            ConnectionManager.destroy();
-            store = new ShapeFeatureStore( filePath, null, null, "http://www.deegree.org/app", "MyFeatureType", true,
-                                           null );
-
-            store.init();
-            srs = store.getStorageSRS();
-
-        } catch ( FeatureStoreException e1 ) {
+                FeatureStoreManager.registerAndInit( store, "MyFeatureType" );
+            } else {
+                store = fs;
+            }
+        } catch ( FeatureStoreException e ) {
             // TODO Auto-generated catch block
-            e1.printStackTrace();
+            e.printStackTrace();
         }
+
+        srs = store.getStorageSRS();
 
     }
 
@@ -137,7 +144,7 @@ public class Scene2DImplShape implements Scene2D {
                 imageBoundingbox = store.getEnvelope( schema.getFeatureTypes()[0].getName() );
                 imageBoundingbox.setCoordinateSystem( srs );
                 sceneValues.setEnvelopeGeoref( imageBoundingbox );
-                sceneValues.transformProportionGeorefPartialOrientation( imageBoundingbox );
+                sceneValues.transformAspectRatioGeorefPartial( imageBoundingbox );
                 imageBoundingbox = sceneValues.getEnvelopeGeoref();
             }
         } catch ( FeatureStoreException e1 ) {

@@ -212,6 +212,7 @@ public class Controller {
 
         geom = new GeometryFactory();
         sceneValues = new Scene2DValues( geom );
+
         conModel = new ControllerModel( view, view.getFootprintPanel(), view.getScenePanel2D(), new OptionDialogModel() );
 
         this.start = false;
@@ -617,10 +618,12 @@ public class Controller {
                 } else if ( ( (JButton) source ).getText().startsWith( GUIConstants.RESET_VIEW_BUTTON_TEXT ) ) {
 
                     initGeoReferencingScene( model );
-                    initFootprintScene( fileChoosed );
+                    if ( fileChoosed != null ) {
+                        initFootprintScene( fileChoosed );
 
-                    conModel.getFootPanel().updatePoints( sceneValues );
-                    conModel.getFootPanel().repaint();
+                        conModel.getFootPanel().updatePoints( sceneValues );
+                        conModel.getFootPanel().repaint();
+                    }
                     conModel.getPanel().updatePoints( sceneValues );
                     conModel.getPanel().repaint();
 
@@ -746,7 +749,7 @@ public class Controller {
                             Envelope env = wmsParameter.getEnvelope( crs, layerList );
                             if ( env != null ) {
                                 int qor = max( conModel.getPanel().getWidth(), conModel.getPanel().getHeight() );
-                                store = new ParameterStore( mapURL, crs, format, layers, env, qor );
+                                store = new ParameterStore( mapURL, env.getCoordinateSystem(), format, layers, env, qor );
                                 model = new Scene2DImplWMS( store, wmsParameter.getWmsClient() );
                                 initGeoReferencingScene( model );
                                 wmsParameter.setVisible( false );

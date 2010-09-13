@@ -38,6 +38,7 @@ package org.deegree.tools.crs.georeferencing.model;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,13 +48,8 @@ import javax.vecmath.Point3d;
 import jj2000.j2k.NotImplementedError;
 
 import org.deegree.commons.utils.StringUtils;
-import org.deegree.cs.configuration.CRSConfiguration;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.cs.transformations.Transformation;
-import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.tools.crs.georeferencing.application.ParameterStore;
 import org.deegree.tools.crs.georeferencing.application.Scene2DValues;
@@ -85,41 +81,19 @@ public class Scene2DImplWMS implements Scene2D {
 
     private ParameterStore store;
 
+    private GeometryFactory geom;
+
     public Scene2DImplWMS( ParameterStore store, WMSClient111 wmsClient ) {
         this.store = store;
         this.wmsClient = wmsClient;
+        this.geom = new GeometryFactory();
     }
 
     @Override
     public void init( Scene2DValues values ) {
         this.sceneValues = values;
 
-        CRSConfiguration crsConfig = CRSConfiguration.getInstance( "org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider" );
-        TransformationFactory fac = crsConfig.getTransformationFactory();
-        Transformation trans = null;
-        List<Point3d> l = null;
-        try {
-            trans = fac.createFromCoordinateSystems( store.getCRS().getWrappedCRS(), GeographicCRS.WGS84 );
-            l = trans.doTransform( store.getBboxAsPoint3d() );
-        } catch ( TransformationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( IllegalArgumentException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( UnknownCRSException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        double[] d = new double[4];
-        int counter = 0;
-        for ( Point3d p : l ) {
-            d[counter++] = p.getX();
-            d[counter++] = p.getY();
-        }
-
-        trans.setDefaultAreaOfUse( d );
-        this.sceneValues.setEnvelopeGeoref( trans.getAreaOfUseBBox(), trans.getTargetCRS() );
+        this.sceneValues.setEnvelopeGeoref( store.getBbox() );
 
         lays = getLayers( store.getLayers() );
         format = store.getFormat();
@@ -143,6 +117,41 @@ public class Scene2DImplWMS implements Scene2D {
     private BufferedImage generateMap( Envelope imageBoundingbox ) {
         BufferedImage i = null;
         try {
+
+            // CRSConfiguration crsConfig = CRSConfiguration.getInstance(
+            // "org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider" );
+            // TransformationFactory fac = crsConfig.getTransformationFactory();
+            // Transformation trans = null;
+            // List<Point3d> l = null;
+            // try {
+            // trans = fac.createFromCoordinateSystems( imageBoundingbox.getCoordinateSystem().getWrappedCRS(),
+            // GeographicCRS.WGS84 );
+            // l = trans.doTransform( getBboxAsPoint3d( imageBoundingbox ) );
+            // } catch ( TransformationException e ) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // } catch ( IllegalArgumentException e ) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // } catch ( UnknownCRSException e ) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // }
+            // double[] d = new double[4];
+            // int counter = 0;
+            // for ( Point3d p : l ) {
+            // d[counter++] = p.getX();
+            // d[counter++] = p.getY();
+            // }
+            //
+            // Envelope envi = sceneValues.transformProportionGeorefPartialOrientation( geom.createEnvelope(
+            // d[0],
+            // d[1],
+            // d[2],
+            // d[3],
+            // new CRS(
+            // GeographicCRS.WGS84 ) ) );
+            // System.out.println( "[Scene2dImplWMS] " + envi );
             i = wmsClient.getMap( lays, imageWidth, imageHeight, imageBoundingbox, sceneValues.getCrs(), format, true,
                                   false, -1, false, null ).first;
 
@@ -155,7 +164,7 @@ public class Scene2DImplWMS implements Scene2D {
 
     @Override
     public BufferedImage generateSubImage( Rectangle bounds ) {
-        sceneValues.transformProportionGeorefPartialOrientation( sceneValues.getEnvelopeGeoref() );
+        sceneValues.transformAspectRatioGeorefPartial( sceneValues.getEnvelopeGeoref() );
         // sceneValues.transformProportionGeorefFullOrientation( store.getBbox() );
         return generatedImage = generateMap( sceneValues.getEnvelopeGeoref() );
 
@@ -277,5 +286,14 @@ public class Scene2DImplWMS implements Scene2D {
     // }
     //
     // }
+
+    private List<Point3d> getBboxAsPoint3d( Envelope bbox ) {
+        List<Point3d> pointsList = new ArrayList<Point3d>();
+        Point3d pMin = new Point3d( bbox.getMin().get0(), bbox.getMin().get1(), Double.NaN );
+        Point3d pMax = new Point3d( bbox.getMax().get0(), bbox.getMax().get1(), Double.NaN );
+        pointsList.add( pMin );
+        pointsList.add( pMax );
+        return pointsList;
+    }
 
 }
