@@ -182,8 +182,6 @@ public class Controller {
 
     private NavigationPanel optionNavPanel;
 
-    public int order;
-
     private SettingsPanel optionSettPanel;
 
     private OptionDialog optionDialog;
@@ -243,7 +241,6 @@ public class Controller {
         this.tablePanel.addActionButtonListener( new ButtonListener() );
         // transform = null;
         if ( conModel.getTransformationType() == null ) {
-            order = 1;
             for ( JCheckBox box : modelTransformation.getList() ) {
                 if ( ( box ).getText().startsWith( MENUITEM_TRANS_HELMERT ) ) {
                     conModel.setTransformationType( TransformationType.Helmert_4 );
@@ -1559,7 +1556,8 @@ public class Controller {
         switch ( type ) {
         case Polynomial:
 
-            t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, order );
+            t = new Polynomial( mappedPoints, footPrint, sceneValues, sourceCRS, targetCRS, conModel.getOrder() );
+            System.out.println( "[Controller] order " + conModel.getOrder() );
 
             break;
         case Helmert_4:
