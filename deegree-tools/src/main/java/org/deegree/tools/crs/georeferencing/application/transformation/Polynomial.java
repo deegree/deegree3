@@ -104,15 +104,15 @@ public class Polynomial extends AbstractTransformation implements Transformation
             int counterDst = 0;
 
             for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
-                double x = p.first.getWorldCoords().getX();
-                double y = p.first.getWorldCoords().getY();
+                double x = p.first.getWorldCoords().x;
+                double y = p.first.getWorldCoords().y;
 
                 passPointsDst[counterDst] = (float) x;
                 passPointsDst[++counterDst] = (float) y;
                 counterDst++;
                 Point4Values pValue = p.second;
-                x = pValue.getWorldCoords().getX();
-                y = pValue.getWorldCoords().getY();
+                x = pValue.getWorldCoords().x;
+                y = pValue.getWorldCoords().y;
                 passPointsSrc[counterSrc] = (float) x;
                 passPointsSrc[++counterSrc] = (float) y;
                 counterSrc++;

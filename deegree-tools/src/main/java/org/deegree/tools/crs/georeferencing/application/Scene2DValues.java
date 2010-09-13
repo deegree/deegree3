@@ -112,8 +112,8 @@ public class Scene2DValues {
                 double getMaxY = envelopeGeoref.getMax().get1();
 
                 // determine the percentage of the requested point
-                double percentX = getWorldDimension( pixelPoint ).getX();
-                double percentY = getWorldDimension( pixelPoint ).getY();
+                double percentX = getWorldDimension( pixelPoint ).x;
+                double percentY = getWorldDimension( pixelPoint ).y;
 
                 return new GeoReferencedPoint( getMinX + percentX, getMaxY - percentY );
             }
@@ -125,8 +125,8 @@ public class Scene2DValues {
             double getMaxY = this.envelopeFootprint.getMax().get1();
 
             // determine the percentage of the requested point
-            double percentX = getWorldDimension( pixelPoint ).getX();
-            double percentY = getWorldDimension( pixelPoint ).getY();
+            double percentX = getWorldDimension( pixelPoint ).x;
+            double percentY = getWorldDimension( pixelPoint ).y;
 
             return new FootprintPoint( getMinX + percentX, getMaxY - percentY );
 
@@ -153,8 +153,8 @@ public class Scene2DValues {
                 double spanY = this.envelopeGeoref.getSpan1();
 
                 // determine the percentage of the requested point
-                double percentX = ( dimension.getX() / dimensionGeoreference.width ) * spanX;
-                double percentY = ( dimension.getY() / dimensionGeoreference.height ) * spanY;
+                double percentX = ( dimension.x / dimensionGeoreference.width ) * spanX;
+                double percentY = ( dimension.y / dimensionGeoreference.height ) * spanY;
 
                 return new GeoReferencedPoint( percentX, percentY );
 
@@ -166,8 +166,8 @@ public class Scene2DValues {
             double spanY = this.envelopeFootprint.getSpan1();
 
             // determine the percentage of the requested point
-            double percentX = ( dimension.getX() / dimensionFootprint.width ) * spanX;
-            double percentY = ( dimension.getY() / dimensionFootprint.height ) * spanY;
+            double percentX = ( dimension.x / dimensionFootprint.width ) * spanX;
+            double percentY = ( dimension.y / dimensionFootprint.height ) * spanY;
 
             return new FootprintPoint( percentX, percentY );
 
@@ -226,8 +226,8 @@ public class Scene2DValues {
         double spanY = env.getSpan1();
         double mathX = -env.getMin().get0();
         double mathY = -env.getMin().get1();
-        double deltaX = mathX + abstractGRPoint.getX();
-        double deltaY = mathY + abstractGRPoint.getY();
+        double deltaX = mathX + abstractGRPoint.x;
+        double deltaY = mathY + abstractGRPoint.y;
         return new Point2d( deltaX / spanX, deltaY / spanY );
 
     }
@@ -244,7 +244,7 @@ public class Scene2DValues {
     private Point2d computePercentPixel( Rectangle dimension, AbstractGRPoint abstractGRPoint ) {
         double spanX = dimension.width;
         double spanY = dimension.height;
-        return new Point2d( abstractGRPoint.getX() / spanX, abstractGRPoint.getY() / spanY );
+        return new Point2d( abstractGRPoint.x / spanX, abstractGRPoint.y / spanY );
     }
 
     public Rectangle getGeorefDimension() {
@@ -373,8 +373,8 @@ public class Scene2DValues {
      * @return the envelope for translation.
      */
     private Envelope createTranslatedEnv( Envelope env, Point2d percent ) {
-        double changeX = env.getSpan0() * percent.getX();
-        double changeY = env.getSpan1() * percent.getY();
+        double changeX = env.getSpan0() * percent.x;
+        double changeY = env.getSpan1() * percent.y;
 
         return geom.createEnvelope( env.getMin().get0() + changeX, env.getMin().get1() - changeY, env.getMax().get0()
                                                                                                   + changeX,
@@ -437,10 +437,10 @@ public class Scene2DValues {
         double percentSpanXPos = spanX - percentSpanX;
         double percentSpanYPos = spanY - percentSpanY;
 
-        double minPointX = center.getX() - percentSpanX;
-        double minPointY = center.getY() - percentSpanY;
-        double maxPointX = center.getX() + percentSpanXPos;
-        double maxPointY = center.getY() + percentSpanYPos;
+        double minPointX = center.x - percentSpanX;
+        double minPointY = center.y - percentSpanY;
+        double maxPointX = center.x + percentSpanXPos;
+        double maxPointY = center.y + percentSpanYPos;
         Envelope e = geom.createEnvelope( minPointX, minPointY, maxPointX, maxPointY, env.getCoordinateSystem() );
         System.out.println( "[Scene2DValues] createdZoomedEnv " + e );
         return e;
@@ -466,18 +466,18 @@ public class Scene2DValues {
             minPoint = getWorldPoint( new GeoReferencedPoint( minXRaster, minYRaster ) );
             dim = getWorldDimension( new GeoReferencedPoint( width, height ) );
 
-            transformAspectRatioGeorefPartial( geom.createEnvelope( minPoint.getX(), minPoint.getY() - dim.getY(),
-                                                                    minPoint.getX() + dim.getX(), minPoint.getY(), crs ) );
+            transformAspectRatioGeorefPartial( geom.createEnvelope( minPoint.x, minPoint.y - dim.y,
+                                                                    minPoint.x + dim.x, minPoint.y, crs ) );
             break;
 
         case FootprintPoint:
             minPoint = getWorldPoint( new FootprintPoint( minXRaster, minYRaster ) );
             dim = getWorldDimension( new FootprintPoint( width, height ) );
 
-            transformProportionPartialOrientationFoot( geom.createEnvelope( minPoint.getX(), minPoint.getY()
-                                                                                             - dim.getY(),
-                                                                            minPoint.getX() + dim.getX(),
-                                                                            minPoint.getY(), null ) );
+            transformProportionPartialOrientationFoot( geom.createEnvelope( minPoint.x, minPoint.y
+                                                                                             - dim.y,
+                                                                            minPoint.x + dim.x,
+                                                                            minPoint.y, null ) );
 
             break;
         }

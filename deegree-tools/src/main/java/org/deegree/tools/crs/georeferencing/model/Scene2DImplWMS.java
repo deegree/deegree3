@@ -140,8 +140,8 @@ public class Scene2DImplWMS implements Scene2D {
             // double[] d = new double[4];
             // int counter = 0;
             // for ( Point3d p : l ) {
-            // d[counter++] = p.getX();
-            // d[counter++] = p.getY();
+            // d[counter++] = p.x;
+            // d[counter++] = p.y;
             // }
             //
             // Envelope envi = sceneValues.transformProportionGeorefPartialOrientation( geom.createEnvelope(

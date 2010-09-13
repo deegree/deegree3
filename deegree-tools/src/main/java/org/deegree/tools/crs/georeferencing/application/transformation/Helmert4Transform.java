@@ -171,8 +171,8 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
             int counterDst = 0;
 
             for ( Triple<Point4Values, Point4Values, PointResidual> p : mappedPoints ) {
-                double x = p.first.getWorldCoords().getX();
-                double y = p.first.getWorldCoords().getY();
+                double x = p.first.getWorldCoords().x;
+                double y = p.first.getWorldCoords().y;
                 cumulatedPointsDstX += x;
                 passPointsDstX[counterDst] = x;
                 cumulatedPointsDstY += y;
@@ -181,8 +181,8 @@ public class Helmert4Transform extends AbstractTransformation implements Transfo
                 Point4Values pValue = p.second;
 
                 // this is strange why is this perverted?? 1/2 later is the second one...
-                y = pValue.getWorldCoords().getY();
-                x = pValue.getWorldCoords().getX();
+                y = pValue.getWorldCoords().y;
+                x = pValue.getWorldCoords().x;
 
                 cumulatedPointsE += y;
                 passPointsSrcE[counterSrc] = y;

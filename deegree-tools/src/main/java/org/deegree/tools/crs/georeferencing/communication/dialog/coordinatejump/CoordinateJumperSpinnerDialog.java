@@ -100,8 +100,8 @@ public class CoordinateJumperSpinnerDialog extends JDialog {
         if ( centerPoint == null ) {
             centerPoint = new Point2d( 0, 0 );
         }
-        spinnerModelX = new SpinnerNumberModel( centerPoint.getX(), 0.00, 1.0, 0.01 );
-        spinnerModelY = new SpinnerNumberModel( centerPoint.getY(), 0.00, 1.0, 0.01 );
+        spinnerModelX = new SpinnerNumberModel( centerPoint.x, 0.00, 1.0, 0.01 );
+        spinnerModelY = new SpinnerNumberModel( centerPoint.y, 0.00, 1.0, 0.01 );
         // spinnerModelSpan = new SpinnerNumberModel( spanValue, 0.00, 1.0, 0.01 );
 
         xCenter = new JSpinner( spinnerModelX );

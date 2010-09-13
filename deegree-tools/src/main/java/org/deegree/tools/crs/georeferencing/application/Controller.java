@@ -107,11 +107,11 @@ import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.OpenWM
 import org.deegree.tools.crs.georeferencing.communication.dialog.menuitem.WMSParameterChooser;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GeneralPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel;
+import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.NavigationPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.OptionDialog;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.SettingsPanel;
 import org.deegree.tools.crs.georeferencing.communication.dialog.option.ViewPanel;
-import org.deegree.tools.crs.georeferencing.communication.dialog.option.GenericSettingsPanel.PanelType;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.AbstractPanel2D;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.BuildingFootprintPanel;
 import org.deegree.tools.crs.georeferencing.communication.panel2D.Scene2DPanel;
@@ -128,11 +128,11 @@ import org.deegree.tools.crs.georeferencing.model.exceptions.NumberException;
 import org.deegree.tools.crs.georeferencing.model.mouse.FootprintMouseModel;
 import org.deegree.tools.crs.georeferencing.model.mouse.GeoReferencedMouseModel;
 import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint;
+import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.deegree.tools.crs.georeferencing.model.points.FootprintPoint;
 import org.deegree.tools.crs.georeferencing.model.points.GeoReferencedPoint;
 import org.deegree.tools.crs.georeferencing.model.points.Point4Values;
 import org.deegree.tools.crs.georeferencing.model.points.PointResidual;
-import org.deegree.tools.crs.georeferencing.model.points.AbstractGRPoint.PointType;
 import org.deegree.tools.crs.georeferencing.model.textfield.AbstractCoordinateJumperModel;
 import org.deegree.tools.crs.georeferencing.model.textfield.CoordinateJumperModel;
 import org.deegree.tools.rendering.viewer.File3dImporter;
@@ -548,8 +548,7 @@ public class Controller {
                         conModel.getDialogModel().setSelectionPointSize( 10 );
                     } else if ( ( (JRadioButton) source ).getText().startsWith( ViewPanel.CUSTOM ) ) {
                         if ( !( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText().equals( "" ) ) {
-                            conModel.getDialogModel().setTextFieldKeyString(
-                                                                             ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
+                            conModel.getDialogModel().setTextFieldKeyString( ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText() );
                             int i;
                             try {
                                 i = Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second );
@@ -731,8 +730,7 @@ public class Controller {
                                     String textInput = ( (ViewPanel) optionSettingPanel ).getTextFieldCustom().getText();
                                     if ( AbstractCoordinateJumperModel.validateInt( textInput ) ) {
                                         conModel.getDialogModel().setTextFieldKeyString( textInput );
-                                        conModel.getDialogModel().setSelectionPointSize(
-                                                                                         Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second ) );
+                                        conModel.getDialogModel().setSelectionPointSize( Integer.parseInt( conModel.getDialogModel().getTextFieldKeyString().second ) );
                                         isRunIntoTrouble = false;
                                     } else {
                                         new ErrorDialog( optionDialog, JDialog.ERROR,
@@ -742,8 +740,7 @@ public class Controller {
 
                                 }
                             } else if ( optionSettingPanel instanceof GeneralPanel ) {
-                                String p = ( (GeneralPanel) optionSettingPanel ).getTextField(
-                                                                                               ( (GeneralPanel) optionSettingPanel ).getZoomValue() ).getText();
+                                String p = ( (GeneralPanel) optionSettingPanel ).getTextField( ( (GeneralPanel) optionSettingPanel ).getZoomValue() ).getText();
                                 String p1 = p.replace( ',', '.' );
                                 conModel.getDialogModel().setResizeValue( new Double( p1 ).doubleValue() );
                                 isRunIntoTrouble = false;
@@ -990,14 +987,14 @@ public class Controller {
         if ( row == rowPoints ) {
             if ( column == fcpx ) {
                 worldCoords = new FootprintPoint( new Double( data.toString() ).doubleValue(),
-                                                  p.first.getWorldCoords().getY() );
+                                                  p.first.getWorldCoords().y );
                 int[] i = sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new FootprintPoint( i[0], i[1] );
 
                 p.first = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.first.getRc() );
                 changed = true;
             } else if ( column == fcpy ) {
-                worldCoords = new FootprintPoint( p.first.getWorldCoords().getX(),
+                worldCoords = new FootprintPoint( p.first.getWorldCoords().x,
                                                   new Double( data.toString() ).doubleValue() );
                 int[] i = sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new FootprintPoint( i[0], i[1] );
@@ -1005,14 +1002,14 @@ public class Controller {
                 changed = true;
             } else if ( column == scpx ) {
                 worldCoords = new GeoReferencedPoint( new Double( data.toString() ).doubleValue(),
-                                                      p.second.getWorldCoords().getY() );
+                                                      p.second.getWorldCoords().y );
                 int[] i = sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new GeoReferencedPoint( i[0], i[1] );
 
                 p.second = new Point4Values( pixelValue, pixelValue, pixelValue, worldCoords, p.second.getRc() );
                 changed = true;
             } else if ( column == scpy ) {
-                worldCoords = new GeoReferencedPoint( p.second.getWorldCoords().getX(),
+                worldCoords = new GeoReferencedPoint( p.second.getWorldCoords().x,
                                                       new Double( data.toString() ).doubleValue() );
                 int[] i = sceneValues.getPixelCoord( worldCoords );
                 pixelValue = new GeoReferencedPoint( i[0], i[1] );
@@ -1164,12 +1161,12 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                     if ( model != null ) {
                         if ( isControlDown || isZoomInGeoref || isZoomOutGeoref ) {
-                            Point2d pointPressed = new Point2d( mouseGeoRef.getPointMousePressed().getX(),
-                                                                mouseGeoRef.getPointMousePressed().getY() );
+                            Point2d pointPressed = new Point2d( mouseGeoRef.getPointMousePressed().x,
+                                                                mouseGeoRef.getPointMousePressed().y );
                             Point2d pointReleased = new Point2d( m.getX(), m.getY() );
                             Point2d minPoint;
                             Point2d maxPoint;
-                            if ( pointPressed.getX() < pointReleased.getX() ) {
+                            if ( pointPressed.x < pointReleased.x ) {
                                 minPoint = pointPressed;
                                 maxPoint = pointReleased;
                             } else {
@@ -1178,20 +1175,16 @@ public class Controller {
                             }
 
                             if ( isZoomInGeoref ) {
-                                if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
-                                    sceneValues.computeZoomedEnvelope(
-                                                                       true,
+                                if ( minPoint.x == maxPoint.x && minPoint.y == maxPoint.y ) {
+                                    sceneValues.computeZoomedEnvelope( true,
                                                                        conModel.getDialogModel().getResizeValue().second,
-                                                                       new GeoReferencedPoint( minPoint.getX(),
-                                                                                               minPoint.getY() ) );
+                                                                       new GeoReferencedPoint( minPoint.x, minPoint.y ) );
                                 } else {
                                     Rectangle r = new Rectangle(
-                                                                 new Double( minPoint.getX() ).intValue(),
-                                                                 new Double( minPoint.getY() ).intValue(),
-                                                                 Math.abs( new Double( maxPoint.getX()
-                                                                                       - minPoint.getX() ).intValue() ),
-                                                                 Math.abs( new Double( maxPoint.getY()
-                                                                                       - minPoint.getY() ).intValue() ) );
+                                                                 new Double( minPoint.x ).intValue(),
+                                                                 new Double( minPoint.y ).intValue(),
+                                                                 Math.abs( new Double( maxPoint.x - minPoint.x ).intValue() ),
+                                                                 Math.abs( new Double( maxPoint.y - minPoint.y ).intValue() ) );
 
                                     sceneValues.createZoomedEnvWithMinPoint( PointType.GeoreferencedPoint, r );
 
@@ -1199,12 +1192,10 @@ public class Controller {
                             } else if ( isZoomOutGeoref ) {
                                 sceneValues.computeZoomedEnvelope( false,
                                                                    conModel.getDialogModel().getResizeValue().second,
-                                                                   new GeoReferencedPoint( maxPoint.getX(),
-                                                                                           maxPoint.getY() ) );
+                                                                   new GeoReferencedPoint( maxPoint.x, maxPoint.y ) );
                             }
 
-                            conModel.getPanel().setImageToDraw(
-                                                                model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                            conModel.getPanel().setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
                             conModel.getPanel().updatePoints( sceneValues );
                             conModel.getPanel().setZoomRect( null );
                             conModel.getPanel().repaint();
@@ -1241,12 +1232,11 @@ public class Controller {
                             } else {
                                 // just pan
                                 mouseGeoRef.setMouseChanging( new GeoReferencedPoint(
-                                                                                      ( mouseGeoRef.getPointMousePressed().getX() - m.getX() ),
-                                                                                      ( mouseGeoRef.getPointMousePressed().getY() - m.getY() ) ) );
+                                                                                      ( mouseGeoRef.getPointMousePressed().x - m.getX() ),
+                                                                                      ( mouseGeoRef.getPointMousePressed().y - m.getY() ) ) );
 
                                 sceneValues.moveEnvelope( mouseGeoRef.getMouseChanging() );
-                                conModel.getPanel().setImageToDraw(
-                                                                    model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                                conModel.getPanel().setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
                                 conModel.getPanel().updatePoints( sceneValues );
                             }
 
@@ -1259,12 +1249,12 @@ public class Controller {
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
 
                     if ( isControlDown || isZoomInFoot || isZoomOutFoot ) {
-                        Point2d pointPressed = new Point2d( mouseFootprint.getPointMousePressed().getX(),
-                                                            mouseFootprint.getPointMousePressed().getY() );
+                        Point2d pointPressed = new Point2d( mouseFootprint.getPointMousePressed().x,
+                                                            mouseFootprint.getPointMousePressed().y );
                         Point2d pointReleased = new Point2d( m.getX(), m.getY() );
                         Point2d minPoint;
                         Point2d maxPoint;
-                        if ( pointPressed.getX() < pointReleased.getX() ) {
+                        if ( pointPressed.x < pointReleased.x ) {
                             minPoint = pointPressed;
                             maxPoint = pointReleased;
                         } else {
@@ -1273,24 +1263,23 @@ public class Controller {
                         }
 
                         if ( isZoomInFoot ) {
-                            if ( minPoint.getX() == maxPoint.getX() && minPoint.getY() == maxPoint.getY() ) {
-                                sceneValues.computeZoomedEnvelope(
-                                                                   true,
+                            if ( minPoint.x == maxPoint.x && minPoint.y == maxPoint.y ) {
+                                sceneValues.computeZoomedEnvelope( true,
                                                                    conModel.getDialogModel().getResizeValue().second,
-                                                                   new FootprintPoint( minPoint.getX(), minPoint.getY() ) );
+                                                                   new FootprintPoint( minPoint.x, minPoint.y ) );
                             } else {
                                 Rectangle r = new Rectangle(
-                                                             new Double( minPoint.getX() ).intValue(),
-                                                             new Double( minPoint.getY() ).intValue(),
-                                                             Math.abs( new Double( maxPoint.getX() - minPoint.getX() ).intValue() ),
-                                                             Math.abs( new Double( maxPoint.getY() - minPoint.getY() ).intValue() ) );
+                                                             new Double( minPoint.x ).intValue(),
+                                                             new Double( minPoint.y ).intValue(),
+                                                             Math.abs( new Double( maxPoint.x - minPoint.x ).intValue() ),
+                                                             Math.abs( new Double( maxPoint.y - minPoint.y ).intValue() ) );
 
                                 sceneValues.createZoomedEnvWithMinPoint( PointType.FootprintPoint, r );
                             }
                         } else if ( isZoomOutFoot ) {
                             sceneValues.computeZoomedEnvelope( false,
                                                                conModel.getDialogModel().getResizeValue().second,
-                                                               new FootprintPoint( maxPoint.getX(), maxPoint.getY() ) );
+                                                               new FootprintPoint( maxPoint.x, maxPoint.y ) );
                         }
                         conModel.getFootPanel().setZoomRect( null );
                         conModel.getFootPanel().updatePoints( sceneValues );
@@ -1335,8 +1324,8 @@ public class Controller {
 
                         } else {
                             mouseFootprint.setMouseChanging( new FootprintPoint(
-                                                                                 ( mouseFootprint.getPointMousePressed().getX() - m.getX() ),
-                                                                                 ( mouseFootprint.getPointMousePressed().getY() - m.getY() ) ) );
+                                                                                 ( mouseFootprint.getPointMousePressed().x - m.getX() ),
+                                                                                 ( mouseFootprint.getPointMousePressed().y - m.getY() ) ) );
 
                             sceneValues.moveEnvelope( mouseFootprint.getMouseChanging() );
                             conModel.getFootPanel().updatePoints( sceneValues );
@@ -1369,7 +1358,7 @@ public class Controller {
 
         public void run() {
 
-            changePoint = new Point2d( changing.getX(), changing.getY() );
+            changePoint = new Point2d( changing.x, changing.y );
             System.out.println( "Threadchange: " + changePoint );
 
             // model.generatePredictedImage( changing );
@@ -1399,10 +1388,10 @@ public class Controller {
                 // Scene2DPanel
                 if ( ( (JPanel) source ).getName().equals( Scene2DPanel.SCENE2D_PANEL_NAME ) ) {
                     if ( m.isControlDown() || isZoomInGeoref ) {
-                        int x = new Double( mouseGeoRef.getPointMousePressed().getX() ).intValue();
-                        int y = new Double( mouseGeoRef.getPointMousePressed().getY() ).intValue();
-                        int width = new Double( m.getX() - mouseGeoRef.getPointMousePressed().getX() ).intValue();
-                        int height = new Double( m.getY() - mouseGeoRef.getPointMousePressed().getY() ).intValue();
+                        int x = new Double( mouseGeoRef.getPointMousePressed().x ).intValue();
+                        int y = new Double( mouseGeoRef.getPointMousePressed().y ).intValue();
+                        int width = new Double( m.getX() - mouseGeoRef.getPointMousePressed().x ).intValue();
+                        int height = new Double( m.getY() - mouseGeoRef.getPointMousePressed().y ).intValue();
                         Rectangle rec = new Rectangle( x, y, width, height );
                         conModel.getPanel().setZoomRect( rec );
                         conModel.getPanel().repaint();
@@ -1411,10 +1400,10 @@ public class Controller {
                 // footprintPanel
                 if ( ( (JPanel) source ).getName().equals( BuildingFootprintPanel.BUILDINGFOOTPRINT_PANEL_NAME ) ) {
                     if ( m.isControlDown() || isZoomInFoot ) {
-                        int x = new Double( mouseFootprint.getPointMousePressed().getX() ).intValue();
-                        int y = new Double( mouseFootprint.getPointMousePressed().getY() ).intValue();
-                        int width = new Double( m.getX() - mouseFootprint.getPointMousePressed().getX() ).intValue();
-                        int height = new Double( m.getY() - mouseFootprint.getPointMousePressed().getY() ).intValue();
+                        int x = new Double( mouseFootprint.getPointMousePressed().x ).intValue();
+                        int y = new Double( mouseFootprint.getPointMousePressed().y ).intValue();
+                        int width = new Double( m.getX() - mouseFootprint.getPointMousePressed().x ).intValue();
+                        int height = new Double( m.getY() - mouseFootprint.getPointMousePressed().y ).intValue();
                         Rectangle rec = new Rectangle( x, y, width, height );
                         conModel.getFootPanel().setZoomRect( rec );
                         conModel.getFootPanel().repaint();
@@ -1482,8 +1471,7 @@ public class Controller {
                         }
                         sceneValues.computeZoomedEnvelope( zoomIn, conModel.getDialogModel().getResizeValue().second,
                                                            mouseOver );
-                        conModel.getPanel().setImageToDraw(
-                                                            model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
+                        conModel.getPanel().setImageToDraw( model.generateSubImageFromRaster( sceneValues.getEnvelopeGeoref() ) );
                         conModel.getPanel().updatePoints( sceneValues );
                         conModel.getPanel().repaint();
                     }
@@ -1640,10 +1628,10 @@ public class Controller {
             int counter = 0;
             for ( Triple<Point4Values, Point4Values, PointResidual> point : mappedPoints ) {
                 Vector element = new Vector( 6 );
-                element.add( point.second.getWorldCoords().getX() );
-                element.add( point.second.getWorldCoords().getY() );
-                element.add( point.first.getWorldCoords().getX() );
-                element.add( point.first.getWorldCoords().getY() );
+                element.add( point.second.getWorldCoords().x );
+                element.add( point.second.getWorldCoords().y );
+                element.add( point.first.getWorldCoords().x );
+                element.add( point.first.getWorldCoords().y );
                 element.add( r[counter].getX() );
                 element.add( r[counter].getY() );
                 data.add( element );

@@ -98,8 +98,8 @@ public class Scene2DPanel extends AbstractPanel2D {
         }
 
         if ( zoomRect != null ) {
-            int x = new Double( zoomRect.getX() ).intValue();
-            int y = new Double( zoomRect.getY() ).intValue();
+            int x = new Double( zoomRect.x ).intValue();
+            int y = new Double( zoomRect.y ).intValue();
             int width = new Double( zoomRect.getWidth() ).intValue();
             int height = new Double( zoomRect.getHeight() ).intValue();
 
@@ -107,8 +107,8 @@ public class Scene2DPanel extends AbstractPanel2D {
         }
 
         if ( lastAbstractPoint != null ) {
-            g2.fillOval( new Double( lastAbstractPoint.getNewValue().getX() ).intValue() - selectedPointSize,
-                         new Double( lastAbstractPoint.getNewValue().getY() ).intValue() - selectedPointSize,
+            g2.fillOval( new Double( lastAbstractPoint.getNewValue().x ).intValue() - selectedPointSize,
+                         new Double( lastAbstractPoint.getNewValue().y ).intValue() - selectedPointSize,
                          selectedPointSize * 2, selectedPointSize * 2 );
         }
 
@@ -122,8 +122,8 @@ public class Scene2DPanel extends AbstractPanel2D {
 
         if ( selectedPoints != null ) {
             for ( Point4Values point : selectedPoints ) {
-                g2.fillOval( new Double( point.getNewValue().getX() ).intValue() - selectedPointSize,
-                             new Double( point.getNewValue().getY() ).intValue() - selectedPointSize,
+                g2.fillOval( new Double( point.getNewValue().x ).intValue() - selectedPointSize,
+                             new Double( point.getNewValue().y ).intValue() - selectedPointSize,
                              selectedPointSize * 2, selectedPointSize * 2 );
             }
         }
