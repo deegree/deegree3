@@ -327,7 +327,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
                 for ( int i = 0; i < jtsMultiPoint.getNumGeometries(); i++ ) {
                     members.add( (Point) createFromJTS( jtsMultiPoint.getGeometryN( i ) ) );
                 }
-                geom = new DefaultMultiPoint( id, crs, pm, members );
+                geom = new DefaultMultiPoint( null, crs, pm, members );
             }
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiLineString ) {
             com.vividsolutions.jts.geom.MultiLineString jtsMultiLineString = (com.vividsolutions.jts.geom.MultiLineString) jtsGeom;
@@ -337,7 +337,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
                     Curve curve = (Curve) createFromJTS( jtsMultiLineString.getGeometryN( i ) );
                     members.add( curve.getAsLineString() );
                 }
-                geom = new DefaultMultiLineString( id, crs, pm, members );
+                geom = new DefaultMultiLineString( null, crs, pm, members );
             }
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiPolygon ) {
             com.vividsolutions.jts.geom.MultiPolygon jtsMultiPolygon = (com.vividsolutions.jts.geom.MultiPolygon) jtsGeom;
@@ -346,7 +346,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
                 for ( int i = 0; i < jtsMultiPolygon.getNumGeometries(); i++ ) {
                     members.add( (Polygon) createFromJTS( jtsMultiPolygon.getGeometryN( i ) ) );
                 }
-                geom = new DefaultMultiPolygon( id, crs, pm, members );
+                geom = new DefaultMultiPolygon( null, crs, pm, members );
             }
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.GeometryCollection ) {
             com.vividsolutions.jts.geom.GeometryCollection jtsGeometryCollection = (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom;
@@ -355,7 +355,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
                 for ( int i = 0; i < jtsGeometryCollection.getNumGeometries(); i++ ) {
                     members.add( createFromJTS( jtsGeometryCollection.getGeometryN( i ) ) );
                 }
-                geom = new DefaultMultiGeometry( id, crs, pm, members );
+                geom = new DefaultMultiGeometry( null, crs, pm, members );
             }
         } else {
             throw new RuntimeException( "Internal error. Encountered unhandled JTS geometry type '"
