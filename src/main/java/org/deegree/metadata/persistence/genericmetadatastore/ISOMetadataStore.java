@@ -81,7 +81,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.persistence.mapping.DBField;
@@ -1246,11 +1245,11 @@ public class ISOMetadataStore implements MetadataStore {
      */
     private void writeResultSet( ResultSet resultSet, XMLStreamWriter writer, int columnIndex )
                             throws SQLException {
-        boolean idIsMatching = false;
+        // boolean idIsMatching = false;
         InputStreamReader isr = null;
         Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
         while ( resultSet.next() ) {
-            idIsMatching = true;
+            // idIsMatching = true;
 
             BufferedInputStream bais = new BufferedInputStream( resultSet.getBinaryStream( columnIndex ) );
 
@@ -1265,10 +1264,10 @@ public class ISOMetadataStore implements MetadataStore {
 
         }
 
-        if ( idIsMatching == false ) {
-
-            throw new InvalidParameterValueException();
-        }
+        // if ( idIsMatching == false ) {
+        //
+        // throw new InvalidParameterValueException();
+        // }
 
     }
 
