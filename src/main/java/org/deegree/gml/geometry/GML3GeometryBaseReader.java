@@ -131,12 +131,16 @@ class GML3GeometryBaseReader {
             try {
                 coordDim = crs.getWrappedCRS().getDimension();
             } catch ( UnknownCRSException e ) {
-                LOG.debug( "Trying to determine dimension of CRS: " + e.getLocalizedMessage(), e );
+                if ( LOG.isDebugEnabled() ) {
+                    LOG.debug( "Trying to determine dimension of CRS: " + e.getLocalizedMessage(), e );
+                }
             }
         }
         if ( coordDim == -1 ) {
-            LOG.debug( "Parsing posList, but not coordinate dimension information from CRS available. Defaulting to "
-                       + defaultCoordDim );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "Parsing posList, but not coordinate dimension information from CRS available. Defaulting to "
+                           + defaultCoordDim );
+            }
             coordDim = defaultCoordDim;
         }
 

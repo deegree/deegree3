@@ -162,8 +162,6 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
     CurveSegment parseCurveSegment( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        LOG.debug( " - parsing gml:_CurveSegment (begin): " + xmlStream.getCurrentEventInfo() );
-
         CurveSegment segment = null;
 
         if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
@@ -209,7 +207,6 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        LOG.debug( " - parsing gml:_CurveSegment (end): " + xmlStream.getCurrentEventInfo() );
         return segment;
     }
 

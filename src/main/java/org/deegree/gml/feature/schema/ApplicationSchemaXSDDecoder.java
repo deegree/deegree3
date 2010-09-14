@@ -248,6 +248,7 @@ public class ApplicationSchemaXSDDecoder {
                 ftNameToFt.put( ftName, ft );
             }
         }
+
         // resolveFtReferences();
 
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
@@ -272,6 +273,7 @@ public class ApplicationSchemaXSDDecoder {
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {
+
         QName ftName = createQName( featureElementDecl.getNamespace(), featureElementDecl.getName() );
         LOG.debug( "Building feature type declaration: '" + ftName + "'" );
 
@@ -423,6 +425,7 @@ public class ApplicationSchemaXSDDecoder {
     }
 
     private PropertyType buildPropertyType( XSElementDeclaration elementDecl, int minOccurs, int maxOccurs ) {
+
         PropertyType pt = null;
         QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "*** Found property declaration: '" + elementDecl.getName() + "'." );
@@ -534,7 +537,8 @@ public class ApplicationSchemaXSDDecoder {
             NamespaceContext nsContext = new NamespaceContext();
             nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
             nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
-            codeListId = adapter.getNodeAsString( adapter.getRootElement(),
+            codeListId = adapter.getNodeAsString(
+                                                  adapter.getRootElement(),
                                                   new XPath( "xs:appinfo/adv:referenzierteCodeList/text()", nsContext ),
                                                   null );
             if ( codeListId != null ) {
@@ -560,19 +564,32 @@ public class ApplicationSchemaXSDDecoder {
 
         QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "Checking if element declaration '" + ptName + "' defines a feature property type." );
+        FeaturePropertyType pt = null;
 
-        FeaturePropertyType pt = buildFeaturePropertyTypeXGml( elementDecl, typeDef, minOccurs, maxOccurs,
-                                                               ptSubstitutions );
-        if ( pt != null ) {
-            return pt;
+        XMLAdapter annotationXML = null;
+        XSObjectList annotations = elementDecl.getAnnotations();
+        if ( annotations.getLength() > 0 ) {
+            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
+            String s = annotation.getAnnotationString();
+            annotationXML = new XMLAdapter( new StringReader( s ) );
         }
-        pt = buildFeaturePropertyTypeAdv( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
-        if ( pt != null ) {
-            return pt;
-        }
-        pt = buildFeaturePropertyTypeGML32( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
-        if ( pt != null ) {
-            return pt;
+
+        if ( annotationXML != null ) {
+            pt = buildFeaturePropertyTypeGML32( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions,
+                                                annotationXML );
+            if ( pt != null ) {
+                return pt;
+            }
+            pt = buildFeaturePropertyTypeXGml( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions,
+                                               annotationXML );
+            if ( pt != null ) {
+                return pt;
+            }
+            pt = buildFeaturePropertyTypeAdv( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions,
+                                              annotationXML );
+            if ( pt != null ) {
+                return pt;
+            }
         }
 
         boolean allowsXLink = allowsXLink( typeDef );
@@ -692,88 +709,76 @@ public class ApplicationSchemaXSDDecoder {
 
     private FeaturePropertyType buildFeaturePropertyTypeXGml( XSElementDeclaration elementDecl,
                                                               XSComplexTypeDefinition typeDef, int minOccurs,
-                                                              int maxOccurs, List<PropertyType> ptSubstitutions ) {
+                                                              int maxOccurs, List<PropertyType> ptSubstitutions,
+                                                              XMLAdapter annotationXML ) {
+
         // handle schemas that use a source="urn:x-gml:targetElement" attribute
         // for defining the referenced feature type
         // inside the annotation element (e.g. CITE examples for WFS 1.1.0)
-        XSObjectList annotations = elementDecl.getAnnotations();
-        if ( annotations.getLength() > 0 ) {
-            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
-            String s = annotation.getAnnotationString();
-            XMLAdapter adapter = new XMLAdapter( new StringReader( s ) );
-            NamespaceContext nsContext = new NamespaceContext();
-            nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
-            QName refElement = adapter.getNodeAsQName( adapter.getRootElement(),
-                                                       new XPath(
-                                                                  "xs:appinfo[@source='urn:x-gml:targetElement']/text()",
-                                                                  nsContext ), null );
-            if ( refElement != null ) {
-                LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
-                QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-                FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                                  elementDecl.getAbstract(), ptSubstitutions,
-                                                                  ValueRepresentation.BOTH );
-                featurePropertyTypes.add( pt );
-                return pt;
-            }
+        NamespaceContext nsContext = new NamespaceContext();
+        nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+        QName refElement = annotationXML.getNodeAsQName(
+                                                         annotationXML.getRootElement(),
+                                                         new XPath(
+                                                                    "xs:appinfo[@source='urn:x-gml:targetElement']/text()",
+                                                                    nsContext ), null );
+        if ( refElement != null ) {
+            LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
+            QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
+            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
+                                                              elementDecl.getAbstract(), ptSubstitutions,
+                                                              ValueRepresentation.BOTH );
+            featurePropertyTypes.add( pt );
+            return pt;
         }
         return null;
     }
 
     private FeaturePropertyType buildFeaturePropertyTypeAdv( XSElementDeclaration elementDecl,
                                                              XSComplexTypeDefinition typeDef, int minOccurs,
-                                                             int maxOccurs, List<PropertyType> ptSubstitutions ) {
+                                                             int maxOccurs, List<PropertyType> ptSubstitutions,
+                                                             XMLAdapter annotationXML ) {
+
         // handle adv schemas (referenced feature type inside annotation
         // element)
-        XSObjectList annotations = elementDecl.getAnnotations();
-        if ( annotations.getLength() > 0 ) {
-            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
-            String s = annotation.getAnnotationString();
-            XMLAdapter adapter = new XMLAdapter( new StringReader( s ) );
-            NamespaceContext nsContext = new NamespaceContext();
-            nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
-            nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
-            QName refElement = adapter.getNodeAsQName( adapter.getRootElement(),
-                                                       new XPath( "xs:appinfo/adv:referenziertesElement/text()",
-                                                                  nsContext ), null );
-            if ( refElement != null ) {
-                LOG.trace( "Identified a feature property (adv style)." );
-                QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-                FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                                  elementDecl.getAbstract(), ptSubstitutions,
-                                                                  ValueRepresentation.BOTH );
-                featurePropertyTypes.add( pt );
-                return pt;
-            }
+        NamespaceContext nsContext = new NamespaceContext();
+        nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+        nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
+        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
+                                                         new XPath( "xs:appinfo/adv:referenziertesElement/text()",
+                                                                    nsContext ), null );
+        if ( refElement != null ) {
+            LOG.trace( "Identified a feature property (adv style)." );
+            QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
+            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
+                                                              elementDecl.getAbstract(), ptSubstitutions,
+                                                              ValueRepresentation.BOTH );
+            featurePropertyTypes.add( pt );
+            return pt;
         }
         return null;
     }
 
     private FeaturePropertyType buildFeaturePropertyTypeGML32( XSElementDeclaration elementDecl,
                                                                XSComplexTypeDefinition typeDef, int minOccurs,
-                                                               int maxOccurs, List<PropertyType> ptSubstitutions ) {
+                                                               int maxOccurs, List<PropertyType> ptSubstitutions,
+                                                               XMLAdapter annotationXML ) {
         // handle GML 3.2 schemas (referenced feature type inside annotation
         // element)
-        XSObjectList annotations = elementDecl.getAnnotations();
-        if ( annotations.getLength() > 0 ) {
-            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
-            String s = annotation.getAnnotationString();
-            XMLAdapter adapter = new XMLAdapter( new StringReader( s ) );
-            NamespaceContext nsContext = new NamespaceContext();
-            nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
-            nsContext.addNamespace( "gml", gmlNs );
-            QName refElement = adapter.getNodeAsQName( adapter.getRootElement(),
-                                                       new XPath( "xs:appinfo/gml:targetElement/text()", nsContext ),
-                                                       null );
-            if ( refElement != null ) {
-                LOG.trace( "Identified a feature property (GML 3.2 style)." );
-                QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-                FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                                  elementDecl.getAbstract(), ptSubstitutions,
-                                                                  ValueRepresentation.REMOTE );
-                featurePropertyTypes.add( pt );
-                return pt;
-            }
+        NamespaceContext nsContext = new NamespaceContext();
+        nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+        nsContext.addNamespace( "gml", gmlNs );
+        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
+                                                         new XPath( "xs:appinfo/gml:targetElement/text()", nsContext ),
+                                                         null );
+        if ( refElement != null ) {
+            LOG.trace( "Identified a feature property (GML 3.2 style)." );
+            QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
+            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
+                                                              elementDecl.getAbstract(), ptSubstitutions,
+                                                              ValueRepresentation.REMOTE );
+            featurePropertyTypes.add( pt );
+            return pt;
         }
         return null;
     }

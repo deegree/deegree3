@@ -37,6 +37,7 @@ package org.deegree.gml.schema;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.xerces.impl.xs.XSComplexTypeDecl;
 import org.apache.xerces.xs.XSConstants;
@@ -113,6 +114,22 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
 
     private XSTypeDefinition abstractFeatureElementTypeDecl;
 
+    private List<XSElementDeclaration> ftDecls;
+
+    private List<XSElementDeclaration> concreteFtDecls;
+
+    private List<XSElementDeclaration> fcDecls;
+
+    private List<XSElementDeclaration> concreteFcDecls;
+
+    private Map<String, List<XSElementDeclaration>> nsToFtDecls;
+
+    private Map<String, List<XSElementDeclaration>> nsToConcreteFtDecls;
+
+    private Map<String, List<XSElementDeclaration>> nsToFcDecls;
+
+    private Map<String, List<XSElementDeclaration>> nsToConcreteFcDecls;
+
     /**
      * Creates a new {@link GMLSchemaAnalyzer} instance for the given GML version and using the specified schemas.
      * 
@@ -168,6 +185,42 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
             break;
         }
         }
+
+        this.ftDecls = getSubstitutions( abstractFeatureElementDecl, null, true, false );
+
+        switch ( version ) {
+        case GML_2:
+        case GML_30:
+        case GML_31: {
+            // TODO do this the right way
+            fcDecls = new ArrayList<XSElementDeclaration>();
+            if ( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ) != null ) {
+                fcDecls.addAll( getSubstitutions(
+                                                  xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ),
+                                                  null, true, false ) );
+            }
+            if ( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ) != null ) {
+                fcDecls.addAll( getSubstitutions(
+                                                  xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ),
+                                                  null, true, false ) );
+            }
+
+            break;
+        }
+        case GML_32:
+            List<XSElementDeclaration> featureDecls = getFeatureElementDeclarations( null, false );
+            fcDecls = new ArrayList<XSElementDeclaration>();
+            for ( XSElementDeclaration featureDecl : featureDecls ) {
+                if ( isGML32FeatureCollection( featureDecl ) ) {
+                    fcDecls.add( featureDecl );
+                }
+            }
+            break;
+        }
+    }
+
+    private void collectFtDecls() {
+        this.ftDecls = getSubstitutions( abstractFeatureElementDecl, null, true, false );
     }
 
     /**
@@ -244,7 +297,15 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
     }
 
     public List<XSElementDeclaration> getFeatureElementDeclarations( String namespace, boolean onlyConcrete ) {
-        return getSubstitutions( abstractFeatureElementDecl, namespace, true, onlyConcrete );
+        List<XSElementDeclaration> ftDecls = new ArrayList<XSElementDeclaration>();
+        for ( XSElementDeclaration ftDecl : this.ftDecls ) {
+            if (!ftDecl.getAbstract() || !onlyConcrete) {
+                if (namespace == null || ftDecl.getNamespace().equals( namespace )) {
+                    ftDecls.add (ftDecl);
+                }
+            }
+        }
+        return ftDecls;
     }
 
     public List<XSTypeDefinition> getFeatureTypeDefinitions( String namespace, boolean onlyConcrete ) {
@@ -252,36 +313,13 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
     }
 
     public List<XSElementDeclaration> getFeatureCollectionElementDeclarations( String namespace, boolean onlyConcrete ) {
-        List<XSElementDeclaration> fcDecls = null;
-
-        switch ( version ) {
-        case GML_2:
-        case GML_30:
-        case GML_31: {
-            // TODO do this the right way
-            fcDecls = new ArrayList<XSElementDeclaration>();
-            if ( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ) != null ) {
-                fcDecls.addAll( getSubstitutions(
-                                                  xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ),
-                                                  namespace, true, onlyConcrete ) );
-            }
-            if ( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ) != null ) {
-                fcDecls.addAll( getSubstitutions(
-                                                  xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ),
-                                                  namespace, true, onlyConcrete ) );
-            }
-
-            break;
-        }
-        case GML_32:
-            List<XSElementDeclaration> featureDecls = getFeatureElementDeclarations( namespace, onlyConcrete );
-            fcDecls = new ArrayList<XSElementDeclaration>();
-            for ( XSElementDeclaration featureDecl : featureDecls ) {
-                if ( isGML32FeatureCollection( featureDecl ) ) {
-                    fcDecls.add( featureDecl );
+        List<XSElementDeclaration> fcDecls = new ArrayList<XSElementDeclaration>();
+        for ( XSElementDeclaration fcDecl : this.fcDecls ) {
+            if (!fcDecl.getAbstract() || !onlyConcrete) {
+                if (namespace == null || fcDecl.getNamespace().equals( namespace )) {
+                    fcDecls.add (fcDecl);
                 }
             }
-            break;
         }
         return fcDecls;
     }
