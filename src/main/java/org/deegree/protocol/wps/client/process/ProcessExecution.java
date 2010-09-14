@@ -345,7 +345,7 @@ public class ProcessExecution extends AbstractProcessExecution {
             is.close();
             os.close();
         } else {
-            XMLStreamWriter writer = outFactory.createXMLStreamWriter( os );
+            XMLStreamWriter writer = outFactory.createXMLStreamWriter( os, "UTF-8" );
             ExecuteRequest100Writer executer = new ExecuteRequest100Writer( writer );
             executer.write100( process.getId(), inputs, responseFormat );
             writer.close();

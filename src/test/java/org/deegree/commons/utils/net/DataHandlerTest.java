@@ -100,10 +100,10 @@ public class DataHandlerTest extends TestCase {
     /**
      * @throws IOException
      */
-    public void testNoEncoding()
-                            throws IOException {
-        assertEquals( retrieveAll( new DURL( "data:text/plain;charset=utf-8,mytest%c3%a1accent" ) ), "mytestáaccent" );
-    }
+//    public void testNoEncoding()
+//                            throws IOException {
+//        assertEquals( retrieveAll( new DURL( "data:text/plain;charset=utf-8,mytest%c3%a1accent" ) ), "mytestáaccent" );
+//    }
 
     /**
      * @throws IOException
