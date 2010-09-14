@@ -33,8 +33,51 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(title = "record subsystem", debug = "placeholder to enable quick debugging, please describe further")
-package org.deegree.record;
+package org.deegree.record.publication;
 
-import org.deegree.commons.utils.log.PackageLoggingNotes;
+import org.deegree.filter.expression.PropertyName;
 
+/**
+ * To specify individual property values to be updated.
+ * 
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author last edited by: $Author: thomas $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+public class MetadataProperty {
+
+    private PropertyName propertyName;
+
+    private Object replacementValue;
+
+    /**
+     * To specify individual property values to be updated.
+     * 
+     * @param propertyName
+     *            can be a string or an XPath-expression [1..1]
+     * @param replacementValue
+     *            can be anyType [0..1]
+     */
+    public MetadataProperty( PropertyName propertyName, Object replacementValue ) {
+        this.propertyName = propertyName;
+        this.replacementValue = replacementValue;
+    }
+
+    /**
+     * 
+     * @return the propertyName element contains the name of a property to be updated. The name may be a path
+     *         expression.
+     */
+    public PropertyName getPropertyName() {
+        return propertyName;
+    }
+
+    /**
+     * @return the replacementValue element contains the replacement value for the named property.
+     */
+    public Object getReplacementValue() {
+        return replacementValue;
+    }
+
+}

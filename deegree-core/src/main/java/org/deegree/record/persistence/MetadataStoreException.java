@@ -45,43 +45,43 @@ package org.deegree.record.persistence;
  * 
  * @version $Revision: 18942 $, $Date: 2009-08-05 19:16:43 +0200 (Mi, 05 Aug 2009) $
  */
-public class RecordStoreException extends Exception {
+public class MetadataStoreException extends Exception {
 
     private static final long serialVersionUID = -8171919093492328054L;
 
     /**
-     * Creates a new {@link RecordStoreException} without detail message.
+     * Creates a new {@link MetadataStoreException} without detail message.
      */
-    public RecordStoreException() {
+    public MetadataStoreException() {
         super();
     }
 
     /**
-     * Creates a new {@link RecordStoreException} with detail message.
+     * Creates a new {@link MetadataStoreException} with detail message.
      * 
      * @param message
      *            detail message
      */
-    public RecordStoreException( String message ) {
+    public MetadataStoreException( String message ) {
         super( message );
     }
 
     /**
-     * Creates a new {@link RecordStoreException} which wraps the causing exception.
+     * Creates a new {@link MetadataStoreException} which wraps the causing exception.
      * 
      * @param cause
      */
-    public RecordStoreException( Throwable cause ) {
+    public MetadataStoreException( Throwable cause ) {
         super( cause );
     }
 
     /**
-     * Creates a new {@link RecordStoreException} which wraps the causing exception and provides a detail message.
+     * Creates a new {@link MetadataStoreException} which wraps the causing exception and provides a detail message.
      * 
      * @param message
      * @param cause
      */
-    public RecordStoreException( String message, Throwable cause ) {
+    public MetadataStoreException( String message, Throwable cause ) {
         super( message, cause );
     }
 }

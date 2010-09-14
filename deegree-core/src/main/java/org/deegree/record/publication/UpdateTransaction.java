@@ -59,7 +59,7 @@ public class UpdateTransaction extends TransactionOperation {
 
     private Filter constraint;
 
-    private List<RecordProperty> recordProperty;
+    private List<MetadataProperty> recordProperty;
 
     /**
      * Creates a new {@link UpdateTransaction} instance.
@@ -71,7 +71,7 @@ public class UpdateTransaction extends TransactionOperation {
      * @param recordProperty
      */
     public UpdateTransaction( String handle, OMElement element, QName typeName, Filter constraint,
-                              List<RecordProperty> recordProperty ) {
+                              List<MetadataProperty> recordProperty ) {
         super( handle );
         this.element = element;
         this.typeName = typeName;
@@ -100,7 +100,7 @@ public class UpdateTransaction extends TransactionOperation {
     /**
      * @return the recordProperty
      */
-    public List<RecordProperty> getRecordProperty() {
+    public List<MetadataProperty> getRecordProperty() {
         return recordProperty;
     }
 
