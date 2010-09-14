@@ -48,7 +48,7 @@ import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.observation.persistence.ObservationStoreManager;
-import org.deegree.record.persistence.RecordStoreManager;
+import org.deegree.record.persistence.MetadataStoreManager;
 import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.slf4j.Logger;
@@ -216,8 +216,8 @@ public class DeegreeWorkspace {
         FeatureStoreManager.init( new File( dir, "datasources" + separator + "feature" ) );
         currentAction = Actions.CoverageManager;
         getCoverageBuilderManager().init();
-        currentAction = Actions.RecordManager;
-        RecordStoreManager.init( new File( dir, "datasources" + separator + "record" ) );
+        currentAction = Actions.MetadataManager;
+        MetadataStoreManager.init( new File( dir, "datasources" + separator + "metadata" ) );
         currentAction = Actions.RenderableManager;
         RenderableStoreManager.init( new File( dir, "datasources" + separator + "renderable" ) );
         currentAction = Actions.BatchedMTManager;
@@ -247,7 +247,7 @@ public class DeegreeWorkspace {
         ObservationManager, /***/
         FeatureManager, /***/
         CoverageManager, /***/
-        RecordManager, /***/
+        MetadataManager, /***/
         RenderableManager, /***/
         BatchedMTManager, /***/
         Inited
