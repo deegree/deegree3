@@ -59,7 +59,7 @@ import org.deegree.protocol.csw.CSWConstants.TransactionType;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
-import org.deegree.record.publication.RecordProperty;
+import org.deegree.record.publication.MetadataProperty;
 import org.deegree.record.publication.TransactionOperation;
 import org.deegree.record.publication.UpdateTransaction;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
@@ -187,22 +187,22 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
             case UPDATE:
 
                 OMElement transChildElementUpdate = null;
-                List<RecordProperty> recordProperties = null;
+                List<MetadataProperty> recordProperties = null;
                 Filter constraintUpdate = null;
                 List<OMElement> recordPropertyElements = getElements( transChildElement,
                                                                       new XPath( "//csw:RecordProperty", nsContext ) );
 
                 if ( recordPropertyElements.size() != 0 ) {
 
-                    RecordProperty recordProperty = null;
-                    recordProperties = new ArrayList<RecordProperty>();
+                    MetadataProperty recordProperty = null;
+                    recordProperties = new ArrayList<MetadataProperty>();
                     for ( OMElement recordPropertyElement : recordPropertyElements ) {
                         QName name = getRequiredNodeAsQName( recordPropertyElement, new XPath( "Name", nsContext ) );
                         // String name = getRequiredNodeAsString( recordPropertyElement, new XPath( "Name", nsContext )
                         // );
                         String value = getNodeAsString( recordPropertyElement, new XPath( "Value", nsContext ), null );
 
-                        recordProperty = new RecordProperty( new PropertyName( name ), new Literal( value ) );
+                        recordProperty = new MetadataProperty( new PropertyName( name ), new Literal( value ) );
                         recordProperties.add( recordProperty );
                     }
 

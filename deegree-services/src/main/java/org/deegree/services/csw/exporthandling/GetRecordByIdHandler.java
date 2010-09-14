@@ -49,7 +49,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
-import org.deegree.record.persistence.RecordStore;
+import org.deegree.record.persistence.MetadataStore;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
@@ -71,7 +71,7 @@ public class GetRecordByIdHandler {
     private CSWService service;
 
     /**
-     * Creates a new {@link GetRecordByIdHandler} instance that uses the given service to lookup the {@link RecordStore}
+     * Creates a new {@link GetRecordByIdHandler} instance that uses the given service to lookup the {@link MetadataStore}
      * s.
      * 
      * @param service
@@ -155,7 +155,7 @@ public class GetRecordByIdHandler {
 
         if ( service.getRecordStore() != null ) {
             try {
-                for ( RecordStore rec : service.getRecordStore() ) {
+                for ( MetadataStore rec : service.getRecordStore() ) {
                     rec.getRecordById( writer, getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
                                        getRecBI.getElementSetName() );
                 }

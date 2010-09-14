@@ -57,8 +57,8 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
-import org.deegree.record.persistence.RecordStore;
-import org.deegree.record.persistence.genericrecordstore.ISORecordStore;
+import org.deegree.record.persistence.MetadataStore;
+import org.deegree.record.persistence.genericmetadatastore.ISOMetadataStore;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -88,13 +88,13 @@ public class DescribeRecordHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( DescribeRecordHandler.class );
 
-    private static Map<QName, RecordStore> requestedTypeNames;
+    private static Map<QName, MetadataStore> requestedTypeNames;
 
     private CSWService service;
 
     /**
      * Creates a new {@link DescribeRecordHandler} instance that uses the given service to lookup the
-     * {@link RecordStore}s.
+     * {@link MetadataStore}s.
      * 
      * @param service
      */
@@ -117,7 +117,7 @@ public class DescribeRecordHandler {
     public void doDescribeRecord( DescribeRecord descRec, HttpResponseBuffer response, boolean isSoap )
                             throws XMLStreamException, IOException, OWSException {
 
-        Set<RecordStore> rec = determineRequestedRecordStore( descRec );
+        Set<MetadataStore> rec = determineRequestedRecordStore( descRec );
 
         if ( rec.size() == 0 ) {
             throw new OWSException( Messages.get( "CSW_NO_RECORDSTORE_DEFINED" ),
@@ -141,23 +141,23 @@ public class DescribeRecordHandler {
      * 
      * @param descRec
      *            the parsed describeRecord request
-     * @return a set of {@link RecordStore}s
+     * @return a set of {@link MetadataStore}s
      */
-    private Set<RecordStore> determineRequestedRecordStore( DescribeRecord descRec ) {
+    private Set<MetadataStore> determineRequestedRecordStore( DescribeRecord descRec ) {
 
-        Set<RecordStore> rss = new HashSet<RecordStore>();
-        requestedTypeNames = new HashMap<QName, RecordStore>();
+        Set<MetadataStore> rss = new HashSet<MetadataStore>();
+        requestedTypeNames = new HashMap<QName, MetadataStore>();
 
         if ( descRec.getTypeNames() == null || descRec.getTypeNames().length == 0 ) {
             LOG.debug( "Describing all served records." );
             rss.addAll( service.getRecordStore() );
-            for ( RecordStore rs : rss ) {
+            for ( MetadataStore rs : rss ) {
                 /*
                  * TODO remove Dirty HACK! problem: the architecture is based on the fact that records can be identified
                  * by their typeNames. If DescribeRecord doesn't use typeNames in the request, there should be all the
                  * records in the response
                  */
-                if ( rs instanceof ISORecordStore ) {
+                if ( rs instanceof ISOMetadataStore ) {
                     requestedTypeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, CSW_PREFIX ), rs );
                     requestedTypeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), rs );
                 }
@@ -192,7 +192,7 @@ public class DescribeRecordHandler {
      *            the recordStore that is requested
      * @throws XMLStreamException
      */
-    private static void export( XMLStreamWriter writer, RecordStore record, Version version, boolean isSoap )
+    private static void export( XMLStreamWriter writer, MetadataStore record, Version version, boolean isSoap )
                             throws XMLStreamException {
 
         if ( VERSION_202.equals( version ) ) {
@@ -211,7 +211,7 @@ public class DescribeRecordHandler {
      * @param record
      * @throws XMLStreamException
      */
-    private static void export202( XMLStreamWriter writer, RecordStore record, boolean isSoap )
+    private static void export202( XMLStreamWriter writer, MetadataStore record, boolean isSoap )
                             throws XMLStreamException {
 
         writer.setDefaultNamespace( CSW_202_NS );
@@ -235,10 +235,10 @@ public class DescribeRecordHandler {
      * @param writer
      * @param record
      * @param typeName
-     *            that corresponds to the requested {@link RecordStore}
+     *            that corresponds to the requested {@link MetadataStore}
      * @throws XMLStreamException
      */
-    private static void exportSchemaComponent( XMLStreamWriter writer, RecordStore record, QName typeName )
+    private static void exportSchemaComponent( XMLStreamWriter writer, MetadataStore record, QName typeName )
                             throws XMLStreamException {
 
         writer.writeStartElement( CSW_202_NS, "SchemaComponent" );

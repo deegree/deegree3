@@ -66,7 +66,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.record.persistence.RecordStore;
+import org.deegree.record.persistence.MetadataStore;
 import org.deegree.record.persistence.RecordStoreOptions;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
@@ -90,12 +90,12 @@ public class GetRecordsHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( GetRecordsHandler.class );
 
-    private static Map<QName, RecordStore> requestedTypeNames;
+    private static Map<QName, MetadataStore> requestedTypeNames;
 
     private CSWService service;
 
     /**
-     * Creates a new {@link GetRecordsHandler} instance that uses the given service to lookup the {@link RecordStore} s.
+     * Creates a new {@link GetRecordsHandler} instance that uses the given service to lookup the {@link MetadataStore} s.
      * 
      * @param service
      */
@@ -234,7 +234,7 @@ public class GetRecordsHandler {
     private void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version )
                             throws XMLStreamException, SQLException {
 
-        requestedTypeNames = new HashMap<QName, RecordStore>();
+        requestedTypeNames = new HashMap<QName, MetadataStore>();
 
         if ( VERSION_202.equals( version ) ) {
 
@@ -254,7 +254,7 @@ public class GetRecordsHandler {
 
             // commits the record to the getRecords operation
             for ( QName qName : requestedTypeNames.keySet() ) {
-                for ( RecordStore rec : requestedTypeNames.values() ) {
+                for ( MetadataStore rec : requestedTypeNames.values() ) {
                     try {
                         rec.getRecords( writer, qName, getRec.getOutputSchema(), gdds );
                     } catch ( IOException e ) {

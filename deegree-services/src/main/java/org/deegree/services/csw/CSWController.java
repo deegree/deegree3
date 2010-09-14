@@ -76,7 +76,7 @@ import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.record.persistence.RecordStoreException;
+import org.deegree.record.persistence.MetadataStoreException;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.authentication.soapauthentication.FailedAuthentication;
 import org.deegree.services.controller.AbstractOGCServiceController;
@@ -211,7 +211,7 @@ public class CSWController extends AbstractOGCServiceController {
             throw new ControllerInitException( "TODO", e );
         } catch ( JAXBException e ) {
             throw new ControllerInitException( "TODO", e );
-        } catch ( RecordStoreException e ) {
+        } catch ( MetadataStoreException e ) {
             e.printStackTrace();
         }
 

@@ -55,7 +55,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
-import org.deegree.record.persistence.RecordStore;
+import org.deegree.record.persistence.MetadataStore;
 import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.TransactionOperation;
@@ -80,10 +80,10 @@ public class TransactionHandler {
 
     private CSWService service;
 
-    private static Map<QName, RecordStore> requestedTypeNames;
+    private static Map<QName, MetadataStore> requestedTypeNames;
 
     /**
-     * Creates a new {@link TransactionHandler} instance that uses the given service to lookup the {@link RecordStore}s.
+     * Creates a new {@link TransactionHandler} instance that uses the given service to lookup the {@link MetadataStore}s.
      * 
      * @param service
      */
@@ -161,7 +161,7 @@ public class TransactionHandler {
                             throws XMLStreamException, SQLException {
         Version version = new Version( 2, 0, 2 );
 
-        requestedTypeNames = new HashMap<QName, RecordStore>();
+        requestedTypeNames = new HashMap<QName, MetadataStore>();
         InsertTransaction insert = null;
         UpdateTransaction update = null;
         DeleteTransaction delete = null;
@@ -202,7 +202,7 @@ public class TransactionHandler {
 
                 }
 
-                for ( RecordStore rec : requestedTypeNames.values() ) {
+                for ( MetadataStore rec : requestedTypeNames.values() ) {
 
                     transactionIds.addAll( rec.transaction( writer, insert ) );
                 }
@@ -231,7 +231,7 @@ public class TransactionHandler {
                                                                                update.getElement().getLocalName(),
                                                                                update.getElement().getNamespace().getPrefix() ) ) );
 
-                    for ( RecordStore rec : requestedTypeNames.values() ) {
+                    for ( MetadataStore rec : requestedTypeNames.values() ) {
                         transactionIds.addAll( rec.transaction( writer, update ) );
 
                     }
@@ -240,7 +240,7 @@ public class TransactionHandler {
                     /*
                      * here all the registered recordStores are queried
                      */
-                    for ( RecordStore rec : service.getRecordStore() ) {
+                    for ( MetadataStore rec : service.getRecordStore() ) {
 
                         transactionIds.addAll( rec.transaction( writer, update ) );
 
@@ -261,7 +261,7 @@ public class TransactionHandler {
                 /*
                  * here all the registered recordStores are queried
                  */
-                for ( RecordStore rec : service.getRecordStore() ) {
+                for ( MetadataStore rec : service.getRecordStore() ) {
                     transactionIds.addAll( rec.transaction( writer, delete ) );
 
                 }
@@ -294,7 +294,7 @@ public class TransactionHandler {
             writer.writeStartElement( CSW_202_NS, "InsertResult" );
             // TODO handle?? where is it?? writer.writeAttribute( "handleRef", trans. );
 
-            for ( RecordStore rec : requestedTypeNames.values() ) {
+            for ( MetadataStore rec : requestedTypeNames.values() ) {
                 try {
                     rec.getRecordsForTransactionInsertStatement( writer, transactionIds );
                 } catch ( IOException e ) {

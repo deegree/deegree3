@@ -42,16 +42,16 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.record.persistence.RecordStore;
-import org.deegree.record.persistence.RecordStoreException;
-import org.deegree.record.persistence.RecordStoreManager;
+import org.deegree.record.persistence.MetadataStore;
+import org.deegree.record.persistence.MetadataStoreException;
+import org.deegree.record.persistence.MetadataStoreManager;
 import org.deegree.services.jaxb.csw.ServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Specifies the Service-Layer. <br>
- * Initial class to register all configured {@link RecordStore}s that are specified in the Service-Configuration.
+ * Initial class to register all configured {@link MetadataStore}s that are specified in the Service-Configuration.
  * 
  * 
  * @author <a href="mailto:thomas@deegree.org">Steffen Thomas</a>
@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CSWService {
 
-    private final Set<RecordStore> recordStore = new HashSet<RecordStore>();
+    private final Set<MetadataStore> recordStore = new HashSet<MetadataStore>();
 
     private static final Logger LOG = LoggerFactory.getLogger( CSWService.class );
 
@@ -70,24 +70,24 @@ public class CSWService {
      * 
      * @param sc
      *            the serviceConfiguration that is specified in the configuration.xml document
-     * @throws RecordStoreException
+     * @throws MetadataStoreException
      */
-    public CSWService( ServiceConfiguration sc, String baseURL ) throws RecordStoreException {
+    public CSWService( ServiceConfiguration sc, String baseURL ) throws MetadataStoreException {
 
         LOG.info( "Initializing/looking up configured record stores." );
 
-        for ( RecordStore rs : RecordStoreManager.getAll().values() ) {
+        for ( MetadataStore rs : MetadataStoreManager.getAll().values() ) {
             addToStore( rs );
         }
     }
 
     /**
-     * Registers a new {@link RecordStore} to the CSW.
+     * Registers a new {@link MetadataStore} to the CSW.
      * 
      * @param rs
      *            store to be registered
      */
-    public void addToStore( RecordStore rs ) {
+    public void addToStore( MetadataStore rs ) {
         synchronized ( this ) {
             if ( recordStore.contains( rs ) ) {
                 String msg = get( "CSW_RECORDSTORE_ALREADY_REGISTERED", rs );
@@ -100,29 +100,29 @@ public class CSWService {
     }
 
     /**
-     * Unregisters the specified {@link RecordStore} from the CSW.
+     * Unregisters the specified {@link MetadataStore} from the CSW.
      * 
      * @param rs
      *            store to be registered
      */
-    public void removeStore( RecordStore rs ) {
+    public void removeStore( MetadataStore rs ) {
         synchronized ( this ) {
             // TODO
         }
     }
 
     /**
-     * Question after a {@link RecordStore} that is available that maps to the requested typeName. <br>
-     * If there is no matching between the parameter typeName and any {@link RecordStore} there is nothing to be
-     * returned. Otherwise the requested {@link RecordStore} should return.
+     * Question after a {@link MetadataStore} that is available that maps to the requested typeName. <br>
+     * If there is no matching between the parameter typeName and any {@link MetadataStore} there is nothing to be
+     * returned. Otherwise the requested {@link MetadataStore} should return.
      * 
      * 
      * @param qName
      *            the characteristic typeName for a specific record
-     * @return {@link RecordStore}, can be <Code>null</Code>
+     * @return {@link MetadataStore}, can be <Code>null</Code>
      */
-    public RecordStore getRecordStore( QName qName ) {
-        for ( RecordStore rs : recordStore ) {
+    public MetadataStore getRecordStore( QName qName ) {
+        for ( MetadataStore rs : recordStore ) {
             if ( rs.getTypeNames().get( qName ) != null ) {
                 return rs;
             }
@@ -135,7 +135,7 @@ public class CSWService {
      * 
      * @return Set of type <Code>RecordStore<Code>
      */
-    public Set<RecordStore> getRecordStore() {
+    public Set<MetadataStore> getRecordStore() {
         return recordStore;
     }
 }
