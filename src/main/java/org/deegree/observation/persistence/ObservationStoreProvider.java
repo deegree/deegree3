@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,36 +35,46 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.observation.persistence;
 
-import org.deegree.observation.model.Observation;
-import org.deegree.observation.model.Offering;
-import org.deegree.protocol.sos.filter.FilterCollection;
-import org.deegree.protocol.sos.time.SamplingTime;
+import java.net.URL;
 
 /**
- * This is the interface for a storage of observations.
+ * The <code></code> class TODO add class documentation here.
  * 
- * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
-public interface ObservationDatastore {
+public interface ObservationStoreProvider {
 
     /**
-     * Get measurements from the datastore.
+     * Returns the namespace for configurations documents that this provider handles.
      * 
-     * @param filter
-     * @return the resulting measurements
-     * @throws Exception
+     * @return the namespace for configurations documents, never <code>null</code>
      */
-    public Observation getObservation( FilterCollection filter, Offering offering )
-                            throws ObservationDatastoreException;
+    public String getConfigNamespace();
 
     /**
-     * Get the time span (sampling time) of all observations in this datastore.
+     * Returns the URL for retrieving the configuration document schema.
      * 
-     * @return the sampling time of the datastore
+     * @return the URL for retrieving the configuration document schema, may be <code>null</code>
      */
-    public SamplingTime getSamplingTime();
+    public URL getConfigSchema();
+
+    /**
+     * Returns the URL for retrieving the configuration document template.
+     * 
+     * @return the URL for retrieving the configuration document template, may be <code>null</code>
+     */
+    public URL getConfigTemplate();
+
+    /**
+     * Creates a new {@link ObservationDatastore} instance from the given configuration document.
+     * 
+     * @param configURL
+     *            location of the configuration document, must not be <code>null</code>
+     * @return new observation store instance, configured, not initialized yet
+     */
+    public ObservationDatastore getObservationStore( URL configURL );
+
 }

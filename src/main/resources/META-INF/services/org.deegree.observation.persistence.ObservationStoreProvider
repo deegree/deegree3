@@ -1,0 +1,3 @@
+org.deegree.observation.persistence.SimpleObservationDatastore
+org.deegree.observation.persistence.BinarySQLDatastore
+org.deegree.observation.persistence.ContinuousObservationDatastore
