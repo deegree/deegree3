@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.deegree.commons.utils.ArrayUtils;
@@ -80,9 +81,9 @@ public class ContinuousFilterConverter extends GenericFilterConverter {
      * @param interval
      *            the id of the first observation (with <code>begin</begin> date)
      */
-    public ContinuousFilterConverter( DatastoreConfiguration dsConf, String idField, Date begin, long interval,
+    public ContinuousFilterConverter( Map<String, String> columnMap, String idField, Date begin, long interval,
                                       int firstID ) {
-        super( dsConf, null );
+        super( columnMap, null );
         this.idField = idField;
         this.begin = begin;
         this.firstID = firstID;

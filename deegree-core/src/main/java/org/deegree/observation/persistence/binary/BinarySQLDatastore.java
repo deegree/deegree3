@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.observation.persistence;
+package org.deegree.observation.persistence.binary;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -47,8 +47,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.observation.model.MeasurementBase;
 import org.deegree.observation.model.Observation;
@@ -59,6 +61,9 @@ import org.deegree.observation.model.Result;
 import org.deegree.observation.model.SimpleIntegerResult;
 import org.deegree.observation.model.SimpleMeasurement;
 import org.deegree.observation.model.SimpleNullResult;
+import org.deegree.observation.persistence.FilterException;
+import org.deegree.observation.persistence.ObservationDatastoreException;
+import org.deegree.observation.persistence.simple.SimpleObservationDatastore;
 import org.deegree.protocol.sos.filter.BeginFilter;
 import org.deegree.protocol.sos.filter.DurationFilter;
 import org.deegree.protocol.sos.filter.EndFilter;
@@ -72,7 +77,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This datastore is able to manage data with a high sampling rate. The data is read from DB records with SQL byte
- * arrays. The current implementation allows each record to store measurements that occured within one second. The
+ * arrays. The current implementation allows each record to store measurements that occurred within one second. The
  * number of measurements per seconds and the time interval between them can be configured with the ms_per_record and
  * number_of_records options. (e.g. if you have 10ms sampling rate: number_of_records = 100, ms_per_record=10)
  * 
@@ -103,16 +108,17 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
     /**
      * @param dsConfig
      */
-    public BinarySQLDatastore( DatastoreConfiguration dsConfig ) {
-        super( dsConfig );
-        this.samplingPeriodMS = Integer.parseInt( dsConfig.getOptionValue( "ms_sampling_period" ) );
-        this.numOfMeasurements = Integer.parseInt( dsConfig.getOptionValue( "number_of_measurements" ) );
+    public BinarySQLDatastore( String jdbcId, String tableName, Map<String, String> columnMap,
+                               Map<String, String> optionMap, List<Property> properties ) {
+        super( jdbcId, tableName, columnMap, optionMap, properties );
+        this.samplingPeriodMS = Integer.parseInt( optionMap.get( "ms_sampling_period" ) );
+        this.numOfMeasurements = Integer.parseInt( optionMap.get( "number_of_measurements" ) );
 
         int msPerRecord = this.samplingPeriodMS * this.numOfMeasurements;
         if ( msPerRecord != T_SECOND && msPerRecord != T_MINUTE && msPerRecord != T_HOUR && msPerRecord != T_DAY ) {
             LOG.warn(
                       "BinarySQLDatastore ({}:{}) is not aligned to seconds, minutes, hours, or days (ms_sampling_period * number_of_measurements = {}ms). Time filter may not work properly.",
-                      new Object[] { dsConfig.getJdbcConnId(), dsConfig.getTableName(), msPerRecord } );
+                      new Object[] { jdbcId, tableName, msPerRecord } );
         }
     }
 
@@ -150,7 +156,7 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
             MeasurementBase measurementBase = new MeasurementBase( "", // TODO
                                                                    properties );
 
-            conn = getConnection();
+            conn = ConnectionManager.getConnection( jdbcId );
             List<String> columns = buildColumnList( properties );
 
             stmt = getStatement( filter, columns, conn, offering );

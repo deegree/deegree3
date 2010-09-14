@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.observation.persistence;
+package org.deegree.observation.persistence.simple;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,9 +46,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.observation.model.MeasurementBase;
@@ -59,6 +61,13 @@ import org.deegree.observation.model.Property;
 import org.deegree.observation.model.Result;
 import org.deegree.observation.model.SimpleDoubleResult;
 import org.deegree.observation.model.SimpleMeasurement;
+import org.deegree.observation.persistence.FilterException;
+import org.deegree.observation.persistence.GenericFilterConverter;
+import org.deegree.observation.persistence.ObservationDatastore;
+import org.deegree.observation.persistence.ObservationDatastoreException;
+import org.deegree.observation.persistence.QueryBuilder;
+import org.deegree.observation.persistence.SQLFilterConverter;
+import org.deegree.observation.persistence.SQLObservationDatastore;
 import org.deegree.protocol.sos.filter.FilterCollection;
 import org.deegree.protocol.sos.filter.ProcedureFilter;
 import org.deegree.protocol.sos.filter.PropertyFilter;
@@ -100,21 +109,25 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
     protected final String timeColumn;
 
     /**
-     * @param conf
-     * @throws SOServiceException
+     * @param jdbcId
+     * @param tableName
+     * @param columnMap
+     * @param optionMap
+     * @param properties
      */
-    public SimpleObservationDatastore( DatastoreConfiguration conf ) {
-        super( conf );
+    public SimpleObservationDatastore( String jdbcId, String tableName, Map<String, String> columnMap,
+                                       Map<String, String> optionMap, List<Property> properties ) {
+        super( jdbcId, tableName, columnMap, optionMap, properties );
         this.timezone = initTimezone();
-        this.filterConverter = new GenericFilterConverter( conf, this.timezone );
+        this.filterConverter = new GenericFilterConverter( columnMap, this.timezone );
 
-        this.timeColumn = getDSConfig().getColumnName( "timestamp" );
-        this.procColumn = getDSConfig().getColumnName( "procedureId" );
+        this.timeColumn = columnMap.get( "timestamp" );
+        this.procColumn = columnMap.get( "procedureId" );
     }
 
     private TimeZone initTimezone() {
         TimeZone result;
-        String tz = getDSConfig().getOptionValue( "db_timezone" );
+        String tz = optionMap.get( "db_timezone" );
         if ( tz == null ) {
             result = TimeZone.getDefault();
         } else {
@@ -141,7 +154,7 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
 
             Calendar template = Calendar.getInstance( this.timezone );
 
-            conn = getConnection();
+            conn = ConnectionManager.getConnection( jdbcId );
             List<String> columns = new LinkedList<String>();
             for ( Property property : properties ) {
                 columns.add( property.getColumnName() );
@@ -216,11 +229,10 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            conn = getConnection();
+            conn = ConnectionManager.getConnection( jdbcId );
             conn.setAutoCommit( true );
             String timestampCol;
-            timestampCol = getDSConfig().getColumnName( "timestamp" );
-            String tableName = getDSConfig().getTableName();
+            timestampCol = columnMap.get( "timestamp" );
 
             stmt = conn.prepareStatement( String.format( "SELECT min(%s) as start_date, max(%s) as end_date FROM %s",
                                                          timestampCol, timestampCol, tableName ) );
@@ -273,7 +285,7 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
         if ( columns.length() == 0 ) {
             columns = "*";
         }
-        q.add( "SELECT " + columns + " FROM " + getDSConfig().getTableName() );
+        q.add( "SELECT " + columns + " FROM " + tableName );
 
         List<TimeFilter> timeFilter = filter.getTimeFilter();
         List<ProcedureFilter> procFilter = getProcedureFilter( filter, offering );
@@ -358,17 +370,17 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
     protected List<Property> getPropertyMap( FilterCollection filter )
                             throws ObservationDatastoreException {
         if ( filter.getPropertyFilter().size() == 0 ) {
-            return getDSConfig().getProperties();
+            return properties;
         }
         Set<String> filteredProperties = new HashSet<String>();
         for ( PropertyFilter propFilter : filter.getPropertyFilter() ) {
             filteredProperties.add( propFilter.getPropertyName() );
         }
 
-        List<Property> properties = new ArrayList<Property>();
-        for ( Property property : getDSConfig().getProperties() ) {
+        List<Property> result = new ArrayList<Property>();
+        for ( Property property : properties ) {
             if ( filteredProperties.contains( property.getHref() ) ) {
-                properties.add( property );
+                result.add( property );
                 filteredProperties.remove( property.getHref() );
             }
         }
@@ -378,7 +390,7 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
             throw new ObservationDatastoreException( msg );
 
         }
-        return properties;
+        return result;
     }
 
 }
