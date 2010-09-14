@@ -55,11 +55,11 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
-import org.deegree.record.persistence.MetadataStore;
-import org.deegree.record.publication.DeleteTransaction;
-import org.deegree.record.publication.InsertTransaction;
-import org.deegree.record.publication.TransactionOperation;
-import org.deegree.record.publication.UpdateTransaction;
+import org.deegree.metadata.persistence.MetadataStore;
+import org.deegree.metadata.publication.DeleteTransaction;
+import org.deegree.metadata.publication.InsertTransaction;
+import org.deegree.metadata.publication.TransactionOperation;
+import org.deegree.metadata.publication.UpdateTransaction;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.transaction.Transaction;
@@ -83,7 +83,8 @@ public class TransactionHandler {
     private static Map<QName, MetadataStore> requestedTypeNames;
 
     /**
-     * Creates a new {@link TransactionHandler} instance that uses the given service to lookup the {@link MetadataStore}s.
+     * Creates a new {@link TransactionHandler} instance that uses the given service to lookup the {@link MetadataStore}
+     * s.
      * 
      * @param service
      */

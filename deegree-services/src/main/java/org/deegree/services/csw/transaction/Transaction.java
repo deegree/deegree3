@@ -38,7 +38,7 @@ package org.deegree.services.csw.transaction;
 import java.util.List;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.record.publication.TransactionOperation;
+import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.services.csw.AbstractCSWRequest;
 
 /**

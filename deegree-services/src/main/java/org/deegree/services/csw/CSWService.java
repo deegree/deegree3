@@ -42,9 +42,9 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.record.persistence.MetadataStore;
-import org.deegree.record.persistence.MetadataStoreException;
-import org.deegree.record.persistence.MetadataStoreManager;
+import org.deegree.metadata.persistence.MetadataStore;
+import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.services.jaxb.csw.ServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

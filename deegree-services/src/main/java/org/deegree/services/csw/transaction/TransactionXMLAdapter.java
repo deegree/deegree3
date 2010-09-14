@@ -55,13 +55,13 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.metadata.publication.DeleteTransaction;
+import org.deegree.metadata.publication.InsertTransaction;
+import org.deegree.metadata.publication.MetadataProperty;
+import org.deegree.metadata.publication.TransactionOperation;
+import org.deegree.metadata.publication.UpdateTransaction;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 import org.deegree.protocol.i18n.Messages;
-import org.deegree.record.publication.DeleteTransaction;
-import org.deegree.record.publication.InsertTransaction;
-import org.deegree.record.publication.MetadataProperty;
-import org.deegree.record.publication.TransactionOperation;
-import org.deegree.record.publication.UpdateTransaction;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
 
 /**

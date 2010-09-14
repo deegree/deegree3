@@ -65,9 +65,9 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.metadata.persistence.MetadataStore;
+import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.record.persistence.MetadataStore;
-import org.deegree.record.persistence.RecordStoreOptions;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.csw.CSWService;
@@ -95,7 +95,8 @@ public class GetRecordsHandler {
     private CSWService service;
 
     /**
-     * Creates a new {@link GetRecordsHandler} instance that uses the given service to lookup the {@link MetadataStore} s.
+     * Creates a new {@link GetRecordsHandler} instance that uses the given service to lookup the {@link MetadataStore}
+     * s.
      * 
      * @param service
      */
