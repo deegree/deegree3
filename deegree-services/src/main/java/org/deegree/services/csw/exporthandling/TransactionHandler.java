@@ -109,7 +109,8 @@ public class TransactionHandler {
 
         Version version = trans.getVersion();
 
-        response.setContentType( trans.getOutputFormat() );
+        // response.setContentType( trans.getOutputFormat() );
+        response.setContentType( "application/xml; charset=UTF-8" );
 
         // to be sure of a valid response
         String schemaLocation = "";
