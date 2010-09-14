@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore.parsing;
+package org.deegree.metadata.persistence.genericrecordstore.parsing;
 
 import java.util.List;
 
@@ -43,9 +43,9 @@ import java.util.List;
  * from an insertable record.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class ReturnableProperties {
 

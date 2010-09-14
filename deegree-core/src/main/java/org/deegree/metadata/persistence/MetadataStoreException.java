@@ -34,16 +34,16 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.record.persistence;
+package org.deegree.metadata.persistence;
 
 /**
  * Indicates an exception that occured in the record persistence layer.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 18942 $, $Date: 2009-08-05 19:16:43 +0200 (Mi, 05 Aug 2009) $
+ * @version $Revision$, $Date$
  */
 public class MetadataStoreException extends Exception {
 

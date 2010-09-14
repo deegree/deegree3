@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence;
+package org.deegree.metadata.persistence;
 
 import java.io.IOException;
 import java.net.URI;
@@ -45,22 +45,22 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.deegree.record.publication.TransactionOperation;
 
 /**
- * Base interface of the {@link MetadataStore} persistence layer, provides access to stored {@link MetadataStore} instances
- * and their schemas.
+ * Base interface of the {@link MetadataStore} persistence layer, provides access to stored {@link MetadataStore}
+ * instances and their schemas.
  * <p>
- * NOTE: One {@link MetadataStore} instance corresponds to one metadata format (e.g. DublinCore, MD_Metadata (ISO TC211),
- * SV_Service (ISO TC211)).
+ * NOTE: One {@link MetadataStore} instance corresponds to one metadata format (e.g. DublinCore, MD_Metadata (ISO
+ * TC211), SV_Service (ISO TC211)).
  * </p>
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public interface MetadataStore {
 

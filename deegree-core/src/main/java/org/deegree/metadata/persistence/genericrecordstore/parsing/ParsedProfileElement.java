@@ -33,18 +33,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore.parsing;
+package org.deegree.metadata.persistence.genericrecordstore.parsing;
 
-import org.deegree.record.persistence.genericrecordstore.generating.GenerateRecord;
+import org.deegree.metadata.persistence.genericrecordstore.generating.GenerateMetadata;
 
 /**
  * Encapsulates the parsed elements that can be analysed from a record that is affected by the transaction operation.<br>
  * Here are the queryable and returnable properties and the elements in xml format.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class ParsedProfileElement {
 
@@ -52,7 +52,7 @@ public class ParsedProfileElement {
 
     private ReturnableProperties returnableProperties;
 
-    private GenerateRecord generateRecord;
+    private GenerateMetadata generateRecord;
 
     /**
      * Creates a new {@link ParsedProfileElement} instance.
@@ -62,7 +62,7 @@ public class ParsedProfileElement {
      * @param generateRecord
      */
     public ParsedProfileElement( QueryableProperties queryableProperties, ReturnableProperties returnableProperties,
-                                 GenerateRecord generateRecord ) {
+                                 GenerateMetadata generateRecord ) {
         this.queryableProperties = queryableProperties;
         this.returnableProperties = returnableProperties;
         this.generateRecord = generateRecord;
@@ -85,7 +85,7 @@ public class ParsedProfileElement {
     /**
      * @return the generateRecord
      */
-    public GenerateRecord getGenerateRecord() {
+    public GenerateMetadata getGenerateRecord() {
         return generateRecord;
     }
 

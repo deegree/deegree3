@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericmetadatastore;
+package org.deegree.metadata.persistence.genericmetadatastore;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -48,18 +48,18 @@ import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.record.persistence.genericrecordstore.generating.BuildMetadataXMLRepresentation;
-import org.deegree.record.persistence.genericrecordstore.generating.GenerateQueryableProperties;
-import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
+import org.deegree.metadata.persistence.genericrecordstore.generating.BuildMetadataXMLRepresentation;
+import org.deegree.metadata.persistence.genericrecordstore.generating.GenerateQueryableProperties;
+import org.deegree.metadata.persistence.genericrecordstore.parsing.ParsedProfileElement;
 import org.slf4j.Logger;
 
 /**
  * The execution of the actions affected by the transaction operation against the database.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class ExecuteStatements {
 

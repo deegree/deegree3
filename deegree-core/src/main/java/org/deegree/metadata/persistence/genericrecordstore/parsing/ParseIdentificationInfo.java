@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore.parsing;
+package org.deegree.metadata.persistence.genericrecordstore.parsing;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -57,10 +57,10 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRS;
-import org.deegree.record.persistence.genericrecordstore.generating.GenerateRecord;
-import org.deegree.record.persistence.neededdatastructures.BoundingBox;
-import org.deegree.record.persistence.neededdatastructures.Keyword;
-import org.deegree.record.persistence.neededdatastructures.OperatesOnData;
+import org.deegree.metadata.persistence.genericrecordstore.generating.GenerateMetadata;
+import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
+import org.deegree.metadata.persistence.neededdatastructures.Keyword;
+import org.deegree.metadata.persistence.neededdatastructures.OperatesOnData;
 import org.slf4j.Logger;
 
 /**
@@ -68,9 +68,9 @@ import org.slf4j.Logger;
  * the complexity.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class ParseIdentificationInfo extends XMLAdapter {
 
@@ -113,7 +113,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @param crsList
      * @throws IOException
      */
-    protected void parseIdentificationInfo( List<OMElement> identificationInfo, GenerateRecord gr,
+    protected void parseIdentificationInfo( List<OMElement> identificationInfo, GenerateMetadata gr,
                                             QueryableProperties qp, ReturnableProperties rp, boolean isInspire,
                                             List<CRS> crsList )
                             throws IOException {

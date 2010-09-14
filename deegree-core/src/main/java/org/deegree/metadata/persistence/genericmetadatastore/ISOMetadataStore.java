@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericmetadatastore;
+package org.deegree.metadata.persistence.genericmetadatastore;
 
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.APISO_PREFIX;
@@ -92,28 +92,28 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.metadata.persistence.MetadataStore;
+import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.RecordStoreOptions;
+import org.deegree.metadata.persistence.genericrecordstore.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.deegree.metadata.publication.DeleteTransaction;
+import org.deegree.metadata.publication.InsertTransaction;
+import org.deegree.metadata.publication.MetadataProperty;
+import org.deegree.metadata.publication.TransactionOperation;
+import org.deegree.metadata.publication.UpdateTransaction;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.deegree.record.persistence.MetadataStore;
-import org.deegree.record.persistence.MetadataStoreException;
-import org.deegree.record.persistence.RecordStoreOptions;
-import org.deegree.record.persistence.genericrecordstore.parsing.ISOQPParsing;
-import org.deegree.record.publication.DeleteTransaction;
-import org.deegree.record.publication.InsertTransaction;
-import org.deegree.record.publication.MetadataProperty;
-import org.deegree.record.publication.TransactionOperation;
-import org.deegree.record.publication.UpdateTransaction;
 import org.slf4j.Logger;
 
 /**
  * {@link MetadataStore} implementation of Dublin Core and ISO Profile.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class ISOMetadataStore implements MetadataStore {
 
