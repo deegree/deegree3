@@ -51,7 +51,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.deegree.record.persistence.genericrecordstore.PostGISMappingsISODC;
+import org.deegree.record.persistence.genericmetadatastore.PostGISMappingsISODC;
 import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
 import org.deegree.record.persistence.genericrecordstore.parsing.QueryableProperties;
 import org.slf4j.Logger;
@@ -65,9 +65,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class BuildRecordXMLRepresentation {
+public class BuildMetadataXMLRepresentation {
 
-    private static final Logger LOG = getLogger( BuildRecordXMLRepresentation.class );
+    private static final Logger LOG = getLogger( BuildMetadataXMLRepresentation.class );
 
     private static final StringBuilder dataColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.data.name() );
 

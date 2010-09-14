@@ -48,78 +48,80 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.record.persistence.genericrecordstore.ISORecordStore;
-import org.deegree.record.persistence.iso19115.jaxb.ISORecordStoreConfig;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for creating {@link RecordStore} instances from XML elements (JAXB objects) and for retrieving global
- * {@link RecordStore} instances by id.
+ * Entry point for creating {@link MetadataStore} instances from XML elements (JAXB objects) and for retrieving global
+ * {@link MetadataStore} instances by id.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
  * 
  * @version $Revision: $, $Date: $
  */
-public class RecordStoreManager {
+public class MetadataStoreManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( RecordStoreManager.class );
+    private static final Logger LOG = LoggerFactory.getLogger( MetadataStoreManager.class );
 
-    private static Map<String, RecordStore> idToRs = Collections.synchronizedMap( new HashMap<String, RecordStore>() );
+    private static Map<String, MetadataStore> idToRs = Collections.synchronizedMap( new HashMap<String, MetadataStore>() );
+
+    private MetadataStoreManager() {
+    }
 
     /**
-     * Returns the global {@link RecordStore} instance with the specified identifier.
+     * Returns the global {@link MetadataStore} instance with the specified identifier.
      * 
      * @param id
      *            identifier of the store
-     * @return the corresponding {@link RecordStore} instance or null if no such instance has been created
+     * @return the corresponding {@link MetadataStore} instance or null if no such instance has been created
      */
-    public static RecordStore get( String id ) {
+    public static MetadataStore get( String id ) {
         return idToRs.get( id );
     }
 
     /**
-     * Returns all {@link RecordStore} instances.
+     * Returns all {@link MetadataStore} instances.
      * 
-     * @return the corresponding {@link RecordStore} instances, may be empty, but never <code>null</code>
+     * @return the corresponding {@link MetadataStore} instances, may be empty, but never <code>null</code>
      */
-    public static Map<String, RecordStore> getAll() {
+    public static Map<String, MetadataStore> getAll() {
         return idToRs;
     }
 
     /**
-     * Returns an initialized {@link RecordStore} instance from the RecordStore configuration document.
+     * Returns an initialized {@link MetadataStore} instance from the RecordStore configuration document.
      * 
      * @param configURL
      *            URL of the configuration document, must not be <code>null</code>
      * @return corresponding {@link FeatureStore} instance, initialized and ready to be used
-     * @throws RecordStoreException
+     * @throws MetadataStoreException
      *             if the creation fails, e.g. due to a configuration error
      * 
      */
-    public static synchronized RecordStore create( URL configURL )
-                            throws RecordStoreException {
+    public static synchronized MetadataStore create( URL configURL )
+                            throws MetadataStoreException {
 
-        ISORecordStoreConfig config = null;
+        ISOMetadataStoreConfig config = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.record.persistence.iso19115.jaxb" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb" );
             Unmarshaller u = jc.createUnmarshaller();
-            config = (ISORecordStoreConfig) u.unmarshal( configURL );
+            config = (ISOMetadataStoreConfig) u.unmarshal( configURL );
         } catch ( JAXBException e ) {
             e.printStackTrace();
         }
-        return new ISORecordStore( config );
+        return (MetadataStore) new ISOMetadataStoreConfig();
     }
 
-    private static void registerAndInit( RecordStore rs, String id )
-                            throws RecordStoreException {
+    private static void registerAndInit( MetadataStore rs, String id )
+                            throws MetadataStoreException {
 
         rs.init();
         if ( id != null ) {
             if ( idToRs.containsKey( id ) ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
-                throw new RecordStoreException( msg );
+                throw new MetadataStoreException( msg );
             }
             LOG.info( "Registering global record store (" + rs + ") with id '" + id + "'." );
             idToRs.put( id, rs );
@@ -141,7 +143,6 @@ public class RecordStoreManager {
         File[] rsConfigFiles = rsDir.listFiles( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
-                // TODO Auto-generated method stub
                 return name.toLowerCase().endsWith( ".xml" );
             }
         } );
@@ -151,7 +152,7 @@ public class RecordStoreManager {
             String rsId = fileName.substring( 0, fileName.length() - 4 );
             LOG.info( "Setting up record store '" + rsId + "' from file '" + fileName + "'..." + "" );
             try {
-                RecordStore rs = create( rsConfigFile.toURI().toURL() );
+                MetadataStore rs = create( rsConfigFile.toURI().toURL() );
                 registerAndInit( rs, rsId );
             } catch ( Exception e ) {
                 LOG.error( "Error initializing feature store: " + e.getMessage(), e );

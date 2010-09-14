@@ -49,10 +49,10 @@ import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.record.publication.TransactionOperation;
 
 /**
- * Base interface of the {@link RecordStore} persistence layer, provides access to stored {@link RecordStore} instances
+ * Base interface of the {@link MetadataStore} persistence layer, provides access to stored {@link MetadataStore} instances
  * and their schemas.
  * <p>
- * NOTE: One {@link RecordStore} instance corresponds to one metadata format (e.g. DublinCore, MD_Metadata (ISO TC211),
+ * NOTE: One {@link MetadataStore} instance corresponds to one metadata format (e.g. DublinCore, MD_Metadata (ISO TC211),
  * SV_Service (ISO TC211)).
  * </p>
  * 
@@ -62,19 +62,19 @@ import org.deegree.record.publication.TransactionOperation;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface RecordStore {
+public interface MetadataStore {
 
     /**
-     * Called by the container to indicate that this {@link RecordStore} instance is being placed into service.
+     * Called by the container to indicate that this {@link MetadataStore} instance is being placed into service.
      * 
-     * @throws RecordStoreException
+     * @throws MetadataStoreException
      *             if the initialization fails
      */
     public void init()
-                            throws RecordStoreException;
+                            throws MetadataStoreException;
 
     /**
-     * Called by the container to indicate that this {@link RecordStore} instance is being taken out of service.
+     * Called by the container to indicate that this {@link MetadataStore} instance is being taken out of service.
      */
     public void destroy();
 

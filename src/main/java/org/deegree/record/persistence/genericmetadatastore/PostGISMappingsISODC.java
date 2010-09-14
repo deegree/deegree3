@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericmetadatastore;
 
 import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.PrimitiveType.DATE;
@@ -75,7 +75,7 @@ import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Implementation of the {@link PostGISMapping}. It's the base class for access to the backend. Is there any change in
- * the database schema for the {@link ISORecordStore} then in this class should be changed the binding, as well. TODO
+ * the database schema for the {@link ISOMetadataStore} then in this class should be changed the binding, as well. TODO
  * boundingbox, crs and association, denominator, distanceUOM, distanceValue put a type in
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>

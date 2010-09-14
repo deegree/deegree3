@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericmetadatastore;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -48,7 +48,7 @@ import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.record.persistence.genericrecordstore.generating.BuildRecordXMLRepresentation;
+import org.deegree.record.persistence.genericrecordstore.generating.BuildMetadataXMLRepresentation;
 import org.deegree.record.persistence.genericrecordstore.generating.GenerateQueryableProperties;
 import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class ExecuteStatements {
 
     private GenerateQueryableProperties generateQP;
 
-    private BuildRecordXMLRepresentation buildRecXML;
+    private BuildMetadataXMLRepresentation buildRecXML;
 
     /**
      * This method executes the statement for INSERT datasets
@@ -84,7 +84,7 @@ public class ExecuteStatements {
                                         ParsedProfileElement parsedElement )
                             throws IOException {
         generateQP = new GenerateQueryableProperties();
-        buildRecXML = new BuildRecordXMLRepresentation();
+        buildRecXML = new BuildMetadataXMLRepresentation();
 
         try {
             PreparedStatement stm = null;
@@ -141,7 +141,7 @@ public class ExecuteStatements {
         final String qp_identifier = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
         boolean isUpdate = true;
         generateQP = new GenerateQueryableProperties();
-        buildRecXML = new BuildRecordXMLRepresentation();
+        buildRecXML = new BuildMetadataXMLRepresentation();
 
         PreparedStatement stm = null;
         Statement stmt = null;

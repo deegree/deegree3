@@ -49,7 +49,7 @@ import java.text.ParseException;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRS;
-import org.deegree.record.persistence.genericrecordstore.PostGISMappingsISODC;
+import org.deegree.record.persistence.genericmetadatastore.PostGISMappingsISODC;
 import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
 import org.deegree.record.persistence.genericrecordstore.parsing.QueryableProperties;
 import org.deegree.record.persistence.genericrecordstore.parsing.ReturnableProperties;

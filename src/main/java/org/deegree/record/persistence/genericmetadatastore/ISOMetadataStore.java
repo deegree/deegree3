@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericmetadatastore;
 
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.APISO_PREFIX;
@@ -92,32 +92,32 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.deegree.record.persistence.RecordStore;
-import org.deegree.record.persistence.RecordStoreException;
+import org.deegree.record.persistence.MetadataStore;
+import org.deegree.record.persistence.MetadataStoreException;
 import org.deegree.record.persistence.RecordStoreOptions;
 import org.deegree.record.persistence.genericrecordstore.parsing.ISOQPParsing;
-import org.deegree.record.persistence.iso19115.jaxb.ISORecordStoreConfig;
 import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
-import org.deegree.record.publication.RecordProperty;
+import org.deegree.record.publication.MetadataProperty;
 import org.deegree.record.publication.TransactionOperation;
 import org.deegree.record.publication.UpdateTransaction;
 import org.slf4j.Logger;
 
 /**
- * {@link RecordStore} implementation of Dublin Core and ISO Profile.
+ * {@link MetadataStore} implementation of Dublin Core and ISO Profile.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
  * 
  * @version $Revision: $, $Date: $
  */
-public class ISORecordStore implements RecordStore {
+public class ISOMetadataStore implements MetadataStore {
 
-    private static final Logger LOG = getLogger( ISORecordStore.class );
+    private static final Logger LOG = getLogger( ISOMetadataStore.class );
 
     /**
      * registers the typeNames that are applicable to this recordStore and maps a typeName to a format, if it is DC or
@@ -137,7 +137,7 @@ public class ISORecordStore implements RecordStore {
 
     private final boolean inspire;
 
-    private final boolean generateFileIds;
+    // private final boolean generateFileIds;
 
     private Connection conn;
 
@@ -153,7 +153,7 @@ public class ISORecordStore implements RecordStore {
         formatTypeInISORecordStore.put( SetOfReturnableElements.summary, "recordsummary" );
         formatTypeInISORecordStore.put( SetOfReturnableElements.full, "recordfull" );
 
-        // typeNames.put( new QName( "", "", "" ), 1 );
+        typeNames.put( new QName( "", "", "" ), 1 );
         typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, "" ), 1 );
         typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, CSW_PREFIX ), 1 );
         typeNames.put( new QName( DC_NS, "", "dc" ), 1 );
@@ -164,14 +164,14 @@ public class ISORecordStore implements RecordStore {
     }
 
     /**
-     * Creates a new {@link ISORecordStore} instance from the given JAXB configuration object.
+     * Creates a new {@link ISOMetadataStore} instance from the given JAXB configuration object.
      * 
      * @param config
      */
-    public ISORecordStore( ISORecordStoreConfig config ) {
+    public ISOMetadataStore( ISOMetadataStoreConfig config ) {
         this.connectionId = config.getConnId();
         inspire = config.isRequireInspireCompliance() == null ? false : config.isRequireInspireCompliance();
-        generateFileIds = config.isGenerateFileIdentifiers() == null ? false : config.isGenerateFileIdentifiers();
+        // generateFileIds = config.isGenerateFileIdentifiers() == null ? false : config.isGenerateFileIdentifiers();
     }
 
     /*
@@ -252,7 +252,7 @@ public class ISORecordStore implements RecordStore {
      */
     @Override
     public void init()
-                            throws RecordStoreException {
+                            throws MetadataStoreException {
 
         LOG.debug( "init" );
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
@@ -837,7 +837,7 @@ public class ISORecordStore implements RecordStore {
                             ResultSet rsGetStoredFullRecordXML = stmt.executeQuery();
 
                             while ( rsGetStoredFullRecordXML.next() ) {
-                                for ( RecordProperty recProp : upd.getRecordProperty() ) {
+                                for ( MetadataProperty recProp : upd.getRecordProperty() ) {
 
                                     PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName(),
                                                                                           null );
