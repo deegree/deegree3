@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+  This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+-->
+<schema xmlns:ds="http://www.deegree.org/datasource/metadata/iso19115" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/metadata/iso19115" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.metadata.persistence.iso19115.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="ISOMetadataStore">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="ISOMetadataStoreConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+
+        <element name="IdentifierInspector" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element name="Param" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                  <simpleContent>
+                    <extension base="string">
+                      <attribute name="key" type="string" use="required" />
+                    </extension>
+                  </simpleContent>
+                </complexType>
+              </element>
+            </sequence>
+            <attribute name="name" type="string" use="required" />
+          </complexType>
+        </element>
+
+
+        <element name="RequireInspireCompliance" minOccurs="0" type="boolean" />
+      </sequence>
+      <attribute name="connId" type="string" use="required" />
+      <attribute name="configVersion" use="required" fixed="0.6.0" />
+    </complexType>
+  </element>
+</schema>
