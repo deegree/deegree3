@@ -68,7 +68,7 @@ import org.deegree.tools.feature.gml.GMLSchemaComparator;
 import org.deegree.tools.feature.gml.MappingShortener;
 import org.deegree.tools.feature.gml.SchemaAnalyzer;
 import org.deegree.tools.feature.persistence.FeatureStoreLoader;
-import org.deegree.tools.record.importhandling.WPSImporter;
+import org.deegree.tools.metadata.importhandling.WPSImporter;
 import org.deegree.tools.rendering.InteractiveWPVS;
 import org.deegree.tools.rendering.dem.builder.DEMDatasetGenerator;
 import org.deegree.tools.rendering.dem.filtering.DEMRasterFilterer;

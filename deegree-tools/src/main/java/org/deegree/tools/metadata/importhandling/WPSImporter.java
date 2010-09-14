@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.record.importhandling;
+package org.deegree.tools.metadata.importhandling;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
@@ -66,7 +66,7 @@ import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
-import org.deegree.record.persistence.neededdatastructures.BoundingBox;
+import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.tools.annotations.Tool;
 

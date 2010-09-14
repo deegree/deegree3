@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.record.importhandling;
+package org.deegree.tools.metadata.importhandling;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_PUBLICATION_SCHEMA;
@@ -64,7 +64,7 @@ import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.record.persistence.genericrecordstore.ISORecordStore;
+import org.deegree.metadata.persistence.genericmetadatastore.ISOMetadataStore;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.slf4j.Logger;
 
@@ -77,7 +77,7 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 public abstract class AbstractDCImporter extends XMLAdapter {
-    private static final Logger LOG = getLogger( ISORecordStore.class );
+    private static final Logger LOG = getLogger( ISOMetadataStore.class );
 
     protected OMFactory factory;
 
