@@ -48,6 +48,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.metadata.persistence.genericmetadatastore.ISOMetadataStore;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +112,7 @@ public class MetadataStoreManager {
         } catch ( JAXBException e ) {
             e.printStackTrace();
         }
-        return (MetadataStore) new ISOMetadataStoreConfig();
+        return new ISOMetadataStore( config );
     }
 
     private static void registerAndInit( MetadataStore rs, String id )
@@ -123,7 +124,7 @@ public class MetadataStoreManager {
                 String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
                 throw new MetadataStoreException( msg );
             }
-            LOG.info( "Registering global record store (" + rs + ") with id '" + id + "'." );
+            LOG.info( "Registering global metadata store (" + rs + ") with id '" + id + "'." );
             idToRs.put( id, rs );
 
         }
@@ -155,7 +156,7 @@ public class MetadataStoreManager {
                 MetadataStore rs = create( rsConfigFile.toURI().toURL() );
                 registerAndInit( rs, rsId );
             } catch ( Exception e ) {
-                LOG.error( "Error initializing feature store: " + e.getMessage(), e );
+                LOG.error( "Error initializing metadata store: " + e.getMessage(), e );
             }
         }
         LOG.info( "" );
