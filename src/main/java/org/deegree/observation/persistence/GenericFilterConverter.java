@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.deegree.commons.utils.ArrayUtils;
@@ -79,7 +80,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger( GenericFilterConverter.class );
 
-    private final DatastoreConfiguration dsConfig;
+    private final Map<String, String> columnMap;
 
     private final TimeZone tz;
 
@@ -87,14 +88,14 @@ public class GenericFilterConverter implements SQLFilterConverter {
      * @param dsConfig
      * @param tz
      */
-    public GenericFilterConverter( DatastoreConfiguration dsConfig, TimeZone tz ) {
-        this.dsConfig = dsConfig;
+    public GenericFilterConverter( Map<String, String> columnMap, TimeZone tz ) {
+        this.columnMap = columnMap;
         this.tz = tz;
     }
 
     @Override
     public void buildTimeClause( QueryBuilder q, List<TimeFilter> filters ) {
-        String timeStampColumn = dsConfig.getColumnName( "timestamp" );
+        String timeStampColumn = columnMap.get( "timestamp" );
         final Calendar template = Calendar.getInstance( tz );
 
         ArrayList<String> timeFilters = new ArrayList<String>( filters.size() );
@@ -141,7 +142,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
 
     @Override
     public void buildProcedureClause( QueryBuilder q, List<ProcedureFilter> filters, Offering offering ) {
-        String procColumn = dsConfig.getColumnName( "procedureId" );
+        String procColumn = columnMap.get( "procedureId" );
         if ( procColumn == null ) {
             return;
         }
@@ -199,7 +200,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
             throw new FilterException(
                                        "Unsupported filter operation. PropertyIsBetween only supports PropertyName and Literal." );
         }
-        String colName = dsConfig.getColumnName( propName );
+        String colName = columnMap.get( propName );
         q.add( stringSetter( lower ) ).add( "? <" ).add( colName );
         q.add( "AND" ).add( colName ).add( " < ?" ).add( stringSetter( upper ) );
     }
@@ -207,7 +208,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
     private void buildPropertyIsNullClause( QueryBuilder q, ComparisonOperator op ) {
         PropertyIsNull p = (PropertyIsNull) op;
         String propName = p.getPropertyName().getPropertyName();
-        String colName = dsConfig.getColumnName( propName );
+        String colName = columnMap.get( propName );
         q.add( colName + " IS NOT NULL" );
     }
 
@@ -239,7 +240,7 @@ public class GenericFilterConverter implements SQLFilterConverter {
         StringPair propFilter = getSimplePropFilter( op );
         if ( compOp != null && propFilter != null ) {
             final String value = propFilter.second;
-            String colName = dsConfig.getColumnName( propFilter.first );
+            String colName = columnMap.get( propFilter.first );
 
             q.add( colName );
             q.add( compOp + " ?" );

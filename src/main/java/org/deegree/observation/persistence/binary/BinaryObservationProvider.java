@@ -33,12 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.observation.persistence;
+package org.deegree.observation.persistence.binary;
 
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
 
-import org.deegree.observation.model.Property;
+import org.deegree.observation.persistence.ObservationDatastore;
+import org.deegree.observation.persistence.ObservationDatastoreException;
+import org.deegree.observation.persistence.ObservationStoreProvider;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -50,29 +51,31 @@ import org.deegree.observation.model.Property;
  * @version $Revision$, $Date$
  * 
  */
-public abstract class SQLObservationDatastore implements ObservationDatastore {
+public class BinaryObservationProvider implements ObservationStoreProvider {
 
-    protected final String jdbcId;
-
-    protected final String tableName;
-
-    protected final Map<String, String> columnMap;
-
-    protected final Map<String, String> optionMap;
-
-    protected final List<Property> properties;
-
-    public SQLObservationDatastore( String jdbcId, String tableName, Map<String, String> columnMap,
-                                    Map<String, String> optionMap, List<Property> properties ) {
-        this.jdbcId = jdbcId;
-        this.tableName = tableName;
-        this.columnMap = columnMap;
-        this.optionMap = optionMap;
-        this.properties = properties;
+    @Override
+    public String getConfigNamespace() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public List<Property> getProperties() {
-        return properties;
+    @Override
+    public URL getConfigSchema() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public URL getConfigTemplate() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public ObservationDatastore getObservationStore( URL configURL )
+                            throws ObservationDatastoreException {
+        // TODO
+        return null;
     }
 
 }

@@ -74,7 +74,9 @@ public interface ObservationStoreProvider {
      * @param configURL
      *            location of the configuration document, must not be <code>null</code>
      * @return new observation store instance, configured, not initialized yet
+     * @throws ObservationDatastoreException
      */
-    public ObservationDatastore getObservationStore( URL configURL );
+    public ObservationDatastore getObservationStore( URL configURL )
+                            throws ObservationDatastoreException;
 
 }

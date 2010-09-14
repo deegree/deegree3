@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.observation.persistence;
+package org.deegree.observation.persistence.continuous;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,7 +44,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.utils.time.Duration;
@@ -55,6 +57,13 @@ import org.deegree.observation.model.Property;
 import org.deegree.observation.model.Result;
 import org.deegree.observation.model.SimpleDoubleResult;
 import org.deegree.observation.model.SimpleMeasurement;
+import org.deegree.observation.persistence.ContinuousFilterConverter;
+import org.deegree.observation.persistence.DatastoreConfiguration;
+import org.deegree.observation.persistence.FilterException;
+import org.deegree.observation.persistence.ObservationDatastore;
+import org.deegree.observation.persistence.ObservationDatastoreException;
+import org.deegree.observation.persistence.SQLFilterConverter;
+import org.deegree.observation.persistence.simple.SimpleObservationDatastore;
 import org.deegree.protocol.sos.filter.FilterCollection;
 import org.deegree.protocol.sos.time.IndeterminateTime;
 import org.deegree.protocol.sos.time.SamplingTime;
@@ -87,24 +96,25 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
      *            the datastore configuration
      * @throws SOSConfigurationException
      *             if the {@link DatastoreConfiguration} contains no beginDate or interval.
-     * @throws SOServiceException
      */
-    public ContinuousObservationDatastore( DatastoreConfiguration dsConfig ) throws ObservationDatastoreException {
-        super( dsConfig );
+    public ContinuousObservationDatastore( String jdbcId, String tableName, Map<String, String> columnMap,
+                                           Map<String, String> optionMap, List<Property> properties )
+                            throws ObservationDatastoreException {
+        super( jdbcId, tableName, columnMap, optionMap, properties );
         try {
-            begin = DateUtils.parseISO8601Date( dsConfig.getOptionValue( "beginDate" ) );
-            Duration duration = DateUtils.parseISO8601Duration( dsConfig.getOptionValue( "interval" ) );
+            begin = DateUtils.parseISO8601Date( optionMap.get( "beginDate" ) );
+            Duration duration = DateUtils.parseISO8601Duration( optionMap.get( "interval" ) );
             interval = duration.getDateAfter( begin ).getTime() - begin.getTime();
-            String firstID = dsConfig.getOptionValue( "firstID" );
+            String firstID = optionMap.get( "firstID" );
             int id = 1;
             if ( firstID != null ) {
                 id = Integer.parseInt( firstID );
             }
-            String columnName = dsConfig.getColumnName( "id" );
-            if ( columnName == null ) {
+            String idField = optionMap.get( "id" );
+            if ( idField == null ) {
                 throw new ObservationDatastoreException( "the datastore configuration is missing the 'id' column" );
             }
-            filterConverter = new ContinuousFilterConverter( dsConfig, columnName, begin, interval, id );
+            filterConverter = new ContinuousFilterConverter( columnMap, idField, begin, interval, id );
         } catch ( ParseException e ) {
             throw new ObservationDatastoreException( "error setting the beginDate/interval", e.getCause() );
         }
@@ -122,12 +132,12 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
             Observation measurements = new Observation( properties );
             MeasurementBase measurementBase = new MeasurementBase( "", properties ); // TODO
 
-            conn = getConnection();
+            conn = ConnectionManager.getConnection( jdbcId );
             List<String> columns = new LinkedList<String>();
             for ( Property property : properties ) {
                 columns.add( property.getColumnName() );
             }
-            String idColumn = getDSConfig().getColumnName( "id" );
+            String idColumn = columnMap.get( "id" );
             columns.add( idColumn );
             stmt = getStatement( filter, columns, conn, offering );
             resultSet = stmt.executeQuery();
@@ -174,8 +184,8 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
-            conn = getConnection();
-            stmt = conn.prepareStatement( "select count(*) as n from " + getDSConfig().getTableName() );
+            conn = ConnectionManager.getConnection( jdbcId );
+            stmt = conn.prepareStatement( "select count(*) as n from " + tableName );
             resultSet = stmt.executeQuery();
             if ( resultSet.next() ) {
                 int count = resultSet.getInt( "n" );
@@ -194,7 +204,6 @@ public class ContinuousObservationDatastore extends SimpleObservationDatastore {
         return result;
     }
 
-    @Override
     protected SQLFilterConverter getFilterConverter() {
         return filterConverter;
     }
