@@ -97,19 +97,21 @@ class OracleApplicationSchemaBuilder {
 
     private DatabaseMetaData md;
 
-    static MappedApplicationSchema build( List<FeatureTypeDecl> ftDecls, String jdbcConnId, String dbSchema,
-                                          CRS storageSRS )
+    static MappedApplicationSchema build( ApplicationSchema appSchema, List<FeatureTypeDecl> ftDecls,
+                                          String jdbcConnId, String dbSchema, CRS storageSRS )
                             throws SQLException {
-        OracleApplicationSchemaBuilder builder = new OracleApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema );
+        OracleApplicationSchemaBuilder builder = new OracleApplicationSchemaBuilder( ftDecls, jdbcConnId, dbSchema,
+                                                                                     appSchema );
         FeatureType[] fts = builder.ftNameToFt.values().toArray( new FeatureType[builder.ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = builder.ftNameToMapping.values().toArray(
                                                                                     new FeatureTypeMapping[builder.ftNameToMapping.size()] );
         BlobMapping blobMapping = null;
-        return new MappedApplicationSchema( fts, null, null, ftMappings, storageSRS, null, blobMapping );
+        return new MappedApplicationSchema( fts, null, null, appSchema.getXSModel(), ftMappings, storageSRS, null,
+                                            blobMapping );
     }
 
-    private OracleApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema )
-                            throws SQLException {
+    private OracleApplicationSchemaBuilder( List<FeatureTypeDecl> ftDecls, String connId, String dbSchema,
+                                            ApplicationSchema appSchema ) throws SQLException {
 
         Connection conn = ConnectionManager.getConnection( connId );
         md = conn.getMetaData();
@@ -117,7 +119,8 @@ class OracleApplicationSchemaBuilder {
         for ( FeatureTypeDecl ftDecl : ftDecls ) {
             process( ftDecl );
         }
-        schema = new ApplicationSchema( ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] ), null );
+        schema = new ApplicationSchema( ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] ), null, null,
+                                        appSchema.getXSModel() );
     }
 
     private void process( FeatureTypeDecl ftDecl ) {

@@ -92,7 +92,7 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
             Unmarshaller u = jc.createUnmarshaller();
             OracleFeatureStoreConfig config = (OracleFeatureStoreConfig) u.unmarshal( configURL );
             CRS storageSRS = new CRS( config.getStorageSRS() );
-            MappedApplicationSchema schema = OracleApplicationSchemaBuilder.build( config.getFeatureType(),
+            MappedApplicationSchema schema = OracleApplicationSchemaBuilder.build( null, config.getFeatureType(),
                                                                                    config.getJDBCConnId(),
                                                                                    config.getDBSchemaQualifier(),
                                                                                    storageSRS );
