@@ -50,6 +50,7 @@ import java.util.Arrays;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.CoreTstProperties;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -78,7 +79,6 @@ import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.RawProcessExecution;
 import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -94,33 +94,22 @@ public class WPSClientTest {
 
     private static final File CURVE_FILE = new File( WPSClientTest.class.getResource( "curve.xml" ).getPath() );
 
-    private static final File POLYGON_FILE = new File( WPSClientTest.class.getResource( "Polygon.gml" ).getPath() );
-
-    private static final File POINT_FILE = new File( WPSClientTest.class.getResource( "Point_coord.gml" ).getPath() );
-
     private static final File BINARY_INPUT = new File( WPSClientTest.class.getResource( "image.png" ).getPath() );
-
-    private static final File BINARY_INPUT_TIFF = new File( WPSClientTest.class.getResource( "image.tiff" ).getPath() );
-
-    private static final String DEMO_SERVICE_URL = "http://deegree3-testing.deegree.org/deegree-wps-demo/services?service=WPS&version=1.0.0&request=GetCapabilities";
-
-    private static final String NORTH52_SERVICE_URL = "http://giv-wps.uni-muenster.de:8080/wps/WebProcessingService?Request=GetCapabilities&Service=WPS";
 
     private static final String REMOTE_XML_INPUT = "http://demo.deegree.org/deegree-wfs/services?REQUEST=GetCapabilities&version=1.1.0&service=WFS";
 
     private static final String REMOTE_BINARY_INPUT = "http://www.deegree.org/deegree/images/deegree/logo-deegree.png";
 
-    @Before
-    public void init() {
-        if ( DEMO_SERVICE_URL == null ) {
-            throw new RuntimeException( "Cannot proceed: Service URL not provided." );
-        }
-    }
-
     @Test
     public void testMetadata()
                             throws OWSException, IOException {
-        URL serviceUrl = new URL( DEMO_SERVICE_URL );
+    	
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        URL serviceUrl = new URL( demoWPSURL );
+        
         WPSClient client = new WPSClient( serviceUrl );
         Assert.assertNotNull( client );
         ServiceIdentification serviceId = client.getMetadata().getServiceIdentification();
@@ -178,8 +167,11 @@ public class WPSClientTest {
     @Test
     public void testProcessDescription_1()
                             throws OWSException, IOException {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process p1 = wpsClient.getProcess( "Buffer" );
         LiteralInputType literalInput = (LiteralInputType) p1.getInputTypes()[1];
         Assert.assertEquals( "1", literalInput.getMinOccurs() );
@@ -205,8 +197,11 @@ public class WPSClientTest {
     @Test
     public void testProcessDescription_2()
                             throws OWSException, IOException {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process p2 = wpsClient.getProcess( "Crosses", null );
         InputType secondInput = p2.getInputTypes()[1];
         Assert.assertEquals( "1", secondInput.getMinOccurs() );
@@ -230,8 +225,11 @@ public class WPSClientTest {
     @Test
     public void testProcessDescription_3()
                             throws OWSException, IOException {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process p2 = wpsClient.getProcess( "ParameterDemoProcess", null );
 
         InputType firstInput = p2.getInputTypes()[0];
@@ -313,8 +311,11 @@ public class WPSClientTest {
     @Test
     public void testGetProcess()
                             throws OWSException, IOException {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process p1 = wpsClient.getProcess( "Buffer", null );
         Assert.assertNotNull( p1 );
         org.deegree.protocol.wps.client.process.Process p2 = wpsClient.getProcess( "ParameterDemoProcess", null );
@@ -324,9 +325,11 @@ public class WPSClientTest {
     @Test
     public void testExecute_1()
                             throws Exception {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
-
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process proc = wpsClient.getProcess( "Centroid", null );
         ProcessExecution execution = proc.prepareExecution();
         execution.addXMLInput( "GMLInput", null, CURVE_FILE.toURI().toURL(), false, "text/xml", null, null );
@@ -352,9 +355,11 @@ public class WPSClientTest {
     public void testExecute_2()
                             throws Exception {
 
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
-
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process proc = wpsClient.getProcess( "Buffer", null );
 
         ProcessExecution execution = proc.prepareExecution();
@@ -376,8 +381,11 @@ public class WPSClientTest {
     @Test
     public void testExecute_3()
                             throws OWSException, IOException, XMLStreamException {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process proc = wpsClient.getProcess( "ParameterDemoProcess" );
 
         ProcessExecution execution = proc.prepareExecution();
@@ -402,8 +410,11 @@ public class WPSClientTest {
     @Test
     public void testExecute_4()
                             throws OWSException, IOException, XMLStreamException {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process proc = wpsClient.getProcess( "ParameterDemoProcess", null );
 
         ProcessExecution execution = proc.prepareExecution();
@@ -428,8 +439,11 @@ public class WPSClientTest {
     @Test
     public void testExecuteRawOutput()
                             throws OWSException, IOException, XMLStreamException {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process proc = wpsClient.getProcess( "ParameterDemoProcess", null );
 
         RawProcessExecution execution = proc.prepareRawExecution();
@@ -453,8 +467,11 @@ public class WPSClientTest {
     @Test
     public void testExecuteInputsByRef()
                             throws OWSException, IOException, XMLStreamException {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process proc = wpsClient.getProcess( "ParameterDemoProcess", null );
 
         ProcessExecution execution = proc.prepareExecution();
@@ -522,8 +539,11 @@ public class WPSClientTest {
     @Test
     public void testExecuteAsync()
                             throws OWSException, IOException, XMLStreamException, InterruptedException {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		return;
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process proc = wpsClient.getProcess( "ParameterDemoProcess", null );
 
         ProcessExecution execution = proc.prepareExecution();
@@ -597,9 +617,11 @@ public class WPSClientTest {
     @Test(expected = OWSException.class)
     public void testFailedExecute()
                             throws Exception {
-        URL processUrl = new URL( DEMO_SERVICE_URL );
-        WPSClient wpsClient = new WPSClient( processUrl );
-
+    	String demoWPSURL = CoreTstProperties.getProperty("demo_wps_url");
+    	if (demoWPSURL == null) {
+    		throw new OWSException(null, null);
+    	}
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         Process proc = wpsClient.getProcess( "Centroid", null );
         ProcessExecution execution = proc.prepareExecution();
         // omitting required input parameter
