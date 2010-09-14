@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence;
+package org.deegree.metadata.persistence;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -57,9 +57,9 @@ import org.slf4j.LoggerFactory;
  * {@link MetadataStore} instances by id.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class MetadataStoreManager {
 

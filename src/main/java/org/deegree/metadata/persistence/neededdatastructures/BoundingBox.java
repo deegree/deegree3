@@ -33,63 +33,67 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.neededdatastructures;
-
-import java.util.List;
+package org.deegree.metadata.persistence.neededdatastructures;
 
 /**
- * Keyword representation for records. This class encapsulates the data for representation only. <br>
- * In ISO profile this class encapsulates the keywords, whereas in DC profile the subjects are encapsulates in this
- * class.
+ * BoundingBox representation for records. This class encapsulates the data for representation only.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class Keyword {
+public class BoundingBox {
 
-    private String keywordType;
+    private double westBoundLongitude;
 
-    private List<String> keywords;
+    private double southBoundLatitude;
 
-    private String thesaurus;
+    private double eastBoundLongitude;
+
+    private double northBoundLatitude;
 
     /**
-     * Creates a new {@link Keyword} instance.
      * 
-     * @param keywordType
-     *            a group of similar keywords. It's defined in a codeList {discipline, place, stratum, theme, temporal}
-     * @param keywords
-     *            topic of the content of the resource
-     * @param thesaurus
-     *            of the keywords
+     * @param westBoundLongitude
+     * @param southBoundLatitude
+     * @param eastBoundLongitude
+     * @param northBoundLatitude
      */
-    public Keyword( String keywordType, List<String> keywords, String thesaurus ) {
-        this.keywordType = keywordType;
-        this.keywords = keywords;
-        this.thesaurus = thesaurus;
+    public BoundingBox( double westBoundLongitude, double southBoundLatitude, double eastBoundLongitude,
+                        double northBoundLatitude ) {
+        this.westBoundLongitude = westBoundLongitude;
+        this.southBoundLatitude = southBoundLatitude;
+        this.eastBoundLongitude = eastBoundLongitude;
+        this.northBoundLatitude = northBoundLatitude;
     }
 
     /**
-     * @return the keywordType
+     * @return the westBoundLongitude
      */
-    public String getKeywordType() {
-        return keywordType;
+    public double getWestBoundLongitude() {
+        return westBoundLongitude;
     }
 
     /**
-     * @return the keywords
+     * @return the southBoundLatitude
      */
-    public List<String> getKeywords() {
-        return keywords;
+    public double getSouthBoundLatitude() {
+        return southBoundLatitude;
     }
 
     /**
-     * @return the thesaurus
+     * @return the eastBoundLongitude
      */
-    public String getThesaurus() {
-        return thesaurus;
+    public double getEastBoundLongitude() {
+        return eastBoundLongitude;
+    }
+
+    /**
+     * @return the northBoundLatitude
+     */
+    public double getNorthBoundLatitude() {
+        return northBoundLatitude;
     }
 
 }

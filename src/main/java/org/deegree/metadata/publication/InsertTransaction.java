@@ -33,62 +33,65 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.neededdatastructures;
+package org.deegree.metadata.publication;
+
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.apache.axiom.om.OMElement;
+import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
- * Specifies the tightly coupled dataset relation in ISO profile 1.0. This is defined in OGC 07-045 document.
+ * Represents a CSW <code>Insert</code> action (part of a Transaction operation request).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class OperatesOnData {
+public class InsertTransaction extends TransactionOperation {
 
-    private String operatesOn;
+    private List<OMElement> element;
 
-    private String operatesOnIdentifier;
-
-    private String operatesOnName;
+    private QName typeName;
 
     /**
-     * Creates a new {@link OperatesOnData} instance.
      * 
-     * @param operatesOn
-     *            holds the identifier of a dataset tightly coupled with the service instance.
-     * 
-     * @param operatesOnIdentifier
-     *            identifier of a tightly coupled dataset on which the service operates on.
-     * 
-     * @param operatesOnName
-     *            name of an operation with which the service operates on a tightly coupled dataset.
-     * 
+     * @param transChildElementInsertAPISORecordList
+     * @param typeName
+     * @param handle
      */
-    public OperatesOnData( String operatesOn, String operatesOnIdentifier, String operatesOnName ) {
-        this.operatesOn = operatesOn;
-        this.operatesOnIdentifier = operatesOnIdentifier;
-        this.operatesOnName = operatesOnName;
+    public InsertTransaction( List<OMElement> transChildElementInsertAPISORecordList, QName typeName, String handle ) {
+        super( handle );
+        this.element = transChildElementInsertAPISORecordList;
+        this.typeName = typeName;
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.services.controller.csw.transaction.TransactionOperation#getType()
+     */
+    @Override
+    public TransactionType getType() {
+
+        return TransactionType.INSERT;
     }
 
     /**
-     * @return the operatesOn
+     * @return the element
      */
-    public String getOperatesOn() {
-        return operatesOn;
+    public List<OMElement> getElement() {
+        return element;
     }
 
     /**
-     * @return the operatesOnIdentifier
+     * @return the typeName
      */
-    public String getOperatesOnIdentifier() {
-        return operatesOnIdentifier;
-    }
-
-    /**
-     * @return the operatesOnName
-     */
-    public String getOperatesOnName() {
-        return operatesOnName;
+    public QName getTypeName() {
+        return typeName;
     }
 
 }

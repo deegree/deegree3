@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericmetadatastore;
+package org.deegree.metadata.persistence.genericmetadatastore;
 
 import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.PrimitiveType.DATE;
@@ -79,9 +79,9 @@ import com.vividsolutions.jts.io.ParseException;
  * boundingbox, crs and association, denominator, distanceUOM, distanceValue put a type in
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class PostGISMappingsISODC implements PostGISMapping {
 
@@ -236,9 +236,9 @@ public class PostGISMappingsISODC implements PostGISMapping {
      * The common column names that are used in the backend for each databasetable.
      * 
      * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-     * @author last edited by: $Author: thomas $
+     * @author last edited by: $Author$
      * 
-     * @version $Revision: $, $Date: $
+     * @version $Revision$, $Date$
      */
     public enum CommonColumnNames {
 
@@ -272,9 +272,9 @@ public class PostGISMappingsISODC implements PostGISMapping {
      * The names of the databasetables that are used in the backend.
      * 
      * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-     * @author last edited by: $Author: thomas $
+     * @author last edited by: $Author$
      * 
-     * @version $Revision: $, $Date: $
+     * @version $Revision$, $Date$
      */
     public enum DatabaseTables {
         /**

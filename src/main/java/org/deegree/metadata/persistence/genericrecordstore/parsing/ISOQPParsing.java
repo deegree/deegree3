@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore.parsing;
+package org.deegree.metadata.persistence.genericrecordstore.parsing;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
@@ -69,10 +69,10 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.cs.CRS;
-import org.deegree.record.persistence.genericrecordstore.generating.GenerateRecord;
-import org.deegree.record.persistence.neededdatastructures.BoundingBox;
-import org.deegree.record.persistence.neededdatastructures.Format;
-import org.deegree.record.persistence.neededdatastructures.Keyword;
+import org.deegree.metadata.persistence.genericrecordstore.generating.GenerateMetadata;
+import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
+import org.deegree.metadata.persistence.neededdatastructures.Format;
+import org.deegree.metadata.persistence.neededdatastructures.Keyword;
 import org.slf4j.Logger;
 
 /**
@@ -83,9 +83,9 @@ import org.slf4j.Logger;
  * areas.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public final class ISOQPParsing extends XMLAdapter {
 
@@ -97,7 +97,7 @@ public final class ISOQPParsing extends XMLAdapter {
 
     private ReturnableProperties rp;
 
-    private GenerateRecord gr;
+    private GenerateMetadata gr;
 
     /**
      * checks if an OMElement is null
@@ -170,7 +170,7 @@ public final class ISOQPParsing extends XMLAdapter {
                                               rootElement.getDefaultNamespace().getNamespaceURI() );
         }
 
-        gr = new GenerateRecord();
+        gr = new GenerateMetadata();
         qp = new QueryableProperties();
 
         rp = new ReturnableProperties();
@@ -764,7 +764,7 @@ public final class ISOQPParsing extends XMLAdapter {
     public ParsedProfileElement parseAPDC( OMElement element )
                             throws IOException {
 
-        gr = new GenerateRecord();
+        gr = new GenerateMetadata();
         qp = new QueryableProperties();
 
         rp = new ReturnableProperties();

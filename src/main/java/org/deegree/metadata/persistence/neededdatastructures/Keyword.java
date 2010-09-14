@@ -33,48 +33,63 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.neededdatastructures;
+package org.deegree.metadata.persistence.neededdatastructures;
+
+import java.util.List;
 
 /**
- * Format representation for records. This class encapsulates the data for representation only. <br>
- * Format determines the software, hardware or other equipment needed to display or operates on a resource.
+ * Keyword representation for records. This class encapsulates the data for representation only. <br>
+ * In ISO profile this class encapsulates the keywords, whereas in DC profile the subjects are encapsulates in this
+ * class.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class Format {
+public class Keyword {
 
-    private String name;
+    private String keywordType;
 
-    private String version;
+    private List<String> keywords;
+
+    private String thesaurus;
 
     /**
-     * Creates a new {@link Format} instance.
+     * Creates a new {@link Keyword} instance.
      * 
-     * @param name
-     *            physical or digital manifestation of a resource, e.g. shapefile
-     * @param version
-     *            of the format, e.g. Amendment 1 or 1.0
+     * @param keywordType
+     *            a group of similar keywords. It's defined in a codeList {discipline, place, stratum, theme, temporal}
+     * @param keywords
+     *            topic of the content of the resource
+     * @param thesaurus
+     *            of the keywords
      */
-    public Format( String name, String version ) {
-        this.name = name;
-        this.version = version;
+    public Keyword( String keywordType, List<String> keywords, String thesaurus ) {
+        this.keywordType = keywordType;
+        this.keywords = keywords;
+        this.thesaurus = thesaurus;
     }
 
     /**
-     * @return the name
+     * @return the keywordType
      */
-    public String getName() {
-        return name;
+    public String getKeywordType() {
+        return keywordType;
     }
 
     /**
-     * @return the version
+     * @return the keywords
      */
-    public String getVersion() {
-        return version;
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
+    /**
+     * @return the thesaurus
+     */
+    public String getThesaurus() {
+        return thesaurus;
     }
 
 }

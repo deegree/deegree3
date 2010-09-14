@@ -33,24 +33,24 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore.parsing;
+package org.deegree.metadata.persistence.genericrecordstore.parsing;
 
 import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.cs.CRS;
-import org.deegree.record.persistence.neededdatastructures.BoundingBox;
-import org.deegree.record.persistence.neededdatastructures.Format;
-import org.deegree.record.persistence.neededdatastructures.Keyword;
-import org.deegree.record.persistence.neededdatastructures.OperatesOnData;
+import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
+import org.deegree.metadata.persistence.neededdatastructures.Format;
+import org.deegree.metadata.persistence.neededdatastructures.Keyword;
+import org.deegree.metadata.persistence.neededdatastructures.OperatesOnData;
 
 /**
  * Properties that are queryable by applicationprofiles such as ISO application profile version 1.0 document 07-045.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public class QueryableProperties {
 

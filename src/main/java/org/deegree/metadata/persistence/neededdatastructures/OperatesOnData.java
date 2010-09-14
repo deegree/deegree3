@@ -33,67 +33,62 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.neededdatastructures;
+package org.deegree.metadata.persistence.neededdatastructures;
 
 /**
- * BoundingBox representation for records. This class encapsulates the data for representation only.
+ * Specifies the tightly coupled dataset relation in ISO profile 1.0. This is defined in OGC 07-045 document.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class BoundingBox {
+public class OperatesOnData {
 
-    private double westBoundLongitude;
+    private String operatesOn;
 
-    private double southBoundLatitude;
+    private String operatesOnIdentifier;
 
-    private double eastBoundLongitude;
-
-    private double northBoundLatitude;
+    private String operatesOnName;
 
     /**
+     * Creates a new {@link OperatesOnData} instance.
      * 
-     * @param westBoundLongitude
-     * @param southBoundLatitude
-     * @param eastBoundLongitude
-     * @param northBoundLatitude
+     * @param operatesOn
+     *            holds the identifier of a dataset tightly coupled with the service instance.
+     * 
+     * @param operatesOnIdentifier
+     *            identifier of a tightly coupled dataset on which the service operates on.
+     * 
+     * @param operatesOnName
+     *            name of an operation with which the service operates on a tightly coupled dataset.
+     * 
      */
-    public BoundingBox( double westBoundLongitude, double southBoundLatitude, double eastBoundLongitude,
-                        double northBoundLatitude ) {
-        this.westBoundLongitude = westBoundLongitude;
-        this.southBoundLatitude = southBoundLatitude;
-        this.eastBoundLongitude = eastBoundLongitude;
-        this.northBoundLatitude = northBoundLatitude;
+    public OperatesOnData( String operatesOn, String operatesOnIdentifier, String operatesOnName ) {
+        this.operatesOn = operatesOn;
+        this.operatesOnIdentifier = operatesOnIdentifier;
+        this.operatesOnName = operatesOnName;
     }
 
     /**
-     * @return the westBoundLongitude
+     * @return the operatesOn
      */
-    public double getWestBoundLongitude() {
-        return westBoundLongitude;
+    public String getOperatesOn() {
+        return operatesOn;
     }
 
     /**
-     * @return the southBoundLatitude
+     * @return the operatesOnIdentifier
      */
-    public double getSouthBoundLatitude() {
-        return southBoundLatitude;
+    public String getOperatesOnIdentifier() {
+        return operatesOnIdentifier;
     }
 
     /**
-     * @return the eastBoundLongitude
+     * @return the operatesOnName
      */
-    public double getEastBoundLongitude() {
-        return eastBoundLongitude;
-    }
-
-    /**
-     * @return the northBoundLatitude
-     */
-    public double getNorthBoundLatitude() {
-        return northBoundLatitude;
+    public String getOperatesOnName() {
+        return operatesOnName;
     }
 
 }
