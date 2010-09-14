@@ -139,7 +139,7 @@ public class VRMLImporter implements ModelImporter {
     private static int textureCount = 0;
 
     // Instance variables.
-    private String name = null;
+//    private String name = null;
 
     // Instance variables.
     private String id = null;
@@ -304,9 +304,6 @@ public class VRMLImporter implements ModelImporter {
         double[] upper = new double[] { Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY };
         if ( fileName != null ) {
             if ( group.getCapability( Group.ALLOW_CHILDREN_READ ) ) {
-                if ( name == null ) {
-                    name = group.getName();
-                }
                 result = new RenderableQualityModel();
                 Transform3D initialMatrix = new Transform3D();
                 if ( doUserRotation ) {
@@ -465,8 +462,6 @@ public class VRMLImporter implements ModelImporter {
     private void importShape3D( RenderableQualityModel result, Shape3D shape, Transform3D transformation,
                                 double[] lower, double[] upper ) {
         Enumeration<Geometry> geoms = shape.getAllGeometries();
-        String shapeName = shape.getName();
-        LOG.debug( "importting a Shape3d with name: " + shapeName );
         Appearance app = shape.getAppearance();
         Color3f ambient = new Color3f( 1f, 1f, 1f );
         Color3f diffuse = new Color3f( 1f, 1f, 1f );
@@ -716,12 +711,9 @@ public class VRMLImporter implements ModelImporter {
             if ( appearance != null ) {
                 Texture tex = appearance.getTexture();
                 if ( tex != null ) {
-                    texName = tex.getName();
-                    LOG.debug( "Texture name: " + texName );
                     ImageComponent ic = tex.getImage( 0 );
                     if ( ic != null ) {
                         if ( ic instanceof ImageComponent2D ) {
-                            LOG.debug( "ImageComponent name: " + ( (ImageComponent2D) ic ).getName() );
                             BufferedImage bi = ( (ImageComponent2D) ic ).getImage();
                             if ( bi != null ) {
                                 Pair<BufferedImage, String> cache = testEquality( bi );

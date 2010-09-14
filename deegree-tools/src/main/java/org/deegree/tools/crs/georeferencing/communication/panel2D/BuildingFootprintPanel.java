@@ -196,8 +196,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
                     distance = point.distance( point2d );
                     if ( point2d instanceof FootprintPoint ) {
                         closestPoint.first = new FootprintPoint( point.x, point.y );
-                        closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).getX(),
-                                                                  pointsPixelToWorld.get( point ).getY() );
+                        closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).x,
+                                                                  pointsPixelToWorld.get( point ).y );
                     }
 
                 } else {
@@ -206,8 +206,8 @@ public class BuildingFootprintPanel extends AbstractPanel2D {
                         distance = distanceTemp;
                         if ( point2d instanceof FootprintPoint ) {
                             closestPoint.first = new FootprintPoint( point.x, point.y );
-                            closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).getX(),
-                                                                      pointsPixelToWorld.get( point ).getY() );
+                            closestPoint.second = new FootprintPoint( pointsPixelToWorld.get( point ).x,
+                                                                      pointsPixelToWorld.get( point ).y	 );
                         }
                     }
                 }

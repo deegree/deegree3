@@ -45,9 +45,6 @@ package org.deegree.tools.crs.georeferencing.model.points;
  * @version $Revision$, $Date$
  */
 public class FootprintPoint extends AbstractGRPoint {
-    private double x;
-
-    private double y;
 
     public FootprintPoint( double x, double y ) {
         super( x, y );

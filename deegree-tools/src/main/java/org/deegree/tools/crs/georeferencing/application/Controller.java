@@ -1632,8 +1632,8 @@ public class Controller {
                 element.add( point.second.getWorldCoords().y );
                 element.add( point.first.getWorldCoords().x );
                 element.add( point.first.getWorldCoords().y );
-                element.add( r[counter].getX() );
-                element.add( r[counter].getY() );
+                element.add( r[counter].x );
+                element.add( r[counter].y );
                 data.add( element );
 
                 point.third = r[counter++];
@@ -1709,7 +1709,7 @@ public class Controller {
                                                               p.second.getRc().getColumnY() ) );
             if ( p.third != null ) {
 
-                PointResidual r = new PointResidual( p.third.getX(), p.third.getY() );
+                PointResidual r = new PointResidual( p.third.x, p.third.y );
                 System.out.println( "\n[Controller] after: " + s );
                 temp.add( new Triple<Point4Values, Point4Values, PointResidual>( f, s, r ) );
             } else {

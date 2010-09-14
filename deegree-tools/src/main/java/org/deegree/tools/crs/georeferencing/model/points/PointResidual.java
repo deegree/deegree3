@@ -45,9 +45,6 @@ package org.deegree.tools.crs.georeferencing.model.points;
  * @version $Revision$, $Date$
  */
 public class PointResidual extends AbstractGRPoint {
-    private double x;
-
-    private double y;
 
     public PointResidual( double x, double y ) {
         super( x, y );
