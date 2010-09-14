@@ -76,7 +76,7 @@ public class CSWService {
 
         LOG.info( "Initializing/looking up configured record stores." );
 
-        for (RecordStore rs : RecordStoreManager.getAll().values()) {
+        for ( RecordStore rs : RecordStoreManager.getAll().values() ) {
             addToStore( rs );
         }
     }
@@ -116,31 +116,17 @@ public class CSWService {
      * If there is no matching between the parameter typeName and any {@link RecordStore} there is nothing to be
      * returned. Otherwise the requested {@link RecordStore} should return.
      * 
-     * <p>
-     * TODO's:
-     * <p>
-     * <b>mappingWithoutTypeName</b> -> if there is a mapping required without a typeName attribute<br>
-     * <b>mappingForCommonQueryableProperties</b> -> if there is a mapping required for common queryable properties
-     * without a typeName attribute
-     * <p>
-     * At the moment there is everytime a matching!!!<br>
      * 
      * @param qName
      *            the characteristic typeName for a specific record
      * @return {@link RecordStore}, can be <Code>null</Code>
      */
     public RecordStore getRecordStore( QName qName ) {
-        QName mappingWithoutTypeName = new QName( qName.getNamespaceURI(), "", qName.getPrefix() );
-        // QName mappingForCommonQueryableProperties = new QName( "", "", "" );
         for ( RecordStore rs : recordStore ) {
-            for ( QName recordstoreTypeName : rs.getTypeNames().keySet() ) {
-                if ( qName.equals( recordstoreTypeName ) || mappingWithoutTypeName.equals( recordstoreTypeName )
-                // || mappingForCommonQueryableProperties.equals( recordstoreTypeName )
-                ) {
-
-                    return rs;
-                }
+            if ( rs.getTypeNames().get( qName ) != null ) {
+                return rs;
             }
+
         }
         return null;
     }
