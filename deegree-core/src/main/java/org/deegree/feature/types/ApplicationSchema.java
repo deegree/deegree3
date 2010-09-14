@@ -44,12 +44,18 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSNamespaceItemList;
+import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSTerm;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -91,6 +97,8 @@ public class ApplicationSchema {
     private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
     private final GMLSchemaAnalyzer xsModel;
+
+    private final Map<XSComplexTypeDefinition, Map<QName, XSElementDeclaration>> typeToAllowedChildDecls = new HashMap<XSComplexTypeDefinition, Map<QName, XSElementDeclaration>>();
 
     /**
      * Creates a new {@link ApplicationSchema} instance from the given {@link FeatureType}s and their derivation
@@ -379,11 +387,7 @@ public class ApplicationSchema {
         }
         List<FeatureType> substitutionGroups = ftToSuperFts.get( substitution );
         if ( substitutionGroups != null ) {
-            for ( FeatureType substitutionGroup : substitutionGroups ) {
-                if ( ft == substitutionGroup ) {
-                    return true;
-                }
-            }
+            return substitutionGroups.contains( substitution );
         }
         return false;
     }
@@ -429,5 +433,54 @@ public class ApplicationSchema {
      */
     public Map<String, String> getNamespaceBindings() {
         return prefixToNs;
+    }
+
+    /**
+     * Returns the child elements that the given complex type definition allows for.
+     * <p>
+     * TODO: Respect order and cardinality of child elements.
+     * </p>
+     * 
+     * @param type
+     *            complex type definition, must not be <code>null</code>
+     * @return the child elements, never <code>null</code>
+     */
+    public synchronized Map<QName, XSElementDeclaration> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
+
+        Map<QName, XSElementDeclaration> childDeclMap = typeToAllowedChildDecls.get( type );
+
+        if ( childDeclMap == null ) {
+            childDeclMap = new HashMap<QName, XSElementDeclaration>();
+            typeToAllowedChildDecls.put( type, childDeclMap );
+            List<XSElementDeclaration> childDecls = new ArrayList<XSElementDeclaration>();
+            addChildElementDecls( type.getParticle(), childDecls );
+
+            for ( XSElementDeclaration decl : childDecls ) {
+                QName name = new QName( decl.getNamespace(), decl.getName() );
+                childDeclMap.put( name, decl );
+                for ( XSElementDeclaration substitution : xsModel.getSubstitutions( decl, null, true, true ) ) {
+                    name = new QName( substitution.getNamespace(), substitution.getName() );
+                    LOG.debug( "Adding: " + name );
+                    childDeclMap.put( name, substitution );
+                }
+            }
+        }
+        return childDeclMap;
+    }
+
+    private void addChildElementDecls( XSParticle particle, List<XSElementDeclaration> propDecls ) {
+        if ( particle != null ) {
+            XSTerm term = particle.getTerm();
+            if ( term instanceof XSElementDeclaration ) {
+                propDecls.add( (XSElementDeclaration) term );
+            } else if ( term instanceof XSModelGroup ) {
+                XSObjectList particles = ( (XSModelGroup) term ).getParticles();
+                for ( int i = 0; i < particles.getLength(); i++ ) {
+                    addChildElementDecls( (XSParticle) particles.item( i ), propDecls );
+                }
+            } else {
+                LOG.warn( "Unhandled term type: " + term.getClass() );
+            }
+        }
     }
 }

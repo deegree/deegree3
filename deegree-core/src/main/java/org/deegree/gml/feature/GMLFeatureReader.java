@@ -46,6 +46,9 @@ import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
 import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML31;
+import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
+import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML311_FEATURECOLLECTION;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -66,11 +69,7 @@ import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSModelGroup;
-import org.apache.xerces.xs.XSObjectList;
-import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
@@ -110,7 +109,6 @@ import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
-import org.deegree.gml.feature.schema.DefaultGMLTypes;
 import org.deegree.gml.geometry.GML2GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
@@ -267,7 +265,9 @@ public class GMLFeatureReader extends XMLAdapter {
         QName featureName = xmlStream.getName();
         FeatureType ft = lookupFeatureType( xmlStream, featureName );
 
-        LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
+        }
 
         // parse properties
         Iterator<PropertyType> declIter = ft.getPropertyDeclarations( version ).iterator();
@@ -283,8 +283,9 @@ public class GMLFeatureReader extends XMLAdapter {
         while ( xmlStream.getEventType() == START_ELEMENT ) {
 
             QName propName = xmlStream.getName();
-
-            LOG.debug( "- property '" + propName + "'" );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "- property '" + propName + "'" );
+            }
 
             if ( findConcretePropertyType( propName, activeDecl ) != null ) {
                 // current property element is equal to active declaration
@@ -320,8 +321,8 @@ public class GMLFeatureReader extends XMLAdapter {
             if ( property != null ) {
                 // if this is the "gml:boundedBy" property, override active CRS
                 // (see GML spec. (where???))
-                if ( StandardGMLFeatureProps.PT_BOUNDED_BY_GML31.getName().equals( activeDecl.getName() )
-                     || StandardGMLFeatureProps.PT_BOUNDED_BY_GML32.getName().equals( activeDecl.getName() ) ) {
+                if ( PT_BOUNDED_BY_GML31.getName().equals( activeDecl.getName() )
+                     || PT_BOUNDED_BY_GML32.getName().equals( activeDecl.getName() ) ) {
                     Envelope bbox = (Envelope) property.getValue();
                     if ( bbox.getCoordinateSystem() != null ) {
                         activeCRS = bbox.getCoordinateSystem();
@@ -334,7 +335,10 @@ public class GMLFeatureReader extends XMLAdapter {
             propOccurences++;
             xmlStream.nextTag();
         }
-        LOG.debug( " - parsing feature (end): " + xmlStream.getCurrentEventInfo() );
+
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( " - parsing feature (end): " + xmlStream.getCurrentEventInfo() );
+        }
 
         feature = ft.newFeature( fid, propertyList, version );
 
@@ -424,8 +428,10 @@ public class GMLFeatureReader extends XMLAdapter {
     public Property parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, CRS crs, int occurence )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        LOG.debug( "- parsing property (begin): " + xmlStream.getCurrentEventInfo() );
-        LOG.debug( "- property declaration: " + propDecl );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "- parsing property (begin): " + xmlStream.getCurrentEventInfo() );
+            LOG.debug( "- property declaration: " + propDecl );
+        }
 
         boolean isNilled = false;
         if ( propDecl.isNillable() ) {
@@ -454,7 +460,9 @@ public class GMLFeatureReader extends XMLAdapter {
                                         + " not handled." );
         }
 
-        LOG.debug( " - parsing property (end): " + xmlStream.getCurrentEventInfo() );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( " - parsing property (end): " + xmlStream.getCurrentEventInfo() );
+        }
         return property;
     }
 
@@ -538,8 +546,7 @@ public class GMLFeatureReader extends XMLAdapter {
             xmlStream.nextTag();
         } else {
             if ( xmlStream.nextTag() == START_ELEMENT ) {
-                Geometry geometry = null;
-                geometry = geomReader.parse( xmlStream, crs );
+                Geometry geometry = geomReader.parse( xmlStream, crs );
                 boolean compatible = false;
                 for ( GeometryType allowedType : propDecl.getAllowedGeometryTypes() ) {
                     if ( allowedType.isCompatible( geometry ) ) {
@@ -632,7 +639,6 @@ public class GMLFeatureReader extends XMLAdapter {
                                                     CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
         TypedObjectNode node = null;
-        LOG.debug( xmlStream.getName().toString() );
         if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
             node = parseGenericXMLElement( xmlStream, (XSSimpleTypeDefinition) xsdValueType );
         } else {
@@ -656,7 +662,7 @@ public class GMLFeatureReader extends XMLAdapter {
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, xsdValueType );
         List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
 
-        Map<QName, XSElementDeclaration> childElementDecls = getAllowedChildElementDecls( xsdValueType );
+        Map<QName, XSElementDeclaration> childElementDecls = schema.getAllowedChildElementDecls( xsdValueType );
 
         switch ( xsdValueType.getContentType() ) {
         case CONTENTTYPE_ELEMENT: {
@@ -676,7 +682,7 @@ public class GMLFeatureReader extends XMLAdapter {
                                                                         xmlStream,
                                                                         childElementDecls.get( childElName ).getTypeDefinition(),
                                                                         crs );
-                        LOG.debug( "adding: " + childElName + ", " + child.getClass().getName() );
+                        // LOG.debug( "adding: " + childElName + ", " + child.getClass().getName() );
                         children.add( child );
                     }
                 }
@@ -704,7 +710,6 @@ public class GMLFeatureReader extends XMLAdapter {
             while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
                 if ( eventType == START_ELEMENT ) {
                     QName childElName = xmlStream.getName();
-                    LOG.debug( "Child: " + childElName );
                     if ( geomReader.isGeometryElement( xmlStream ) ) {
                         children.add( geomReader.parse( xmlStream, crs ) );
                     } else {
@@ -716,7 +721,6 @@ public class GMLFeatureReader extends XMLAdapter {
                                                                         xmlStream,
                                                                         childElementDecls.get( childElName ).getTypeDefinition(),
                                                                         crs );
-                        LOG.debug( "adding: " + childElName + ", " + child.getClass().getName() );
                         children.add( child );
                     }
                 } else if ( eventType == CDATA || eventType == CHARACTERS ) {
@@ -734,43 +738,7 @@ public class GMLFeatureReader extends XMLAdapter {
         }
         }
 
-        LOG.debug( "creating element: " + xmlStream.getName() );
         return new GenericXMLElement( xmlStream.getName(), xsdValueType, attrs, children );
-    }
-
-    private Map<QName, XSElementDeclaration> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
-        List<XSElementDeclaration> childDecls = new ArrayList<XSElementDeclaration>();
-        getChildElementDecls( type.getParticle(), childDecls );
-
-        Map<QName, XSElementDeclaration> childDeclMap = new HashMap<QName, XSElementDeclaration>();
-        for ( XSElementDeclaration decl : childDecls ) {
-            QName name = new QName( decl.getNamespace(), decl.getName() );
-            childDeclMap.put( name, decl );
-            for ( XSElementDeclaration substitution : schema.getXSModel().getSubstitutions( decl, null, true, true ) ) {
-                name = new QName( substitution.getNamespace(), substitution.getName() );
-                LOG.debug( "Adding: " + name );
-                childDeclMap.put( name, substitution );
-            }
-        }
-        return childDeclMap;
-    }
-
-    private void getChildElementDecls( XSParticle particle, List<XSElementDeclaration> propDecls ) {
-        if ( particle != null ) {
-            XSTerm term = particle.getTerm();
-            if ( term instanceof XSElementDeclaration ) {
-                // XSElementDeclaration childElDecl = (XSElementDeclaration) term;
-                // QName name = new QName( childElDecl.getNamespace(), childElDecl.getName() );
-                propDecls.add( (XSElementDeclaration) term );
-            } else if ( term instanceof XSModelGroup ) {
-                XSObjectList particles = ( (XSModelGroup) term ).getParticles();
-                for ( int i = 0; i < particles.getLength(); i++ ) {
-                    getChildElementDecls( (XSParticle) particles.item( i ), propDecls );
-                }
-            } else {
-                LOG.warn( "Unhandled term type: " + term.getClass() );
-            }
-        }
     }
 
     private Map<QName, PrimitiveValue> parseAttributes( XMLStreamReader xmlStream, XSComplexTypeDefinition xsdValueType ) {
@@ -842,8 +810,8 @@ public class GMLFeatureReader extends XMLAdapter {
                             throws XMLParsingException {
 
         // TODO implement this less hacky
-        if ( ftName.equals( DefaultGMLTypes.GML311_FEATURECOLLECTION.getName() ) ) {
-            return DefaultGMLTypes.GML311_FEATURECOLLECTION;
+        if ( ftName.equals( GML311_FEATURECOLLECTION.getName() ) ) {
+            return GML311_FEATURECOLLECTION;
         }
 
         FeatureType ft = null;
@@ -872,14 +840,10 @@ public class GMLFeatureReader extends XMLAdapter {
             fid = xmlReader.getAttributeValue( null, FID );
         }
 
-        // Check that the feature id has the correct form. "fid" and "gml:id"
-        // are both based
-        // on the XML type "ID": http://www.w3.org/TR/xmlschema11-2/#NCName
-        // Thus, they must match the NCName production rule. This means that
-        // they may not contain
-        // a separating colon (only at the first position a colon is allowed)
-        // and must not
-        // start with a digit.
+        // Check that the feature id has the correct form. "fid" and "gml:id" are both based on the XML type "ID":
+        // http://www.w3.org/TR/xmlschema11-2/#NCName Thus, they must match the NCName production rule. This means that
+        // they may not contain a separating colon (only at the first position a colon is allowed) and must not start
+        // with a digit.
         if ( fid != null && fid.length() > 0 && !fid.matches( "[^\\d][^:]+" ) ) {
             String msg = Messages.getMessage( "ERROR_INVALID_FEATUREID", fid );
             throw new IllegalArgumentException( msg );
