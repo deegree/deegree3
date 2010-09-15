@@ -37,8 +37,13 @@ package org.deegree.services.wps.provider.sextante;
 
 import java.net.URL;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
+import org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +71,14 @@ public class SextanteProcessProviderProvider implements ProcessProviderProvider 
 
         LOG.info( "Configuring Sextante process provider using file '" + configURL + "'." );
 
-        // TODO extract the configuration from configURL
+        SextanteProcesses config = null;
+        try {
+            JAXBContext jc = JAXBContext.newInstance( "http://www.deegree.org/services/wps/sextante" );
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            config = (SextanteProcesses) unmarshaller.unmarshal( configURL );
+        } catch ( JAXBException e ) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
 
         // return a SEXTANTE process provider instance with the extracted configuration
         return new SextanteProcessProvider();

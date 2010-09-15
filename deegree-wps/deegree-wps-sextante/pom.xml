@@ -22,6 +22,22 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <schemaFiles>processes/sextante/0.1.0/sextante.xsd</schemaFiles>
+          <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <repositories>
@@ -63,6 +79,6 @@
       <groupId>es.unex.sextante</groupId>
       <artifactId>libMath</artifactId>
       <version>0.6</version>
-    </dependency>    
+    </dependency>
   </dependencies>
 </project>

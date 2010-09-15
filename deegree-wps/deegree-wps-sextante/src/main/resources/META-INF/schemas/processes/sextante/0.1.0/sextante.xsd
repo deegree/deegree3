@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:st="http://www.deegree.org/services/wps/sextante"
+  targetNamespace="http://www.deegree.org/services/wps/sextante"
+  elementFormDefault="qualified" attributeFormDefault="unqualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.wps.provider.sextante.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="SextanteProcesses">
+    <complexType>
+      <sequence>
+        <element name="Process" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <element name="Abstract" type="string" />
+            </sequence>
+            <attribute name="id" type="string" use="required" />
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="configVersion" use="required" fixed="0.1.0" />
+    </complexType>
+  </element>
+</schema>
