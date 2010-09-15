@@ -57,6 +57,8 @@ import org.deegree.gml.feature.StandardGMLFeatureProps;
 import org.deegree.gml.props.GMLStdProps;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for common {@link Feature} implementations.
@@ -67,6 +69,8 @@ import org.jaxen.XPath;
  * @version $Revision:$, $Date:$
  */
 public abstract class AbstractFeature implements Feature {
+
+    private static final Logger LOG = LoggerFactory.getLogger( AbstractFeature.class );
 
     /** Stores the default GML properties that every GML feature allows for (gml:name, gml:description, ...). */
     protected StandardGMLFeatureProps standardProps;
@@ -137,14 +141,20 @@ public abstract class AbstractFeature implements Feature {
             }
         } else if ( node instanceof Geometry ) {
             Geometry g = (Geometry) node;
-            if ( env != null ) {
-                env = env.merge( g.getEnvelope() );
+            Envelope gEnv = g.getEnvelope();
+            // TODO this is to skip one-dimensional bounding boxes...
+            if ( gEnv.getCoordinateDimension() > 1 ) {
+                if ( env != null ) {
+                    env = env.merge( gEnv );
+                } else {
+                    env = gEnv;
+                }
             } else {
-                env = g.getEnvelope();
+                LOG.warn( "Encountered one-dimensional bbox. Ignoring for feature envelope." );
             }
         } else if ( node instanceof GenericXMLElementContent ) {
             GenericXMLElementContent xml = (GenericXMLElementContent) node;
-            for (TypedObjectNode child : xml.getChildren()) {
+            for ( TypedObjectNode child : xml.getChildren() ) {
                 env = mergeEnvelope( child, env );
             }
         }
