@@ -98,7 +98,7 @@ public class SurfaceLinearizer {
                 linearizedInteriorRings.add( (Ring) curveLinearizer.linearize( interiorRing, crit ) );
             }
             linearizedSurface = geomFac.createPolygon( polygon.getId(), polygon.getCoordinateSystem(),
-                                                       linearizedExteriorRing, interiorRings );
+                                                       linearizedExteriorRing, linearizedInteriorRings );
             break;
         }
         case PolyhedralSurface: {
@@ -161,6 +161,6 @@ public class SurfaceLinearizer {
         for ( Ring interiorRing : interiorRings ) {
             linearizedInteriorRings.add( (Ring) curveLinearizer.linearize( interiorRing, crit ) );
         }
-        return geomFac.createPolygonPatch( linearizedExteriorRing, interiorRings );
+        return geomFac.createPolygonPatch( linearizedExteriorRing, linearizedInteriorRings );
     }
 }
