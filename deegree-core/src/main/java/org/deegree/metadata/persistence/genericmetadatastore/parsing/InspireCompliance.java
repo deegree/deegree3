@@ -32,8 +32,20 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.genericmetadatastore.parsing;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import jj2000.j2k.NotImplementedError;
+
+import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.RequireInspireCompliance;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -44,5 +56,71 @@ package org.deegree.metadata.persistence.genericmetadatastore.parsing;
  * @version $Revision$, $Date$
  */
 public class InspireCompliance {
+
+    private static final Logger LOG = getLogger( InspireCompliance.class );
+
+    private final RequireInspireCompliance ric;
+
+    private InspireCompliance( RequireInspireCompliance ric ) {
+        this.ric = ric;
+    }
+
+    public static InspireCompliance newInstance( RequireInspireCompliance ric ) {
+        return new InspireCompliance( ric );
+    }
+
+    public boolean checkInspireCompliance() {
+        if ( ric == null ) {
+            return false;
+        } else {
+            return ric.isInspireRequired();
+        }
+    }
+
+    public List<String> determineInspireCompliance( List<String> rsList, String id )
+                            throws MetadataStoreException {
+        boolean generateAutomatic = ric.getComplianceGenerator().isGenerateAutomatic();
+        if ( checkInspireCompliance() ) {
+            if ( generateAutomatic == false ) {
+                if ( checkRSListAgainstID( rsList, id ) ) {
+                    LOG.info( "The resourceIdentifier has been accepted." );
+                    return rsList;
+                }
+                LOG.debug( "There was no match between resourceIdentifier and the id-attribute! Without any automatic guarantee this metadata has to be rejected! " );
+                throw new MetadataStoreException( "There was no match between resourceIdentifier and the id-attribute!" );
+            }
+            if ( checkRSListAgainstID( rsList, id ) ) {
+                LOG.info( "The resourceIdentifier has been accepted without any automatic creation. " );
+                return rsList;
+            }
+            throw new NotImplementedError( "What if the creation is needed for INSPIRE!! should be implemented, soon!" );
+        }
+        return null;
+    }
+
+    private boolean checkRSListAgainstID( List<String> rsList, String id ) {
+        if ( rsList.size() == 0 ) {
+            return false;
+        } else {
+            if ( checkUUIDCompliance( rsList.get( 0 ) ) ) {
+                if ( checkUUIDCompliance( id ) ) {
+                    return rsList.get( 0 ).equals( id );
+                }
+            }
+
+        }
+        return false;
+    }
+
+    private boolean checkUUIDCompliance( String uuid ) {
+
+        char firstChar = uuid.charAt( 0 );
+        Pattern p = Pattern.compile( "[0-9]" );
+        Matcher m = p.matcher( "" + firstChar );
+        if ( m.matches() ) {
+            return false;
+        }
+        return true;
+    }
 
 }

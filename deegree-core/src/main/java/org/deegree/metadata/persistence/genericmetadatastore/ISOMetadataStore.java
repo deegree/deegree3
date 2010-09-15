@@ -97,6 +97,7 @@ import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.FileIdentifierInspector;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.ISOQPParsing;
+import org.deegree.metadata.persistence.genericmetadatastore.parsing.InspireCompliance;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
@@ -134,6 +135,8 @@ public class ISOMetadataStore implements MetadataStore {
     private boolean useLegacyPredicates;
 
     private FileIdentifierInspector fi;
+
+    private InspireCompliance ric;
 
     /**
      * shows the encoding of the database that is used
@@ -174,8 +177,8 @@ public class ISOMetadataStore implements MetadataStore {
     public ISOMetadataStore( ISOMetadataStoreConfig config ) {
         this.connectionId = config.getConnId();
         fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), connectionId );
-        // inspire = config.isRequireInspireCompliance() == null ? false : config.isRequireInspireCompliance();
-        // generateFileIds = config.isGenerateFileIdentifiers() == null ? false : config.isGenerateFileIdentifiers();
+        ric = InspireCompliance.newInstance( config.getRequireInspireCompliance() );
+
     }
 
     /*
