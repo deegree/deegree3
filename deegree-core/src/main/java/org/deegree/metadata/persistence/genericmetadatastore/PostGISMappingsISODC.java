@@ -466,6 +466,11 @@ public class PostGISMappingsISODC implements PostGISMapping {
                 // TODO primitive type
                 DBField valueField = new DBField( tableColumn.first, tableColumn.second );
                 mapping = new PropertyNameMapping( aliasManager, valueField, joins );
+            } else {
+
+                String msg = "Error while mapping the propertyName '" + qName + "'";
+                LOG.debug( "Error while mapping the propertyName '{}'", qName );
+                throw new FilterEvaluationException( msg );
             }
         }
         return mapping;
