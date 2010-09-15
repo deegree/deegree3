@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.genericmetadatastore;
 
+import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -48,6 +49,7 @@ import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.genericmetadatastore.generating.BuildMetadataXMLRepresentation;
 import org.deegree.metadata.persistence.genericmetadatastore.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.ParsedProfileElement;
@@ -79,35 +81,22 @@ public class ExecuteStatements {
      * @param parsedElement
      *            {@link ParsedProfileElement}
      * @throws IOException
+     * @throws MetadataStoreException
      */
     public void executeInsertStatement( boolean isDC, Connection connection, List<Integer> insertedIds,
                                         ParsedProfileElement parsedElement )
-                            throws IOException {
+                            throws IOException, MetadataStoreException {
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildMetadataXMLRepresentation();
 
-        try {
-            PreparedStatement stm = null;
-            boolean isUpdate = false;
+        boolean isUpdate = false;
 
-            /*
-             * Question if there already exists the identifier.
-             */
-            for ( String identifier : parsedElement.getQueryableProperties().getIdentifier() ) {
-                String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
-                           + " AS i WHERE i.identifier = ?;";
-                stm = connection.prepareStatement( s );
-                stm.setObject( 1, identifier );
-                ResultSet r = stm.executeQuery();
-                LOG.debug( s );
+        /*
+         * Question if there already exists the identifier.
+         */
+        boolean idExistsAlready = proveIdExistence( connection, parsedElement );
 
-                if ( r.next() ) {
-                    stm.close();
-                    throw new IOException( "Record with identifier '"
-                                           + parsedElement.getQueryableProperties().getIdentifier()
-                                           + "' already exists!" );
-                }
-            }
+        if ( idExistsAlready ) {
             int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
 
             if ( isDC == true ) {
@@ -117,13 +106,39 @@ public class ExecuteStatements {
 
             }
             generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
-            if ( stm != null ) {
-                stm.close();
-            }
-        } catch ( SQLException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
+        } else {
+            String id = parsedElement.getQueryableProperties().getIdentifier().toString();
+            LOG.debug( "Metadata with identifier '{}' already exists!", id );
         }
 
+    }
+
+    private boolean proveIdExistence( Connection connection, ParsedProfileElement parsedElement )
+                            throws MetadataStoreException {
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        boolean notAvailable = true;
+        try {
+            for ( String identifier : parsedElement.getQueryableProperties().getIdentifier() ) {
+                String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
+                           + " AS i WHERE i.identifier = ?;";
+                stm = connection.prepareStatement( s );
+                stm.setObject( 1, identifier );
+                rs = stm.executeQuery();
+                LOG.debug( s );
+                if ( rs.next() ) {
+                    notAvailable = false;
+                }
+            }
+
+        } catch ( SQLException e ) {
+            LOG.debug( "Error while proving the IDs stored in the backend: {}" + e.getMessage() );
+            throw new MetadataStoreException( "Error while proving the IDs stored in the backend: {}" + e.getMessage() );
+        } finally {
+            close( stm );
+            close( rs );
+        }
+        return notAvailable;
     }
 
     /**
