@@ -83,6 +83,10 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     // private Connection connection;
 
+    private String dataIdentificationId;
+
+    private String dataIdentificationUuId;
+
     private NamespaceContext nsContextParseII;
 
     private final List<String> resourceIdentifierList;
@@ -264,15 +268,11 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                              new XPath(
                                                                         "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                         nsContextParseII ), null );
-                String dataIdentificationId = md_dataIdentification.getAttributeValue( new QName( "id" ) );
-                String dataIdentificationUuId = md_dataIdentification.getAttributeValue( new QName( "uuid" ) );
-                if ( resourceIdentifier == null && dataIdentificationUuId != null ) {
-                    resourceIdentifierList.add( dataIdentificationUuId );
-                } else if ( resourceIdentifier == null && dataIdentificationId != null ) {
-                    resourceIdentifierList.add( dataIdentificationId );
-                } else {
-                    resourceIdentifierList.add( resourceIdentifier );
-                }
+                dataIdentificationId = md_dataIdentification.getAttributeValue( new QName( "id" ) );
+                dataIdentificationUuId = md_dataIdentification.getAttributeValue( new QName( "uuid" ) );
+
+                resourceIdentifierList.add( resourceIdentifier );
+
             }
             qp.setResourceIdentifier( resourceIdentifierList );
 
@@ -1230,6 +1230,14 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     public List<String> getResourceIdentifierList() {
         return resourceIdentifierList;
+    }
+
+    public String getDataIdentificationId() {
+        return dataIdentificationId;
+    }
+
+    public String getDataIdentificationUuId() {
+        return dataIdentificationUuId;
     }
 
 }

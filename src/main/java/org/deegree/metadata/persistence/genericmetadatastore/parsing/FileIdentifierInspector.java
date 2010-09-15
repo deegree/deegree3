@@ -72,9 +72,16 @@ public class FileIdentifierInspector {
 
     private final IdentifierInspector inspector;
 
+    private final List<String> idList;
+
+    private String id;
+
+    private String uuid;
+
     private FileIdentifierInspector( IdentifierInspector inspector, String connectionId ) {
         this.connectionId = connectionId;
         this.inspector = inspector;
+        this.idList = new ArrayList<String>();
     }
 
     public static FileIdentifierInspector newInstance( IdentifierInspector inspector, String connectionId ) {
@@ -106,25 +113,34 @@ public class FileIdentifierInspector {
      * @return the new fileIdentifier.
      * @throws MetadataStoreException
      */
-    public List<String> determineFileIdentifier( String fi, List<String> rsList )
+    public List<String> determineFileIdentifier( String fi, List<String> rsList, String id, String uuid )
                             throws MetadataStoreException {
-        List<String> idList = new ArrayList<String>();
+        this.id = id;
+        this.uuid = uuid;
         if ( fi != null ) {
             if ( proveIdExistence( fi ) ) {
                 LOG.info( "'{}' accepted as a valid fileIdentifier. ", fi );
                 idList.add( fi );
                 return idList;
             }
-            LOG.debug( "'{}' is stored in backend, already! ", fi );
-            throw new MetadataStoreException( fi + " stored in backend, already!" );
+            LOG.debug( "The metadata with id '{}' is stored in backend, already! ", fi );
+            throw new MetadataStoreException( "The metadata with id '" + fi + "' stored in backend, already!" );
         } else {
             // default behavior if there is no inspector provided
             if ( isFileIdentifierRejected() == false ) {
-                if ( rsList.size() == 0 ) {
+                if ( rsList.size() == 0 || id == null || uuid == null ) {
+
                     LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );
                     idList.add( generateUUID() );
                     LOG.debug( "(DEFAULT) The new FileIdentifier: " + idList );
                 } else {
+                    if ( rsList.size() == 0 && id != null ) {
+                        LOG.debug( "(DEFAULT) The id attribute will be taken: {}", id );
+                        idList.add( id );
+                    } else if ( rsList.size() == 0 && uuid != null ) {
+                        LOG.debug( "(DEFAULT) The uuid attribute will be taken: {}", uuid );
+                        idList.add( uuid );
+                    }
                     LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
                     idList.add( rsList.get( 0 ) );
                 }
@@ -243,6 +259,18 @@ public class FileIdentifierInspector {
         }
         return uuid;
 
+    }
+
+    public List<String> getIdList() {
+        return idList;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
 }
