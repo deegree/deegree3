@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.geometry;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
@@ -60,29 +61,33 @@ public class Centroid extends Function {
      */
     public Centroid( List<Expression> exprs ) {
         super( "Centroid", exprs );
+        if ( exprs.size() != 1 ) {
+            throw new IllegalArgumentException( "Centroid requires exactly one parameter." );
+        }
+    }
+
+    private Geometry getGeomValue( TypedObjectNode node ) {
+        Geometry geom = null;
+        if ( node instanceof Geometry ) {
+            geom = (Geometry) node;
+        } else if ( node instanceof Property && ( (Property) node ).getValue() instanceof Geometry ) {
+            geom = (Geometry) ( (Property) node ).getValue();
+        }
+        return geom;
     }
 
     @Override
     public TypedObjectNode[] evaluate( MatchableObject f )
                             throws FilterEvaluationException {
-        TypedObjectNode[] vals = getParams()[0].evaluate( f );
 
-        if ( vals.length != 1 ) {
-            throw new FilterEvaluationException( "The Centroid function takes exactly one argument (got " + vals.length
-                                                 + ")." );
+        TypedObjectNode[] inputs = getParams()[0].evaluate( f );
+        List<TypedObjectNode> centroids = new ArrayList<TypedObjectNode>( inputs.length );
+        for ( TypedObjectNode val : inputs ) {
+            Geometry geom = getGeomValue( val );
+            if ( geom != null ) {
+                centroids.add( geom.getCentroid() );
+            }
         }
-        if ( vals[0] instanceof Geometry
-             || ( vals[0] instanceof Property && ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
-            Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0]
-                                                       : (Geometry) ( (Property) vals[0] ).getValue();
-            return new TypedObjectNode[] { geom.getCentroid() };
-        }
-        if ( vals[0] == null ) {
-            throw new FilterEvaluationException( "The argument to the Centroid function must be a geometry (was null)." );
-        }
-
-        throw new FilterEvaluationException( "The argument to the Centroid function must be a geometry (was a "
-                                             + vals[0].getClass() + ")." );
+        return centroids.toArray( new TypedObjectNode[centroids.size()] );
     }
-
 }
