@@ -147,4 +147,31 @@ public final class JDBCUtils {
             }
         }
     }
+
+    /**
+     * Tries to close each object from a <code>ResultSet</code>, <code>PreparedStatement</code>, <code>Connection</code>
+     * triple. Useful for cleaning up in <code>finally</code> clauses.
+     * 
+     * @param rs
+     *            <code>ResultSet</code> to be closed
+     * @param pstmt
+     *            <code>PreparedStatement</code> to be closed
+     * @param conn
+     *            <code>Connection</code> to be closed
+     * @param log
+     *            used to log error messages, may be null
+     */
+    public static void close( ResultSet rs, PreparedStatement pstmt, Connection conn, Logger log ) {
+        close( rs, null, conn, log );
+        if ( pstmt != null ) {
+            try {
+                pstmt.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close PreparedStatement: " + e.getMessage() );
+                }
+            }
+        }
+    }
+
 }
