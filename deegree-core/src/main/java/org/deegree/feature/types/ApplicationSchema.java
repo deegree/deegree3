@@ -44,8 +44,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -374,7 +374,7 @@ public class ApplicationSchema {
      *            base feature type, must be part of this schema
      * @param substitution
      *            feature type to be checked, must be part of this schema
-     * @return true, if the first feature type is a valid substitution for the second
+     * @return true, if the second feature type is a valid substitution for the first one
      */
     public boolean isSubType( FeatureType ft, FeatureType substitution ) {
         if ( substitution == null || ft == null ) {
@@ -387,7 +387,7 @@ public class ApplicationSchema {
         }
         List<FeatureType> substitutionGroups = ftToSuperFts.get( substitution );
         if ( substitutionGroups != null ) {
-            return substitutionGroups.contains( substitution );
+            return substitutionGroups.contains( ft );
         }
         return false;
     }
