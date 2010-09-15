@@ -112,6 +112,8 @@ public class SextanteWPSProcess implements WPSProcess {
     public static final String TEXT_OUTPUT = "text";
 
     public static final String CHART_OUTPUT = "chart";
+    
+    
 
     // processlet
     private final SextanteProcesslet processlet;

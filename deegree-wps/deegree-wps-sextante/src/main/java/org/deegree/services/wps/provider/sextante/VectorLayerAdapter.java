@@ -204,7 +204,7 @@ public class VectorLayerAdapter {
      * Creates an {@link IVectorLayer} from a {@link Geometry}.
      * 
      * @param g
-     *            - If the {@link Geometry} isn't simple, she will be linearized.
+     *            - If the {@link Geometry} isn't simple, it will be linearized.
      * 
      * @return An {@link IVectorLayer} with a {@link IFeature}. The {@link IFeature} contains only one
      *         {@link com.vividsolutions.jts.geom.Geometry} and no properties.
@@ -486,7 +486,7 @@ public class VectorLayerAdapter {
      * 
      * @param g
      *            - {@link Geometry}
-     * @return Returns a {@link com.vividsolutions.jts.geom.Geometry}. If the {@link Geometry} isn't simple, she will be
+     * @return Returns a {@link com.vividsolutions.jts.geom.Geometry}. If the {@link Geometry} isn't simple, it will be
      *         linearized.
      */
     private static com.vividsolutions.jts.geom.Geometry createJTSGeometry( Geometry g ) {
