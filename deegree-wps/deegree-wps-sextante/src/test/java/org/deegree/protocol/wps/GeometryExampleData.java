@@ -112,32 +112,32 @@ public class GeometryExampleData implements ExampleData {
                                                                                     GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
     public static final GeometryExampleData GML_31_FEATURE_COLLECTION_MULTIPOLYGONS = new GeometryExampleData(
-                                                                                                               GeometryExampleData.class.getResource( "GML31_FeatureCollection_Deegree_MultiPolygons.xml" ),
+                                                                                                               GeometryExampleData.class.getResource( "GML31_FeatureCollection_deegree_MultiPolygons.xml" ),
                                                                                                                GeometryType.POLYGON,
                                                                                                                GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final GeometryExampleData GML_31_FEATURE_COLLECTION_POLYGONS = new GeometryExampleData(
-                                                                                                          GeometryExampleData.class.getResource( "GML31_FeatureCollection_Deegree_Polygons.xml" ),
+                                                                                                          GeometryExampleData.class.getResource( "GML31_FeatureCollection_deegree_Polygons.xml" ),
                                                                                                           GeometryType.POLYGON,
                                                                                                           GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final GeometryExampleData GML_31_FEATURE_COLLECTION_MULTILINESTRINGS = new GeometryExampleData(
-                                                                                                                  GeometryExampleData.class.getResource( "GML31_FeatureCollection_Deegree_MultiLineStrings.xml" ),
+                                                                                                                  GeometryExampleData.class.getResource( "GML31_FeatureCollection_deegree_MultiLineStrings.xml" ),
                                                                                                                   GeometryType.LINE,
                                                                                                                   GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final GeometryExampleData GML_31_FEATURE_COLLECTION_LINESTRINGS = new GeometryExampleData(
-                                                                                                             GeometryExampleData.class.getResource( "GML31_FeatureCollection_Deegree_LineStrings.xml" ),
+                                                                                                             GeometryExampleData.class.getResource( "GML31_FeatureCollection_deegree_LineStrings.xml" ),
                                                                                                              GeometryType.LINE,
                                                                                                              GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final GeometryExampleData GML_31_FEATURE_COLLECTION_MULTIPOINTS = new GeometryExampleData(
-                                                                                                             GeometryExampleData.class.getResource( "GML31_FeatureCollection_Deegree_MultiPoints.xml" ),
+                                                                                                             GeometryExampleData.class.getResource( "GML31_FeatureCollection_deegree_MultiPoints.xml" ),
                                                                                                              GeometryType.POINT,
                                                                                                              GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final GeometryExampleData GML_31_FEATURE_COLLECTION_POINTS = new GeometryExampleData(
-                                                                                                        GeometryExampleData.class.getResource( "GML31_FeatureCollection_Deegree_Points.xml" ),
+                                                                                                        GeometryExampleData.class.getResource( "GML31_FeatureCollection_deegree_Points.xml" ),
                                                                                                         GeometryType.POINT,
                                                                                                         GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
