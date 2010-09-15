@@ -39,6 +39,7 @@ package org.deegree.feature.persistence.memory;
 import static org.deegree.feature.i18n.Messages.getMessage;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,6 +66,8 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureStoreTransaction} implementation used by the {@link MemoryFeatureStore}.
@@ -77,6 +80,8 @@ import org.deegree.gml.feature.FeatureReference;
  * @version $Revision$, $Date$
  */
 class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
+
+    private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreTransaction.class );
 
     private MemoryFeatureStore store;
 
@@ -174,12 +179,17 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
-        Set<Geometry> geometries = new LinkedHashSet<Geometry>();
-        Set<Feature> features = new LinkedHashSet<Feature>();
+        Set<Geometry> geometries = new HashSet<Geometry>();
+        Set<Feature> features = new HashSet<Feature>();
         Set<String> fids = new LinkedHashSet<String>();
-        Set<String> gids = new LinkedHashSet<String>();
-        findFeaturesAndGeometries( fc, geometries, features, fids, gids );
+        Set<String> gids = new HashSet<String>();
 
+        long begin = System.currentTimeMillis();
+        findFeaturesAndGeometries( fc, geometries, features, fids, gids );
+        long elapsed = System.currentTimeMillis() - begin;
+        LOG.debug( "Finding features and geometries took {} [ms]", elapsed );
+
+        begin = System.currentTimeMillis();
         switch ( mode ) {
         case GENERATE_NEW: {
             // TODO don't alter incoming features / geometries
@@ -227,29 +237,44 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             break;
         }
         }
+        elapsed = System.currentTimeMillis() - begin;
+        LOG.debug( "Id generation took {} [ms]", elapsed );
 
         // check if any of the features / geometries to be inserted already exists in the store
+        begin = System.currentTimeMillis();
         for ( String fid : fids ) {
             if ( store.getObjectById( fid ) != null ) {
                 String msg = "Cannot insert feature '" + fid + "'. This feature already exists in the feature store.";
                 throw new FeatureStoreException( msg );
             }
         }
+        elapsed = System.currentTimeMillis() - begin;
+        LOG.debug( "Checking for existing features took {} [ms]", elapsed );
+
+        begin = System.currentTimeMillis();
         for ( String gid : gids ) {
             if ( store.getObjectById( gid ) != null ) {
                 String msg = "Cannot insert geometry '" + gid + "'. This geometry already exists in the feature store.";
                 throw new FeatureStoreException( msg );
             }
         }
+        elapsed = System.currentTimeMillis() - begin;
+        LOG.debug( "Checking for existing geometries took {} [ms]", elapsed );
 
+        begin = System.currentTimeMillis();
         store.addFeatures( features );
+        elapsed = System.currentTimeMillis() - begin;
+        LOG.debug( "Adding of features took {} [ms]", elapsed );
+
         try {
+            begin = System.currentTimeMillis();
             store.addGeometriesWithId( geometries );
+            elapsed = System.currentTimeMillis() - begin;
+            LOG.debug( "Adding of geometries took {} [ms]", elapsed );
         } catch ( UnknownCRSException e ) {
             String msg = "Cannot insert geometry: " + e.getMessage();
             throw new FeatureStoreException( msg );
         }
-
         return new ArrayList<String>( fids );
     }
 
