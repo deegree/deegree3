@@ -30,22 +30,26 @@ public class IsCurve extends Function {
      */
     public IsCurve( List<Expression> exprs ) {
         super( "IsCurve", exprs );
+        if ( exprs.size() != 1 ) {
+            throw new IllegalArgumentException( "IsCurve requires exactly one parameter." );
+        }        
     }
 
     @Override
     public TypedObjectNode[] evaluate( MatchableObject f )
                             throws FilterEvaluationException {
-        TypedObjectNode[] vals = getParams()[0].evaluate( f );
 
-        if ( !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
+        TypedObjectNode[] vals = getParams()[0].evaluate( f );
+        if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
              && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
-            throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
+            return new TypedObjectNode [0];
+//            throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
         }
         Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0] : (Geometry) ( (Property) vals[0] ).getValue();
 
         // TODO is handling of multi geometries like this ok?
         boolean result = geom instanceof Curve || geom instanceof MultiCurve || geom instanceof MultiLineString;
-        return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( result ).toString() ) };
+        return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( result ) ) };
     }
 
 }

@@ -30,6 +30,9 @@ public class IsSurface extends Function {
      */
     public IsSurface( List<Expression> exprs ) {
         super( "IsSurface", exprs );
+        if ( exprs.size() != 1 ) {
+            throw new IllegalArgumentException( "IsSurface requires exactly one parameter." );
+        }
     }
 
     @Override
@@ -37,14 +40,15 @@ public class IsSurface extends Function {
                             throws FilterEvaluationException {
         Object[] vals = getParams()[0].evaluate( f );
 
-        if ( !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
+        if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
              && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
-            throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
+            return new TypedObjectNode[0];
+            // throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
         }
         Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0] : (Geometry) ( (Property) vals[0] ).getValue();
 
         // TODO is handling of multi geometries like this ok?
         boolean isSurface = geom instanceof Surface || geom instanceof MultiPolygon || geom instanceof MultiSurface;
-        return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( isSurface ).toString() ) };
+        return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( isSurface ) ) };
     }
 }

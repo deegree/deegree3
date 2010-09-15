@@ -29,6 +29,9 @@ public class IsPoint extends Function {
      */
     public IsPoint( List<Expression> exprs ) {
         super( "IsPoint", exprs );
+        if ( exprs.size() != 1 ) {
+            throw new IllegalArgumentException( "IsPoint requires exactly one parameter." );
+        }
     }
 
     @Override
@@ -36,14 +39,15 @@ public class IsPoint extends Function {
                             throws FilterEvaluationException {
         TypedObjectNode[] vals = getParams()[0].evaluate( f );
 
-        if ( !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
+        if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
              && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
-            throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
+            return new TypedObjectNode[0];
+            // throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
         }
         Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0] : (Geometry) ( (Property) vals[0] ).getValue();
 
         // TODO is handling of multi geometries like this ok?
         boolean isPoint = geom instanceof Point || geom instanceof MultiPoint;
-        return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( isPoint ).toString() ) };
+        return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( isPoint ) ) };
     }
 }
