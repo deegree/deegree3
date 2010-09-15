@@ -50,6 +50,8 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.metadata.persistence.MetadataStore;
+import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.getrecordbyid.GetRecordById;
@@ -92,9 +94,10 @@ public class GetRecordByIdHandler {
      * @throws IOException
      * @throws XMLStreamException
      * @throws InvalidParameterValueException
+     * @throws OWSException
      */
     public void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, boolean isSoap )
-                            throws XMLStreamException, IOException, InvalidParameterValueException {
+                            throws XMLStreamException, IOException, InvalidParameterValueException, OWSException {
 
         LOG.debug( "doGetRecords: " + getRecBI );
 
@@ -111,8 +114,9 @@ public class GetRecordByIdHandler {
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
         try {
             export( xmlWriter, getRecBI, version, isSoap );
-        } catch ( SQLException e ) {
-            e.printStackTrace();
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage() );
+            throw new InvalidParameterValueException( e.getMessage() );
         }
         xmlWriter.flush();
 
@@ -127,9 +131,10 @@ public class GetRecordByIdHandler {
      * @param version
      * @throws XMLStreamException
      * @throws SQLException
+     * @throws OWSException
      */
     private void export( XMLStreamWriter xmlWriter, GetRecordById getRecBI, Version version, boolean isSoap )
-                            throws XMLStreamException, SQLException {
+                            throws XMLStreamException, OWSException {
         if ( VERSION_202.equals( version ) ) {
             export202( xmlWriter, getRecBI, isSoap );
         } else {
@@ -145,9 +150,10 @@ public class GetRecordByIdHandler {
      * @param getRecBI
      * @throws XMLStreamException
      * @throws SQLException
+     * @throws OWSException
      */
     private void export202( XMLStreamWriter writer, GetRecordById getRecBI, boolean isSoap )
-                            throws XMLStreamException, SQLException {
+                            throws XMLStreamException, OWSException {
 
         writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
@@ -159,8 +165,10 @@ public class GetRecordByIdHandler {
                     rec.getRecordById( writer, getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
                                        getRecBI.getElementSetName() );
                 }
-            } catch ( InvalidParameterValueException e ) {
-                throw new InvalidParameterValueException( "The requested identifier is no available in dataset." );
+                // } catch ( InvalidParameterValueException e ) {
+                // throw new InvalidParameterValueException( "The requested identifier is no available in dataset." );
+            } catch ( MetadataStoreException e ) {
+                throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
             }
         }
 

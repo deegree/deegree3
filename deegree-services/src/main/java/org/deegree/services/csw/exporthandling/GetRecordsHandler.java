@@ -61,13 +61,16 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.metadata.persistence.MetadataStore;
+import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.csw.CSWService;
@@ -113,9 +116,10 @@ public class GetRecordsHandler {
      * @throws XMLStreamException
      * @throws IOException
      * @throws SQLException
+     * @throws OWSException
      */
     public void doGetRecords( GetRecords getRec, HttpResponseBuffer response, boolean isSoap )
-                            throws XMLStreamException, IOException, SQLException {
+                            throws XMLStreamException, IOException, OWSException {
 
         LOG.debug( "doGetRecords: " + getRec );
 
@@ -131,7 +135,12 @@ public class GetRecordsHandler {
         }
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
-        export( xmlWriter, getRec, version, isSoap );
+        try {
+            export( xmlWriter, getRec, version, isSoap );
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage() );
+            throw new InvalidParameterValueException( e.getMessage() );
+        }
         xmlWriter.flush();
     }
 
@@ -144,9 +153,10 @@ public class GetRecordsHandler {
      * @param version
      * @throws XMLStreamException
      * @throws SQLException
+     * @throws OWSException
      */
     private void export( XMLStreamWriter xmlWriter, GetRecords getRec, Version version, boolean isSoap )
-                            throws XMLStreamException, SQLException {
+                            throws XMLStreamException, OWSException {
 
         if ( VERSION_202.equals( version ) ) {
             export202( xmlWriter, getRec, isSoap );
@@ -164,9 +174,10 @@ public class GetRecordsHandler {
      * @param getRec
      * @throws XMLStreamException
      * @throws SQLException
+     * @throws OWSException
      */
     private void export202( XMLStreamWriter writer, GetRecords getRec, boolean isSoap )
-                            throws XMLStreamException, SQLException {
+                            throws XMLStreamException, OWSException {
         Version version = new Version( 2, 0, 2 );
 
         writer.setDefaultNamespace( CSW_202_NS );
@@ -231,9 +242,10 @@ public class GetRecordsHandler {
      * @param version
      * @throws XMLStreamException
      * @throws SQLException
+     * @throws OWSException
      */
     private void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version )
-                            throws XMLStreamException, SQLException {
+                            throws XMLStreamException, OWSException {
 
         requestedTypeNames = new HashMap<QName, MetadataStore>();
 
@@ -258,8 +270,8 @@ public class GetRecordsHandler {
                 for ( MetadataStore rec : requestedTypeNames.values() ) {
                     try {
                         rec.getRecords( writer, qName, getRec.getOutputSchema(), gdds );
-                    } catch ( IOException e ) {
-                        e.printStackTrace();
+                    } catch ( MetadataStoreException e ) {
+                        throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
                     }
                 }
             }

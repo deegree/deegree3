@@ -54,12 +54,15 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.metadata.persistence.MetadataStore;
+import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.metadata.publication.UpdateTransaction;
+import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.transaction.Transaction;
@@ -104,7 +107,7 @@ public class TransactionHandler {
      * @throws SQLException
      */
     public void doTransaction( Transaction trans, HttpResponseBuffer response, boolean isSoap )
-                            throws XMLStreamException, IOException, SQLException {
+                            throws XMLStreamException, IOException {
 
         LOG.debug( "doTransaction: " + trans );
 
@@ -120,7 +123,12 @@ public class TransactionHandler {
         }
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
-        export( xmlWriter, trans, version, isSoap );
+        try {
+            export( xmlWriter, trans, version, isSoap );
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage() );
+            throw new InvalidParameterValueException( e.getMessage() );
+        }
         xmlWriter.flush();
 
     }
@@ -134,9 +142,10 @@ public class TransactionHandler {
      * @param version
      * @throws XMLStreamException
      * @throws SQLException
+     * @throws OWSException
      */
     private void export( XMLStreamWriter xmlWriter, Transaction transaction, Version version, boolean isSoap )
-                            throws XMLStreamException, SQLException {
+                            throws XMLStreamException, OWSException {
 
         if ( VERSION_202.equals( version ) ) {
             export202( xmlWriter, transaction, isSoap );
@@ -157,9 +166,10 @@ public class TransactionHandler {
      *            request
      * @throws XMLStreamException
      * @throws SQLException
+     * @throws OWSException
      */
     private void export202( XMLStreamWriter writer, Transaction transaction, boolean isSoap )
-                            throws XMLStreamException, SQLException {
+                            throws XMLStreamException, OWSException {
         Version version = new Version( 2, 0, 2 );
 
         requestedTypeNames = new HashMap<QName, MetadataStore>();
@@ -183,98 +193,101 @@ public class TransactionHandler {
             writer.writeAttribute( "requestId", transaction.getRequestId() );
         }
         Iterator<Integer> it;
+        try {
+            for ( TransactionOperation transact : transaction.getOperations() ) {
+                switch ( transact.getType() ) {
 
-        for ( TransactionOperation transact : transaction.getOperations() ) {
-            switch ( transact.getType() ) {
+                case INSERT:
 
-            case INSERT:
+                    insert = (InsertTransaction) transact;
 
-                insert = (InsertTransaction) transact;
+                    for ( OMElement element : insert.getElement() ) {
 
-                for ( OMElement element : insert.getElement() ) {
-
-                    requestedTypeNames.put(
-                                            new QName( element.getNamespace().getNamespaceURI(),
-                                                       element.getLocalName(), element.getNamespace().getPrefix() ),
-                                            service.getRecordStore( new QName(
-                                                                               element.getNamespace().getNamespaceURI(),
-                                                                               element.getLocalName(),
-                                                                               element.getNamespace().getPrefix() ) ) );
-
-                }
-
-                for ( MetadataStore rec : requestedTypeNames.values() ) {
-
-                    transactionIds.addAll( rec.transaction( writer, insert ) );
-                }
-
-                it = transactionIds.listIterator();
-                while ( it.hasNext() ) {
-                    it.next();
-                    insertCount++;
-                }
-
-                break;
-            case UPDATE:
-
-                update = (UpdateTransaction) transact;
-
-                /*
-                 * Either it is a hole recordStore to be updated or just some recordProperties.
-                 */
-                if ( update.getRecordProperty() == null ) {
-                    requestedTypeNames.put(
-                                            new QName( update.getElement().getNamespace().getNamespaceURI(),
-                                                       update.getElement().getLocalName(),
-                                                       update.getElement().getNamespace().getPrefix() ),
-                                            service.getRecordStore( new QName(
-                                                                               update.getElement().getNamespace().getNamespaceURI(),
-                                                                               update.getElement().getLocalName(),
-                                                                               update.getElement().getNamespace().getPrefix() ) ) );
-
-                    for ( MetadataStore rec : requestedTypeNames.values() ) {
-                        transactionIds.addAll( rec.transaction( writer, update ) );
+                        requestedTypeNames.put(
+                                                new QName( element.getNamespace().getNamespaceURI(),
+                                                           element.getLocalName(), element.getNamespace().getPrefix() ),
+                                                service.getRecordStore( new QName(
+                                                                                   element.getNamespace().getNamespaceURI(),
+                                                                                   element.getLocalName(),
+                                                                                   element.getNamespace().getPrefix() ) ) );
 
                     }
-                } else {
 
+                    for ( MetadataStore rec : requestedTypeNames.values() ) {
+
+                        transactionIds.addAll( rec.transaction( writer, insert ) );
+                    }
+
+                    it = transactionIds.listIterator();
+                    while ( it.hasNext() ) {
+                        it.next();
+                        insertCount++;
+                    }
+
+                    break;
+                case UPDATE:
+
+                    update = (UpdateTransaction) transact;
+
+                    /*
+                     * Either it is a hole recordStore to be updated or just some recordProperties.
+                     */
+                    if ( update.getRecordProperty() == null ) {
+                        requestedTypeNames.put(
+                                                new QName( update.getElement().getNamespace().getNamespaceURI(),
+                                                           update.getElement().getLocalName(),
+                                                           update.getElement().getNamespace().getPrefix() ),
+                                                service.getRecordStore( new QName(
+                                                                                   update.getElement().getNamespace().getNamespaceURI(),
+                                                                                   update.getElement().getLocalName(),
+                                                                                   update.getElement().getNamespace().getPrefix() ) ) );
+
+                        for ( MetadataStore rec : requestedTypeNames.values() ) {
+                            transactionIds.addAll( rec.transaction( writer, update ) );
+
+                        }
+                    } else {
+
+                        /*
+                         * here all the registered recordStores are queried
+                         */
+                        for ( MetadataStore rec : service.getRecordStore() ) {
+
+                            transactionIds.addAll( rec.transaction( writer, update ) );
+
+                        }
+
+                    }
+
+                    it = transactionIds.listIterator();
+                    while ( it.hasNext() ) {
+                        it.next();
+                        updateCount++;
+                    }
+
+                    break;
+                case DELETE:
+
+                    delete = (DeleteTransaction) transact;
                     /*
                      * here all the registered recordStores are queried
                      */
                     for ( MetadataStore rec : service.getRecordStore() ) {
-
-                        transactionIds.addAll( rec.transaction( writer, update ) );
+                        transactionIds.addAll( rec.transaction( writer, delete ) );
 
                     }
+                    it = transactionIds.listIterator();
+                    while ( it.hasNext() ) {
+                        it.next();
+                        deleteCount++;
+                    }
+
+                    break;
 
                 }
-
-                it = transactionIds.listIterator();
-                while ( it.hasNext() ) {
-                    it.next();
-                    updateCount++;
-                }
-
-                break;
-            case DELETE:
-
-                delete = (DeleteTransaction) transact;
-                /*
-                 * here all the registered recordStores are queried
-                 */
-                for ( MetadataStore rec : service.getRecordStore() ) {
-                    transactionIds.addAll( rec.transaction( writer, delete ) );
-
-                }
-                it = transactionIds.listIterator();
-                while ( it.hasNext() ) {
-                    it.next();
-                    deleteCount++;
-                }
-
-                break;
-
             }
+        } catch ( MetadataStoreException e ) {
+            throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
         }
 
         writer.writeStartElement( CSW_202_NS, "totalInserted" );
@@ -298,7 +311,8 @@ public class TransactionHandler {
             for ( MetadataStore rec : requestedTypeNames.values() ) {
                 try {
                     rec.getRecordsForTransactionInsertStatement( writer, transactionIds );
-                } catch ( IOException e ) {
+                } catch ( MetadataStoreException e ) {
+                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 

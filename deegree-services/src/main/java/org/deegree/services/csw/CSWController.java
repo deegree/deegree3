@@ -39,7 +39,6 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -516,8 +515,6 @@ public class CSWController extends AbstractOGCServiceController {
         } catch ( XMLStreamException e ) {
             e.printStackTrace();
         } catch ( IOException e ) {
-            e.printStackTrace();
-        } catch ( SQLException e ) {
             e.printStackTrace();
         } catch ( MissingParameterException e ) {
             sendSOAPException( soapDoc.getHeader(), factory, response, new OWSException( e ),
