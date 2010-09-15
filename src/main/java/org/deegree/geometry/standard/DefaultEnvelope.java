@@ -42,6 +42,8 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.LinearRing;
 
@@ -55,6 +57,8 @@ import com.vividsolutions.jts.geom.LinearRing;
  */
 public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope {
 
+    private static final Logger LOG = LoggerFactory.getLogger( DefaultEnvelope.class );
+    
     private Point max;
 
     private Point min;
@@ -126,6 +130,15 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     @Override
     public Envelope merge( Envelope other ) {
+
+        if ( this.getCoordinateSystem() != null && other.getCoordinateSystem() != null ) {
+            if ( !this.getCoordinateSystem().equals( other.getCoordinateSystem() ) ) {
+                String msg = "Merging of envelopes from different coordinate systems is currently not implemented!";
+                LOG.warn( msg );
+                return this;
+            }
+        }
+
         int coordinateDimension = Math.min( getCoordinateDimension(), other.getCoordinateDimension() );
         double[] min = new double[coordinateDimension];
         double[] max = new double[coordinateDimension];
