@@ -38,8 +38,18 @@
           </complexType>
         </element>
 
-
-        <element name="RequireInspireCompliance" minOccurs="0" type="boolean" />
+        <element name="RequireInspireCompliance" minOccurs="0">
+        <complexType>
+            <sequence>
+              <element name="ComplianceGenerator" minOccurs="1" >
+                <complexType>
+                  <attribute name="generateAutomatic" type="boolean" use="required" />
+                </complexType>
+              </element>
+            </sequence>
+            <attribute name="inspireRequired" type="boolean" use="required" />
+          </complexType>
+        </element>
       </sequence>
       <attribute name="connId" type="string" use="required" />
       <attribute name="configVersion" use="required" fixed="0.6.0" />
