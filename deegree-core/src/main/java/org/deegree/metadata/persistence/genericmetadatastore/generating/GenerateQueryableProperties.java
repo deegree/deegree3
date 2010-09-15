@@ -341,6 +341,7 @@ public class GenerateQueryableProperties {
                                  + queryablePropertyStatement_POST.toString() );
 
             stm = connection.prepareStatement( sqlStatement.toString() );
+            LOG.debug( stm.toString() );
             stm.setObject( 1, localId );
             stm.setObject( 2, operatesOnId );
             stm.executeUpdate();
@@ -807,7 +808,7 @@ public class GenerateQueryableProperties {
         StringWriter s_POST = new StringWriter( 50 );
 
         try {
-            if ( qp.getPublicationDate() == null || qp.getPublicationDate().equals( new Date( "0000-00-00" ) ) ) {
+            if ( qp.getPublicationDate() != null || !qp.getPublicationDate().equals( new Date( "0000-00-00" ) ) ) {
                 String publicationDateAttribute = "'" + qp.getPublicationDate() + "'";
                 s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
                               + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", publicationdate)" );
@@ -1207,11 +1208,11 @@ public class GenerateQueryableProperties {
                 sqlStatement.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( ',' );
                 sqlStatement.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
                 sqlStatement.append( ", bbox) VALUES (" + localId ).append( "," + operatesOnId );
-                sqlStatement.append( ",SetSRID('BOX3D(" + east ).append( " " + north ).append( "," + west );
-                sqlStatement.append( " " + south ).append( ")'::box3d,-1));" );
+                sqlStatement.append( ",SetSRID('BOX3D(" + west ).append( " " + south ).append( "," + east );
+                sqlStatement.append( " " + north ).append( ")'::box3d,-1));" );
             } else {
-                sqlStatement.append( "UPDATE " ).append( databaseTable ).append( " SET bbox = SetSRID('BOX3D(" + east );
-                sqlStatement.append( " " + north ).append( "," + west ).append( " " + south );
+                sqlStatement.append( "UPDATE " ).append( databaseTable ).append( " SET bbox = SetSRID('BOX3D(" + west );
+                sqlStatement.append( " " + south ).append( "," + east ).append( " " + north );
                 sqlStatement.append( ")'::box3d,-1) WHERE " );
                 sqlStatement.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
                 sqlStatement.append( " = " + operatesOnId + ";" );
