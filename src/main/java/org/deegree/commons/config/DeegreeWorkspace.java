@@ -233,6 +233,8 @@ public class DeegreeWorkspace {
     }
 
     /**
+     * Please check back with the TMC when changing these, they're used as keys in i18n files (used for progress bars
+     * when initializing applications)!
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author$
