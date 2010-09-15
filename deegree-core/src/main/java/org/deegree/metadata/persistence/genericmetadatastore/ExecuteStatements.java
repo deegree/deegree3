@@ -48,9 +48,9 @@ import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.metadata.persistence.genericrecordstore.generating.BuildMetadataXMLRepresentation;
-import org.deegree.metadata.persistence.genericrecordstore.generating.GenerateQueryableProperties;
-import org.deegree.metadata.persistence.genericrecordstore.parsing.ParsedProfileElement;
+import org.deegree.metadata.persistence.genericmetadatastore.generating.BuildMetadataXMLRepresentation;
+import org.deegree.metadata.persistence.genericmetadatastore.generating.GenerateQueryableProperties;
+import org.deegree.metadata.persistence.genericmetadatastore.parsing.ParsedProfileElement;
 import org.slf4j.Logger;
 
 /**
