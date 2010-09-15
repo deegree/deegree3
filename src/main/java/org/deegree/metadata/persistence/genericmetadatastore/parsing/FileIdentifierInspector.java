@@ -48,8 +48,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jj2000.j2k.NotImplementedError;
-
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.genericmetadatastore.PostGISMappingsISODC;
@@ -74,9 +72,6 @@ public class FileIdentifierInspector {
 
     private final IdentifierInspector inspector;
 
-    // public FileIdentifierInspector( String connectionId ) {
-    // this.connectionId = connectionId;
-    // }
     private FileIdentifierInspector( IdentifierInspector inspector, String connectionId ) {
         this.connectionId = connectionId;
         this.inspector = inspector;
@@ -86,17 +81,20 @@ public class FileIdentifierInspector {
         return new FileIdentifierInspector( inspector, connectionId );
     }
 
-    public boolean isFileIdentifierRejected() {
-        // TODO prove null for inspector
-        List<Param> paramList = inspector.getParam();
+    private boolean isFileIdentifierRejected() {
+        if ( inspector == null ) {
+            return false;
+        } else {
+            List<Param> paramList = inspector.getParam();
 
-        for ( Param p : paramList ) {
-            if ( p.getKey().equals( REJECT_EMPTY_FILE_IDENTIFIER ) ) {
-                return Boolean.getBoolean( p.getValue() );
+            for ( Param p : paramList ) {
+                if ( p.getKey().equals( REJECT_EMPTY_FILE_IDENTIFIER ) ) {
+                    return Boolean.getBoolean( p.getValue() );
+                }
             }
-        }
 
-        return false;
+            return false;
+        }
     }
 
     /**
@@ -121,22 +119,29 @@ public class FileIdentifierInspector {
             throw new MetadataStoreException( fi + " stored in backend, already!" );
         } else {
             // default behavior if there is no inspector provided
-            if ( inspector == null ) {
+            if ( isFileIdentifierRejected() == false ) {
                 if ( rsList.size() == 0 ) {
-                    LOG.debug( "(DEFAULT) A new UUID will be generated..." );
+                    LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );
                     idList.add( generateUUID() );
                     LOG.debug( "(DEFAULT) The new FileIdentifier: " + idList );
                 } else {
-                    LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken. " );
+                    LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
                     idList.add( rsList.get( 0 ) );
                 }
                 return idList;
             } else {
-                LOG.debug( "(CUSTOM) Here should be the implementation of the custom handled ID. " );
-                throw new NotImplementedError(
-                                               "If there is a custom configuration for the identifier problematic, this should be implemented!" );
+                if ( rsList.size() == 0 ) {
+                    LOG.debug( "This file must be rejected because the configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
+                    throw new MetadataStoreException(
+                                                      "The configuration-file requires at least a fileIdentifier or one resourceIdentifier!" );
+                } else {
+                    LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
+                    idList.add( rsList.get( 0 ) );
+                    return idList;
+                }
             }
         }
+
     }
 
     /**
