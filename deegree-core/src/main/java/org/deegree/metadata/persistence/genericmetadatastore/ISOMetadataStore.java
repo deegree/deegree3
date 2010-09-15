@@ -140,7 +140,7 @@ public class ISOMetadataStore implements MetadataStore {
      */
     private String encoding;
 
-    private final boolean inspire;
+    // private final boolean inspire;
 
     // private final boolean generateFileIds;
 
@@ -174,7 +174,7 @@ public class ISOMetadataStore implements MetadataStore {
     public ISOMetadataStore( ISOMetadataStoreConfig config ) {
         this.connectionId = config.getConnId();
         fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), connectionId );
-        inspire = config.isRequireInspireCompliance() == null ? false : config.isRequireInspireCompliance();
+        // inspire = config.isRequireInspireCompliance() == null ? false : config.isRequireInspireCompliance();
         // generateFileIds = config.isGenerateFileIdentifiers() == null ? false : config.isGenerateFileIdentifiers();
     }
 
