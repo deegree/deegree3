@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.genericmetadatastore;
 
-import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -90,55 +89,16 @@ public class ExecuteStatements {
         buildRecXML = new BuildMetadataXMLRepresentation();
 
         boolean isUpdate = false;
+        int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
 
-        /*
-         * Question if there already exists the identifier.
-         */
-        boolean idExistsAlready = proveIdExistence( connection, parsedElement );
-
-        if ( idExistsAlready ) {
-            int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
-
-            if ( isDC == true ) {
-                insertedIds.add( buildRecXML.generateDC( connection, operatesOnId, parsedElement ) );
-            } else {
-                insertedIds.add( buildRecXML.generateISO( connection, operatesOnId, parsedElement ) );
-
-            }
-            generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
+        if ( isDC == true ) {
+            insertedIds.add( buildRecXML.generateDC( connection, operatesOnId, parsedElement ) );
         } else {
-            String id = parsedElement.getQueryableProperties().getIdentifier().toString();
-            LOG.debug( "Metadata with identifier '{}' already exists!", id );
+            insertedIds.add( buildRecXML.generateISO( connection, operatesOnId, parsedElement ) );
+
         }
+        generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
 
-    }
-
-    private boolean proveIdExistence( Connection connection, ParsedProfileElement parsedElement )
-                            throws MetadataStoreException {
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        boolean notAvailable = true;
-        try {
-            for ( String identifier : parsedElement.getQueryableProperties().getIdentifier() ) {
-                String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
-                           + " AS i WHERE i.identifier = ?;";
-                stm = connection.prepareStatement( s );
-                stm.setObject( 1, identifier );
-                rs = stm.executeQuery();
-                LOG.debug( s );
-                if ( rs.next() ) {
-                    notAvailable = false;
-                }
-            }
-
-        } catch ( SQLException e ) {
-            LOG.debug( "Error while proving the IDs stored in the backend: {}" + e.getMessage() );
-            throw new MetadataStoreException( "Error while proving the IDs stored in the backend: {}" + e.getMessage() );
-        } finally {
-            close( stm );
-            close( rs );
-        }
-        return notAvailable;
     }
 
     /**

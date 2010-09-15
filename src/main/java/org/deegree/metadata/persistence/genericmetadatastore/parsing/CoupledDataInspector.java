@@ -32,8 +32,20 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.genericmetadatastore.parsing;
+
+import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.metadata.persistence.MetadataStoreException;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -44,5 +56,51 @@ package org.deegree.metadata.persistence.genericmetadatastore.parsing;
  * @version $Revision$, $Date$
  */
 public class CoupledDataInspector {
+
+    private static final Logger LOG = getLogger( CoupledDataInspector.class );
+
+    private final String connectionId;
+
+    private CoupledDataInspector( String connectionId ) {
+        this.connectionId = connectionId;
+    }
+
+    public static CoupledDataInspector newInstance( String connectionId ) {
+        return new CoupledDataInspector( connectionId );
+    }
+
+    /**
+     * If there is a data metadata record available for the service metadata record.
+     * 
+     * @param resourceIdentifierList
+     * @return
+     * @throws MetadataStoreException
+     */
+    private boolean getCoupledDataMetadatasets( String resourceIdentifier )
+                            throws MetadataStoreException {
+        boolean gotOneDataset = false;
+        ResultSet rs = null;
+        PreparedStatement stm = null;
+        Connection conn = null;
+        String s = "SELECT resourceidentifier FROM isoqp_resourceidentifier WHERE resourceidentifier = ?;";
+
+        try {
+            conn = ConnectionManager.getConnection( connectionId );
+            stm = conn.prepareStatement( s );
+            stm.setObject( 1, resourceIdentifier );
+            rs = stm.executeQuery();
+            while ( rs.next() ) {
+                gotOneDataset = true;
+            }
+        } catch ( SQLException e ) {
+            LOG.debug( "Error while proving the ID for the coupled resources: {}", e.getMessage() );
+            throw new MetadataStoreException( "Error while proving the ID for the coupled resources: {}"
+                                              + e.getMessage() );
+        } finally {
+            close( rs, stm, conn, LOG );
+        }
+
+        return gotOneDataset;
+    }
 
 }

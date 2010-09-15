@@ -42,13 +42,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jj2000.j2k.NotImplementedError;
+
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.genericmetadatastore.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector.Param;
 import org.slf4j.Logger;
 
 /**
@@ -74,11 +80,99 @@ public class FileIdentifierInspector {
     private FileIdentifierInspector( IdentifierInspector inspector, String connectionId ) {
         this.connectionId = connectionId;
         this.inspector = inspector;
-
     }
 
     public static FileIdentifierInspector newInstance( IdentifierInspector inspector, String connectionId ) {
         return new FileIdentifierInspector( inspector, connectionId );
+    }
+
+    public boolean isFileIdentifierRejected() {
+        // TODO prove null for inspector
+        List<Param> paramList = inspector.getParam();
+
+        for ( Param p : paramList ) {
+            if ( p.getKey().equals( REJECT_EMPTY_FILE_IDENTIFIER ) ) {
+                return Boolean.getBoolean( p.getValue() );
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param fi
+     *            the fileIdentifier that should be determined, can be <Code>null</Code>.
+     * @param rsList
+     *            the list of resourceIdentifier, not <Code>null</Code>.
+     * @return the new fileIdentifier.
+     * @throws MetadataStoreException
+     */
+    public List<String> determineFileIdentifier( String fi, List<String> rsList )
+                            throws MetadataStoreException {
+        List<String> idList = new ArrayList<String>();
+        if ( fi != null ) {
+            if ( proveIdExistence( fi ) ) {
+                LOG.info( "'{}' accepted as a valid fileIdentifier. ", fi );
+                idList.add( fi );
+                return idList;
+            }
+            LOG.debug( "'{}' is stored in backend, already! ", fi );
+            throw new MetadataStoreException( fi + " stored in backend, already!" );
+        } else {
+            // default behavior if there is no inspector provided
+            if ( inspector == null ) {
+                if ( rsList.size() == 0 ) {
+                    LOG.debug( "(DEFAULT) A new UUID will be generated..." );
+                    idList.add( generateUUID() );
+                    LOG.debug( "(DEFAULT) The new FileIdentifier: " + idList );
+                } else {
+                    LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken. " );
+                    idList.add( rsList.get( 0 ) );
+                }
+                return idList;
+            } else {
+                LOG.debug( "(CUSTOM) Here should be the implementation of the custom handled ID. " );
+                throw new NotImplementedError(
+                                               "If there is a custom configuration for the identifier problematic, this should be implemented!" );
+            }
+        }
+    }
+
+    /**
+     * Proves the availability of the identifier in the backend.
+     * 
+     * @param identifier
+     *            that is proved, not <Code>null</Code>.
+     * @return true, if the identifier is not found in the backend, otherwise false.
+     * @throws MetadataStoreException
+     */
+    private boolean proveIdExistence( String identifier )
+                            throws MetadataStoreException {
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        Connection conn = null;
+        boolean notAvailable = true;
+        try {
+            conn = ConnectionManager.getConnection( connectionId );
+            String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
+                       + " AS i WHERE i.identifier = ?;";
+            stm = conn.prepareStatement( s );
+            stm.setObject( 1, identifier );
+            rs = stm.executeQuery();
+            LOG.debug( s );
+            if ( rs.next() ) {
+                notAvailable = false;
+            }
+
+        } catch ( SQLException e ) {
+            LOG.debug( "Error while proving the IDs stored in the backend: {}", e.getMessage() );
+            throw new MetadataStoreException( "Error while proving the IDs stored in the backend: {}" + e.getMessage() );
+        } finally {
+            close( stm );
+            close( rs );
+        }
+        return notAvailable;
     }
 
     /**
@@ -92,7 +186,7 @@ public class FileIdentifierInspector {
      * @return a uuid that is unique in the backend.
      * @throws MetadataStoreException
      */
-    public String generateUUID()
+    private String generateUUID()
                             throws MetadataStoreException {
 
         ResultSet rs = null;

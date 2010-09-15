@@ -38,16 +38,14 @@ package org.deegree.metadata.persistence.genericmetadatastore.parsing;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+
+import jj2000.j2k.NotImplementedError;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -57,6 +55,7 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRS;
+import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.genericmetadatastore.generating.GenerateMetadata;
 import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
 import org.deegree.metadata.persistence.neededdatastructures.Keyword;
@@ -82,9 +81,11 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     private OMNamespace namespaceGCO;
 
-    private Connection connection;
+    // private Connection connection;
 
     private NamespaceContext nsContextParseII;
+
+    private final List<String> resourceIdentifierList;
 
     /**
      * 
@@ -92,10 +93,11 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @param connection
      * @param nsContext
      */
-    protected ParseIdentificationInfo( OMFactory factory, Connection connection, NamespaceContext nsContext ) {
+    protected ParseIdentificationInfo( OMFactory factory, NamespaceContext nsContext ) {
         this.factory = factory;
-        this.connection = connection;
+        // this.connection = connection;
         this.nsContextParseII = nsContext;
+        this.resourceIdentifierList = new ArrayList<String>();
 
         namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
         namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
@@ -115,7 +117,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
      */
     protected void parseIdentificationInfo( List<OMElement> identificationInfo, GenerateMetadata gr,
                                             QueryableProperties qp, ReturnableProperties rp, List<CRS> crsList )
-                            throws IOException {
+                            throws MetadataStoreException {
 
         List<OMElement> identificationInfo_Update = new ArrayList<OMElement>();
 
@@ -173,8 +175,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             List<OMElement> identifier = getElements( ci_citation, new XPath( "./gmd:identifier", nsContextParseII ) );
 
-            List<String> resourceIdentifierList = new ArrayList<String>();
-
             String[] titleElements = getNodesAsStrings( title, new XPath( "./gco:CharacterString", nsContextParseII ) );
 
             String[] alternateTitleElements = getNodesAsStrings(
@@ -217,10 +217,14 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                              dateElem,
                                                              new XPath(
                                                                         "./gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date",
-                                                                        nsContextParseII ), "0000-00-00" );
+                                                                        nsContextParseII ), null );
 
                 try {
-                    date = new Date( creationDateString );
+                    if ( creationDateString != null ) {
+                        date = new Date( creationDateString );
+                    } else {
+                        date = null;
+                    }
                 } catch ( ParseException e ) {
 
                     e.printStackTrace();
@@ -232,10 +236,14 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                 dateElem,
                                                                 new XPath(
                                                                            "./gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date",
-                                                                           nsContextParseII ), "0000-00-00" );
+                                                                           nsContextParseII ), null );
 
                 try {
-                    date = new Date( publicationDateString );
+                    if ( publicationDateString != null ) {
+                        date = new Date( publicationDateString );
+                    } else {
+                        date = null;
+                    }
                 } catch ( ParseException e ) {
 
                     e.printStackTrace();
@@ -801,24 +809,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
              *---------------------------------------------------------------*/
             List<OMElement> extent = (List<OMElement>) ( extent_md_dataIdent.size() != 0 ? extent_md_dataIdent
                                                                                         : extent_service );
-            String temporalExtentBegin = "0000-00-00";
-            Date dateTempBeg = null;
-            try {
-                dateTempBeg = new Date( temporalExtentBegin );
-            } catch ( ParseException e ) {
-
-                e.printStackTrace();
-            }
-
-            String temporalExtentEnd = "0000-00-00";
-
-            Date dateTempEnd = null;
-            try {
-                dateTempEnd = new Date( temporalExtentEnd );
-            } catch ( ParseException e ) {
-
-                e.printStackTrace();
-            }
 
             double boundingBoxWestLongitude = 0.0;
             double boundingBoxEastLongitude = 0.0;
@@ -826,26 +816,38 @@ public class ParseIdentificationInfo extends XMLAdapter {
             double boundingBoxNorthLatitude = 0.0;
 
             CRS crs = null;
+            Date tempBeg = null;
+            Date tempEnd = null;
 
             String geographicDescriptionCode_service = null;
             String[] geographicDescriptionCode_serviceOtherLang = null;
 
             for ( OMElement extentElem : extent ) {
 
-                if ( temporalExtentBegin.equals( "0000-00-00" ) ) {
-                    temporalExtentBegin = getNodeAsString(
-                                                           extentElem,
-                                                           new XPath(
-                                                                      "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
-                                                                      nsContextParseII ), "0000-00-00" );
-                }
+                // if ( temporalExtentBegin.equals( "0000-00-00" ) ) {
+                String temporalExtentBegin = getNodeAsString(
+                                                              extentElem,
+                                                              new XPath(
+                                                                         "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
+                                                                         nsContextParseII ), null );
+                // }
 
-                if ( temporalExtentEnd.equals( "0000-00-00" ) ) {
-                    temporalExtentEnd = getNodeAsString(
-                                                         extentElem,
-                                                         new XPath(
-                                                                    "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
-                                                                    nsContextParseII ), "0000-00-00" );
+                // if ( temporalExtentEnd.equals( "0000-00-00" ) ) {
+                String temporalExtentEnd = getNodeAsString(
+                                                            extentElem,
+                                                            new XPath(
+                                                                       "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
+                                                                       nsContextParseII ), null );
+                // }
+
+                try {
+                    if ( temporalExtentBegin != null && temporalExtentEnd != null ) {
+                        tempBeg = new Date( temporalExtentBegin );
+                        tempEnd = new Date( temporalExtentEnd );
+                    }
+                } catch ( ParseException e ) {
+
+                    e.printStackTrace();
                 }
 
                 OMElement bbox = getElement(
@@ -902,8 +904,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             }
 
-            qp.setTemporalExtentBegin( dateTempBeg );
-            qp.setTemporalExtentEnd( dateTempEnd );
+            qp.setTemporalExtentBegin( tempBeg );
+            qp.setTemporalExtentEnd( tempEnd );
             qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
                                                 boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
             qp.setCrs( crsList );
@@ -1044,49 +1046,51 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     // TODO
 
                 } else if ( couplingTypeString.equals( "tight" ) ) {
-                    for ( String operatesOnString : operatesOnList ) {
-                        if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
-                            String msg = "No resourceIdentifier " + operatesOnString
-                                         + " found in the data metadata. So there is no coupling possible.";
-                            throw new IOException( msg );
-                        }
-                    }
+                    // for ( String operatesOnString : operatesOnList ) {
+                    // if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
+                    // String msg = "No resourceIdentifier " + operatesOnString
+                    // + " found in the data metadata. So there is no coupling possible.";
+                    // throw new IOException( msg );
+                    // }
+                    // }
+                    throw new NotImplementedError( "coupledResources in ParseIdentification is not implemented yet!" );
 
-                    boolean isTightlyCoupledOK = false;
-                    // TODO please more efficiency and intelligence
-                    for ( String operatesOnString : operatesOnList ) {
-
-                        for ( String operatesOnIdentifierString : operatesOnIdentifierList ) {
-
-                            if ( operatesOnString.equals( operatesOnIdentifierString ) ) {
-                                isTightlyCoupledOK = true;
-                                break;
-                            }
-                            isTightlyCoupledOK = false;
-
-                        }
-                        // OperatesOnList [a,b,c] - OperatesOnIdList [b,c,d] -> a not in OperatesOnIdList ->
-                        // inconsistency
-                        if ( isTightlyCoupledOK == false ) {
-
-                            String msg = "Missmatch between OperatesOn '" + operatesOnString
-                                         + "' and its tightly coupled resource OperatesOnIdentifier. ";
-                            throw new IOException( msg );
-
-                            // there is no possibility to set the operationName -> not able to set the coupledResource
-
-                        }
-
-                    }
-                    // OperatesOnList [] - OperatesOnIdList [a,b,c] -> inconsistency
-                    if ( isTightlyCoupledOK == false && operatesOnIdentifierList.length != 0 ) {
-
-                        String msg = "Missmatch between OperatesOn and its tightly coupled resource OperatesOnIdentifier. ";
-                        throw new IOException( msg );
-                    }
-                } else {
-                    // mixed coupled if there are loose and tight coupled resources.
-
+                    // boolean isTightlyCoupledOK = false;
+                    // // TODO please more efficiency and intelligence
+                    // for ( String operatesOnString : operatesOnList ) {
+                    //
+                    // for ( String operatesOnIdentifierString : operatesOnIdentifierList ) {
+                    //
+                    // if ( operatesOnString.equals( operatesOnIdentifierString ) ) {
+                    // isTightlyCoupledOK = true;
+                    // break;
+                    // }
+                    // isTightlyCoupledOK = false;
+                    //
+                    // }
+                    // // OperatesOnList [a,b,c] - OperatesOnIdList [b,c,d] -> a not in OperatesOnIdList ->
+                    // // inconsistency
+                    // if ( isTightlyCoupledOK == false ) {
+                    //
+                    // String msg = "Missmatch between OperatesOn '" + operatesOnString
+                    // + "' and its tightly coupled resource OperatesOnIdentifier. ";
+                    // throw new IOException( msg );
+                    //
+                    // // there is no possibility to set the operationName -> not able to set the coupledResource
+                    //
+                    // }
+                    //
+                    // }
+                    // // OperatesOnList [] - OperatesOnIdList [a,b,c] -> inconsistency
+                    // if ( isTightlyCoupledOK == false && operatesOnIdentifierList.length != 0 ) {
+                    //
+                    // String msg =
+                    // "Missmatch between OperatesOn and its tightly coupled resource OperatesOnIdentifier. ";
+                    // throw new IOException( msg );
+                    // }
+                    // } else {
+                    // // mixed coupled if there are loose and tight coupled resources.
+                    //
                 }
             }
 
@@ -1216,34 +1220,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
         gr.setIdentificationInfo( identificationInfo_Update );
     }
 
-    /**
-     * If there is a data metadata record available for the service metadata record.
-     * 
-     * @param resourceIdentifierList
-     * @return
-     */
-    private boolean getCoupledDataMetadatasets( String resourceIdentifier ) {
-        boolean gotOneDataset = false;
-        ResultSet rs = null;
-        PreparedStatement stm = null;
-
-        String s = "SELECT resourceidentifier FROM isoqp_resourceidentifier WHERE resourceidentifier = ?;";
-
-        try {
-            stm = connection.prepareStatement( s );
-            stm.setObject( 1, resourceIdentifier );
-            rs = stm.executeQuery();
-            while ( rs.next() ) {
-                gotOneDataset = true;
-            }
-            stm.close();
-            rs.close();
-        } catch ( SQLException e ) {
-
-            e.printStackTrace();
-        }
-
-        return gotOneDataset;
+    public List<String> getResourceIdentifierList() {
+        return resourceIdentifierList;
     }
 
 }

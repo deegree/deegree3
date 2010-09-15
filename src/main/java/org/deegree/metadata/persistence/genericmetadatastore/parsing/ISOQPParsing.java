@@ -173,35 +173,6 @@ public final class ISOQPParsing extends XMLAdapter {
         /*---------------------------------------------------------------
          * 
          * 
-         * FileIdentifier
-         * 
-         * 
-         *---------------------------------------------------------------*/
-        String fileIdentifierString = getNodeAsString( rootElement,
-                                                       new XPath( "./gmd:fileIdentifier/gco:CharacterString",
-                                                                  nsContextISOParsing ), null );
-        List<String> idList = new ArrayList<String>();
-        if ( fileIdentifierString == null ) {
-            idList.add( fi.generateUUID() );
-            qp.setIdentifier( idList );
-
-            OMElement omFileIdentifier = factory.createOMElement( "fileIdentifier", namespaceGMD );
-            OMElement omFileCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
-            omFileIdentifier.addChild( omFileCharacterString );
-            omFileCharacterString.setText( qp.getIdentifier().get( 0 ) );
-            gr.setIdentifier( omFileIdentifier );
-
-        } else {
-            idList.add( fileIdentifierString );
-            qp.setIdentifier( idList );
-
-            gr.setIdentifier( getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContextISOParsing ) ) );
-
-        }
-
-        /*---------------------------------------------------------------
-         * 
-         * 
          * (default) Language
          * 
          * 
@@ -476,8 +447,35 @@ public final class ISOQPParsing extends XMLAdapter {
         List<OMElement> identificationInfo = getElements( rootElement, new XPath( "./gmd:identificationInfo",
                                                                                   nsContextISOParsing ) );
 
-        // ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, connection, nsContextISOParsing );
-        // pI.parseIdentificationInfo( identificationInfo, gr, qp, rp, crsList );
+        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, nsContextISOParsing );
+        pI.parseIdentificationInfo( identificationInfo, gr, qp, rp, crsList );
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * FileIdentifier
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        String fileIdentifierString = getNodeAsString( rootElement,
+                                                       new XPath( "./gmd:fileIdentifier/gco:CharacterString",
+                                                                  nsContextISOParsing ), null );
+        List<String> idList = fi.determineFileIdentifier( fileIdentifierString, pI.getResourceIdentifierList() );
+
+        qp.setIdentifier( idList );
+
+        OMElement omFileIdentifier = factory.createOMElement( "fileIdentifier", namespaceGMD );
+        OMElement omFileCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
+        omFileIdentifier.addChild( omFileCharacterString );
+        omFileCharacterString.setText( qp.getIdentifier().get( 0 ) );
+        gr.setIdentifier( omFileIdentifier );
+
+        // idList.add( fileIdentifierString );
+        // qp.setIdentifier( idList );
+        //
+        // gr.setIdentifier( getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContextISOParsing ) ) );
+        //
+        // }
+        // TODO
 
         /*---------------------------------------------------------------
          * 
