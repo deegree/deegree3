@@ -135,11 +135,11 @@ public class MetadataStoreManager {
      */
     public static void init( File rsDir ) {
         if ( !rsDir.exists() ) {
-            LOG.info( "No 'datasources/record' directory -- skipping initialization of record stores." );
+            LOG.info( "No 'datasources/metadata' directory -- skipping initialization of metadata stores." );
             return;
         }
         LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up record stores." );
+        LOG.info( "Setting up metadata stores." );
         LOG.info( "--------------------------------------------------------------------------------" );
         File[] rsConfigFiles = rsDir.listFiles( new FilenameFilter() {
             @Override
@@ -151,7 +151,7 @@ public class MetadataStoreManager {
             String fileName = rsConfigFile.getName();
             // 4 is the length of ".xml"
             String rsId = fileName.substring( 0, fileName.length() - 4 );
-            LOG.info( "Setting up record store '" + rsId + "' from file '" + fileName + "'..." + "" );
+            LOG.info( "Setting up metadata store '" + rsId + "' from file '" + fileName + "'..." + "" );
             try {
                 MetadataStore rs = create( rsConfigFile.toURI().toURL() );
                 registerAndInit( rs, rsId );

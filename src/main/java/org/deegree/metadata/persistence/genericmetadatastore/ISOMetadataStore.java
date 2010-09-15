@@ -94,7 +94,7 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.RecordStoreOptions;
-import org.deegree.metadata.persistence.genericrecordstore.parsing.ISOQPParsing;
+import org.deegree.metadata.persistence.genericmetadatastore.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
