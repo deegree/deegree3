@@ -264,7 +264,15 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                              new XPath(
                                                                         "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                         nsContextParseII ), null );
-                resourceIdentifierList.add( resourceIdentifier );
+                String dataIdentificationId = md_dataIdentification.getAttributeValue( new QName( "id" ) );
+                String dataIdentificationUuId = md_dataIdentification.getAttributeValue( new QName( "uuid" ) );
+                if ( resourceIdentifier == null && dataIdentificationUuId != null ) {
+                    resourceIdentifierList.add( dataIdentificationUuId );
+                } else if ( resourceIdentifier == null && dataIdentificationId != null ) {
+                    resourceIdentifierList.add( dataIdentificationId );
+                } else {
+                    resourceIdentifierList.add( resourceIdentifier );
+                }
             }
             qp.setResourceIdentifier( resourceIdentifierList );
 
