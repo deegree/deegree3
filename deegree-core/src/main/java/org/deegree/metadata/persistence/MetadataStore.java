@@ -107,7 +107,7 @@ public interface MetadataStore {
      */
     public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema,
                             RecordStoreOptions recordStoreOptions )
-                            throws SQLException, XMLStreamException, IOException;
+                            throws MetadataStoreException, XMLStreamException;
 
     /**
      * Exports the records by the requested identifier.
@@ -124,7 +124,7 @@ public interface MetadataStore {
      */
     public void getRecordById( XMLStreamWriter writer, List<String> idList, URI outputSchema,
                                SetOfReturnableElements elementSetName )
-                            throws SQLException;
+                            throws MetadataStoreException, XMLStreamException;
 
     /**
      * Exports the XML fragment to the recordstore-backend.
@@ -144,7 +144,7 @@ public interface MetadataStore {
      * @throws XMLStreamException
      */
     public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations )
-                            throws SQLException, XMLStreamException;
+                            throws MetadataStoreException, XMLStreamException;
 
     /**
      * Gets the records in dublin core representation for the insert action of the transaction operation. If there is an
@@ -159,7 +159,7 @@ public interface MetadataStore {
      * @throws IOException
      */
     public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, List<Integer> transactionIds )
-                            throws SQLException, IOException;
+                            throws MetadataStoreException;
 
     /**
      * Returns the typeNames that are known in the backend. <br>
