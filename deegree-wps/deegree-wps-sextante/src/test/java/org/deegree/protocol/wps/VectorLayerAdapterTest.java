@@ -67,32 +67,38 @@ public class VectorLayerAdapterTest {
 
     private static Logger LOG = LoggerFactory.getLogger( VectorLayerAdapterTest.class );
 
+    // enabled/disabled all tests
+    private static final boolean ENABLED = false;
+
     /**
      * Tests the {@link VectorLayerAdapter} to convert geometries to {@link VectorLayerImpl} and back. <br>
      * Compares the input geometry with the output geometry.
      */
     @Test
     public void testGeometries() {
-        try {
+        if ( ENABLED ) {
 
-            // read geometries
-            LinkedList<Geometry> geoms = readGeometries();
+            try {
 
-            // traverse all geometries
-            for ( Geometry gIn : geoms ) {
+                // read geometries
+                LinkedList<Geometry> geoms = readGeometries();
 
-                // create vector layer
-                IVectorLayer layer = VectorLayerAdapter.createVectorLayer( gIn );
+                // traverse all geometries
+                for ( Geometry gIn : geoms ) {
 
-                // create geometry
-                Geometry gOut = VectorLayerAdapter.createGeometry( layer );
+                    // create vector layer
+                    IVectorLayer layer = VectorLayerAdapter.createVectorLayer( gIn );
 
-                // check geometry
-                Assert.assertTrue( gIn.equals( gOut ) );
+                    // create geometry
+                    Geometry gOut = VectorLayerAdapter.createGeometry( layer );
+
+                    // check geometry
+                    Assert.assertTrue( gIn.equals( gOut ) );
+                }
+            } catch ( Throwable t ) {
+                LOG.error( t.getMessage(), t );
+                Assert.fail( t.getLocalizedMessage() );
             }
-        } catch ( Throwable t ) {
-            LOG.error( t.getMessage(), t );
-            Assert.fail( t.getLocalizedMessage() );
         }
     }
 
@@ -102,52 +108,54 @@ public class VectorLayerAdapterTest {
      */
     @Test
     public void testFeatures() {
-        try {
+        if ( ENABLED ) {
+            try {
 
-            // read features
-            LinkedList<Feature> fs = readFeatures();
+                // read features
+                LinkedList<Feature> fs = readFeatures();
 
-            // traverse all features
-            for ( Feature f : fs ) {
+                // traverse all features
+                for ( Feature f : fs ) {
 
-                IVectorLayer layer = VectorLayerAdapter.createVectorLayer( f );
-                Feature fOut = VectorLayerAdapter.createFeature( layer );
+                    IVectorLayer layer = VectorLayerAdapter.createVectorLayer( f );
+                    Feature fOut = VectorLayerAdapter.createFeature( layer );
 
-                // if feature is a feature collection
-                if ( f instanceof FeatureCollection ) {
+                    // if feature is a feature collection
+                    if ( f instanceof FeatureCollection ) {
 
-                    FeatureCollection fcIn = (FeatureCollection) f;
+                        FeatureCollection fcIn = (FeatureCollection) f;
 
-                    if ( fcIn.size() > 1 ) {// more features
+                        if ( fcIn.size() > 1 ) {// more features
 
-                        // check instance
-                        Assert.assertTrue( fOut instanceof FeatureCollection );
+                            // check instance
+                            Assert.assertTrue( fOut instanceof FeatureCollection );
 
-                        // check feature collection
-                        checkFeatureCollection( fcIn, (FeatureCollection) fOut );
+                            // check feature collection
+                            checkFeatureCollection( fcIn, (FeatureCollection) fOut );
 
-                    } else {// one feature
+                        } else {// one feature
 
-                        // check instance
-                        Assert.assertTrue( !( fOut instanceof FeatureCollection ) );
+                            // check instance
+                            Assert.assertTrue( !( fOut instanceof FeatureCollection ) );
+
+                            // check feature
+                            Feature fModifyIn = fcIn.iterator().next();
+                            checkFeature( fModifyIn, fOut );
+
+                        }
+
+                    } else { // if feature is a feature
 
                         // check feature
-                        Feature fModifyIn = fcIn.iterator().next();
-                        checkFeature( fModifyIn, fOut );
-
+                        checkFeature( f, fOut );
                     }
 
-                } else { // if feature is a feature
-
-                    // check feature
-                    checkFeature( f, fOut );
                 }
 
+            } catch ( Throwable t ) {
+                LOG.error( t.getMessage(), t );
+                Assert.fail( t.getLocalizedMessage() );
             }
-
-        } catch ( Throwable t ) {
-            LOG.error( t.getMessage(), t );
-            Assert.fail( t.getLocalizedMessage() );
         }
     }
 
@@ -158,26 +166,28 @@ public class VectorLayerAdapterTest {
      */
     @Test
     public void testFeatureCollections() {
-        try {
-            // read feature collections
-            LinkedList<FeatureCollection> fcs = readFeatureCollections();
+        if ( ENABLED ) {
+            try {
+                // read feature collections
+                LinkedList<FeatureCollection> fcs = readFeatureCollections();
 
-            // traverse all feature collections
-            for ( FeatureCollection fcIn : fcs ) {
+                // traverse all feature collections
+                for ( FeatureCollection fcIn : fcs ) {
 
-                // create vector layer
-                IVectorLayer layer = VectorLayerAdapter.createVectorLayer( fcIn );
+                    // create vector layer
+                    IVectorLayer layer = VectorLayerAdapter.createVectorLayer( fcIn );
 
-                // create feature collection
-                FeatureCollection fcOut = VectorLayerAdapter.createFeatureCollection( layer );
+                    // create feature collection
+                    FeatureCollection fcOut = VectorLayerAdapter.createFeatureCollection( layer );
 
-                // check feature collection
-                checkFeatureCollection( fcIn, fcOut );
+                    // check feature collection
+                    checkFeatureCollection( fcIn, fcOut );
 
+                }
+            } catch ( Throwable t ) {
+                LOG.error( t.getMessage(), t );
+                Assert.fail( t.getLocalizedMessage() );
             }
-        } catch ( Throwable t ) {
-            LOG.error( t.getMessage(), t );
-            Assert.fail( t.getLocalizedMessage() );
         }
     }
 

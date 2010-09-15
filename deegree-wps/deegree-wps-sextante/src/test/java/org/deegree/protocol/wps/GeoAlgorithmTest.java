@@ -72,7 +72,7 @@ public class GeoAlgorithmTest {
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     /**
      * Returns a list of all supported {@link GeoAlgorithm} as {@link AlgorithmWithData} for testing.
@@ -90,7 +90,7 @@ public class GeoAlgorithmTest {
             // test only one algorithm
             Sextante.initialize();
             HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
-            GeoAlgorithm geoAlg = sextanteAlgs.get( "cleanpointslayer" );
+            GeoAlgorithm geoAlg = sextanteAlgs.get( "centroids" );
             AlgorithmWithData testAlg = new AlgorithmWithData( geoAlg );
             testAlg.addAllInputData( getInputData( geoAlg ) );
             algs.add( testAlg );
@@ -269,11 +269,8 @@ public class GeoAlgorithmTest {
              || alg.getCommandLineName().equals( "splitpolylinesatnodes" )
              || alg.getCommandLineName().equals( "geometricpropertieslines" ) ) {
 
-            //tested changelinedirection
-            layers.add( GeometryExampleData.GML_31_LINESTRING );
-            layers.add( GeometryExampleData.GML_31_MULTILINESTRING );
-            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
-            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
+            // tested changelinedirection
+            layers.addAll( GeometryExampleData.getData( GeometryType.LINE ) );
 
         } else
 
