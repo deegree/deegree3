@@ -37,6 +37,7 @@ package org.deegree.services.wps.provider.sextante;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import org.deegree.commons.tom.ows.CodeType;
@@ -136,6 +137,28 @@ public class SextanteProcessProvider implements ProcessProvider {
         return algs;
     }
 
+    public static GeoAlgorithm[] getSupportedAlgorithms() {
+        Sextante.initialize();
+
+        // list of supported algorithms
+        LinkedList<String> supportedAlgKeys = new LinkedList<String>();
+        supportedAlgKeys.add( "boundingbox" );
+        supportedAlgKeys.add( "centroids" );
+        supportedAlgKeys.add( "changelinedirection" );
+        supportedAlgKeys.add( "cleanpointslayer" );
+
+        // get algorithms
+        LinkedList<GeoAlgorithm> supportedAlgs = new LinkedList<GeoAlgorithm>();
+        for ( String key : supportedAlgKeys ) {
+            GeoAlgorithm alg = Sextante.getAlgorithmFromCommandLineName( key );
+            if ( alg != null ) {
+                supportedAlgs.add( alg );
+            }
+        }
+
+        return supportedAlgs.toArray( new GeoAlgorithm[supportedAlgs.size()] );
+    }
+
     SextanteProcessProvider() {
     }
 
@@ -148,6 +171,7 @@ public class SextanteProcessProvider implements ProcessProvider {
 
         // initialize WPS processes
         GeoAlgorithm[] algs = getVectorLayerAlgorithms();
+        // GeoAlgorithm[] algs = getSupportedAlgorithms();
 
         for ( int i = 0; i < algs.length; i++ ) {
             // SEXTANTE algorithm

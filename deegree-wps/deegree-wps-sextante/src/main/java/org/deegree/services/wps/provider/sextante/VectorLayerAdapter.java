@@ -91,7 +91,6 @@ public class VectorLayerAdapter {
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( VectorLayerAdapter.class );
 
-    private static long id = 0;
 
     /**
      * Creates an {@link IVectorLayer} from a {@link FeatureCollection}.

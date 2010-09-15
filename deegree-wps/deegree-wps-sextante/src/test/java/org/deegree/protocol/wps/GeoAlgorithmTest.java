@@ -75,13 +75,13 @@ public class GeoAlgorithmTest {
     private static final boolean ENABLED = false;
 
     /**
-     * Returns a list of all supported {@link GeoAlgorithm} as {@link TestAlgorithm} for testing.
+     * Returns a list of all supported {@link GeoAlgorithm} as {@link AlgorithmWithData} for testing.
      * 
-     * @return List of all supported {@link GeoAlgorithm} as {@link TestAlgorithm}.
+     * @return List of all supported {@link GeoAlgorithm} as {@link AlgorithmWithData}.
      */
     @SuppressWarnings("unchecked")
-    private LinkedList<TestAlgorithm> getAlgorithms() {
-        LinkedList<TestAlgorithm> algs = new LinkedList<TestAlgorithm>();
+    private LinkedList<AlgorithmWithData> getAlgorithms() {
+        LinkedList<AlgorithmWithData> algs = new LinkedList<AlgorithmWithData>();
 
         // test all algorithms?
         boolean testAll = false;
@@ -90,8 +90,8 @@ public class GeoAlgorithmTest {
             // test only one algorithm
             Sextante.initialize();
             HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
-            GeoAlgorithm geoAlg = sextanteAlgs.get( "removerepeatedgeometries" );
-            TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
+            GeoAlgorithm geoAlg = sextanteAlgs.get( "cleanpointslayer" );
+            AlgorithmWithData testAlg = new AlgorithmWithData( geoAlg );
             testAlg.addAllInputData( getInputData( geoAlg ) );
             algs.add( testAlg );
 
@@ -103,7 +103,7 @@ public class GeoAlgorithmTest {
                 GeoAlgorithm geoAlg = geoalgs[i];
 
                 if ( !geoAlg.getCommandLineName().equals( "no algorithm" ) ) {
-                    TestAlgorithm testAlg = new TestAlgorithm( geoAlg );
+                    AlgorithmWithData testAlg = new AlgorithmWithData( geoAlg );
                     testAlg.addAllInputData( getInputData( geoAlg ) );
                     algs.add( testAlg );
                 }
@@ -225,8 +225,8 @@ public class GeoAlgorithmTest {
         if ( alg.getCommandLineName().equals( "union" ) ) {
 
             // TODO
-            // layers.add( GeometryExampleData.GML_31_POLYGON );
-            // layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS );
+            layers.add( GeometryExampleData.GML_31_POLYGON );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTIPOLYGONS );
 
             LOG.warn( "No test data for '" + alg.getCommandLineName() + "' available." );
         } else
@@ -269,8 +269,12 @@ public class GeoAlgorithmTest {
              || alg.getCommandLineName().equals( "splitpolylinesatnodes" )
              || alg.getCommandLineName().equals( "geometricpropertieslines" ) ) {
 
+            //tested changelinedirection
             layers.add( GeometryExampleData.GML_31_LINESTRING );
-            layers.add( GeometryExampleData.GML_31_POLYGON );
+            layers.add( GeometryExampleData.GML_31_MULTILINESTRING );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
+            layers.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
+
         } else
 
         // delaunay algorithm
@@ -321,10 +325,10 @@ public class GeoAlgorithmTest {
                 Assert.assertNotNull( client );
 
                 // all algorithms
-                LinkedList<TestAlgorithm> algs = getAlgorithms();
+                LinkedList<AlgorithmWithData> algs = getAlgorithms();
 
                 // traverse all algorithms
-                for ( TestAlgorithm testAlg : algs ) {
+                for ( AlgorithmWithData testAlg : algs ) {
 
                     // geoalgorithm
                     GeoAlgorithm alg = testAlg.getAlgorithm();
