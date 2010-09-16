@@ -46,7 +46,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 
-import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.genericmetadatastore.PostGISMappingsISODC;
@@ -109,7 +108,7 @@ public class GenerateQueryableProperties {
             stm.setObject( 3, null );
             stm.setObject( 4, generateISOQP_AnyTextStatement( isCaseSensitive, parsedElement.getQueryableProperties(),
                                                               parsedElement.getReturnableProperties() ) );
-            if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
+            if ( parsedElement.getQueryableProperties().getModified() != null ) {
                 String time = parsedElement.getQueryableProperties().getModified().toString();
                 stm.setTimestamp(
                                   5,
@@ -130,8 +129,8 @@ public class GenerateQueryableProperties {
 
             LOG.debug( "error: " + e.getMessage(), e );
         } catch ( ParseException e ) {
-
-            LOG.debug( "error: " + e.getMessage(), e );
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
         return operatesOnId;
@@ -537,19 +536,14 @@ public class GenerateQueryableProperties {
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
-        try {
-            if ( ( qp.getTemporalExtentBegin() != null || !qp.getTemporalExtentBegin().equals( new Date( "0000-00-00" ) ) )
-                 && ( qp.getTemporalExtentEnd() != null || !qp.getTemporalExtentEnd().equals( new Date( "0000-00-00" ) ) ) ) {
 
-                s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
-                              + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name()
-                              + ", tempextent_begin, tempextent_end)" );
+        if ( ( qp.getTemporalExtentBegin() != null ) && ( qp.getTemporalExtentEnd() != null ) ) {
 
-                s_POST.append( "'" + qp.getTemporalExtentBegin() + "','" + qp.getTemporalExtentEnd() + "');" );
-            }
-        } catch ( ParseException e ) {
+            s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
+                          + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name()
+                          + ", tempextent_begin, tempextent_end)" );
 
-            e.printStackTrace();
+            s_POST.append( "'" + qp.getTemporalExtentBegin() + "','" + qp.getTemporalExtentEnd() + "');" );
         }
 
         executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
@@ -747,20 +741,14 @@ public class GenerateQueryableProperties {
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
 
-        try {
-            if ( qp.getRevisionDate() != null || !qp.getRevisionDate().equals( new Date( "0000-00-00" ) ) ) {
-                String revisionDateAttribute = "'" + qp.getRevisionDate() + "'";
-                s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
-                              + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", revisiondate)" );
+        if ( qp.getRevisionDate() != null ) {
+            String revisionDateAttribute = "'" + qp.getRevisionDate() + "'";
+            s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
+                          + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", revisiondate)" );
 
-                s_POST.append( revisionDateAttribute + ");" );
+            s_POST.append( revisionDateAttribute + ");" );
 
-                executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE,
-                                                          s_POST );
-            }
-        } catch ( ParseException e ) {
-
-            e.printStackTrace();
+            executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
 
     }
@@ -777,20 +765,14 @@ public class GenerateQueryableProperties {
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
 
-        try {
-            if ( qp.getCreationDate() != null || !qp.getCreationDate().equals( new Date( "0000-00-00" ) ) ) {
-                String creationDateAttribute = "'" + qp.getCreationDate() + "'";
-                s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
-                              + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", creationdate)" );
+        if ( qp.getCreationDate() != null ) {
+            String creationDateAttribute = "'" + qp.getCreationDate() + "'";
+            s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
+                          + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", creationdate)" );
 
-                s_POST.append( creationDateAttribute + ");" );
+            s_POST.append( creationDateAttribute + ");" );
 
-                executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE,
-                                                          s_POST );
-            }
-        } catch ( ParseException e ) {
-
-            e.printStackTrace();
+            executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
 
     }
@@ -807,20 +789,14 @@ public class GenerateQueryableProperties {
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
 
-        try {
-            if ( qp.getPublicationDate() != null || !qp.getPublicationDate().equals( new Date( "0000-00-00" ) ) ) {
-                String publicationDateAttribute = "'" + qp.getPublicationDate() + "'";
-                s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
-                              + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", publicationdate)" );
+        if ( qp.getPublicationDate() != null ) {
+            String publicationDateAttribute = "'" + qp.getPublicationDate() + "'";
+            s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
+                          + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", publicationdate)" );
 
-                s_POST.append( publicationDateAttribute + ");" );
+            s_POST.append( publicationDateAttribute + ");" );
 
-                executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE,
-                                                          s_POST );
-            }
-        } catch ( ParseException e ) {
-
-            e.printStackTrace();
+            executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
         }
 
     }
@@ -1076,17 +1052,21 @@ public class GenerateQueryableProperties {
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
 
-        for ( String specificationTitle : qp.getSpecificationTitle() ) {
+        if ( qp.getSpecificationDate() != null ) {
+            for ( String specificationTitle : qp.getSpecificationTitle() ) {
 
-            s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
-                          + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name()
-                          + ", specificationTitle, specificationDateType, specificationDate)" );
+                s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.CommonColumnNames.id.name()
+                              + ", " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name()
+                              + ", specificationTitle, specificationDateType, specificationDate)" );
 
-            s_POST.append( "'" + specificationTitle + "','" + qp.getSpecificationDateType() + "','"
-                           + qp.getSpecificationDate() + "');" );
+                s_POST.append( "'" + specificationTitle + "','" + qp.getSpecificationDateType() + "','"
+                               + qp.getSpecificationDate() + "');" );
 
-            executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE, s_POST );
+                executeQueryablePropertiesDatabasetables( isUpdate, connection, operatesOnId, databaseTable, s_PRE,
+                                                          s_POST );
+            }
         }
+
     }
 
     /**
