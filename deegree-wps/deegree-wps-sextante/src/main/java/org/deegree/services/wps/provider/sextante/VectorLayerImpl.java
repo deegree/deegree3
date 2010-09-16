@@ -94,9 +94,9 @@ public class VectorLayerImpl extends AbstractVectorLayer {
      * No attributes are provided for the geometries.
      * 
      * @param name
-     *            - layer name
+     *            Layer name.
      * @param crs
-     *            - coordinate reference system
+     *            Coordinate reference system.
      */
     public VectorLayerImpl( String name, String crs ) {
         this( name, crs, null );
@@ -106,11 +106,11 @@ public class VectorLayerImpl extends AbstractVectorLayer {
      * Creates a VectorLayer.
      * 
      * @param name
-     *            - layer name
+     *            Layer name.
      * @param crs
-     *            - coordinate reference system
+     *            Coordinate reference system.
      * @param fields
-     *            - name and data type of geometry attributes
+     *            Name and data type of geometry attributes.
      */
     public VectorLayerImpl( String name, String crs, Field[] fields ) {
         m_Name = name;
@@ -243,7 +243,7 @@ public class VectorLayerImpl extends AbstractVectorLayer {
      * Sets the shape type on the basis of the {@link Geometry}.
      * 
      * @param geom
-     *            - {@link Geometry}
+     *            {@link Geometry}.
      */
     private void setShapeType( Geometry geom ) {
 
@@ -310,10 +310,10 @@ public class VectorLayerImpl extends AbstractVectorLayer {
     }
 
     /**
-     * Sets the shape type on the basis of the IVectorLayer.SHAPE_TYPES.
+     * Sets the shape type on the basis of the {@link IVectorLayer}.SHAPE_TYPES.
      * 
      * @param shapeType
-     *            - IVectorLayer.SHAPE_TYPE
+     *            Shape Type of {@link IVectorLayer}.
      */
     private void setNewShapeType( int shapeType ) {
 

@@ -169,7 +169,7 @@ public class GeometryExampleData implements ExampleData {
      * Returns list of all {@link GeometryExampleData} without the {@link GeometryExampleData} of the array.
      * 
      * @param without
-     *            - Array of unwanted {@link GeometryExampleData}, may be <code>null</code>.
+     *            Array of unwanted {@link GeometryExampleData}, may be <code>null</code>.
      * 
      * @return List of all {@link GeometryExampleData} without the {@link GeometryExampleData} of the array. If the
      *         array of unwanted {@link GeometryExampleData is <code>null</code>, returns all
@@ -227,7 +227,7 @@ public class GeometryExampleData implements ExampleData {
      * Returns list of all {@link GeometryExampleData} with the same {@link GeometryType}.
      * 
      * @param type
-     *            - {@link GeometryType} of the {@link GeometryExampleData}, may be <code>null</code>.
+     *            {@link GeometryType} of the {@link GeometryExampleData}, may be <code>null</code>.
      * 
      * @return List of {@link GeometryExampleData} with the same {@link GeometryType}. If the {@link GeometryType} is
      *         <code>null</code>, returns all {@link GeometryExampleData}.
@@ -280,11 +280,11 @@ public class GeometryExampleData implements ExampleData {
      * Encoding will set to "UTF-8" and the mime type to "text/xml".
      * 
      * @param url
-     *            - URL of the data source.
+     *            URL of the data source.
      * @param type
-     *            - {@link GeometryType} of the test data.
+     *            {@link GeometryType} of the test data.
      * @param schema
-     *            - GML schema URL of the data
+     *            GML schema URL of the data
      */
     private GeometryExampleData( URL url, GeometryType type, GMLSchema schema ) {
         this( url, type, schema, null, null );
@@ -294,15 +294,15 @@ public class GeometryExampleData implements ExampleData {
      * Creates an {@link GeometryExampleData} object.
      * 
      * @param url
-     *            - URL of the data source.
+     *            URL of the data source.
      * @param type
-     *            - {@link GeometryType} of the test data.
+     *            {@link GeometryType} of the test data.
      * @param schema
-     *            - GML schema URL of the test data.
+     *            GML schema URL of the test data.
      * @param mimeType
-     *            - Mime type of the test data.
+     *            Mime type of the test data.
      * @param encoding
-     *            - Encoding of the test data.
+     *            Encoding of the test data.
      */
     private GeometryExampleData( URL url, GeometryType type, GMLSchema schema, String mimeType, String encoding ) {
         this.url = url;

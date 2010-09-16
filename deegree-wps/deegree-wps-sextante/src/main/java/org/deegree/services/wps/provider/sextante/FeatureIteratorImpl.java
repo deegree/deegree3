@@ -59,7 +59,7 @@ public class FeatureIteratorImpl implements IFeatureIterator {
      * Creates a {@link FeatureIteratorImpl} from a {@link Iterator}.
      * 
      * @param it
-     *            - {@link Iterator}.
+     *            {@link Iterator}.
      */
     public FeatureIteratorImpl( Iterator<IFeature> it ) {
         this.it = it;

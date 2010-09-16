@@ -67,7 +67,7 @@ public class FormatHelper {
      * Returns the {@link GMLVersion} of the input data.
      * 
      * @param input
-     *            - {@link ComplexInput}, can be created with the {@link ProcessletInputs}.
+     *            {@link ComplexInput}, can be created with the {@link ProcessletInputs}.
      * @return The {@link GMLVersion} of the input data.
      */
     public static GMLVersion determineGMLVersion( ComplexInput input ) {
@@ -86,7 +86,7 @@ public class FormatHelper {
      * Returns the {@link GMLVersion} of the output data.
      * 
      * @param output
-     *            - {@link ComplexOutput}, can be created with the {@link ProcessletOutputs}.
+     *            {@link ComplexOutput}, can be created with the {@link ProcessletOutputs}.
      * @return {@link GMLVersion} of the output data. If this method can't determine the {@link GMLVersion}, returns
      *         default {@link GMLVersion}.
      */
@@ -110,7 +110,7 @@ public class FormatHelper {
      * Returns the {@link GMLType} of the input data.
      * 
      * @param input
-     *            - {@link ComplexInput}, can be created with the {@link ProcessletInputs}.
+     *            {@link ComplexInput}, can be created with the {@link ProcessletInputs}.
      * @return The {@link GMLType} of the input data.
      */
     public static GMLType determineGMLType( ComplexInput input ) {

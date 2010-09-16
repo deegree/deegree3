@@ -54,9 +54,9 @@ public class Field {
      * Creates an array of {@link Field}s. If the length of names and types are different then this method returns null.
      * 
      * @param names
-     *            - Column name.
+     *            Column name.
      * @param types
-     *            - Data type.
+     *            Data type.
      * @return Array of {@link Field}s.
      */
     public static Field[] createFieldArray( String[] names, Class<?>[] types ) {

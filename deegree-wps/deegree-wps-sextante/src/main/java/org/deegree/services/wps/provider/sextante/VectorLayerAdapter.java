@@ -91,15 +91,14 @@ public class VectorLayerAdapter {
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( VectorLayerAdapter.class );
 
-
     /**
      * Creates an {@link IVectorLayer} from a {@link FeatureCollection}.
      * 
      * @param c
-     *            - The {@link FeatureCollection} must contain simple {@link Feature}s, this means that a
-     *            {@link Feature} has only one geometry and only properties with different names. If a {@link Feature}
-     *            has more geometries, they would be merged. If a {@link Feature} has more properties with the same
-     *            name, it will be used the first. Some cases can't handled, when the {@link Feature}s has different
+     *            The {@link FeatureCollection} must contain simple {@link Feature}s, this means that a {@link Feature}
+     *            has only one geometry and only properties with different names. If a {@link Feature} has more
+     *            geometries, they would be merged. If a {@link Feature} has more properties with the same name, it will
+     *            be used the first. Some cases can't handled, when the {@link Feature}s has different
      *            {@link FeatureType}s or contains other {@link Feature}s.
      * 
      * @return An {@link IVectorLayer} with {@link IFeature}s. The {@link IFeature}s contains only one
@@ -165,7 +164,7 @@ public class VectorLayerAdapter {
      * Creates an {@link IVectorLayer} from a {@link Feature}.
      * 
      * @param f
-     *            - The {@link Feature} must be simple, this means that a {@link Feature} has only one geometry and only
+     *            The {@link Feature} must be simple, this means that a {@link Feature} has only one geometry and only
      *            properties with different names. If a {@link Feature} has more geometries, they would be merged. If a
      *            {@link Feature} has more properties with the same name, it will be used the first. A case can't
      *            handled, if the {@link Feature} contains other {@link Feature}s. If the {@link Feature} is a
@@ -203,7 +202,7 @@ public class VectorLayerAdapter {
      * Creates an {@link IVectorLayer} from a {@link Geometry}.
      * 
      * @param g
-     *            - If the {@link Geometry} isn't simple, it will be linearized.
+     *            If the {@link Geometry} isn't simple, it will be linearized.
      * 
      * @return An {@link IVectorLayer} with a {@link IFeature}. The {@link IFeature} contains only one
      *         {@link com.vividsolutions.jts.geom.Geometry} and no properties.
@@ -225,7 +224,7 @@ public class VectorLayerAdapter {
      * TODO more details.
      * 
      * @param l
-     *            - Every {@link IVectorLayer}.
+     *            Every {@link IVectorLayer}.
      * 
      * @return {@link FeatureCollection}
      * 
@@ -261,7 +260,7 @@ public class VectorLayerAdapter {
      * TODO more details.
      * 
      * @param l
-     *            - {@link IVectorLayer}
+     *            {@link IVectorLayer}
      * 
      * @return feature
      * 
@@ -297,11 +296,11 @@ public class VectorLayerAdapter {
      * Creates a {@link Feature} from an {@link IFeature}.
      * 
      * @param f
-     *            - {@link IFeature}
+     *            {@link IFeature}
      * @param id
-     *            - {@link IFeature} id
+     *            {@link IFeature} id
      * @param l
-     *            - {@link IVectorLayer}
+     *            {@link IVectorLayer}
      * 
      * @return {@link Feature}
      * 
@@ -375,7 +374,7 @@ public class VectorLayerAdapter {
      * Creates a {@link Geometry} from an {@link IVectorLayer}.
      * 
      * @param l
-     *            - Every {@link IVectorLayer}.
+     *            Every {@link IVectorLayer}.
      * 
      * @return Returns a {@link Geometry}. If the {@link IVectorLayer} contains more than one {@link IFeature}, they
      *         will be merged to a MultiGeometry.
@@ -422,7 +421,7 @@ public class VectorLayerAdapter {
      * Creates a CRS name from a {@link Feature}.
      * 
      * @param f
-     *            - {@link Feature}
+     *            {@link Feature}
      * @return CRS name.
      */
     private static String determineCRS( Feature f ) {
@@ -441,7 +440,7 @@ public class VectorLayerAdapter {
      * Creates {@link com.vividsolutions.jts.geom.Geometry} from {@link Feature}.
      * 
      * @param f
-     *            - {@link Feature}
+     *            {@link Feature}
      * @return Returns a {@link com.vividsolutions.jts.geom.Geometry}. If the {@link Feature} contains more than one
      *         geometry property, they will be merged to a MultiGeometry.
      */
@@ -484,7 +483,7 @@ public class VectorLayerAdapter {
      * Creates {@link com.vividsolutions.jts.geom.Geometry} from {@link Geometry} .
      * 
      * @param g
-     *            - {@link Geometry}
+     *            {@link Geometry}
      * @return Returns a {@link com.vividsolutions.jts.geom.Geometry}. If the {@link Geometry} isn't simple, it will be
      *         linearized.
      */
@@ -501,7 +500,7 @@ public class VectorLayerAdapter {
      * Creates {@link Geometry} from {@link com.vividsolutions.jts.geom.Geometry} .
      * 
      * @param gJTS
-     *            - {@link com.vividsolutions.jts.geom.Geometry}
+     *            {@link com.vividsolutions.jts.geom.Geometry}
      * @return {@link Geometry} or <code>null</code> if the given geometry is an empty collection.
      */
     private static Geometry createGeometry( com.vividsolutions.jts.geom.Geometry gJTS ) {
@@ -568,10 +567,10 @@ public class VectorLayerAdapter {
      * If a {@link Feature} has more properties with the same name, it will be used the first.
      * 
      * @param f
-     *            - {@link Feature}
+     *            {@link Feature}
      * 
      * @param propertyDeclarations
-     *            - Property declaration as {@link Field} array.
+     *            Property declaration as {@link Field} array.
      * 
      * @return {@link IFeature} properties as object array.
      */

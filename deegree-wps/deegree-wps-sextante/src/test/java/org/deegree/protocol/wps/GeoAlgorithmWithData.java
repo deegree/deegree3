@@ -68,10 +68,10 @@ public class GeoAlgorithmWithData {
      * Creates a {@link GeoAlgorithmWithData} with test data.
      * 
      * @param alg
-     *            - SEXTANTE {@link GeoAlgorithm}.
+     *            SEXTANTE {@link GeoAlgorithm}.
      * @param data
-     *            - A list of a list of test data. If the algorithm need only one input parameter, you need only one
-     *            list of test data in the list. If the algorithm need more than one input parameter, you need for every
+     *            A list of a list of test data. If the algorithm need only one input parameter, you need only one list
+     *            of test data in the list. If the algorithm need more than one input parameter, you need for every
      *            input parameter a list of test data in the list.
      */
     public GeoAlgorithmWithData( GeoAlgorithm alg, LinkedList<LinkedList<ExampleData>> data ) {
@@ -86,7 +86,7 @@ public class GeoAlgorithmWithData {
      * Adds a list of test data for one input parameter.
      * 
      * @param data
-     *            - List of test data for one input parameter.
+     *            List of test data for one input parameter.
      */
     public void addInputData( LinkedList<ExampleData> data ) {
         this.data.add( data );
@@ -96,8 +96,8 @@ public class GeoAlgorithmWithData {
      * Adds lists of test data for more than one input parameters.
      * 
      * @param data
-     *            - A list of a list of test data. If the algorithm need only one input parameter, you need only one
-     *            list of test data in the list. If the algorithm need more than one input parameter, you need for every
+     *            A list of a list of test data. If the algorithm need only one input parameter, you need only one list
+     *            of test data in the list. If the algorithm need more than one input parameter, you need for every
      *            input parameter a list of test data in the list.
      */
     public void addAllInputData( LinkedList<LinkedList<ExampleData>> data ) {

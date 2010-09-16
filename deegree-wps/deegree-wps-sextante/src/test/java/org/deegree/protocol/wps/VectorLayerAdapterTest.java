@@ -194,7 +194,7 @@ public class VectorLayerAdapterTest {
     /**
      * Returns a list of feature collections with different geometry types.
      * 
-     * @return - List of feature collections.
+     * @return List of feature collections.
      * @throws Exception
      */
     private static LinkedList<FeatureCollection> readFeatureCollections()
@@ -273,9 +273,9 @@ public class VectorLayerAdapterTest {
      * Checks two features of the same properties and geometry.
      * 
      * @param fIn
-     *            - input feature
+     *            Input feature.
      * @param fOut
-     *            - ouput feature
+     *            Ouput feature.
      */
     private void checkFeature( Feature fIn, Feature fOut ) {
 
@@ -345,9 +345,9 @@ public class VectorLayerAdapterTest {
      * Checks two feature collections of number of features and the same properties and geometry of every feature.
      * 
      * @param fcIn
-     *            - input feature collection
+     *            - Input feature collection.
      * @param fcOut
-     *            - ouput feature collection
+     *            - Ouput feature collection.
      */
     private void checkFeatureCollection( FeatureCollection fcIn, FeatureCollection fcOut ) {
 

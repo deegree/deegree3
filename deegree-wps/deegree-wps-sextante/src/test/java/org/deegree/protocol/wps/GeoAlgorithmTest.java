@@ -119,7 +119,7 @@ public class GeoAlgorithmTest {
      * 
      * @param alg
      *            SEXTANTE {@link GeoAlgorithm}.
-     * @return - A list of a list of test data. If the algorithm need only one input parameter, returns only one list of
+     * @return A list of a list of test data. If the algorithm need only one input parameter, returns only one list of
      *         test data in the list. If the algorithm need more than one input parameter, returns for every input
      *         parameter a list of test data in the list.
      */
@@ -182,7 +182,7 @@ public class GeoAlgorithmTest {
      * Returns a list of all test data for a vector layer of a SEXTANTE {@link GeoAlgorithm}.
      * 
      * @param alg
-     *            - SEXTANTE {@link GeoAlgorithm}.
+     *            SEXTANTE {@link GeoAlgorithm}.
      * 
      * @return List of all test data for a layer of a SEXTANTE {@link GeoAlgorithm}.
      */

@@ -158,11 +158,11 @@ public class GMLSchema {
      * Creates a new {@link GMLSchema} and add the schema to map from {@link FormatHelper}.
      * 
      * @param schema
-     *            - Schema URL.
+     *            Schema URL.
      * @param version
-     *            - {@link GMLVersion} of the schema URL.
+     *            {@link GMLVersion} of the schema URL.
      * @param type
-     *            -{@link GMLType} of the schema URL.
+     *            {@link GMLType} of the schema URL.
      * 
      */
     private GMLSchema( String schema, GMLVersion version, GMLType type ) {
