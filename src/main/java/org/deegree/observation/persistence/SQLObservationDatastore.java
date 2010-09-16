@@ -71,6 +71,10 @@ public abstract class SQLObservationDatastore implements ObservationDatastore {
         this.properties = properties;
     }
 
+    public String getJdbcId() {
+        return jdbcId;
+    }
+
     public List<Property> getProperties() {
         return properties;
     }
