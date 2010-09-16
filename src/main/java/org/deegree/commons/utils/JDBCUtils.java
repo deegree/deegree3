@@ -162,7 +162,15 @@ public final class JDBCUtils {
      *            used to log error messages, may be null
      */
     public static void close( ResultSet rs, PreparedStatement pstmt, Connection conn, Logger log ) {
-        close( rs, null, conn, log );
+        if ( rs != null ) {
+            try {
+                rs.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close ResultSet: " + e.getMessage() );
+                }
+            }
+        }
         if ( pstmt != null ) {
             try {
                 pstmt.close();
@@ -172,6 +180,16 @@ public final class JDBCUtils {
                 }
             }
         }
+        if ( conn != null ) {
+            try {
+                conn.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close Connection: " + e.getMessage() );
+                }
+            }
+        }
+
     }
 
 }
