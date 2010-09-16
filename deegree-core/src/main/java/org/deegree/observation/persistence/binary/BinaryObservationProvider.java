@@ -56,26 +56,30 @@ public class BinaryObservationProvider implements ObservationStoreProvider {
     @Override
     public String getConfigNamespace() {
         // TODO Auto-generated method stub
-        return null;
+        throw new RuntimeException(
+                                    "The support for Binary Observation Stores is not yet finished. Please check back soon!" );
     }
 
     @Override
     public URL getConfigSchema() {
         // TODO
-        return null;
+        throw new RuntimeException(
+                                    "The support for Binary Observation Stores is not yet finished. Please check back soon!" );
     }
 
     @Override
     public URL getConfigTemplate() {
         // TODO
-        return null;
+        throw new RuntimeException(
+                                    "The support for Binary Observation Stores is not yet finished. Please check back soon!" );
     }
 
     @Override
     public ObservationDatastore getObservationStore( URL configURL )
                             throws ObservationDatastoreException {
         // TODO
-        return null;
+        throw new ObservationDatastoreException(
+                                                 "The support for Binary Observation Stores is not yet finished. Please check back soon!" );
     }
 
 }

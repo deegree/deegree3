@@ -50,7 +50,6 @@ import org.deegree.observation.persistence.ObservationDatastore;
 import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreProvider;
 import org.deegree.observation.persistence.contsql.jaxb.ContinuousObservationStore;
-import org.deegree.observation.persistence.simple.SimpleObservationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,13 +74,12 @@ public class ContinuousObservationProvider implements ObservationStoreProvider {
 
     @Override
     public URL getConfigSchema() {
-        return SimpleObservationProvider.class.getResource( "/META-INF/schemas/datasource/0.5.0/observation/contsql.xsd" );
+        return ContinuousObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/0.6.0/contsql/contsql.xsd" );
     }
 
     @Override
     public URL getConfigTemplate() {
-        // TODO
-        return null;
+        return ContinuousObservationProvider.class.getResource( "/META-INF/schemas/datasource/observation/0.6.0/contsql/example.xml" );
     }
 
     @Override
