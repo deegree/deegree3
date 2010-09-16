@@ -136,7 +136,7 @@ public class ISOMetadataStore implements MetadataStore {
 
     private FileIdentifierInspector fi;
 
-    private InspireCompliance ric;
+    private InspireCompliance ic;
 
     /**
      * shows the encoding of the database that is used
@@ -177,7 +177,7 @@ public class ISOMetadataStore implements MetadataStore {
     public ISOMetadataStore( ISOMetadataStoreConfig config ) {
         this.connectionId = config.getConnId();
         fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), connectionId );
-        ric = InspireCompliance.newInstance( config.getRequireInspireCompliance(), connectionId );
+        ic = InspireCompliance.newInstance( config.getRequireInspireCompliance(), connectionId );
 
     }
 
@@ -752,7 +752,7 @@ public class ISOMetadataStore implements MetadataStore {
                         } else {
 
                             executeStatements.executeInsertStatement( false, conn, affectedIds,
-                                                                      new ISOQPParsing().parseAPISO( fi, element ) );
+                                                                      new ISOQPParsing().parseAPISO( fi, ic, element ) );
 
                         }
 
@@ -789,7 +789,8 @@ public class ISOMetadataStore implements MetadataStore {
 
                     } else {
                         executeStatements.executeUpdateStatement( conn, affectedIds,
-                                                                  new ISOQPParsing().parseAPISO( fi, upd.getElement() ) );
+                                                                  new ISOQPParsing().parseAPISO( fi, ic,
+                                                                                                 upd.getElement() ) );
 
                     }
 
@@ -905,6 +906,7 @@ public class ISOMetadataStore implements MetadataStore {
                                                                                   conn,
                                                                                   affectedIds,
                                                                                   new ISOQPParsing().parseAPISO( fi,
+                                                                                                                 ic,
                                                                                                                  omElement ) );
 
                                     }
