@@ -47,9 +47,11 @@ import javax.xml.namespace.QName;
 
 import jj2000.j2k.NotImplementedError;
 
+import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.impl.llom.OMAttributeImpl;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -89,16 +91,19 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     private final List<String> resourceIdentifierList;
 
+    private final InspireCompliance ic;
+
     /**
      * 
      * @param factory
      * @param connection
      * @param nsContext
      */
-    protected ParseIdentificationInfo( OMFactory factory, NamespaceContext nsContext ) {
+    protected ParseIdentificationInfo( OMFactory factory, InspireCompliance ic, NamespaceContext nsContext ) {
         this.factory = factory;
         this.nsContextParseII = nsContext;
         this.resourceIdentifierList = new ArrayList<String>();
+        this.ic = ic;
 
         namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
         namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
@@ -253,11 +258,13 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 qp.setPublicationDate( date );
             }
 
-            OMElement omCitation;
-            // if ( isInspire == false ) {
+            OMElement omCitation = citation;
 
-            omCitation = citation;
-
+            /*---------------------------------------------------------------
+             * 
+             * RS_/MD_Identifier check
+             * 
+             *---------------------------------------------------------------*/
             for ( OMElement resourceElement : identifier ) {
                 // maybe additional this?? : | ./gmd:RS_Identifier/gmd:code/gco:CharacterString
                 String resourceIdentifier = getNodeAsString(
@@ -271,112 +278,97 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 resourceIdentifierList.add( resourceIdentifier );
 
             }
+
+            List<String> rsList = ic.determineInspireCompliance( resourceIdentifierList, dataIdentificationId );
+
+            if ( dataIdentificationUuId == null ) {
+                md_dataIdentification.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD, rsList.get( 0 ), factory ) );
+            }
+
+            OMAttribute attribute_id = md_dataIdentification.getAttribute( new QName( "id" ) );
+            md_dataIdentification.removeAttribute( attribute_id );
+            md_dataIdentification.addAttribute( new OMAttributeImpl( "id", namespaceGMD, rsList.get( 0 ), factory ) );
+
             qp.setResourceIdentifier( resourceIdentifierList );
 
-            // } else {
-            // for ( OMElement resourceElement : identifier ) {
-            // // maybe additional this?? : | ./gmd:RS_Identifier/gmd:code/gco:CharacterString
-            // String resourceIdentifier = getNodeAsString(
-            // resourceElement,
-            // new XPath(
-            // "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
-            // nsContextParseII ), null );
-            // resourceIdentifierList.add( resourceIdentifier );
-            // }
-            // String firstResourceId = "";
-            // // gets the first identifier in the list
-            // // if size == 0 then generate a new UUID
-            // if ( resourceIdentifierList.size() != 0 ) {
-            // for ( int i = 0; i < 1; i++ ) {
-            // firstResourceId = resourceIdentifierList.get( i );
-            // }
-            // } else {
-            // // String uuid_gen = generateUUID();
-            // // resourceIdentifierList.add( uuid_gen );
+            List<OMElement> identiferListTemp = new ArrayList<OMElement>();
+            if ( identifier != null ) {
+                for ( OMElement resourceElement : identifier ) {
+                    // maybe additional this?? : | ./gmd:RS_Identifier/gmd:code/gco:CharacterString
+                    OMElement resourceIdentifier = (OMElement) getNode(
+                                                                        resourceElement,
+                                                                        new XPath(
+                                                                                   "./gmd:MD_Identifier | ./gmd:RS_Identifier",
+                                                                                   nsContextParseII ) );
+                    identiferListTemp.add( (OMElement) resourceIdentifier );
+                }
+            } else {
+
+                OMElement omIdentifier = factory.createOMElement( "identifier", namespaceGMD );
+                OMElement omMD_Identifier = factory.createOMElement( "MD_Identifier", namespaceGMD );
+                OMElement omCode = factory.createOMElement( "code", namespaceGMD );
+                OMElement omCharacterStringCode = factory.createOMElement( "CharacterString", namespaceGCO );
+
+                omCode.addChild( omCharacterStringCode );
+                omCharacterStringCode.setText( resourceIdentifierList.get( 0 ) );
+                omMD_Identifier.addChild( omCode );
+                omIdentifier.addChild( omMD_Identifier );
+                identiferListTemp.add( omIdentifier );
+            }
+
+            List<OMElement> citedResponsibleParty = getElements( ci_citation, new XPath( "./gmd:citedResponsibleParty",
+                                                                                         nsContextParseII ) );
+            List<OMElement> presentationForm = getElements( ci_citation, new XPath( "./gmd:presentationForm",
+                                                                                    nsContextParseII ) );
+            OMElement series = getElement( ci_citation, new XPath( "./gmd:series", nsContextParseII ) );
+            OMElement otherCitationDetails = getElement( ci_citation, new XPath( "./gmd:otherCitationDetails",
+                                                                                 nsContextParseII ) );
+            OMElement collectiveTitle = getElement( ci_citation, new XPath( "./gmd:collectiveTitle", nsContextParseII ) );
+            OMElement ISBN = getElement( ci_citation, new XPath( "./gmd:ISBN", nsContextParseII ) );
+            OMElement ISSN = getElement( ci_citation, new XPath( "./gmd:ISSN", nsContextParseII ) );
             //
-            // OMElement omIdentifier = factory.createOMElement( "identifier", namespaceGMD );
-            // OMElement omMD_Identifier = factory.createOMElement( "MD_Identifier", namespaceGMD );
-            // OMElement omCode = factory.createOMElement( "code", namespaceGMD );
-            // OMElement omCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
-            //
-            // // omCharacterString.setText( uuid_gen );
-            // omCode.addChild( omCharacterString );
-            // omMD_Identifier.addChild( omCode );
-            // omIdentifier.addChild( omMD_Identifier );
-            // identifier.add( omIdentifier );
-            //
-            // }
-            // String dataIdentificationId = md_dataIdentification.getAttributeValue( new QName( "id" ) );
-            // String dataIdentificationUuId = md_dataIdentification.getAttributeValue( new QName( "uuid" ) );
-            // if ( firstResourceId.equals( dataIdentificationId ) ) {
-            // } else {
-            // md_dataIdentification.getAttribute( new QName( "id" ) ).setAttributeValue( firstResourceId );
-            //
-            // }
-            // if ( firstResourceId.equals( dataIdentificationUuId ) ) {
-            // } else {
-            // md_dataIdentification.getAttribute( new QName( "uuid" ) ).setAttributeValue( firstResourceId );
-            //
-            // }
-            //
-            // qp.setResourceIdentifier( resourceIdentifierList );
-            //
-            // List<OMElement> citedResponsibleParty = getElements( ci_citation,
-            // new XPath( "./gmd:citedResponsibleParty",
-            // nsContextParseII ) );
-            // List<OMElement> presentationForm = getElements( ci_citation, new XPath( "./gmd:presentationForm",
-            // nsContextParseII ) );
-            // OMElement series = getElement( ci_citation, new XPath( "./gmd:series", nsContextParseII ) );
-            // OMElement otherCitationDetails = getElement( ci_citation, new XPath( "./gmd:otherCitationDetails",
-            // nsContextParseII ) );
-            // OMElement collectiveTitle = getElement( ci_citation, new XPath( "./gmd:collectiveTitle",
-            // nsContextParseII ) );
-            // OMElement ISBN = getElement( ci_citation, new XPath( "./gmd:ISBN", nsContextParseII ) );
-            // OMElement ISSN = getElement( ci_citation, new XPath( "./gmd:ISSN", nsContextParseII ) );
-            //
-            // omCitation = factory.createOMElement( "citation", namespaceGMD );
-            // OMElement omCI_Citation = factory.createOMElement( "CI_Citation", namespaceGCO );
-            //
-            // omCI_Citation.addChild( title );
-            // for ( OMElement elem : alternateTitle ) {
-            // omCI_Citation.addChild( elem );
-            // }
-            // for ( OMElement elem : citation_date ) {
-            // omCI_Citation.addChild( elem );
-            // }
-            // if ( edition != null ) {
-            // omCI_Citation.addChild( edition );
-            // }
-            // if ( editionDate != null ) {
-            // omCI_Citation.addChild( editionDate );
-            // }
-            // for ( OMElement elem : identifier ) {
-            // omCI_Citation.addChild( elem );
-            // }
-            // for ( OMElement elem : citedResponsibleParty ) {
-            // omCI_Citation.addChild( elem );
-            // }
-            // for ( OMElement elem : presentationForm ) {
-            // omCI_Citation.addChild( elem );
-            // }
-            // if ( series != null ) {
-            // omCI_Citation.addChild( series );
-            // }
-            // if ( otherCitationDetails != null ) {
-            // omCI_Citation.addChild( otherCitationDetails );
-            // }
-            // if ( collectiveTitle != null ) {
-            // omCI_Citation.addChild( collectiveTitle );
-            // }
-            // if ( ISBN != null ) {
-            // omCI_Citation.addChild( ISBN );
-            // }
-            // if ( ISSN != null ) {
-            // omCI_Citation.addChild( ISSN );
-            // }
-            //
-            // omCitation.addChild( omCI_Citation );
-            // }
+            omCitation = factory.createOMElement( "citation", namespaceGMD );
+            OMElement omCI_Citation = factory.createOMElement( "CI_Citation", namespaceGCO );
+
+            omCI_Citation.addChild( title );
+            for ( OMElement elem : alternateTitle ) {
+                omCI_Citation.addChild( elem );
+            }
+            for ( OMElement elem : citation_date ) {
+                omCI_Citation.addChild( elem );
+            }
+            if ( edition != null ) {
+                omCI_Citation.addChild( edition );
+            }
+            if ( editionDate != null ) {
+                omCI_Citation.addChild( editionDate );
+            }
+            for ( OMElement elem : identiferListTemp ) {
+                omCI_Citation.addChild( elem );
+            }
+            for ( OMElement elem : citedResponsibleParty ) {
+                omCI_Citation.addChild( elem );
+            }
+            for ( OMElement elem : presentationForm ) {
+                omCI_Citation.addChild( elem );
+            }
+            if ( series != null ) {
+                omCI_Citation.addChild( series );
+            }
+            if ( otherCitationDetails != null ) {
+                omCI_Citation.addChild( otherCitationDetails );
+            }
+            if ( collectiveTitle != null ) {
+                omCI_Citation.addChild( collectiveTitle );
+            }
+            if ( ISBN != null ) {
+                omCI_Citation.addChild( ISBN );
+            }
+            if ( ISSN != null ) {
+                omCI_Citation.addChild( ISSN );
+            }
+
+            omCitation.addChild( omCI_Citation );
 
             /*---------------------------------------------------------------
              * 
