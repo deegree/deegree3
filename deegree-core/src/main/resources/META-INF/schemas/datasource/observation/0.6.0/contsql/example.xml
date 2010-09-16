@@ -1,0 +1,24 @@
+<ContinuousObservationStore configVersion="0.6.0" xmlns="http://www.deegree.org/datasource/observation/contsql"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/observation/contsql http://schemas.deegree.org/datasource/observation/0.6.0/contsql/contsql.xsd">
+  
+  <!-- [1] Identifier of the JDBC connection -->
+  <JDBCConnId>postgres</JDBCConnId>
+  
+  <!-- [1] Name of table with observations -->
+  <Table>earthquake_data_istambul</Table>
+  
+  <!-- [1] Time Interval at which observations are recorded -->
+  <TimeInterval uom="seconds">0.5</TimeInterval>
+  
+  <!-- [0..n] Column definitions -->
+  
+  <!-- [0..n] Option definitions -->  
+  
+  <!-- [1..n] Property definitions -->
+  <Property href="urn:ogc:def:phenomenon:OGC:earthquake_magnitude">
+    <Column name="magnitude" type="property"></Column>
+    <Option name="uom" value="richter"></Option>
+  </Property>
+  
+</ContinuousObservationStore>
