@@ -63,7 +63,7 @@ import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.genericmetadatastore.generating.GenerateMetadata;
-import org.deegree.metadata.persistence.genericmetadatastore.generating.generatingelements.GenerateFileIdentifier;
+import org.deegree.metadata.persistence.genericmetadatastore.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
 import org.deegree.metadata.persistence.neededdatastructures.Format;
 import org.deegree.metadata.persistence.neededdatastructures.Keyword;
@@ -464,7 +464,7 @@ public final class ISOQPParsing extends XMLAdapter {
 
         qp.setIdentifier( idList );
 
-        gr.setIdentifier( GenerateFileIdentifier.newInstance( factory ).createFileIdentifierElement( idList.get( 0 ) ) );
+        gr.setIdentifier( GenerateOMElement.newInstance( factory ).createFileIdentifierElement( idList.get( 0 ) ) );
 
         // TODO
 
