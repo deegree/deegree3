@@ -75,13 +75,13 @@ public class GeoAlgorithmTest {
     private static final boolean ENABLED = false;
 
     /**
-     * Returns a list of all supported {@link GeoAlgorithm} as {@link AlgorithmWithData} for testing.
+     * Returns a list of all supported {@link GeoAlgorithm} as {@link GeoAlgorithmWithData} for testing.
      * 
-     * @return List of all supported {@link GeoAlgorithm} as {@link AlgorithmWithData}.
+     * @return List of all supported {@link GeoAlgorithm} as {@link GeoAlgorithmWithData}.
      */
     @SuppressWarnings("unchecked")
-    private LinkedList<AlgorithmWithData> getAlgorithms() {
-        LinkedList<AlgorithmWithData> algs = new LinkedList<AlgorithmWithData>();
+    private LinkedList<GeoAlgorithmWithData> getAlgorithms() {
+        LinkedList<GeoAlgorithmWithData> algs = new LinkedList<GeoAlgorithmWithData>();
 
         // test all algorithms?
         boolean testAll = false;
@@ -91,7 +91,7 @@ public class GeoAlgorithmTest {
             Sextante.initialize();
             HashMap<String, GeoAlgorithm> sextanteAlgs = Sextante.getAlgorithms();
             GeoAlgorithm geoAlg = sextanteAlgs.get( "centroids" );
-            AlgorithmWithData testAlg = new AlgorithmWithData( geoAlg );
+            GeoAlgorithmWithData testAlg = new GeoAlgorithmWithData( geoAlg );
             testAlg.addAllInputData( getInputData( geoAlg ) );
             algs.add( testAlg );
 
@@ -103,7 +103,7 @@ public class GeoAlgorithmTest {
                 GeoAlgorithm geoAlg = geoalgs[i];
 
                 if ( !geoAlg.getCommandLineName().equals( "no algorithm" ) ) {
-                    AlgorithmWithData testAlg = new AlgorithmWithData( geoAlg );
+                    GeoAlgorithmWithData testAlg = new GeoAlgorithmWithData( geoAlg );
                     testAlg.addAllInputData( getInputData( geoAlg ) );
                     algs.add( testAlg );
                 }
@@ -322,10 +322,10 @@ public class GeoAlgorithmTest {
                 Assert.assertNotNull( client );
 
                 // all algorithms
-                LinkedList<AlgorithmWithData> algs = getAlgorithms();
+                LinkedList<GeoAlgorithmWithData> algs = getAlgorithms();
 
                 // traverse all algorithms
-                for ( AlgorithmWithData testAlg : algs ) {
+                for ( GeoAlgorithmWithData testAlg : algs ) {
 
                     // geoalgorithm
                     GeoAlgorithm alg = testAlg.getAlgorithm();

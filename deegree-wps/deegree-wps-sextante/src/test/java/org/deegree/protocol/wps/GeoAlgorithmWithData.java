@@ -46,7 +46,7 @@ import es.unex.sextante.core.GeoAlgorithm;
  * 
  * @version $Revision: $, $Date: $
  */
-public class AlgorithmWithData {
+public class GeoAlgorithmWithData {
 
     // SEXTANTE algorithm
     private final GeoAlgorithm alg;
@@ -55,17 +55,17 @@ public class AlgorithmWithData {
     private final LinkedList<LinkedList<ExampleData>> data = new LinkedList<LinkedList<ExampleData>>();
 
     /**
-     * Creates a {@link AlgorithmWithData} without test data.
+     * Creates a {@link GeoAlgorithmWithData} without test data.
      * 
      * @param alg
      *            - SEXTANTE {@link GeoAlgorithm}.
      */
-    public AlgorithmWithData( GeoAlgorithm alg ) {
+    public GeoAlgorithmWithData( GeoAlgorithm alg ) {
         this( alg, null );
     }
 
     /**
-     * Creates a {@link AlgorithmWithData} with test data.
+     * Creates a {@link GeoAlgorithmWithData} with test data.
      * 
      * @param alg
      *            - SEXTANTE {@link GeoAlgorithm}.
@@ -74,7 +74,7 @@ public class AlgorithmWithData {
      *            list of test data in the list. If the algorithm need more than one input parameter, you need for every
      *            input parameter a list of test data in the list.
      */
-    public AlgorithmWithData( GeoAlgorithm alg, LinkedList<LinkedList<ExampleData>> data ) {
+    public GeoAlgorithmWithData( GeoAlgorithm alg, LinkedList<LinkedList<ExampleData>> data ) {
         this.alg = alg;
 
         if ( data != null )
@@ -123,7 +123,7 @@ public class AlgorithmWithData {
     }
 
     public String toString() {
-        String s = AlgorithmWithData.class.getSimpleName() + "(";
+        String s = GeoAlgorithmWithData.class.getSimpleName() + "(";
 
         s += alg.getCommandLineName() + ", ";
 
