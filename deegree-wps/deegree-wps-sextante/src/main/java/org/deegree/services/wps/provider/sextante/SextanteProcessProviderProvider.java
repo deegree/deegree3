@@ -77,10 +77,10 @@ public class SextanteProcessProviderProvider implements ProcessProviderProvider 
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             config = (SextanteProcesses) unmarshaller.unmarshal( configURL );
         } catch ( JAXBException e ) {
-            throw new IllegalArgumentException(e.getMessage(), e);
+            throw new IllegalArgumentException( e.getMessage(), e );
         }
 
         // return a SEXTANTE process provider instance with the extracted configuration
-        return new SextanteProcessProvider();
+        return new SextanteProcessProvider( config );
     }
 }

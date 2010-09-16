@@ -38,12 +38,14 @@ package org.deegree.services.wps.provider.sextante;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.provider.ProcessProvider;
+import org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import es.unex.sextante.core.GeoAlgorithm;
@@ -70,6 +72,9 @@ public class SextanteProcessProvider implements ProcessProvider {
 
     // SEXTANTE WPS processes
     private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
+
+    // configurations of configuration file
+    private final SextanteProcesses config;
 
     /**
      * Returns an array of SEXTANTE {@link GeoAlgorithm}s, which processing vector data.
@@ -137,41 +142,64 @@ public class SextanteProcessProvider implements ProcessProvider {
         return algs;
     }
 
-    public static GeoAlgorithm[] getSupportedAlgorithms() {
+    /**
+     * This method returns all supported SEXTANTE {@link GeoAlgorithm}s, these are called in the configuration file.
+     * 
+     * @param config
+     *            Data of the configuration file.
+     * @return All supported SEXTANTE {@link GeoAlgorithm}s.
+     */
+    public static GeoAlgorithm[] getSupportedAlgorithms( SextanteProcesses config ) {
+
+        // initialize Sextante
         Sextante.initialize();
 
-        // list of supported algorithms
-        LinkedList<String> supportedAlgKeys = new LinkedList<String>();
-        supportedAlgKeys.add( "boundingbox" );
-        supportedAlgKeys.add( "centroids" );
-        supportedAlgKeys.add( "changelinedirection" );
-        supportedAlgKeys.add( "cleanpointslayer" );
+        // list for notice algorithms
+        LinkedList<GeoAlgorithm> algs = new LinkedList<GeoAlgorithm>();
 
-        // get algorithms
-        LinkedList<GeoAlgorithm> supportedAlgs = new LinkedList<GeoAlgorithm>();
-        for ( String key : supportedAlgKeys ) {
-            GeoAlgorithm alg = Sextante.getAlgorithmFromCommandLineName( key );
-            if ( alg != null ) {
-                supportedAlgs.add( alg );
+        if ( config != null ) {
+
+            // list of supported algorithms
+            List<org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process> processes = config.getProcess();
+
+            for ( org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process p : processes ) {
+
+                // get algorithm
+                GeoAlgorithm alg = Sextante.getAlgorithmFromCommandLineName( SextanteWPSProcess.createCommandLineName( p.getId() ) );
+
+                if ( alg != null ) {// found
+                    algs.add( alg );
+
+                    LOG.info( alg.getCommandLineName() );
+                } else {// not found
+                    // TODO throw Exception??
+                    LOG.error( "Algorithm with the id '" + p.getId() + "' is not found." );
+                }
             }
+
+        } else {
+            // TODO throw Exception??
+            LOG.error( "Configuration file can not be found." );
         }
 
-        return supportedAlgs.toArray( new GeoAlgorithm[supportedAlgs.size()] );
+        return algs.toArray( new GeoAlgorithm[algs.size()] );
     }
 
-    SextanteProcessProvider() {
+    SextanteProcessProvider( SextanteProcesses config ) {
+        this.config = config;
     }
 
     @Override
     public void init()
                             throws ServiceInitException {
+
         // initialize SEXTANTE
         Sextante.initialize();
         LOG.info( "Sextante initialized" );
 
         // initialize WPS processes
         GeoAlgorithm[] algs = getVectorLayerAlgorithms();
-        // GeoAlgorithm[] algs = getSupportedAlgorithms();
+        // GeoAlgorithm[] algs = getSupportedAlgorithms( config );
 
         for ( int i = 0; i < algs.length; i++ ) {
             // SEXTANTE algorithm
@@ -181,7 +209,8 @@ public class SextanteProcessProvider implements ProcessProvider {
             CodeType codeType = new CodeType( alg.getCommandLineName() );
 
             // add and initialize process
-            SextanteWPSProcess process = new SextanteWPSProcess( alg );
+            SextanteWPSProcess process = new SextanteWPSProcess( alg, null );
+            // SextanteWPSProcess process = new SextanteWPSProcess( alg, config );
             process.getProcesslet().init();
             idToProcess.put( codeType, process );
         }

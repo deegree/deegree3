@@ -53,6 +53,7 @@ import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPSProcess;
+import org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import es.unex.sextante.core.GeoAlgorithm;
@@ -112,8 +113,36 @@ public class SextanteWPSProcess implements WPSProcess {
     public static final String TEXT_OUTPUT = "text";
 
     public static final String CHART_OUTPUT = "chart";
-    
-    
+
+    // prefix for process identifier
+    private static final String PREFIX = "st_";
+
+    // suffix for process identifier
+    private static final String SUFFIX = "_st";
+
+    /**
+     * This method creates the command line name from a identifier of a {@link SextanteProcesses}. It removes prefix and
+     * suffix.
+     * 
+     * @param indentifier
+     *            Identifier of a {@link SextanteProcesses}.
+     * @return Command line name of a SEXTANTE {@link GeoAlgorithm}.
+     */
+    public static String createCommandLineName( String indentifier ) {
+        String s = indentifier.substring( PREFIX.length() - 1, ( indentifier.length() - SUFFIX.length() ) - 1 );
+        return s;
+    }
+
+    /**
+     * This method creates the identifier for a {@link SextanteWPSProcess} with its prefix and suffix.
+     * 
+     * @param alg
+     *            SEXTANTE {@link GeoAlgorithm}.
+     * @return Identifier for a {@link SextanteWPSProcess}.
+     */
+    public static String createIdentifier( GeoAlgorithm alg ) {
+        return PREFIX + alg.getCommandLineName() + SUFFIX;
+    }
 
     // processlet
     private final SextanteProcesslet processlet;
@@ -126,9 +155,9 @@ public class SextanteWPSProcess implements WPSProcess {
 
     private LinkedList<ComplexFormatType> gmlOutputFormats = FormatHelper.getOutputFormatsWithoutDefault();
 
-    SextanteWPSProcess( GeoAlgorithm alg ) {
+    SextanteWPSProcess( GeoAlgorithm alg, SextanteProcesses config ) {
         processlet = new SextanteProcesslet( alg );
-        description = createDescription( alg );
+        description = createDescription( alg, config );
     }
 
     @Override
@@ -150,10 +179,10 @@ public class SextanteWPSProcess implements WPSProcess {
      * Creates a {@link ProcessDefinition} for a SEXTANTE {@link GeoAlgorithm}.
      * 
      * @param alg
-     *            - SEXTANTE {@link GeoAlgorithm}
+     *            SEXTANTE {@link GeoAlgorithm}
      * @return
      */
-    private ProcessDefinition createDescription( GeoAlgorithm alg ) {
+    private ProcessDefinition createDescription( GeoAlgorithm alg, SextanteProcesses config ) {
 
         // process definition
         ProcessDefinition processDefinition = new ProcessDefinition();
@@ -162,8 +191,9 @@ public class SextanteWPSProcess implements WPSProcess {
         processDefinition.setStatusSupported( false );
 
         // identifier
+        String identifierStr = createIdentifier( alg );
         org.deegree.services.jaxb.wps.CodeType identifier = new org.deegree.services.jaxb.wps.CodeType();
-        identifier.setValue( alg.getCommandLineName() );
+        identifier.setValue( identifierStr );
         processDefinition.setIdentifier( identifier );
 
         // title
@@ -172,13 +202,25 @@ public class SextanteWPSProcess implements WPSProcess {
         processDefinition.setTitle( title );
 
         // abstract
-        LanguageStringType abstr = new LanguageStringType();
-        String help = "";
-        try {
-            help = alg.getCommandLineHelp();
-        } catch ( StringIndexOutOfBoundsException e ) {
+        String abstrStr = "No abstract available.";
+        if ( config != null ) {// read abstract from configuration file
+            List<org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process> processes = config.getProcess();
+            for ( org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process p : processes ) {
+                if ( p.getId().equals( identifierStr ) ) {
+                    abstrStr = p.getAbstract();
+                    break;
+                }
+            }
+        } else {
+            // not a good abstract form GeoAlgorithm class.
+            try {
+                abstrStr = alg.getCommandLineHelp();
+            } catch ( Exception e ) {
+            }
         }
-        abstr.setValue( help );
+
+        LanguageStringType abstr = new LanguageStringType();
+        abstr.setValue( abstrStr );
         processDefinition.setAbstract( abstr );
 
         // define input parameters
@@ -269,7 +311,7 @@ public class SextanteWPSProcess implements WPSProcess {
      * Returns a input parameter definition for a vector layer.
      * 
      * @param param
-     *            - input parameter
+     *            input parameter
      * @return
      */
     private JAXBElement<? extends ProcessletInputDefinition> createVectorLayerInputParameter( Parameter param ) {
@@ -607,7 +649,7 @@ public class SextanteWPSProcess implements WPSProcess {
      * Logs a SEXTANTE {@link GeoAlgorithm} with his input und output parameters.
      * 
      * @param alg
-     *            - SEXTANTE {@link GeoAlgorithm}
+     *            SEXTANTE {@link GeoAlgorithm}
      */
     public static void logAlgorithm( GeoAlgorithm alg ) {
 
