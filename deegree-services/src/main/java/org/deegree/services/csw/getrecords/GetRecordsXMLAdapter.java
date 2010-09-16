@@ -116,7 +116,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
         String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ),
                                                 ResultType.hits.name() );
-
+        resultTypeStr = resultTypeStr.toLowerCase();
         OMElement holeRequest = getElement( rootElement, new XPath( ".", nsContext ) );
 
         ResultType resultType = null;
