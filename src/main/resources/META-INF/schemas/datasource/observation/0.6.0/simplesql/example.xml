@@ -1,0 +1,21 @@
+<SimpleObservationStore configVersion="0.6.0" xmlns="http://www.deegree.org/datasource/observation/simplesql"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/observation/simplesql http://schemas.deegree.org/datasource/observation/0.6.0/simplesql/simplesql.xsd">
+  
+  <!-- [1] Identifier of the JDBC connection -->
+  <JDBCConnId>derby</JDBCConnId>
+  
+  <!-- [1] Name of table with observations -->
+  <Table>weather_data_bonn</Table>
+  
+  <!-- [0..n] Column definitions -->
+  
+  <!-- [0..n] Option definitions -->  
+  
+  <!-- [1..n] Property definitions -->
+  <Property href="urn:ogc:def:phenomenon:OGC:temperature_average">
+    <Column name="temp_avg" type="property"></Column>
+    <Option name="uom" value="celsius"></Option>
+  </Property>
+  
+</SimpleObservationStore>
