@@ -107,20 +107,20 @@ public class InspireCompliance {
                 return rsList;
             }
             /**
-             * if both, id and rs_identifier exists but different: update id with rs_identifier
+             * if both, id and resourceIdentifier exists but different: update id with resourceIdentifier
              * <p>
-             * if id exists: update rs_identifier with id DONE
+             * if id exists: update resourceIdentifier with id
              * <p>
-             * if rs_identifier exists: update id with rs_identifier
+             * if resourceIdentifier exists: update id with resourceIdentifier
              * <p>
-             * if nothing exists: generate it for id and rs_identifier DONE
+             * if nothing exists: generate it for id and resourceIdentifier
              */
             if ( rsList.size() == 0 && id == null ) {
-                LOG.info( "Neither an id nor a RS_Identifier exists...so this creates a new one. " );
+                LOG.info( "Neither an id nor a resourceIdentifier exists...so this creates a new one. " );
                 rsList.add( ParsingUtils.newInstance( connectionId ).generateUUID() );
                 return rsList;
             } else if ( rsList.size() == 0 && id != null ) {
-                LOG.info( "An id exists but not a RS_Identifier...so adapting RS_Identifier with id. " );
+                LOG.info( "An id exists but not a resourceIdentifier...so adapting resourceIdentifier with id. " );
                 rsList.add( id );
                 return rsList;
             }

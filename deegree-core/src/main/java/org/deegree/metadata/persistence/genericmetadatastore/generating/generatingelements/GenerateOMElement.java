@@ -40,14 +40,14 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 
 /**
- * TODO add class documentation here
+ * <Code>GenerateOMElement<Code>
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GenerateFileIdentifier {
+public class GenerateOMElement {
 
     private final OMFactory factory;
 
@@ -55,17 +55,24 @@ public class GenerateFileIdentifier {
 
     private final OMNamespace namespaceGCO;
 
-    private GenerateFileIdentifier( OMFactory factory ) {
+    private GenerateOMElement( OMFactory factory ) {
         this.factory = factory;
         namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
         namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
     }
 
-    public static GenerateFileIdentifier newInstance( OMFactory factory ) {
+    public static GenerateOMElement newInstance( OMFactory factory ) {
 
-        return new GenerateFileIdentifier( factory );
+        return new GenerateOMElement( factory );
     }
 
+    /**
+     * Creates the fileIdentifier element for application profile ISO.
+     * 
+     * @param id
+     *            the id for the fileIdentifier, not <Code>null</Code>.
+     * @return the generated element of the fileIdentifier.
+     */
     public OMElement createFileIdentifierElement( String id ) {
         OMElement omFileIdentifier = factory.createOMElement( "fileIdentifier", namespaceGMD );
         OMElement omFileCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
@@ -73,6 +80,29 @@ public class GenerateFileIdentifier {
         omFileCharacterString.setText( id );
 
         return omFileIdentifier;
+    }
+
+    /**
+     * Creates the MD_Identifier element for the application profile ISO.
+     * 
+     * @param id
+     *            the id for the resourceIdentifier, not <Code>null</Code>.
+     * @return the generated element of the identifier.
+     */
+    public OMElement createMD_ResourceIdentifier( String id ) {
+
+        OMElement omIdentifier = factory.createOMElement( "identifier", namespaceGMD );
+        OMElement omMD_Identifier = factory.createOMElement( "MD_Identifier", namespaceGMD );
+        OMElement omCode = factory.createOMElement( "code", namespaceGMD );
+        OMElement omCharacterStringCode = factory.createOMElement( "CharacterString", namespaceGCO );
+
+        omCode.addChild( omCharacterStringCode );
+        omCharacterStringCode.setText( id );
+        omMD_Identifier.addChild( omCode );
+        omIdentifier.addChild( omMD_Identifier );
+
+        return omIdentifier;
+
     }
 
 }
