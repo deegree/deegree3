@@ -36,6 +36,7 @@
 package org.deegree.commons.tom.datetime;
 
 import java.text.ParseException;
+import java.util.Date;
 
 import org.deegree.commons.utils.time.DateUtils;
 
@@ -51,7 +52,7 @@ public class DateTime implements Comparable<DateTime> {
 
     private final String isoDate;
 
-    private final java.util.Date date;
+    private final Date date;
 
     /**
      * @param isoDate
@@ -84,4 +85,12 @@ public class DateTime implements Comparable<DateTime> {
     public String toString() {
         return isoDate;
     }
+
+    /**
+     * @return the actual Date value
+     */
+    public Date getValue() {
+        return date;
+    }
+
 }
