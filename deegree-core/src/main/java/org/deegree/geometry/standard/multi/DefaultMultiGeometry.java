@@ -199,15 +199,17 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
 
     @Override
     public Envelope getEnvelope() {
-        // TODO NullEnvelope for emtpy aggregates? or throw an exception?
-        Envelope result = get( 0 ).getEnvelope();
-        for ( Geometry geom : this ) {
-            result = result.merge( geom.getEnvelope() );
+        if ( env == null ) {
+            // TODO NullEnvelope for emtpy aggregates? or throw an exception?
+            env = get( 0 ).getEnvelope();
+            for ( Geometry geom : this ) {
+                env = env.merge( geom.getEnvelope() );
+            }
+            if ( env.getCoordinateSystem() == null ) {
+                env.setCoordinateSystem( crs );
+            }
         }
-        if ( result.getCoordinateSystem() == null ) {
-            result.setCoordinateSystem( crs );
-        }
-        return result;
+        return env;
     }
 
     @Override
