@@ -106,6 +106,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     private GMLStdProps standardProps;
 
+    protected Envelope env;
+
     /**
      * @param id
      * @param crs
@@ -256,11 +258,13 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public Envelope getEnvelope() {
-        // TODO consider 3D geometries
-        com.vividsolutions.jts.geom.Envelope jtsEnvelope = getJTSGeometry().getEnvelopeInternal();
-        Point min = new DefaultPoint( null, crs, pm, new double[] { jtsEnvelope.getMinX(), jtsEnvelope.getMinY() } );
-        Point max = new DefaultPoint( null, crs, pm, new double[] { jtsEnvelope.getMaxX(), jtsEnvelope.getMaxY() } );
-        return new DefaultEnvelope( null, crs, pm, min, max );
+        if ( env == null ) {
+            com.vividsolutions.jts.geom.Envelope jtsEnvelope = getJTSGeometry().getEnvelopeInternal();
+            Point min = new DefaultPoint( null, crs, pm, new double[] { jtsEnvelope.getMinX(), jtsEnvelope.getMinY() } );
+            Point max = new DefaultPoint( null, crs, pm, new double[] { jtsEnvelope.getMaxX(), jtsEnvelope.getMaxY() } );
+            env = new DefaultEnvelope( null, crs, pm, min, max );
+        }
+        return env;
     }
 
     /**
