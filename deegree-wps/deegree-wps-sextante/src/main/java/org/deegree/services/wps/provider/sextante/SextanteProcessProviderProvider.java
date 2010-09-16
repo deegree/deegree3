@@ -73,7 +73,7 @@ public class SextanteProcessProviderProvider implements ProcessProviderProvider 
 
         SextanteProcesses config = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "http://www.deegree.org/services/wps/sextante" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wps.provider.sextante.jaxb" );
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             config = (SextanteProcesses) unmarshaller.unmarshal( configURL );
         } catch ( JAXBException e ) {

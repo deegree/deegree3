@@ -118,7 +118,7 @@ public class SextanteWPSProcess implements WPSProcess {
     private static final String PREFIX = "st_";
 
     // suffix for process identifier
-    private static final String SUFFIX = "_st";
+    private static final String SUFFIX = "";
 
     /**
      * This method creates the command line name from a identifier of a {@link SextanteProcesses}. It removes prefix and
@@ -129,7 +129,7 @@ public class SextanteWPSProcess implements WPSProcess {
      * @return Command line name of a SEXTANTE {@link GeoAlgorithm}.
      */
     public static String createCommandLineName( String indentifier ) {
-        String s = indentifier.substring( PREFIX.length() - 1, ( indentifier.length() - SUFFIX.length() ) - 1 );
+        String s = indentifier.substring( PREFIX.length(), ( indentifier.length() - SUFFIX.length() ) );
         return s;
     }
 
@@ -189,6 +189,7 @@ public class SextanteWPSProcess implements WPSProcess {
         processDefinition.setConfigVersion( "0.5.0" );
         processDefinition.setProcessVersion( "1.0.0" );
         processDefinition.setStatusSupported( false );
+        processDefinition.setStoreSupported( true );
 
         // identifier
         String identifierStr = createIdentifier( alg );

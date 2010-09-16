@@ -169,8 +169,6 @@ public class SextanteProcessProvider implements ProcessProvider {
 
                 if ( alg != null ) {// found
                     algs.add( alg );
-
-                    LOG.info( alg.getCommandLineName() );
                 } else {// not found
                     // TODO throw Exception??
                     LOG.error( "Algorithm with the id '" + p.getId() + "' is not found." );
@@ -198,8 +196,8 @@ public class SextanteProcessProvider implements ProcessProvider {
         LOG.info( "Sextante initialized" );
 
         // initialize WPS processes
-        GeoAlgorithm[] algs = getVectorLayerAlgorithms();
-        // GeoAlgorithm[] algs = getSupportedAlgorithms( config );
+        // GeoAlgorithm[] algs = getVectorLayerAlgorithms();
+        GeoAlgorithm[] algs = getSupportedAlgorithms( config );
 
         for ( int i = 0; i < algs.length; i++ ) {
             // SEXTANTE algorithm
@@ -209,8 +207,8 @@ public class SextanteProcessProvider implements ProcessProvider {
             CodeType codeType = new CodeType( alg.getCommandLineName() );
 
             // add and initialize process
-            SextanteWPSProcess process = new SextanteWPSProcess( alg, null );
-            // SextanteWPSProcess process = new SextanteWPSProcess( alg, config );
+            // SextanteWPSProcess process = new SextanteWPSProcess( alg, null );
+            SextanteWPSProcess process = new SextanteWPSProcess( alg, config );
             process.getProcesslet().init();
             idToProcess.put( codeType, process );
         }

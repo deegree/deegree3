@@ -62,6 +62,7 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
@@ -385,7 +386,7 @@ public class VectorLayerAdapter {
                             throws IteratorException {
 
         // JTS geometry
-        com.vividsolutions.jts.geom.Geometry gJTS = null;
+        com.vividsolutions.jts.geom.Geometry gJTS;
 
         IFeatureIterator it = l.iterator();
 
@@ -397,18 +398,17 @@ public class VectorLayerAdapter {
             com.vividsolutions.jts.geom.GeometryFactory gFactoryJTS = new com.vividsolutions.jts.geom.GeometryFactory(
                                                                                                                        new PrecisionModel() );
 
-            // create a JTS geometry array
-            com.vividsolutions.jts.geom.Geometry[] gArrayJTS = new com.vividsolutions.jts.geom.Geometry[l.getShapesCount()];
-            int k = 0;
+            // create a JTS geometry array and skip emty geometries
+            LinkedList<com.vividsolutions.jts.geom.Geometry> geomList = new LinkedList<com.vividsolutions.jts.geom.Geometry>();
             while ( it.hasNext() ) {
-
                 com.vividsolutions.jts.geom.Geometry geom = it.next().getGeometry();
-                gArrayJTS[k] = geom;
-                k++;
+                if ( !geom.isEmpty() ) {
+                    geomList.add( geom );
+                }
             }
 
             // create a JTS geometry collection
-            gJTS = gFactoryJTS.createGeometryCollection( gArrayJTS );
+            gJTS = gFactoryJTS.createGeometryCollection( geomList.toArray( new com.vividsolutions.jts.geom.Geometry[geomList.size()] ) );
         }
 
         // create a deegree geometry
@@ -457,7 +457,7 @@ public class VectorLayerAdapter {
 
             geom = createJTSGeometry( (Geometry) fGeometries[0].getValue() );
 
-            LOG.warn( "Feature '" + f.getId() + "' has many geometries, first is in use." );
+            LOG.warn( "Feature '" + f.getId() + "' has many geometries, only the first is in use." );
 
             // merge all geometries
             // com.vividsolutions.jts.geom.GeometryFactory gFactoryJTS = new

@@ -3,19 +3,19 @@
   xmlns="http://www.deegree.org/services/wps/sextante" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wps/sextante sextante.xsd">
 
-  <Process id="st_boundingbox_st">
+  <Process id="st_boundingbox">
     <Abstract>This algorithm generates a new vector layer with a single polygon representing the bounding box of an input vector layer.</Abstract>
   </Process>
 
-  <Process id="st_centroids_st">
+  <Process id="st_centroids">
     <Abstract>Creates a new points layer with the centroids of the polygons in a given layer.</Abstract>
   </Process>
 
-  <Process id="st_changelinedirection_st">
+  <Process id="st_changelinedirection">
     <Abstract>This algorithm inverts the ordering of vertices in a line, thus reversing its orientation.</Abstract>
   </Process>
 
-  <Process id="st_cleanpointslayer_st">
+  <Process id="st_cleanpointslayer">
     <Abstract>This algorithm eliminates duplicated points. If several points with the same coordinates appear in a layer, the algorithm will leave just the first one of them, removing the remaining ones.</Abstract>
   </Process>
 
