@@ -81,8 +81,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     private OMNamespace namespaceGCO;
 
-    // private Connection connection;
-
     private String dataIdentificationId;
 
     private String dataIdentificationUuId;
@@ -99,7 +97,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
      */
     protected ParseIdentificationInfo( OMFactory factory, NamespaceContext nsContext ) {
         this.factory = factory;
-        // this.connection = connection;
         this.nsContextParseII = nsContext;
         this.resourceIdentifierList = new ArrayList<String>();
 

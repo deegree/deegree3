@@ -177,7 +177,7 @@ public class ISOMetadataStore implements MetadataStore {
     public ISOMetadataStore( ISOMetadataStoreConfig config ) {
         this.connectionId = config.getConnId();
         fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), connectionId );
-        ric = InspireCompliance.newInstance( config.getRequireInspireCompliance() );
+        ric = InspireCompliance.newInstance( config.getRequireInspireCompliance(), connectionId );
 
     }
 
