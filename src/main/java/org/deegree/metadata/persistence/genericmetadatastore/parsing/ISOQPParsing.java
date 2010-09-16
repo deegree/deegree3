@@ -55,7 +55,6 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -64,6 +63,7 @@ import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.genericmetadatastore.generating.GenerateMetadata;
+import org.deegree.metadata.persistence.genericmetadatastore.generating.generatingelements.GenerateFileIdentifier;
 import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
 import org.deegree.metadata.persistence.neededdatastructures.Format;
 import org.deegree.metadata.persistence.neededdatastructures.Keyword;
@@ -146,14 +146,10 @@ public final class ISOQPParsing extends XMLAdapter {
      * @return {@link ParsedProfileElement}
      * @throws IOException
      */
-    public ParsedProfileElement parseAPISO( FileIdentifierInspector fi, OMElement element )
+    public ParsedProfileElement parseAPISO( FileIdentifierInspector fi, InspireCompliance ic, OMElement element )
                             throws MetadataStoreException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
-
-        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
-
-        OMNamespace namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
 
         setRootElement( element );
         if ( element.getDefaultNamespace() != null ) {
@@ -447,7 +443,7 @@ public final class ISOQPParsing extends XMLAdapter {
         List<OMElement> identificationInfo = getElements( rootElement, new XPath( "./gmd:identificationInfo",
                                                                                   nsContextISOParsing ) );
 
-        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, nsContextISOParsing );
+        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, ic, nsContextISOParsing );
         pI.parseIdentificationInfo( identificationInfo, gr, qp, rp, crsList );
         /*---------------------------------------------------------------
          * 
@@ -464,18 +460,8 @@ public final class ISOQPParsing extends XMLAdapter {
 
         qp.setIdentifier( idList );
 
-        OMElement omFileIdentifier = factory.createOMElement( "fileIdentifier", namespaceGMD );
-        OMElement omFileCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
-        omFileIdentifier.addChild( omFileCharacterString );
-        omFileCharacterString.setText( qp.getIdentifier().get( 0 ) );
-        gr.setIdentifier( omFileIdentifier );
+        gr.setIdentifier( GenerateFileIdentifier.newInstance( factory ).createFileIdentifierElement( idList.get( 0 ) ) );
 
-        // idList.add( fileIdentifierString );
-        // qp.setIdentifier( idList );
-        //
-        // gr.setIdentifier( getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContextISOParsing ) ) );
-        //
-        // }
         // TODO
 
         /*---------------------------------------------------------------
