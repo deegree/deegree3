@@ -41,8 +41,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jj2000.j2k.NotImplementedError;
-
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.RequireInspireCompliance;
 import org.slf4j.Logger;
@@ -61,12 +59,15 @@ public class InspireCompliance {
 
     private final RequireInspireCompliance ric;
 
-    private InspireCompliance( RequireInspireCompliance ric ) {
+    private final String connectionId;
+
+    private InspireCompliance( RequireInspireCompliance ric, String connectionId ) {
         this.ric = ric;
+        this.connectionId = connectionId;
     }
 
-    public static InspireCompliance newInstance( RequireInspireCompliance ric ) {
-        return new InspireCompliance( ric );
+    public static InspireCompliance newInstance( RequireInspireCompliance ric, String connectionId ) {
+        return new InspireCompliance( ric, connectionId );
     }
 
     public boolean checkInspireCompliance() {
@@ -77,6 +78,18 @@ public class InspireCompliance {
         }
     }
 
+    /**
+     * Determines if the required constraint of the equality of the attribute
+     * <Code>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier</Code>
+     * and <Code>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Code> is given.
+     * 
+     * @param rsList
+     *            the list of RS_Identifier, not <Code>null</Code>.
+     * @param id
+     *            the id attribute if exists, can be <Code>null</Code>.
+     * @return a list of RS_Identifier with one element, at least.
+     * @throws MetadataStoreException
+     */
     public List<String> determineInspireCompliance( List<String> rsList, String id )
                             throws MetadataStoreException {
         boolean generateAutomatic = ric.getComplianceGenerator().isGenerateAutomatic();
@@ -93,9 +106,26 @@ public class InspireCompliance {
                 LOG.info( "The resourceIdentifier has been accepted without any automatic creation. " );
                 return rsList;
             }
-            throw new NotImplementedError( "What if the creation is needed for INSPIRE!! should be implemented, soon!" );
+            /**
+             * if both, id and rs_identifier exists but different: update id with rs_identifier
+             * <p>
+             * if id exists: update rs_identifier with id DONE
+             * <p>
+             * if rs_identifier exists: update id with rs_identifier
+             * <p>
+             * if nothing exists: generate it for id and rs_identifier DONE
+             */
+            if ( rsList.size() == 0 && id == null ) {
+                LOG.info( "Neither an id nor a RS_Identifier exists...so this creates a new one. " );
+                rsList.add( ParsingUtils.newInstance( connectionId ).generateUUID() );
+                return rsList;
+            } else if ( rsList.size() == 0 && id != null ) {
+                LOG.info( "An id exists but not a RS_Identifier...so adapting RS_Identifier with id. " );
+                rsList.add( id );
+                return rsList;
+            }
         }
-        return null;
+        return rsList;
     }
 
     private boolean checkRSListAgainstID( List<String> rsList, String id ) {

@@ -44,9 +44,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.metadata.persistence.MetadataStoreException;
@@ -131,7 +128,7 @@ public class FileIdentifierInspector {
                 if ( rsList.size() == 0 || id == null || uuid == null ) {
 
                     LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );
-                    idList.add( generateUUID() );
+                    idList.add( ParsingUtils.newInstance( connectionId ).generateUUID() );
                     LOG.debug( "(DEFAULT) The new FileIdentifier: " + idList );
                 } else {
                     if ( rsList.size() == 0 && id != null ) {
@@ -194,71 +191,6 @@ public class FileIdentifierInspector {
             close( rs );
         }
         return notAvailable;
-    }
-
-    /**
-     * Method to generate via the Java UUID-API a UUID if there is no identifier available.<br>
-     * If the generated ID begins with a number then this is replaced with a random letter from the ASCII table. This
-     * has to be done because the id attribute in the xml does not support any number at the beginning of an uuid. The
-     * uppercase letters are in range from 65 to 90 whereas the lowercase letters are from 97 to 122. After the
-     * generation there is a check if (in spite of the nearly impossibility) this uuid exists in the database already.
-     * 
-     * 
-     * @return a uuid that is unique in the backend.
-     * @throws MetadataStoreException
-     */
-    private String generateUUID()
-                            throws MetadataStoreException {
-
-        ResultSet rs = null;
-        PreparedStatement stm = null;
-        Connection conn = null;
-        String uuid = null;
-
-        try {
-
-            conn = ConnectionManager.getConnection( connectionId );
-
-            uuid = UUID.randomUUID().toString();
-            char firstChar = uuid.charAt( 0 );
-            Pattern p = Pattern.compile( "[0-9]" );
-            Matcher m = p.matcher( "" + firstChar );
-            if ( m.matches() ) {
-                int i;
-                double ma = Math.random();
-                if ( ma < 0.5 ) {
-                    i = 65;
-
-                } else {
-                    i = 97;
-                }
-
-                firstChar = (char) ( (int) ( i + ma * 26 ) );
-                uuid = uuid.replaceFirst( "[0-9]", String.valueOf( firstChar ) );
-            }
-            boolean uuidIsEqual = false;
-
-            String compareIdentifier = "SELECT identifier FROM qp_identifier WHERE identifier = ?";
-            stm = conn.prepareStatement( compareIdentifier );
-            stm.setObject( 1, uuid );
-            rs = stm.executeQuery();
-            while ( rs.next() ) {
-                uuidIsEqual = true;
-
-            }
-
-            if ( uuidIsEqual == true ) {
-                close( rs, stm, conn, LOG );
-                return generateUUID();
-            }
-        } catch ( SQLException e ) {
-            LOG.debug( "Error while generating a new UUID for the metadata: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while generating a new UUID for the metadata: {}", e );
-        } finally {
-            close( rs, stm, conn, LOG );
-        }
-        return uuid;
-
     }
 
     public List<String> getIdList() {
