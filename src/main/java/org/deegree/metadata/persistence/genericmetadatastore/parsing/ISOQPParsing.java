@@ -288,10 +288,14 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
         String dateString = getNodeAsString( rootElement, new XPath( "./gmd:dateStamp/gco:Date", nsContextISOParsing ),
-                                             "0000-00-00" );
+                                             null );
         Date date = null;
         try {
-            date = new Date( dateString );
+            if ( dateString != null ) {
+                date = new Date( dateString );
+            } else {
+                date = null;
+            }
         } catch ( ParseException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
@@ -575,10 +579,14 @@ public final class ISOQPParsing extends XMLAdapter {
                                                               rootElement,
                                                               new XPath(
                                                                          "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date",
-                                                                         nsContextISOParsing ), "0000-00-00" );
+                                                                         nsContextISOParsing ), null );
             Date dateSpecificationDate = null;
             try {
-                dateSpecificationDate = new Date( specificationDateString );
+                if ( dateSpecificationDate != null ) {
+                    dateSpecificationDate = new Date( specificationDateString );
+                } else {
+                    date = null;
+                }
             } catch ( ParseException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
