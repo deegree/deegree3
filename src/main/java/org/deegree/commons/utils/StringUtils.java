@@ -71,27 +71,6 @@ public class StringUtils {
     public static final int NO_TRIM_FIELDS = 4;
 
     /**
-     * concatenates an array of strings using a
-     * 
-     * @see StringBuffer
-     * 
-     * @param size
-     *            estimated size of the target string
-     * @param objects
-     *            toString() will be called for each object to append it to the result string
-     * @return concatinated string
-     * @deprecated highliy deprecated, use normal string concatenation ("foo" + "bar")
-     */
-    @Deprecated
-    public static String concat( int size, Object... objects ) {
-        StringBuilder sbb = new StringBuilder( size );
-        for ( int i = 0; i < objects.length; i++ ) {
-            sbb.append( objects[i] );
-        }
-        return sbb.toString();
-    }
-
-    /**
      * Extract all the strings that begin and end with the given tokens.
      * 
      * @param target
