@@ -343,14 +343,33 @@ public class StandardGMLFeatureProps extends GMLStdProps {
                 for ( int i = 0; i < names.length; i++ ) {
                     props[i] = new GenericProperty( PT_NAME_GML31, names[i] );
                 }
-            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
+            } else if ( PT_BOUNDED_BY_GML31.getName().equals( propName ) ) {
                 if ( boundedBy != null ) {
                     props = new Property[] { new GenericProperty( PT_BOUNDED_BY_GML31, boundedBy ) };
                 }
             }
             break;
         case GML_32:
-            throw new UnsupportedOperationException( "Not implemented yet." );
+            if ( PT_META_DATA_PROPERTY_GML32.getName().equals( propName ) && metadata.length > 0 ) {
+                props = new Property[metadata.length];
+                for ( int i = 0; i < metadata.length; i++ ) {
+                    props[i] = new GenericProperty( PT_NAME_GML32, metadata[i] );
+                }
+            } else if ( PT_DESCRIPTION_GML32.getName().equals( propName ) && description != null ) {
+                props = new Property[] { new GenericProperty( PT_DESCRIPTION_GML32, description ) };
+            } else if ( PT_NAME_GML32.getName().equals( propName ) && names.length > 0 ) {
+                props = new Property[names.length];
+                for ( int i = 0; i < names.length; i++ ) {
+                    props[i] = new GenericProperty( PT_NAME_GML32, names[i] );
+                }
+            } else if ( PT_IDENTIFIER_GML32.getName().equals( propName ) && identifier != null ) {
+                props = new Property[] { new GenericProperty( PT_IDENTIFIER_GML32, identifier ) };
+            } else if ( PT_BOUNDED_BY_GML32.getName().equals( propName ) ) {
+                if ( boundedBy != null ) {
+                    props = new Property[] { new GenericProperty( PT_BOUNDED_BY_GML32, boundedBy ) };
+                }
+            }
+            break;
         }
         return props;
     }
@@ -482,7 +501,7 @@ public class StandardGMLFeatureProps extends GMLStdProps {
                 } else {
                     // remove first if present
                     List<TypedObjectNode> subList = Arrays.asList( metadata ).subList( metadata.length > 0 ? 1 : 0,
-                                                                              metadata.length );
+                                                                                       metadata.length );
                     metadata = subList.toArray( new TypedObjectNode[subList.size()] );
                 }
             } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) ) {

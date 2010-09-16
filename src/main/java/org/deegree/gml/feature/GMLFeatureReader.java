@@ -230,7 +230,7 @@ public class GMLFeatureReader extends XMLAdapter {
     }
 
     /**
-     * Returns the {@link GMLDocumentIdContext} that keeps track of objects, identifieres and references.
+     * Returns the {@link GMLDocumentIdContext} that keeps track of objects, identifiers and references.
      * 
      * @return the {@link GMLDocumentIdContext}, never <code>null</code>
      */
