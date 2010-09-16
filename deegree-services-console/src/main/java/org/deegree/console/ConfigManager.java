@@ -44,6 +44,7 @@ import javax.faces.context.FacesContext;
 
 import org.deegree.console.featurestore.FeatureStoreConfigManager;
 import org.deegree.console.jdbc.ConnectionConfigManager;
+import org.deegree.console.observationstore.ObservationStoreConfigManager;
 import org.deegree.console.services.ServiceConfigManager;
 import org.deegree.console.styles.StyleConfigManager;
 import org.deegree.services.controller.OGCFrontController;
@@ -78,6 +79,8 @@ public class ConfigManager {
 
     private final FeatureStoreConfigManager fsManager;
 
+    private final ObservationStoreConfigManager osManager;
+
     private final ConnectionConfigManager connManager;
 
     private String lastMessage = "Workspace initialized.";
@@ -93,6 +96,7 @@ public class ConfigManager {
         this.serviceManager = new ServiceConfigManager();
         this.styleManager = new StyleConfigManager();
         this.fsManager = new FeatureStoreConfigManager();
+        this.osManager = new ObservationStoreConfigManager();
         this.connManager = new ConnectionConfigManager();
     }
 
@@ -114,6 +118,10 @@ public class ConfigManager {
             return true;
         }
         if ( fsManager.needsReloading() ) {
+            lastMessage = "Workspace has been changed.";
+            return true;
+        }
+        if ( osManager.needsReloading() ) {
             lastMessage = "Workspace has been changed.";
             return true;
         }
@@ -159,6 +167,13 @@ public class ConfigManager {
     }
 
     /**
+     * @return the osManager
+     */
+    public ObservationStoreConfigManager getOsManager() {
+        return osManager;
+    }
+
+    /**
      * @return the connManager
      */
     public ConnectionConfigManager getConnManager() {
@@ -182,6 +197,7 @@ public class ConfigManager {
         serviceManager.scan();
         styleManager.scan();
         fsManager.scan();
+        osManager.scan();
         connManager.scan();
         lastMessage = "Workspace changes have been applied.";
         return "/console";

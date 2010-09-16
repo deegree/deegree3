@@ -161,6 +161,43 @@
         <h:commandButton value="Create new" action="#{newFeatureStoreConfig.create}" />
       </h:form>
     </dgc:collapsiblePanel>
+    
+    <dgc:collapsiblePanel styleClass="collapsiblePanel" collapsed="false">
+      <f:facet name="header">
+      ------------------------------------------------------------------------------  
+      <br />
+       Observation stores
+      <br />
+      ------------------------------------------------------------------------------
+      </f:facet>
+      <h:form>
+        <table border="0">
+          <ui:repeat value="#{configManager.osManager.configs}" var="config">
+            <tr align="center">
+              <td align="left"><h:outputText value="- #{config.id}" /></td>
+              <td>&nbsp;<h:outputText value="#{config.status}" />&nbsp;</td>
+              <td><h:commandButton rendered="#{!config.deactivated}" value="Deactivate"
+                action="#{config.deactivate}" /> <h:commandButton rendered="#{config.deactivated}" value="Activate"
+                action="#{config.activate}" /></td>
+              <td><h:commandButton value="Edit" action="#{config.edit}" /></td>
+              <td><h:commandButton value="Delete" action="#{config.delete}" /></td>
+              <td><h:commandButton rendered="#{config.active}" value="Info" action="#{config.showInfo}" /></td>
+              <td><h:commandButton rendered="#{config.active}" value="Setup tables"
+                action="#{config.createTables}" /></td>
+            </tr>
+          </ui:repeat>
+        </table>
+        <br />
+      </h:form>
+      <h:form>
+        <h:outputLabel for="newOSBt" value="Name: " />
+        <h:inputText id="newOSBt" value="#{newObservationStoreConfig.id}" size="16" />
+        <h:selectOneMenu value="#{newObservationStoreConfig.type}">
+          <f:selectItems value="#{configManager.osManager.osTypes}" />
+        </h:selectOneMenu>
+        <h:commandButton value="Create new" action="#{newObservationStoreConfig.create}" />
+      </h:form>
+    </dgc:collapsiblePanel>
 
     <dgc:collapsiblePanel styleClass="collapsiblePanel" collapsed="false">
       <f:facet name="header">

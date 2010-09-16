@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -33,30 +32,39 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.services;
+package org.deegree.console.observationstore;
 
-import org.deegree.console.XMLConfigManager;
+import org.deegree.console.ManagedXMLConfig;
+import org.deegree.observation.persistence.ObservationStoreProvider;
 
 /**
  * TODO add class documentation here
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class ServiceConfigManager extends XMLConfigManager<ServiceConfig> {
+public class ObservationStoreConfig extends ManagedXMLConfig {
 
-    @Override
-    protected void add( String id, String namespace, boolean ignore ) {
-        if ( !( id.equals( "main" ) || id.equals( "metadata" ) || /* !! HACK !! */id.endsWith( "-sensorml" ) ) ) {
-            ServiceConfig config = new ServiceConfig( id, !ignore, ignore, this );
-            idToConfig.put( id, config );
-        }
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5042571409250389913L;
+
+    public ObservationStoreConfig( String id, boolean active, boolean ignore, ObservationStoreConfigManager manager,
+                                   ObservationStoreProvider provider ) {
+        super( id, active, ignore, manager, provider.getConfigSchema(), provider.getConfigTemplate() );
     }
 
-    @Override
-    public String getBaseDir() {
-        return "services";
+    public String createTables() {
+        throw new RuntimeException(
+                                    "Currently it is not possible to create tables/ insert data into the observation databases. Please check back soon!" );
     }
+
+    public String showInfo() {
+        throw new RuntimeException(
+                                    "Currently this feature has no definition for an observation store. Please check back soon!" );
+    }
+
 }

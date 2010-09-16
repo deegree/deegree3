@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -33,30 +33,49 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.console.services;
+package org.deegree.console.observationstore;
 
-import org.deegree.console.XMLConfigManager;
+import java.io.IOException;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import org.deegree.console.ConfigManager;
+import org.deegree.observation.persistence.ObservationStoreProvider;
 
 /**
  * TODO add class documentation here
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class ServiceConfigManager extends XMLConfigManager<ServiceConfig> {
+@ManagedBean
+@RequestScoped
+public class NewObservationStoreConfig {
 
-    @Override
-    protected void add( String id, String namespace, boolean ignore ) {
-        if ( !( id.equals( "main" ) || id.equals( "metadata" ) || /* !! HACK !! */id.endsWith( "-sensorml" ) ) ) {
-            ServiceConfig config = new ServiceConfig( id, !ignore, ignore, this );
-            idToConfig.put( id, config );
-        }
-    }
+    @Getter
+    @Setter
+    private String id;
 
-    @Override
-    public String getBaseDir() {
-        return "services";
+    @Getter
+    @Setter
+    private String type;
+
+    public String create()
+                            throws IOException {
+        ObservationStoreConfigManager configManager = ConfigManager.getApplicationInstance().getOsManager();
+        ObservationStoreProvider provider = configManager.getProvider( type );
+        provider.getConfigTemplate();
+        ObservationStoreConfig config = new ObservationStoreConfig( id, false, false, configManager, provider );
+        configManager.add( config );
+        config.create();
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", config );
+        return "console/generic/xmleditor.jsf?faces-redirect=true";
     }
 }
