@@ -303,7 +303,12 @@ public class FeatureLayer extends Layer {
                 }
             }
             for ( Feature f : rs ) {
-                render( f, style, renderer, textRenderer, gm.getScale(), resolution );
+                try {
+                    render( f, style, renderer, textRenderer, gm.getScale(), resolution );
+                } catch ( IllegalArgumentException e ) {
+                    LOG.warn( "Unable to render feature, probably a curve had multiple/non-linear segments." );
+                    LOG.trace( "Stack trace:", e );
+                }
                 if ( max > 0 && ++cnt == max ) {
                     LOG.debug( "Reached max features of {} for layer '{}', stopping.", max, this );
                     break;
