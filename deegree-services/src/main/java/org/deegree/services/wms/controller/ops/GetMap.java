@@ -109,7 +109,8 @@ import org.deegree.services.wms.model.layers.Layer;
 import org.slf4j.Logger;
 
 /**
- * <code>GetMap</code>
+ * Constructors must make sure there is an equal number of layers and styles, the VSP maps are filled, and the
+ * scale/resolution are calculated properly. Also, with/height and envelope must obviously be set to reasonable values.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
