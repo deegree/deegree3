@@ -201,6 +201,15 @@ public class GetMap {
         format = "image/png";
         transparent = false;
         handleVSPs( service, new HashMap<String, String>() );
+        try {
+            scale = Utils.calcScaleWMS130( width, height, bbox, crs.getWrappedCRS() );
+            LOG.debug( "GetMap request has a WMS 1.3.0/SLD scale of '{}'.", scale );
+            resolution = max( bbox.getSpan0() / width, bbox.getSpan1() / height );
+            LOG.debug( "Resolution per pixel is {}.", resolution );
+        } catch ( UnknownCRSException e ) {
+            LOG.trace( "Stack trace:", e );
+            LOG.warn( "The scale of a GetMap request could not be calculated: '{}'.", e.getLocalizedMessage() );
+        }
     }
 
     private void parse111( Map<String, String> map, MapService service )
