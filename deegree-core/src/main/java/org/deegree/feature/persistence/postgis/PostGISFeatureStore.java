@@ -225,7 +225,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         }
         sql.append( "(" );
         sql.append( column );
-        sql.append( ") FROM " );
+        sql.append( ")::BOX2D FROM " );
         sql.append( ftMapping.getFtTable() );
 
         Connection conn = null;
@@ -307,7 +307,7 @@ public class PostGISFeatureStore implements SQLFeatureStore {
         }
         sql.append( "(" );
         sql.append( column );
-        sql.append( ") FROM " );
+        sql.append( ")::BOX2D FROM " );
         sql.append( blobMapping.getTable() );
         sql.append( " WHERE " );
         sql.append( blobMapping.getTypeColumn() );
