@@ -178,9 +178,9 @@ class DescribeFeatureTypeHandler {
             } else {
                 // feature types from multiple namespaces -> generate wrapper schema document from all feature stores
                 Set<String> namespaces = new LinkedHashSet<String>();
-                for ( String ns : request.getNsBindings().values() ) {
-                    namespaces.add( ns );
-                }
+//                for ( String ns : request.getNsBindings().values() ) {
+//                    namespaces.add( ns );
+//                }
 
                 for ( FeatureStore fs : service.getStores() ) {
                     namespaces.addAll( fs.getSchema().getNamespaceBindings().values() );
