@@ -35,21 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
+import org.deegree.CoreTstProperties;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
 import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * Tests that check the extraction of {@link FeatureType}s from GML application schemas.
+ * Tests that check the extraction of {@link FeatureType}s from various GML application schemas.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -57,6 +61,7 @@ import org.slf4j.Logger;
  * @version $Revision: $, $Date: $
  */
 public class ApplicationSchemaXSDDecoderTest {
+
     private static final Logger LOG = getLogger( ApplicationSchemaXSDDecoderTest.class );
 
     @Test
@@ -101,21 +106,21 @@ public class ApplicationSchemaXSDDecoderTest {
         PropertyType pt = buildingFt.getPropertyDeclaration( QName.valueOf( "{http://www.opengis.net/citygml/1.0}_GenericApplicationPropertyOfCityObject" ) );
         Assert.assertEquals( 8, pt.getSubstitutions().length );
     }
-    
-//    @Test
-//    public void testParsingGeoSciML()
-//                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-//                            IllegalAccessException {
-//
-//        String schemaURL = "file:/home/markus/workspace/geosciml/xsd/geosciml.xsd";
-//        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-//        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
-//        FeatureType[] fts = schema.getFeatureTypes();
-//        for ( FeatureType ft : fts ) {
-//            System.out.println (ft.getName());
-//        }
-//        System.out.println (fts.length);
-//    }
+
+    @Test
+    public void testParsingGeoSciML()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = CoreTstProperties.getProperty( "schema_geosciml" );
+        if ( schemaURL == null ) {
+            return;
+        }
+        
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        FeatureType[] fts = schema.getFeatureTypes();
+    }
 
     @Test
     public void testParsingCite110SF0()
@@ -171,21 +176,44 @@ public class ApplicationSchemaXSDDecoderTest {
         Assert.assertEquals( 19, fts.length );
     }
 
-    // @Test
+    @Test
     public void testParsingXPlanGML20()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        String schemaURL = "file:/home/schneider/workspace/lkee_xplanung2/resources/schema/XPlanGML_2_0/XPlanGml.xsd";
+        String schemaURL = CoreTstProperties.getProperty( "schema_xplan2" );
+        if ( schemaURL == null ) {
+            return;
+        }
+
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
-        FeatureType ft = adapter.extractFeatureTypeSchema().getFeatureType(
-                                                                            new QName(
-                                                                                       "http://www.xplanung.de/xplangml",
-                                                                                       "BP_Plan" ) );
-        LOG.debug( "" + ft );
-        // TODO do more thorough testing
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        Assert.assertEquals( 132, schema.getFeatureTypes().length );
     }
-    
+
+    @Test
+    public void testParsingNAS511()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = CoreTstProperties.getProperty( "schema_nas511" );
+        if ( schemaURL == null ) {
+            return;
+        }
+
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_30, null, schemaURL );
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        Assert.assertEquals( 237, schema.getFeatureTypes().length );
+
+        QName ftName = new QName( "http://www.adv-online.de/namespaces/adv/gid/5.1.1", "AX_BesondereFlurstuecksgrenze" );
+        FeatureType ft = adapter.extractFeatureTypeSchema().getFeatureType( ftName );
+        QName propName = new QName( "http://www.adv-online.de/namespaces/adv/gid/5.1.1", "position" );
+        GeometryPropertyType pt = (GeometryPropertyType) ft.getPropertyDeclaration( propName );
+        assertEquals( 2, pt.getAllowedGeometryTypes().size() );
+        assertTrue( pt.getAllowedGeometryTypes().contains( GeometryPropertyType.GeometryType.CURVE ) );
+        assertTrue( pt.getAllowedGeometryTypes().contains( GeometryPropertyType.GeometryType.COMPOSITE_CURVE ) );
+    }
+
     @Test
     public void testParsingCustomProperties()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
@@ -195,7 +223,7 @@ public class ApplicationSchemaXSDDecoderTest {
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 1, fts.length );
-        FeatureType ft = fts [0];
+        FeatureType ft = fts[0];
         Assert.assertEquals( 4, ft.getPropertyDeclarations().size() );
-    }    
+    }
 }
