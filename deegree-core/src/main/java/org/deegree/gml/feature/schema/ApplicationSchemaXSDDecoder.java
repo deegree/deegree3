@@ -812,7 +812,42 @@ public class ApplicationSchemaXSDDecoder {
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.trace( "Found choice." ); 
+                    XSObjectList geomChoice = modelGroup.getParticles();
+                    int length = geomChoice.getLength();
+                    Set<GeometryType> allowedTypes = new HashSet<GeometryType>();
+                    for ( int i = 0; i < length; ++i ) {
+                        XSParticle geomChoiceParticle = (XSParticle) geomChoice.item( i );
+                        XSTerm geomChoiceTerm = geomChoiceParticle.getTerm();
+                        if ( geomChoiceTerm.getType() == XSConstants.ELEMENT_DECLARATION ) {
+                            // other types are not supported
+                            XSElementDeclaration geomChoiceElement = (XSElementDeclaration) geomChoiceTerm;
+                            // min occurs check should be done, in regards to the xlinking.
+                            int minOccurs3 = geomChoiceParticle.getMinOccurs();
+                            int maxOccurs3 = geomChoiceParticle.getMaxOccursUnbounded() ? -1
+                                                                                       : geomChoiceParticle.getMaxOccurs();
+                            if ( minOccurs3 != 1 || maxOccurs3 != 1 ) {
+                                LOG.warn( "Only single geometries are currently supported, ignoring in choice." );
+                                return null;
+                            }
+                            QName elementName = createQName( geomChoiceElement.getNamespace(),
+                                                             geomChoiceElement.getName() );
+                            if ( geometryNameToGeometryElement.get( elementName ) != null ) {
+                                LOG.trace( "Identified a geometry property." );
+                                GeometryType geometryType = getGeometryType( elementName );
+                                allowedTypes.add( geometryType );
+                            } else {
+                                LOG.warn( "Unknown geometry type." );
+                            }
+                        } else {
+                            LOG.warn( "Unsupported type particle type." );
+                        }
+                    }
+                    if ( !allowedTypes.isEmpty() ) {
+                        return new GeometryPropertyType( ptName, minOccurs, maxOccurs, allowedTypes,
+                                                         CoordinateDimension.DIM_2_OR_3,
+                                                         elementDecl.getAbstract(), ptSubstitutions, BOTH );
+                    }
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
