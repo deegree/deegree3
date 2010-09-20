@@ -125,10 +125,20 @@ public class GeoAlgorithmWithData {
         return alg;
     }
 
+    /**
+     * Returns the identifier of this process.
+     * 
+     * @return Identifier of this process.
+     */
     public String getIdentifier() {
         return SextanteWPSProcess.createIdentifier( alg );
     }
 
+    /**
+     * Returns the command line name of the SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @return Command line name of the SEXTANTE {@link GeoAlgorithm}.
+     */
     public String getCommandLineName() {
         return alg.getCommandLineName();
     }

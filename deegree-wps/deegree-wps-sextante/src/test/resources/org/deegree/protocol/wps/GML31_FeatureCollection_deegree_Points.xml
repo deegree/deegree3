@@ -155,7 +155,7 @@
       <app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
       <app:geom>
         <gml:Point srsName="EPSG:4326">
-          <gml:pos>50 50</gml:pos>
+          <gml:pos>501 501</gml:pos>
         </gml:Point>
       </app:geom>
     </app:Country>

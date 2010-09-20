@@ -11,7 +11,7 @@
 
 	<gml:interior>
 		<gml:LinearRing>
-			<gml:posList>3 3 7 3 7 7 3 7 3 3</gml:posList>
+			<gml:posList>8 8 12 5 12 8 12 12 8 8</gml:posList>
 		</gml:LinearRing>
 	</gml:interior>
 

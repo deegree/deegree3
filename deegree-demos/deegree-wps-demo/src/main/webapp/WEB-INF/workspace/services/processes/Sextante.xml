@@ -77,10 +77,28 @@
       taken from the geometry it belongs to.</Abstract>
   </Process>
 
+  <Process id="st_intersection">
+    <Abstract>This algorithm computes the intersection between two
+      polygon vector layers. This is equivalent to a boolean AND
+      operator. The geometries are altered and attributes table of the
+      resulting layer contains as many fields as the union of both input
+      attributes tables, as shown in the following picture.</Abstract>
+  </Process>
 
+  <Process id="st_nodelines">
+    <Abstract>-</Abstract>
+  </Process>
 
+  <Process id="st_pointcoordinates">
+    <Abstract>This algorithm takes a points layer and generates a new
+      layer with those same points, but adding two new fields (X and Y)
+      to its attributes table, containing X and Y coordinates of each
+      point</Abstract>
+  </Process>
 
-
+  <Process id="st_polygonize">
+    <Abstract>-</Abstract>
+  </Process>
 
   <Process id="st_polygonstopolylines">
     <Abstract>This algorithms converts a polygons layer into a polylines
@@ -108,6 +126,10 @@
       set of inner ones (the holes). This algorithm transform each
       polygon, removing those inner subpolygons and leaving just the
       outer one.</Abstract>
+  </Process>
+
+  <Process id="st_removerepeatedgeometries">
+    <Abstract>-</Abstract>
   </Process>
 
   <Process id="st_splitmultipart">

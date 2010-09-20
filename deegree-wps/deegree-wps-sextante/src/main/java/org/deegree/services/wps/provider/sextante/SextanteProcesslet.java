@@ -127,8 +127,7 @@ public class SextanteProcesslet implements Processlet {
 
             String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm, " + e.getMessage();
 
-            if ( SextanteWPSProcess.createIdentifier( alg ).equals( "delaunay" )
-                 || SextanteWPSProcess.createIdentifier( alg ).equals( "polygonize" ) )
+            if ( alg.getCommandLineName().equals( "delaunay" ) || alg.getCommandLineName().equals( "polygonize" ) )
                 message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
                           + e.getLocalizedMessage() + ")";
 
@@ -139,8 +138,7 @@ public class SextanteProcesslet implements Processlet {
 
             String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm, " + e.getMessage();
 
-            if ( SextanteWPSProcess.createIdentifier( alg ).equals( "exportvector" )
-                 || SextanteWPSProcess.createIdentifier( alg ).equals( "union" ) )
+            if ( alg.getCommandLineName().equals( "exportvector" ) || alg.getCommandLineName().equals( "union" ) )
                 message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
                           + e.getLocalizedMessage() + ")";
 

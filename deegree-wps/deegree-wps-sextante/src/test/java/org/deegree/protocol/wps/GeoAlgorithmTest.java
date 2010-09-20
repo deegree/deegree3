@@ -70,7 +70,7 @@ public class GeoAlgorithmTest {
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
 
     private static LinkedList<GeoAlgorithmWithData> getAlgorithms() {
 
@@ -272,13 +272,69 @@ public class GeoAlgorithmTest {
             GeoAlgorithmWithData geometriestopointsAlg = new GeoAlgorithmWithData(
                                                                                    Sextante.getAlgorithmFromCommandLineName( geometriestopointsName ) );
             // add all test data
-            LinkedList<? extends ExampleData> geometriestopointsData = GeometryExampleData.getData( GeometryType.POINT );
+            LinkedList<? extends ExampleData> geometriestopointsData = GeometryExampleData.getAllData();
             for ( ExampleData data : geometriestopointsData ) {
                 LinkedList<ExampleData> list = new LinkedList<ExampleData>();
                 list.add( data );
                 geometriestopointsAlg.addInputData( list );
             }
             allAlgs.add( geometriestopointsAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // intersection algorithm
+            String intersectionName = "intersection";
+            GeoAlgorithmWithData intersectionAlg = new GeoAlgorithmWithData(
+                                                                             Sextante.getAlgorithmFromCommandLineName( intersectionName ) );
+            // add test data
+            LinkedList<ExampleData> intersectionData1 = new LinkedList<ExampleData>();
+            intersectionData1.add( GeometryExampleData.GML_31_POLYGON );
+            intersectionData1.add( GeometryExampleData.GML_31_POLYGON_2 );
+            intersectionAlg.addInputData( intersectionData1 );
+            allAlgs.add( intersectionAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // nodelines algorithm
+            String nodelinesName = "nodelines";
+            GeoAlgorithmWithData nodelinesAlg = new GeoAlgorithmWithData(
+                                                                          Sextante.getAlgorithmFromCommandLineName( nodelinesName ) );
+            // add all test data
+            LinkedList<? extends ExampleData> nodelinesData = GeometryExampleData.getData( GeometryType.LINE );
+            for ( ExampleData data : nodelinesData ) {
+                LinkedList<ExampleData> list = new LinkedList<ExampleData>();
+                list.add( data );
+                nodelinesAlg.addInputData( list );
+            }
+            allAlgs.add( nodelinesAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // pointcoordinates algorithm
+            String pointcoordinatesName = "pointcoordinates";
+            GeoAlgorithmWithData pointcoordinatesAlg = new GeoAlgorithmWithData(
+                                                                                 Sextante.getAlgorithmFromCommandLineName( pointcoordinatesName ) );
+            // add all test data
+            LinkedList<? extends ExampleData> pointcoordinatesData = GeometryExampleData.getData( GeometryType.POINT );
+            for ( ExampleData data : pointcoordinatesData ) {
+                LinkedList<ExampleData> list = new LinkedList<ExampleData>();
+                list.add( data );
+                pointcoordinatesAlg.addInputData( list );
+            }
+            allAlgs.add( pointcoordinatesAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // polygonize algorithm
+            String polygonizeName = "polygonize";
+            GeoAlgorithmWithData polygonizeAlg = new GeoAlgorithmWithData(
+                                                                           Sextante.getAlgorithmFromCommandLineName( polygonizeName ) );
+            // add all test data
+            LinkedList<ExampleData> polygonizeData = new LinkedList<ExampleData>();
+            polygonizeData.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_MULTILINESTRINGS );
+            polygonizeData.add( GeometryExampleData.GML_31_MULTILINESTRING );
+            for ( ExampleData data : polygonizeData ) {
+                LinkedList<ExampleData> list = new LinkedList<ExampleData>();
+                list.add( data );
+                polygonizeAlg.addInputData( list );
+            }
+            allAlgs.add( polygonizeAlg );
 
             // ---------------------------------------------------------------------------------------------------------------------------
             // polygonstopolylines algorithm
@@ -335,6 +391,20 @@ public class GeoAlgorithmTest {
                 removeholesAlg.addInputData( list );
             }
             allAlgs.add( removeholesAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // removerepeatedgeometries algorithm
+            String removerepeatedgeometriesName = "removerepeatedgeometries";
+            GeoAlgorithmWithData removerepeatedgeometriesAlg = new GeoAlgorithmWithData(
+                                                                                         Sextante.getAlgorithmFromCommandLineName( removerepeatedgeometriesName ) );
+            // add all test data
+            LinkedList<? extends ExampleData> removerepeatedgeometriesData = GeometryExampleData.getAllData();
+            for ( ExampleData data : removerepeatedgeometriesData ) {
+                LinkedList<ExampleData> list = new LinkedList<ExampleData>();
+                list.add( data );
+                removerepeatedgeometriesAlg.addInputData( list );
+            }
+            allAlgs.add( removerepeatedgeometriesAlg );
 
             // ---------------------------------------------------------------------------------------------------------------------------
             // splitmultipart algorithm
