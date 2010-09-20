@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.sextante;
 
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -317,23 +318,29 @@ public class VectorLayerAdapter {
 
         // create property declarations
         LinkedList<PropertyType> propDecls = new LinkedList<PropertyType>();
-
+        Object[] propObjs = f.getRecord().getValues();
         // create simple properties
         for ( int i = 0; i < l.getFieldCount(); i++ ) {
             String[] name = l.getFieldName( i ).replace( "{", "" ).split( "}" );
-            if ( name.length >= 2 ) {
-                QName probName = new QName( name[0], name[1] );
 
-                SimplePropertyType spt = new SimplePropertyType(
-                                                                 probName,
-                                                                 1,
-                                                                 1,
-                                                                 PrimitiveType.determinePrimitiveType( f.getRecord().getValues()[i] ),
-                                                                 false, new LinkedList<PropertyType>() );
+            // determine element name
+            QName probName;
+            if ( name.length >= 2 )
+                probName = new QName( name[1] );
+            else
+                probName = new QName( l.getFieldName( i ).replace( " ", "" ) );
 
-                propDecls.add( spt );
+            // modify value
+            Object value = propObjs[i];
+            if ( value instanceof Integer )// PrimitiveType only support BigInteger
+                value = new BigInteger( value.toString() );
 
-            }
+            // create property type
+            SimplePropertyType spt = new SimplePropertyType( probName, 1, 1,
+                                                             PrimitiveType.determinePrimitiveType( value ), false,
+                                                             new LinkedList<PropertyType>() );
+
+            propDecls.add( spt );
         }
 
         // create simple geometry
@@ -348,12 +355,17 @@ public class VectorLayerAdapter {
         // create properties
         LinkedList<Property> props = new LinkedList<Property>();
         Iterator<PropertyType> it = propDecls.iterator();
-        Object[] propObjs = f.getRecord().getValues();
         for ( int i = 0; i < propObjs.length; i++ ) {
             if ( it.hasNext() ) {
+
+                Object value = propObjs[i];
+                if ( value instanceof Integer ) // PrimitiveType only support BigInteger
+                    value = new BigInteger( value.toString() );
+
                 // GenericProperty gp = new GenericProperty( it.next(), new PrimitiveValue( propObjs[i] ) );
-                SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), propObjs[i].toString(),
-                                                        PrimitiveType.determinePrimitiveType( propObjs[i] ) );
+                SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), value.toString(),
+                                                        PrimitiveType.determinePrimitiveType( value ) );
+
                 props.add( sp );
             }
         }
@@ -361,8 +373,12 @@ public class VectorLayerAdapter {
 
             Geometry geom = createGeometry( f.getGeometry() );
 
-            GenericProperty gp = new GenericProperty( it.next(), geom );
-            props.add( gp );
+            if ( geom != null ) {
+                GenericProperty gp = new GenericProperty( it.next(), geom );
+                props.add( gp );
+
+            }
+
         }
 
         // create feature

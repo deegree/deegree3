@@ -204,7 +204,7 @@ public class SextanteProcessProvider implements ProcessProvider {
             GeoAlgorithm alg = algs[i];
 
             // create WPS process code type
-            CodeType codeType = new CodeType( alg.getCommandLineName() );
+            CodeType codeType = new CodeType( SextanteWPSProcess.createIdentifier( alg ) );
 
             // add and initialize process
             // SextanteWPSProcess process = new SextanteWPSProcess( alg, null );

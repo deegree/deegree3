@@ -95,7 +95,7 @@ public class SextanteProcesslet implements Processlet {
 
     @Override
     public void init() {
-        LOG.info( "Initializing process with id '" + alg.getCommandLineName() + "'" );
+        LOG.info( "Initializing process with id '" + SextanteWPSProcess.createIdentifier( alg ) + "'" );
     }
 
     @Override
@@ -119,16 +119,17 @@ public class SextanteProcesslet implements Processlet {
 
         } catch ( NullParameterValueException e ) { // false input data
             e.printStackTrace();
-            throw new ProcessletException( "'" + alg.getCommandLineName() + "' algorithm found false input data. ("
-                                           + e.getLocalizedMessage() + ")" );
+            throw new ProcessletException( "'" + SextanteWPSProcess.createIdentifier( alg )
+                                           + "' algorithm found false input data. (" + e.getLocalizedMessage() + ")" );
 
         } catch ( ArrayIndexOutOfBoundsException e ) { // false input data
             e.printStackTrace();
 
-            String message = "'" + alg.getCommandLineName() + "' algorithm, " + e.getMessage();
+            String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm, " + e.getMessage();
 
-            if ( alg.getCommandLineName().equals( "delaunay" ) || alg.getCommandLineName().equals( "polygonize" ) )
-                message = "'" + alg.getCommandLineName() + "' algorithm found false input data. ("
+            if ( SextanteWPSProcess.createIdentifier( alg ).equals( "delaunay" )
+                 || SextanteWPSProcess.createIdentifier( alg ).equals( "polygonize" ) )
+                message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
                           + e.getLocalizedMessage() + ")";
 
             throw new ProcessletException( message );
@@ -136,10 +137,11 @@ public class SextanteProcesslet implements Processlet {
         } catch ( NullPointerException e ) { // false input data
             e.printStackTrace();
 
-            String message = "'" + alg.getCommandLineName() + "' algorithm, " + e.getMessage();
+            String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm, " + e.getMessage();
 
-            if ( alg.getCommandLineName().equals( "exportvector" ) || alg.getCommandLineName().equals( "union" ) )
-                message = "'" + alg.getCommandLineName() + "' algorithm found false input data. ("
+            if ( SextanteWPSProcess.createIdentifier( alg ).equals( "exportvector" )
+                 || SextanteWPSProcess.createIdentifier( alg ).equals( "union" ) )
+                message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
                           + e.getLocalizedMessage() + ")";
 
             throw new ProcessletException( message );
@@ -637,7 +639,9 @@ public class SextanteProcesslet implements Processlet {
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
                                                                                 FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );
+
             gmlWriter.write( geometry );
+
         } catch ( Exception e ) {
             throw new ProcessletException( "Error exporting geometry: " + e.getMessage() );
         }
@@ -664,6 +668,7 @@ public class SextanteProcesslet implements Processlet {
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
                                                                                 FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );
+
             gmlWriter.write( coll );
 
         } catch ( Exception e ) {
