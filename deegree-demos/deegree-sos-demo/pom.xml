@@ -83,7 +83,7 @@
               <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
-              <classifier>webapp-template</classifier>         
+              <classifier>webapp-template</classifier>
               <type>zip</type>
               <includeGroupIds>org.deegree</includeGroupIds>
               <includeArtifactIds>deegree-services-console</includeArtifactIds>
@@ -102,6 +102,53 @@
               <includeArtifactIds>deegree-tomcat</includeArtifactIds>
               <outputDirectory>target</outputDirectory>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.1.1</version>
+        <executions>
+          <execution>
+            <id>insertwebclientinfo</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>org.deegree.client.sos.fileutils.InsertWebclientInfo</mainClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>replaceclientlink</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>org.deegree.client.sos.fileutils.ReplaceClientLink</mainClass>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <configuration>
+              <target>
+                <copy file="src/main/webapp/WEB-INF/newweb.xml" tofile="src/main/webapp/WEB-INF/web.xml" />
+                <delete file="src/main/webapp/WEB-INF/newweb.xml" />
+                <copy file="src/main/webapp/newconsole.xhtml" tofile="src/main/webapp/console.xhtml" />
+                <delete file="src/main/webapp/newconsole.xhtml" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
@@ -125,7 +172,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-    </plugins>    
+      </plugin>      
+    </plugins>
   </build>
 </project>
