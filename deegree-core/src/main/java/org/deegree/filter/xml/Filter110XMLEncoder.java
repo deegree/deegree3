@@ -389,6 +389,8 @@ public class Filter110XMLEncoder {
                 export( param, writer );
             }
             break;
+        case CUSTOM:
+            throw new UnsupportedOperationException( "Exporting of custom expressions is not implemented yet." );
         case ADD:
             export( ( (Add) expression ).getParameter1(), writer );
             export( ( (Add) expression ).getParameter2(), writer );
@@ -406,7 +408,6 @@ public class Filter110XMLEncoder {
             export( ( (Div) expression ).getParameter2(), writer );
             break;
         }
-
         writer.writeEndElement();
     }
 }

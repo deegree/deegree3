@@ -94,7 +94,7 @@ public class CategorizeTest extends TestCase {
     @Test
     public void testCategorize() throws FileNotFoundException, URISyntaxException, XMLStreamException {
         loadCategorizeFromXml();
-        cat.buildLookupArrays();
+//        cat.buildLookupArrays();
         LOG.debug( "Categorize: {}", cat );
         test( -1 );
         test( -0.5 );
@@ -113,5 +113,4 @@ public class CategorizeTest extends TestCase {
         LOG.debug( "------------------" );
 //        assertEquals( x1, x2 );
     }
-
 }

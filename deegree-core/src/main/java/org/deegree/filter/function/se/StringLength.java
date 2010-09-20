@@ -37,15 +37,17 @@ package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
@@ -57,15 +59,29 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  * 
  * @version $Revision$, $Date$
  */
-public class StringLength extends Function {
+public class StringLength extends AbstractCustomExpression {
+
+    private static final QName ELEMENT_NAME = new QName( SENS, "StringLength" );
 
     private StringBuffer value;
 
     private Continuation<StringBuffer> contn;
 
-    /***/
+    /**
+     * 
+     */
     public StringLength() {
-        super( "StringLength", null );
+        // just used for SPI
+    }
+
+    private StringLength( StringBuffer value, Continuation<StringBuffer> contn ) {
+        this.value = value;
+        this.contn = contn;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     @Override
@@ -78,14 +94,14 @@ public class StringLength extends Function {
         return new TypedObjectNode[] { new PrimitiveValue( sb.length() + "" ) };
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public StringLength parse( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, null, "StringLength" );
 
+        StringBuffer value = null;
+        Continuation<StringBuffer> contn = null;
+
+        in.require( START_ELEMENT, null, "StringLength" );
         while ( !( in.isEndElement() && in.getLocalName().equals( "StringLength" ) ) ) {
             in.nextTag();
 
@@ -93,10 +109,8 @@ public class StringLength extends Function {
                 value = new StringBuffer();
                 contn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
             }
-
         }
-
         in.require( END_ELEMENT, null, "StringLength" );
+        return new StringLength( value, contn );
     }
-
 }

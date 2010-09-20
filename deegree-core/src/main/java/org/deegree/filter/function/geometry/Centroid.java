@@ -43,6 +43,7 @@ import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
 import org.deegree.geometry.Geometry;
 
@@ -54,8 +55,14 @@ import org.deegree.geometry.Geometry;
  * 
  * @version $Revision$, $Date$
  */
-public class Centroid extends Function {
+public class Centroid extends Function implements FunctionProvider {
 
+    /****/
+    public Centroid() {
+        // needed for SPI
+        super( "Centroid", null );
+    }
+    
     /**
      * @param exprs
      */
@@ -64,6 +71,11 @@ public class Centroid extends Function {
         if ( exprs.size() != 1 ) {
             throw new IllegalArgumentException( "Centroid requires exactly one parameter." );
         }
+    }
+
+    @Override
+    public Centroid create( List<Expression> params ) {
+        return new Centroid( params );
     }
 
     private Geometry getGeomValue( TypedObjectNode node ) {

@@ -9,6 +9,7 @@ import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
@@ -23,7 +24,13 @@ import org.deegree.geometry.primitive.Curve;
  * 
  * @version $Revision$, $Date$
  */
-public class IsCurve extends Function {
+public class IsCurve extends Function implements FunctionProvider {
+
+    /****/
+    public IsCurve() {
+        // needed for SPI
+        super( "IsCurve", null );
+    }
 
     /**
      * @param exprs
@@ -32,7 +39,12 @@ public class IsCurve extends Function {
         super( "IsCurve", exprs );
         if ( exprs.size() != 1 ) {
             throw new IllegalArgumentException( "IsCurve requires exactly one parameter." );
-        }        
+        }
+    }
+
+    @Override
+    public IsCurve create( List<Expression> params ) {
+        return new IsCurve( params );
     }
 
     @Override
@@ -42,8 +54,8 @@ public class IsCurve extends Function {
         TypedObjectNode[] vals = getParams()[0].evaluate( f );
         if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
              && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
-            return new TypedObjectNode [0];
-//            throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
+            return new TypedObjectNode[0];
+            // throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
         }
         Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0] : (Geometry) ( (Property) vals[0] ).getValue();
 
@@ -51,5 +63,4 @@ public class IsCurve extends Function {
         boolean result = geom instanceof Curve || geom instanceof MultiCurve || geom instanceof MultiLineString;
         return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( result ) ) };
     }
-
 }

@@ -37,15 +37,17 @@ package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
@@ -57,7 +59,9 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  * 
  * @version $Revision$, $Date$
  */
-public class Trim extends Function {
+public class Trim extends AbstractCustomExpression {
+
+    private static final QName ELEMENT_NAME = new QName( SENS, "Trim" );
 
     private StringBuffer value;
 
@@ -67,9 +71,24 @@ public class Trim extends Function {
 
     private String substr;
 
-    /***/
+    /**
+     * 
+     */
     public Trim() {
-        super( "Trim", null );
+        // just used for SPI
+    }
+
+    private Trim( StringBuffer value, Continuation<StringBuffer> contn, boolean leading, boolean trailing, String substr ) {
+        this.value = value;
+        this.contn = contn;
+        this.leading = leading;
+        this.trailing = trailing;
+        this.substr = substr;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     @Override
@@ -95,12 +114,14 @@ public class Trim extends Function {
         return new TypedObjectNode[] { new PrimitiveValue( res ) };
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public Trim parse( XMLStreamReader in )
                             throws XMLStreamException {
+
+        StringBuffer value = null;
+        Continuation<StringBuffer> contn = null;
+        boolean leading = true, trailing = false;
+
         in.require( START_ELEMENT, null, "Trim" );
 
         String pos = in.getAttributeValue( null, "stripOffPosition" );
@@ -114,7 +135,7 @@ public class Trim extends Function {
             }
         }
         String ch = in.getAttributeValue( null, "stripOffChar" );
-        substr = ch == null ? " " : ch;
+        String substr = ch == null ? " " : ch;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "Trim" ) ) ) {
             in.nextTag();
@@ -125,8 +146,7 @@ public class Trim extends Function {
             }
 
         }
-
         in.require( END_ELEMENT, null, "Trim" );
+        return new Trim( value, contn, leading, trailing, substr );
     }
-
 }

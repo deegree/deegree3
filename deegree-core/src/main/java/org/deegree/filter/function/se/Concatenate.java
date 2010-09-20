@@ -37,18 +37,20 @@ package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
@@ -60,15 +62,27 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  * 
  * @version $Revision$, $Date$
  */
-public class Concatenate extends Function {
+public class Concatenate extends AbstractCustomExpression {
 
-    private LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+    private static final QName ELEMENT_NAME = new QName( SENS, "Concatenate" );
 
-    private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+    private LinkedList<StringBuffer> values;
+
+    private LinkedList<Continuation<StringBuffer>> valueContns;
 
     /***/
     public Concatenate() {
-        super( "Concatenate", null );
+        // just used for SPI
+    }
+
+    private Concatenate( LinkedList<StringBuffer> values, LinkedList<Continuation<StringBuffer>> valueContns ) {
+        this.values = values;
+        this.valueContns = valueContns;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     @Override
@@ -87,12 +101,13 @@ public class Concatenate extends Function {
         return new TypedObjectNode[] { new PrimitiveValue( res.toString().trim() ) };
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public Concatenate parse( XMLStreamReader in )
                             throws XMLStreamException {
+
+        LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+
         in.require( START_ELEMENT, null, "Concatenate" );
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "Concatenate" ) ) ) {
@@ -103,10 +118,9 @@ public class Concatenate extends Function {
                 valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", sb, SBUPDATER, null ).second );
                 values.add( sb );
             }
-
         }
 
         in.require( END_ELEMENT, null, "Concatenate" );
+        return new Concatenate( values, valueContns );
     }
-
 }

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,55 +33,36 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function.other;
+package org.deegree.filter.custom;
 
-import static org.deegree.filter.function.other.IMod.extractValues;
-
-import java.math.BigInteger;
 import java.util.List;
 
-import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
 
 /**
- * <code>IDiv</code>
+ * Implementations of this class provide {@link Function} implementations.
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class IDiv extends Function implements FunctionProvider {
+public interface FunctionProvider {
 
-    /****/
-    public IDiv() {
-        // needed for SPI
-        super( "IDiv", null );
-    }
-    
     /**
-     * @param exprs
+     * Returns the name of the provided function.
+     * 
+     * @return the name of the provided function, never <code>null</code>
      */
-    public IDiv( List<Expression> exprs ) {
-        super( "idiv", exprs );
-    }
+    public String getName();
 
-    @Override
-    public IDiv create( List<Expression> params ) {
-        return new IDiv( params );
-    }
-
-    @Override
-    public TypedObjectNode[] evaluate( MatchableObject f )
-                            throws FilterEvaluationException {
-        Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], f );
-
-        return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first / p.second ) ) };
-    }
+    /**
+     * Creates a new {@link Function} instance.
+     * 
+     * @param params
+     *            params for the new function, may be empty, but never <code>null</code>
+     * @return the new function instance, never <code>null</code>
+     */
+    public Function create( List<Expression> params );
 }

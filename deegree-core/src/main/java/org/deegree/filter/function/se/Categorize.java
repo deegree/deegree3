@@ -39,6 +39,7 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import java.awt.Color;
@@ -49,15 +50,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.styling.RasterStyling;
@@ -74,7 +77,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class Categorize extends Function {
+public class Categorize extends AbstractCustomExpression {
+
+    private static final QName ELEMENT_NAME = new QName( SENS, "Categorize" );
 
     private static final Logger LOG = LoggerFactory.getLogger( Categorize.class );
 
@@ -82,23 +87,43 @@ public class Categorize extends Function {
 
     private Continuation<StringBuffer> contn;
 
-    private boolean precedingBelongs = false;
+    private boolean precedingBelongs;
 
-    private List<StringBuffer> values = new ArrayList<StringBuffer>();
+    private List<StringBuffer> values;
 
-    private Color[] valuesArray = null;
+    private Color[] valuesArray;
 
-    private List<StringBuffer> thresholds = new ArrayList<StringBuffer>();
+    private List<StringBuffer> thresholds;
 
-    private Float[] thresholdsArray = null;
+    private Float[] thresholdsArray;
 
-    private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+    private LinkedList<Continuation<StringBuffer>> valueContns;
 
-    private LinkedList<Continuation<StringBuffer>> thresholdContns = new LinkedList<Continuation<StringBuffer>>();
+    private LinkedList<Continuation<StringBuffer>> thresholdContns;
 
     /***/
     public Categorize() {
-        super( "Categorize", null );
+        // just used for SPI
+    }
+
+    private Categorize( StringBuffer value, Continuation<StringBuffer> contn, boolean precedingBelongs,
+                        List<StringBuffer> values, Color[] valuesArray, List<StringBuffer> thresholds,
+                        Float[] thresholdsArray, LinkedList<Continuation<StringBuffer>> valueContns,
+                        LinkedList<Continuation<StringBuffer>> thresholdContns ) {
+        this.value = value;
+        this.contn = contn;
+        this.precedingBelongs = precedingBelongs;
+        this.values = values;
+        this.valuesArray = valuesArray;
+        this.thresholds = thresholds;
+        this.thresholdsArray = thresholdsArray;
+        this.valueContns = valueContns;
+        this.thresholdContns = thresholdContns;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     private static final String eval( StringBuffer initial, Continuation<StringBuffer> contn, MatchableObject f ) {
@@ -169,7 +194,7 @@ public class Categorize extends Function {
      *            value
      * @return Category value
      */
-    public final Color lookup2( final double value ) {
+    final Color lookup2( final double value ) {
         int pos = Arrays.binarySearch( thresholdsArray, new Float( value ) );
         if ( pos >= 0 ) {
             // found exact value in the thresholds array
@@ -190,7 +215,7 @@ public class Categorize extends Function {
      *            double value
      * @return rgb int value, for storing in a BufferedImage
      */
-    public final Color lookup( final double val ) {
+    final Color lookup( final double val ) {
         Iterator<StringBuffer> ts = thresholds.iterator();
         Iterator<StringBuffer> vs = values.iterator();
 
@@ -206,12 +231,18 @@ public class Categorize extends Function {
         return c;
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public Categorize parse( XMLStreamReader in )
                             throws XMLStreamException {
+
+        StringBuffer value = null;
+        Continuation<StringBuffer> contn = null;
+        boolean precedingBelongs = false;
+        List<StringBuffer> values = new ArrayList<StringBuffer>();
+        List<StringBuffer> thresholds = new ArrayList<StringBuffer>();
+        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+        LinkedList<Continuation<StringBuffer>> thresholdContns = new LinkedList<Continuation<StringBuffer>>();
+
         in.require( START_ELEMENT, null, "Categorize" );
 
         String belong = in.getAttributeValue( null, "thresholdsBelongTo" );
@@ -243,10 +274,12 @@ public class Categorize extends Function {
             }
 
         }
-
         in.require( END_ELEMENT, null, "Categorize" );
-
-        buildLookupArrays();
+        Pair<Color[], Float[]> lookup = buildLookupArrays( values, thresholds );
+        Color[] valuesArray = lookup.first;
+        Float[] thresholdsArray = lookup.second;
+        return new Categorize( value, contn, precedingBelongs, values, valuesArray, thresholds, thresholdsArray,
+                               valueContns, thresholdContns );
     }
 
     @Override
@@ -255,8 +288,10 @@ public class Categorize extends Function {
     }
 
     /** Create the sorted lookup arrays from the StringBuffer lists */
-    void buildLookupArrays() {
+    private static Pair<Color[], Float[]> buildLookupArrays( List<StringBuffer> values, List<StringBuffer> thresholds ) {
         LOG.debug( "Building look-up arrays, for binary search... " );
+        Color[] valuesArray = null;
+        Float[] thresholdsArray = null;
         if ( valuesArray == null ) {
             valuesArray = new Color[values.size()];
             List<Color> list = new ArrayList<Color>( values.size() );
@@ -276,6 +311,6 @@ public class Categorize extends Function {
             }
             thresholdsArray = list.toArray( thresholdsArray );
         }
+        return new Pair<Color[], Float[]>( valuesArray, thresholdsArray );
     }
-
 }

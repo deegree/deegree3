@@ -1033,11 +1033,9 @@ public class SymbologyParser {
                     in.nextTag();
 
                     if ( in.getLocalName().equals( "Categorize" ) ) {
-                        baseOrEvaluated.categorize = new Categorize();
-                        baseOrEvaluated.categorize.parse( in );
+                        baseOrEvaluated.categorize = new Categorize().parse( in );
                     } else if ( in.getLocalName().equals( "Interpolate" ) ) {
-                        baseOrEvaluated.interpolate = new Interpolate();
-                        baseOrEvaluated.interpolate.parse( in );
+                        baseOrEvaluated.interpolate = new Interpolate().parse( in );
                     } else if ( in.isStartElement() ) {
                         Location loc = in.getLocation();
                         LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
@@ -1047,8 +1045,7 @@ public class SymbologyParser {
 
                     in.nextTag();
                 } else {
-                    baseOrEvaluated.interpolate = new Interpolate();
-                    baseOrEvaluated.interpolate.parseSLD100( in );
+                    baseOrEvaluated.interpolate = Interpolate.parseSLD100( in );
                 }
             } else if ( in.getLocalName().equals( "ContrastEnhancement" ) ) {
                 baseOrEvaluated.contrastEnhancement = parseContrastEnhancement( in );

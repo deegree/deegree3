@@ -40,15 +40,17 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
@@ -60,15 +62,35 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  * 
  * @version $Revision$, $Date$
  */
-public class Substring extends Function {
+public class Substring extends AbstractCustomExpression {
+
+    private static final QName ELEMENT_NAME = new QName( SENS, "Substring" );
 
     private StringBuffer value, position, length;
 
     private Continuation<StringBuffer> valueContn, positionContn, lengthContn;
 
-    /***/
+    /**
+     * 
+     */
     public Substring() {
-        super( "Substring", null );
+        // just used for SPI
+    }
+
+    private Substring( StringBuffer value, StringBuffer position, StringBuffer length,
+                       Continuation<StringBuffer> valueContn, Continuation<StringBuffer> positionContn,
+                       Continuation<StringBuffer> lengthContn ) {
+        this.value = value;
+        this.position = position;
+        this.length = length;
+        this.valueContn = valueContn;
+        this.positionContn = positionContn;
+        this.lengthContn = lengthContn;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     @Override
@@ -110,15 +132,17 @@ public class Substring extends Function {
         return new PrimitiveValue[] { new PrimitiveValue( val.substring( pos, end ) ) };
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public Substring parse( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Substring" );
 
-        position = new StringBuffer( "1" );
+        StringBuffer value = null;
+        StringBuffer position = new StringBuffer( "1" );
+        StringBuffer length = null;
+        Continuation<StringBuffer> valueContn = null;
+        Continuation<StringBuffer> positionContn = null;
+        Continuation<StringBuffer> lengthContn = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "Substring" ) ) ) {
             in.nextTag();
@@ -140,6 +164,6 @@ public class Substring extends Function {
         }
 
         in.require( END_ELEMENT, null, "Substring" );
+        return new Substring( value, position, length, valueContn, positionContn, lengthContn );
     }
-
 }

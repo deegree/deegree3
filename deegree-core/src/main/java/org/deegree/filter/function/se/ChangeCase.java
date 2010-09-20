@@ -37,15 +37,17 @@ package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
@@ -57,17 +59,30 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  * 
  * @version $Revision$, $Date$
  */
-public class ChangeCase extends Function {
+public class ChangeCase extends AbstractCustomExpression {
+
+    private static final QName ELEMENT_NAME = new QName( SENS, "ChangeCase" );
 
     private StringBuffer value;
 
     private Continuation<StringBuffer> contn;
 
-    private boolean toupper = true;
+    private boolean toupper;
 
     /***/
     public ChangeCase() {
-        super( "ChangeCase", null );
+        // just used for SPI
+    }
+
+    private ChangeCase( StringBuffer value, Continuation<StringBuffer> contn, boolean toupper ) {
+        this.value = value;
+        this.contn = contn;
+        this.toupper = toupper;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     @Override
@@ -80,12 +95,14 @@ public class ChangeCase extends Function {
                                                                   : sb.toString().toLowerCase() ) };
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public ChangeCase parse( XMLStreamReader in )
                             throws XMLStreamException {
+
+        StringBuffer value = null;
+        Continuation<StringBuffer> contn = null;
+        boolean toupper = true;
+
         in.require( START_ELEMENT, null, "ChangeCase" );
 
         String dir = in.getAttributeValue( null, "direction" );
@@ -102,8 +119,7 @@ public class ChangeCase extends Function {
             }
 
         }
-
         in.require( END_ELEMENT, null, "ChangeCase" );
+        return new ChangeCase( value, contn, toupper );
     }
-
 }

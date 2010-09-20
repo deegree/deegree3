@@ -37,15 +37,17 @@ package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
@@ -57,7 +59,9 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  * 
  * @version $Revision$, $Date$
  */
-public class StringPosition extends Function {
+public class StringPosition extends AbstractCustomExpression {
+
+    private static final QName ELEMENT_NAME = new QName( SENS, "StringPosition" );
 
     private StringBuffer lookup;
 
@@ -67,11 +71,34 @@ public class StringPosition extends Function {
 
     private Continuation<StringBuffer> contn;
 
-    private boolean forward = true;
+    private boolean forward;
 
-    /***/
+    /**
+     * 
+     */
     public StringPosition() {
-        super( "StringPosition", null );
+        // just used for SPI
+    }
+
+    /**
+     * @param lookup
+     * @param lookupContn
+     * @param value
+     * @param contn
+     * @param forward
+     */
+    public StringPosition( StringBuffer lookup, Continuation<StringBuffer> lookupContn, StringBuffer value,
+                           Continuation<StringBuffer> contn, boolean forward ) {
+        this.lookup = lookup;
+        this.lookupContn = lookupContn;
+        this.value = value;
+        this.contn = contn;
+        this.forward = forward;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     @Override
@@ -94,12 +121,16 @@ public class StringPosition extends Function {
                                                            + "" ) };
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public StringPosition parse( XMLStreamReader in )
                             throws XMLStreamException {
+
+        StringBuffer lookup = null;
+        Continuation<StringBuffer> lookupContn = null;
+        StringBuffer value = null;
+        Continuation<StringBuffer> contn = null;
+        boolean forward = true;
+
         in.require( START_ELEMENT, null, "StringPosition" );
 
         String dir = in.getAttributeValue( null, "searchDirection" );
@@ -109,7 +140,6 @@ public class StringPosition extends Function {
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "StringPosition" ) ) ) {
             in.nextTag();
-
             if ( in.getLocalName().equals( "LookupString" ) ) {
                 lookup = new StringBuffer();
                 lookupContn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupString", lookup, SBUPDATER, null ).second;
@@ -120,8 +150,7 @@ public class StringPosition extends Function {
             }
 
         }
-
         in.require( END_ELEMENT, null, "StringPosition" );
+        return new StringPosition( lookup, lookupContn, value, contn, forward );
     }
-
 }
