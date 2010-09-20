@@ -36,6 +36,9 @@
 package org.deegree.protocol.wps;
 
 import java.util.LinkedList;
+
+import org.deegree.services.wps.provider.sextante.SextanteWPSProcess;
+
 import es.unex.sextante.core.GeoAlgorithm;
 
 /**
@@ -120,6 +123,14 @@ public class GeoAlgorithmWithData {
      */
     public GeoAlgorithm getAlgorithm() {
         return alg;
+    }
+
+    public String getIdentifier() {
+        return SextanteWPSProcess.createIdentifier( alg );
+    }
+
+    public String getCommandLineName() {
+        return alg.getCommandLineName();
     }
 
     public String toString() {
