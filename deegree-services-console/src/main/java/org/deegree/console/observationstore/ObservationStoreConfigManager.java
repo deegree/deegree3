@@ -81,7 +81,6 @@ public class ObservationStoreConfigManager extends XMLConfigManager<ObservationS
 
     public ObservationStoreProvider getProvider( String osType ) {
         ObservationStoreProvider osp = osTypeToProvider.get( osType );
-        System.out.println( "osp : " + osp );
         return osp;
     }
 
