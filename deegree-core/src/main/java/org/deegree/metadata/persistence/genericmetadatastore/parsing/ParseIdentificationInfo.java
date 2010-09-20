@@ -45,8 +45,6 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import jj2000.j2k.NotImplementedError;
-
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -94,17 +92,21 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     private final InspireCompliance ic;
 
+    private final CoupledDataInspector ci;
+
     /**
      * 
      * @param factory
      * @param connection
      * @param nsContext
      */
-    protected ParseIdentificationInfo( OMFactory factory, InspireCompliance ic, NamespaceContext nsContext ) {
+    protected ParseIdentificationInfo( OMFactory factory, InspireCompliance ic, CoupledDataInspector ci,
+                                       NamespaceContext nsContext ) {
         this.factory = factory;
         this.nsContextParseII = nsContext;
         this.resourceIdentifierList = new ArrayList<String>();
         this.ic = ic;
+        this.ci = ci;
 
         namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
         namespaceSRV = factory.createOMNamespace( "http://www.isotc211.org/2005/srv", "srv" );
@@ -1112,48 +1114,9 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
                 } else if ( couplingTypeString.equals( "tight" ) ) {
                     LOG.debug( "coupling: tight..." );
-                    // for ( String operatesOnString : operatesOnList ) {
-                    // if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
-                    // String msg = "No resourceIdentifier " + operatesOnString
-                    // + " found in the data metadata. So there is no coupling possible.";
-                    // throw new IOException( msg );
-                    // }
-                    // }
-                    throw new NotImplementedError( "coupledResources in ParseIdentification is not implemented yet!" );
 
-                    // boolean isTightlyCoupledOK = false;
-                    // // TODO please more efficiency and intelligence
-                    // for ( String operatesOnString : operatesOnList ) {
-                    //
-                    // for ( String operatesOnIdentifierString : operatesOnIdentifierList ) {
-                    //
-                    // if ( operatesOnString.equals( operatesOnIdentifierString ) ) {
-                    // isTightlyCoupledOK = true;
-                    // break;
-                    // }
-                    // isTightlyCoupledOK = false;
-                    //
-                    // }
-                    // // OperatesOnList [a,b,c] - OperatesOnIdList [b,c,d] -> a not in OperatesOnIdList ->
-                    // // inconsistency
-                    // if ( isTightlyCoupledOK == false ) {
-                    //
-                    // String msg = "Missmatch between OperatesOn '" + operatesOnString
-                    // + "' and its tightly coupled resource OperatesOnIdentifier. ";
-                    // throw new IOException( msg );
-                    //
-                    // // there is no possibility to set the operationName -> not able to set the coupledResource
-                    //
-                    // }
-                    //
-                    // }
-                    // // OperatesOnList [] - OperatesOnIdList [a,b,c] -> inconsistency
-                    // if ( isTightlyCoupledOK == false && operatesOnIdentifierList.length != 0 ) {
-                    //
-                    // String msg =
-                    // "Missmatch between OperatesOn and its tightly coupled resource OperatesOnIdentifier. ";
-                    // throw new IOException( msg );
-                    // }
+                    ci.determineTightlyCoupled( operatesOnList, Arrays.asList( operatesOnIdentifierList ) );
+
                     // } else {
                     // // mixed coupled if there are loose and tight coupled resources.
                     //

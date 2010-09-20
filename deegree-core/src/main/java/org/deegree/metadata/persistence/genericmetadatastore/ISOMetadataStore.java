@@ -95,6 +95,7 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.RecordStoreOptions;
+import org.deegree.metadata.persistence.genericmetadatastore.parsing.CoupledDataInspector;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.FileIdentifierInspector;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.InspireCompliance;
@@ -138,6 +139,8 @@ public class ISOMetadataStore implements MetadataStore {
 
     private InspireCompliance ic;
 
+    private CoupledDataInspector ci;
+
     /**
      * shows the encoding of the database that is used
      */
@@ -178,6 +181,7 @@ public class ISOMetadataStore implements MetadataStore {
         this.connectionId = config.getConnId();
         fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), connectionId );
         ic = InspireCompliance.newInstance( config.getRequireInspireCompliance(), connectionId );
+        ci = CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), connectionId );
 
     }
 
@@ -752,7 +756,8 @@ public class ISOMetadataStore implements MetadataStore {
                         } else {
 
                             executeStatements.executeInsertStatement( false, conn, affectedIds,
-                                                                      new ISOQPParsing().parseAPISO( fi, ic, element ) );
+                                                                      new ISOQPParsing().parseAPISO( fi, ic, ci,
+                                                                                                     element ) );
 
                         }
 
@@ -789,7 +794,7 @@ public class ISOMetadataStore implements MetadataStore {
 
                     } else {
                         executeStatements.executeUpdateStatement( conn, affectedIds,
-                                                                  new ISOQPParsing().parseAPISO( fi, ic,
+                                                                  new ISOQPParsing().parseAPISO( fi, ic, ci,
                                                                                                  upd.getElement() ) );
 
                     }
@@ -907,6 +912,7 @@ public class ISOMetadataStore implements MetadataStore {
                                                                                   affectedIds,
                                                                                   new ISOQPParsing().parseAPISO( fi,
                                                                                                                  ic,
+                                                                                                                 ci,
                                                                                                                  omElement ) );
 
                                     }
