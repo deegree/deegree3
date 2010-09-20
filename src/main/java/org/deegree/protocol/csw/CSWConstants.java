@@ -47,7 +47,7 @@ import org.deegree.commons.tom.ows.Version;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CSWConstants {
+public final class CSWConstants {
 
     /**
      * Namespace for elements from the CSW 2.0.2 specification <br>
@@ -203,7 +203,25 @@ public class CSWConstants {
         /** returns one or more records from the result set up to the maximum number of records specified in the request */
         results,
         /** validates the request message */
-        validate
+        validate;
+
+        ResultType() {
+
+        }
+
+        public static ResultType determineResultType( String typeString ) {
+            ResultType resultType = null;
+            typeString = typeString.toLowerCase();
+            if ( typeString.equalsIgnoreCase( ResultType.hits.name() ) ) {
+                resultType = ResultType.hits;
+            } else if ( typeString.equalsIgnoreCase( ResultType.results.name() ) ) {
+                resultType = ResultType.results;
+            } else if ( typeString.equalsIgnoreCase( ResultType.validate.name() ) ) {
+                resultType = ResultType.validate;
+            }
+
+            return resultType;
+        }
 
     }
 
@@ -217,7 +235,7 @@ public class CSWConstants {
      * 
      * @version $Revision: $, $Date: $
      */
-    public enum SetOfReturnableElements {
+    public enum ReturnableElement {
 
         /**
          * Brief representation of a record. This is the shortest view of a record by a specific profile.
@@ -233,7 +251,26 @@ public class CSWConstants {
          * Full representation of a record. In that response there are all the elements represented that a record holds.
          * Thus, there are elements presented that are not queryable regarding to the CSW specification.
          */
-        full
+        full;
+
+        private ReturnableElement() {
+            // TODO Auto-generated constructor stub
+        }
+
+        public static ReturnableElement determineReturnableElement( String returnableElement ) {
+            ReturnableElement elementSetName = null;
+            returnableElement = returnableElement.toLowerCase();
+            if ( returnableElement.equalsIgnoreCase( ReturnableElement.brief.name() ) ) {
+                elementSetName = ReturnableElement.brief;
+            } else if ( returnableElement.equalsIgnoreCase( ReturnableElement.summary.name() ) ) {
+                elementSetName = ReturnableElement.summary;
+            } else if ( returnableElement.equalsIgnoreCase( ReturnableElement.full.name() ) ) {
+                elementSetName = ReturnableElement.full;
+            } else {
+                elementSetName = ReturnableElement.summary;
+            }
+            return elementSetName;
+        }
 
     }
 
