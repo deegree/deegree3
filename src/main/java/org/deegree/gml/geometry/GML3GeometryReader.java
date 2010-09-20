@@ -2211,6 +2211,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 upperCorner = parseCoordType( xmlStream );
                 xmlStream.require( END_ELEMENT, gmlNs, "coord" );
             } else if ( "pos".equals( name ) ) {
+                // NOTE PLEASE: some envelopes only have the srsName on the pos, not on the envelope
+                // this is a hack so the envelopes have a sensible crs set
+                if ( crs == null ) {
+                    crs = determineActiveCRS( xmlStream, defaultCRS );
+                }
                 lowerCorner = parseDoubleList( xmlStream );
                 xmlStream.require( END_ELEMENT, gmlNs, "pos" );
                 xmlStream.nextTag();
