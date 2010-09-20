@@ -42,9 +42,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.CoupledResourceInspector;
 import org.slf4j.Logger;
 
 /**
@@ -61,12 +63,79 @@ public class CoupledDataInspector {
 
     private final String connectionId;
 
-    private CoupledDataInspector( String connectionId ) {
+    private final CoupledResourceInspector ci;
+
+    private CoupledDataInspector( CoupledResourceInspector ci, String connectionId ) {
         this.connectionId = connectionId;
+        this.ci = ci;
     }
 
-    public static CoupledDataInspector newInstance( String connectionId ) {
-        return new CoupledDataInspector( connectionId );
+    public static CoupledDataInspector newInstance( CoupledResourceInspector ci, String connectionId ) {
+        return new CoupledDataInspector( ci, connectionId );
+    }
+
+    /**
+     * 
+     * @param operatesOnList
+     * @param operatesOnIdentifierList
+     * @return
+     * @throws MetadataStoreException
+     */
+    public boolean determineTightlyCoupled( List<String> operatesOnList, List<String> operatesOnIdentifierList )
+                            throws MetadataStoreException {
+        consistencyCheck( operatesOnList );
+        boolean isTightlyCoupled = false;
+        // TODO please more efficiency and intelligence
+        for ( String operatesOnString : operatesOnList ) {
+
+            for ( String operatesOnIdentifierString : operatesOnIdentifierList ) {
+
+                if ( operatesOnString.equals( operatesOnIdentifierString ) ) {
+                    isTightlyCoupled = true;
+                    break;
+                }
+                isTightlyCoupled = false;
+
+            }
+            // OperatesOnList [a,b,c] - OperatesOnIdList [b,c,d] -> a not in OperatesOnIdList ->
+            // inconsistency
+            if ( isTightlyCoupled == false ) {
+
+                String msg = "Missmatch between OperatesOn '" + operatesOnString
+                             + "' and its tightly coupled resource OperatesOnIdentifier. ";
+                LOG.info( msg );
+                throw new MetadataStoreException( msg );
+
+                // there is no possibility to set the operationName -> not able to set the coupledResource
+
+            }
+
+        }
+        // OperatesOnList [] - OperatesOnIdList [a,b,c] -> inconsistency
+        if ( isTightlyCoupled == false && operatesOnIdentifierList.size() != 0 ) {
+
+            String msg = "Missmatch between OperatesOn and its tightly coupled resource OperatesOnIdentifier. ";
+            LOG.info( msg );
+            throw new MetadataStoreException( msg );
+        }
+
+        return isTightlyCoupled;
+    }
+
+    private void consistencyCheck( List<String> operatesOnList )
+                            throws MetadataStoreException {
+        if ( ci.isThrowConsistencyError() ) {
+            for ( String operatesOnString : operatesOnList ) {
+                if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
+                    String msg = "No resourceIdentifier "
+                                 + operatesOnString
+                                 + " found in the data metadata. So there is no coupling possible and an exception has to be thrown in conformity with configuration. ";
+                    LOG.info( msg );
+                    throw new MetadataStoreException( msg );
+                }
+            }
+        }
+
     }
 
     /**
@@ -78,6 +147,7 @@ public class CoupledDataInspector {
      */
     private boolean getCoupledDataMetadatasets( String resourceIdentifier )
                             throws MetadataStoreException {
+
         boolean gotOneDataset = false;
         ResultSet rs = null;
         PreparedStatement stm = null;

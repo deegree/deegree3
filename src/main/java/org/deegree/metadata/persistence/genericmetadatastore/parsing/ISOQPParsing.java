@@ -146,7 +146,8 @@ public final class ISOQPParsing extends XMLAdapter {
      * @return {@link ParsedProfileElement}
      * @throws IOException
      */
-    public ParsedProfileElement parseAPISO( FileIdentifierInspector fi, InspireCompliance ic, OMElement element )
+    public ParsedProfileElement parseAPISO( FileIdentifierInspector fi, InspireCompliance ic, CoupledDataInspector ci,
+                                            OMElement element )
                             throws MetadataStoreException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -447,7 +448,7 @@ public final class ISOQPParsing extends XMLAdapter {
         List<OMElement> identificationInfo = getElements( rootElement, new XPath( "./gmd:identificationInfo",
                                                                                   nsContextISOParsing ) );
 
-        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, ic, nsContextISOParsing );
+        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, ic, ci, nsContextISOParsing );
         pI.parseIdentificationInfo( identificationInfo, gr, qp, rp, crsList );
         /*---------------------------------------------------------------
          * 
