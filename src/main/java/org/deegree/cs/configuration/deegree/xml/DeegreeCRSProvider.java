@@ -327,7 +327,7 @@ public class DeegreeCRSProvider<T> extends AbstractCRSProvider<T> {
         CRSParser parser = null;
         if ( properties != null ) {
             String v = properties.getProperty( VERSION );
-            if ( !"".equals( v ) ) {
+            if ( v != null && !"".equals( v ) ) {
                 Version vers = Version.parseVersion( v );
                 if ( vers.compareTo( version ) < 0 ) {
                     provider = new DeegreeCRSProvider<OMElement>( properties );
