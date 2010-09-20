@@ -106,7 +106,7 @@ import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.metadata.publication.UpdateTransaction;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.slf4j.Logger;
 
 /**
@@ -151,13 +151,13 @@ public class ISOMetadataStore implements MetadataStore {
      * maps the specific returnable element format to a concrete table in the backend<br>
      * brief, summary, full
      */
-    private static final Map<SetOfReturnableElements, String> formatTypeInISORecordStore = new HashMap<SetOfReturnableElements, String>();
+    private static final Map<ReturnableElement, String> formatTypeInISORecordStore = new HashMap<ReturnableElement, String>();
 
     static {
 
-        formatTypeInISORecordStore.put( SetOfReturnableElements.brief, "recordbrief" );
-        formatTypeInISORecordStore.put( SetOfReturnableElements.summary, "recordsummary" );
-        formatTypeInISORecordStore.put( SetOfReturnableElements.full, "recordfull" );
+        formatTypeInISORecordStore.put( ReturnableElement.brief, "recordbrief" );
+        formatTypeInISORecordStore.put( ReturnableElement.summary, "recordsummary" );
+        formatTypeInISORecordStore.put( ReturnableElement.full, "recordfull" );
 
         typeNames.put( new QName( "", "", "" ), 1 );
         typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, "" ), 1 );
@@ -530,34 +530,34 @@ public class ISOMetadataStore implements MetadataStore {
             case brief:
 
                 preparedStatement = generateSELECTStatement(
-                                                             formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                                                             formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief ),
                                                              recordStoreOptions, typeNameFormatNumber,
                                                              profileFormatNumberOutputSchema, false, builder, conn );
 
                 doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
-                                   formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                                   formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief ),
                                    ResultType.results, builder, conn );
                 break;
             case summary:
 
                 preparedStatement = generateSELECTStatement(
-                                                             formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
+                                                             formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.summary ),
                                                              recordStoreOptions, typeNameFormatNumber,
                                                              profileFormatNumberOutputSchema, false, builder, conn );
 
                 doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
-                                   formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
+                                   formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.summary ),
                                    ResultType.results, builder, conn );
                 break;
             case full:
 
                 preparedStatement = generateSELECTStatement(
-                                                             formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
+                                                             formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.full ),
                                                              recordStoreOptions, typeNameFormatNumber,
                                                              profileFormatNumberOutputSchema, false, builder, conn );
 
                 doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
-                                   formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
+                                   formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.full ),
                                    ResultType.results, builder, conn );
                 break;
             }
@@ -797,7 +797,7 @@ public class ISOMetadataStore implements MetadataStore {
                 } else {
 
                     RecordStoreOptions gdds = new RecordStoreOptions( upd.getConstraint(), ResultType.results,
-                                                                      SetOfReturnableElements.full );
+                                                                      ReturnableElement.full );
 
                     int formatNumber = 0;
                     Set<QName> qNameSet = new HashSet<QName>();
@@ -834,7 +834,7 @@ public class ISOMetadataStore implements MetadataStore {
                     }
 
                     PreparedStatement str = getRequestedIDStatement(
-                                                                     formatTypeInISORecordStore.get( SetOfReturnableElements.full ),
+                                                                     formatTypeInISORecordStore.get( ReturnableElement.full ),
                                                                      gdds, formatNumber, builder );
 
                     ResultSet rsUpdatableDatasets = str.executeQuery();
@@ -850,15 +850,15 @@ public class ISOMetadataStore implements MetadataStore {
                         PreparedStatement stmt = null;
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append( "SELECT " ).append(
-                                                                  formatTypeInISORecordStore.get( SetOfReturnableElements.full ) );
+                                                                  formatTypeInISORecordStore.get( ReturnableElement.full ) );
                         stringBuilder.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.data.name() );
                         stringBuilder.append( " FROM " ).append(
-                                                                 formatTypeInISORecordStore.get( SetOfReturnableElements.full ) );
+                                                                 formatTypeInISORecordStore.get( ReturnableElement.full ) );
                         stringBuilder.append( " WHERE " ).append(
-                                                                  formatTypeInISORecordStore.get( SetOfReturnableElements.full ) );
+                                                                  formatTypeInISORecordStore.get( ReturnableElement.full ) );
                         stringBuilder.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.format.name() );
                         stringBuilder.append( " = 2 AND " ).append(
-                                                                    formatTypeInISORecordStore.get( SetOfReturnableElements.full ) );
+                                                                    formatTypeInISORecordStore.get( ReturnableElement.full ) );
                         stringBuilder.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append(
                                                                                                                                 " = ?;" );
                         for ( int i : updatableDatasets ) {
@@ -961,7 +961,7 @@ public class ISOMetadataStore implements MetadataStore {
                         // test if there is a record to delete
 
                         ps = generateSELECTStatement(
-                                                      formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                                                      formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief ),
                                                       null, formatNum, 0, false, builder, conn );
 
                         rs = ps.executeQuery();
@@ -1063,7 +1063,7 @@ public class ISOMetadataStore implements MetadataStore {
      */
     @Override
     public void getRecordById( XMLStreamWriter writer, List<String> idList, URI outputSchema,
-                               SetOfReturnableElements elementSetName )
+                               ReturnableElement elementSetName )
                             throws MetadataStoreException, XMLStreamException {
 
         int profileFormatNumberOutputSchema = 0;
@@ -1086,19 +1086,19 @@ public class ISOMetadataStore implements MetadataStore {
 
                 case brief:
 
-                    elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.brief );
+                    elementSetNameString = formatTypeInISORecordStore.get( ReturnableElement.brief );
                     break;
                 case summary:
 
-                    elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.summary );
+                    elementSetNameString = formatTypeInISORecordStore.get( ReturnableElement.summary );
                     break;
                 case full:
 
-                    elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.full );
+                    elementSetNameString = formatTypeInISORecordStore.get( ReturnableElement.full );
                     break;
                 default:
 
-                    elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.brief );
+                    elementSetNameString = formatTypeInISORecordStore.get( ReturnableElement.brief );
 
                     break;
                 }
@@ -1238,16 +1238,16 @@ public class ISOMetadataStore implements MetadataStore {
             conn = ConnectionManager.getConnection( connectionId );
 
             StringBuilder s = new StringBuilder().append( " SELECT " );
-            s.append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );
+            s.append( formatTypeInISORecordStore.get( ReturnableElement.brief ) );
             s.append( '.' );
             s.append( PostGISMappingsISODC.CommonColumnNames.data.name() );
             s.append( " FROM " ).append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
-            s.append( ',' ).append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );
-            s.append( " WHERE " ).append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );
+            s.append( ',' ).append( formatTypeInISORecordStore.get( ReturnableElement.brief ) );
+            s.append( " WHERE " ).append( formatTypeInISORecordStore.get( ReturnableElement.brief ) );
             s.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
             s.append( '=' ).append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
             s.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
-            s.append( " AND " ).append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );
+            s.append( " AND " ).append( formatTypeInISORecordStore.get( ReturnableElement.brief ) );
             s.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " = ?" );
 
             for ( int i : transactionIds ) {
