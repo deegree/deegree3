@@ -100,15 +100,7 @@ public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
         String elementSetNameString = getNodeAsString( rootElement, new XPath( "csw:ElementSetName", nsContext ),
                                                        ReturnableElement.summary.name() );
 
-        ReturnableElement elementSetName = null;
-
-        if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.brief.name() ) ) {
-            elementSetName = ReturnableElement.brief;
-        } else if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.summary.name() ) ) {
-            elementSetName = ReturnableElement.summary;
-        } else if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.full.name() ) ) {
-            elementSetName = ReturnableElement.full;
-        }
+        ReturnableElement elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
 
         String outputSchemaString = getNodeAsString( rootElement, new XPath( "@outputSchema", nsContext ),
                                                      "http://www.opengis.net/cat/csw/2.0.2" );

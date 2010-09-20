@@ -97,15 +97,7 @@ public class GetRecordByIdKVPAdapter {
         String elementSetNameString = KVPUtils.getDefault( normalizedKVPParams, "ELEMENTSETNAME",
                                                            ReturnableElement.summary.name() );
 
-        ReturnableElement elementSetName = null;
-
-        if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.brief.name() ) ) {
-            elementSetName = ReturnableElement.brief;
-        } else if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.summary.name() ) ) {
-            elementSetName = ReturnableElement.summary;
-        } else if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.full.name() ) ) {
-            elementSetName = ReturnableElement.full;
-        }
+        ReturnableElement elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
 
         // outputSchema String
         String outputSchemaString = KVPUtils.getDefault( normalizedKVPParams, "OUTPUTSCHEMA",
