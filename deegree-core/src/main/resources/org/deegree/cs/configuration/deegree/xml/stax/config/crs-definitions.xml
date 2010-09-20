@@ -9023,6 +9023,85 @@
       </crs:Axis>
       <crs:UsedDatum>epsg:6326</crs:UsedDatum>
     </crs:GeographicCRS>
+     <crs:GeographicCRS>
+		<crs:Id>DE_DHDN_Lat-Lon</crs:Id>
+		<crs:Name>DHDN, ellipsoidische (geographische) Koordinaten</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:Description>DHDN, ellipsoidische (geographische) Koordinaten gemäß GeoInfoDok 6.0; </crs:Description>
+		<crs:AreaOfUse>5.87,47.27,13.83,55.04</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - states of former West Germany - Baden-Wurtemberg, Bayern, Hessen, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Schleswig-Holstein.</crs:AreaOfUse>
+		<crs:AreaOfUse>Deutschland</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>latitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>longitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedDatum>urn:ogc:def:crs:epsg::6314</crs:UsedDatum>
+	</crs:GeographicCRS>
+	<crs:GeographicCRS>
+		<crs:Id>ED50_Lat-Lon</crs:Id>
+		<crs:Name>System ED50, ellipsoidische (geographische) Koordinaten</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:Description>System ED50, ellipsoidische (geographische) Koordinaten gemäß GeoInfoDok 6.0.</crs:Description>
+		<crs:AreaOfUse>44.06,23.35,63.37,39.8</crs:AreaOfUse>
+		<crs:AreaOfUse>Deutschland</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>latitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>longitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedDatum>urn:ogc:def:crs:epsg::6704</crs:UsedDatum>
+	</crs:GeographicCRS>
+	<crs:GeographicCRS>
+		<crs:Id>ETRS89_Lat-Lon</crs:Id>
+		<crs:Name>ETRS89, ellipsoidische (geographische) Koordinaten</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:Description>ETRS89, ellipsoidische (geographische) Koordinaten gemäß GeoInfoDok 6.0</crs:Description>
+		<crs:AreaOfUse>-10.67,34.5,31.55,71.05</crs:AreaOfUse>
+		<crs:AreaOfUse>Europe: Albania; Andorra; Austria; Belgium; Bosnia and Herzegovina; Bulgaria; Croatia; Cyprus; Czech Republic; Denmark; Estonia; Finland; Faroe Islands; France; Germany; Greece; Hungary; Ireland; Italy; Latvia; Liechtenstein; Lithuania; Luxembourg; Malta; Montenegro; Netherlands; Norway; Poland; Portugal; Romania; San Marino; Serbia; Slovakia; Slovenia; Spain; Svalbard; Sweden; Switzerland; United Kingdom (UK) including Channel Islands and Isle of Man; Vatican City State.</crs:AreaOfUse>
+		<crs:AreaOfUse>Europa</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>latitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>longitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedDatum>urn:ogc:def:crs:epsg::6258</crs:UsedDatum>
+	</crs:GeographicCRS>
+	<crs:GeographicCRS>
+		<crs:Id>WGS84_Lat-Lon</crs:Id>
+		<crs:Name>WGS84, ellipsoidische (geographische) Koordinaten</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:Description>WGS84, ellipsoidische (geographische) Koordinaten gemäß GeoInfoDok 6.0</crs:Description>
+		<crs:AreaOfUse>world</crs:AreaOfUse>
+		<crs:AreaOfUse>global</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>latitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>longitude</crs:Name>
+			<crs:Units>degree</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedDatum>urn:ogc:def:crs:epsg::6326</crs:UsedDatum>
+	</crs:GeographicCRS>
     <crs:ProjectedCRS>
       <crs:Id>bbr:0001</crs:Id>
       <crs:Name>Custom projected BBR crs</crs:Name>
@@ -67408,6 +67487,408 @@
       <crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4314</crs:UsedGeographicCRS>
       <crs:UsedProjection>epsg:16263</crs:UsedProjection>
     </crs:ProjectedCRS>
+     <crs:ProjectedCRS>
+		<crs:Id>DE_DHDN_LCC</crs:Id>
+		<crs:Name>DHDN - konforme konische Lambertprojetion</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>-5.75,47.27,15.03,55.03</crs:AreaOfUse>
+		<crs:AreaOfUse>Deutschland</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>DE_DHDN_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>lcc-de</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ETRS89_LCC</crs:Id>
+		<crs:Name>ETRS89 - konforme konische Lambertprojetion</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>-5.75,47.27,15.03,55.03</crs:AreaOfUse>
+		<crs:AreaOfUse>Deutschland</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>ETRS89_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>lcc-de</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>WGS84_LCC</crs:Id>
+		<crs:Name>WGS84 - konforme konische Lambertprojetion</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>-5.75,47.27,15.03,55.03</crs:AreaOfUse>
+		<crs:AreaOfUse>Deutschland</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>WGS84_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>lcc-de</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>DE_DHDN_3GK2</crs:Id>
+		<crs:Name>DHDN / Gauss-Kruger zone 2</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>5.87,49.1,7.5,53.75</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - west of 7Â°30'E - Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>Rechtswert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>Hochwert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>DE_DHDN_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16262</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>DE_DHDN_3GK3</crs:Id>
+		<crs:Name>DHDN / Gauss-Kruger zone 3</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>7.5,47.27,10.5,55.06</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - former West Germany onshore between 7Â°30'E and 10Â°30'E - Baden-Wurtemberg, Bayern, Hessen, Niedersachsen, Nordrhein-Westfalen, Rhineland-Pfalz, Schleswig-Holstein.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>Rechtswert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>Hochwert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>DE_DHDN_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16263</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>DE_DHDN_3GK4</crs:Id>
+		<crs:Name>DHDN / Gauss-Kruger zone 4</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>10.5,47.27,13.5,55.06</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - former West Germany onshore between 10Â°30'E and 13Â°30'E - Bayern, Niedersachsen, Schleswig-Holstein.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>Rechtswert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>Hochwert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>DE_DHDN_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16264</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>DE_DHDN_3GK5</crs:Id>
+		<crs:Name>DHDN / Gauss-Kruger zone 5</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>13.5,47.27,16.5,55.06</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - former West Germany onshore east of 13Â°30'E - Bayern.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>Rechtswert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>Hochwert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>DE_DHDN_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16265</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ETRS89_3GK2</crs:Id>
+		<crs:Name>ETRS89 / Gauss-Kruger zone 2</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>5.87,49.1,7.5,53.75</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - west of 7Â°30'E - Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>Rechtswert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>Hochwert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4258</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16262</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ETRS89_3GK3</crs:Id>
+		<crs:Name>ETRS89 / Gauss-Kruger zone 3</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>7.5,47.27,10.5,55.06</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - former West Germany onshore between 7Â°30'E and 10Â°30'E - Baden-Wurtemberg, Bayern, Hessen, Niedersachsen, Nordrhein-Westfalen, Rhineland-Pfalz, Schleswig-Holstein.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>Rechtswert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>Hochwert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4258</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16263</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ETRS89_3GK4</crs:Id>
+		<crs:Name>ETRS89 / Gauss-Kruger zone 4</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>10.5,47.27,13.5,55.06</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - former West Germany onshore between 10Â°30'E and 13Â°30'E - Bayern, Niedersachsen, Schleswig-Holstein.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>Rechtswert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>Hochwert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4258</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16264</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ETRS89_3GK5</crs:Id>
+		<crs:Name>ETRS89/ Gauss-Kruger zone 5</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>13.5,47.27,16.5,55.06</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - former West Germany onshore east of 13Â°30'E - Bayern.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>Rechtswert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>Hochwert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>urn:opengis:def:crs:epsg::4258</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16265</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>DE_Soldner-Mueggelberg</crs:Id>
+		<crs:Name>DHDN / Soldner Berlin</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>13.08,52.33,13.77,52.68</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany - Berlin.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>Rechtswert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>Hochwert</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>DE_DHDN_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:19996</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ETRS89_UTM32</crs:Id>
+		<crs:Name>ETRS89 / UTM zone 32N</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>5.05,57.9,12.0,65.67</crs:AreaOfUse>
+		<crs:AreaOfUse>Europe - between 6Â°E and 12Â°E - Norway - onshore west of 12Â°E.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>ETRS89_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16032</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ETRS89_UTM33</crs:Id>
+		<crs:Name>ETRS89 / UTM zone 33N</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>12.0,35.5,21.0,80.05</crs:AreaOfUse>
+		<crs:AreaOfUse>Europe - between 12Â°E and 18Â°E - Norway and Svalbard between 12Â°E and 21Â°E.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>ETRS89_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16033</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>WGS84_UTM32</crs:Id>
+		<crs:Name>WGS84 / UTM zone 32N</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>5.05,57.9,12.0,65.67</crs:AreaOfUse>
+		<crs:AreaOfUse>Europe - between 6Â°E and 12Â°E - Norway - onshore west of 12Â°E.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>WGS84_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16032</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>WGS84_UTM33</crs:Id>
+		<crs:Name>WGS84 / UTM zone 33N</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>12.0,35.5,21.0,80.05</crs:AreaOfUse>
+		<crs:AreaOfUse>Europe - between 12Â°E and 18Â°E - Norway and Svalbard between 12Â°E and 21Â°E.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>WGS84_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16033</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ED50_UTM32</crs:Id>
+		<crs:Name>ED50 / UTM zone 32N</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>5.05,57.9,12.0,65.67</crs:AreaOfUse>
+		<crs:AreaOfUse>Europe - between 6Â°E and 12Â°E - Norway - onshore west of 12Â°E.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>ED50_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16032</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ED50_UTM33</crs:Id>
+		<crs:Name>ED50 / UTM zone 33N</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>12.0,35.5,21.0,80.05</crs:AreaOfUse>
+		<crs:AreaOfUse>Europe - between 12Â°E and 18Â°E - Norway and Svalbard between 12Â°E and 21Â°E.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>ED50_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16033</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ED87_UTM32</crs:Id>
+		<crs:Name>ED87 / UTM zone 32N</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>5.05,57.9,12.0,65.67</crs:AreaOfUse>
+		<crs:AreaOfUse>Europe - between 6Â°E and 12Â°E - Norway - onshore west of 12Â°E.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>urn:ogc:def:crs:epsg::4231</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16032</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ED87_UTM33</crs:Id>
+		<crs:Name>ED87 / UTM zone 33N</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>12.0,35.5,21.0,80.05</crs:AreaOfUse>
+		<crs:AreaOfUse>Europe - between 12Â°E and 18Â°E - Norway and Svalbard between 12Â°E and 21Â°E.</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>urn:ogc:def:crs:epsg::4231</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:16033</crs:UsedProjection>
+	</crs:ProjectedCRS>
+	<crs:ProjectedCRS>
+		<crs:Id>ETRS89_LAEA</crs:Id>
+		<crs:Name>ETRS89_LAEA</crs:Name>
+		<crs:Version>2008-04-11</crs:Version>
+		<crs:AreaOfUse>-5.75,47.27,15.03,55.03</crs:AreaOfUse>
+		<crs:AreaOfUse>Germany</crs:AreaOfUse>
+		<crs:Axis>
+			<crs:Name>East</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>east</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:Axis>
+			<crs:Name>North</crs:Name>
+			<crs:Units>metre</crs:Units>
+			<crs:AxisOrientation>north</crs:AxisOrientation>
+		</crs:Axis>
+		<crs:UsedGeographicCRS>ETRS89_Lat-Lon</crs:UsedGeographicCRS>
+		<crs:UsedProjection>epsg:19986</crs:UsedProjection>
+	</crs:ProjectedCRS>
     <crs:CompoundCRS>
       <crs:Id>epsg:4979</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4979</crs:Id>
