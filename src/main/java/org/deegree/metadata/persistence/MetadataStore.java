@@ -46,7 +46,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.metadata.publication.TransactionOperation;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
  * Base interface of the {@link MetadataStore} persistence layer, provides access to stored {@link MetadataStore}
@@ -119,11 +119,11 @@ public interface MetadataStore {
      * @param outputSchema
      *            that should be presented in the response
      * @param elementSetName
-     *            {@link SetOfReturnableElements}
+     *            {@link ReturnableElement}
      * @throws SQLException
      */
     public void getRecordById( XMLStreamWriter writer, List<String> idList, URI outputSchema,
-                               SetOfReturnableElements elementSetName )
+                               ReturnableElement elementSetName )
                             throws MetadataStoreException, XMLStreamException;
 
     /**

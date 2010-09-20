@@ -39,7 +39,7 @@ import java.io.Writer;
 
 import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
  * This class holds all the necessary information that is needed for the database request. <br>
@@ -54,7 +54,7 @@ public class RecordStoreOptions {
 
     private ResultType resultType;
 
-    private SetOfReturnableElements setOfReturnableElements;
+    private ReturnableElement setOfReturnableElements;
 
     private int maxRecords;
 
@@ -70,13 +70,13 @@ public class RecordStoreOptions {
      * @param resultType
      *            {@link ResultType}
      * @param setOfReturnableElements
-     *            {@link SetOfReturnableElements}
+     *            {@link ReturnableElement}
      * @param maxRecords
      *            the maximum number of records that shall be presented in the response
      * @param startPosition
      *            at which record position should start the response}
      */
-    public RecordStoreOptions( Filter filter, ResultType resultType, SetOfReturnableElements setOfReturnableElements,
+    public RecordStoreOptions( Filter filter, ResultType resultType, ReturnableElement setOfReturnableElements,
                                int maxRecords, int startPosition ) {
 
         this.filter = filter;
@@ -97,9 +97,9 @@ public class RecordStoreOptions {
      * @param resultType
      *            {@link ResultType}
      * @param setOfReturnableElements
-     *            {@link SetOfReturnableElements}
+     *            {@link ReturnableElement}
      */
-    public RecordStoreOptions( Filter filter, ResultType resultType, SetOfReturnableElements setOfReturnableElements ) {
+    public RecordStoreOptions( Filter filter, ResultType resultType, ReturnableElement setOfReturnableElements ) {
 
         this.filter = filter;
         this.resultType = resultType;
@@ -125,7 +125,7 @@ public class RecordStoreOptions {
     /**
      * @return the setOfReturnableElements
      */
-    public SetOfReturnableElements getSetOfReturnableElements() {
+    public ReturnableElement getSetOfReturnableElements() {
         return setOfReturnableElements;
     }
 
