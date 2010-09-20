@@ -1,20 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ISOMetadataStore
-	connId="dbId"
+	connId="conn1"
 	configVersion="0.6.0"
 	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
 	<IdentifierInspector name="DEFAULT">
-		<Param key="rejectEmptyFileIdentifier">false</Param>
-		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier
-    </Param>
-		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Param>
-	</IdentifierInspector>
-	
-	<!--<IdentifierInspector name="REJECT_ID">
 		<Param key="rejectEmptyFileIdentifier">true</Param>
 		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier
     </Param>
 		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Param>
-	</IdentifierInspector>-->
+	</IdentifierInspector>
+	<RequireInspireCompliance inspireRequired="true">
+		<ComplianceGenerator generateAutomatic="false" />
+	</RequireInspireCompliance>
+	<CoupledResourceInspector throwConsistencyError="true" />
 </ISOMetadataStore>

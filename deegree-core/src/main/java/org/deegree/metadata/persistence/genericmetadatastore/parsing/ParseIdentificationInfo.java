@@ -82,8 +82,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     private OMNamespace namespaceGMD;
 
-    private OMNamespace namespaceGCO;
-
     private OMNamespace namespaceSRV;
 
     private String dataIdentificationId;
@@ -109,7 +107,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
         this.ic = ic;
 
         namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
-        namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
         namespaceSRV = factory.createOMNamespace( "http://www.isotc211.org/2005/srv", "srv" );
 
     }
@@ -1285,10 +1282,6 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     LOG.debug( "Creats element environmentDescription..." );
                     update_Ident.addChild( environmentDescription );
                 }
-                // for ( OMElement elem : extent ) {
-                // LOG.debug( "Creats element extent..." );
-                // update_Ident.addChild( elem );
-                // }
                 if ( supplementalInformation != null ) {
                     LOG.debug( "Creats element supplementalInformation..." );
                     update_Ident.addChild( supplementalInformation );

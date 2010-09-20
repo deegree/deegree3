@@ -50,6 +50,18 @@
             <attribute name="inspireRequired" type="boolean" use="required" />
           </complexType>
         </element>
+        
+        <element name="CoupledResourceInspector" minOccurs="0">
+          <complexType>
+            <attribute name="throwConsistencyError" type="boolean" use="required">
+              <annotation>
+                <documentation>true, if there should be thrown an exception and the metadata should not be inserted. </documentation>
+              </annotation>
+            </attribute>
+            
+          </complexType>
+        </element>
+        
       </sequence>
       <attribute name="connId" type="string" use="required" />
       <attribute name="configVersion" use="required" fixed="0.6.0" />
