@@ -37,11 +37,9 @@ package org.deegree.filter.xml;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
-import static org.deegree.filter.xml.Filter110XMLDecoder.parseFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,8 +83,12 @@ import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.comparison.ComparisonOperator.SubType;
+import org.deegree.filter.custom.CustomExpressionProvider;
+import org.deegree.filter.custom.CustomExpressionManager;
+import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
+import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.PropertyName;
@@ -149,8 +151,6 @@ public class Filter100XMLDecoder {
 
     private static final QName GML_OBJECT_ID_ELEMENT = new QName( OGC_NS, "GmlObjectId" );
 
-    private static final QName GML_ID_ATTR_NAME = new QName( GML_NS, "id" );
-
     private static final Map<Expression.Type, QName> expressionTypeToElementName = new HashMap<Expression.Type, QName>();
 
     private static final Map<QName, Expression.Type> elementNameToExpressionType = new HashMap<QName, Expression.Type>();
@@ -179,18 +179,11 @@ public class Filter100XMLDecoder {
         addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.PROPERTY_NAME );
         addElementToExpressionMapping( new QName( OGC_NS, "Function" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
-        // SE functions
-        addElementToExpressionMapping( new QName( SENS, "FormatNumber" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "FormatDate" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Substring" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Concatenate" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "ChangeCase" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Trim" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "StringPosition" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "StringLength" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Categorize" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Interpolate" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Recode" ), Expression.Type.FUNCTION );
+
+        // element name <-> expression type (custom expressions)
+        for ( CustomExpressionProvider ce : CustomExpressionManager.getCustomExpressions().values() ) {
+            addElementToExpressionMapping( ce.getElementName(), Expression.Type.CUSTOM );
+        }
 
         // element name <-> spatial operator type
         addElementToSpatialOperatorMapping( new QName( OGC_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
@@ -310,6 +303,7 @@ public class Filter100XMLDecoder {
      * <li>ogc:PropertyName</li>
      * <li>ogc:Literal</li>
      * <li>ogc:Function</li>
+     * <li>substitution for ogc:expression (handled by {@link CustomExpressionProvider} instance)</li>
      * </ul>
      * </p>
      * <p>
@@ -390,8 +384,82 @@ public class Filter100XMLDecoder {
             expression = parseFunction( xmlStream );
             break;
         }
+        case CUSTOM: {
+            expression = parseCustomExpression( xmlStream );
+            break;
+        }
         }
         return expression;
+    }
+
+    /**
+     * Returns the object representation for the given <code>ogc:Function</code> element event that the cursor of the
+     * associated <code>XMLStreamReader</code> points at.
+     * <p>
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:Function&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:Function&gt;)</li>
+     * </ul>
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:Function&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:Function&gt;) afterwards
+     * @return corresponding {@link Function} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "ogc:Function" element
+     * @throws XMLStreamException
+     */
+    public static Function parseFunction( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
+        String name = getRequiredAttributeValue( xmlStream, "name" );
+        xmlStream.nextTag();
+        List<Expression> params = new ArrayList<Expression>();
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
+            params.add( parseExpression( xmlStream ) );
+            xmlStream.nextTag();
+        }
+        xmlStream.require( END_ELEMENT, OGC_NS, "Function" );
+
+        Function function = null;
+        FunctionProvider cf = CustomExpressionManager.getFunction( name );
+        if ( cf != null ) {
+            function = cf.create( params );
+        } else {
+            function = new Function( name, params );
+        }
+        return function;
+    }
+
+    /**
+     * Returns the object representation for the given custom <code>ogc:expression</code> element event that the cursor
+     * of the associated <code>XMLStreamReader</code> points at.
+     * <p>
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;)</li>
+     * </ul>
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
+     * @return corresponding {@link CustomExpressionProvider} object
+     * @throws XMLParsingException
+     *             if the element is not a known or valid custom "ogc:expression" element
+     * @throws XMLStreamException
+     */
+    public static CustomExpressionProvider parseCustomExpression( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        CustomExpressionProvider expr = CustomExpressionManager.getExpression( xmlStream.getName() );
+        if ( expr == null ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_UNKNOWN_CUSTOM_EXPRESSION", xmlStream.getName() );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        return expr.parse100( xmlStream );
     }
 
     /**

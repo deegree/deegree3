@@ -45,6 +45,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import java.awt.Color;
@@ -55,6 +56,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -64,7 +66,7 @@ import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.styling.RasterStyling;
@@ -82,7 +84,9 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 @LoggingNotes(debug = "logs when the fallback value is used or values cannot be parsed properly for the given type")
-public class Interpolate extends Function {
+public class Interpolate extends AbstractCustomExpression {
+
+    private static final QName ELEMENT_NAME = new QName( SENS, "Interpolate" );
 
     private static final Logger LOG = LoggerFactory.getLogger( Interpolate.class );
 
@@ -90,29 +94,54 @@ public class Interpolate extends Function {
 
     private Continuation<StringBuffer> contn;
 
-    private LinkedList<Double> datas = new LinkedList<Double>();
+    private LinkedList<Double> datas;
 
     private Double[] dataArray;
 
-    private LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+    private LinkedList<StringBuffer> values;
 
     private Double[] valuesArray;
 
     private Color[] colorArray;
 
-    private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+    private LinkedList<Continuation<StringBuffer>> valueContns;
 
-    private boolean color = false;
+    private boolean color;
 
-    private boolean linear = true, cosine, cubic;
+    private boolean linear, cosine, cubic;
 
-    private Mode mode = Mode.Linear;
+    private Mode mode;
 
     private Color fallbackColor;
 
     /***/
     public Interpolate() {
-        super( "Interpolate", null );
+        // just used for SPI
+    }
+
+    private Interpolate( StringBuffer value, Continuation<StringBuffer> contn, LinkedList<Double> datas,
+                         Double[] dataArray, LinkedList<StringBuffer> values, Double[] valuesArray, Color[] colorArray,
+                         LinkedList<Continuation<StringBuffer>> valueContns, boolean color, boolean linear,
+                         boolean cosine, boolean cubic, Mode mode, Color fallbackColor ) {
+        this.value = value;
+        this.contn = contn;
+        this.datas = datas;
+        this.dataArray = dataArray;
+        this.values = values;
+        this.valuesArray = valuesArray;
+        this.colorArray = colorArray;
+        this.valueContns = valueContns;
+        this.color = color;
+        this.linear = linear;
+        this.cosine = cosine;
+        this.cubic = cubic;
+        this.mode = mode;
+        this.fallbackColor = fallbackColor;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     /** Linear interpolation between two colors, with fraction f */
@@ -271,6 +300,164 @@ public class Interpolate extends Function {
         }
     }
 
+    /**
+     * @param in
+     * @throws XMLStreamException
+     */
+    public Interpolate parse( XMLStreamReader in )
+                            throws XMLStreamException {
+
+        StringBuffer value = null;
+        Continuation<StringBuffer> contn = null;
+        LinkedList<Double> datas = new LinkedList<Double>();
+        LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+        boolean color = false;
+        boolean linear = true;
+        boolean cosine = false;
+        boolean cubic = false;
+        Mode mode = Mode.Linear;
+        Color fallbackColor = null;
+
+        in.require( START_ELEMENT, null, "Interpolate" );
+
+        String fallbackValue = in.getAttributeValue( null, "fallbackValue" );
+
+        LOG.trace( "Parsing SE XML document for Interpolate... " );
+        String sMode = in.getAttributeValue( null, "mode" );
+        if ( sMode != null ) {
+            linear = sMode.equalsIgnoreCase( "linear" );
+            cosine = sMode.equalsIgnoreCase( "cosine" );
+            cubic = sMode.equalsIgnoreCase( "cubic" );
+            if ( linear )
+                mode = Mode.Linear;
+            if ( cosine )
+                mode = Mode.Cosine;
+            if ( cubic )
+                mode = Mode.Cubic;
+        }
+
+        String method = in.getAttributeValue( null, "method" );
+        if ( method != null ) {
+            color = method.equals( "color" );
+            if ( color ) {
+                fallbackColor = decodeWithAlpha( fallbackValue );
+            }
+        }
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "Interpolate" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "LookupValue" ) ) {
+                value = new StringBuffer();
+                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupValue", value, SBUPDATER, null ).second;
+            }
+
+            if ( in.getLocalName().equals( "InterpolationPoint" ) ) {
+                while ( !( in.isEndElement() && in.getLocalName().equals( "InterpolationPoint" ) ) ) {
+                    in.nextTag();
+
+                    if ( in.getLocalName().equals( "Data" ) ) {
+                        datas.add( Double.valueOf( in.getElementText() ) );
+                    }
+
+                    if ( in.getLocalName().equals( "Value" ) ) {
+                        StringBuffer sb = new StringBuffer();
+                        valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
+                        values.add( sb );
+                    }
+                }
+            }
+
+        }
+
+        in.require( END_ELEMENT, null, "Interpolate" );
+
+        Interpolate inp = new Interpolate( value, contn, datas, dataArray, values, valuesArray, colorArray,
+                                           valueContns, color, linear, cosine, cubic, mode, fallbackColor );
+        inp.buildLookupArrays();
+        return inp;
+    }
+
+    /**
+     * @param in
+     * @return
+     * @throws XMLStreamException
+     */
+    public static Interpolate parseSLD100( XMLStreamReader in )
+                            throws XMLStreamException {
+
+        StringBuffer value = null;
+        Continuation<StringBuffer> contn = null;
+        LinkedList<Double> datas = new LinkedList<Double>();
+        LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+        boolean color = true;
+        boolean linear = true;
+        boolean cosine = false;
+        boolean cubic = false;
+        Mode mode = Mode.Linear;
+        Color fallbackColor = null;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "ColorMap" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "ColorMapEntry" ) ) {
+                String colorS = in.getAttributeValue( null, "color" );
+                String opacity = in.getAttributeValue( null, "opacity" );
+                String quantity = in.getAttributeValue( null, "quantity" );
+                datas.add( quantity != null ? Double.valueOf( quantity ) : 0 );
+                if ( opacity != null ) {
+                    colorS = "#" + toHexString( round( parseDouble( opacity ) * 255 ) ) + colorS.substring( 1 );
+                }
+                values.add( new StringBuffer( colorS ) );
+                // for legend generation, later on?
+                // String label= in.getAttributeValue(null, "label" );
+                in.nextTag();
+            }
+        }
+
+        Color[] colorArray = null;
+        Double[] valuesArray = null;
+        Double[] dataArray = null;
+        Interpolate inp = new Interpolate( value, contn, datas, dataArray, values, valuesArray, colorArray,
+                                           valueContns, color, linear, cosine, cubic, mode, fallbackColor );
+        inp.buildLookupArrays();
+        return inp;
+    }
+
+    private void buildLookupArrays() {
+        LOG.debug( "Building look-up arrays, for binary search... " );
+        if ( color && colorArray == null ) {
+            colorArray = new Color[values.size()];
+            List<Color> list = new ArrayList<Color>( values.size() );
+            Iterator<StringBuffer> i = values.iterator();
+            while ( i.hasNext() ) {
+                list.add( decodeWithAlpha( i.next().toString() ) );
+            }
+            colorArray = list.toArray( colorArray );
+        }
+        if ( !color && valuesArray == null ) {
+            valuesArray = new Double[values.size()];
+            List<Double> list = new ArrayList<Double>( values.size() );
+            Iterator<StringBuffer> i = values.iterator();
+            while ( i.hasNext() ) {
+                list.add( Double.parseDouble( i.next().toString() ) );
+            }
+            valuesArray = list.toArray( valuesArray );
+        }
+
+        if ( dataArray == null ) {
+            dataArray = new Double[datas.size()];
+            List<Double> list = new ArrayList<Double>( datas.size() );
+            Iterator<Double> i = datas.iterator();
+            while ( i.hasNext() ) {
+                list.add( Double.parseDouble( i.next().toString() ) );
+            }
+            dataArray = list.toArray( dataArray );
+        }
+    }
+
     @Override
     public TypedObjectNode[] evaluate( MatchableObject f ) {
         StringBuffer sb = new StringBuffer( value.toString().trim() );
@@ -318,131 +505,6 @@ public class Interpolate extends Function {
     }
 
     /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
-                            throws XMLStreamException {
-        in.require( START_ELEMENT, null, "Interpolate" );
-
-        String fallbackValue = in.getAttributeValue( null, "fallbackValue" );
-
-        LOG.trace( "Parsing SE XML document for Interpolate... " );
-        String mode = in.getAttributeValue( null, "mode" );
-        if ( mode != null ) {
-            linear = mode.equalsIgnoreCase( "linear" );
-            cosine = mode.equalsIgnoreCase( "cosine" );
-            cubic = mode.equalsIgnoreCase( "cubic" );
-            if ( linear )
-                this.mode = Mode.Linear;
-            if ( cosine )
-                this.mode = Mode.Cosine;
-            if ( cubic )
-                this.mode = Mode.Cubic;
-        }
-
-        String method = in.getAttributeValue( null, "method" );
-        if ( method != null ) {
-            color = method.equals( "color" );
-            if ( color ) {
-                fallbackColor = decodeWithAlpha( fallbackValue );
-            }
-        }
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Interpolate" ) ) ) {
-            in.nextTag();
-
-            if ( in.getLocalName().equals( "LookupValue" ) ) {
-                value = new StringBuffer();
-                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupValue", value, SBUPDATER, null ).second;
-            }
-
-            if ( in.getLocalName().equals( "InterpolationPoint" ) ) {
-                while ( !( in.isEndElement() && in.getLocalName().equals( "InterpolationPoint" ) ) ) {
-                    in.nextTag();
-
-                    if ( in.getLocalName().equals( "Data" ) ) {
-                        datas.add( Double.valueOf( in.getElementText() ) );
-                    }
-
-                    if ( in.getLocalName().equals( "Value" ) ) {
-                        StringBuffer sb = new StringBuffer();
-                        valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
-                        values.add( sb );
-                    }
-                }
-            }
-
-        }
-
-        in.require( END_ELEMENT, null, "Interpolate" );
-
-        buildLookupArrays();
-    }
-
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parseSLD100( XMLStreamReader in )
-                            throws XMLStreamException {
-        color = true;
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "ColorMap" ) ) ) {
-            in.nextTag();
-
-            if ( in.getLocalName().equals( "ColorMapEntry" ) ) {
-                String color = in.getAttributeValue( null, "color" );
-                String opacity = in.getAttributeValue( null, "opacity" );
-                String quantity = in.getAttributeValue( null, "quantity" );
-                datas.add( quantity != null ? Double.valueOf( quantity ) : 0 );
-                if ( opacity != null ) {
-                    color = "#" + toHexString( round( parseDouble( opacity ) * 255 ) ) + color.substring( 1 );
-                }
-                values.add( new StringBuffer( color ) );
-                // for legend generation, later on?
-                // String label= in.getAttributeValue(null, "label" );
-                in.nextTag();
-            }
-        }
-
-        buildLookupArrays();
-    }
-
-    /** Create the sorted lookup arrays from the linked lists, so that we can perform binary search. */
-    void buildLookupArrays() {
-        LOG.debug( "Building look-up arrays, for binary search... " );
-        if ( color && colorArray == null ) {
-            colorArray = new Color[values.size()];
-            List<Color> list = new ArrayList<Color>( values.size() );
-            Iterator<StringBuffer> i = values.iterator();
-            while ( i.hasNext() ) {
-                list.add( decodeWithAlpha( i.next().toString() ) );
-            }
-            colorArray = list.toArray( colorArray );
-        }
-        if ( !color && valuesArray == null ) {
-            valuesArray = new Double[values.size()];
-            List<Double> list = new ArrayList<Double>( values.size() );
-            Iterator<StringBuffer> i = values.iterator();
-            while ( i.hasNext() ) {
-                list.add( Double.parseDouble( i.next().toString() ) );
-            }
-            valuesArray = list.toArray( valuesArray );
-        }
-
-        if ( dataArray == null ) {
-            dataArray = new Double[datas.size()];
-            List<Double> list = new ArrayList<Double>( datas.size() );
-            Iterator<Double> i = datas.iterator();
-            while ( i.hasNext() ) {
-                list.add( Double.parseDouble( i.next().toString() ) );
-            }
-            dataArray = list.toArray( dataArray );
-        }
-    }
-
-    /**
      * Construct an image map, as the result of the Interpolate operation
      * 
      * @param raster
@@ -478,7 +540,7 @@ public class Interpolate extends Function {
      *            value
      * @return the corresponding Color
      */
-    public Color lookup2Color( double value ) {
+    Color lookup2Color( double value ) {
         Color color;
 
         int l = dataArray.length - 1;
@@ -523,7 +585,7 @@ public class Interpolate extends Function {
      * @param value
      * @return the interpolated value
      */
-    public final double lookup2( final double value ) {
+    double lookup2( final double value ) {
         int l = dataArray.length - 1;
         if ( value <= dataArray[0] || value >= dataArray[l] ) {
             if ( this.color == true ) {
@@ -560,5 +622,4 @@ public class Interpolate extends Function {
     private static enum Mode {
         Linear, Cosine, Cubic
     }
-
 }

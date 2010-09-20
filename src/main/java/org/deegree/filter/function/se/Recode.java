@@ -38,18 +38,20 @@ package org.deegree.filter.function.se;
 import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
@@ -61,7 +63,9 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  * 
  * @version $Revision$, $Date$
  */
-public class Recode extends Function {
+public class Recode extends AbstractCustomExpression {
+
+    private static final QName ELEMENT_NAME = new QName( SENS, "Recode" );
 
     private StringBuffer value;
 
@@ -77,7 +81,23 @@ public class Recode extends Function {
 
     /***/
     public Recode() {
-        super( "Recode", null );
+        // just used for SPI
+    }
+
+    private Recode( StringBuffer value, Continuation<StringBuffer> contn, LinkedList<Double> datas,
+                    LinkedList<StringBuffer> values, LinkedList<Continuation<StringBuffer>> valueContns,
+                    String fallbackValue ) {
+        this.value = value;
+        this.contn = contn;
+        this.datas = datas;
+        this.values = values;
+        this.valueContns = valueContns;
+        this.fallbackValue = fallbackValue;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     @Override
@@ -112,12 +132,17 @@ public class Recode extends Function {
         return new TypedObjectNode[] { new PrimitiveValue( fallbackValue ) };
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public Recode parse( XMLStreamReader in )
                             throws XMLStreamException {
+
+        StringBuffer value = null;
+        Continuation<StringBuffer> contn = null;
+        LinkedList<Double> datas = new LinkedList<Double>();
+        LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+        String fallbackValue;
+
         in.require( START_ELEMENT, null, "Recode" );
 
         fallbackValue = in.getAttributeValue( null, "fallbackValue" );
@@ -145,10 +170,8 @@ public class Recode extends Function {
                     }
                 }
             }
-
         }
-
         in.require( END_ELEMENT, null, "Recode" );
+        return new Recode( value, contn, datas, values, valueContns, fallbackValue );
     }
-
 }

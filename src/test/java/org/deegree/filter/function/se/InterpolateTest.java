@@ -95,7 +95,7 @@ public class InterpolateTest extends TestCase {
     public void testInterpolate()
                             throws FileNotFoundException, URISyntaxException, XMLStreamException {
         loadCategorizeFromXml();
-        interp.buildLookupArrays();
+//        interp.buildLookupArrays();
         LOG.debug( "Interpolate: {}", interp );
         test( -0.51 );
         test( 0 );

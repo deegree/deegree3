@@ -1,0 +1,6 @@
+org.deegree.filter.function.geometry.Centroid
+org.deegree.filter.function.geometry.IsCurve
+org.deegree.filter.function.geometry.IsPoint
+org.deegree.filter.function.geometry.IsSurface
+org.deegree.filter.function.other.IDiv
+org.deegree.filter.function.other.IMod

@@ -9,6 +9,7 @@ import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiPoint;
@@ -22,8 +23,14 @@ import org.deegree.geometry.primitive.Point;
  * 
  * @version $Revision$, $Date$
  */
-public class IsPoint extends Function {
+public class IsPoint extends Function implements FunctionProvider {
 
+    /****/
+    public IsPoint() {
+        // needed for SPI
+        super( "IsPoint", null );
+    }
+    
     /**
      * @param exprs
      */
@@ -32,6 +39,11 @@ public class IsPoint extends Function {
         if ( exprs.size() != 1 ) {
             throw new IllegalArgumentException( "IsPoint requires exactly one parameter." );
         }
+    }
+
+    @Override
+    public IsPoint create( List<Expression> params ) {
+        return new IsPoint( params );
     }
 
     @Override

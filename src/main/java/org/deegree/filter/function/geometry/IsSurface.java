@@ -9,6 +9,7 @@ import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiPolygon;
@@ -23,7 +24,13 @@ import org.deegree.geometry.primitive.Surface;
  * 
  * @version $Revision$, $Date$
  */
-public class IsSurface extends Function {
+public class IsSurface extends Function implements FunctionProvider {
+
+    /****/
+    public IsSurface() {
+        // needed for SPI
+        super( "IsSurface", null );
+    }
 
     /**
      * @param exprs
@@ -33,6 +40,11 @@ public class IsSurface extends Function {
         if ( exprs.size() != 1 ) {
             throw new IllegalArgumentException( "IsSurface requires exactly one parameter." );
         }
+    }
+
+    @Override
+    public IsSurface create( List<Expression> params ) {
+        return new IsSurface( params );
     }
 
     @Override

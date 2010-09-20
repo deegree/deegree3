@@ -36,6 +36,7 @@
 package org.deegree.filter;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.filter.custom.CustomExpressionProvider;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
@@ -84,7 +85,11 @@ public interface Expression {
         /**
          * Value is given as a function. The {@link Expression} is an instance of {@link Function}.
          */
-        FUNCTION;
+        FUNCTION,
+        /**
+         * Value is given as a custom expression. The {@link Expression} is an instance of {@link CustomExpression}.
+         */
+        CUSTOM;
     }
 
     /**

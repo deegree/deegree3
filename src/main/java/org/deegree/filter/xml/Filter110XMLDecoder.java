@@ -38,7 +38,6 @@ package org.deegree.filter.xml;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
@@ -85,6 +84,9 @@ import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.comparison.ComparisonOperator.SubType;
+import org.deegree.filter.custom.CustomExpressionProvider;
+import org.deegree.filter.custom.CustomExpressionManager;
+import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
@@ -92,23 +94,6 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.expression.Sub;
-import org.deegree.filter.function.geometry.Centroid;
-import org.deegree.filter.function.geometry.IsCurve;
-import org.deegree.filter.function.geometry.IsPoint;
-import org.deegree.filter.function.geometry.IsSurface;
-import org.deegree.filter.function.other.IDiv;
-import org.deegree.filter.function.other.IMod;
-import org.deegree.filter.function.se.Categorize;
-import org.deegree.filter.function.se.ChangeCase;
-import org.deegree.filter.function.se.Concatenate;
-import org.deegree.filter.function.se.FormatDate;
-import org.deegree.filter.function.se.FormatNumber;
-import org.deegree.filter.function.se.Interpolate;
-import org.deegree.filter.function.se.Recode;
-import org.deegree.filter.function.se.StringLength;
-import org.deegree.filter.function.se.StringPosition;
-import org.deegree.filter.function.se.Substring;
-import org.deegree.filter.function.se.Trim;
 import org.deegree.filter.i18n.Messages;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
@@ -185,18 +170,11 @@ public class Filter110XMLDecoder {
         addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.PROPERTY_NAME );
         addElementToExpressionMapping( new QName( OGC_NS, "Function" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
-        // SE functions
-        addElementToExpressionMapping( new QName( SENS, "FormatNumber" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "FormatDate" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Substring" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Concatenate" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "ChangeCase" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Trim" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "StringPosition" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "StringLength" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Categorize" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Interpolate" ), Expression.Type.FUNCTION );
-        addElementToExpressionMapping( new QName( SENS, "Recode" ), Expression.Type.FUNCTION );
+
+        // element name <-> expression type (custom expressions)
+        for ( CustomExpressionProvider ce : CustomExpressionManager.getCustomExpressions().values() ) {
+            addElementToExpressionMapping( ce.getElementName(), Expression.Type.CUSTOM );
+        }
 
         // element name <-> spatial operator type
         addElementToSpatialOperatorMapping( new QName( OGC_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
@@ -314,6 +292,7 @@ public class Filter110XMLDecoder {
      * <li>ogc:PropertyName</li>
      * <li>ogc:Literal</li>
      * <li>ogc:Function</li>
+     * <li>substitution for ogc:expression (handled by {@link CustomExpressionProvider} instance)</li>
      * </ul>
      * </p>
      * <p>
@@ -393,98 +372,34 @@ public class Filter110XMLDecoder {
             expression = parseFunction( xmlStream );
             break;
         }
+        case CUSTOM: {
+            expression = parseCustomExpression( xmlStream );
+            break;
+        }
         }
         return expression;
     }
 
     /**
-     * Returns the object representation for the given <code>ogc:expression</code> element event that the cursor of the
+     * Returns the object representation for the given <code>ogc:Function</code> element event that the cursor of the
      * associated <code>XMLStreamReader</code> points at.
      * <p>
-     * The element must be one of the following:
      * <ul>
-     * <li>ogc:Add</li>
-     * <li>ogc:Sub</li>
-     * <li>ogc:Div</li>
-     * <li>ogc:Mul</li>
-     * <li>ogc:PropertyName</li>
-     * <li>ogc:Literal</li>
-     * <li>ogc:Function</li>
-     * </ul>
-     * </p>
-     * <p>
-     * <ul>
-     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;)</li>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:Function&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:Function&gt;)</li>
      * </ul>
      * </p>
      * 
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
-     * @return corresponding {@link Expression} object
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:Function&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:Function&gt;) afterwards
+     * @return corresponding {@link Function} object
      * @throws XMLParsingException
-     *             if the element is not a valid "ogc:expression" element
+     *             if the element is not a valid "ogc:Function" element
      * @throws XMLStreamException
      */
     public static Function parseFunction( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-
-        if ( xmlStream.getLocalName().equals( "FormatNumber" ) ) {
-            FormatNumber fun = new FormatNumber();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "FormatDate" ) ) {
-            FormatDate fun = new FormatDate();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Substring" ) ) {
-            Substring fun = new Substring();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Concatenate" ) ) {
-            Concatenate fun = new Concatenate();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "ChangeCase" ) ) {
-            ChangeCase fun = new ChangeCase();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Trim" ) ) {
-            Trim fun = new Trim();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "StringPosition" ) ) {
-            StringPosition fun = new StringPosition();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "StringLength" ) ) {
-            StringLength fun = new StringLength();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Categorize" ) ) {
-            Categorize fun = new Categorize();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Interpolate" ) ) {
-            Interpolate fun = new Interpolate();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Recode" ) ) {
-            Recode fun = new Recode();
-            fun.parse( xmlStream );
-            return fun;
-        }
 
         xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
         String name = getRequiredAttributeValue( xmlStream, "name" );
@@ -496,26 +411,43 @@ public class Filter110XMLDecoder {
         }
         xmlStream.require( END_ELEMENT, OGC_NS, "Function" );
 
-        if ( name.equals( "IsPoint" ) ) {
-            return new IsPoint( params );
+        Function function = null;
+        FunctionProvider cf = CustomExpressionManager.getFunction( name );
+        if ( cf != null ) {
+            function = cf.create( params );
+        } else {
+            function = new Function( name, params );
         }
-        if ( name.equals( "IsCurve" ) ) {
-            return new IsCurve( params );
-        }
-        if ( name.equals( "IsSurface" ) ) {
-            return new IsSurface( params );
-        }
-        if ( name.equals( "Centroid" ) ) {
-            return new Centroid( params );
-        }
-        if ( name.equals( "imod" ) ) {
-            return new IMod( params );
-        }
-        if ( name.equals( "idiv" ) ) {
-            return new IDiv( params );
-        }
+        return function;
+    }
 
-        return new Function( name, params );
+    /**
+     * Returns the object representation for the given custom <code>ogc:expression</code> element event that the cursor
+     * of the associated <code>XMLStreamReader</code> points at.
+     * <p>
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;)</li>
+     * </ul>
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
+     * @return corresponding {@link CustomExpressionProvider} object
+     * @throws XMLParsingException
+     *             if the element is not a known or valid custom "ogc:expression" element
+     * @throws XMLStreamException
+     */
+    public static CustomExpressionProvider parseCustomExpression( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        CustomExpressionProvider expr = CustomExpressionManager.getExpression( xmlStream.getName() );
+        if ( expr == null ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_UNKNOWN_CUSTOM_EXPRESSION", xmlStream.getName() );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        return expr.parse100( xmlStream );
     }
 
     /**
@@ -729,7 +661,8 @@ public class Filter110XMLDecoder {
         return new Literal<TypedObjectNode>( value );
     }
 
-    private static GenericXMLElement parseElement( XMLStreamReader xmlStream ) throws IllegalArgumentException, XMLStreamException {
+    private static GenericXMLElement parseElement( XMLStreamReader xmlStream )
+                            throws IllegalArgumentException, XMLStreamException {
         Map<QName, PrimitiveValue> attrs = parseAttrs( xmlStream );
         List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
         while ( xmlStream.next() != END_ELEMENT ) {

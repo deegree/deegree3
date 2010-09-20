@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,56 +35,73 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
-import org.slf4j.Logger;
 
 /**
- * TODO add documentation here
+ * Generic {@link Function} implementation that can be used to represent an arbitrary function, but that doesn't offer
+ * any evaluation capabilities (added by subclassing).
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision: $, $Date: $
  */
 public class Function implements Expression {
-
-    private static final Logger LOG = getLogger( Function.class );
 
     private String name;
 
     private List<Expression> params;
 
+    /**
+     * Creates a new {@link Function} instance.
+     * 
+     * @param name
+     *            name of the function, must not be <code>null</code>
+     * @param params
+     *            parameters of the function, may be empty, but never <code>null</code>
+     */
     public Function( String name, List<Expression> params ) {
         this.name = name;
         this.params = params;
     }
 
+    /**
+     * Returns the name of the function.
+     * 
+     * @return the name of the function, never <code>null</code>
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Always returns {@link Expression.Type#FUNCTION}.
+     * 
+     * @return {@link Expression.Type#FUNCTION}
+     */
+    public Type getType() {
+        return Type.FUNCTION;
+    }
+
+    /**
+     * Returns the parameters of the function.
+     * 
+     * @return the parameters of the function, may be empty, but never <code>null</code>
+     */
     public List<Expression> getParameters() {
         return params;
     }
 
     @Override
-    public Type getType() {
-        return Type.FUNCTION;
-    }
-
-    @Override
     public TypedObjectNode[] evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        LOG.warn( "The function with name '{}' is not implemented.", name );
-        throw new FilterEvaluationException( "Evaluation of the '" + getType().name()
-                                             + "' expression is not implemented yet." );
+        throw new FilterEvaluationException( "Evaluation of function '" + getType().name()
+                                             + "' is not available (GenericFunction)." );
     }
 
     @Override

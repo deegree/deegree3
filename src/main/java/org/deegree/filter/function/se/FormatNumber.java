@@ -38,17 +38,19 @@ package org.deegree.filter.function.se;
 import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import java.text.DecimalFormat;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
@@ -60,9 +62,9 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  * 
  * @version $Revision$, $Date$
  */
-public class FormatNumber extends Function {
+public class FormatNumber extends AbstractCustomExpression {
 
-    private String decimalPoint, groupingSeparator;
+    private static final QName ELEMENT_NAME = new QName( SENS, "FormatNumber" );
 
     private StringBuffer numericValue;
 
@@ -72,7 +74,20 @@ public class FormatNumber extends Function {
 
     /***/
     public FormatNumber() {
-        super( "FormatNumber", null );
+        // just used for SPI
+    }
+
+    private FormatNumber( StringBuffer numericValue, Continuation<StringBuffer> numericValueContn,
+                          DecimalFormat pattern, DecimalFormat negativePattern ) {
+        this.numericValue = numericValue;
+        this.numericValueContn = numericValueContn;
+        this.pattern = pattern;
+        this.negativePattern = negativePattern;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     @Override
@@ -92,17 +107,19 @@ public class FormatNumber extends Function {
         return new TypedObjectNode[] { new PrimitiveValue( pattern.format( nr ) ) };
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public FormatNumber parse( XMLStreamReader in )
                             throws XMLStreamException {
+
+        StringBuffer numericValue = null;
+        Continuation<StringBuffer> numericValueContn = null;
+        DecimalFormat pattern, negativePattern;
+
         in.require( START_ELEMENT, null, "FormatNumber" );
 
-        decimalPoint = in.getAttributeValue( null, "decimalPoint" );
+        String decimalPoint = in.getAttributeValue( null, "decimalPoint" );
         decimalPoint = decimalPoint == null ? "." : decimalPoint;
-        groupingSeparator = in.getAttributeValue( null, "groupingSeparator" );
+        String groupingSeparator = in.getAttributeValue( null, "groupingSeparator" );
         groupingSeparator = groupingSeparator == null ? "," : groupingSeparator;
 
         String pat = "", neg = null;
@@ -133,6 +150,6 @@ public class FormatNumber extends Function {
         negativePattern = new DecimalFormat( neg );
 
         in.require( END_ELEMENT, null, "FormatNumber" );
+        return new FormatNumber( numericValue, numericValueContn, pattern, negativePattern );
     }
-
 }

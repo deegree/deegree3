@@ -37,6 +37,7 @@ package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.text.ParseException;
@@ -46,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -53,7 +55,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.Function;
+import org.deegree.filter.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
@@ -67,7 +69,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class FormatDate extends Function {
+public class FormatDate extends AbstractCustomExpression {
+
+    private static final QName ELEMENT_NAME = new QName( SENS, "FormatDate" );
 
     private static final Logger LOG = getLogger( FormatDate.class );
 
@@ -79,7 +83,18 @@ public class FormatDate extends Function {
 
     /***/
     public FormatDate() {
-        super( "FormatDate", null );
+        // just used for SPI
+    }
+
+    private FormatDate( StringBuffer dateValue, Continuation<StringBuffer> dateValueContn, SimpleDateFormat formatter ) {
+        this.dateValue = dateValue;
+        this.dateValueContn = dateValueContn;
+        this.formatter = formatter;
+    }
+
+    @Override
+    public QName getElementName() {
+        return ELEMENT_NAME;
     }
 
     @Override
@@ -98,12 +113,14 @@ public class FormatDate extends Function {
         return new TypedObjectNode[] { new PrimitiveValue( sb.toString().trim() ) };
     }
 
-    /**
-     * @param in
-     * @throws XMLStreamException
-     */
-    public void parse( XMLStreamReader in )
+    @Override
+    public FormatDate parse( XMLStreamReader in )
                             throws XMLStreamException {
+
+        StringBuffer dateValue = null;
+        Continuation<StringBuffer> dateValueContn = null;
+        SimpleDateFormat formatter = null;
+
         in.require( START_ELEMENT, null, "FormatDate" );
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "FormatDate" ) ) ) {
@@ -146,6 +163,6 @@ public class FormatDate extends Function {
         }
 
         in.require( END_ELEMENT, null, "FormatDate" );
+        return new FormatDate( dateValue, dateValueContn, formatter );
     }
-
 }

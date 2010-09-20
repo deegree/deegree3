@@ -47,6 +47,7 @@ import org.deegree.feature.property.SimpleProperty;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
 
 /**
@@ -57,13 +58,24 @@ import org.deegree.filter.expression.Function;
  * 
  * @version $Revision$, $Date$
  */
-public class IMod extends Function {
+public class IMod extends Function implements FunctionProvider {
+
+    /****/
+    public IMod() {
+        // needed for SPI
+        super( "IMod", null );
+    }
 
     /**
      * @param exprs
      */
     public IMod( List<Expression> exprs ) {
         super( "imod", exprs );
+    }
+
+    @Override
+    public IMod create( List<Expression> params ) {
+        return new IMod( params );
     }
 
     static Pair<Integer, Integer> extractValues( Expression first, Expression second, MatchableObject f )
@@ -95,5 +107,4 @@ public class IMod extends Function {
 
         return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first % p.second ) ) };
     }
-
 }
