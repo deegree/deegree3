@@ -45,7 +45,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
 import org.slf4j.Logger;
@@ -98,16 +98,16 @@ public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
         String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), "application/xml" );
 
         String elementSetNameString = getNodeAsString( rootElement, new XPath( "csw:ElementSetName", nsContext ),
-                                                       SetOfReturnableElements.summary.name() );
+                                                       ReturnableElement.summary.name() );
 
-        SetOfReturnableElements elementSetName = null;
+        ReturnableElement elementSetName = null;
 
-        if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.brief.name() ) ) {
-            elementSetName = SetOfReturnableElements.brief;
-        } else if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.summary.name() ) ) {
-            elementSetName = SetOfReturnableElements.summary;
-        } else if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.full.name() ) ) {
-            elementSetName = SetOfReturnableElements.full;
+        if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.brief.name() ) ) {
+            elementSetName = ReturnableElement.brief;
+        } else if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.summary.name() ) ) {
+            elementSetName = ReturnableElement.summary;
+        } else if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.full.name() ) ) {
+            elementSetName = ReturnableElement.full;
         }
 
         String outputSchemaString = getNodeAsString( rootElement, new XPath( "@outputSchema", nsContext ),

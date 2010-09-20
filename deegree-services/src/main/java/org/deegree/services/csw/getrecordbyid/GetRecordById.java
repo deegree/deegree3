@@ -39,7 +39,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
@@ -52,7 +52,7 @@ import org.deegree.services.csw.AbstractCSWRequest;
  */
 public class GetRecordById extends AbstractCSWRequest {
 
-    private SetOfReturnableElements elementSetName;
+    private ReturnableElement elementSetName;
 
     private URI outputSchema;
 
@@ -65,11 +65,11 @@ public class GetRecordById extends AbstractCSWRequest {
      * @param outputFormat
      *            controls the format of the output regarding to a MIME-type (default: application/xml)
      * @param elementSetName
-     *            {@link SetOfReturnableElements}
+     *            {@link ReturnableElement}
      * @param outputSchema
      * @param id
      */
-    public GetRecordById( Version version, String outputFormat, SetOfReturnableElements elementSetName,
+    public GetRecordById( Version version, String outputFormat, ReturnableElement elementSetName,
                           URI outputSchema, List<String> id ) {
         super( version, null, null, outputFormat );
         this.elementSetName = elementSetName;
@@ -80,7 +80,7 @@ public class GetRecordById extends AbstractCSWRequest {
     /**
      * @return the elementSetName
      */
-    public SetOfReturnableElements getElementSetName() {
+    public ReturnableElement getElementSetName() {
         return elementSetName;
     }
 

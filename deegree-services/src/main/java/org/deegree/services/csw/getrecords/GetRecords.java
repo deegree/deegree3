@@ -47,7 +47,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
@@ -70,7 +70,7 @@ public class GetRecords extends AbstractCSWRequest {
 
     private List<String> elementName;
 
-    private SetOfReturnableElements elementSetName;
+    private ReturnableElement elementSetName;
 
     private Filter constraint;
 
@@ -121,7 +121,7 @@ public class GetRecords extends AbstractCSWRequest {
      */
     public GetRecords( Version version, NamespaceContext namespaces, QName[] typeNames, String outputFormat,
                        ResultType resultType, String requestId, URI outputSchema, int startPosition, int maxRecords,
-                       List<String> elementName, SetOfReturnableElements elementSetName,
+                       List<String> elementName, ReturnableElement elementSetName,
                        ConstraintLanguage constraintLanguage, Filter constraint, List<SortProperty> sortBy,
                        boolean distributedSearch, int hopCount, String responseHandler, OMElement holeRequest ) {
         super( version, namespaces, typeNames, outputFormat );
@@ -179,7 +179,7 @@ public class GetRecords extends AbstractCSWRequest {
     /**
      * @return the elementSetName
      */
-    public SetOfReturnableElements getElementSetName() {
+    public ReturnableElement getElementSetName() {
         return elementSetName;
     }
 

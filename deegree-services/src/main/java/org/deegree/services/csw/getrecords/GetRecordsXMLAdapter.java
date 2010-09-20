@@ -40,6 +40,7 @@ import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,8 +49,11 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import jj2000.j2k.NotImplementedError;
+
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
@@ -62,7 +66,7 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
 import org.slf4j.Logger;
@@ -116,17 +120,9 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
         String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ),
                                                 ResultType.hits.name() );
-        resultTypeStr = resultTypeStr.toLowerCase();
-        OMElement holeRequest = getElement( rootElement, new XPath( ".", nsContext ) );
 
-        ResultType resultType = null;
-        if ( resultTypeStr.equalsIgnoreCase( ResultType.hits.name() ) ) {
-            resultType = ResultType.hits;
-        } else if ( resultTypeStr.equalsIgnoreCase( ResultType.results.name() ) ) {
-            resultType = ResultType.results;
-        } else if ( resultTypeStr.equalsIgnoreCase( ResultType.validate.name() ) ) {
-            resultType = ResultType.validate;
-        }
+        OMElement holeRequest = getElement( rootElement, new XPath( ".", nsContext ) );
+        ResultType resultType = ResultType.determineResultType( resultTypeStr );
 
         int maxRecords = getNodeAsInt( rootElement, new XPath( "@maxRecords", nsContext ), 10 );
 
@@ -147,10 +143,9 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
         int hopCount = -1;
         String responseHandler = null;
 
-        QName[] elementSetNameTypeNames = null;
         Set<QName> SetOfTypeNames = new HashSet<QName>();
 
-        SetOfReturnableElements elementSetName = null;
+        ReturnableElement elementSetName = null;
 
         Filter constraint = null;
         ConstraintLanguage constraintLanguage = null;
@@ -186,69 +181,60 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
                 List<OMElement> queryChildElements = getRequiredElements( omElement, new XPath( "*", nsContext ) );
 
-                String type = getNodeAsString( omElement, new XPath( "./@typeNames", nsContext ), "" );
+                String typeQuery = getNodeAsString( omElement, new XPath( "./@typeNames", nsContext ), "" );
 
-                if ( "".equals( type ) ) {
+                if ( "".equals( typeQuery ) ) {
                     String msg = "ERROR in XML document: Required attribute \"typeNames\" in element \"Query\" is missing!";
                     throw new MissingParameterException( msg );
                 }
 
-                List<QName> listOfTypeNames = new ArrayList<QName>();
-                String[] typeArray = type.split( "," );
-                for ( int i = 0; i < typeArray.length; i++ ) {
-                    listOfTypeNames.add( parseQName( typeArray[i], omElement ) );
+                String[] queryTypeNamesString = ArrayUtils.toArray( typeQuery, ",", true );
+                QName[] queryTypeNames = new QName[queryTypeNamesString.length];
+                int counterQName = 0;
+                for ( String s : queryTypeNamesString ) {
+                    LOG.debug( "Parsing typeName '" + s + "' of Query as QName. " );
+                    QName qname = parseQName( s, omElement );
+                    queryTypeNames[counterQName++] = qname;
                 }
-                QName[] queryTypeNames = new QName[listOfTypeNames.size()];
-                listOfTypeNames.toArray( queryTypeNames );
-
-                // QName[] queryTypeNames = getNodesAsQNames( omElement, new XPath("@typeNames", nsContext) );
 
                 for ( OMElement omQueryElement : queryChildElements ) {
 
                     // TODO mandatory exclusiveness between ElementSetName vs. ElementName not implemented yet
                     if ( new QName( CSWConstants.CSW_202_NS, "ElementSetName" ).equals( omQueryElement.getQName() ) ) {
                         String elementSetNameString = omQueryElement.getText();
+                        elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
 
-                        if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.brief.name() ) ) {
-                            elementSetName = SetOfReturnableElements.brief;
-                        } else if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.summary.name() ) ) {
-                            elementSetName = SetOfReturnableElements.summary;
-                        } else if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.full.name() ) ) {
-                            elementSetName = SetOfReturnableElements.full;
+                        // elementSetNameTypeNames = getNodesAsQNames( omQueryElement, new XPath( "@typeNames",
+                        // nsContext ) );
+                        String typeElementSetName = getNodeAsString( omQueryElement, new XPath( "./@typeNames",
+                                                                                                nsContext ), "" );
+                        if ( "".equals( typeElementSetName ) ) {
+                            LOG.info( "TypeName of element 'ElementSetName' is not specified, so there are the typeNames taken from element 'Query'. " );
+                            SetOfTypeNames.addAll( Arrays.asList( queryTypeNames ) );
                         } else {
-                            elementSetName = SetOfReturnableElements.summary;
-                        }
-                        elementSetNameTypeNames = getNodesAsQNames( omQueryElement, new XPath( "@typeNames", nsContext ) );
 
-                        /**
-                         * checks if the attribute typename from ElementSetName is a subset of Query typename
-                         */
-                        int queryTypeNamesLength = queryTypeNames.length;
-                        int elementSetNameTypeNamesLength = elementSetNameTypeNames.length;
-                        if ( queryTypeNamesLength >= elementSetNameTypeNamesLength ) {
-                            for ( QName queryTypeName : queryTypeNames ) {
-                                if ( elementSetNameTypeNames.length != 0 ) {
-                                    for ( QName elementSetNameTypeName : elementSetNameTypeNames ) {
-                                        if ( queryTypeName.equals( elementSetNameTypeName )
-                                             || elementSetNameTypeName.getLocalPart().equals( "" ) ) {
-                                            SetOfTypeNames.add( queryTypeName );
-                                        }
-                                    }
-                                } else {
-                                    SetOfTypeNames.add( queryTypeName );
+                            String[] elementSetNameTypeNamesString = ArrayUtils.toArray( typeElementSetName, ",", true );
+                            boolean isSubset = false;
+                            for ( String s : elementSetNameTypeNamesString ) {
+                                LOG.debug( "Parsing typeName '" + s + "' of ElementSetName as QName. " );
+                                QName qname = parseQName( s, omElement );
+                                LOG.debug( "Parsing correct, so check for containing of the typeName '" + s + "'. " );
+                                isSubset = ArrayUtils.contains( queryTypeNamesString, s, true, true );
+                                if ( !isSubset ) {
+                                    String msg = "QName '"
+                                                 + s
+                                                 + "' is not containing in typeNames of element Query => typeName of element ElementSetName is not a subset of typeName of element Query!";
+                                    LOG.debug( msg );
+                                    throw new InvalidParameterValueException( msg );
                                 }
+                                SetOfTypeNames.add( qname );
                             }
-                        } else {
-                            String msg = Messages.get( "TYPENAME OF ELEMENTSETNAME IS A PROPER SUBSET OF TYPENAME OF QUERY" );
-                            throw new InvalidParameterValueException( msg );
-                        }
-                        if ( SetOfTypeNames.size() == 0 ) {
-                            String msg = Messages.get( "NO HARMONY BETWEEN ELEMENTSETNAME TYPENAME AND QUERY TYPENAME" );
-                            throw new InvalidParameterValueException( msg );
                         }
 
                     } else {
-                        // TODO elementName
+                        String msg = "ElementName is not implmeneted yet, use ElementSetName, instead. ";
+                        LOG.info( msg );
+                        throw new NotImplementedError( msg );
 
                     }
 
@@ -278,17 +264,22 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
                                 } else {
                                     String msg = Messages.get( "FILTER_VERSION NOT SPECIFIED", versionConstraint,
                                                                Version.getVersionsString( new Version( 1, 1, 0 ) ) );
+                                    LOG.info( msg );
                                     throw new InvalidParameterValueException( msg );
                                 }
                             } catch ( XMLStreamException e ) {
-                                e.printStackTrace();
+                                String msg = "FilterParsingException: There went something wrong while parsing the filter expression, so please check this!";
+                                LOG.debug( msg );
                                 throw new XMLParsingException( this, filterEl, e.getMessage() );
                             }
 
                         } else if ( ( filterEl == null ) && ( cqlTextEl != null ) ) {
-                            // TODO CQLParsing
+                            String msg = "CQL-Filter is not implemented yet. Please use the OGC Filter expression, instead. ";
+                            LOG.info( msg );
+                            throw new NotImplementedError( msg );
                         } else {
                             String msg = Messages.get( "MANDATORY EXCLUSIVENESS! EITHER AN OGC FILTER- OR CQL-EXPRESSION MUST BE SPECIFIED." );
+                            LOG.debug( msg );
                             throw new InvalidParameterValueException( msg );
                         }
 
@@ -322,7 +313,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
         SetOfTypeNames.toArray( typeNames );
 
         if ( elementSetName == null ) {
-            elementSetName = SetOfReturnableElements.summary;
+            elementSetName = ReturnableElement.summary;
         }
 
         // TODO ElementName
@@ -330,5 +321,4 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
                                startPosition, maxRecords, null, elementSetName, constraintLanguage, constraint,
                                sortProps, distributedSearch, hopCount, responseHandler, holeRequest );
     }
-
 }

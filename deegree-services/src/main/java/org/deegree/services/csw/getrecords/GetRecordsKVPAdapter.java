@@ -38,9 +38,6 @@ package org.deegree.services.csw.getrecords;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 import static org.deegree.protocol.csw.CSWConstants.ConstraintLanguage.CQLTEXT;
 import static org.deegree.protocol.csw.CSWConstants.ConstraintLanguage.FILTER;
-import static org.deegree.protocol.csw.CSWConstants.ResultType.hits;
-import static org.deegree.protocol.csw.CSWConstants.ResultType.results;
-import static org.deegree.protocol.csw.CSWConstants.ResultType.validate;
 
 import java.io.StringReader;
 import java.net.URI;
@@ -66,7 +63,7 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWKVPAdapter;
 
@@ -138,16 +135,9 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
         // outputFormat (optional)
         String outputFormat = KVPUtils.getDefault( normalizedKVPParams, "outputFormat", "application/xml" );
 
-        // resultType (optional; default = hits)
-        ResultType resultType = hits;
-        if ( normalizedKVPParams.get( "RESULTTYPE" ) != null
-             && !normalizedKVPParams.get( "RESULTTYPE" ).equalsIgnoreCase( hits.name() ) ) {
-            if ( normalizedKVPParams.get( "RESULTTYPE" ).equalsIgnoreCase( results.name() ) ) {
-                resultType = results;
-            } else if ( normalizedKVPParams.get( "RESULTTYPE" ).equalsIgnoreCase( validate.name() ) ) {
-                resultType = validate;
-            }
-        }
+        // resultTpye (optional)
+        String resultTypeStr = KVPUtils.getDefault( normalizedKVPParams, "RESULTTYPE", ResultType.hits.name() );
+        ResultType resultType = ResultType.determineResultType( resultTypeStr );
 
         // requestId (optional)
         String requestId = normalizedKVPParams.get( "REQUESTID" );
@@ -174,25 +164,8 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
          * parameter of the Response.
          */
         String elementSetNameString = KVPUtils.getDefault( normalizedKVPParams, "ELEMENTSETNAME",
-                                                           SetOfReturnableElements.summary.name() );
-        SetOfReturnableElements elementSetName = null;
-
-        // Question if there is no mutually exclusiveness
-        if ( ( elementName == null || elementName.size() == 0 )
-             && elementSetNameString.equals( SetOfReturnableElements.summary.name() ) ) {
-            // throw new InvalidParameterValueException(
-            // "ElementName and ElementSetName are mutually exclusive and ONE has to be specified!" );
-            elementSetName = SetOfReturnableElements.summary;
-        } else {
-            if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.brief.name() ) ) {
-                elementSetName = SetOfReturnableElements.brief;
-            } else if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.summary.name() ) ) {
-                elementSetName = SetOfReturnableElements.summary;
-            } else if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.full.name() ) ) {
-                elementSetName = SetOfReturnableElements.full;
-            }
-
-        }
+                                                           ReturnableElement.summary.name() );
+        ReturnableElement elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
 
         String constraintLanguageString = normalizedKVPParams.get( "CONSTRAINTLAGNUAGE" );
         // ConstraintLanguage Enum Language is specified

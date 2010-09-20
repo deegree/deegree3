@@ -44,7 +44,7 @@ import java.util.Map;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
 
 /**
@@ -95,16 +95,16 @@ public class GetRecordByIdKVPAdapter {
         String outputFormat = KVPUtils.getDefault( normalizedKVPParams, "outputFormat", "application/xml" );
 
         String elementSetNameString = KVPUtils.getDefault( normalizedKVPParams, "ELEMENTSETNAME",
-                                                           SetOfReturnableElements.summary.name() );
+                                                           ReturnableElement.summary.name() );
 
-        SetOfReturnableElements elementSetName = null;
+        ReturnableElement elementSetName = null;
 
-        if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.brief.name() ) ) {
-            elementSetName = SetOfReturnableElements.brief;
-        } else if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.summary.name() ) ) {
-            elementSetName = SetOfReturnableElements.summary;
-        } else if ( elementSetNameString.equalsIgnoreCase( SetOfReturnableElements.full.name() ) ) {
-            elementSetName = SetOfReturnableElements.full;
+        if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.brief.name() ) ) {
+            elementSetName = ReturnableElement.brief;
+        } else if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.summary.name() ) ) {
+            elementSetName = ReturnableElement.summary;
+        } else if ( elementSetNameString.equalsIgnoreCase( ReturnableElement.full.name() ) ) {
+            elementSetName = ReturnableElement.full;
         }
 
         // outputSchema String
