@@ -180,7 +180,9 @@ public class TransactionHandler {
         int insertCount = 0;
         int updateCount = 0;
         int deleteCount = 0;
-        List<Integer> transactionIds = new ArrayList<Integer>();
+        List<Integer> transactionIdsInsert = new ArrayList<Integer>();
+        List<Integer> transactionIdsUpdate = new ArrayList<Integer>();
+        List<Integer> transactionIdsDelete = new ArrayList<Integer>();
 
         writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
@@ -192,7 +194,9 @@ public class TransactionHandler {
         if ( transaction.getRequestId() != null ) {
             writer.writeAttribute( "requestId", transaction.getRequestId() );
         }
-        Iterator<Integer> it;
+        Iterator<Integer> itInsert;
+        Iterator<Integer> itUpdate;
+        Iterator<Integer> itDelete;
         try {
             for ( TransactionOperation transact : transaction.getOperations() ) {
                 switch ( transact.getType() ) {
@@ -215,13 +219,8 @@ public class TransactionHandler {
 
                     for ( MetadataStore rec : requestedTypeNames.values() ) {
 
-                        transactionIds.addAll( rec.transaction( writer, insert ) );
-                    }
-
-                    it = transactionIds.listIterator();
-                    while ( it.hasNext() ) {
-                        it.next();
-                        insertCount++;
+                        transactionIdsInsert.addAll( rec.transaction( writer, insert ) );
+                        LOG.debug( "" + transactionIdsInsert );
                     }
 
                     break;
@@ -243,7 +242,7 @@ public class TransactionHandler {
                                                                                    update.getElement().getNamespace().getPrefix() ) ) );
 
                         for ( MetadataStore rec : requestedTypeNames.values() ) {
-                            transactionIds.addAll( rec.transaction( writer, update ) );
+                            transactionIdsUpdate.addAll( rec.transaction( writer, update ) );
 
                         }
                     } else {
@@ -253,16 +252,10 @@ public class TransactionHandler {
                          */
                         for ( MetadataStore rec : service.getRecordStore() ) {
 
-                            transactionIds.addAll( rec.transaction( writer, update ) );
+                            transactionIdsUpdate.addAll( rec.transaction( writer, update ) );
 
                         }
 
-                    }
-
-                    it = transactionIds.listIterator();
-                    while ( it.hasNext() ) {
-                        it.next();
-                        updateCount++;
                     }
 
                     break;
@@ -273,18 +266,23 @@ public class TransactionHandler {
                      * here all the registered recordStores are queried
                      */
                     for ( MetadataStore rec : service.getRecordStore() ) {
-                        transactionIds.addAll( rec.transaction( writer, delete ) );
+                        transactionIdsDelete.addAll( rec.transaction( writer, delete ) );
 
-                    }
-                    it = transactionIds.listIterator();
-                    while ( it.hasNext() ) {
-                        it.next();
-                        deleteCount++;
                     }
 
                     break;
 
                 }
+            }
+
+            for ( Integer t : transactionIdsDelete ) {
+                deleteCount++;
+            }
+            for ( Integer t : transactionIdsInsert ) {
+                insertCount++;
+            }
+            for ( Integer t : transactionIdsUpdate ) {
+                updateCount++;
             }
         } catch ( MetadataStoreException e ) {
             throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
@@ -310,10 +308,10 @@ public class TransactionHandler {
 
             for ( MetadataStore rec : requestedTypeNames.values() ) {
                 try {
-                    rec.getRecordsForTransactionInsertStatement( writer, transactionIds );
+                    rec.getRecordsForTransactionInsertStatement( writer, transactionIdsInsert );
                 } catch ( MetadataStoreException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    String msg = e.getMessage();
+                    LOG.debug( msg );
                 }
 
             }
