@@ -53,7 +53,8 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Ide
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Inspects whether the fileIdentifier should be set when inserting a metadata or not and what consequences should
+ * occur.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -165,7 +166,7 @@ public class FileIdentifierInspector {
      * @return true, if the identifier is not found in the backend, otherwise false.
      * @throws MetadataStoreException
      */
-    private boolean proveIdExistence( String identifier )
+    public boolean proveIdExistence( String identifier )
                             throws MetadataStoreException {
         PreparedStatement stm = null;
         ResultSet rs = null;

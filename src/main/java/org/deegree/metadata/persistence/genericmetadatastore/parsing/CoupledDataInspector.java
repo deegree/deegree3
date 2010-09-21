@@ -50,7 +50,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Cou
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Inspects the coupling of data-metadata and service-metadata.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$

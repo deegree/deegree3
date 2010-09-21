@@ -1087,6 +1087,11 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
             for ( String identifier : idList ) {
+                if ( fi.proveIdExistence( identifier ) ) {
+                    String msg = "No Metadata found with ID: '" + identifier + "'";
+                    LOG.info( msg );
+                    throw new MetadataStoreException( msg );
+                }
 
                 switch ( elementSetName ) {
 
@@ -1124,11 +1129,14 @@ public class ISOMetadataStore implements MetadataStore {
                 select.append( PostGISMappingsISODC.CommonColumnNames.format.name() ).append( " = ?;" );
 
                 stmt = conn.prepareStatement( select.toString() );
+                LOG.debug( "select RecordById statement: " + stmt );
 
                 if ( stmt != null ) {
 
                     stmt.setObject( 1, identifier );
                     stmt.setInt( 2, profileFormatNumberOutputSchema );
+                    LOG.debug( "identifier: " + identifier );
+                    LOG.debug( "outputFormat: " + profileFormatNumberOutputSchema );
 
                     rs = stmt.executeQuery();
                     writeResultSet( rs, writer, 1 );
