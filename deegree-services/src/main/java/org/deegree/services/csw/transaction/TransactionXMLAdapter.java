@@ -63,6 +63,8 @@ import org.deegree.metadata.publication.UpdateTransaction;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adapter between XML encoded <code>Transaction</code> requests and {@link Transaction} objects.
@@ -73,6 +75,8 @@ import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
  * @version $Revision: $, $Date: $
  */
 public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
+
+    private static final Logger LOG = LoggerFactory.getLogger( TransactionXMLAdapter.class );
 
     /**
      * Parses the {@link Transaction} XML request by deciding which version has to be parsed because of the requested
@@ -177,7 +181,7 @@ public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
                         throw new InvalidParameterValueException( msg );
                     }
                 } catch ( XMLStreamException e ) {
-                    e.printStackTrace();
+                    LOG.debug( e.getMessage() );
                     throw new XMLParsingException( this, filterEl, e.getMessage() );
                 }
 
