@@ -305,7 +305,9 @@ public class ParseIdentificationInfo extends XMLAdapter {
             }
             LOG.info( "Setting id attribute from the resourceIdentifier..." );
             OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
-            sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
+            if ( attribute_id != null ) {
+                sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
+            }
             sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "id", namespaceGMD, rsList.get( 0 ),
                                                                                    factory ) );
             dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
@@ -1221,25 +1223,35 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     update_Ident.addChild( elem );
                 }
 
-                for ( OMElement elem : spatialRepresentationType ) {
-                    LOG.debug( "Creats element spatialRepresentationType..." );
-                    update_Ident.addChild( elem );
+                if ( spatialRepresentationType != null ) {
+                    for ( OMElement elem : spatialRepresentationType ) {
+                        LOG.debug( "Creats element spatialRepresentationType..." );
+                        update_Ident.addChild( elem );
+                    }
                 }
-                for ( OMElement elem : spatialResolution ) {
-                    LOG.debug( "Creats element spatialResolution..." );
-                    update_Ident.addChild( elem );
+                if ( spatialResolution != null ) {
+                    for ( OMElement elem : spatialResolution ) {
+                        LOG.debug( "Creats element spatialResolution..." );
+                        update_Ident.addChild( elem );
+                    }
                 }
-                for ( OMElement elem : language_md_dataIdent ) {
-                    LOG.debug( "Creats element language..." );
-                    update_Ident.addChild( elem );
+                if ( language_md_dataIdent != null ) {
+                    for ( OMElement elem : language_md_dataIdent ) {
+                        LOG.debug( "Creats element language..." );
+                        update_Ident.addChild( elem );
+                    }
                 }
-                for ( OMElement elem : characterSet_md_dataIdent ) {
-                    LOG.debug( "Creats element characterSet..." );
-                    update_Ident.addChild( elem );
+                if ( characterSet_md_dataIdent != null ) {
+                    for ( OMElement elem : characterSet_md_dataIdent ) {
+                        LOG.debug( "Creats element characterSet..." );
+                        update_Ident.addChild( elem );
+                    }
                 }
-                for ( OMElement elem : topicCategory ) {
-                    LOG.debug( "Creats element topicCategory..." );
-                    update_Ident.addChild( elem );
+                if ( topicCategory != null ) {
+                    for ( OMElement elem : topicCategory ) {
+                        LOG.debug( "Creats element topicCategory..." );
+                        update_Ident.addChild( elem );
+                    }
                 }
                 if ( environmentDescription != null ) {
                     LOG.debug( "Creats element environmentDescription..." );
