@@ -613,32 +613,6 @@ public class RTree<T> extends SpatialIndex<T> {
     }
 
     /**
-     * Verifies whether bbox1 intersects bbox2 (strictly; if the two share a lap, the answers will be false).
-     * 
-     * @param bbox1
-     * @param bbox2
-     * @return
-     */
-    private boolean intersects( float[] bbox1, float[] bbox2 ) {
-        return pointInside( bbox1[0], bbox1[1], bbox2 ) || pointInside( bbox1[0], bbox1[3], bbox2 )
-               || pointInside( bbox1[2], bbox1[1], bbox2 ) || pointInside( bbox1[2], bbox1[3], bbox2 )
-               || pointInside( bbox2[0], bbox2[1], bbox1 ) || pointInside( bbox2[0], bbox2[3], bbox1 )
-               || pointInside( bbox2[2], bbox2[1], bbox1 ) || pointInside( bbox2[2], bbox2[3], bbox1 );
-    }
-
-    /**
-     * Verifies whether a point is inside a bbox (strictly; if the point is on the border the answer will be false)
-     * 
-     * @param x
-     * @param y
-     * @param bbox
-     * @return true if it is, false if it's not
-     */
-    private boolean pointInside( float x, float y, float[] bbox ) {
-        return x >= bbox[0] && x <= bbox[2] && y >= bbox[1] && y <= bbox[3];
-    }
-
-    /**
      * @return extra flag read from a file (used for hacking around buggy shp files)
      */
     public boolean getExtraFlag() {
@@ -859,7 +833,7 @@ public class RTree<T> extends SpatialIndex<T> {
             float[][] rightSide = copyBoxesFromRange( entries, i + 1, bigM + 1 );
 
             double currentVal;
-            if ( !intersects( mbb( leftSide ), mbb( rightSide ) ) ) {
+            if ( !intersects( mbb( leftSide ), mbb( rightSide ), 2 ) ) {
                 currentVal = wgFunction( leftSide, rightSide ) * wfFunction( i );
             } else {
                 currentVal = wgFunction( leftSide, rightSide ) / wfFunction( i );
