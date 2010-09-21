@@ -48,24 +48,28 @@ import java.util.LinkedList;
  */
 public class LiteralExampleData implements ExampleData {
 
+    // all literal example data
+    private static final LinkedList<LiteralExampleData> ALL_EXAMPLE_DATA = new LinkedList<LiteralExampleData>();
+
     // types of literal data
-    public static final String BOOLEAN = "boolean";
+    public static final String TYPE_BOOLEAN = "boolean";
 
-    public static final String NUMERICAL_VALUE = "double";
+    public static final String TYPE_NUMERICAL_VALUE = "double";
 
-    public static final String STRING = "string";
+    public static final String TYPE_STRING = "string";
 
     // numerical value example data
-    public static LiteralExampleData NUMERICAL_VALUE_1 = new LiteralExampleData( "one", "1", NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_0 = new LiteralExampleData( "zero", "0", TYPE_NUMERICAL_VALUE );
 
-    public static LiteralExampleData NUMERICAL_VALUE_2 = new LiteralExampleData( "two", "2", NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_1 = new LiteralExampleData( "one1", "1", TYPE_NUMERICAL_VALUE );
 
-    public static LiteralExampleData NUMERICAL_VALUE_3 = new LiteralExampleData( "three", "3", NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_100 = new LiteralExampleData( "one2", "100", TYPE_NUMERICAL_VALUE );
 
-    public static LiteralExampleData NUMERICAL_VALUE_4 = new LiteralExampleData( "four", "4", NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_200 = new LiteralExampleData( "two", "200", TYPE_NUMERICAL_VALUE );
 
-    // all literal example data
-    private static final LinkedList<LiteralExampleData> ALL_LITERAL_EXAMPLE_DATA = new LinkedList<LiteralExampleData>();
+    public static LiteralExampleData NUMERICAL_VALUE_300 = new LiteralExampleData( "three", "300", TYPE_NUMERICAL_VALUE );
+
+    public static LiteralExampleData NUMERICAL_VALUE_400 = new LiteralExampleData( "four", "400", TYPE_NUMERICAL_VALUE );
 
     // attributes of a literal
     private final String id;
@@ -78,17 +82,17 @@ public class LiteralExampleData implements ExampleData {
 
     private final String uom;
 
-    public LiteralExampleData( String id, String idCodeSpace, String value, String type, String uom ) {
+    private LiteralExampleData( String id, String idCodeSpace, String value, String type, String uom ) {
         this.id = id;
         this.idCodeSpace = idCodeSpace;
         this.value = value;
         this.type = type;
         this.uom = uom;
 
-        ALL_LITERAL_EXAMPLE_DATA.add( this );
+        ALL_EXAMPLE_DATA.add( this );
     }
 
-    public LiteralExampleData( String id, String value, String type ) {
+    private LiteralExampleData( String id, String value, String type ) {
         this( id, null, value, type, null );
     }
 
@@ -113,7 +117,7 @@ public class LiteralExampleData implements ExampleData {
     }
 
     public static LinkedList<LiteralExampleData> getAllData() {
-        return ALL_LITERAL_EXAMPLE_DATA;
+        return ALL_EXAMPLE_DATA;
     }
 
     public String toString() {

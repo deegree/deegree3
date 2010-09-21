@@ -165,7 +165,7 @@ public class SextanteProcessProvider implements ProcessProvider {
             for ( org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process p : processes ) {
 
                 // get algorithm
-                GeoAlgorithm alg = Sextante.getAlgorithmFromCommandLineName( SextanteWPSProcess.createCommandLineName( p.getId() ) );
+                GeoAlgorithm alg = Sextante.getAlgorithmFromCommandLineName( p.getId() );
 
                 if ( alg != null ) {// found
                     algs.add( alg );
