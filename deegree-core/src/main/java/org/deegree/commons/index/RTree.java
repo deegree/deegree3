@@ -36,22 +36,25 @@
 
 package org.deegree.commons.index;
 
-import static java.lang.Math.min;
+import static java.nio.ByteOrder.BIG_ENDIAN;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
-import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,7 +70,10 @@ import org.deegree.commons.utils.Pair;
 import org.slf4j.Logger;
 
 /**
- * <code>RTree</code> Query will return the Objects of the index
+ * <code>RTree</code>
+ * 
+ * NB: When creating node entry arrays i.e. new RTree.NodeEntry[bigM + 1], be sure to always use dimension bigM + 1, as
+ * this length is expected (otherwise NullPointerExceptions will pop up).
  * 
  * <p>
  * The bulk insertion mechanism is an implementation of STRTree:
@@ -96,43 +102,41 @@ public class RTree<T> extends SpatialIndex<T> {
 
     private static final double EPS5 = 1E-5;
 
-    protected Entry<T>[] root;
+    protected NodeEntry[] root;
 
-    private float[] bbox;
+    /* entire bbox of the tree */
+    private float[] rootbbox;
 
+    /* default value, usually an actual one is passed to the constructor */
     private int bigM = 128;
 
     private int smallm;
 
-    private final double asym = 1.0;
+    /* --------------------------- */
 
-    private final double s = 0.5;
+    /* internal constants */
+    private final double ASYM = 1.0;
 
-    private final String storagePath = "/main/resources/org/deegree/commons/index/rtree_storage";
-
-    private File storageFile;
-
-    private FileWriter storageWriter;
+    private final double S = 0.5;
 
     // rb: output the warning
     boolean outputWarning = true;
 
     private boolean extraFlag;
 
-    private List<Entry<T>> removedEntries;
+    private List<NodeEntry> removedNodeEntries;
 
     /**
      * @param rootEnvelope
      *            of this rtree.
      * @param numberOfObjects
      *            each rectangle shall hold before splitting.
-     * @throws IOException
      */
     public RTree( float[] rootEnvelope, int numberOfObjects ) {
         if ( rootEnvelope == null ) {
             throw new NullPointerException( "The root envelope may not be null" );
         }
-        this.bbox = Arrays.copyOf( rootEnvelope, rootEnvelope.length );
+        this.rootbbox = Arrays.copyOf( rootEnvelope, rootEnvelope.length );
         if ( numberOfObjects > 0 ) {
             this.bigM = numberOfObjects;
         }
@@ -147,45 +151,116 @@ public class RTree<T> extends SpatialIndex<T> {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    @SuppressWarnings("unchecked")
+    @Deprecated
     public RTree( InputStream is ) throws IOException, ClassNotFoundException {
         ObjectInputStream in = new ObjectInputStream( new BufferedInputStream( is ) );
         bigM = in.readInt();
         this.smallm = ( bigM / 5 ) == 0 ? 1 : ( bigM / 5 );
-        bbox = (float[]) in.readObject();
-        root = (Entry[]) in.readObject();
+        rootbbox = (float[]) in.readObject();
+        root = (NodeEntry[]) in.readObject();
         extraFlag = in.readBoolean();
         in.close();
     }
 
     /**
-     * @param filename
+     * @param <T>
+     * @param storagePath
+     *            absolute path to the file
      * @return
-     * @throws IOException
-     * @throws URISyntaxException
      */
-    public static RTree loadFromStorage( String filename )
-                            throws IOException, URISyntaxException {
-        File file = new File( RTree.class.getResource( filename ).toURI() );
-        BufferedReader buffReader = new BufferedReader( new FileReader( file ) );
-        int bigM = Integer.parseInt( buffReader.readLine() );
-        // read root envelope
-        String[] coords = buffReader.readLine().split( " " );
-        // TODO verify the coords are valid
-        float[] rootEnv = new float[] { Float.parseFloat( coords[0] ), Float.parseFloat( coords[1] ),
-                                       Float.parseFloat( coords[2] ), Float.parseFloat( coords[3] ) };
-        RTree rtree = new RTree( rootEnv, bigM );
+    public static <T> RTree<T> loadFromDisk( String storagePath ) {
+        RTree<T> tree = null;
+        File storageFile = new File( storagePath );
+        try {
+            DataInputStream dis = new DataInputStream( new FileInputStream( storageFile ) );
+            float[] loadedBbox = loadBboxFromDisk( dis );
+            dis.readChar(); // '\n'
+            int loadedBigM = dis.readInt();
+            dis.readChar(); // '\n'
 
-        // TODO read nodes
+            tree = new RTree<T>( loadedBbox, loadedBigM );
 
-        return rtree;
+            tree.root = tree.loadNodeFromDisk( dis );
+
+            dis.close();
+        } catch ( FileNotFoundException e ) {
+            LOG.error( "Cannot find file from which to read the R-Tree. Original message: " + e.getMessage() );
+        } catch ( IOException e ) {
+            LOG.error( "Error encountered while reading R-Tree from disk; location " + storagePath
+                       + " . Original message: " + e.getMessage() );
+        }
+
+        return tree;
     }
 
-    private LinkedList<T> query( final float[] bbox, Entry<T>[] node ) {
+    /**
+     * @param dis
+     * @throws IOException
+     */
+    private static float[] loadBboxFromDisk( DataInputStream dis )
+                            throws IOException {
+        float xmin = dis.readFloat();
+        dis.readChar(); // ' '
+        float ymin = dis.readFloat();
+        dis.readChar(); // ' '
+        float xmax = dis.readFloat();
+        dis.readChar(); // ' '
+        float ymax = dis.readFloat();
+        return new float[] { xmin, ymin, xmax, ymax };
+    }
+
+    private static final int getBEInt( ByteBuffer buffer ) {
+        buffer.order( BIG_ENDIAN );
+        int result = buffer.getInt();
+        buffer.order( LITTLE_ENDIAN );
+        return result;
+    }
+
+    /**
+     * @param reader
+     * @throws IOException
+     */
+    @SuppressWarnings("unchecked")
+    private NodeEntry[] loadNodeFromDisk( DataInputStream dis )
+                            throws IOException {
+        // the number of non-null entries in this node
+        int n = dis.readInt();
+        dis.readChar(); // '\n'
+
+        NodeEntry[] node = new RTree.NodeEntry[bigM + 1];
+
+        for ( int i = 0; i < n; i++ ) {
+            node[i] = new RTree.NodeEntry();
+            node[i].bbox = loadBboxFromDisk( dis );
+            dis.readChar(); // '\n'
+            Long value = dis.readLong();
+            if ( Long.MIN_VALUE == value ) {
+                node[i].entryValue = null;
+                dis.readChar(); // '\n'
+                node[i].next = loadNodeFromDisk( dis );
+            } else {
+                node[i].entryValue = (T) value;
+                dis.readChar(); // '\n'
+            }
+        }
+
+        return node;
+    }
+
+    private static float[] parseBbox( String bboxStrConcat ) {
+        String[] bboxStr = bboxStrConcat.split( "\\s" );
+        float[] bbox = new float[4];
+        for ( int i = 0; i <= 3; i++ ) {
+            bbox[i] = Float.valueOf( bboxStr[i] );
+        }
+        return bbox;
+    }
+
+    private LinkedList<T> query( final float[] bbox, NodeEntry[] node ) {
 
         LinkedList<T> list = new LinkedList<T>();
 
-        for ( Entry<T> e : node ) {
+        for ( NodeEntry e : node ) {
             if ( e != null && intersects( bbox, e.bbox, 2 ) ) {
                 if ( e.next == null ) {
                     list.add( e.entryValue );
@@ -223,13 +298,16 @@ public class RTree<T> extends SpatialIndex<T> {
             // final float[] bbox = new float[] { env.getMin().get0(), env.getMin().get1(),
             // env.getMax().get0(), env.getMax().get1() };
 
-            if ( intersects( env, this.bbox, 2 ) ) {
+            if ( intersects( env, this.rootbbox, 2 ) ) {
                 return query( env, root );
             }
         }
+
+        LOG.debug( "Querying either a null tree or with a envelope that does not intersect it... returning." );
         return new LinkedList<T>();
     }
 
+    @SuppressWarnings("unchecked")
     private TreeMap<Float, LinkedList<Pair<float[], ?>>> sortEnvelopes( Collection<Pair<float[], ?>> rects, int byIdx ) {
         TreeMap<Float, LinkedList<Pair<float[], ?>>> map = new TreeMap<Float, LinkedList<Pair<float[], ?>>>();
 
@@ -239,7 +317,7 @@ public class RTree<T> extends SpatialIndex<T> {
             if ( !map.containsKey( d ) ) {
                 map.put( d, new LinkedList<Pair<float[], ?>>() );
             }
-            map.get( d ).add( new Pair<float[], Object>( env, p.second ) );
+            map.get( d ).add( new Pair( env, p.second ) );
         }
 
         return map;
@@ -288,28 +366,28 @@ public class RTree<T> extends SpatialIndex<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void insertBulk( List<Pair<float[], T>> listOfObjects ) {
-        // rb: dirty cast because the ? will not accept T... m*rf*king generics.
         root = buildTree( (List) listOfObjects );
     }
 
     @SuppressWarnings("unchecked")
-    private Entry<T>[] buildTree( List<Pair<float[], ?>> rects ) {
+    private NodeEntry[] buildTree( List<Pair<float[], ?>> rects ) {
         if ( rects.size() <= bigM ) {
-            Entry<T>[] node = new Entry[rects.size()];
+            // all of them are leaves
+            NodeEntry[] node = new RTree.NodeEntry[bigM + 1];
             for ( int i = 0; i < rects.size(); ++i ) {
-                node[i] = new Entry<T>();
+                node[i] = new RTree.NodeEntry();
                 node[i].bbox = rects.get( i ).first;// createEnvelope( rects.get( i ).first );
-                if ( rects.get( i ).second instanceof Entry[] ) {
-                    node[i].next = (Entry[]) rects.get( i ).second;
-                } else {
-                    node[i].entryValue = (T) rects.get( i ).second;
-                }
+                // if ( rects.get( i ).second instanceof NodeEntry[] ) {
+                // node[i].next = (NodeEntry[]) rects.get( i ).second;
+                // } else {
+                node[i].entryValue = (T) rects.get( i ).second;
+                // }
             }
             return node;
         }
 
         LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sortEnvelopes( rects, 0 ), bigM * bigM );
-        ArrayList<Pair<float[], ?>> newRects = new ArrayList<Pair<float[], ?>>();
+        ArrayList<Pair<float[], NodeEntry[]>> newRects = new ArrayList<Pair<float[], NodeEntry[]>>();
 
         for ( LinkedList<Pair<float[], ?>> slice : slices ) {
             TreeMap<Float, LinkedList<Pair<float[], ?>>> map = sort( slice, 1 );
@@ -318,7 +396,7 @@ public class RTree<T> extends SpatialIndex<T> {
             LinkedList<Pair<float[], ?>> list = iter.next();
             int idx = 0;
             while ( idx < slice.size() ) {
-                Entry<T>[] node = new Entry[min( bigM, slice.size() - idx )];
+                NodeEntry[] node = new RTree.NodeEntry[bigM + 1];
                 float[] bbox = null;
                 for ( int i = 0; i < bigM; ++i, ++idx ) {
                     if ( idx < slice.size() ) {
@@ -326,10 +404,10 @@ public class RTree<T> extends SpatialIndex<T> {
                             list = iter.next();
                         }
                         Pair<float[], ?> p = list.poll();
-                        node[i] = new Entry<T>();
+                        node[i] = new RTree.NodeEntry();
                         node[i].bbox = p.first;
-                        if ( p.second instanceof Entry[] ) {
-                            node[i].next = (Entry[]) p.second;
+                        if ( p.second instanceof RTree.NodeEntry[] ) {
+                            node[i].next = (NodeEntry[]) p.second;
                         } else {
                             node[i].entryValue = (T) p.second;
                         }
@@ -349,11 +427,11 @@ public class RTree<T> extends SpatialIndex<T> {
                         }
                     }
                 }
-                newRects.add( new Pair<float[], Entry[]>( bbox, node ) );
+                newRects.add( new Pair<float[], NodeEntry[]>( bbox, node ) );
             }
         }
 
-        return buildFromFloat( newRects );
+        return buildFromFloat( (List) newRects );
     }
 
     /**
@@ -363,14 +441,14 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param rects
      */
     @SuppressWarnings("unchecked")
-    private Entry<T>[] buildFromFloat( List<Pair<float[], ?>> rects ) {
+    private NodeEntry[] buildFromFloat( List<Pair<float[], ?>> rects ) {
         if ( rects.size() <= bigM ) {
-            Entry<T>[] node = new Entry[rects.size()];
+            NodeEntry[] node = new RTree.NodeEntry[bigM + 1];
             for ( int i = 0; i < rects.size(); ++i ) {
-                node[i] = new Entry<T>();
+                node[i] = new RTree.NodeEntry();
                 node[i].bbox = rects.get( i ).first;
-                if ( rects.get( i ).second instanceof Entry[] ) {
-                    node[i].next = (Entry[]) rects.get( i ).second;
+                if ( rects.get( i ).second instanceof RTree.NodeEntry[] ) {
+                    node[i].next = (NodeEntry[]) rects.get( i ).second;
                 } else {
                     node[i].entryValue = (T) rects.get( i ).second;
                 }
@@ -379,7 +457,7 @@ public class RTree<T> extends SpatialIndex<T> {
         }
 
         LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sort( rects, 0 ), bigM * bigM );
-        ArrayList<Pair<float[], ?>> newRects = new ArrayList<Pair<float[], ?>>();
+        ArrayList<Pair<float[], NodeEntry[]>> newRects = new ArrayList<Pair<float[], NodeEntry[]>>();
 
         for ( LinkedList<Pair<float[], ?>> slice : slices ) {
             TreeMap<Float, LinkedList<Pair<float[], ?>>> map = sort( slice, 1 );
@@ -388,7 +466,7 @@ public class RTree<T> extends SpatialIndex<T> {
             LinkedList<Pair<float[], ?>> list = iter.next();
             int idx = 0;
             while ( idx < slice.size() ) {
-                Entry<T>[] node = new Entry[min( bigM, slice.size() - idx )];
+                NodeEntry[] node = new RTree.NodeEntry[bigM + 1];
                 float[] bbox = null;
                 for ( int i = 0; i < bigM; ++i, ++idx ) {
                     if ( idx < slice.size() ) {
@@ -396,10 +474,10 @@ public class RTree<T> extends SpatialIndex<T> {
                             list = iter.next();
                         }
                         Pair<float[], ?> p = list.poll();
-                        node[i] = new Entry<T>();
+                        node[i] = new RTree.NodeEntry();
                         node[i].bbox = p.first;
-                        if ( p.second instanceof Entry[] ) {
-                            node[i].next = (Entry[]) p.second;
+                        if ( p.second instanceof RTree.NodeEntry[] ) {
+                            node[i].next = (NodeEntry[]) p.second;
                         } else {
                             node[i].entryValue = (T) p.second;
                         }
@@ -419,24 +497,26 @@ public class RTree<T> extends SpatialIndex<T> {
                         }
                     }
                 }
-                newRects.add( new Pair<float[], Entry[]>( bbox, node ) );
+                newRects.add( new Pair<float[], NodeEntry[]>( bbox, node ) );
             }
         }
 
-        return buildFromFloat( newRects );
+        return buildFromFloat( (List) newRects );
     }
 
     /**
+     * 
      * @param output
      * @param extraFlag
      * @throws IOException
      */
-    public void write( RandomAccessFile output, boolean extraFlag )
+    @Deprecated
+    public void write( RandomAccessFile output, @SuppressWarnings("hiding") boolean extraFlag )
                             throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream( bos );
         out.writeInt( bigM );
-        out.writeObject( bbox );
+        out.writeObject( rootbbox );
         out.writeObject( root );
         out.writeBoolean( extraFlag );
         out.close();
@@ -458,16 +538,17 @@ public class RTree<T> extends SpatialIndex<T> {
         TraceCell[] trace = findLeafWithValue( object, root );
         if ( trace != null ) {
             removeFromArray( trace[0].node, trace[0].index );
-            removedEntries = new ArrayList<Entry<T>>();
+            removedNodeEntries = new ArrayList<NodeEntry>();
             boolean remove = false;
             int nnl = notNullLength( trace[0].node );
             if ( nnl < smallm ) {
                 remove = true;
                 for ( int j = 0; j < nnl; j++ ) {
-                    removedEntries.add( trace[0].node[j] );
+                    removedNodeEntries.add( trace[0].node[j] );
                 }
             }
             condenseTree( trace, 1, remove );
+
             return true;
         }
         // the object to-be-removed was not found
@@ -480,7 +561,7 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param node
      * @return
      */
-    private int notNullLength( Entry[] node ) {
+    private int notNullLength( NodeEntry[] node ) {
         for ( int i = 0; i < node.length; i++ ) {
             if ( node[i] == null ) {
                 return i;
@@ -517,7 +598,7 @@ public class RTree<T> extends SpatialIndex<T> {
     private void condenseTree( TraceCell[] trace, int traceIndex, boolean removed ) {
         if ( traceIndex < trace.length ) {
             int entryIndex = trace[traceIndex].index;
-            Entry<T>[] entries = trace[traceIndex].node;
+            NodeEntry[] entries = trace[traceIndex].node;
             if ( removed ) {
                 // removed child node, parent entry has to be removed
                 removeFromArray( entries, entryIndex );
@@ -534,7 +615,7 @@ public class RTree<T> extends SpatialIndex<T> {
                 } else {
                     condenseTree( trace, traceIndex + 1, false );
                     // insert orphaned nodes
-                    for ( Entry<T> orphaned : removedEntries ) {
+                    for ( NodeEntry orphaned : removedNodeEntries ) {
                         insertNode( orphaned.bbox, orphaned.entryValue, trace[traceIndex].node );
                     }
                 }
@@ -548,7 +629,7 @@ public class RTree<T> extends SpatialIndex<T> {
         } else {
             if ( removed ) {
                 // insert orphaned nodes into the empty tree
-                for ( Entry<T> orphaned : removedEntries ) {
+                for ( NodeEntry orphaned : removedNodeEntries ) {
                     insert( orphaned.bbox, orphaned.entryValue );
                 }
             }
@@ -558,12 +639,12 @@ public class RTree<T> extends SpatialIndex<T> {
     /**
      * @param removed
      */
-    private void addOrphanedEntries( Entry<T> entry ) {
+    private void addOrphanedEntries( NodeEntry entry ) {
         if ( entry.next == null ) {
-            removedEntries.add( entry );
+            removedNodeEntries.add( entry );
             return;
         }
-        Entry<T>[] nextLevelEntries = entry.next;
+        NodeEntry[] nextLevelEntries = entry.next;
         for ( int i = 0; i < nextLevelEntries.length; i++ ) {
             if ( nextLevelEntries[i] != null ) {
                 addOrphanedEntries( nextLevelEntries[i] );
@@ -577,12 +658,13 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param object
      * @param entries
      */
-    private TraceCell[] findLeafWithValue( T object, Entry<T>[] entries ) {
+    @SuppressWarnings("unchecked")
+    private TraceCell[] findLeafWithValue( T object, NodeEntry[] entries ) {
         if ( entries[0].next == null ) {
             // leaf node, try to find object in one of the entries
             for ( int i = 0; i < entries.length; i++ ) {
-                if ( entries[i] != null && entries[i].entryValue.equals( object ) ) {
-                    return new TraceCell[] { new TraceCell( entries, i ) };
+                if ( entries[i] != null && entries[i].entryValue.equals( object.toString() ) ) {
+                    return new RTree.TraceCell[] { new TraceCell( entries, i ) };
                 }
             }
             return null;
@@ -594,7 +676,7 @@ public class RTree<T> extends SpatialIndex<T> {
                 TraceCell[] furtherTrace = findLeafWithValue( object, entries[i].next );
                 if ( furtherTrace != null ) {
                     // add this node to the trace
-                    TraceCell[] updatedResult = new TraceCell[furtherTrace.length + 1];
+                    TraceCell[] updatedResult = new RTree.TraceCell[furtherTrace.length + 1];
                     System.arraycopy( furtherTrace, 0, updatedResult, 0, furtherTrace.length );
                     updatedResult[furtherTrace.length] = new TraceCell( entries, i );
                     return updatedResult;
@@ -619,26 +701,32 @@ public class RTree<T> extends SpatialIndex<T> {
         return extraFlag;
     }
 
-    static class Entry<T> implements Serializable {
+    // class Node<T> {
+    //
+    // }
+
+    class NodeEntry implements Serializable {
         private static final long serialVersionUID = -4272761420705520561L;
 
         float[] bbox;
 
         T entryValue;
 
-        Entry<T>[] next;
+        NodeEntry[] next;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean insert( float[] insertBox, T object ) {
         if ( root == null || hasNullEntries( root ) ) {
-            Entry<T> newEntry = new Entry<T>();
+            NodeEntry newEntry = new NodeEntry();
             newEntry.bbox = insertBox;
             newEntry.entryValue = object;
             newEntry.next = null;
 
-            root = new Entry[bigM + 1];
+            root = new RTree.NodeEntry[bigM + 1];
             root[0] = newEntry;
+
             return true;
         }
 
@@ -647,50 +735,98 @@ public class RTree<T> extends SpatialIndex<T> {
     }
 
     /**
-     * @param array
-     * @return
+     * Persist the r-tree to the given location.
+     * 
+     * @param storagePath
      */
-    private boolean hasNullEntries( Entry<T>[] array ) {
-        Entry<T>[] nullArray = new Entry[bigM + 1];
+    public void writeTreeToDisk( String storagePath ) {
+        try {
+            DataOutputStream output = new DataOutputStream( new FileOutputStream( new File( storagePath ) ) );
+            writeBboxToDisk( output, this.rootbbox );
+            output.writeChar( '\n' );
+            output.writeInt( this.bigM );
+            output.writeChar( '\n' );
+            writeNodeToDisk( root, output );
+            output.close();
+        } catch ( IOException e ) {
+            throw new RuntimeException( "Error while writing tree to disk. " + e.getMessage() );
+        }
+    }
+
+    /**
+     * @param treeRoot
+     * @throws IOException
+     */
+    private void writeNodeToDisk( NodeEntry[] node, DataOutputStream output )
+                            throws IOException {
+        // write how many entries in the node are not-null
+        output.writeInt( lastNotNull( node ) + 1 );
+        output.writeChar( '\n' );
+        for ( int i = 0; i < bigM; i++ ) {
+            if ( node[i] != null ) {
+                writeBboxToDisk( output, node[i].bbox );
+                output.writeChar( '\n' );
+                if ( node[i].entryValue != null ) {
+                    output.writeLong( (Long) node[i].entryValue );
+                } else {
+                    output.writeLong( Long.MIN_VALUE );
+                }
+                output.writeChar( '\n' );
+
+                if ( node[i].next != null ) {
+                    writeNodeToDisk( node[i].next, output );
+                }
+            }
+        }
+
+    }
+
+    /**
+     * @param bbox2
+     * @return
+     * @throws IOException
+     */
+    private void writeBboxToDisk( DataOutputStream output, float[] boundingBox )
+                            throws IOException {
+        output.writeFloat( boundingBox[0] );
+        output.writeChar( ' ' );
+        output.writeFloat( boundingBox[1] );
+        output.writeChar( ' ' );
+        output.writeFloat( boundingBox[2] );
+        output.writeChar( ' ' );
+        output.writeFloat( boundingBox[3] );
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean hasNullEntries( NodeEntry[] array ) {
+        NodeEntry[] nullArray = new RTree.NodeEntry[bigM + 1];
         Arrays.fill( nullArray, null );
         return Arrays.equals( nullArray, array );
     }
 
-    /**
+    /*
      * Insert an object of value type T and bbox insertBox among the entries of the current node.
-     * 
-     * @param insertBox
-     * @param object
-     * @param entries
-     * @param parent
      */
-    private void insertNode( float[] insertBox, T object, Entry<T>[] entries ) {
+    @SuppressWarnings("unchecked")
+    private void insertNode( float[] insertBox, T object, NodeEntry[] entries ) {
         List<TraceCell> trace = new ArrayList<TraceCell>();
-        Entry<T>[] leafNode = chooseLeaf( insertBox, entries, trace );
+        NodeEntry[] leafNode = chooseLeaf( insertBox, entries, trace );
 
-        Entry<T> newEntry = new Entry<T>();
+        NodeEntry newEntry = new RTree.NodeEntry();
         newEntry.bbox = insertBox;
         newEntry.entryValue = object;
         newEntry.next = null;
 
-        // TODO improve insertion of new entry
-        for ( int i = bigM - 1; i >= 0; i-- ) {
-            if ( leafNode[i] != null ) {
-                leafNode[i + 1] = newEntry;
-                break;
-            }
-        }
+        int index = lastNotNull( leafNode );
+        leafNode[index + 1] = newEntry;
 
         if ( leafNode[bigM] != null ) {
             int splitIndex = split( leafNode, insertBox, object );
 
-            @SuppressWarnings( { "unchecked", "cast" })
-            Entry<T>[] addedNode = (Entry<T>[]) new Entry[bigM + 1];
+            NodeEntry[] addedNode = new RTree.NodeEntry[bigM + 1];
             Arrays.fill( addedNode, null );
             System.arraycopy( leafNode, splitIndex + 1, addedNode, 0, bigM - splitIndex );
             Arrays.fill( leafNode, splitIndex + 1, bigM + 1, null );
-
-            // TODO store()
 
             adjustTree( leafNode, addedNode, trace, trace.size() - 1 );
 
@@ -709,15 +845,16 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param trace
      * @param traceIndex
      */
-    private void adjustTree( Entry<T>[] leftEntries, Entry<T>[] rightEntries, List<TraceCell> trace, int traceIndex ) {
+    @SuppressWarnings("unchecked")
+    private void adjustTree( NodeEntry[] leftEntries, NodeEntry[] rightEntries, List<TraceCell> trace, int traceIndex ) {
         if ( rightEntries != null ) { // children have been split
 
             // get the parent of the original child
-            Entry<T>[] parent;
+            NodeEntry[] parent;
             int parentIndex;
             if ( traceIndex < 0 ) {
-                parent = new Entry[bigM + 1];
-                parent[0] = new Entry();
+                parent = new RTree.NodeEntry[bigM + 1];
+                parent[0] = new RTree.NodeEntry();
                 root = parent;
                 parentIndex = 0;
             } else {
@@ -726,41 +863,21 @@ public class RTree<T> extends SpatialIndex<T> {
             }
 
             // update the bbox of the parent after the child entries changed due to insert/split
-            // TODO
-            int nLeftEntries = 0;
-            for ( int i = bigM - 1; i >= 0; i-- ) {
-                if ( leftEntries[i] != null ) {
-                    nLeftEntries = i;
-                    break;
-                }
-            }
+            int nLeftEntries = lastNotNull( leftEntries );
             parent[parentIndex].bbox = mbb( copyBoxesFromRange( leftEntries, 0, nLeftEntries + 1 ) );
             parent[parentIndex].next = leftEntries;
 
-            Entry<T> newEntry = new Entry();
-            // TODO
-            int nRightEntries = 0;
-            for ( int i = bigM - 1; i >= 0; i-- ) {
-                if ( rightEntries[i] != null ) {
-                    nRightEntries = i;
-                    break;
-                }
-            }
+            NodeEntry newEntry = new RTree.NodeEntry();
+            int nRightEntries = lastNotNull( rightEntries );
             newEntry.bbox = mbb( copyBoxesFromRange( rightEntries, 0, nRightEntries + 1 ) );
             newEntry.next = rightEntries;
 
-            // TODO improve addition of new entry immediately after the last non-null entry of parent
-            for ( int i = parentIndex + 1; i < bigM + 1; i++ ) {
-                if ( parent[i] == null ) {
-                    parent[i] = newEntry;
-                    break;
-                }
-            }
+            addAfterLast( newEntry, parent, parentIndex );
 
             if ( parent[bigM] != null ) {
                 int splitIndex = split( parent, newEntry.bbox, null );
 
-                Entry<T>[] addedNode = new Entry[bigM + 1];
+                NodeEntry[] addedNode = new RTree.NodeEntry[bigM + 1];
                 Arrays.fill( addedNode, null );
                 System.arraycopy( parent, splitIndex + 1, addedNode, 0, bigM - splitIndex );
                 Arrays.fill( parent, splitIndex + 1, bigM + 1, null );
@@ -776,10 +893,9 @@ public class RTree<T> extends SpatialIndex<T> {
                 return;
             }
 
-            Entry<T>[] parent = trace.get( traceIndex ).node;
+            NodeEntry[] parent = trace.get( traceIndex ).node;
             int parentIndex = trace.get( traceIndex ).index;
 
-            // TODO determine the length of non-null entries
             int nLeftEntries = -1;
             for ( int i = 0; i < bigM + 1; i++ ) {
                 if ( leftEntries[i] == null ) {
@@ -796,6 +912,37 @@ public class RTree<T> extends SpatialIndex<T> {
     }
 
     /**
+     * Add newEntry after the last not-null entry in the array, starting from index + 1.
+     * 
+     * @param newEntry
+     * @param array
+     * @param index
+     */
+    private void addAfterLast( NodeEntry newEntry, NodeEntry[] array, int index ) {
+        for ( int i = index + 1; i < bigM + 1; i++ ) {
+            if ( array[i] == null ) {
+                array[i] = newEntry;
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param leftEntries
+     * @return
+     */
+    private int lastNotNull( NodeEntry[] array ) {
+        int res = -1;
+        for ( int i = bigM - 1; i >= 0; i-- ) {
+            if ( array[i] != null ) {
+                res = i;
+                break;
+            }
+        }
+        return res;
+    }
+
+    /**
      * Find the right leaf node in which to insert
      * 
      * @param insertBox
@@ -803,7 +950,7 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param entries
      * @param parent
      */
-    private Entry<T>[] chooseLeaf( float[] insertBox, Entry<T>[] entries, List<TraceCell> trace ) {
+    private NodeEntry[] chooseLeaf( float[] insertBox, NodeEntry[] entries, List<TraceCell> trace ) {
         if ( entries[0].next == null ) {
             return entries;
         }
@@ -820,7 +967,7 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param insertBox
      * @param object
      */
-    private int split( Entry<T>[] entries, float[] insertBox, T object ) {
+    private int split( NodeEntry[] entries, float[] insertBox, T object ) {
         if ( entries[0].next == null ) {
             // leaf node
             splitAxis( entries );
@@ -852,10 +999,10 @@ public class RTree<T> extends SpatialIndex<T> {
      */
     private double wfFunction( int i ) {
         double result;
-        double miu = ( 1 - 2 * smallm / ( bigM + 1 ) ) * asym;
+        double miu = ( 1 - 2 * smallm / ( bigM + 1 ) ) * ASYM;
         double xi = 2 * i / ( bigM + 1 ) - 1;
-        double sigma = s * ( 1 + Math.abs( miu ) );
-        double y1 = Math.exp( -1 / ( s * s ) );
+        double sigma = S * ( 1 + Math.abs( miu ) );
+        double y1 = Math.exp( -1 / ( S * S ) );
         double ys = 1 / ( 1 - y1 );
         double expr = Math.exp( -( ( xi - miu ) / sigma ) * ( ( xi - miu ) / sigma ) );
         result = ( ys * expr - y1 );
@@ -898,8 +1045,8 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param entries
      * @return -1 when the X axis wins, 1 when Y axis wins
      */
-    private int splitAxis( Entry<T>[] entries ) {
-        Entry<T>[] entriesOrderX = Arrays.copyOf( entries, bigM + 1 );
+    private int splitAxis( NodeEntry[] entries ) {
+        NodeEntry[] entriesOrderX = Arrays.copyOf( entries, bigM + 1 );
         sortEntriesByX( entriesOrderX );
         double perimX = 0.0;
         for ( int i = smallm - 1; i <= bigM + 1 - smallm; i++ ) {
@@ -910,7 +1057,7 @@ public class RTree<T> extends SpatialIndex<T> {
             perimX += calculatePerimeter( mbb( boxes ) );
         }
 
-        Entry<T>[] entriesOrderY = Arrays.copyOf( entries, bigM + 1 );
+        NodeEntry[] entriesOrderY = Arrays.copyOf( entries, bigM + 1 );
         sortEntriesByY( entriesOrderY );
         double perimY = 0.0;
         for ( int i = smallm; i <= bigM + 1 - smallm; i++ ) {
@@ -962,7 +1109,7 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param i2
      * @return an array of bboxes (each containing a float array)
      */
-    private float[][] copyBoxesFromRange( Entry<T>[] entries, int i1, int i2 ) {
+    private float[][] copyBoxesFromRange( NodeEntry[] entries, int i1, int i2 ) {
         float[][] boxes = new float[i2 - i1][];
         for ( int j = i1; j < i2; j++ ) {
             if ( entries[j] != null ) {
@@ -977,9 +1124,9 @@ public class RTree<T> extends SpatialIndex<T> {
      * 
      * @param entriesOrderY
      */
-    private void sortEntriesByY( Entry<T>[] entriesOrderY ) {
-        Arrays.sort( entriesOrderY, new Comparator<Entry<?>>() {
-            public int compare( Entry<?> a, Entry<?> b ) {
+    private void sortEntriesByY( NodeEntry[] entriesOrderY ) {
+        Arrays.sort( entriesOrderY, new Comparator<RTree<T>.NodeEntry>() {
+            public int compare( RTree<T>.NodeEntry a, RTree<T>.NodeEntry b ) {
                 if ( a.bbox[1] < b.bbox[1] ) {
                     return -1;
                 } else if ( a.bbox[1] > b.bbox[1] ) {
@@ -989,8 +1136,8 @@ public class RTree<T> extends SpatialIndex<T> {
                 }
             }
         } );
-        Arrays.sort( entriesOrderY, new Comparator<Entry<?>>() {
-            public int compare( Entry<?> a, Entry<?> b ) {
+        Arrays.sort( entriesOrderY, new Comparator<RTree<T>.NodeEntry>() {
+            public int compare( RTree<T>.NodeEntry a, RTree<T>.NodeEntry b ) {
                 if ( a.bbox[3] < b.bbox[3] ) {
                     return -1;
                 } else if ( a.bbox[3] > b.bbox[3] ) {
@@ -1007,9 +1154,9 @@ public class RTree<T> extends SpatialIndex<T> {
      * 
      * @param entriesOrderX
      */
-    private void sortEntriesByX( Entry<T>[] entriesOrderX ) {
-        Arrays.sort( entriesOrderX, new Comparator<Entry<?>>() {
-            public int compare( Entry<?> a, Entry<?> b ) {
+    private void sortEntriesByX( NodeEntry[] entriesOrderX ) {
+        Arrays.sort( entriesOrderX, new Comparator<RTree<T>.NodeEntry>() {
+            public int compare( RTree<T>.NodeEntry a, RTree<T>.NodeEntry b ) {
                 if ( a.bbox[0] < b.bbox[0] ) {
                     return -1;
                 } else if ( a.bbox[0] > b.bbox[0] ) {
@@ -1019,8 +1166,8 @@ public class RTree<T> extends SpatialIndex<T> {
                 }
             }
         } );
-        Arrays.sort( entriesOrderX, new Comparator<Entry<?>>() {
-            public int compare( Entry<?> a, Entry<?> b ) {
+        Arrays.sort( entriesOrderX, new Comparator<RTree<T>.NodeEntry>() {
+            public int compare( RTree<T>.NodeEntry a, RTree<T>.NodeEntry b ) {
                 if ( a.bbox[2] < b.bbox[2] ) {
                     return -1;
                 } else if ( a.bbox[2] > b.bbox[2] ) {
@@ -1040,8 +1187,8 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param object
      * @return the index of the <code>entries</code> in which it is best to insert the new node
      */
-    private int chooseSubtree( Entry<T>[] entries, float[] insertBox ) {
-        // TODO
+    @SuppressWarnings("unchecked")
+    private int chooseSubtree( NodeEntry[] entries, float[] insertBox ) {
         int n = bigM;
         for ( int i = bigM; i >= 0; i-- ) {
             if ( entries[i] != null ) {
@@ -1073,10 +1220,10 @@ public class RTree<T> extends SpatialIndex<T> {
                             - calculatePerimeter( entries[i].bbox );
         }
 
-        ArrayEncapsInsert<T>[] array = new ArrayEncapsInsert[n];
+        ArrayEncapsInsert[] array = new RTree.ArrayEncapsInsert[n];
         for ( int i = 0; i < n; i++ ) {
             array[i] = new ArrayEncapsInsert();
-            array[i].entry = entries[i];
+            array[i].nodeEntry = entries[i];
             array[i].value = deltaPerim[i];
             array[i].origIndex = i;
         }
@@ -1088,7 +1235,7 @@ public class RTree<T> extends SpatialIndex<T> {
 
         double perimOverlap = 0.0;
         for ( int i = 1; i < n; i++ ) {
-            perimOverlap += calculatePerimOverlap( array[0].entry.bbox, array[i].entry.bbox, insertBox );
+            perimOverlap += calculatePerimOverlap( array[0].nodeEntry.bbox, array[i].nodeEntry.bbox, insertBox );
         }
         if ( perimOverlap < EPS5 ) {
             return array[0].origIndex;
@@ -1097,8 +1244,8 @@ public class RTree<T> extends SpatialIndex<T> {
         double maxOverlap = Double.MIN_VALUE;
         int selectIndex = -1;
         for ( int i = 1; i < n; i++ ) {
-            if ( calculatePerimOverlap( array[0].entry.bbox, array[i].entry.bbox, insertBox ) > maxOverlap ) {
-                maxOverlap = calculatePerimOverlap( array[0].entry.bbox, array[i].entry.bbox, insertBox );
+            if ( calculatePerimOverlap( array[0].nodeEntry.bbox, array[i].nodeEntry.bbox, insertBox ) > maxOverlap ) {
+                maxOverlap = calculatePerimOverlap( array[0].nodeEntry.bbox, array[i].nodeEntry.bbox, insertBox );
                 selectIndex = i;
             }
         }
@@ -1131,7 +1278,8 @@ public class RTree<T> extends SpatialIndex<T> {
         cand.add( i );
         for ( int j = 0; j < p; j++ ) {
             if ( j != i ) {
-                double currentOverlap = calculateAreaOverlap( array[i].entry.bbox, array[j].entry.bbox, insertBox );
+                double currentOverlap = calculateAreaOverlap( array[i].nodeEntry.bbox, array[j].nodeEntry.bbox,
+                                                              insertBox );
                 overlap[j] += currentOverlap;
                 if ( currentOverlap > 0 && !cand.contains( j ) ) {
                     checkComp( j, p, array, insertBox, success, cand, c, overlap );
@@ -1182,8 +1330,8 @@ public class RTree<T> extends SpatialIndex<T> {
      * @version $Revision$, $Date$
      * 
      */
-    class ArrayEncapsInsert<T> {
-        Entry<T> entry;
+    class ArrayEncapsInsert {
+        NodeEntry nodeEntry;
 
         double value;
 
@@ -1202,12 +1350,12 @@ public class RTree<T> extends SpatialIndex<T> {
      * @version $Revision$, $Date$
      * 
      */
-    class TraceCell<T> {
-        Entry<T>[] node;
+    class TraceCell {
+        NodeEntry[] node;
 
         int index;
 
-        public TraceCell( Entry<T>[] node, int index ) {
+        public TraceCell( NodeEntry[] node, int index ) {
             this.node = node;
             this.index = index;
         }

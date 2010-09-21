@@ -45,7 +45,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -307,12 +306,10 @@ public class ShapeFeatureStore implements FeatureStore {
 
         if ( rtfile.exists() && !( rtfile.lastModified() < shpFile.lastModified() ) && !forceIndexRebuild ) {
             try {
-                RTree<Long> rtree = new RTree<Long>( new FileInputStream( shpName + ".rti" ) );
+                LOG.debug( "Loading RTree from disk." );
+                RTree<Long> rtree = RTree.loadFromDisk( shpName + ".rti" );
                 shp = new SHPReader( raf, crs, rtree, rtree.getExtraFlag() );
             } catch ( IOException e ) {
-                LOG.debug( "Stack trace:", e );
-                LOG.warn( "Existing rtree index could not be read. Generating a new one..." );
-            } catch ( ClassNotFoundException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Existing rtree index could not be read. Generating a new one..." );
             }
@@ -326,14 +323,9 @@ public class ShapeFeatureStore implements FeatureStore {
         LOG.debug( "Building rtree index in memory for '{}'", new File( shpName ).getName() );
 
         Pair<RTree<Long>, Boolean> p = createIndex( shp );
-        LOG.debug( "done." );
+        LOG.debug( "done building index." );
         shp = new SHPReader( raf, crs, p.first, p.second );
-        RandomAccessFile output = new RandomAccessFile( shpName + ".rti", "rw" );
-        try {
-            p.first.write( output, p.second );
-        } finally {
-            output.close();
-        }
+        p.first.writeTreeToDisk( shpName + ".rti" );
         return shp;
     }
 
@@ -349,8 +341,11 @@ public class ShapeFeatureStore implements FeatureStore {
         // to work around Java's non-existent variant type
         LOG.debug( "Read envelopes from shape file..." );
         Pair<ArrayList<Pair<float[], Long>>, Boolean> p = shapeReader.readEnvelopes();
-        LOG.debug( "done." );
-        result.insertBulk( p.first );
+        LOG.debug( "done reading envelopes." );
+        for ( Pair<float[], Long> pair : p.first ) {
+            result.insert( pair.first, pair.second );
+        }
+        // result.insertBulk( p.first );
         return new Pair<RTree<Long>, Boolean>( result, p.second );
     }
 
