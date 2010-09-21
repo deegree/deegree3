@@ -231,11 +231,11 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
                             }
                         }
 
-                    } else {
+                    }
+                    if ( new QName( CSWConstants.CSW_202_NS, "ElementName" ).equals( omQueryElement.getQName() ) ) {
                         String msg = "ElementName is not implmeneted yet, use ElementSetName, instead. ";
                         LOG.info( msg );
                         throw new NotImplementedError( msg );
-
                     }
 
                     if ( new QName( CSWConstants.CSW_202_NS, "Constraint" ).equals( omQueryElement.getQName() ) ) {
