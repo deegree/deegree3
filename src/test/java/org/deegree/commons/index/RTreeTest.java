@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.deegree.commons.index.RTree.Entry;
+import org.deegree.commons.index.RTree.NodeEntry;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,11 +54,13 @@ import org.junit.Test;
  */
 public class RTreeTest {
 
+    private static final String STORAGE_PATH = "/org/deegree/commons/index/rtree_storage";;
+
     public int bigM = 4;
 
     float[] rootEnvelope = new float[] { 0, 0, 200, 200 };
 
-    public RTree<Integer> tree = new RTree<Integer>( rootEnvelope, bigM );
+    public RTree<Long> tree = new RTree<Long>( rootEnvelope, bigM );
 
     /**
      * With the sample tree from the wikipedia page http://en.wikipedia.org/wiki/File:R-tree.svg
@@ -68,52 +70,55 @@ public class RTreeTest {
     @Before
     public void loadWikipediaTree() {
         float[] box = new float[] { 20, 70, 35, 85 };
-        tree.insert( box, new Integer( 8 ) );
+        tree.insert( box, new Long( 8 ) );
         box = new float[] { 50, 90, 65, 105 };
-        tree.insert( box, new Integer( 9 ) );
+        tree.insert( box, new Long( 9 ) );
         box = new float[] { 50, 75, 65, 85 };
-        tree.insert( box, new Integer( 10 ) );
+        tree.insert( box, new Long( 10 ) );
         box = new float[] { 85, 15, 95, 110 };
-        tree.insert( box, new Integer( 11 ) );
+        tree.insert( box, new Long( 11 ) );
         box = new float[] { 40, 45, 90, 65 };
-        tree.insert( box, new Integer( 12 ) );
+        tree.insert( box, new Long( 12 ) );
         box = new float[] { 125, 40, 135, 95 };
-        tree.insert( box, new Integer( 13 ) );
+        tree.insert( box, new Long( 13 ) );
         box = new float[] { 115, 60, 130, 85 };
-        tree.insert( box, new Integer( 14 ) );
+        tree.insert( box, new Long( 14 ) );
         box = new float[] { 0, 0, 15, 30 };
-        tree.insert( box, new Integer( 15 ) );
+        tree.insert( box, new Long( 15 ) );
         box = new float[] { 20, 0, 80, 40 };
-        tree.insert( box, new Integer( 16 ) );
+        tree.insert( box, new Long( 16 ) );
         box = new float[] { 140, 20, 180, 45 };
-        tree.insert( box, new Integer( 17 ) );
+        tree.insert( box, new Long( 17 ) );
         box = new float[] { 150, 5, 165, 55 };
-        tree.insert( box, new Integer( 18 ) );
+        tree.insert( box, new Long( 18 ) );
         box = new float[] { 155, 10, 175, 25 };
-        tree.insert( box, new Integer( 19 ) );
+        tree.insert( box, new Long( 19 ) );
         box = new float[] { 145, 75, 160, 105 };
-        tree.insert( box, new Integer( 20 ) );
+        tree.insert( box, new Long( 20 ) );
         box = new float[] { 150, 60, 170, 75 };
-        tree.insert( box, new Integer( 21 ) );
+        tree.insert( box, new Long( 21 ) );
         box = new float[] { 155, 85, 180, 95 };
-        tree.insert( box, new Integer( 22 ) );
+        tree.insert( box, new Long( 22 ) );
         printOut( tree );
 
         System.out.println();
         System.out.println();
     }
 
-    public static void printOut( RTree tree ) {
+    /**
+     * @param tree
+     */
+    public static void printOut( RTree<Long> tree ) {
         if ( tree.root == null ) {
             throw new RuntimeException( "Tree is empty. Nothing to print." );
         }
 
-        List<Entry<Integer>[]> queue = new ArrayList<Entry<Integer>[]>();
+        List<NodeEntry[]> queue = new ArrayList<NodeEntry[]>();
         queue.add( tree.root );
         int index = 0;
         int firstIndexOfNextLevel = 0;
         while ( index < queue.size() ) {
-            Entry<Integer>[] cur = queue.get( index );
+            NodeEntry[] cur = queue.get( index );
             if ( index == firstIndexOfNextLevel ) {
                 firstIndexOfNextLevel = queue.size();
                 System.out.println();
@@ -135,7 +140,7 @@ public class RTreeTest {
         }
     }
 
-    private void myQuery( float[] box, Entry<Integer>[] entries ) {
+    private void myQuery( float[] box, NodeEntry[] entries ) {
         for ( int i = 0; i < entries.length; i++ ) {
             if ( entries[i] != null ) {
                 if ( tree.intersects( box, entries[i].bbox, 2 ) ) {
@@ -158,7 +163,15 @@ public class RTreeTest {
 
     @Test
     public void testRemove() {
-        tree.remove( new Integer( 11 ) );
+        tree.remove( new Long( 11 ) );
+        printOut( tree );
+    }
+
+    @Test
+    public void testFromStorage() {
+        tree.writeTreeToDisk( "/tmp/rtree.txt" );
+
+        tree = RTree.loadFromDisk( "/tmp/rtree.txt" );
         printOut( tree );
     }
 }
