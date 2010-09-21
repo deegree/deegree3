@@ -70,7 +70,7 @@ public class IMod extends Function implements FunctionProvider {
      * @param exprs
      */
     public IMod( List<Expression> exprs ) {
-        super( "imod", exprs );
+        super( "IMod", exprs );
     }
 
     @Override

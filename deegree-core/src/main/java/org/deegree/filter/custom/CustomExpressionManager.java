@@ -90,7 +90,8 @@ public class CustomExpressionManager {
     }
 
     /**
-     * Returns all available {@link FunctionProvider}s.
+     * Returns all available {@link FunctionProvider}s. Multiple functions with the same case ignored name are not
+     * allowed.
      * 
      * @return all available functions, keys: name, value: CustomFunction
      */
@@ -100,12 +101,13 @@ public class CustomExpressionManager {
             try {
                 for ( FunctionProvider function : customFunctionLoader ) {
                     LOG.debug( "Function: " + function + ", name: " + function.getName() );
-                    if ( nameToFunction.containsKey( function.getName() ) ) {
-                        LOG.error( "Multiple CustomFunction instances for name: '" + function.getName()
+                    String name = function.getName().toLowerCase();
+                    if ( nameToFunction.containsKey( name ) ) {
+                        LOG.error( "Multiple CustomFunction instances for name: '" + name
                                    + "' on classpath -- omitting '" + function.getClass().getName() + "'." );
                         continue;
                     }
-                    nameToFunction.put( function.getName(), function );
+                    nameToFunction.put( name, function );
                 }
             } catch ( Exception e ) {
                 LOG.error( e.getMessage(), e );
@@ -133,6 +135,6 @@ public class CustomExpressionManager {
      * @return custom function instance, or <code>null</code> if there is no function with this name
      */
     public static FunctionProvider getFunction( String name ) {
-        return getCustomFunctions().get( name );
+        return getCustomFunctions().get( name.toLowerCase() );
     }
 }

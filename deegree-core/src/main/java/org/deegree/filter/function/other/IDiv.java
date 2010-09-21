@@ -69,7 +69,7 @@ public class IDiv extends Function implements FunctionProvider {
      * @param exprs
      */
     public IDiv( List<Expression> exprs ) {
-        super( "idiv", exprs );
+        super( "IDiv", exprs );
     }
 
     @Override
