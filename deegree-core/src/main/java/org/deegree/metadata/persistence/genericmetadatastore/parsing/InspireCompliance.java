@@ -46,7 +46,7 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Req
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Inspects the INSPIRE compliance of the metadataset.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
