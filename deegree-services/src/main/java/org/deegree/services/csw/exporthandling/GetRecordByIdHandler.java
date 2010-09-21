@@ -165,8 +165,6 @@ public class GetRecordByIdHandler {
                     rec.getRecordById( writer, getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
                                        getRecBI.getElementSetName() );
                 }
-                // } catch ( InvalidParameterValueException e ) {
-                // throw new InvalidParameterValueException( "The requested identifier is no available in dataset." );
             } catch ( MetadataStoreException e ) {
                 throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
             }
