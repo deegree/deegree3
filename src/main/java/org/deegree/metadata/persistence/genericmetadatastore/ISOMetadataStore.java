@@ -146,10 +146,6 @@ public class ISOMetadataStore implements MetadataStore {
      */
     private String encoding;
 
-    // private final boolean inspire;
-
-    // private final boolean generateFileIds;
-
     /**
      * maps the specific returnable element format to a concrete table in the backend<br>
      * brief, summary, full
