@@ -70,7 +70,7 @@ public class GeoAlgorithmTest {
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
 
     // manages all supported algorithms with example data
     private final LinkedList<GeoAlgorithmWithData> algorithms;
