@@ -37,6 +37,7 @@ package org.deegree.geometry.standard;
 
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
@@ -58,7 +59,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope {
 
     private static final Logger LOG = LoggerFactory.getLogger( DefaultEnvelope.class );
-    
+
     private Point max;
 
     private Point min;
@@ -193,4 +194,39 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     public String toString() {
         return "min: " + min + ", max: " + max + ", span0: " + getSpan0() + ", span1: " + getSpan1() + " , crs: " + crs;
     }
+
+    @Override
+    public boolean intersects( Geometry other ) {
+        if ( !( other instanceof Envelope ) ) {
+            return super.intersects( other );
+        }
+
+        Envelope e = (Envelope) other;
+
+        double minX1 = this.getMin().get0();
+        double minY1 = this.getMin().get1();
+        double maxX1 = this.getMax().get0();
+        double maxY1 = this.getMax().get1();
+
+        double minX2 = e.getMin().get0();
+        double minY2 = e.getMin().get1();
+        double maxX2 = e.getMax().get0();
+        double maxY2 = e.getMax().get1();
+
+        return pointInside( minX1, minY1, e ) || pointInside( minX1, maxY1, e ) || pointInside( maxX1, minY1, e )
+               || pointInside( maxX1, maxY1, e ) || pointInside( minX2, minY2, this )
+               || pointInside( minX2, maxY2, this ) || pointInside( maxX2, minY2, this )
+               || pointInside( maxX2, maxY2, this ) || noEdgeOverlap( e, this ) || noEdgeOverlap( this, e );
+    }
+
+    private boolean pointInside( double x, double y, Envelope bbox ) {
+        return x >= bbox.getMin().get0() && x <= bbox.getMax().get0() && y >= bbox.getMin().get1()
+               && y <= bbox.getMax().get1();
+    }
+
+    private static final boolean noEdgeOverlap( final Envelope box1, final Envelope box2 ) {
+        return box1.getMin().get0() <= box2.getMin().get0() && box2.getMax().get0() <= box1.getMax().get0()
+               && box2.getMin().get1() <= box1.getMin().get1() && box1.getMax().get1() <= box2.getMax().get1();
+    }
+
 }
