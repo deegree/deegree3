@@ -52,6 +52,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -74,6 +75,7 @@ import org.deegree.filter.IdFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
@@ -237,6 +239,37 @@ public class MemoryFeatureStore implements FeatureStore {
 
             // determine / filter features
             fc = ftToFeatures.get( ft );
+
+            Envelope prefilterBox = query.getPrefilterBBox();
+            if ( prefilterBox != null && prefilterBox.getCoordinateSystem() != null ) {
+                CRS pboxcrs = prefilterBox.getCoordinateSystem();
+                try {
+                    GeometryTransformer t = new GeometryTransformer( prefilterBox.getCoordinateSystem() );
+
+                    GenericFeatureCollection col = new GenericFeatureCollection();
+                    for ( Feature f : fc ) {
+                        Envelope fbox = f.getEnvelope();
+                        if ( fbox != null ) {
+                            fbox = fbox.getCoordinateSystem().equals( pboxcrs ) ? fbox : t.transform( fbox );
+                        }
+
+                        if ( fbox == null || fbox.intersects( prefilterBox ) ) {
+                            col.add( f );
+                        }
+                    }
+                    fc = col;
+                } catch ( IllegalArgumentException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch ( UnknownCRSException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch ( TransformationException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
             if ( query.getFilter() != null ) {
                 fc = fc.getMembers( query.getFilter() );
             }
