@@ -44,6 +44,8 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.utils.kvp.MissingParameterException;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
@@ -93,6 +95,7 @@ public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
      * 
      * @return {@link GetRecordById}
      */
+    @SuppressWarnings("unchecked")
     private GetRecordById parse202() {
         // outputFormat (optional)
         String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), "application/xml" );
@@ -107,11 +110,19 @@ public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
         URI outputSchema = URI.create( outputSchemaString );
 
         // elementName List<String>
-        List<OMElement> idList = getRequiredNodes( rootElement, new XPath( "csw:Id", nsContext ) );
-        List<String> id = new ArrayList<String>();
-        for ( OMElement elem : idList ) {
-            String idString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            id.add( idString );
+        List<String> id = null;
+        try {
+            List<OMElement> idList = getRequiredNodes( rootElement, new XPath( "csw:Id", nsContext ) );
+            LOG.debug( "idList: " + idList );
+            id = new ArrayList<String>();
+            for ( OMElement elem : idList ) {
+                String idString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
+                id.add( idString );
+            }
+        } catch ( XMLParsingException e ) {
+            String msg = "No ID provided, please check the mandatory element 'id'. ";
+            LOG.info( msg );
+            throw new MissingParameterException( msg );
         }
 
         return new GetRecordById( VERSION_202, outputFormat, elementSetName, outputSchema, id );

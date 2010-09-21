@@ -44,8 +44,12 @@ import java.util.Map;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
+import org.deegree.commons.utils.kvp.MissingParameterException;
+import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates the method for parsing a {@link GetRecordById} KVP request via Http-GET.
@@ -56,6 +60,7 @@ import org.deegree.protocol.i18n.Messages;
  * @version $Revision: $, $Date: $
  */
 public class GetRecordByIdKVPAdapter {
+    private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdKVPAdapter.class );
 
     /**
      * Parses the {@link GetRecordById} kvp request and decides which version has to parse because of the requested
@@ -64,6 +69,7 @@ public class GetRecordByIdKVPAdapter {
      * @param normalizedKVPParams
      *            that are requested containing all mandatory and optional parts regarding CSW spec
      * @return {@link GetRecordById}
+     * @throws MetadataStoreException
      */
     public static GetRecordById parse( Map<String, String> normalizedKVPParams ) {
         Version version = Version.parseVersion( KVPUtils.getRequired( normalizedKVPParams, "VERSION" ) );
@@ -88,6 +94,7 @@ public class GetRecordByIdKVPAdapter {
      * @param normalizedKVPParams
      *            that are requested containing all mandatory and optional parts regarding CSW spec
      * @return {@link GetRecordById}
+     * @throws MetadataStoreException
      */
     private static GetRecordById parse202( Version version202, Map<String, String> normalizedKVPParams ) {
 
@@ -106,6 +113,11 @@ public class GetRecordByIdKVPAdapter {
 
         // elementName List<String>
         List<String> id = KVPUtils.splitAll( normalizedKVPParams, "ID" );
+        if ( id.size() == 0 ) {
+            String msg = "No ID provided, please check the mandatory element 'id'. ";
+            LOG.info( msg );
+            throw new MissingParameterException( msg );
+        }
 
         return new GetRecordById( version202, outputFormat, elementSetName, outputSchema, id );
     }

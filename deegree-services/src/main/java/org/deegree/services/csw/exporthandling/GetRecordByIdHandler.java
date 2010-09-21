@@ -99,7 +99,7 @@ public class GetRecordByIdHandler {
     public void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, boolean isSoap )
                             throws XMLStreamException, IOException, InvalidParameterValueException, OWSException {
 
-        LOG.debug( "doGetRecords: " + getRecBI );
+        LOG.debug( "doGetRecordById: " + getRecBI );
 
         Version version = getRecBI.getVersion();
 

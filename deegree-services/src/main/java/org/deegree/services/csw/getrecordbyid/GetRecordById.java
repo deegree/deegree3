@@ -69,8 +69,8 @@ public class GetRecordById extends AbstractCSWRequest {
      * @param outputSchema
      * @param id
      */
-    public GetRecordById( Version version, String outputFormat, ReturnableElement elementSetName,
-                          URI outputSchema, List<String> id ) {
+    public GetRecordById( Version version, String outputFormat, ReturnableElement elementSetName, URI outputSchema,
+                          List<String> id ) {
         super( version, null, null, outputFormat );
         this.elementSetName = elementSetName;
         this.outputSchema = outputSchema;
@@ -96,6 +96,20 @@ public class GetRecordById extends AbstractCSWRequest {
      */
     public List<String> getRequestedIds() {
         return requestedIds;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append( "GetRecordById-request: \n" );
+        s.append( "\t elementSetName: " ).append( elementSetName ).append( "\n" );
+        s.append( "\t outputSchema: " ).append( outputSchema ).append( "\n" );
+        for ( String r : requestedIds ) {
+            s.append( "\t requestedID: " ).append( r ).append( "\n" );
+        }
+
+        return s.toString();
+
     }
 
 }
