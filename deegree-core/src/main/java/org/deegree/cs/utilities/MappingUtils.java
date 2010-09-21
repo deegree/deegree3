@@ -131,7 +131,7 @@ public class MappingUtils {
         Iterator<Transformation> it = userRequested.iterator();
         while ( it.hasNext() ) {
             Transformation tbu = it.next();
-            if ( tbu != null ) {
+            if ( tbu != null && !"Helmert".equals( tbu.getImplementationName() ) ) {
                 originalChain = traverseAndReplace( originalChain, tbu );
             }
         }

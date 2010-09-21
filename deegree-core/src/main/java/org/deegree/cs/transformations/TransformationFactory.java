@@ -250,7 +250,7 @@ public class TransformationFactory {
 
         // check if the list of required transformations contains a 'direct' transformation.
         Transformation result = getRequiredTransformation( toBeUsed, sourceCRS, targetCRS );
-        if ( result == null ) {
+        if ( result == null || "Helmert".equals( result.getImplementationName() ) ) {
             // check if a 'direct' transformation could be loaded from the configuration;
             result = getTransformation( sourceCRS, targetCRS );
             if ( result == null || "Helmert".equals( result.getImplementationName() ) ) {
@@ -746,9 +746,36 @@ public class TransformationFactory {
                 result.inverse();
             }
         }
-        if ( result == null || "Helmert".equalsIgnoreCase( result.getImplementationName() )
-             || ! this.preferredDSTransform.isPreferred( result ) ) {
+        // prepare the found transformation if it is a helmert transfomation
+        if ( result != null && "Helmert".equalsIgnoreCase( result.getImplementationName() )
+             && this.preferredDSTransform.isPreferred( result ) ) {
+            LOG.debug( "Creating geographic -> geographic transformation: from (source): " + sourceCRS.getCode()
+                       + " to(target): " + targetCRS.getCode() + " based on a given Helmert transformation" );
 
+            final GeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
+            final GeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
+            String name = sourceCRS.getName() + "_Geocentric";
+            final GeocentricCRS sourceGCS = new GeocentricCRS( sourceDatum, sourceCRS.getCode(), name );
+            name = targetCRS.getName() + "_Geocentric";
+            final GeocentricCRS targetGCS = new GeocentricCRS( targetDatum, targetCRS.getCode(), name );
+
+            Transformation step1 = null;
+            Transformation step2 = null;
+            Transformation step3 = null;
+            // geographic->geocentric
+            step1 = createTransformation( sourceCRS, sourceGCS );
+            // transformation found in configuration
+            step2 = result;
+            // geocentric->geographic
+            step3 = createTransformation( targetCRS, targetGCS );
+
+            if ( step3 != null ) {
+                step3.inverse();// call inverseTransform from step 3.
+            }
+            return concatenate( step1, step2, step3 );
+
+        } else if ( result == null || "Helmert".equalsIgnoreCase( result.getImplementationName() )
+                    || !this.preferredDSTransform.isPreferred( result ) ) {
             LOG.debug( "Creating geographic ->geographic transformation: from (source): " + sourceCRS.getCode()
                        + " to(target): " + targetCRS.getCode() );
             // if a conversion needs to take place

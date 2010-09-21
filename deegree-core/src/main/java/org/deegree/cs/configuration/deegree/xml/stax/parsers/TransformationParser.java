@@ -168,9 +168,9 @@ public class TransformationParser extends DefinitionParser {
         Transformation result = getProvider().getCachedIdentifiable( Transformation.class, transformId );
         if ( result == null ) {
             try {
-                Transformation tmpRes = parseTransformation( getConfigReader() );
-                while ( tmpRes != null && !tmpRes.hasId( transformId, false, true ) ) {
-                    tmpRes = parseTransformation( getConfigReader() );
+                result = parseTransformation( getConfigReader() );
+                while ( result != null && !result.hasId( transformId, false, true ) ) {
+                    result = parseTransformation( getConfigReader() );
                 }
 
             } catch ( XMLStreamException e ) {
@@ -394,7 +394,7 @@ public class TransformationParser extends DefinitionParser {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "helmert",
                                                                       "definitions", e.getMessage() ), e );
         }
-        return new Helmert( xT, yT, zT, xR, yR, zR, scale, null, GeographicCRS.WGS84, identifiable );
+        return new Helmert( xT, yT, zT, xR, yR, zR, scale, sourceCRS, targetCRS, identifiable );
     }
 
     @Override
