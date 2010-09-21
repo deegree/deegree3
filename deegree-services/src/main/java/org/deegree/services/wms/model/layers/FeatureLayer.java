@@ -42,6 +42,7 @@ import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
 import static org.deegree.cs.CRSCodeType.getUndefined;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.services.wms.model.Dimension.formatDimensionValueList;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -347,7 +348,7 @@ public class FeatureLayer extends Layer {
         }
         LinkedList<Operator> list = new LinkedList<Operator>();
         for ( PropertyType pt : u.getPropertyDeclarations() ) {
-            if ( pt instanceof GeometryPropertyType ) {
+            if ( pt instanceof GeometryPropertyType && ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 ) {
                 list.add( new And( new BBOX( new PropertyName( pt.getName() ), clickBox ),
                                    new Intersects( new PropertyName( pt.getName() ), clickBox ) ) );
             }
@@ -378,7 +379,6 @@ public class FeatureLayer extends Layer {
         try {
             final Pair<Filter, LinkedList<String>> dimFilter = getDimensionFilter( fi.getDimensions() );
             // TODO need the style here for filters, scale constraints etc.
-
             final Envelope clickBox = fi.getClickBox();
             final Operator operator = dimFilter == null ? null : ( (OperatorFilter) dimFilter.first ).getOperator();
 
