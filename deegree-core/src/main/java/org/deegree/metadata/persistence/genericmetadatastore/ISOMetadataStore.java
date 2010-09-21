@@ -381,11 +381,9 @@ public class ISOMetadataStore implements MetadataStore {
                 typeNameFormatNumber = typeNames.get( typeName );
             }
 
-            if ( !typeName.getNamespaceURI().equals( outputSchema.toString() ) ) {
-                for ( QName qName : typeNames.keySet() ) {
-                    if ( qName.getNamespaceURI().equals( outputSchema.toString() ) ) {
-                        profileFormatNumberOutputSchema = typeNames.get( qName );
-                    }
+            for ( QName qName : typeNames.keySet() ) {
+                if ( qName.getNamespaceURI().equals( outputSchema.toString() ) ) {
+                    profileFormatNumberOutputSchema = typeNames.get( qName );
                 }
             }
 
@@ -968,7 +966,7 @@ public class ISOMetadataStore implements MetadataStore {
 
                         ps = generateSELECTStatement(
                                                       formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief ),
-                                                      null, formatNum, 0, false, builder, conn );
+                                                      null, 0, formatNum, false, builder, conn );
 
                         rs = ps.executeQuery();
                         List<Integer> deletableDatasets = new ArrayList<Integer>();

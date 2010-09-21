@@ -105,7 +105,7 @@ public class FileIdentifierInspector {
     /**
      * 
      * @param fi
-     *            the fileIdentifier that should be determined, can be <Code>null</Code>.
+     *            the fileIdentifier that should be determined for one metadata, can be <Code>null</Code>.
      * @param rsList
      *            the list of resourceIdentifier, not <Code>null</Code>.
      * @return the new fileIdentifier.
@@ -115,6 +115,7 @@ public class FileIdentifierInspector {
                             throws MetadataStoreException {
         this.id = id;
         this.uuid = uuid;
+        this.idList.clear();
         if ( fi != null ) {
             if ( proveIdExistence( fi ) ) {
                 LOG.info( "'{}' accepted as a valid fileIdentifier. ", fi );
