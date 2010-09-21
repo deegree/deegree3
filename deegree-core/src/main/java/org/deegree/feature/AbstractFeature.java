@@ -35,9 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
+import static java.util.Collections.synchronizedMap;
+
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -72,6 +76,8 @@ public abstract class AbstractFeature implements Feature {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractFeature.class );
 
+    private final Map<PropertyName, TypedObjectNode[]> XPATH_MAP = synchronizedMap( new HashMap<PropertyName, TypedObjectNode[]>() );
+
     /** Stores the default GML properties that every GML feature allows for (gml:name, gml:description, ...). */
     protected StandardGMLFeatureProps standardProps;
 
@@ -89,24 +95,33 @@ public abstract class AbstractFeature implements Feature {
             return getProperties( simplePropName, version );
         }
 
-        // no. activate the full xpath machinery
-        XPath xpath = new FeatureXPath( propName.getPropertyName(), this, version );
-        xpath.setNamespaceContext( propName.getNsContext() );
-        List<?> selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature>( null, this, version ) );
-
-        TypedObjectNode[] resultValues = new TypedObjectNode[selectedNodes.size()];
-        int i = 0;
-        for ( Object node : selectedNodes ) {
-            if ( node instanceof XPathNode<?> ) {
-                resultValues[i++] = ( (XPathNode<?>) node ).getValue();
-            } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
-                resultValues[i++] = new PrimitiveValue( node );
-            } else {
-                throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
-                                            + node.getClass().getName() + "' (=" + node + ") during XPath-evaluation." );
+        TypedObjectNode[] resultValues;
+        synchronized ( this ) {
+            resultValues = XPATH_MAP.get( propName );
+            if ( resultValues == null ) {
+                // no. activate the full xpath machinery
+                XPath xpath = new FeatureXPath( propName.getPropertyName(), this, version );
+                xpath.setNamespaceContext( propName.getNsContext() );
+                List<?> selectedNodes;
+                selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature>( null, this, version ) );
+                resultValues = new TypedObjectNode[selectedNodes.size()];
+                int i = 0;
+                for ( Object node : selectedNodes ) {
+                    if ( node instanceof XPathNode<?> ) {
+                        resultValues[i++] = ( (XPathNode<?>) node ).getValue();
+                    } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
+                        resultValues[i++] = new PrimitiveValue( node );
+                    } else {
+                        throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
+                                                    + node.getClass().getName() + "' (=" + node
+                                                    + ") during XPath-evaluation." );
+                    }
+                }
+                XPATH_MAP.put( propName, resultValues );
             }
+            return resultValues;
         }
-        return resultValues;
+
     }
 
     @Override
