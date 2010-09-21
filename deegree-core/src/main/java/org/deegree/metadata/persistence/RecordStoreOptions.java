@@ -38,6 +38,7 @@ package org.deegree.metadata.persistence;
 import java.io.Writer;
 
 import org.deegree.filter.Filter;
+import org.deegree.filter.sort.SortProperty;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
@@ -62,6 +63,8 @@ public class RecordStoreOptions {
 
     private Filter filter;
 
+    private SortProperty[] sorting;
+
     /**
      * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared.
      * 
@@ -76,11 +79,11 @@ public class RecordStoreOptions {
      * @param startPosition
      *            at which record position should start the response}
      */
-    public RecordStoreOptions( Filter filter, ResultType resultType, ReturnableElement setOfReturnableElements,
-                               int maxRecords, int startPosition ) {
+    public RecordStoreOptions( Filter filter, SortProperty[] sorting, ResultType resultType,
+                               ReturnableElement setOfReturnableElements, int maxRecords, int startPosition ) {
 
         this.filter = filter;
-
+        this.sorting = sorting;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
         this.maxRecords = maxRecords;
@@ -141,6 +144,10 @@ public class RecordStoreOptions {
      */
     public int getStartPosition() {
         return startPosition;
+    }
+
+    public SortProperty[] getSorting() {
+        return sorting;
     }
 
 }

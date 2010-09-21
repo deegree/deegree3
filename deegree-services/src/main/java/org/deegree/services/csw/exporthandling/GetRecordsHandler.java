@@ -261,9 +261,9 @@ public class GetRecordsHandler {
                 }
             }
 
-            RecordStoreOptions gdds = new RecordStoreOptions( getRec.getConstraint(), getRec.getResultType(),
-                                                              getRec.getElementSetName(), getRec.getMaxRecords(),
-                                                              getRec.getStartPosition() );
+            RecordStoreOptions gdds = new RecordStoreOptions( getRec.getConstraint(), getRec.getSortBy(),
+                                                              getRec.getResultType(), getRec.getElementSetName(),
+                                                              getRec.getMaxRecords(), getRec.getStartPosition() );
 
             // commits the record to the getRecords operation
             for ( QName qName : requestedTypeNames.keySet() ) {

@@ -368,11 +368,10 @@ public class ISOMetadataStore implements MetadataStore {
         PostGISWhereBuilder builder = null;
         Connection conn = null;
 
-        // TODO sortProperty
         try {
             conn = ConnectionManager.getConnection( connectionId );
-            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) recordStoreOptions.getFilter(), null,
-                                               useLegacyPredicates );
+            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) recordStoreOptions.getFilter(),
+                                               recordStoreOptions.getSorting(), useLegacyPredicates );
 
             int profileFormatNumberOutputSchema = 0;
             int typeNameFormatNumber = 0;
@@ -681,7 +680,8 @@ public class ISOMetadataStore implements MetadataStore {
                 getDatasetIDs.append( " AND " );
                 getDatasetIDs.append( builder.getWhere().getSQL() );
             }
-            if ( builder.getOrderBy() != null ) {
+
+            if ( builder.getOrderBy() != null && !setCount ) {
                 getDatasetIDs.append( " ORDER BY " );
                 getDatasetIDs.append( builder.getOrderBy().getSQL() );
             }

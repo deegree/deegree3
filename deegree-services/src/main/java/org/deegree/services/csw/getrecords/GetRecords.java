@@ -74,7 +74,7 @@ public class GetRecords extends AbstractCSWRequest {
 
     private Filter constraint;
 
-    private List<SortProperty> sortBy;
+    private SortProperty[] sortBy;
 
     private boolean distributedSearch;
 
@@ -85,10 +85,8 @@ public class GetRecords extends AbstractCSWRequest {
     private ResultType resultType;
 
     private ConstraintLanguage constraintLanguage;
-    
-    private OMElement holeRequest;
 
-    
+    private OMElement holeRequest;
 
     /**
      * Creates a new {@link GetRecords} request.
@@ -122,7 +120,7 @@ public class GetRecords extends AbstractCSWRequest {
     public GetRecords( Version version, NamespaceContext namespaces, QName[] typeNames, String outputFormat,
                        ResultType resultType, String requestId, URI outputSchema, int startPosition, int maxRecords,
                        List<String> elementName, ReturnableElement elementSetName,
-                       ConstraintLanguage constraintLanguage, Filter constraint, List<SortProperty> sortBy,
+                       ConstraintLanguage constraintLanguage, Filter constraint, SortProperty[] sortBy,
                        boolean distributedSearch, int hopCount, String responseHandler, OMElement holeRequest ) {
         super( version, namespaces, typeNames, outputFormat );
         this.resultType = resultType;
@@ -193,7 +191,7 @@ public class GetRecords extends AbstractCSWRequest {
     /**
      * @return the sortBy
      */
-    public List<SortProperty> getSortBy() {
+    public SortProperty[] getSortBy() {
         return sortBy;
     }
 
@@ -238,7 +236,5 @@ public class GetRecords extends AbstractCSWRequest {
     public OMElement getHoleRequest() {
         return holeRequest;
     }
-    
-    
 
 }

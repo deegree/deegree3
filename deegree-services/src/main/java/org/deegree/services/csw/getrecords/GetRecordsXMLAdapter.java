@@ -39,7 +39,6 @@ import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -150,7 +149,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
         Filter constraint = null;
         ConstraintLanguage constraintLanguage = null;
         // String constraint = "";
-        List<SortProperty> sortProps = null;
+        SortProperty[] sortProps = null;
 
         // Question about the occurrence of the elements
         for ( OMElement omElement : getRecordsChildElements ) {
@@ -193,7 +192,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
                 int counterQName = 0;
                 for ( String s : queryTypeNamesString ) {
                     LOG.debug( "Parsing typeName '" + s + "' of Query as QName. " );
-                    QName qname = parseQName( s, omElement );
+                    QName qname = parseQName( s, rootElement );
                     queryTypeNames[counterQName++] = qname;
                 }
 
@@ -285,11 +284,12 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
                     }
                     if ( new QName( OGCNS, "SortBy" ).equals( omQueryElement.getQName() ) ) {
-                        sortProps = new ArrayList<SortProperty>();
+
                         List<OMElement> sortPropertyElements = getRequiredElements( omQueryElement,
                                                                                     new XPath( "ogc:SortProperty",
                                                                                                nsContext ) );
-
+                        sortProps = new SortProperty[sortPropertyElements.size()];
+                        int counter = 0;
                         for ( OMElement sortPropertyEl : sortPropertyElements ) {
                             OMElement propNameEl = getRequiredElement( sortPropertyEl, new XPath( "ogc:PropertyName",
                                                                                                   nsContext ) );
@@ -300,7 +300,7 @@ public class GetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
                                                                                         propNameEl.getText(),
                                                                                         getNamespaceContext( propNameEl ) ),
                                                                       sortOrder.equals( "ASC" ) );
-                            sortProps.add( sortProp );
+                            sortProps[counter++] = sortProp;
                         }
                     }
 

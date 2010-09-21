@@ -42,7 +42,6 @@ import static org.deegree.protocol.csw.CSWConstants.ConstraintLanguage.FILTER;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -216,7 +215,7 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
 
         // sortBy List<String>
         List<String> sortByStrList = KVPUtils.splitAll( normalizedKVPParams, "SORTBY" );
-        List<SortProperty> sortBy = getSortBy( sortByStrList, nsContext );
+        SortProperty[] sortBy = getSortBy( sortByStrList, nsContext );
 
         // distributedSearch (optional; default = false)
         boolean distributedSearch = KVPUtils.getBoolean( normalizedKVPParams, "DISTRIBUTEDSEARCH", false );
@@ -241,24 +240,25 @@ public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
      * @param nsContext
      * @return
      */
-    private static List<SortProperty> getSortBy( List<String> sortByStrList, NamespaceContext nsContext ) {
-        List<SortProperty> result = null;
+    private static SortProperty[] getSortBy( List<String> sortByStrList, NamespaceContext nsContext ) {
+        SortProperty[] result = null;
         if ( sortByStrList != null ) {
 
-            result = new LinkedList<SortProperty>();
+            result = new SortProperty[sortByStrList.size()];
+            int counter = 0;
             for ( String s : sortByStrList ) {
                 if ( s.endsWith( " D" ) ) {
                     String sortbyProp = s.substring( 0, s.indexOf( " " ) );
-                    result.add( new SortProperty( new PropertyName( sortbyProp, nsContext ), false ) );
+                    result[counter++] = new SortProperty( new PropertyName( sortbyProp, nsContext ), false );
 
                 } else {
 
                     if ( s.endsWith( " A" ) ) {
                         String sortbyProp = s.substring( 0, s.indexOf( " " ) );
-                        result.add( new SortProperty( new PropertyName( sortbyProp, nsContext ), true ) );
+                        result[counter++] = new SortProperty( new PropertyName( sortbyProp, nsContext ), true );
 
                     } else {
-                        result.add( new SortProperty( new PropertyName( s, nsContext ), true ) );
+                        result[counter++] = new SortProperty( new PropertyName( s, nsContext ), true );
                     }
                 }
             }
