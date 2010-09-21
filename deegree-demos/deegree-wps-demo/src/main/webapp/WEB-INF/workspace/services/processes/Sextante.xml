@@ -3,30 +3,30 @@
   xmlns="http://www.deegree.org/services/wps/sextante" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wps/sextante sextante.xsd">
 
-  <Process id="st_boundingbox">
+  <Process id="boundingbox">
     <Abstract>This algorithm generates a new vector layer with a single
       polygon representing the bounding box of an input vector layer.
     </Abstract>
   </Process>
 
-  <Process id="st_centroids">
+  <Process id="centroids">
     <Abstract>Creates a new points layer with the centroids of the
       polygons in a given layer.</Abstract>
   </Process>
 
-  <Process id="st_changelinedirection">
+  <Process id="changelinedirection">
     <Abstract>This algorithm inverts the ordering of vertices in a line,
       thus reversing its orientation.</Abstract>
   </Process>
 
-  <Process id="st_cleanpointslayer">
+  <Process id="cleanpointslayer">
     <Abstract>This algorithm eliminates duplicated points. If several
       points with the same coordinates appear in a layer, the algorithm
       will leave just the first one of them, removing the remaining
       ones.</Abstract>
   </Process>
 
-  <Process id="st_cleanvectorlayer">
+  <Process id="cleanvectorlayer">
     <Abstract>This algorithms checks the integrity of the attributes
       tables of a vector layer and removes invalid features (features
       with missing attributes or invalid values). The number of invalid
@@ -34,50 +34,50 @@
     </Abstract>
   </Process>
 
-  <Process id="st_clip">
+  <Process id="clip">
     <Abstract>This algorithm clips a vector layer using the polygons
       from an additional polygons layer.</Abstract>
   </Process>
 
-  <Process id="st_countpoints">
+  <Process id="countpoints">
     <Abstract>This algorithm counts the points in each polygon of a
       given vector layer.</Abstract>
   </Process>
 
-  <Process id="st_delaunay">
+  <Process id="delaunay">
     <Abstract>This algorithm creates a delaunay triangulation from a set
       of points.</Abstract>
   </Process>
 
-  <Process id="st_difference">
+  <Process id="difference">
     <Abstract>-</Abstract>
   </Process>
 
-  <Process id="st_extractendpointsoflines">
+  <Process id="extractendpointsoflines">
     <Abstract>-</Abstract>
   </Process>
 
-  <Process id="st_extractnodes">
+  <Process id="extractnodes">
     <Abstract>-</Abstract>
   </Process>
 
-  <Process id="st_geometricproperties">
+  <Process id="geometricproperties">
     <Abstract>This algorithm computes some geometric properties of the
       polygons in a given vector layer.</Abstract>
   </Process>
 
-  <Process id="st_geometricpropertieslines">
+  <Process id="geometricpropertieslines">
     <Abstract>This algorithm computes some geometric properties of the
       lines in a given vector layer.</Abstract>
   </Process>
 
-  <Process id="st_geometriestopoints">
+  <Process id="geometriestopoints">
     <Abstract>This algorithm generates a new points layer, taking all
       nodes from an input vector layer. Attributes of each point are
       taken from the geometry it belongs to.</Abstract>
   </Process>
 
-  <Process id="st_intersection">
+  <Process id="intersection">
     <Abstract>This algorithm computes the intersection between two
       polygon vector layers. This is equivalent to a boolean AND
       operator. The geometries are altered and attributes table of the
@@ -85,33 +85,33 @@
       attributes tables, as shown in the following picture.</Abstract>
   </Process>
 
-  <Process id="st_nodelines">
+  <Process id="nodelines">
     <Abstract>-</Abstract>
   </Process>
 
-  <Process id="st_pointcoordinates">
+  <Process id="pointcoordinates">
     <Abstract>This algorithm takes a points layer and generates a new
       layer with those same points, but adding two new fields (X and Y)
       to its attributes table, containing X and Y coordinates of each
       point</Abstract>
   </Process>
 
-  <Process id="st_polygonize">
+  <Process id="polygonize">
     <Abstract>-</Abstract>
   </Process>
 
-  <Process id="st_polygonstopolylines">
+  <Process id="polygonstopolylines">
     <Abstract>This algorithms converts a polygons layer into a polylines
       layer.</Abstract>
   </Process>
 
-  <Process id="st_polylinestopolygons">
+  <Process id="polylinestopolygons">
     <Abstract>This algorithm converts polylines to polygons. Each
       polygon gets the attributes of the polyline it was created from.
     </Abstract>
   </Process>
 
-  <Process id="st_polylinestosinglesegments">
+  <Process id="polylinestosinglesegments">
     <Abstract>This algorithm takes a lines layer and generates a new
       lines layer where each line has been substituted by a single
       segment (a line with just two nodes), which best approximate the
@@ -119,7 +119,7 @@
     </Abstract>
   </Process>
 
-  <Process id="st_removeholes">
+  <Process id="removeholes">
     <Abstract>This algorithm removes holes from polygons in a polygon
       layer. A hole is an empty area within a polygon. Polygons with
       holes are defined as a envelope polygon (the outer contour) and a
@@ -128,18 +128,51 @@
       outer one.</Abstract>
   </Process>
 
-  <Process id="st_removerepeatedgeometries">
+  <Process id="removerepeatedgeometries">
     <Abstract>-</Abstract>
   </Process>
 
-  <Process id="st_splitmultipart">
+  <Process id="splitmultipart">
     <Abstract>This algorithm separates those features that contains more
       than one single geometry. The resulting layer will contain each
       one of those geometries in a different feature. All features will
       share the same associated attributes.</Abstract>
   </Process>
 
+  <Process id="splitpolylinesatnodes">
+    <Abstract>-</Abstract>
+  </Process>
 
+  <Process id="symdifference">
+    <Abstract>-</Abstract>
+  </Process>
+
+  <Process id="union">
+    <Abstract>-</Abstract>
+  </Process>
+
+  <Process id="vectormean">
+    <Abstract>This algorithm computes the directional mean of a set of
+      lines in a vector layer. Each segment of the input lines is
+      treated as a vector. Summing up all those vector, a new one
+      showing the directional mean is obtained. This vector is
+      represented as a single-segment line in the resulting vector
+      layer. The modulus of the resulting vector provides information
+      about the directional variance. Uniform directions will yield
+      longer vectors.</Abstract>
+  </Process>
+
+  <Process id="clipbyrectangle">
+    <Abstract>This algorithms clips a vector layer using a rectangular
+      area defined by its max and min coordinates. Instead of using a
+      second layer to define the clipping region, this is defined
+      numerically by the user. Useful in scripting and batch mode.
+    </Abstract>
+  </Process>
+
+  <Process id="groupnearfeatures">
+    <Abstract>-</Abstract>
+  </Process>
 
 
 
