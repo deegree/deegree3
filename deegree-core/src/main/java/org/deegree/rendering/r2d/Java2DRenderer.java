@@ -79,11 +79,9 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.linearization.CurveLinearizer;
+import org.deegree.geometry.linearization.GeometryLinearizer;
 import org.deegree.geometry.linearization.NumPointsCriterion;
-import org.deegree.geometry.linearization.SurfaceLinearizer;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
@@ -129,9 +127,7 @@ public class Java2DRenderer implements Renderer {
 
     private double res;
 
-    private static final CurveLinearizer curveLinearizer = new CurveLinearizer( new GeometryFactory() );
-
-    private static final SurfaceLinearizer surfaceLinearizer = new SurfaceLinearizer( new GeometryFactory() );
+    private static final GeometryLinearizer linearizer = new GeometryLinearizer();
 
     /**
      * @param graphics
@@ -386,13 +382,13 @@ public class Java2DRenderer implements Renderer {
             } catch ( IllegalArgumentException e ) {
                 if ( g instanceof Surface ) {
                     @SuppressWarnings("unchecked")
-                    T g2 = (T) transform( surfaceLinearizer.linearize( (Surface) g, new NumPointsCriterion( 100 ) ) );
+                    T g2 = (T) transform( linearizer.linearize( (Surface) g, new NumPointsCriterion( 100 ) ) );
                     g2.setCoordinateSystem( g.getCoordinateSystem() );
                     return g2;
                 }
                 if ( g instanceof Curve ) {
                     @SuppressWarnings("unchecked")
-                    T g2 = (T) transform( curveLinearizer.linearize( (Curve) g, new NumPointsCriterion( 100 ) ) );
+                    T g2 = (T) transform( linearizer.linearize( (Curve) g, new NumPointsCriterion( 100 ) ) );
                     g2.setCoordinateSystem( g.getCoordinateSystem() );
                     return g2;
                 }
@@ -489,7 +485,7 @@ public class Java2DRenderer implements Renderer {
 
         // TODO use error criterion
         CRS crs = curve.getCoordinateSystem();
-        curve = curveLinearizer.linearize( curve, new NumPointsCriterion( 100 ) );
+        curve = linearizer.linearize( curve, new NumPointsCriterion( 100 ) );
         curve.setCoordinateSystem( crs );
         Points points = curve.getControlPoints();
         Iterator<Point> iter = points.iterator();

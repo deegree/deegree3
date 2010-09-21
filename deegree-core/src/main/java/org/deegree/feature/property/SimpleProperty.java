@@ -38,6 +38,7 @@ package org.deegree.feature.property;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -79,6 +80,11 @@ public class SimpleProperty implements Property {
     @Override
     public PrimitiveValue getValue() {
         return value;
+    }
+
+    @Override
+    public void setValue( TypedObjectNode value ) {
+        this.value = (PrimitiveValue) value;
     }
 
     @Override

@@ -106,4 +106,8 @@ public class GenericXMLElementContent implements TypedObjectNode {
         }
         return s;
     }
+
+    public void setChildren( List<TypedObjectNode> newChildren ) {
+        this.children = newChildren;
+    }
 }

@@ -107,20 +107,25 @@ public class MemoryFeatureStore implements FeatureStore {
 
     DefaultLockManager lockManager;
 
+    CRS storageSRS;
+
     /**
      * Creates a new {@link MemoryFeatureStore} for the given {@link ApplicationSchema}.
      * 
      * @param schema
      *            application schema, must not be <code>null</code>
+     * @param storageSRS
+     *            srs used for storing geometries, may be <code>null</code>
      * @throws FeatureStoreException
      */
-    MemoryFeatureStore( ApplicationSchema schema ) throws FeatureStoreException {
+    MemoryFeatureStore( ApplicationSchema schema, CRS storageSRS ) throws FeatureStoreException {
         this.schema = schema;
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             ftToFeatures.put( ft, new GenericFeatureCollection() );
         }
         // TODO
         lockManager = new DefaultLockManager( this, "LOCK_DB" );
+        this.storageSRS = storageSRS;
     }
 
     /**
@@ -140,7 +145,7 @@ public class MemoryFeatureStore implements FeatureStore {
                             UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException,
                             ReferenceResolvingException {
 
-        this( schema );
+        this( schema, null );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         gmlReader.setApplicationSchema( schema );
         gmlReader.readFeature();

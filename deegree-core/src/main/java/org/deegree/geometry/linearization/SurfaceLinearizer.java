@@ -81,12 +81,15 @@ public class SurfaceLinearizer {
      * NOTE: This method respects the semantic difference between {@link Surface} and {@link Polygon} geometries: if the
      * input is a {@link Polygon}, a polygon geometry will be returned.
      * 
+     * @param <T>
+     *            subtype of Surface
      * @param surface
      * @param crit
      * @return linearized version of the input curve
      */
-    public Surface linearize( Surface surface, LinearizationCriterion crit ) {
-        Surface linearizedSurface = null;
+    @SuppressWarnings("unchecked")
+    public <T extends Surface> T linearize( T surface, LinearizationCriterion crit ) {
+        T linearizedSurface = null;
         switch ( surface.getSurfaceType() ) {
         case Polygon: {
             Polygon polygon = (Polygon) surface;
@@ -97,8 +100,8 @@ public class SurfaceLinearizer {
             for ( Ring interiorRing : interiorRings ) {
                 linearizedInteriorRings.add( (Ring) curveLinearizer.linearize( interiorRing, crit ) );
             }
-            linearizedSurface = geomFac.createPolygon( polygon.getId(), polygon.getCoordinateSystem(),
-                                                       linearizedExteriorRing, linearizedInteriorRings );
+            linearizedSurface = (T) geomFac.createPolygon( polygon.getId(), polygon.getCoordinateSystem(),
+                                                           linearizedExteriorRing, linearizedInteriorRings );
             break;
         }
         case PolyhedralSurface: {
@@ -111,8 +114,8 @@ public class SurfaceLinearizer {
                 }
                 linearizedPatches.add( linearize( (PolygonPatch) patch, crit ) );
             }
-            linearizedSurface = geomFac.createPolyhedralSurface( surface.getId(), surface.getCoordinateSystem(),
-                                                                 linearizedPatches );
+            linearizedSurface = (T) geomFac.createPolyhedralSurface( surface.getId(), surface.getCoordinateSystem(),
+                                                                     linearizedPatches );
             break;
         }
         case Surface: {
@@ -125,8 +128,8 @@ public class SurfaceLinearizer {
                 }
                 linearizedPatches.add( linearize( (PolygonPatch) patch, crit ) );
             }
-            linearizedSurface = geomFac.createSurface( surface.getId(), linearizedPatches,
-                                                       surface.getCoordinateSystem() );
+            linearizedSurface = (T) geomFac.createSurface( surface.getId(), linearizedPatches,
+                                                           surface.getCoordinateSystem() );
             break;
         }
         default: {

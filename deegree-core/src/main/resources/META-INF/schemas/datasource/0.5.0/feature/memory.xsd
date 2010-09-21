@@ -21,6 +21,7 @@
     </annotation>
     <complexType>
       <sequence>
+        <element name="StorageCRS" type="string" minOccurs="0"/>
         <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
           <complexType>
             <attribute name="prefix" type="string" use="required" />
