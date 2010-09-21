@@ -100,7 +100,7 @@ public class Function implements Expression {
     @Override
     public TypedObjectNode[] evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        throw new FilterEvaluationException( "Evaluation of function '" + getType().name()
+        throw new FilterEvaluationException( "Evaluation of function '" + getName()
                                              + "' is not available (GenericFunction)." );
     }
 
