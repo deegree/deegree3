@@ -194,13 +194,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                     LOG.debug( "No crs with id: " + id + " found in cache." );
                     try {
                         result = parseCoordinateSystem( resolver.getURIAsType( id.getOriginal() ) );
-                        if ( forceXY && result != null ) {
-                            result = createXYCoordinateSystem( result );
-                        }
                     } catch ( IOException e ) {
                         LOG.debug( e.getLocalizedMessage(), e );
                         throw new CRSConfigurationException( e );
                     }
+                }
+                if ( forceXY && result != null ) {
+                    result = createXYCoordinateSystem( result );
                 }
             }
         }
@@ -213,7 +213,6 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
              * Adding the used underlying crs's to the cache.
              */
             if ( forceXY ) {
-                cachedCRSXY.put( id, result );
                 addIdToCache( cachedCRSXY, result, false );
                 if ( result.getType() == COMPOUND ) {
                     addIdToCache( cachedCRSXY, ( (CompoundCRS) result ).getUnderlyingCRS(), false );
