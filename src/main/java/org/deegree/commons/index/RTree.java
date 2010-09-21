@@ -36,8 +36,6 @@
 
 package org.deegree.commons.index;
 
-import static java.nio.ByteOrder.BIG_ENDIAN;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
@@ -54,7 +52,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -207,13 +204,6 @@ public class RTree<T> extends SpatialIndex<T> {
         dis.readChar(); // ' '
         float ymax = dis.readFloat();
         return new float[] { xmin, ymin, xmax, ymax };
-    }
-
-    private static final int getBEInt( ByteBuffer buffer ) {
-        buffer.order( BIG_ENDIAN );
-        int result = buffer.getInt();
-        buffer.order( LITTLE_ENDIAN );
-        return result;
     }
 
     /**
