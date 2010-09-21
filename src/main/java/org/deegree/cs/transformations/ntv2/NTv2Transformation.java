@@ -266,7 +266,7 @@ public class NTv2Transformation extends Transformation {
                         sb.append( " Failed." );
                     }
                 }
-                LOG.debug( sb.toString() );
+                LOG.info( sb.toString() );
             } else {
                 StringBuilder sb = new StringBuilder( "Successfully applied " );
                 sb.append( ( isInverseTransform() ? "an inverse" : "a forward" ) ).append(
