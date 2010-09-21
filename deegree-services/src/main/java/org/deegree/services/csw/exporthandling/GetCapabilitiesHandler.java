@@ -437,14 +437,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writer.writeEndElement();// Parameter
 
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "outputFormat" );
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "application/xml" );
-        writer.writeEndElement();// Value
-
-        writer.writeEndElement();// Parameter
+        writeOutputFormat( writer, owsNS );
 
         writer.writeStartElement( owsNS, "Parameter" );
         writer.writeAttribute( "name", "schemaLocation" );
@@ -463,6 +456,27 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();// Constraint
 
         // Constraints...[0..*]
+    }
+
+    private static void writeOutputFormat( XMLStreamWriter writer, String owsNS )
+                            throws XMLStreamException {
+        writer.writeStartElement( owsNS, "Parameter" );
+        writer.writeAttribute( "name", "outputFormat" );
+
+        writer.writeStartElement( owsNS, "Value" );
+        writer.writeCharacters( "application/xml" );
+        writer.writeEndElement();// Value
+
+        writer.writeStartElement( owsNS, "Value" );
+        writer.writeCharacters( "text/plain" );
+        writer.writeEndElement();// Value
+
+        writer.writeStartElement( owsNS, "Value" );
+        writer.writeCharacters( "text/html" );
+        writer.writeEndElement();// Value
+
+        writer.writeEndElement();// Parameter
+
     }
 
     /**
@@ -494,14 +508,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writer.writeEndElement();// Parameter
 
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "outputFormat" );
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "application/xml" );
-        writer.writeEndElement();// Value
-
-        writer.writeEndElement();// Parameter
+        writeOutputFormat( writer, owsNS );
 
         writer.writeStartElement( owsNS, "Parameter" );
         writer.writeAttribute( "name", "outputSchema" );
@@ -588,6 +595,8 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
      */
     private static void writeGetRecordById( XMLStreamWriter writer, String owsNS )
                             throws XMLStreamException {
+
+        writeOutputFormat( writer, owsNS );
 
         writer.writeStartElement( owsNS, "Parameter" );
         writer.writeAttribute( "name", "outputSchema" );
