@@ -62,7 +62,7 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testAxisOrderDef()
                             throws IllegalArgumentException, UnknownCRSException {
-        CRS crsLikeDefined = new CRS( "EPSG:4326" );
+        CRS crsLikeDefined = new CRS( "4326_AO" );
         CoordinateSystem wCRSLikeDefined = crsLikeDefined.getWrappedCRS();
         assertNotNull( wCRSLikeDefined );
         Axis[] axisLikeDefined = wCRSLikeDefined.getAxis();
@@ -75,7 +75,7 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testAxisOrderXY()
                             throws IllegalArgumentException, UnknownCRSException {
-        CRS crsXY = new CRS( "EPSG:4326", true );
+        CRS crsXY = new CRS( "4326_AO", true );
         CoordinateSystem wCRSXY = crsXY.getWrappedCRS();
         assertNotNull( wCRSXY );
         Axis[] axisXY = wCRSXY.getAxis();
@@ -88,8 +88,8 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testWGS84DefToDef()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "EPSG:4326" );
-        CRS targetCRS = new CRS( "EPSG:4326" );
+        CRS sourceCRS = new CRS( "4326_AO" );
+        CRS targetCRS = new CRS( "4326_AO" );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 46.074, 9.799, Double.NaN ) );
@@ -105,8 +105,8 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testWGS84XYToDef()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "EPSG:4326", true );
-        CRS targetCRS = new CRS( "EPSG:4326" );
+        CRS sourceCRS = new CRS( "4326_AO", true );
+        CRS targetCRS = new CRS( "4326_AO" );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 9.799, 46.074, Double.NaN ) );
@@ -122,8 +122,8 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testWGS84XYToXY()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "EPSG:4326", true );
-        CRS targetCRS = new CRS( "EPSG:4326", true );
+        CRS sourceCRS = new CRS( "4326_AO", true );
+        CRS targetCRS = new CRS( "4326_AO", true );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 9.799, 46.074, Double.NaN ) );
@@ -139,8 +139,8 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testWGS84DefToXY()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "EPSG:4326" );
-        CRS targetCRS = new CRS( "EPSG:4326", true );
+        CRS sourceCRS = new CRS( "4326_AO" );
+        CRS targetCRS = new CRS( "4326_AO", true );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 46.074, 9.799, Double.NaN ) );
@@ -156,7 +156,7 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testTransformDefToDef()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "EPSG:4326" );
+        CRS sourceCRS = new CRS( "4326_AO" );
         CRS targetCRS = new CRS( "EPSG:31467" );
 
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
@@ -175,7 +175,7 @@ public class AxisOrderTest extends TestCase {
     public void testTransformDefToDefInverse()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
         CRS sourceCRS = new CRS( "EPSG:31467" );
-        CRS targetCRS = new CRS( "EPSG:4326" );
+        CRS targetCRS = new CRS( "4326_AO" );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 3532465.57, 5301523.49, 817 ) );
@@ -191,7 +191,7 @@ public class AxisOrderTest extends TestCase {
     @Test
     public void testTransformXYToDef()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
-        CRS sourceCRS = new CRS( "EPSG:4326", true );
+        CRS sourceCRS = new CRS( "4326_AO", true );
         CRS targetCRS = new CRS( "EPSG:31467" );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();
@@ -209,7 +209,7 @@ public class AxisOrderTest extends TestCase {
     public void testTransformDefToXY()
                             throws UnknownCRSException, IllegalArgumentException, TransformationException {
         CRS sourceCRS = new CRS( "EPSG:31467" );
-        CRS targetCRS = new CRS( "EPSG:4326", true );
+        CRS targetCRS = new CRS( "4326_AO", true );
         CoordinateTransformer tranformer = new CoordinateTransformer( targetCRS.getWrappedCRS() );
         List<Point3d> points = new ArrayList<Point3d>();
         points.add( new Point3d( 3532465.57, 5301523.49, 817 ) );
