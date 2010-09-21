@@ -269,7 +269,7 @@ public class XMLAdapter {
     }
 
     public XMLAdapter( XMLStreamReader xmlStream ) {
-        load (xmlStream);
+        load( xmlStream );
     }
 
     /**
@@ -1077,7 +1077,8 @@ public class XMLAdapter {
                             throws XMLParsingException {
         List nodes = getNodes( context, xpath );
         if ( nodes.size() == 0 ) {
-
+            String msg = Messages.getMessage( "XML_REQUIRED_NODE_MISSING", xpath, context.getQName() );
+            throw new XMLParsingException( this, context, msg );
         }
         return nodes;
     }
