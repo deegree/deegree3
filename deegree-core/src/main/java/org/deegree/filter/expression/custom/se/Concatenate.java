@@ -33,12 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function.se;
+package org.deegree.filter.expression.custom.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
+
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -47,36 +50,34 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.AbstractCustomExpression;
+import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>StringLength</code>
+ * <code>Concatenate</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StringLength extends AbstractCustomExpression {
+public class Concatenate extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "StringLength" );
+    private static final QName ELEMENT_NAME = new QName( SENS, "Concatenate" );
 
-    private StringBuffer value;
+    private LinkedList<StringBuffer> values;
 
-    private Continuation<StringBuffer> contn;
+    private LinkedList<Continuation<StringBuffer>> valueContns;
 
-    /**
-     * 
-     */
-    public StringLength() {
+    /***/
+    public Concatenate() {
         // just used for SPI
     }
 
-    private StringLength( StringBuffer value, Continuation<StringBuffer> contn ) {
-        this.value = value;
-        this.contn = contn;
+    private Concatenate( LinkedList<StringBuffer> values, LinkedList<Continuation<StringBuffer>> valueContns ) {
+        this.values = values;
+        this.valueContns = valueContns;
     }
 
     @Override
@@ -86,31 +87,40 @@ public class StringLength extends AbstractCustomExpression {
 
     @Override
     public TypedObjectNode[] evaluate( MatchableObject f ) {
-        StringBuffer sb = new StringBuffer( value.toString().trim() );
-        if ( contn != null ) {
-            contn.evaluate( sb, f );
+        StringBuffer res = new StringBuffer();
+        Iterator<StringBuffer> sbs = values.iterator();
+        Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
+        while ( sbs.hasNext() && contns.hasNext() ) {
+            StringBuffer sb = new StringBuffer( sbs.next().toString().trim() );
+            Continuation<StringBuffer> contn = contns.next();
+            if ( contn != null ) {
+                contn.evaluate( sb, f );
+            }
+            res.append( sb.toString() );
         }
-
-        return new TypedObjectNode[] { new PrimitiveValue( sb.length() + "" ) };
+        return new TypedObjectNode[] { new PrimitiveValue( res.toString().trim() ) };
     }
 
     @Override
-    public StringLength parse( XMLStreamReader in )
+    public Concatenate parse( XMLStreamReader in )
                             throws XMLStreamException {
 
-        StringBuffer value = null;
-        Continuation<StringBuffer> contn = null;
+        LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
 
-        in.require( START_ELEMENT, null, "StringLength" );
-        while ( !( in.isEndElement() && in.getLocalName().equals( "StringLength" ) ) ) {
+        in.require( START_ELEMENT, null, "Concatenate" );
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "Concatenate" ) ) ) {
             in.nextTag();
 
             if ( in.getLocalName().equals( "StringValue" ) ) {
-                value = new StringBuffer();
-                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
+                StringBuffer sb = new StringBuffer();
+                valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", sb, SBUPDATER, null ).second );
+                values.add( sb );
             }
         }
-        in.require( END_ELEMENT, null, "StringLength" );
-        return new StringLength( value, contn );
+
+        in.require( END_ELEMENT, null, "Concatenate" );
+        return new Concatenate( values, valueContns );
     }
 }

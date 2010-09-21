@@ -1,0 +1,11 @@
+org.deegree.filter.expression.custom.se.Categorize
+org.deegree.filter.expression.custom.se.ChangeCase
+org.deegree.filter.expression.custom.se.Concatenate
+org.deegree.filter.expression.custom.se.FormatDate
+org.deegree.filter.expression.custom.se.FormatNumber
+org.deegree.filter.expression.custom.se.Interpolate
+org.deegree.filter.expression.custom.se.Recode
+org.deegree.filter.expression.custom.se.StringLength
+org.deegree.filter.expression.custom.se.StringPosition
+org.deegree.filter.expression.custom.se.Substring
+org.deegree.filter.expression.custom.se.Trim

@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.filter.function.se;
+package org.deegree.filter.expression.custom.se;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -51,6 +51,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.TestCase;
 
+import org.deegree.filter.expression.custom.se.Categorize;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.parser.SymbologyParserTest;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
@@ -60,23 +61,23 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * <code>InterpolateTest</code>
+ * <code>CategorizeTest</code>
  * 
- * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class InterpolateTest extends TestCase {
+public class CategorizeTest extends TestCase {
 
-    private static final Logger LOG = getLogger( InterpolateTest.class );
+    private static final Logger LOG = getLogger( CategorizeTest.class );
 
-    private static Interpolate interp = null;
+    private static Categorize cat = null;
 
     @BeforeClass
     private void loadCategorizeFromXml()
                             throws URISyntaxException, XMLStreamException, FileNotFoundException {
-        URI uri = SymbologyParserTest.class.getResource( "setest18.xml" ).toURI();
+        URI uri = SymbologyParserTest.class.getResource( "setest17.xml" ).toURI();
         LOG.debug( "Loading resource: {}", uri );
         File f = new File( uri );
         final XMLInputFactory fac = XMLInputFactory.newInstance();
@@ -88,44 +89,29 @@ public class InterpolateTest extends TestCase {
         in.require( XMLStreamConstants.START_ELEMENT, null, "RasterSymbolizer" );
         Symbolizer<RasterStyling> symb = SymbologyParser.INSTANCE.parseRasterSymbolizer( in, null );
         RasterStyling rs = symb.getBase();
-        interp = rs.interpolate;
+        cat = rs.categorize;
     }
 
     @Test
-    public void testInterpolate()
-                            throws FileNotFoundException, URISyntaxException, XMLStreamException {
+    public void testCategorize() throws FileNotFoundException, URISyntaxException, XMLStreamException {
         loadCategorizeFromXml();
-//        interp.buildLookupArrays();
-        LOG.debug( "Interpolate: {}", interp );
-        test( -0.51 );
+//        cat.buildLookupArrays();
+        LOG.debug( "Categorize: {}", cat );
+        test( -1 );
+        test( -0.5 );
         test( 0 );
-        test( 0.49 );
         test( 0.5 );
-        test( 0.51 );
-        test( 1 );
-        test( 2 );
-        test( 7 );
-        test( 8 );
-        test( 9 );
-        test( 15 );
-        test( 16 );
-        test( 17 );
-        test( 31 );
-        test( 32 );
-        test( 33 );
-        test( 48 );
-        test( 48.3 );
-        test( 50 );
-
-        test( 225 );
-        test( 240 );
-        test( 250 );
+        test( 0.75);
+        test(1);
+        test(2);
     }
 
     private void test( double x ) {
-        LOG.debug( "Lookup({}): {}", x, interp.lookup2Color( x ).toString() );
+        LOG.debug( "Testing lookup({})", x );
+        String x1 = cat.lookup( x ).toString();
+        String x2 = cat.lookup2( x ).toString();
+        LOG.debug( "Lookup1: {}, Lookup2: {}", x1, x2);
         LOG.debug( "------------------" );
-        // assertEquals( x1, x2 );
+//        assertEquals( x1, x2 );
     }
-
 }

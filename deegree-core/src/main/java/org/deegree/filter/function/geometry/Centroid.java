@@ -43,8 +43,8 @@ import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
+import org.deegree.filter.function.FunctionProvider;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -55,51 +55,42 @@ import org.deegree.geometry.Geometry;
  * 
  * @version $Revision$, $Date$
  */
-public class Centroid extends Function implements FunctionProvider {
+public class Centroid implements FunctionProvider {
 
-    /****/
-    public Centroid() {
-        // needed for SPI
-        super( "Centroid", null );
-    }
-    
-    /**
-     * @param exprs
-     */
-    public Centroid( List<Expression> exprs ) {
-        super( "Centroid", exprs );
-        if ( exprs.size() != 1 ) {
-            throw new IllegalArgumentException( "Centroid requires exactly one parameter." );
-        }
+    private static final String NAME = "Centroid";
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     @Override
-    public Centroid create( List<Expression> params ) {
-        return new Centroid( params );
-    }
-
-    private Geometry getGeomValue( TypedObjectNode node ) {
-        Geometry geom = null;
-        if ( node instanceof Geometry ) {
-            geom = (Geometry) node;
-        } else if ( node instanceof Property && ( (Property) node ).getValue() instanceof Geometry ) {
-            geom = (Geometry) ( (Property) node ).getValue();
-        }
-        return geom;
-    }
-
-    @Override
-    public TypedObjectNode[] evaluate( MatchableObject f )
-                            throws FilterEvaluationException {
-
-        TypedObjectNode[] inputs = getParams()[0].evaluate( f );
-        List<TypedObjectNode> centroids = new ArrayList<TypedObjectNode>( inputs.length );
-        for ( TypedObjectNode val : inputs ) {
-            Geometry geom = getGeomValue( val );
-            if ( geom != null ) {
-                centroids.add( geom.getCentroid() );
+    public Function create( List<Expression> params ) {
+        return new Function( NAME, params ) {
+            private Geometry getGeomValue( TypedObjectNode node ) {
+                Geometry geom = null;
+                if ( node instanceof Geometry ) {
+                    geom = (Geometry) node;
+                } else if ( node instanceof Property && ( (Property) node ).getValue() instanceof Geometry ) {
+                    geom = (Geometry) ( (Property) node ).getValue();
+                }
+                return geom;
             }
-        }
-        return centroids.toArray( new TypedObjectNode[centroids.size()] );
+
+            @Override
+            public TypedObjectNode[] evaluate( MatchableObject f )
+                                    throws FilterEvaluationException {
+
+                TypedObjectNode[] inputs = getParams()[0].evaluate( f );
+                List<TypedObjectNode> centroids = new ArrayList<TypedObjectNode>( inputs.length );
+                for ( TypedObjectNode val : inputs ) {
+                    Geometry geom = getGeomValue( val );
+                    if ( geom != null ) {
+                        centroids.add( geom.getCentroid() );
+                    }
+                }
+                return centroids.toArray( new TypedObjectNode[centroids.size()] );
+            }
+        };
     }
 }

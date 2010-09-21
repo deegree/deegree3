@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function.se;
+package org.deegree.filter.expression.custom.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -47,53 +47,43 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.AbstractCustomExpression;
+import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>StringPosition</code>
+ * <code>Trim</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StringPosition extends AbstractCustomExpression {
+public class Trim extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "StringPosition" );
-
-    private StringBuffer lookup;
-
-    private Continuation<StringBuffer> lookupContn;
+    private static final QName ELEMENT_NAME = new QName( SENS, "Trim" );
 
     private StringBuffer value;
 
     private Continuation<StringBuffer> contn;
 
-    private boolean forward;
+    private boolean leading = true, trailing;
+
+    private String substr;
 
     /**
      * 
      */
-    public StringPosition() {
+    public Trim() {
         // just used for SPI
     }
 
-    /**
-     * @param lookup
-     * @param lookupContn
-     * @param value
-     * @param contn
-     * @param forward
-     */
-    public StringPosition( StringBuffer lookup, Continuation<StringBuffer> lookupContn, StringBuffer value,
-                           Continuation<StringBuffer> contn, boolean forward ) {
-        this.lookup = lookup;
-        this.lookupContn = lookupContn;
+    private Trim( StringBuffer value, Continuation<StringBuffer> contn, boolean leading, boolean trailing, String substr ) {
         this.value = value;
         this.contn = contn;
-        this.forward = forward;
+        this.leading = leading;
+        this.trailing = trailing;
+        this.substr = substr;
     }
 
     @Override
@@ -108,49 +98,55 @@ public class StringPosition extends AbstractCustomExpression {
             contn.evaluate( sb, f );
         }
 
-        String val = sb.toString();
-        sb.setLength( 0 );
-        sb.append( lookup.toString().trim() );
-        if ( lookupContn != null ) {
-            lookupContn.evaluate( sb, f );
-        }
-        String lookup = sb.toString();
+        String res = sb.toString();
 
-        return new TypedObjectNode[] { new PrimitiveValue( ( ( forward ? val.indexOf( lookup )
-                                                                      : val.lastIndexOf( lookup ) ) + 1 )
-                                                           + "" ) };
+        final int subLen = substr.length();
+        if ( leading ) {
+            while ( res.startsWith( substr ) ) {
+                res = res.substring( subLen );
+            }
+        }
+        if ( trailing ) {
+            while ( res.endsWith( substr ) ) {
+                res = res.substring( 0, res.length() - subLen );
+            }
+        }
+        return new TypedObjectNode[] { new PrimitiveValue( res ) };
     }
 
     @Override
-    public StringPosition parse( XMLStreamReader in )
+    public Trim parse( XMLStreamReader in )
                             throws XMLStreamException {
 
-        StringBuffer lookup = null;
-        Continuation<StringBuffer> lookupContn = null;
         StringBuffer value = null;
         Continuation<StringBuffer> contn = null;
-        boolean forward = true;
+        boolean leading = true, trailing = false;
 
-        in.require( START_ELEMENT, null, "StringPosition" );
+        in.require( START_ELEMENT, null, "Trim" );
 
-        String dir = in.getAttributeValue( null, "searchDirection" );
-        if ( dir != null ) {
-            forward = !dir.equals( "backToFront" );
-        }
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "StringPosition" ) ) ) {
-            in.nextTag();
-            if ( in.getLocalName().equals( "LookupString" ) ) {
-                lookup = new StringBuffer();
-                lookupContn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupString", lookup, SBUPDATER, null ).second;
+        String pos = in.getAttributeValue( null, "stripOffPosition" );
+        if ( pos != null ) {
+            if ( pos.equals( "trailing" ) ) {
+                leading = false;
+                trailing = true;
             }
+            if ( pos.equals( "both" ) ) {
+                trailing = true;
+            }
+        }
+        String ch = in.getAttributeValue( null, "stripOffChar" );
+        String substr = ch == null ? " " : ch;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "Trim" ) ) ) {
+            in.nextTag();
+
             if ( in.getLocalName().equals( "StringValue" ) ) {
                 value = new StringBuffer();
                 contn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
             }
 
         }
-        in.require( END_ELEMENT, null, "StringPosition" );
-        return new StringPosition( lookup, lookupContn, value, contn, forward );
+        in.require( END_ELEMENT, null, "Trim" );
+        return new Trim( value, contn, leading, trailing, substr );
     }
 }

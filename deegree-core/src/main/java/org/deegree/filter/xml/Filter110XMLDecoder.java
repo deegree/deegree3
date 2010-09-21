@@ -84,9 +84,6 @@ import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.comparison.ComparisonOperator.SubType;
-import org.deegree.filter.custom.CustomExpressionProvider;
-import org.deegree.filter.custom.CustomExpressionManager;
-import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
@@ -94,6 +91,10 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.expression.Sub;
+import org.deegree.filter.expression.custom.CustomExpressionManager;
+import org.deegree.filter.expression.custom.CustomExpressionProvider;
+import org.deegree.filter.function.FunctionManager;
+import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.i18n.Messages;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
@@ -412,7 +413,7 @@ public class Filter110XMLDecoder {
         xmlStream.require( END_ELEMENT, OGC_NS, "Function" );
 
         Function function = null;
-        FunctionProvider cf = CustomExpressionManager.getFunction( name );
+        FunctionProvider cf = FunctionManager.getFunctionProvider( name );
         if ( cf != null ) {
             function = cf.create( params );
         } else {
