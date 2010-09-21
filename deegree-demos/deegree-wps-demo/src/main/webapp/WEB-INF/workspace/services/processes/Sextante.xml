@@ -174,6 +174,93 @@
     <Abstract>-</Abstract>
   </Process>
 
+  <Process id="joinadjacentlines">
+    <Abstract>-</Abstract>
+  </Process>
+
+  <Process id="linestoequispacedpoints">
+    <Abstract>This algorithm creates a new points layer by adding evenly
+      spaced points along the lines of an input layer</Abstract>
+  </Process>
+
+  <Process id="perturbatepointslayer">
+    <Abstract>This algorithm alter the position of points in a layer,
+      displacing them. Points are displaced in a random direction, and
+      the displacement distance follows a normal distribution.
+    </Abstract>
+  </Process>
+
+  <Process id="snappoints">
+    <Abstract>This algorithm snaps points in a given layer to the lines
+      in a second one.
+    </Abstract>
+  </Process>
+
+  <Process id="transform">
+    <Abstract>This algorithm applies a affine transformation to all the
+      geometries of a given vector layer.</Abstract>
+  </Process>
+
+  <Process id="vectorspatialcluster">
+    <Abstract>This algorithm creates clusters from an input points
+      layer, grouping them according to their spatial location.
+    </Abstract>
+  </Process>
+
+  <Process id="fixeddistancebuffer">
+    <Abstract>This algorithm creates a new polygon layer with buffers around features in the input layer. All buffers will have the same size, regardless of the feature being buffered.</Abstract>
+    <SelectionParameters id="TYPES">
+      <Parameter id="BUFFER_OUTSIDE_POLY" value="0" />
+      <Parameter id="BUFFER_INSIDE_POLY" value="1" />
+      <Parameter id="BUFFER_INSIDE_OUTSIDE_POLY" value="2" />
+    </SelectionParameters>
+  </Process>
+
+  <Process id="generateroutes">
+    <Abstract>This algorithm creates a number of new alternative routes based on an original route, linking the same starting and end points.</Abstract>
+    <SelectionParameters id="METHOD">
+      <Parameter id="CREATION_METHOD_BROWNIAN" value="0" />
+      <Parameter id="CREATION_METHOD_RECOMBINE" value="1" />
+    </SelectionParameters>
+  </Process>
+
+  <Process id="smoothlines">
+    <Abstract>This algorithm smooth the lines in a lines layer, adding extra nodes to it. This is the inverse operation to the one performed by the "simplify lines" algorithms.</Abstract>
+    <SelectionParameters id="INTERMEDIATE_POINTS">
+      <Parameter id="ONE_POINT" value="1" />
+      <Parameter id="TWO_POINTS" value="2" />
+      <Parameter id="THREE_POINTS" value="3" />
+      <Parameter id="FOUR_POINTS" value="4" />
+      <Parameter id="FIVE_POINTS" value="5" />
+      <Parameter id="SIX_POINTS" value="6" />
+      <Parameter id="SEVEN_POINTS" value="7" />
+      <Parameter id="EIGHT_POINTS" value="8" />
+      <Parameter id="NINE_POINTS" value="9" />
+      <Parameter id="TEN_POINTS" value="10" />
+    </SelectionParameters>
+    <SelectionParameters id="CURVE_TYPE">
+      <Parameter id="NATURAL_CUBIC_SPLINES" value="0" />
+      <Parameter id="BEZIER_CURVES" value="1" />
+      <Parameter id="BSPLINES" value="2" />
+    </SelectionParameters>
+  </Process>
+
+  <Process id="splitlineswithpoints">
+    <Abstract>This algorithm splits a lines layer using an additional points layer. Points at a distance from a line lower than a given threshold will cause the be split at the closest point between both.A value from the point is added to the line. The user can select whether to add it to the segment finishing at the point or to the one starting at it.</Abstract>
+    <SelectionParameters id="METHOD">
+      <Parameter id="NULL_VALUE" value="0" />
+      <Parameter id="LAST_VALUE" value="1" />
+    </SelectionParameters>
+  </Process>
+
+  <Process id="vectoraddfield">
+    <Abstract>This algorithm splits a lines layer using an additional points layer. Points at a distance from a line lower than a given threshold will cause the be split at the closest point between both.A value from the point is added to the line. The user can select whether to add it to the segment finishing at the point or to the one starting at it.</Abstract>
+    <SelectionParameters id="FIELD_TYPE">
+      <Parameter id="DOUBLE" value="Double" />
+      <Parameter id="INTEGER" value="Integer" />
+      <Parameter id="STRING" value="String" />
+    </SelectionParameters>
+  </Process>
 
 
 </SextanteProcesses>

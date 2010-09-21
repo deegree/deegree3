@@ -10,14 +10,37 @@
       </jaxb:schemaBindings>
     </appinfo>
   </annotation>
+
   <element name="SextanteProcesses">
     <complexType>
       <sequence>
         <element name="Process" minOccurs="0" maxOccurs="unbounded">
+
           <complexType>
+
             <sequence>
               <element name="Abstract" type="string" />
+
+              <element name="SelectionParameters" minOccurs="0"
+                maxOccurs="unbounded">
+                <complexType>
+                  <sequence>
+                    <element name="Parameter" minOccurs="0"
+                      maxOccurs="unbounded">
+                      <complexType>
+                        <attribute name="id" type="string"
+                          use="required" />
+                        <attribute name="value" type="string"
+                          use="required" />
+                      </complexType>
+                    </element>
+                  </sequence>
+                  <attribute name="id" type="string" use="required" />
+                </complexType>
+              </element>
+
             </sequence>
+
             <attribute name="id" type="string" use="required" />
           </complexType>
         </element>

@@ -70,7 +70,7 @@ public class GeoAlgorithmTest {
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     // manages all supported algorithms with example data
     private final LinkedList<GeoAlgorithmWithData> algorithms;
@@ -225,21 +225,9 @@ public class GeoAlgorithmTest {
         Sextante.initialize();
         LinkedList<GeoAlgorithmWithData> allAlgs = new LinkedList<GeoAlgorithmWithData>();
 
-        boolean getAll = false;
+        boolean getAll = true;
 
         if ( !getAll ) {// return only one algorithm
-
-            // ---------------------------------------------------------------------------------------------------------------------------
-            // groupnearfeatures algorithm
-            String groupnearfeaturesName = "groupnearfeatures";
-            GeoAlgorithmWithData groupnearfeaturesAlg = new GeoAlgorithmWithData(
-                                                                                  Sextante.getAlgorithmFromCommandLineName( groupnearfeaturesName ) );
-            // add test data
-            LinkedList<ExampleData> groupnearfeaturesData1 = new LinkedList<ExampleData>();
-            groupnearfeaturesData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POLYGONS );
-            groupnearfeaturesData1.add( LiteralExampleData.NUMERICAL_VALUE_0 );
-            groupnearfeaturesAlg.addInputData( groupnearfeaturesData1 );
-            allAlgs.add( groupnearfeaturesAlg );
 
         } else {// return all algorithms
 
@@ -648,13 +636,104 @@ public class GeoAlgorithmTest {
             clipbyrectangleData1.add( LiteralExampleData.NUMERICAL_VALUE_100 );
             clipbyrectangleAlg.addInputData( clipbyrectangleData1 );
             allAlgs.add( clipbyrectangleAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // groupnearfeatures algorithm
+            String groupnearfeaturesName = "groupnearfeatures";
+            GeoAlgorithmWithData groupnearfeaturesAlg = new GeoAlgorithmWithData(
+                                                                                  Sextante.getAlgorithmFromCommandLineName( groupnearfeaturesName ) );
+            // add test data
+            LinkedList<ExampleData> groupnearfeaturesData1 = new LinkedList<ExampleData>();
+            groupnearfeaturesData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POLYGONS );
+            groupnearfeaturesData1.add( LiteralExampleData.NUMERICAL_VALUE_1 );
+            groupnearfeaturesAlg.addInputData( groupnearfeaturesData1 );
+            allAlgs.add( groupnearfeaturesAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // joinadjacentlines algorithm
+            String joinadjacentlinesName = "joinadjacentlines";
+            GeoAlgorithmWithData joinadjacentlinesAlg = new GeoAlgorithmWithData(
+                                                                                  Sextante.getAlgorithmFromCommandLineName( joinadjacentlinesName ) );
+            // add test data
+            LinkedList<ExampleData> joinadjacentlinesData1 = new LinkedList<ExampleData>();
+            joinadjacentlinesData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
+            joinadjacentlinesData1.add( LiteralExampleData.NUMERICAL_VALUE_100 );
+            joinadjacentlinesAlg.addInputData( joinadjacentlinesData1 );
+            allAlgs.add( joinadjacentlinesAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // linestoequispacedpoints algorithm
+            String linestoequispacedpointsName = "linestoequispacedpoints";
+            GeoAlgorithmWithData linestoequispacedpointsAlg = new GeoAlgorithmWithData(
+                                                                                        Sextante.getAlgorithmFromCommandLineName( linestoequispacedpointsName ) );
+            // add test data
+            LinkedList<ExampleData> linestoequispacedpointsData1 = new LinkedList<ExampleData>();
+            linestoequispacedpointsData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
+            linestoequispacedpointsData1.add( LiteralExampleData.NUMERICAL_VALUE_100 );
+            linestoequispacedpointsAlg.addInputData( linestoequispacedpointsData1 );
+            allAlgs.add( linestoequispacedpointsAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // perturbatepointslayer algorithm
+            String perturbatepointslayerName = "perturbatepointslayer";
+            GeoAlgorithmWithData perturbatepointslayerAlg = new GeoAlgorithmWithData(
+                                                                                      Sextante.getAlgorithmFromCommandLineName( perturbatepointslayerName ) );
+            // add test data
+            LinkedList<ExampleData> perturbatepointslayerData1 = new LinkedList<ExampleData>();
+            perturbatepointslayerData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POINTS );
+            perturbatepointslayerData1.add( LiteralExampleData.NUMERICAL_VALUE_100 );
+            perturbatepointslayerData1.add( LiteralExampleData.NUMERICAL_VALUE_200 );
+            perturbatepointslayerAlg.addInputData( perturbatepointslayerData1 );
+            allAlgs.add( perturbatepointslayerAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // snappoints algorithm
+            String snappointsName = "snappoints";
+            GeoAlgorithmWithData snappointsAlg = new GeoAlgorithmWithData(
+                                                                           Sextante.getAlgorithmFromCommandLineName( snappointsName ) );
+            // add test data
+            LinkedList<ExampleData> snappointsData1 = new LinkedList<ExampleData>();
+            snappointsData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POINTS );
+            snappointsData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_LINESTRINGS );
+            snappointsData1.add( LiteralExampleData.NUMERICAL_VALUE_100 );
+            snappointsAlg.addInputData( snappointsData1 );
+            allAlgs.add( snappointsAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // transform algorithm
+            String transformName = "transform";
+            GeoAlgorithmWithData transformAlg = new GeoAlgorithmWithData(
+                                                                          Sextante.getAlgorithmFromCommandLineName( transformName ) );
+            // add test data
+            LinkedList<ExampleData> transformData1 = new LinkedList<ExampleData>();
+            transformData1.add( GeometryExampleData.GML_31_POINT );
+            transformData1.add( LiteralExampleData.NUMERICAL_VALUE_100 );
+            transformData1.add( LiteralExampleData.NUMERICAL_VALUE_200 );
+            transformData1.add( LiteralExampleData.NUMERICAL_VALUE_0 );
+            transformData1.add( LiteralExampleData.NUMERICAL_VALUE_1 );
+            transformData1.add( LiteralExampleData.NUMERICAL_VALUE_1 );
+            transformData1.add( LiteralExampleData.NUMERICAL_VALUE_0 );
+            transformData1.add( LiteralExampleData.NUMERICAL_VALUE_0 );
+            transformAlg.addInputData( transformData1 );
+            allAlgs.add( transformAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // vectorspatialcluster algorithm
+            String vectorspatialclusterName = "vectorspatialcluster";
+            GeoAlgorithmWithData vectorspatialclusterAlg = new GeoAlgorithmWithData(
+                                                                                     Sextante.getAlgorithmFromCommandLineName( vectorspatialclusterName ) );
+            // add test data
+            LinkedList<ExampleData> vectorspatialclusterData1 = new LinkedList<ExampleData>();
+            vectorspatialclusterData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POINTS );
+            vectorspatialclusterData1.add( LiteralExampleData.NUMERICAL_VALUE_100 );
+            vectorspatialclusterAlg.addInputData( vectorspatialclusterData1 );
+            allAlgs.add( vectorspatialclusterAlg );
         }
 
         LOG.info( "FOUND DATA FOR " + allAlgs.size() + " ALGORITHMS" );
 
         return allAlgs;
     }
-
 }
 
 // /**
