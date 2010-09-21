@@ -696,7 +696,7 @@ public class ISOMetadataStore implements MetadataStore {
             preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
 
             int i = 1;
-            preparedStatement.setInt( i++, typeNameFormatNumber );
+            preparedStatement.setInt( i++, profileFormatNumberOutputSchema );
 
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
