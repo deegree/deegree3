@@ -9,8 +9,8 @@ import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
+import org.deegree.filter.function.FunctionProvider;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.primitive.Point;
@@ -23,43 +23,38 @@ import org.deegree.geometry.primitive.Point;
  * 
  * @version $Revision$, $Date$
  */
-public class IsPoint extends Function implements FunctionProvider {
+public class IsPoint implements FunctionProvider {
 
-    /****/
-    public IsPoint() {
-        // needed for SPI
-        super( "IsPoint", null );
-    }
-    
-    /**
-     * @param exprs
-     */
-    public IsPoint( List<Expression> exprs ) {
-        super( "IsPoint", exprs );
-        if ( exprs.size() != 1 ) {
-            throw new IllegalArgumentException( "IsPoint requires exactly one parameter." );
-        }
+    private static final String NAME = "IsPoint";
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     @Override
-    public IsPoint create( List<Expression> params ) {
-        return new IsPoint( params );
-    }
-
-    @Override
-    public TypedObjectNode[] evaluate( MatchableObject f )
-                            throws FilterEvaluationException {
-        TypedObjectNode[] vals = getParams()[0].evaluate( f );
-
-        if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
-             && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
-            return new TypedObjectNode[0];
-            // throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
+    public Function create( List<Expression> params ) {
+        if ( params.size() != 1 ) {
+            throw new IllegalArgumentException( NAME + " requires exactly one parameter." );
         }
-        Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0] : (Geometry) ( (Property) vals[0] ).getValue();
+        return new Function( NAME, params ) {
+            @Override
+            public TypedObjectNode[] evaluate( MatchableObject f )
+                                    throws FilterEvaluationException {
+                TypedObjectNode[] vals = getParams()[0].evaluate( f );
 
-        // TODO is handling of multi geometries like this ok?
-        boolean isPoint = geom instanceof Point || geom instanceof MultiPoint;
-        return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( isPoint ) ) };
+                if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
+                     && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
+                    return new TypedObjectNode[0];
+                    // throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
+                }
+                Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0]
+                                                           : (Geometry) ( (Property) vals[0] ).getValue();
+
+                // TODO is handling of multi geometries like this ok?
+                boolean isPoint = geom instanceof Point || geom instanceof MultiPoint;
+                return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( isPoint ) ) };
+            }
+        };
     }
 }

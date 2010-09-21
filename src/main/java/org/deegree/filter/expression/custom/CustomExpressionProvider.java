@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.custom;
+package org.deegree.filter.expression.custom;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;

@@ -36,7 +36,6 @@
 package org.deegree.filter;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.filter.custom.CustomExpressionProvider;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;

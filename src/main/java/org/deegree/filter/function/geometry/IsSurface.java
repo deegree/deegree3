@@ -9,8 +9,8 @@ import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
+import org.deegree.filter.function.FunctionProvider;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSurface;
@@ -24,43 +24,39 @@ import org.deegree.geometry.primitive.Surface;
  * 
  * @version $Revision$, $Date$
  */
-public class IsSurface extends Function implements FunctionProvider {
+public class IsSurface implements FunctionProvider {
 
-    /****/
-    public IsSurface() {
-        // needed for SPI
-        super( "IsSurface", null );
-    }
+    private static final String NAME = "IsSurface";
 
-    /**
-     * @param exprs
-     */
-    public IsSurface( List<Expression> exprs ) {
-        super( "IsSurface", exprs );
-        if ( exprs.size() != 1 ) {
-            throw new IllegalArgumentException( "IsSurface requires exactly one parameter." );
-        }
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     @Override
-    public IsSurface create( List<Expression> params ) {
-        return new IsSurface( params );
-    }
-
-    @Override
-    public TypedObjectNode[] evaluate( MatchableObject f )
-                            throws FilterEvaluationException {
-        Object[] vals = getParams()[0].evaluate( f );
-
-        if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
-             && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
-            return new TypedObjectNode[0];
-            // throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
+    public Function create( List<Expression> params ) {
+        if ( params.size() != 1 ) {
+            throw new IllegalArgumentException( NAME + " requires exactly one parameter." );
         }
-        Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0] : (Geometry) ( (Property) vals[0] ).getValue();
+        return new Function( NAME, params ) {
+            @Override
+            public TypedObjectNode[] evaluate( MatchableObject f )
+                                    throws FilterEvaluationException {
+                Object[] vals = getParams()[0].evaluate( f );
 
-        // TODO is handling of multi geometries like this ok?
-        boolean isSurface = geom instanceof Surface || geom instanceof MultiPolygon || geom instanceof MultiSurface;
-        return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( isSurface ) ) };
+                if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
+                     && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
+                    return new TypedObjectNode[0];
+                    // throw new FilterEvaluationException( "The argument to the Is*** functions must be a geometry." );
+                }
+                Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0]
+                                                           : (Geometry) ( (Property) vals[0] ).getValue();
+
+                // TODO is handling of multi geometries like this ok?
+                boolean isSurface = geom instanceof Surface || geom instanceof MultiPolygon
+                                    || geom instanceof MultiSurface;
+                return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( isSurface ) ) };
+            }
+        };
     }
 }

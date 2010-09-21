@@ -47,8 +47,8 @@ import org.deegree.feature.property.SimpleProperty;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
+import org.deegree.filter.function.FunctionProvider;
 
 /**
  * <code>IMod</code>
@@ -58,53 +58,47 @@ import org.deegree.filter.expression.Function;
  * 
  * @version $Revision$, $Date$
  */
-public class IMod extends Function implements FunctionProvider {
+public class IMod implements FunctionProvider {
 
-    /****/
-    public IMod() {
-        // needed for SPI
-        super( "IMod", null );
-    }
+    private static final String NAME = "IMod";
 
-    /**
-     * @param exprs
-     */
-    public IMod( List<Expression> exprs ) {
-        super( "IMod", exprs );
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     @Override
-    public IMod create( List<Expression> params ) {
-        return new IMod( params );
-    }
+    public Function create( List<Expression> params ) {
+        return new Function( NAME, params ) {
+            private Pair<Integer, Integer> extractValues( Expression first, Expression second, MatchableObject f )
+                                    throws FilterEvaluationException {
+                TypedObjectNode[] vals1 = first.evaluate( f );
+                TypedObjectNode[] vals2 = second.evaluate( f );
 
-    static Pair<Integer, Integer> extractValues( Expression first, Expression second, MatchableObject f )
-                            throws FilterEvaluationException {
-        TypedObjectNode[] vals1 = first.evaluate( f );
-        TypedObjectNode[] vals2 = second.evaluate( f );
+                PrimitiveValue pv1;
+                PrimitiveValue pv2;
+                if ( vals1[0] instanceof PrimitiveValue ) {
+                    pv1 = (PrimitiveValue) vals1[0];
+                } else {
+                    pv1 = ( (SimpleProperty) vals1[0] ).getValue();
+                }
+                if ( vals2[0] instanceof PrimitiveValue ) {
+                    pv2 = (PrimitiveValue) vals2[0];
+                } else {
+                    pv2 = ( (SimpleProperty) vals2[0] ).getValue();
+                }
 
-        PrimitiveValue pv1;
-        PrimitiveValue pv2;
-        if ( vals1[0] instanceof PrimitiveValue ) {
-            pv1 = (PrimitiveValue) vals1[0];
-        } else {
-            pv1 = ( (SimpleProperty) vals1[0] ).getValue();
-        }
-        if ( vals2[0] instanceof PrimitiveValue ) {
-            pv2 = (PrimitiveValue) vals2[0];
-        } else {
-            pv2 = ( (SimpleProperty) vals2[0] ).getValue();
-        }
+                return new Pair<Integer, Integer>( round( Double.valueOf( pv1.getValue().toString() ) ),
+                                                   round( Double.valueOf( pv2.getValue().toString() ) ) );
+            }
 
-        return new Pair<Integer, Integer>( round( Double.valueOf( pv1.getValue().toString() ) ),
-                                           round( Double.valueOf( pv2.getValue().toString() ) ) );
-    }
+            @Override
+            public TypedObjectNode[] evaluate( MatchableObject f )
+                                    throws FilterEvaluationException {
+                Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], f );
 
-    @Override
-    public TypedObjectNode[] evaluate( MatchableObject f )
-                            throws FilterEvaluationException {
-        Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], f );
-
-        return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first % p.second ) ) };
+                return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first % p.second ) ) };
+            }
+        };
     }
 }

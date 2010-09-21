@@ -33,15 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function.se;
+package org.deegree.filter.expression.custom.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
-
-import java.util.Iterator;
-import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -50,34 +47,37 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.AbstractCustomExpression;
+import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>Concatenate</code>
+ * <code>ChangeCase</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Concatenate extends AbstractCustomExpression {
+public class ChangeCase extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "Concatenate" );
+    private static final QName ELEMENT_NAME = new QName( SENS, "ChangeCase" );
 
-    private LinkedList<StringBuffer> values;
+    private StringBuffer value;
 
-    private LinkedList<Continuation<StringBuffer>> valueContns;
+    private Continuation<StringBuffer> contn;
+
+    private boolean toupper;
 
     /***/
-    public Concatenate() {
+    public ChangeCase() {
         // just used for SPI
     }
 
-    private Concatenate( LinkedList<StringBuffer> values, LinkedList<Continuation<StringBuffer>> valueContns ) {
-        this.values = values;
-        this.valueContns = valueContns;
+    private ChangeCase( StringBuffer value, Continuation<StringBuffer> contn, boolean toupper ) {
+        this.value = value;
+        this.contn = contn;
+        this.toupper = toupper;
     }
 
     @Override
@@ -87,40 +87,39 @@ public class Concatenate extends AbstractCustomExpression {
 
     @Override
     public TypedObjectNode[] evaluate( MatchableObject f ) {
-        StringBuffer res = new StringBuffer();
-        Iterator<StringBuffer> sbs = values.iterator();
-        Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
-        while ( sbs.hasNext() && contns.hasNext() ) {
-            StringBuffer sb = new StringBuffer( sbs.next().toString().trim() );
-            Continuation<StringBuffer> contn = contns.next();
-            if ( contn != null ) {
-                contn.evaluate( sb, f );
-            }
-            res.append( sb.toString() );
+        StringBuffer sb = new StringBuffer( value.toString().trim() );
+        if ( contn != null ) {
+            contn.evaluate( sb, f );
         }
-        return new TypedObjectNode[] { new PrimitiveValue( res.toString().trim() ) };
+        return new TypedObjectNode[] { new PrimitiveValue( toupper ? sb.toString().toUpperCase()
+                                                                  : sb.toString().toLowerCase() ) };
     }
 
     @Override
-    public Concatenate parse( XMLStreamReader in )
+    public ChangeCase parse( XMLStreamReader in )
                             throws XMLStreamException {
 
-        LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
-        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+        StringBuffer value = null;
+        Continuation<StringBuffer> contn = null;
+        boolean toupper = true;
 
-        in.require( START_ELEMENT, null, "Concatenate" );
+        in.require( START_ELEMENT, null, "ChangeCase" );
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Concatenate" ) ) ) {
+        String dir = in.getAttributeValue( null, "direction" );
+        if ( dir != null ) {
+            toupper = dir.equals( "toUpper" );
+        }
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "ChangeCase" ) ) ) {
             in.nextTag();
 
             if ( in.getLocalName().equals( "StringValue" ) ) {
-                StringBuffer sb = new StringBuffer();
-                valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", sb, SBUPDATER, null ).second );
-                values.add( sb );
+                value = new StringBuffer();
+                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
             }
-        }
 
-        in.require( END_ELEMENT, null, "Concatenate" );
-        return new Concatenate( values, valueContns );
+        }
+        in.require( END_ELEMENT, null, "ChangeCase" );
+        return new ChangeCase( value, contn, toupper );
     }
 }

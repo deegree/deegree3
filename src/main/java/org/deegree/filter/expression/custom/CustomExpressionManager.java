@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.custom;
+package org.deegree.filter.expression.custom;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for retrieving {@link CustomExpressionProvider} and {@link FunctionProvider} instances.
+ * Entry point for retrieving {@link CustomExpressionProvider} instances that are registered via Java SPI.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -58,11 +58,7 @@ public class CustomExpressionManager {
 
     private static ServiceLoader<CustomExpressionProvider> customExpressionLoader = ServiceLoader.load( CustomExpressionProvider.class );
 
-    private static ServiceLoader<FunctionProvider> customFunctionLoader = ServiceLoader.load( FunctionProvider.class );
-
     private static Map<QName, CustomExpressionProvider> elNameToExpression;
-
-    private static Map<String, FunctionProvider> nameToFunction;
 
     /**
      * Returns all available {@link CustomExpressionProvider}s.
@@ -90,33 +86,6 @@ public class CustomExpressionManager {
     }
 
     /**
-     * Returns all available {@link FunctionProvider}s. Multiple functions with the same case ignored name are not
-     * allowed.
-     * 
-     * @return all available functions, keys: name, value: CustomFunction
-     */
-    public static synchronized Map<String, FunctionProvider> getCustomFunctions() {
-        if ( nameToFunction == null ) {
-            nameToFunction = new HashMap<String, FunctionProvider>();
-            try {
-                for ( FunctionProvider function : customFunctionLoader ) {
-                    LOG.debug( "Function: " + function + ", name: " + function.getName() );
-                    String name = function.getName().toLowerCase();
-                    if ( nameToFunction.containsKey( name ) ) {
-                        LOG.error( "Multiple CustomFunction instances for name: '" + name
-                                   + "' on classpath -- omitting '" + function.getClass().getName() + "'." );
-                        continue;
-                    }
-                    nameToFunction.put( name, function );
-                }
-            } catch ( Exception e ) {
-                LOG.error( e.getMessage(), e );
-            }
-        }
-        return nameToFunction;
-    }
-
-    /**
      * Returns the {@link CustomExpressionProvider} for the given element name.
      * 
      * @param elName
@@ -125,16 +94,5 @@ public class CustomExpressionManager {
      */
     public static CustomExpressionProvider getExpression( QName elName ) {
         return getCustomExpressions().get( elName );
-    }
-
-    /**
-     * Returns the {@link FunctionProvider} for the given name.
-     * 
-     * @param name
-     *            name of the function, must not be <code>null</code>
-     * @return custom function instance, or <code>null</code> if there is no function with this name
-     */
-    public static FunctionProvider getFunction( String name ) {
-        return getCustomFunctions().get( name.toLowerCase() );
     }
 }

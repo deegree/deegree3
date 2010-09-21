@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function.se;
+package org.deegree.filter.expression.custom.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -47,43 +47,36 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.AbstractCustomExpression;
+import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>Trim</code>
+ * <code>StringLength</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Trim extends AbstractCustomExpression {
+public class StringLength extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "Trim" );
+    private static final QName ELEMENT_NAME = new QName( SENS, "StringLength" );
 
     private StringBuffer value;
 
     private Continuation<StringBuffer> contn;
 
-    private boolean leading = true, trailing;
-
-    private String substr;
-
     /**
      * 
      */
-    public Trim() {
+    public StringLength() {
         // just used for SPI
     }
 
-    private Trim( StringBuffer value, Continuation<StringBuffer> contn, boolean leading, boolean trailing, String substr ) {
+    private StringLength( StringBuffer value, Continuation<StringBuffer> contn ) {
         this.value = value;
         this.contn = contn;
-        this.leading = leading;
-        this.trailing = trailing;
-        this.substr = substr;
     }
 
     @Override
@@ -98,55 +91,26 @@ public class Trim extends AbstractCustomExpression {
             contn.evaluate( sb, f );
         }
 
-        String res = sb.toString();
-
-        final int subLen = substr.length();
-        if ( leading ) {
-            while ( res.startsWith( substr ) ) {
-                res = res.substring( subLen );
-            }
-        }
-        if ( trailing ) {
-            while ( res.endsWith( substr ) ) {
-                res = res.substring( 0, res.length() - subLen );
-            }
-        }
-        return new TypedObjectNode[] { new PrimitiveValue( res ) };
+        return new TypedObjectNode[] { new PrimitiveValue( sb.length() + "" ) };
     }
 
     @Override
-    public Trim parse( XMLStreamReader in )
+    public StringLength parse( XMLStreamReader in )
                             throws XMLStreamException {
 
         StringBuffer value = null;
         Continuation<StringBuffer> contn = null;
-        boolean leading = true, trailing = false;
 
-        in.require( START_ELEMENT, null, "Trim" );
-
-        String pos = in.getAttributeValue( null, "stripOffPosition" );
-        if ( pos != null ) {
-            if ( pos.equals( "trailing" ) ) {
-                leading = false;
-                trailing = true;
-            }
-            if ( pos.equals( "both" ) ) {
-                trailing = true;
-            }
-        }
-        String ch = in.getAttributeValue( null, "stripOffChar" );
-        String substr = ch == null ? " " : ch;
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Trim" ) ) ) {
+        in.require( START_ELEMENT, null, "StringLength" );
+        while ( !( in.isEndElement() && in.getLocalName().equals( "StringLength" ) ) ) {
             in.nextTag();
 
             if ( in.getLocalName().equals( "StringValue" ) ) {
                 value = new StringBuffer();
                 contn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
             }
-
         }
-        in.require( END_ELEMENT, null, "Trim" );
-        return new Trim( value, contn, leading, trailing, substr );
+        in.require( END_ELEMENT, null, "StringLength" );
+        return new StringLength( value, contn );
     }
 }

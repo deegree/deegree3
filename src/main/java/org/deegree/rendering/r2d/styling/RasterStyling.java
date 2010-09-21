@@ -42,8 +42,8 @@ import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 
 import java.util.HashMap;
 
-import org.deegree.filter.function.se.Categorize;
-import org.deegree.filter.function.se.Interpolate;
+import org.deegree.filter.expression.custom.se.Categorize;
+import org.deegree.filter.expression.custom.se.Interpolate;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.components.UOM;
 

@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.other;
 
-import static org.deegree.filter.function.other.IMod.extractValues;
+import static org.deegree.commons.utils.math.MathUtils.round;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -43,11 +43,12 @@ import java.util.List;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.property.SimpleProperty;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.FunctionProvider;
 import org.deegree.filter.expression.Function;
+import org.deegree.filter.function.FunctionProvider;
 
 /**
  * <code>IDiv</code>
@@ -57,31 +58,48 @@ import org.deegree.filter.expression.Function;
  * 
  * @version $Revision$, $Date$
  */
-public class IDiv extends Function implements FunctionProvider {
+public class IDiv implements FunctionProvider {
 
-    /****/
-    public IDiv() {
-        // needed for SPI
-        super( "IDiv", null );
-    }
-    
-    /**
-     * @param exprs
-     */
-    public IDiv( List<Expression> exprs ) {
-        super( "IDiv", exprs );
+    private static final String NAME = "IDiv";
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     @Override
-    public IDiv create( List<Expression> params ) {
-        return new IDiv( params );
-    }
+    public Function create( List<Expression> params ) {
+        return new Function( NAME, params ) {
 
-    @Override
-    public TypedObjectNode[] evaluate( MatchableObject f )
-                            throws FilterEvaluationException {
-        Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], f );
+            private Pair<Integer, Integer> extractValues( Expression first, Expression second, MatchableObject f )
+                                    throws FilterEvaluationException {
+                TypedObjectNode[] vals1 = first.evaluate( f );
+                TypedObjectNode[] vals2 = second.evaluate( f );
 
-        return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first / p.second ) ) };
+                PrimitiveValue pv1;
+                PrimitiveValue pv2;
+                if ( vals1[0] instanceof PrimitiveValue ) {
+                    pv1 = (PrimitiveValue) vals1[0];
+                } else {
+                    pv1 = ( (SimpleProperty) vals1[0] ).getValue();
+                }
+                if ( vals2[0] instanceof PrimitiveValue ) {
+                    pv2 = (PrimitiveValue) vals2[0];
+                } else {
+                    pv2 = ( (SimpleProperty) vals2[0] ).getValue();
+                }
+
+                return new Pair<Integer, Integer>( round( Double.valueOf( pv1.getValue().toString() ) ),
+                                                   round( Double.valueOf( pv2.getValue().toString() ) ) );
+            }
+
+            @Override
+            public TypedObjectNode[] evaluate( MatchableObject f )
+                                    throws FilterEvaluationException {
+                Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], f );
+
+                return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first / p.second ) ) };
+            }
+        };
     }
 }

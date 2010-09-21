@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function.se;
+package org.deegree.filter.expression.custom.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -47,37 +47,53 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.AbstractCustomExpression;
+import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>ChangeCase</code>
+ * <code>StringPosition</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ChangeCase extends AbstractCustomExpression {
+public class StringPosition extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "ChangeCase" );
+    private static final QName ELEMENT_NAME = new QName( SENS, "StringPosition" );
+
+    private StringBuffer lookup;
+
+    private Continuation<StringBuffer> lookupContn;
 
     private StringBuffer value;
 
     private Continuation<StringBuffer> contn;
 
-    private boolean toupper;
+    private boolean forward;
 
-    /***/
-    public ChangeCase() {
+    /**
+     * 
+     */
+    public StringPosition() {
         // just used for SPI
     }
 
-    private ChangeCase( StringBuffer value, Continuation<StringBuffer> contn, boolean toupper ) {
+    /**
+     * @param lookup
+     * @param lookupContn
+     * @param value
+     * @param contn
+     * @param forward
+     */
+    public StringPosition( StringBuffer lookup, Continuation<StringBuffer> lookupContn, StringBuffer value,
+                           Continuation<StringBuffer> contn, boolean forward ) {
+        this.lookup = lookup;
+        this.lookupContn = lookupContn;
         this.value = value;
         this.contn = contn;
-        this.toupper = toupper;
+        this.forward = forward;
     }
 
     @Override
@@ -91,35 +107,50 @@ public class ChangeCase extends AbstractCustomExpression {
         if ( contn != null ) {
             contn.evaluate( sb, f );
         }
-        return new TypedObjectNode[] { new PrimitiveValue( toupper ? sb.toString().toUpperCase()
-                                                                  : sb.toString().toLowerCase() ) };
+
+        String val = sb.toString();
+        sb.setLength( 0 );
+        sb.append( lookup.toString().trim() );
+        if ( lookupContn != null ) {
+            lookupContn.evaluate( sb, f );
+        }
+        String lookup = sb.toString();
+
+        return new TypedObjectNode[] { new PrimitiveValue( ( ( forward ? val.indexOf( lookup )
+                                                                      : val.lastIndexOf( lookup ) ) + 1 )
+                                                           + "" ) };
     }
 
     @Override
-    public ChangeCase parse( XMLStreamReader in )
+    public StringPosition parse( XMLStreamReader in )
                             throws XMLStreamException {
 
+        StringBuffer lookup = null;
+        Continuation<StringBuffer> lookupContn = null;
         StringBuffer value = null;
         Continuation<StringBuffer> contn = null;
-        boolean toupper = true;
+        boolean forward = true;
 
-        in.require( START_ELEMENT, null, "ChangeCase" );
+        in.require( START_ELEMENT, null, "StringPosition" );
 
-        String dir = in.getAttributeValue( null, "direction" );
+        String dir = in.getAttributeValue( null, "searchDirection" );
         if ( dir != null ) {
-            toupper = dir.equals( "toUpper" );
+            forward = !dir.equals( "backToFront" );
         }
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "ChangeCase" ) ) ) {
+        while ( !( in.isEndElement() && in.getLocalName().equals( "StringPosition" ) ) ) {
             in.nextTag();
-
+            if ( in.getLocalName().equals( "LookupString" ) ) {
+                lookup = new StringBuffer();
+                lookupContn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupString", lookup, SBUPDATER, null ).second;
+            }
             if ( in.getLocalName().equals( "StringValue" ) ) {
                 value = new StringBuffer();
                 contn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
             }
 
         }
-        in.require( END_ELEMENT, null, "ChangeCase" );
-        return new ChangeCase( value, contn, toupper );
+        in.require( END_ELEMENT, null, "StringPosition" );
+        return new StringPosition( lookup, lookupContn, value, contn, forward );
     }
 }

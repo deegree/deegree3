@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function.se;
+package org.deegree.filter.expression.custom.se;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.toHexString;
@@ -66,7 +66,7 @@ import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.custom.AbstractCustomExpression;
+import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.styling.RasterStyling;

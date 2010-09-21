@@ -33,36 +33,61 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.custom;
+package org.deegree.filter.expression.custom;
 
-import java.util.List;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.filter.Expression;
-import org.deegree.filter.expression.Function;
 
 /**
- * Implementations of this class provide {@link Function} implementations.
+ * Base class for implementing {@link CustomExpressionProvider}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface FunctionProvider {
+public abstract class AbstractCustomExpression implements CustomExpressionProvider {
+
+    @Override
+    public Type getType() {
+        return Type.CUSTOM;
+    }
+
+    @Override
+    public CustomExpressionProvider parse100( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        return parse( xmlStream );
+    }
+
+    @Override
+    public CustomExpressionProvider parse110( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        return parse( xmlStream );
+    }
+
+    @Override
+    public CustomExpressionProvider parse200( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        return parse( xmlStream );
+    }
 
     /**
-     * Returns the name of the provided function.
-     * 
-     * @return the name of the provided function, never <code>null</code>
+     * @param xmlStream
+     * @return
+     * @throws XMLStreamException
      */
-    public String getName();
+    public abstract CustomExpressionProvider parse( XMLStreamReader xmlStream )
+                            throws XMLStreamException;
 
-    /**
-     * Creates a new {@link Function} instance.
-     * 
-     * @param params
-     *            params for the new function, may be empty, but never <code>null</code>
-     * @return the new function instance, never <code>null</code>
-     */
-    public Function create( List<Expression> params );
+    @Override
+    public Expression[] getParams() {
+        return new Expression[0];
+    }
+
+    @Override
+    public String toString( String indent ) {
+        return indent + "CustomExpression (" + getElementName() + ")";
+    }
 }
