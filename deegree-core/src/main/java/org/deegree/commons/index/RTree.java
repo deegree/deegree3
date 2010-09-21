@@ -635,7 +635,7 @@ public class RTree<T> extends SpatialIndex<T> {
      * @return true if it is, false if it's not
      */
     private boolean pointInside( float x, float y, float[] bbox ) {
-        return x > bbox[0] && x < bbox[2] && y > bbox[1] && y < bbox[3];
+        return x >= bbox[0] && x <= bbox[2] && y >= bbox[1] && y <= bbox[3];
     }
 
     /**
