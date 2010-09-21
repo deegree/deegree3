@@ -295,26 +295,30 @@ public class ParseIdentificationInfo extends XMLAdapter {
             LOG.info( "Creating of resourceIdentifierList finished: " + rsList );
             if ( dataIdentificationUuId == null ) {
                 LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
-                sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD,
-                                                                                       rsList.get( 0 ), factory ) );
-                dataIdentificationUuId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
-                                                                                                           namespaceGMD.getNamespaceURI(),
-                                                                                                           "uuid",
-                                                                                                           namespaceGMD.getPrefix() ) );
+                if ( !rsList.isEmpty() ) {
+                    sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD,
+                                                                                           rsList.get( 0 ), factory ) );
+                    dataIdentificationUuId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
+                                                                                                               namespaceGMD.getNamespaceURI(),
+                                                                                                               "uuid",
+                                                                                                               namespaceGMD.getPrefix() ) );
+                }
 
             }
-            LOG.info( "Setting id attribute from the resourceIdentifier..." );
-            OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
-            if ( attribute_id != null ) {
-                sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
+            if ( !rsList.isEmpty() ) {
+                LOG.info( "Setting id attribute from the resourceIdentifier..." );
+                OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
+                if ( attribute_id != null ) {
+                    sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
+                }
+                sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "id", namespaceGMD,
+                                                                                       rsList.get( 0 ), factory ) );
+                dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
+                                                                                                         namespaceGMD.getNamespaceURI(),
+                                                                                                         "id",
+                                                                                                         namespaceGMD.getPrefix() ) );
+                LOG.debug( "id attribute is now: '" + dataIdentificationId + "' " );
             }
-            sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "id", namespaceGMD, rsList.get( 0 ),
-                                                                                   factory ) );
-            dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
-                                                                                                     namespaceGMD.getNamespaceURI(),
-                                                                                                     "id",
-                                                                                                     namespaceGMD.getPrefix() ) );
-            LOG.debug( "id attribute is now: '" + dataIdentificationId + "' " );
             qp.setResourceIdentifier( resourceIdentifierList );
 
             List<OMElement> identiferListTemp = new ArrayList<OMElement>();
@@ -322,10 +326,12 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 LOG.debug( "There is at least one resourceIdentifier available" );
                 identiferListTemp.addAll( identifier );
             } else {
-                LOG.debug( "There is no resourceIdentifier available...so there will be a new identifier element created." );
+                if ( !resourceIdentifierList.isEmpty() ) {
+                    LOG.debug( "There is no resourceIdentifier available...so there will be a new identifier element created." );
 
-                identiferListTemp.add( GenerateOMElement.newInstance( factory ).createMD_ResourceIdentifier(
-                                                                                                             resourceIdentifierList.get( 0 ) ) );
+                    identiferListTemp.add( GenerateOMElement.newInstance( factory ).createMD_ResourceIdentifier(
+                                                                                                                 resourceIdentifierList.get( 0 ) ) );
+                }
             }
 
             List<OMElement> citedResponsibleParty = getElements( ci_citation, new XPath( "./gmd:citedResponsibleParty",
@@ -1039,11 +1045,9 @@ public class ParseIdentificationInfo extends XMLAdapter {
             List<String> operatesOnList = new ArrayList<String>();
             List<OperatesOnData> operatesOnDataList = new ArrayList<OperatesOnData>();
             for ( OMElement operatesOnElem : operatesOn ) {
-                // ./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier(/gmd:RS_Identifier |
-                // /gmd:MD_Identifier)/gmd:code/gco:CharacterString
                 String operatesOnStringUuIdAttribute = operatesOnElem.getAttributeValue( new QName( "uuidref" ) );
                 String operatesOnString = "";
-                if ( !operatesOnStringUuIdAttribute.equals( "" ) ) {
+                if ( operatesOnStringUuIdAttribute != null && !operatesOnStringUuIdAttribute.equals( "" ) ) {
                     operatesOnList.add( operatesOnStringUuIdAttribute );
                 } else {
                     operatesOnString = getNodeAsString(
@@ -1158,15 +1162,25 @@ public class ParseIdentificationInfo extends XMLAdapter {
             if ( md_dataIdentification != null ) {
                 LOG.debug( "Creating element MD_DataIdentification..." );
                 update_Ident = factory.createOMElement( "MD_DataIdentification", namespaceGMD );
-                update_Ident.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD, dataIdentificationUuId, factory ) );
-                update_Ident.addAttribute( new OMAttributeImpl( "id", namespaceGMD, dataIdentificationId, factory ) );
+                if ( dataIdentificationUuId != null ) {
+                    update_Ident.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD, dataIdentificationUuId,
+                                                                    factory ) );
+                }
+                if ( dataIdentificationId != null ) {
+                    update_Ident.addAttribute( new OMAttributeImpl( "id", namespaceGMD, dataIdentificationId, factory ) );
+                }
                 rootItendElem.addChild( update_Ident );
 
             } else {
                 LOG.debug( "Creating element SV_ServiceIdentification..." );
                 update_Ident = factory.createOMElement( "SV_ServiceIdentification", namespaceSRV );
-                update_Ident.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD, dataIdentificationUuId, factory ) );
-                update_Ident.addAttribute( new OMAttributeImpl( "id", namespaceGMD, dataIdentificationId, factory ) );
+                if ( dataIdentificationUuId != null ) {
+                    update_Ident.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD, dataIdentificationUuId,
+                                                                    factory ) );
+                }
+                if ( dataIdentificationId != null ) {
+                    update_Ident.addAttribute( new OMAttributeImpl( "id", namespaceGMD, dataIdentificationId, factory ) );
+                }
                 rootItendElem.addChild( update_Ident );
             }
             if ( update_Ident != null ) {

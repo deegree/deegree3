@@ -35,19 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.genericmetadatastore.generating;
 
-import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.text.ParseException;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.impl.llom.OMElementImpl;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.ReturnableProperties;
@@ -155,13 +151,15 @@ public class GenerateMetadata {
         // Contact, is mandatory in the metadataEntity.xsd but not in ISO spec -> contact is provided empty
         if ( contact != null ) {
             for ( OMElement elem : contact ) {
-                isoBriefElement.addChild( new OMElementImpl( new QName( GMD_NS, "contact" ), elem, factory ) );
+                // isoBriefElement.addChild( new OMElementImpl( new QName( GMD_NS, "contact" ), elem, factory ) );
+                isoBriefElement.addChild( elem );
             }
         }
         // Contact, is mandatory in the metadataEntity.xsd but not in ISO spec -> contact is provided empty
         if ( dateStamp != null ) {
 
-            isoBriefElement.addChild( new OMElementImpl( new QName( GMD_NS, "dateStamp" ), dateStamp, factory ) );
+            // isoBriefElement.addChild( new OMElementImpl( new QName( GMD_NS, "dateStamp" ), dateStamp, factory ) );
+            isoBriefElement.addChild( dateStamp );
 
         }
         // BoundingBox, GraphicOverview, ServiceType, ServiceTypeVersion
@@ -214,7 +212,8 @@ public class GenerateMetadata {
         // Contact, is mandatory in the metadataEntity.xsd but not in ISO spec -> contact is provided empty
         if ( contact != null ) {
             for ( OMElement elem : contact ) {
-                isoSummaryElement.addChild( new OMElementImpl( new QName( GMD_NS, "contact" ), elem, factory ) );
+                // isoSummaryElement.addChild( new OMElementImpl( new QName( GMD_NS, "contact" ), elem, factory ) );
+                isoSummaryElement.addChild( elem );
             }
         }
         // Modified

@@ -87,7 +87,7 @@ public class InspireCompliance {
      *            the list of RS_Identifier, not <Code>null</Code>.
      * @param id
      *            the id attribute if exists, can be <Code>null</Code>.
-     * @return a list of RS_Identifier with one element, at least.
+     * @return a list of RS_Identifier, not <Code>null</Code> but empty, at least.
      * @throws MetadataStoreException
      */
     public List<String> determineInspireCompliance( List<String> rsList, String id )
@@ -125,6 +125,7 @@ public class InspireCompliance {
                 return rsList;
             }
         }
+        LOG.info( "No modification happened, so the resourceIdentifierList will be passed through. " );
         return rsList;
     }
 
