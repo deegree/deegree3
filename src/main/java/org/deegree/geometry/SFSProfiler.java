@@ -38,9 +38,8 @@ package org.deegree.geometry;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.geometry.linearization.CurveLinearizer;
+import org.deegree.geometry.linearization.GeometryLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
-import org.deegree.geometry.linearization.SurfaceLinearizer;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -89,9 +88,7 @@ public class SFSProfiler {
 
     private final GeometryFactory geomFac = new GeometryFactory();
 
-    private final CurveLinearizer curveLinearizer = new CurveLinearizer( geomFac );
-
-    private final SurfaceLinearizer surfaceLinearizer = new SurfaceLinearizer( geomFac );
+    private final GeometryLinearizer linearizer = new GeometryLinearizer();
 
     private final LinearizationCriterion crit;
 
@@ -197,7 +194,7 @@ public class SFSProfiler {
         case Curve:
         case OrientableCurve:
         case Ring: {
-            Curve linearized = curveLinearizer.linearize( geometry, crit );
+            Curve linearized = linearizer.linearize( geometry, crit );
             simplified = linearized.getAsLineString();
             break;
         }
@@ -218,7 +215,7 @@ public class SFSProfiler {
         switch ( geometry.getSurfaceType() ) {
         case Polygon: {
             // an ISO polygon may actually use non-linear rings
-            simplified = surfaceLinearizer.linearize( geometry, crit );
+            simplified = linearizer.linearize( geometry, crit );
             break;
         }
         case CompositeSurface:
@@ -227,7 +224,7 @@ public class SFSProfiler {
         case Surface:
         case Tin:
         case TriangulatedSurface: {
-            Surface linearized = surfaceLinearizer.linearize( geometry, crit );
+            Surface linearized = linearizer.linearize( geometry, crit );
             if ( linearized.getPatches().size() == 1 ) {
                 // only a single patch -> Polygon
                 PolygonPatch patch = (PolygonPatch) linearized.getPatches().get( 0 );
@@ -289,7 +286,7 @@ public class SFSProfiler {
                 simplifiedMembers.add( simplify( member ) );
             }
             simplified = geomFac.createMultiLineString( mc.getId(), mc.getCoordinateSystem(), simplifiedMembers );
-            break;            
+            break;
         }
         case MULTI_GEOMETRY: {
             MultiGeometry<Geometry> mg = (MultiGeometry<Geometry>) geometry;
@@ -298,7 +295,7 @@ public class SFSProfiler {
                 simplifiedMembers.add( simplify( member ) );
             }
             simplified = geomFac.createMultiGeometry( mg.getId(), mg.getCoordinateSystem(), simplifiedMembers );
-            break;            
+            break;
         }
         case MULTI_POLYGON: {
             MultiPolygon mp = (MultiPolygon) geometry;
@@ -307,7 +304,7 @@ public class SFSProfiler {
                 simplifiedMembers.add( (Polygon) simplify( member ) );
             }
             simplified = geomFac.createMultiPolygon( mp.getId(), mp.getCoordinateSystem(), simplifiedMembers );
-            break;            
+            break;
         }
         case MULTI_SURFACE: {
             MultiSurface ms = (MultiSurface) geometry;
@@ -325,7 +322,7 @@ public class SFSProfiler {
                 }
             }
             simplified = geomFac.createMultiPolygon( ms.getId(), ms.getCoordinateSystem(), simplifiedMembers );
-            break;            
+            break;
         }
         case MULTI_SOLID: {
             throw new IllegalArgumentException( "Simplifying of solids is not implemented yet." );

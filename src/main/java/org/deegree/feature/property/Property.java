@@ -86,15 +86,23 @@ public interface Property extends TypedObjectNode {
     /**
      * Returns the value of this property.
      * 
-     * @return the value of this property can be <code>null</code>
+     * @return the value of this property, can be <code>null</code>
      */
     public TypedObjectNode getValue();
-    
+
+    /**
+     * Sets the value of this property.
+     * 
+     * @param value
+     *            the value of this property, can be <code>null</code>
+     */
+    public void setValue( TypedObjectNode value );
+
     /**
      * Returns the text value of this property.
      * 
      * @return the text value of this property, never <code>null</code>
      */
     @Override
-    public String toString ();
+    public String toString();
 }

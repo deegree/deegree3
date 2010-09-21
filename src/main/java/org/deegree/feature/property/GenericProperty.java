@@ -115,10 +115,10 @@ public class GenericProperty implements Property {
      *            true, if the property is explicitly nilled, false otherwise
      */
     public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value, boolean isNilled ) {
-        this (declaration, name, value);
+        this( declaration, name, value );
         this.nilled = isNilled;
     }
-    
+
     @Override
     public QName getName() {
         return name;
@@ -132,6 +132,11 @@ public class GenericProperty implements Property {
     @Override
     public TypedObjectNode getValue() {
         return value;
+    }
+
+    @Override
+    public void setValue( TypedObjectNode value ) {
+        this.value = value;
     }
 
     @Override

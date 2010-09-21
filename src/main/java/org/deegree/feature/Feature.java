@@ -46,6 +46,7 @@ import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.StandardGMLFeatureProps;
 
 /**
  * A feature is a structured object with named properties, an identifier and type information. Properties may have
@@ -241,4 +242,7 @@ public interface Feature extends MatchableObject, GMLObject {
      */
     public void setProperties( List<Property> props, GMLVersion version )
                             throws IllegalArgumentException;
+
+    @Override
+    public StandardGMLFeatureProps getGMLProperties();
 }

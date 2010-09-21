@@ -46,6 +46,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.cs.CRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -98,6 +99,7 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                             throws FeatureStoreException {
 
         MemoryFeatureStore fs = null;
+        CRS storageSRS = null;
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.memory.jaxb" );
             Unmarshaller u = jc.createUnmarshaller();
@@ -126,13 +128,17 @@ public class MemoryFeatureStoreProvider implements FeatureStoreProvider {
                                                                getHintMap( config.getNamespaceHint() ), schemaURLs );
                 }
                 schema = decoder.extractFeatureTypeSchema();
+                if ( config.getStorageCRS() != null ) {
+                    storageSRS = new CRS( config.getStorageCRS() );
+                    storageSRS.getWrappedCRS();
+                }
             } catch ( Exception e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
                 LOG.error( msg, e );
                 throw new FeatureStoreException( msg, e );
             }
 
-            fs = new MemoryFeatureStore( schema );
+            fs = new MemoryFeatureStore( schema, storageSRS );
             for ( GMLFeatureCollectionFileURL datasetFile : config.getGMLFeatureCollectionFileURL() ) {
                 if ( datasetFile != null ) {
                     try {

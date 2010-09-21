@@ -47,22 +47,34 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
+import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.CustomPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.linearization.GeometryLinearizer;
+import org.deegree.geometry.linearization.LinearizationCriterion;
+import org.deegree.geometry.linearization.NumPointsCriterion;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
@@ -82,6 +94,10 @@ import org.slf4j.LoggerFactory;
 class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreTransaction.class );
+
+    private final GeometryLinearizer linearizer = new GeometryLinearizer();
+
+    private final LinearizationCriterion crit = new NumPointsCriterion( 20 );
 
     private MemoryFeatureStore store;
 
@@ -178,6 +194,18 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
+
+        if ( store.storageSRS != null ) {
+            LOG.info( "Transforming incoming feature collection to '" + store.getStorageSRS() + "'" );
+            try {
+                fc = transformGeometries( fc );
+            } catch ( Exception e ) {
+                e.printStackTrace();
+                String msg = "Unable to transform geometries: " + e.getMessage();
+                throw new FeatureStoreException( msg );
+            }
+            LOG.info( "Done." );
+        }
 
         Set<Geometry> geometries = new HashSet<Geometry>();
         Set<Feature> features = new HashSet<Feature>();
@@ -276,6 +304,68 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new FeatureStoreException( msg );
         }
         return new ArrayList<String>( fids );
+    }
+
+    private FeatureCollection transformGeometries( FeatureCollection fc )
+                            throws IllegalArgumentException, UnknownCRSException, TransformationException {
+
+        FeatureCollection transformedFc = new GenericFeatureCollection();
+        GeometryTransformer transformer = new GeometryTransformer( store.storageSRS );
+        for ( Feature feature : fc ) {
+            transformedFc.add( transformGeometries( feature, transformer ) );
+        }
+        return transformedFc;
+    }
+
+    private Feature transformGeometries( Feature feature, GeometryTransformer transformer )
+                            throws IllegalArgumentException, TransformationException, UnknownCRSException {
+        // TODO Do not modify the incoming feature, but create a new one.
+        for ( Property prop : feature.getProperties() ) {
+            TypedObjectNode value = prop.getValue();
+            if ( value != null ) {
+                PropertyType pt = prop.getType();
+                if ( pt instanceof GeometryPropertyType ) {
+                    Geometry transformed = transformGeometry( (Geometry) value, transformer );
+                    prop.setValue( transformed );
+                } else if ( pt instanceof CustomPropertyType ) {
+                    TypedObjectNode transformed = transformGeometries( value, transformer );
+                    prop.setValue( transformed );
+                }
+            }
+        }
+        feature.getGMLProperties().setBoundedBy( null );
+        return feature;
+    }
+
+    private TypedObjectNode transformGeometries( TypedObjectNode value, GeometryTransformer transformer )
+                            throws IllegalArgumentException, TransformationException, UnknownCRSException {
+        if ( value instanceof GenericXMLElementContent ) {
+            GenericXMLElementContent generic = (GenericXMLElementContent) value;
+            List<TypedObjectNode> newChildren = new ArrayList<TypedObjectNode>( generic.getChildren().size() );
+            for ( int i = 0; i < generic.getChildren().size(); i++ ) {
+                TypedObjectNode child = generic.getChildren().get( i );
+                TypedObjectNode transformed = transformGeometries( child, transformer );
+                newChildren.add( transformed );
+            }
+            generic.setChildren( newChildren );
+        } else if ( value instanceof Geometry ) {
+            value = transformGeometry( (Geometry) value, transformer );
+        }
+        return value;
+    }
+
+    private Geometry transformGeometry( Geometry value, GeometryTransformer transformer )
+                            throws IllegalArgumentException, TransformationException, UnknownCRSException {
+        Geometry transformed = value;
+        if ( transformed.getCoordinateSystem() == null ) {
+            transformed.setCoordinateSystem( store.storageSRS );
+        } else {
+            transformed = linearizer.linearize( value, crit );
+            if ( transformed instanceof Point && transformed.getCoordinateDimension() > 1 ) {
+                transformed = transformer.transform( value, value.getCoordinateSystem().getWrappedCRS() );
+            }
+        }
+        return transformed;
     }
 
     private String generateNewId() {

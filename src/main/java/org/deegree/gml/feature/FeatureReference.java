@@ -73,7 +73,7 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
     public FeatureReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
-        super (resolver, uri, baseURL);
+        super( resolver, uri, baseURL );
     }
 
     @Override
@@ -157,5 +157,10 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     @Override
     public void setPropertyValue( QName propName, int occurence, TypedObjectNode value, GMLVersion version ) {
         getReferencedObject().setPropertyValue( propName, occurence, value, version );
+    }
+
+    @Override
+    public StandardGMLFeatureProps getGMLProperties() {
+        return getReferencedObject().getGMLProperties();
     }
 }
