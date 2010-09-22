@@ -36,6 +36,7 @@
 package org.deegree.tools.crs.georeferencing.model;
 
 import static java.lang.Math.max;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -56,6 +57,7 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wms.Utils;
@@ -155,15 +157,20 @@ public class Scene2DImplShape implements Scene2D {
         Java2DRenderer renderer = new Java2DRenderer( g, imageWidth, imageHeight, imageBoundingbox );
         Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
+        // TODO
+        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+
         Query query = new Query( schema.getFeatureTypes()[0].getName(), imageBoundingbox, null, -1, -1, -1 );
         double resolution = max( imageBoundingbox.getSpan0() / imageWidth, imageBoundingbox.getSpan1() / imageHeight );
 
         try {
             FeatureResultSet fs = store.query( query );
             for ( Feature f : fs ) {
-                Layer.render( f, null, renderer, textRenderer, Utils.calcScaleWMS130( imageWidth, imageHeight,
-                                                                                      imageBoundingbox,
-                                                                                      srs.getWrappedCRS() ), resolution );
+                Layer.render( f, evaluator, null, renderer, textRenderer, Utils.calcScaleWMS130( imageWidth,
+                                                                                                 imageHeight,
+                                                                                                 imageBoundingbox,
+                                                                                                 srs.getWrappedCRS() ),
+                              resolution );
             }
         } catch ( FeatureStoreException e ) {
             // TODO Auto-generated catch block

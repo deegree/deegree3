@@ -36,6 +36,8 @@
 
 package org.deegree.tools.rendering.manager.buildings.importers;
 
+import static org.deegree.gml.GMLVersion.GML_31;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -62,6 +64,8 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -87,7 +91,6 @@ import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.rendering.r3d.opengl.tesselation.Tesselator;
-import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -549,13 +552,15 @@ public class CityGMLImporter implements ModelImporter {
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "cgml", NS );
         PropertyName propName = new PropertyName( "cgml:externalReference/cgml:informationSystem/text()", nsContext );
+
+        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
         TypedObjectNode[] tons;
         try {
-            tons = building.evalXPath( propName, GMLVersion.GML_31 );
+            tons = evaluator.eval( building, propName );
             if ( tons.length > 0 ) {
                 result = ( (PrimitiveValue) tons[0] ).getAsText().trim();
             }
-        } catch ( JaxenException e ) {
+        } catch ( FilterEvaluationException e ) {
             LOG.error( "Retrieving of information system property failed: " + e.getMessage() );
         }
         return result;
