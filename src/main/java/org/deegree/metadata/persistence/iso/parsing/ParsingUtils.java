@@ -46,7 +46,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.slf4j.Logger;
 
@@ -61,14 +60,14 @@ import org.slf4j.Logger;
 public class ParsingUtils {
     private static final Logger LOG = getLogger( ParsingUtils.class );
 
-    private final String connectionId;
+    private final Connection conn;
 
-    private ParsingUtils( String connectionId ) {
-        this.connectionId = connectionId;
+    private ParsingUtils( Connection conn ) {
+        this.conn = conn;
     }
 
-    public static ParsingUtils newInstance( String connectionId ) {
-        return new ParsingUtils( connectionId );
+    public static ParsingUtils newInstance( Connection conn ) {
+        return new ParsingUtils( conn );
     }
 
     /**
@@ -87,12 +86,9 @@ public class ParsingUtils {
 
         ResultSet rs = null;
         PreparedStatement stm = null;
-        Connection conn = null;
         String uuid = null;
 
         try {
-
-            conn = ConnectionManager.getConnection( connectionId );
 
             uuid = UUID.randomUUID().toString();
             char firstChar = uuid.charAt( 0 );

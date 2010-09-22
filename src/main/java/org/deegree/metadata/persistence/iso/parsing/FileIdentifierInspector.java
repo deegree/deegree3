@@ -45,7 +45,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector;
@@ -66,7 +65,7 @@ public class FileIdentifierInspector {
 
     private static final String REJECT_EMPTY_FILE_IDENTIFIER = "rejectEmptyFileIdentifier";
 
-    private final String connectionId;
+    private final Connection conn;
 
     private final IdentifierInspector inspector;
 
@@ -76,14 +75,14 @@ public class FileIdentifierInspector {
 
     private String uuid;
 
-    private FileIdentifierInspector( IdentifierInspector inspector, String connectionId ) {
-        this.connectionId = connectionId;
+    private FileIdentifierInspector( IdentifierInspector inspector, Connection conn ) {
+        this.conn = conn;
         this.inspector = inspector;
         this.idList = new ArrayList<String>();
     }
 
-    public static FileIdentifierInspector newInstance( IdentifierInspector inspector, String connectionId ) {
-        return new FileIdentifierInspector( inspector, connectionId );
+    public static FileIdentifierInspector newInstance( IdentifierInspector inspector, Connection conn ) {
+        return new FileIdentifierInspector( inspector, conn );
     }
 
     private boolean isFileIdentifierRejected() {
@@ -142,7 +141,6 @@ public class FileIdentifierInspector {
                 if ( rsList.size() == 0 || id == null || uuid == null ) {
 
                     LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );
-                    idList.add( ParsingUtils.newInstance( connectionId ).generateUUID() );
                     LOG.debug( "(DEFAULT) The new FileIdentifier: " + idList );
                 } else {
                     if ( rsList.size() == 0 && id != null ) {
@@ -183,10 +181,8 @@ public class FileIdentifierInspector {
                             throws MetadataStoreException {
         PreparedStatement stm = null;
         ResultSet rs = null;
-        Connection conn = null;
         boolean notAvailable = true;
         try {
-            conn = ConnectionManager.getConnection( connectionId );
             String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
                        + " AS i WHERE i.identifier = ?;";
             stm = conn.prepareStatement( s );

@@ -47,7 +47,7 @@ import org.deegree.protocol.csw.CSWConstants.TransactionType;
  */
 public abstract class TransactionOperation {
 
-    private String handle;
+    private final String handle;
 
     /**
      * Returns the type of operation. Use this to safely determine the subtype of {@link TransactionOperation}.
@@ -64,6 +64,7 @@ public abstract class TransactionOperation {
      */
     protected TransactionOperation( String handle ) {
         this.handle = handle;
+
     }
 
     /**

@@ -3,6 +3,7 @@ package org.deegree.metadata.persistence.iso;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -10,7 +11,11 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
+import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
+import org.deegree.metadata.persistence.iso.parsing.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
+import org.deegree.metadata.persistence.iso.parsing.InspireCompliance;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.UpdateTransaction;
@@ -31,9 +36,19 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final Connection conn;
 
-    ISOMetadataStoreTransaction( Connection conn ) throws SQLException {
+    private final FileIdentifierInspector fi;
+
+    private final InspireCompliance ic;
+
+    private final CoupledDataInspector ci;
+
+    ISOMetadataStoreTransaction( Connection conn, ISOMetadataStoreConfig config ) throws SQLException {
         this.conn = conn;
+        fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), conn );
+        ic = InspireCompliance.newInstance( config.getRequireInspireCompliance(), conn );
+        ci = CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), conn );
         conn.setAutoCommit( false );
+
     }
 
     @Override
@@ -59,23 +74,25 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public List<String> performInsert( InsertTransaction insert )
                             throws MetadataStoreException {
-        ExecuteStatements executeStatements;
+        ExecuteStatements execStm;
+        List<String> identifierList = new ArrayList<String>();
         for ( OMElement element : insert.getElement() ) {
             QName localName = element.getQName();
 
             try {
 
-                executeStatements = new ExecuteStatements();
+                execStm = new ExecuteStatements();
 
                 if ( localName.getLocalPart().equals( "Record" ) ) {
 
-                    executeStatements.executeInsertStatement( true, conn, new ISOQPParsing().parseAPDC( element ) );
+                    identifierList.add( execStm.executeInsertStatement( true, conn,
+                                                                        new ISOQPParsing().parseAPDC( element ) ) );
 
                 } else {
 
-                    // executeStatements.executeInsertStatement( false, conn, new ISOQPParsing().parseAPISO( fi, ic, ci,
-                    // element,
-                    // false ) );
+                    identifierList.add( execStm.executeInsertStatement( false, conn,
+                                                                        new ISOQPParsing().parseAPISO( fi, ic, ci,
+                                                                                                       element, false ) ) );
 
                 }
 
@@ -84,7 +101,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             }
 
         }
-        return null;
+        return identifierList;
     }
 
     @Override

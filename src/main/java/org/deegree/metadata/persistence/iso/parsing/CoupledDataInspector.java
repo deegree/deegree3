@@ -44,7 +44,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.CoupledResourceInspector;
 import org.slf4j.Logger;
@@ -61,17 +60,17 @@ public class CoupledDataInspector {
 
     private static final Logger LOG = getLogger( CoupledDataInspector.class );
 
-    private final String connectionId;
+    private final Connection conn;
 
     private final CoupledResourceInspector ci;
 
-    private CoupledDataInspector( CoupledResourceInspector ci, String connectionId ) {
-        this.connectionId = connectionId;
+    private CoupledDataInspector( CoupledResourceInspector ci, Connection conn ) {
+        this.conn = conn;
         this.ci = ci;
     }
 
-    public static CoupledDataInspector newInstance( CoupledResourceInspector ci, String connectionId ) {
-        return new CoupledDataInspector( ci, connectionId );
+    public static CoupledDataInspector newInstance( CoupledResourceInspector ci, Connection conn ) {
+        return new CoupledDataInspector( ci, conn );
     }
 
     /**
@@ -151,11 +150,9 @@ public class CoupledDataInspector {
         boolean gotOneDataset = false;
         ResultSet rs = null;
         PreparedStatement stm = null;
-        Connection conn = null;
         String s = "SELECT resourceidentifier FROM isoqp_resourceidentifier WHERE resourceidentifier = ?;";
 
         try {
-            conn = ConnectionManager.getConnection( connectionId );
             stm = conn.prepareStatement( s );
             stm.setObject( 1, resourceIdentifier );
             rs = stm.executeQuery();
