@@ -37,6 +37,7 @@ package org.deegree.metadata.persistence.iso.parsing;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,15 +60,15 @@ public class InspireCompliance {
 
     private final RequireInspireCompliance ric;
 
-    private final String connectionId;
+    private final Connection conn;
 
-    private InspireCompliance( RequireInspireCompliance ric, String connectionId ) {
+    private InspireCompliance( RequireInspireCompliance ric, Connection conn ) {
         this.ric = ric;
-        this.connectionId = connectionId;
+        this.conn = conn;
     }
 
-    public static InspireCompliance newInstance( RequireInspireCompliance ric, String connectionId ) {
-        return new InspireCompliance( ric, connectionId );
+    public static InspireCompliance newInstance( RequireInspireCompliance ric, Connection conn ) {
+        return new InspireCompliance( ric, conn );
     }
 
     public boolean checkInspireCompliance() {
@@ -117,7 +118,7 @@ public class InspireCompliance {
              */
             if ( rsList.size() == 0 && id == null ) {
                 LOG.info( "Neither an id nor a resourceIdentifier exists...so this creates a new one. " );
-                rsList.add( ParsingUtils.newInstance( connectionId ).generateUUID() );
+                rsList.add( ParsingUtils.newInstance( conn ).generateUUID() );
                 return rsList;
             } else if ( rsList.size() == 0 && id != null ) {
                 LOG.info( "An id exists but not a resourceIdentifier...so adapting resourceIdentifier with id. " );

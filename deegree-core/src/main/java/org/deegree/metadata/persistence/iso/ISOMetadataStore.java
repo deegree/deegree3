@@ -97,10 +97,7 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.RecordStoreOptions;
-import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
-import org.deegree.metadata.persistence.iso.parsing.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
-import org.deegree.metadata.persistence.iso.parsing.InspireCompliance;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.MetadataProperty;
@@ -134,16 +131,18 @@ public class ISOMetadataStore implements MetadataStore {
     // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
     private boolean useLegacyPredicates;
 
-    private FileIdentifierInspector fi;
-
-    private InspireCompliance ic;
-
-    private CoupledDataInspector ci;
+    // private FileIdentifierInspector fi;
+    //
+    // private InspireCompliance ic;
+    //
+    // private CoupledDataInspector ci;
 
     /**
      * shows the encoding of the database that is used
      */
     private String encoding;
+
+    private ISOMetadataStoreConfig config;
 
     private static final String datasets;
 
@@ -196,9 +195,7 @@ public class ISOMetadataStore implements MetadataStore {
      */
     public ISOMetadataStore( ISOMetadataStoreConfig config ) {
         this.connectionId = config.getConnId();
-        fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), connectionId );
-        ic = InspireCompliance.newInstance( config.getRequireInspireCompliance(), connectionId );
-        ci = CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), connectionId );
+        this.config = config;
 
     }
 
@@ -876,15 +873,15 @@ public class ISOMetadataStore implements MetadataStore {
 
                                     } else {
 
-                                        executeStatements.executeUpdateStatement(
-                                                                                  conn,
-                                                                                  affectedIds,
-                                                                                  new ISOQPParsing().parseAPISO(
-                                                                                                                 fi,
-                                                                                                                 ic,
-                                                                                                                 ci,
-                                                                                                                 omElement,
-                                                                                                                 true ) );
+                                        // executeStatements.executeUpdateStatement(
+                                        // conn,
+                                        // affectedIds,
+                                        // new ISOQPParsing().parseAPISO(
+                                        // fi,
+                                        // ic,
+                                        // ci,
+                                        // omElement,
+                                        // true ) );
 
                                     }
 
@@ -1058,11 +1055,11 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
             for ( String identifier : idList ) {
-                if ( fi.proveIdExistence( identifier ) ) {
-                    String msg = "No Metadata found with ID: '" + identifier + "'";
-                    LOG.info( msg );
-                    throw new MetadataStoreException( msg );
-                }
+                // if ( fi.proveIdExistence( identifier ) ) {
+                // String msg = "No Metadata found with ID: '" + identifier + "'";
+                // LOG.info( msg );
+                // throw new MetadataStoreException( msg );
+                // }
 
                 switch ( elementSetName ) {
 
@@ -1332,7 +1329,7 @@ public class ISOMetadataStore implements MetadataStore {
                             throws MetadataStoreException {
         ISOMetadataStoreTransaction ta = null;
         try {
-            ta = new ISOMetadataStoreTransaction( ConnectionManager.getConnection( connectionId ) );
+            ta = new ISOMetadataStoreTransaction( ConnectionManager.getConnection( connectionId ), config );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
         }

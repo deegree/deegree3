@@ -92,21 +92,23 @@ public class ExecuteStatements {
      * @throws IOException
      * @throws MetadataStoreException
      */
-    public void executeInsertStatement( boolean isDC, Connection connection, ParsedProfileElement parsedElement )
+    public String executeInsertStatement( boolean isDC, Connection connection, ParsedProfileElement parsedElement )
                             throws IOException, MetadataStoreException {
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildMetadataXMLRepresentation();
 
         boolean isUpdate = false;
+        String identifier = null;
         int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
 
         if ( isDC == true ) {
-            buildRecXML.generateDC( connection, operatesOnId, parsedElement );
+            identifier = buildRecXML.generateDC( connection, operatesOnId, parsedElement );
         } else {
-            buildRecXML.generateISO( connection, operatesOnId, parsedElement );
+            identifier = buildRecXML.generateISO( connection, operatesOnId, parsedElement );
 
         }
         generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
+        return identifier;
 
     }
 
