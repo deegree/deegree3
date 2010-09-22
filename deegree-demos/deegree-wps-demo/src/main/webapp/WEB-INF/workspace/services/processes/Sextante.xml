@@ -208,35 +208,48 @@
   </Process>
 
   <Process id="fixeddistancebuffer">
-    <Abstract>This algorithm creates a new polygon layer with buffers around features in the input layer. All buffers will have the same size, regardless of the feature being buffered.</Abstract>
+    <Abstract>This algorithm creates a new polygon layer with buffers
+      around features in the input layer. All buffers will have the same
+      size, regardless of the feature being buffered.</Abstract>
     <SelectionParameters id="TYPES">
       <Parameter id="BUFFER_OUTSIDE_POLY" value="0" />
       <Parameter id="BUFFER_INSIDE_POLY" value="1" />
       <Parameter id="BUFFER_INSIDE_OUTSIDE_POLY" value="2" />
     </SelectionParameters>
-  </Process>
-
-  <Process id="generateroutes">
-    <Abstract>This algorithm creates a number of new alternative routes based on an original route, linking the same starting and end points.</Abstract>
-    <SelectionParameters id="METHOD">
-      <Parameter id="CREATION_METHOD_BROWNIAN" value="0" />
-      <Parameter id="CREATION_METHOD_RECOMBINE" value="1" />
+    <SelectionParameters id="RINGS">
+      <Parameter id="NUMBER_OF_RINGS" value="0-*" />
     </SelectionParameters>
   </Process>
 
+  <Process id="generateroutes">
+    <Abstract>This algorithm creates a number of new alternative routes
+      based on an original route, linking the same starting and end
+      points.</Abstract>
+    <SelectionParameters id="METHOD">
+      <Parameter id="CREATION_METHOD_BROWNIAN_(doesn't work)"
+        value="0" />
+      <Parameter id="CREATION_METHOD_RECOMBINE_(works)" value="1" />
+    </SelectionParameters>
+  </Process>
+
+  <Process id="simplifylines">
+    <Abstract>This algorithm simplifies lines, reducing the number of
+      vertices in each of them.</Abstract>
+  </Process>
+
+  <Process id="simplifypolygons">
+    <Abstract>This algorithm simplifies points, removing nodes from
+      them. This reduces the amount of data needed to store a polygon,
+      while preserving its original shape as much as possible. The
+      number of nodes removed depends on a tolerance value.</Abstract>
+  </Process>
+
   <Process id="smoothlines">
-    <Abstract>This algorithm smooth the lines in a lines layer, adding extra nodes to it. This is the inverse operation to the one performed by the "simplify lines" algorithms.</Abstract>
+    <Abstract>This algorithm smooth the lines in a lines layer, adding
+      extra nodes to it. This is the inverse operation to the one
+      performed by the "simplify lines" algorithms.</Abstract>
     <SelectionParameters id="INTERMEDIATE_POINTS">
-      <Parameter id="ONE_POINT" value="1" />
-      <Parameter id="TWO_POINTS" value="2" />
-      <Parameter id="THREE_POINTS" value="3" />
-      <Parameter id="FOUR_POINTS" value="4" />
-      <Parameter id="FIVE_POINTS" value="5" />
-      <Parameter id="SIX_POINTS" value="6" />
-      <Parameter id="SEVEN_POINTS" value="7" />
-      <Parameter id="EIGHT_POINTS" value="8" />
-      <Parameter id="NINE_POINTS" value="9" />
-      <Parameter id="TEN_POINTS" value="10" />
+      <Parameter id="NUMBER_OF_POINTS" value="1-10" />
     </SelectionParameters>
     <SelectionParameters id="CURVE_TYPE">
       <Parameter id="NATURAL_CUBIC_SPLINES" value="0" />
@@ -246,21 +259,29 @@
   </Process>
 
   <Process id="splitlineswithpoints">
-    <Abstract>This algorithm splits a lines layer using an additional points layer. Points at a distance from a line lower than a given threshold will cause the be split at the closest point between both.A value from the point is added to the line. The user can select whether to add it to the segment finishing at the point or to the one starting at it.</Abstract>
+    <Abstract>This algorithm splits a lines layer using an additional
+      points layer. Points at a distance from a line lower than a given
+      threshold will cause the be split at the closest point between
+      both.A value from the point is added to the line. The user can
+      select whether to add it to the segment finishing at the point or
+      to the one starting at it.</Abstract>
     <SelectionParameters id="METHOD">
-      <Parameter id="NULL_VALUE" value="0" />
+      <Parameter id="START_VALUE" value="0" />
       <Parameter id="LAST_VALUE" value="1" />
     </SelectionParameters>
   </Process>
 
   <Process id="vectoraddfield">
-    <Abstract>This algorithm splits a lines layer using an additional points layer. Points at a distance from a line lower than a given threshold will cause the be split at the closest point between both.A value from the point is added to the line. The user can select whether to add it to the segment finishing at the point or to the one starting at it.</Abstract>
+    <Abstract>-</Abstract>
     <SelectionParameters id="FIELD_TYPE">
-      <Parameter id="DOUBLE" value="Double" />
-      <Parameter id="INTEGER" value="Integer" />
-      <Parameter id="STRING" value="String" />
+      <Parameter id="INTEGER" value="0" />
+      <Parameter id="DOUBLE" value="1" />
+      <Parameter id="STRING" value="2" />
     </SelectionParameters>
   </Process>
+
+
+
 
 
 </SextanteProcesses>
