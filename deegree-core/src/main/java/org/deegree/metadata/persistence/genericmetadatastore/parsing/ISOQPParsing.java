@@ -147,7 +147,7 @@ public final class ISOQPParsing extends XMLAdapter {
      * @throws IOException
      */
     public ParsedProfileElement parseAPISO( FileIdentifierInspector fi, InspireCompliance ic, CoupledDataInspector ci,
-                                            OMElement element )
+                                            OMElement element, boolean isUpdate )
                             throws MetadataStoreException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -461,7 +461,8 @@ public final class ISOQPParsing extends XMLAdapter {
                                                        new XPath( "./gmd:fileIdentifier/gco:CharacterString",
                                                                   nsContextISOParsing ), null );
         List<String> idList = fi.determineFileIdentifier( fileIdentifierString, pI.getResourceIdentifierList(),
-                                                          pI.getDataIdentificationId(), pI.getDataIdentificationUuId() );
+                                                          pI.getDataIdentificationId(), pI.getDataIdentificationUuId(),
+                                                          isUpdate );
 
         qp.setIdentifier( idList );
 

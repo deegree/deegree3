@@ -77,14 +77,12 @@ public class BuildMetadataXMLRepresentation {
 
     private static final StringBuilder formatColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.format.name() );
 
-    // TODO UPDATE like INSERT remove the databasetable out of preparedStatements
-    private static final StringBuilder sqlStatementUpdate = new StringBuilder().append( "UPDATE ? SET " ).append(
-                                                                                                                  dataColumn ).append(
-                                                                                                                                       " = ? WHERE " ).append(
-                                                                                                                                                               fk_datasetsColumn ).append(
-                                                                                                                                                                                           " = ? AND " ).append(
-                                                                                                                                                                                                                 formatColumn ).append(
-                                                                                                                                                                                                                                        " = ?;" );
+    private static final StringBuilder sqlStatementUpdate = new StringBuilder().append( " SET " ).append( dataColumn ).append(
+                                                                                                                               " = ? WHERE " ).append(
+                                                                                                                                                       fk_datasetsColumn ).append(
+                                                                                                                                                                                   " = ? AND " ).append(
+                                                                                                                                                                                                         formatColumn ).append(
+                                                                                                                                                                                                                                " = ?;" );;
 
     private static final StringBuilder sqlStatementInsert = new StringBuilder().append( " ( " ).append( idColumn ).append(
                                                                                                                            ", " ).append(
@@ -119,6 +117,10 @@ public class BuildMetadataXMLRepresentation {
             PreparedStatement stm = null;
 
             try {
+
+                String updateDatabaseTable = "UPDATE " + databaseTable;
+                int updateDatadaseTableLength = updateDatabaseTable.length();
+                sqlStatementUpdate.insert( 0, "UPDATE " ).insert( 7, databaseTable );
                 // DC-update
                 OMElement omElement = factory.createOMElement(
                                                                PostGISMappingsISODC.getTableRecordType().get(
@@ -140,21 +142,24 @@ public class BuildMetadataXMLRepresentation {
                 setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
 
                 stm = connection.prepareStatement( sqlStatementUpdate.toString() );
-                stm.setObject( 1, databaseTable );
-                stm.setObject( 2, omElement );
-                stm.setObject( 3, fk_datasets );
-                stm.setObject( 4, 1 );
+                // stm.setObject( 1, databaseTable );
+                stm.setBytes( 1, omElement.toString().getBytes() );
+                stm.setObject( 2, fk_datasets );
+                stm.setObject( 3, 1 );
+                LOG.debug( "" + stm );
                 stm.executeUpdate();
-                sqlStatementUpdate.setLength( 0 );
 
                 // ISO-update
                 stm = connection.prepareStatement( sqlStatementUpdate.toString() );
-                stm.setObject( 1, databaseTable );
-                stm.setObject( 2, isoOMElement );
-                stm.setObject( 3, fk_datasets );
-                stm.setObject( 4, 2 );
+                // stm.setObject( 1, databaseTable );
+                stm.setBytes( 1, isoOMElement.toString().getBytes() );
+                stm.setObject( 2, fk_datasets );
+                stm.setObject( 3, 2 );
+                LOG.debug( "" + stm );
                 stm.executeUpdate();
                 stm.close();
+
+                sqlStatementUpdate.delete( 0, updateDatadaseTableLength );
 
             } catch ( SQLException e ) {
 
@@ -215,6 +220,7 @@ public class BuildMetadataXMLRepresentation {
                 stm.setObject( 2, operatesOnId );
                 stm.setObject( 3, 2 );
                 stm.setBytes( 4, isoElement.toString().getBytes() );
+                LOG.debug( "" + stm );
                 stm.executeUpdate();
                 stm.close();
 
