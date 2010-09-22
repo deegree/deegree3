@@ -280,8 +280,14 @@
     </SelectionParameters>
   </Process>
 
+  <Process id="vectorcluster">
+    <Abstract>This algorithm classifies features in a vector layer into
+      a given number of classes, using the values of a variable
+      associated with those features.</Abstract>
+  </Process>
 
-
-
+  <Process id="vectorfieldcalculator">
+    <Abstract>-</Abstract>
+  </Process>
 
 </SextanteProcesses>

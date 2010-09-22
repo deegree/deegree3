@@ -37,8 +37,6 @@ package org.deegree.services.wps.provider.sextante;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import javax.xml.stream.XMLStreamReader;
-
-import org.apache.commons.lang.NumberUtils;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Geometry;
@@ -121,29 +119,26 @@ public class SextanteProcesslet implements Processlet {
 
         } catch ( NullParameterValueException e ) { // false input data
             e.printStackTrace();
-            throw new ProcessletException( "'" + SextanteWPSProcess.createIdentifier( alg )
-                                           + "' algorithm found false input data. (" + e.getLocalizedMessage() + ")" );
+            String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
+                             + e.getLocalizedMessage() + ")";
+            throw new ProcessletException( message );
 
         } catch ( ArrayIndexOutOfBoundsException e ) { // false input data
             e.printStackTrace();
-
-            String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm, " + e.getMessage();
-
-            if ( alg.getCommandLineName().equals( "delaunay" ) || alg.getCommandLineName().equals( "polygonize" ) )
-                message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
-                          + e.getLocalizedMessage() + ")";
-
+            String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
+                             + e.getLocalizedMessage() + ")";
             throw new ProcessletException( message );
 
         } catch ( NullPointerException e ) { // false input data
             e.printStackTrace();
+            String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
+                             + e.getLocalizedMessage() + ")";
+            throw new ProcessletException( message );
 
-            String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm, " + e.getMessage();
-
-            if ( alg.getCommandLineName().equals( "exportvector" ) || alg.getCommandLineName().equals( "union" ) )
-                message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
-                          + e.getLocalizedMessage() + ")";
-
+        } catch ( IndexOutOfBoundsException e ) { // false input data
+            e.printStackTrace();
+            String message = "'" + SextanteWPSProcess.createIdentifier( alg ) + "' algorithm found false input data. ("
+                             + e.getLocalizedMessage() + ")";
             throw new ProcessletException( message );
 
         } catch ( Exception e ) {
@@ -287,6 +282,7 @@ public class SextanteProcesslet implements Processlet {
         // special case of 'vectoraddfield' algorithm
         if ( alg.getCommandLineName().equals( "vectoraddfield" ) ) {
 
+            @SuppressWarnings("unused")
             String valueAsText;
 
             if ( valueAsInteger == 0 )

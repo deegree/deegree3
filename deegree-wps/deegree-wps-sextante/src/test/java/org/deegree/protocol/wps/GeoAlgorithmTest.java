@@ -225,26 +225,24 @@ public class GeoAlgorithmTest {
 
         LinkedList<GeoAlgorithmWithData> allAlgs = new LinkedList<GeoAlgorithmWithData>();
 
-        boolean getAll = false;
+        boolean getAll = true;
 
         if ( !getAll ) {// return only one algorithm
 
             // ---------------------------------------------------------------------------------------------------------------------------
-            // vectoraddfield algorithm
-            String vectoraddfieldName = "vectoraddfield";
-            GeoAlgorithmWithData vectoraddfieldAlg = new GeoAlgorithmWithData(
-                                                                               Sextante.getAlgorithmFromCommandLineName( vectoraddfieldName ) );
+            // vectorfieldcalculator algorithm
+            String vectorfieldcalculatorName = "vectorfieldcalculator";
+            GeoAlgorithmWithData vectorfieldcalculatorAlg = new GeoAlgorithmWithData(
+                                                                                      Sextante.getAlgorithmFromCommandLineName( vectorfieldcalculatorName ) );
             // add test data
-            LinkedList<ExampleData> vectoraddfieldData1 = new LinkedList<ExampleData>();
-            vectoraddfieldData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POINTS ); // INPUT
-            vectoraddfieldData1.add( LiteralExampleData.STRING_VIEW ); // FIELD_NAME
-            vectoraddfieldData1.add( LiteralExampleData.SELECTION_0 ); // FIELD_TYPE: INTEGER
-            vectoraddfieldData1.add( LiteralExampleData.NUMERICAL_VALUE_1 ); // FIELD_LENGTH: 1
-            vectoraddfieldData1.add( LiteralExampleData.NUMERICAL_VALUE_10 ); // FIELD_PRECISION: 10
-            vectoraddfieldData1.add( LiteralExampleData.STRING_0 ); // DEFAULT_VALUE: 0
-            vectoraddfieldAlg.addInputData( vectoraddfieldData1 );
-            allAlgs.add( vectoraddfieldAlg );
+            LinkedList<ExampleData> vectorfieldcalculatorData1 = new LinkedList<ExampleData>();
+            vectorfieldcalculatorData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POLYGONS ); // LAYER
+            vectorfieldcalculatorData1.add( LiteralExampleData.STRING_TEST ); // FORMULA
+            vectorfieldcalculatorAlg.addInputData( vectorfieldcalculatorData1 );
+            allAlgs.add( vectorfieldcalculatorAlg );
 
+            // vectorfieldcalculator
+            // LAYER[Vector Layer], FORMULA[String], RESULT[output vector layer]
         } else {// return all algorithms
 
             // ---------------------------------------------------------------------------------------------------------------------------
@@ -929,6 +927,19 @@ public class GeoAlgorithmTest {
             vectoraddfieldData1.add( LiteralExampleData.STRING_0 ); // DEFAULT_VALUE: 0
             vectoraddfieldAlg.addInputData( vectoraddfieldData1 );
             allAlgs.add( vectoraddfieldAlg );
+
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // vectorcluster algorithm
+            String vectorclusterName = "vectorcluster";
+            GeoAlgorithmWithData vectorclusterAlg = new GeoAlgorithmWithData(
+                                                                              Sextante.getAlgorithmFromCommandLineName( vectorclusterName ) );
+            // add test data
+            LinkedList<ExampleData> vectorclusterData1 = new LinkedList<ExampleData>();
+            vectorclusterData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POLYGONS ); // LAYER
+            vectorclusterData1.add( LiteralExampleData.STRING_NAME_UPPERNAME_DATAORIGIN_AREA_QUERYBBOXOVERLAP ); // FIELDS
+            vectorclusterData1.add( LiteralExampleData.NUMERICAL_VALUE_5 ); // NUMCLASS: 5
+            vectorclusterAlg.addInputData( vectorclusterData1 );
+            allAlgs.add( vectorclusterAlg );
 
         }
 

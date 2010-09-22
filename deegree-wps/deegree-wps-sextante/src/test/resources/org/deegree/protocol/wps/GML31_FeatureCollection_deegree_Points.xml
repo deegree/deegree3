@@ -17,10 +17,10 @@
           <gml:upperCorner>9.56222152709961 51.09111022949219</gml:upperCorner>
         </gml:Envelope>
       </gml:boundedBy>
-      <app:name>France</app:name>
-      <app:upperName>FRANCE</app:upperName>
+      <app:name>Germany</app:name>
+      <app:upperName>GERMANY</app:upperName>
       <app:dataOrigin>Imported from shapefile.</app:dataOrigin>
-      <app:area>64.3483226450664</app:area>
+      <app:area>12.56493</app:area>
       <app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
       <app:geom>
         <gml:Point srsName="EPSG:4326">
@@ -41,7 +41,7 @@
       <app:name>France</app:name>
       <app:upperName>FRANCE</app:upperName>
       <app:dataOrigin>Imported from shapefile.</app:dataOrigin>
-      <app:area>64.3483226450664</app:area>
+      <app:area>64.34832</app:area>
       <app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
       <app:geom>
 
@@ -60,10 +60,10 @@
           <gml:upperCorner>9.56222152709961 51.09111022949219</gml:upperCorner>
         </gml:Envelope>
       </gml:boundedBy>
-      <app:name>France</app:name>
-      <app:upperName>FRANCE</app:upperName>
+      <app:name>Denmark</app:name>
+      <app:upperName>DENMARK</app:upperName>
       <app:dataOrigin>Imported from shapefile.</app:dataOrigin>
-      <app:area>64.3483226450664</app:area>
+      <app:area>6.32665</app:area>
       <app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
       <app:geom>
 
@@ -83,10 +83,10 @@
           <gml:upperCorner>9.56222152709961 51.09111022949219</gml:upperCorner>
         </gml:Envelope>
       </gml:boundedBy>
-      <app:name>France</app:name>
-      <app:upperName>FRANCE</app:upperName>
+      <app:name>England</app:name>
+      <app:upperName>ENGLAND</app:upperName>
       <app:dataOrigin>Imported from shapefile.</app:dataOrigin>
-      <app:area>64.3483226450664</app:area>
+      <app:area>14.63469</app:area>
       <app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
       <app:geom>
 
@@ -105,10 +105,10 @@
           <gml:upperCorner>9.56222152709961 51.09111022949219</gml:upperCorner>
         </gml:Envelope>
       </gml:boundedBy>
-      <app:name>France</app:name>
-      <app:upperName>FRANCE</app:upperName>
+      <app:name>Spain</app:name>
+      <app:upperName>SPAIN</app:upperName>
       <app:dataOrigin>Imported from shapefile.</app:dataOrigin>
-      <app:area>64.3483226450664</app:area>
+      <app:area>11.49535</app:area>
       <app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
       <app:geom>
 
@@ -127,10 +127,10 @@
           <gml:upperCorner>9.56222152709961 51.09111022949219</gml:upperCorner>
         </gml:Envelope>
       </gml:boundedBy>
-      <app:name>France</app:name>
-      <app:upperName>FRANCE</app:upperName>
+      <app:name>Poland</app:name>
+      <app:upperName>POLAND</app:upperName>
       <app:dataOrigin>Imported from shapefile.</app:dataOrigin>
-      <app:area>64.3483226450664</app:area>
+      <app:area>9.38431</app:area>
       <app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
       <app:geom>
 
@@ -148,10 +148,10 @@
           <gml:upperCorner>9.56222152709961 51.09111022949219</gml:upperCorner>
         </gml:Envelope>
       </gml:boundedBy>
-      <app:name>France</app:name>
-      <app:upperName>FRANCE</app:upperName>
+      <app:name>Italy</app:name>
+      <app:upperName>ITALY</app:upperName>
       <app:dataOrigin>Imported from shapefile.</app:dataOrigin>
-      <app:area>64.3483226450664</app:area>
+      <app:area>7.682469</app:area>
       <app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
       <app:geom>
         <gml:Point srsName="EPSG:4326">

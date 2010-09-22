@@ -35,13 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.sextante;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.xml.namespace.QName;
-
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -63,14 +62,11 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.vividsolutions.jts.geom.PrecisionModel;
-
 import es.unex.sextante.dataObjects.FeatureImpl;
 import es.unex.sextante.dataObjects.IFeature;
 import es.unex.sextante.dataObjects.IFeatureIterator;
@@ -319,31 +315,38 @@ public class VectorLayerAdapter {
         // create property declarations
         LinkedList<PropertyType> propDecls = new LinkedList<PropertyType>();
         Object[] propObjs = f.getRecord().getValues();
+
         // create simple properties
         for ( int i = 0; i < l.getFieldCount(); i++ ) {
 
             String nameRaw = l.getFieldName( i );
-            String[] nameArray;
-            if ( nameRaw != null ) {
-                nameArray = l.getFieldName( i ).replace( "{", "" ).split( "}" );
-            } else {
-                nameArray = new String[0];
+
+            if ( nameRaw == null ) {
                 nameRaw = "PROPERTY_WITHOUT_NAME";
             }
 
             // determine element name
-            QName probName;
-            if ( nameArray.length >= 2 )
-                probName = new QName( nameArray[1] );
-            else
-                probName = new QName( nameRaw.replace( " ", "" ) );
+            QName probName = new QName( nameRaw.replace( " ", "" ) );
 
+            // TODO correct redundancy
             // modify value
             Object value = propObjs[i];
-            if ( value instanceof Integer )// PrimitiveType only support BigInteger
-                value = new BigInteger( value.toString() );
-            else if ( value instanceof Long )// PrimitiveType only support Double
-                value = new Double( value.toString() );
+            if ( value != null ) { // value is not null
+                if ( value instanceof Integer )// PrimitiveType only support BigInteger
+                    value = new BigInteger( value.toString() );
+                else if ( value instanceof Long )// PrimitiveType only support Double
+                    value = new Double( value.toString() );
+
+            } else {// value is null
+
+                // TODO dangerous handling
+                Class<?> valueClass = l.getFieldType( i );
+                if ( valueClass.equals( BigDecimal.class ) ) {
+                    value = new BigDecimal( 0.0 );
+                } else {
+                    value = valueClass.newInstance();
+                }
+            }
 
             // create property type
             SimplePropertyType spt = new SimplePropertyType( probName, 1, 1,
@@ -368,11 +371,25 @@ public class VectorLayerAdapter {
         for ( int i = 0; i < propObjs.length; i++ ) {
             if ( it.hasNext() ) {
 
+                // TODO correct redundancy
+                // modify value
                 Object value = propObjs[i];
-                if ( value instanceof Integer ) // PrimitiveType only support BigInteger
-                    value = new BigInteger( value.toString() );
-                else if ( value instanceof Long ) // PrimitiveType only support Double
-                    value = new Double( value.toString() );
+                if ( value != null ) { // value is not null
+                    if ( value instanceof Integer )// PrimitiveType only support BigInteger
+                        value = new BigInteger( value.toString() );
+                    else if ( value instanceof Long )// PrimitiveType only support Double
+                        value = new Double( value.toString() );
+
+                } else {// value is null
+
+                    // TODO dangerous handling
+                    Class<?> valueClass = l.getFieldType( i );
+                    if ( valueClass.equals( BigDecimal.class ) ) {
+                        value = new BigDecimal( 0.0 );
+                    } else {
+                        value = valueClass.newInstance();
+                    }
+                }
 
                 // GenericProperty gp = new GenericProperty( it.next(), new PrimitiveValue( propObjs[i] ) );
                 SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), value.toString(),
@@ -569,11 +586,11 @@ public class VectorLayerAdapter {
                 QName pName = spt.getName();
 
                 // class
-                // Class<?> pClass = spt.getPrimitiveType().getValueClass();
-                Class<?> pClass = String.class;
+                Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                // Class<?> pClass = String.class;
 
                 // notice name and class as field
-                vectoLayerPropertyDeclarations.add( new Field( pName.toString(), pClass ) );
+                vectoLayerPropertyDeclarations.add( new Field( pName.getLocalPart(), pClass ) );
 
                 // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
             }
@@ -611,39 +628,41 @@ public class VectorLayerAdapter {
 
             for ( int i = 0; i < propertyDeclarations.length; i++ ) {
 
-                String[] name = propertyDeclarations[i].getName().replace( "{", "" ).split( "}" );
+                // propterties by name
+                Property[] allProperties = f.getProperties();
+                LinkedList<Property> propertyByName = new LinkedList<Property>();
+                for ( int j = 0; j < allProperties.length; j++ ) {
+                    Property prop = allProperties[j];
+                    if ( prop.getName().getLocalPart().equals( propertyDeclarations[i].getName() ) )
+                        propertyByName.add( prop );
+                }
 
-                if ( name.length >= 2 ) {
+                // notice only the first
+                if ( propertyByName.size() >= 1 ) {
 
-                    QName probName = new QName( name[0], name[1] );
+                    Property prop = propertyByName.getFirst();
 
-                    // propterties by name
-                    Property[] properties = f.getProperties( probName );
+                    if ( propertyByName.size() > 1 ) {
+                        LOG.warn( "Multiple occurrence of property {}, using only first one for IVectorLayer.",
+                                  prop.getName().getLocalPart() );
+                    }
 
-                    // notice only the first
-                    if ( properties.length >= 1 ) {
+                    TypedObjectNode probNode = prop.getValue();
 
-                        if ( properties.length > 1 ) {
-                            LOG.warn( "Multiple occurrence of property {}, using only first one for IVectorLayer.",
-                                      probName );
-                        }
-
-                        TypedObjectNode probNode = properties[0].getValue();
-
-                        if ( probNode instanceof PrimitiveValue ) {
-                            // geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() );
-                            geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() ).getAsText();
-                        } else {
-                            LOG.warn( "Property '" + properties[0].getName() + "' is not supported." );
-                            geomProperties[i] = null;
-                        }
-
+                    if ( probNode instanceof PrimitiveValue ) {
+                        geomProperties[i] = ( (PrimitiveValue) probNode ).getValue();
+                        // geomProperties[i] = ( (PrimitiveValue) properties[0].getValue() ).getAsText();
                     } else {
+                        LOG.warn( "Property '" + prop.getName() + "' is not supported." );
                         geomProperties[i] = null;
                     }
 
-                    // LOG.info( "  PROPERTY: " + propertyDeclarations[i].getName() + ": " + geomProperties[i] );
+                } else {
+                    geomProperties[i] = null;
                 }
+
+                // LOG.info( "  PROPERTY: " + propertyDeclarations[i].getName() + ": " + geomProperties[i] );
+
             }
 
         } else { // if names=null

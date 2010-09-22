@@ -65,6 +65,14 @@ public class LiteralExampleData implements ExampleData {
 
     public static LiteralExampleData NUMERICAL_VALUE_1 = new LiteralExampleData( "1", NUMERICAL_VALUE_TYPE );
 
+    public static LiteralExampleData NUMERICAL_VALUE_2 = new LiteralExampleData( "2", NUMERICAL_VALUE_TYPE );
+
+    public static LiteralExampleData NUMERICAL_VALUE_3 = new LiteralExampleData( "3", NUMERICAL_VALUE_TYPE );
+
+    public static LiteralExampleData NUMERICAL_VALUE_4 = new LiteralExampleData( "4", NUMERICAL_VALUE_TYPE );
+
+    public static LiteralExampleData NUMERICAL_VALUE_5 = new LiteralExampleData( "5", NUMERICAL_VALUE_TYPE );
+
     public static LiteralExampleData NUMERICAL_VALUE_10 = new LiteralExampleData( "10", NUMERICAL_VALUE_TYPE );
 
     public static LiteralExampleData NUMERICAL_VALUE_50 = new LiteralExampleData( "50", NUMERICAL_VALUE_TYPE );
@@ -107,6 +115,13 @@ public class LiteralExampleData implements ExampleData {
 
     // string value example data
     public static LiteralExampleData STRING_VIEW = new LiteralExampleData( "VIEWS", STRING_TYPE );
+
+    public static LiteralExampleData STRING_TEST = new LiteralExampleData( "sqrt({http://www.deegree.org/app}area)",
+                                                                           STRING_TYPE );
+
+    public static LiteralExampleData STRING_NAME_UPPERNAME_DATAORIGIN_AREA_QUERYBBOXOVERLAP = new LiteralExampleData(
+                                                                                                                      "name,upperName,dataOrigin,area,queryBBOXOverlap",
+                                                                                                                      STRING_TYPE );
 
     public static LiteralExampleData STRING_0 = new LiteralExampleData( "0", STRING_TYPE );
 
