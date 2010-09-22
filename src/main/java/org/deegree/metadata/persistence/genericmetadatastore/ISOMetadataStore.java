@@ -775,7 +775,7 @@ public class ISOMetadataStore implements MetadataStore {
 
                             executeStatements.executeInsertStatement( false, conn, affectedIds,
                                                                       new ISOQPParsing().parseAPISO( fi, ic, ci,
-                                                                                                     element ) );
+                                                                                                     element, false ) );
 
                         }
 
@@ -809,9 +809,11 @@ public class ISOMetadataStore implements MetadataStore {
                                                                   new ISOQPParsing().parseAPDC( upd.getElement() ) );
 
                     } else {
-                        executeStatements.executeUpdateStatement( conn, affectedIds,
+                        executeStatements.executeUpdateStatement(
+                                                                  conn,
+                                                                  affectedIds,
                                                                   new ISOQPParsing().parseAPISO( fi, ic, ci,
-                                                                                                 upd.getElement() ) );
+                                                                                                 upd.getElement(), true ) );
 
                     }
 
@@ -913,10 +915,12 @@ public class ISOMetadataStore implements MetadataStore {
                                         executeStatements.executeUpdateStatement(
                                                                                   conn,
                                                                                   affectedIds,
-                                                                                  new ISOQPParsing().parseAPISO( fi,
+                                                                                  new ISOQPParsing().parseAPISO(
+                                                                                                                 fi,
                                                                                                                  ic,
                                                                                                                  ci,
-                                                                                                                 omElement ) );
+                                                                                                                 omElement,
+                                                                                                                 true ) );
 
                                     }
 

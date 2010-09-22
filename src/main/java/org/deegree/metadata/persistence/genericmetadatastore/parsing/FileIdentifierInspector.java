@@ -108,10 +108,17 @@ public class FileIdentifierInspector {
      *            the fileIdentifier that should be determined for one metadata, can be <Code>null</Code>.
      * @param rsList
      *            the list of resourceIdentifier, not <Code>null</Code>.
+     * @param id
+     *            the id-attribute, can be <Code>null<Code>.
+     * @param uuid
+     *            the uuid-attribure, can be <Code>null</Code>.
+     * @param isFileIdentifierExistenceDesired
+     *            true, if the existence of the fileIdentifier is desired in backend.
      * @return the new fileIdentifier.
      * @throws MetadataStoreException
      */
-    public List<String> determineFileIdentifier( String fi, List<String> rsList, String id, String uuid )
+    public List<String> determineFileIdentifier( String fi, List<String> rsList, String id, String uuid,
+                                                 boolean isFileIdentifierExistenceDesired )
                             throws MetadataStoreException {
         this.id = id;
         this.uuid = uuid;
@@ -119,6 +126,11 @@ public class FileIdentifierInspector {
         if ( fi != null ) {
             if ( proveIdExistence( fi ) ) {
                 LOG.info( "'{}' accepted as a valid fileIdentifier. ", fi );
+                idList.add( fi );
+                return idList;
+            }
+            if ( isFileIdentifierExistenceDesired ) {
+                LOG.info( "'{}' is stored in backend and should be updated. ", fi );
                 idList.add( fi );
                 return idList;
             }
