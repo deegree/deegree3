@@ -42,6 +42,7 @@ import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.services.controller.FrontControllerStats.getCombinedGetMapEnvelope;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -71,6 +72,7 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
@@ -149,6 +151,9 @@ public class StatisticsLayer extends FeatureLayer {
                             throws MissingDimensionValue, InvalidDimensionValue {
         Pair<Filter, LinkedList<String>> filter = getDimensionFilter( fi.getDimensions() );
 
+        // TODO
+        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+
         GenericFeatureCollection col = new GenericFeatureCollection();
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {
@@ -169,7 +174,7 @@ public class StatisticsLayer extends FeatureLayer {
 
                     GenericFeature f = new GenericFeature( featureType, null, props, null );
                     try {
-                        if ( filter.first != null && !filter.first.evaluate( f ) ) {
+                        if ( filter.first != null && !filter.first.evaluate( f, evaluator ) ) {
                             continue;
                         }
                     } catch ( FilterEvaluationException e ) {
@@ -202,6 +207,10 @@ public class StatisticsLayer extends FeatureLayer {
 
         Java2DRenderer renderer = new Java2DRenderer( g, gm.getWidth(), gm.getHeight(), gm.getBoundingBox(),
                                                       gm.getPixelSize() );
+
+        // TODO
+        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+
         for ( ComparablePair<Long, String> req : FrontControllerStats.getKVPRequests() ) {
             if ( req.second.toUpperCase().indexOf( "REQUEST=GETMAP" ) != -1 ) {
                 try {
@@ -221,14 +230,14 @@ public class StatisticsLayer extends FeatureLayer {
 
                     GenericFeature f = new GenericFeature( featureType, null, props, null );
                     try {
-                        if ( filter.first != null && !filter.first.evaluate( f ) ) {
+                        if ( filter.first != null && !filter.first.evaluate( f, evaluator ) ) {
                             continue;
                         }
                     } catch ( FilterEvaluationException e ) {
                         LOG.debug( "Filter could not be evaluated: '{}'", e.getLocalizedMessage() );
                         LOG.trace( "Stack trace:", e );
                     }
-                    render( f, style, renderer, null, gm.getScale(), gm.getResolution() );
+                    render( f, evaluator, style, renderer, null, gm.getScale(), gm.getResolution() );
                 } catch ( UnsupportedEncodingException e ) {
                     LOG.trace( "Stack trace:", e );
                 }

@@ -135,8 +135,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Supported WFS protocol versions:
  * <ul>
- * <li>1.0.0 (in implementation, nearly finished)</li>
- * <li>1.1.0 (in implementation, nearly finished)</li>
+ * <li>1.0.0</li>
+ * <li>1.1.0</li>
  * <li>2.0.0 (started)</li>
  * </ul>
  * </p>

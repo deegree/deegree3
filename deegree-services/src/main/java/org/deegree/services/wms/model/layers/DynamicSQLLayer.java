@@ -36,6 +36,7 @@
 package org.deegree.services.wms.model.layers;
 
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
@@ -57,6 +58,7 @@ import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
@@ -156,6 +158,9 @@ public class DynamicSQLLayer extends Layer {
                                                       gm.getPixelSize() );
         Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
+        // TODO
+        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+
         LinkedList<Style> defStyles = new LinkedList<Style>();
         for ( Integer code : symbolCodes ) {
             defStyles.add( styles.getStyle( code ) );
@@ -171,7 +176,7 @@ public class DynamicSQLLayer extends Layer {
 
             for ( Feature f : rs ) {
                 if ( style != null ) {
-                    render( f, style, renderer, textRenderer, gm.getScale(), resolution );
+                    render( f, evaluator, style, renderer, textRenderer, gm.getScale(), resolution );
                 }
                 boolean painted = false;
                 if ( symbolField != null ) {
@@ -185,7 +190,8 @@ public class DynamicSQLLayer extends Layer {
                                     try {
                                         Style sty = styles.getStyle( Integer.parseInt( s ) );
                                         if ( sty != null ) {
-                                            render( f, sty, renderer, textRenderer, gm.getScale(), resolution );
+                                            render( f, evaluator, sty, renderer, textRenderer, gm.getScale(),
+                                                    resolution );
                                             painted = true;
                                         } else {
                                             LOG.debug( "Style with symbol code {} was not found in the database.", s );
@@ -204,12 +210,12 @@ public class DynamicSQLLayer extends Layer {
                 }
                 if ( !painted ) { // then use default (layer level) styles
                     for ( Style s : defStyles ) {
-                        render( f, s, renderer, textRenderer, gm.getScale(), resolution );
+                        render( f, evaluator, s, renderer, textRenderer, gm.getScale(), resolution );
                         painted = true;
                     }
                 }
                 if ( !painted ) { // then use gray default style
-                    render( f, null, renderer, textRenderer, gm.getScale(), resolution );
+                    render( f, evaluator, null, renderer, textRenderer, gm.getScale(), resolution );
                 }
             }
         } catch ( FilterEvaluationException e ) {

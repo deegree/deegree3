@@ -65,6 +65,7 @@ import static org.deegree.commons.utils.CollectionUtils.AND;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
 import static org.deegree.services.wms.controller.ops.GetMap.Antialias.BOTH;
 import static org.deegree.services.wms.controller.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
@@ -119,6 +120,7 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.query.ThreadedResultSet;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -746,6 +748,9 @@ public class MapService {
                                                               gm.getPixelSize() );
                 Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
+                // TODO
+                FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+
                 Collection<LinkedList<Query>> qs = queries.values();
                 FeatureResultSet rs = null;
                 try {
@@ -761,7 +766,8 @@ public class MapService {
 
                             applyHints( l, qualities, interpolations, antialiases, g );
 
-                            render( f, ftToStyle.get( name ), renderer, textRenderer, gm.getScale(), gm.getResolution() );
+                            render( f, evaluator, ftToStyle.get( name ), renderer, textRenderer, gm.getScale(),
+                                    gm.getResolution() );
                         }
                     } else {
                         LOG.warn( "No queries were found for the requested layers." );

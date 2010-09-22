@@ -43,6 +43,7 @@ import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601DateWOMS;
 import static org.deegree.cs.CRSCodeType.getUndefined;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.services.wms.model.Dimension.formatDimensionValueList;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -78,6 +79,7 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
@@ -274,6 +276,9 @@ public class FeatureLayer extends Layer {
                                                       gm.getPixelSize() );
         Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
 
+        // TODO
+        FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+
         if ( queries.isEmpty() ) {
             LOG.warn( "No queries were generated. Is the configuration correct?" );
             return warnings;
@@ -305,7 +310,7 @@ public class FeatureLayer extends Layer {
             }
             for ( Feature f : rs ) {
                 try {
-                    render( f, style, renderer, textRenderer, gm.getScale(), resolution );
+                    render( f, evaluator, style, renderer, textRenderer, gm.getScale(), resolution );
                 } catch ( IllegalArgumentException e ) {
                     LOG.warn( "Unable to render feature, probably a curve had multiple/non-linear segments." );
                     LOG.trace( "Stack trace:", e );

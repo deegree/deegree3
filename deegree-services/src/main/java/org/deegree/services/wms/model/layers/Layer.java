@@ -65,6 +65,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -279,21 +280,23 @@ public abstract class Layer {
 
     /**
      * @param f
+     * @param evaluator 
      * @param style
      * @param renderer
      * @param textRenderer
      * @param scale
      * @param resolution
      */
-    public static void render( final Feature f, final Style style, final Renderer renderer,
-                               final TextRenderer textRenderer, final double scale, final double resolution ) {
+    public static void render( final Feature f, final XPathEvaluator<Feature> evaluator, final Style style,
+                               final Renderer renderer, final TextRenderer textRenderer, final double scale,
+                               final double resolution ) {
         Style s = style;
         if ( s == null ) {
             s = new Style();
         }
         s = s.filter( scale );
 
-        LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = s.evaluate( f );
+        LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = s.evaluate( f, evaluator );
         for ( Triple<Styling, LinkedList<Geometry>, String> evald : evalds ) {
             // boolean invisible = true;
 

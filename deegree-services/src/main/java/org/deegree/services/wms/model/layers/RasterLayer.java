@@ -285,7 +285,7 @@ public class RasterLayer extends Layer {
             style = style == null ? null : style.filter( gm.getScale() );
 
             LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = style == null ? null
-                                                                                          : style.evaluate( null );
+                                                                                          : style.evaluate( null, null );
             if ( list != null && list.size() > 0 ) {
                 for ( Triple<Styling, LinkedList<Geometry>, String> t : list ) {
                     renderer.render( (RasterStyling) t.first, raster );
