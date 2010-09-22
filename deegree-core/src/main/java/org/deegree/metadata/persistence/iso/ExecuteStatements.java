@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.genericmetadatastore;
+package org.deegree.metadata.persistence.iso;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -49,9 +49,9 @@ import java.util.List;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.genericmetadatastore.generating.BuildMetadataXMLRepresentation;
-import org.deegree.metadata.persistence.genericmetadatastore.generating.GenerateQueryableProperties;
-import org.deegree.metadata.persistence.genericmetadatastore.parsing.ParsedProfileElement;
+import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
+import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
+import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.slf4j.Logger;
 
 /**
@@ -70,6 +70,16 @@ public class ExecuteStatements {
 
     private BuildMetadataXMLRepresentation buildRecXML;
 
+    private static final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
+
+    private static final String qp_identifier = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
+
+    private static final String id = PostGISMappingsISODC.CommonColumnNames.id.name();
+
+    private static final String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
+
+    private static final String identifier = PostGISMappingsISODC.CommonColumnNames.identifier.name();
+
     /**
      * This method executes the statement for INSERT datasets
      * 
@@ -82,8 +92,7 @@ public class ExecuteStatements {
      * @throws IOException
      * @throws MetadataStoreException
      */
-    public void executeInsertStatement( boolean isDC, Connection connection, List<Integer> insertedIds,
-                                        ParsedProfileElement parsedElement )
+    public void executeInsertStatement( boolean isDC, Connection connection, ParsedProfileElement parsedElement )
                             throws IOException, MetadataStoreException {
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildMetadataXMLRepresentation();
@@ -92,9 +101,9 @@ public class ExecuteStatements {
         int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
 
         if ( isDC == true ) {
-            insertedIds.add( buildRecXML.generateDC( connection, operatesOnId, parsedElement ) );
+            buildRecXML.generateDC( connection, operatesOnId, parsedElement );
         } else {
-            insertedIds.add( buildRecXML.generateISO( connection, operatesOnId, parsedElement ) );
+            buildRecXML.generateISO( connection, operatesOnId, parsedElement );
 
         }
         generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
@@ -112,8 +121,6 @@ public class ExecuteStatements {
     public void executeUpdateStatement( Connection connection, List<Integer> updatedIds,
                                         ParsedProfileElement parsedElement ) {
 
-        final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
-        final String qp_identifier = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
         boolean isUpdate = true;
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildMetadataXMLRepresentation();
@@ -132,15 +139,12 @@ public class ExecuteStatements {
             for ( String identifierString : parsedElement.getQueryableProperties().getIdentifier() ) {
 
                 sqlStatementUpdate.append( "SELECT " ).append( databaseTable ).append( '.' );
-                sqlStatementUpdate.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " FROM " );
+                sqlStatementUpdate.append( id ).append( " FROM " );
                 sqlStatementUpdate.append( databaseTable ).append( ',' ).append( qp_identifier ).append( " WHERE " );
-                sqlStatementUpdate.append( databaseTable ).append( '.' ).append(
-                                                                                 PostGISMappingsISODC.CommonColumnNames.id.name() );
-                sqlStatementUpdate.append( '=' ).append( qp_identifier ).append( '.' ).append(
-                                                                                               PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
-                sqlStatementUpdate.append( " AND " ).append( qp_identifier ).append( '.' ).append(
-                                                                                                   PostGISMappingsISODC.CommonColumnNames.identifier.name() ).append(
-                                                                                                                                                                      " = ?" );
+                sqlStatementUpdate.append( databaseTable ).append( '.' ).append( id );
+                sqlStatementUpdate.append( '=' ).append( qp_identifier ).append( '.' ).append( fk_datasets );
+                sqlStatementUpdate.append( " AND " ).append( qp_identifier ).append( '.' ).append( identifier ).append(
+                                                                                                                        " = ?" );
                 LOG.debug( sqlStatementUpdate.toString() );
 
                 stm = connection.prepareStatement( sqlStatementUpdate.toString() );
@@ -169,7 +173,7 @@ public class ExecuteStatements {
                         sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET anyText = '" );
                         sqlStatementUpdate.append( parsedElement.getQueryableProperties().getAnyText() ).append(
                                                                                                                  "' WHERE " );
-                        sqlStatementUpdate.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( '=' );
+                        sqlStatementUpdate.append( id ).append( '=' );
                         sqlStatementUpdate.append( requestedId );
                         stmt.executeUpdate( sqlStatementUpdate.toString() );
                         sqlStatementUpdate.setLength( 0 );
@@ -180,7 +184,7 @@ public class ExecuteStatements {
                     if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
                         sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET modified = " ).append(
                                                                                                                             modifiedAttribute );
-                        sqlStatementUpdate.append( " WHERE " ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
+                        sqlStatementUpdate.append( " WHERE " ).append( id );
                         sqlStatementUpdate.append( '=' ).append( requestedId );
                         stmt.executeUpdate( sqlStatementUpdate.toString() );
                         sqlStatementUpdate.setLength( 0 );
@@ -190,8 +194,7 @@ public class ExecuteStatements {
                         sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append(
                                                                                                " SET hassecurityconstraints = '" );
                         sqlStatementUpdate.append( parsedElement.getQueryableProperties().isHasSecurityConstraints() );
-                        sqlStatementUpdate.append( "' WHERE " ).append(
-                                                                        PostGISMappingsISODC.CommonColumnNames.id.name() );
+                        sqlStatementUpdate.append( "' WHERE " ).append( id );
                         sqlStatementUpdate.append( '=' ).append( requestedId );
 
                         stmt.executeUpdate( sqlStatementUpdate.toString() );
@@ -203,7 +206,7 @@ public class ExecuteStatements {
                         sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET language = '" );
                         sqlStatementUpdate.append( parsedElement.getQueryableProperties().getLanguage() ).append(
                                                                                                                   "' WHERE " );
-                        sqlStatementUpdate.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( '=' );
+                        sqlStatementUpdate.append( id ).append( '=' );
                         sqlStatementUpdate.append( requestedId );
 
                         stmt.executeUpdate( sqlStatementUpdate.toString() );
@@ -214,8 +217,7 @@ public class ExecuteStatements {
                         sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append(
                                                                                                " SET parentidentifier = '" );
                         sqlStatementUpdate.append( parsedElement.getQueryableProperties().getParentIdentifier() );
-                        sqlStatementUpdate.append( "' WHERE " ).append(
-                                                                        PostGISMappingsISODC.CommonColumnNames.id.name() );
+                        sqlStatementUpdate.append( "' WHERE " ).append( id );
                         sqlStatementUpdate.append( '=' ).append( requestedId );
 
                         stmt.executeUpdate( sqlStatementUpdate.toString() );

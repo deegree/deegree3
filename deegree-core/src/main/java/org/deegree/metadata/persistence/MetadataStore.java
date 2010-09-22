@@ -45,7 +45,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
@@ -127,48 +126,15 @@ public interface MetadataStore {
                             throws MetadataStoreException, XMLStreamException;
 
     /**
-     * Exports the XML fragment to the recordstore-backend.
-     * <p>
-     * INSERT-action: inserts one or more records to the backend. <br>
-     * UPDATE-action: updates one or more complete records OR individual properties. <br>
-     * DELETE-action: deletes one or more records by one filter expression.
-     * <p>
-     * 
-     * 
-     * @param writer
-     *            writer to export to, must not be <code>null</code>
-     * @param operations
-     *            that are hold by this container
-     * @return the number of successful transactions
-     * @throws SQLException
-     * @throws XMLStreamException
-     */
-    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations )
-                            throws MetadataStoreException, XMLStreamException;
-
-    /**
      * Acquires transactional access to the metadata store.
      * 
      * @return transaction object that allows to perform transactions operations on the metadata store, never
      *         <code>null</code>
      * @throws MetadataStoreException
-     *             if the transactional access could not be acquired or is not implemented for this {@link MetadataStore}
-     */    
-    public MetadataStoreTransaction acquireTransaction() throws MetadataStoreException;
-
-    /**
-     * Gets the records in dublin core representation for the insert action of the transaction operation. If there is an
-     * INSERT statement in the transaction operation there has to be a brief representation (because of the validity) of
-     * this inserted record presented in the response.
-     * 
-     * @param writer
-     *            to be updated with a brief representation of the inserted records
-     * @param transactionIds
-     *            that are affected by the transaction
-     * @throws SQLException
-     * @throws IOException
+     *             if the transactional access could not be acquired or is not implemented for this
+     *             {@link MetadataStore}
      */
-    public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, List<Integer> transactionIds )
+    public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException;
 
     /**

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.genericmetadatastore.parsing;
+package org.deegree.metadata.persistence.iso.parsing;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
@@ -62,8 +62,8 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.genericmetadatastore.generating.GenerateMetadata;
-import org.deegree.metadata.persistence.genericmetadatastore.generating.generatingelements.GenerateOMElement;
+import org.deegree.metadata.persistence.iso.generating.GenerateMetadata;
+import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
 import org.deegree.metadata.persistence.neededdatastructures.Format;
 import org.deegree.metadata.persistence.neededdatastructures.Keyword;

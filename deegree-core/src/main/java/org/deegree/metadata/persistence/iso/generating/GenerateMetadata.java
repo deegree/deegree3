@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.genericmetadatastore.generating;
+package org.deegree.metadata.persistence.iso.generating;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,14 +45,14 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.tom.datetime.Date;
-import org.deegree.metadata.persistence.genericmetadatastore.parsing.QueryableProperties;
-import org.deegree.metadata.persistence.genericmetadatastore.parsing.ReturnableProperties;
+import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
+import org.deegree.metadata.persistence.iso.parsing.ReturnableProperties;
 import org.deegree.metadata.persistence.neededdatastructures.Format;
 import org.deegree.metadata.persistence.neededdatastructures.Keyword;
 import org.slf4j.Logger;
 
 /**
- * Generates the records in DC and ISO in all representation types (brief, summary, full).
+ * Generates the metadata-BLOB in DC and ISO in all representation types (brief, summary, full).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -425,16 +425,18 @@ public class GenerateMetadata {
      * @param factory
      * @param omElement
      */
-    private void setDCBriefElements( OMElement omElement, OMFactory factory ) {
+    private String setDCBriefElements( OMElement omElement, OMFactory factory ) {
 
         OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
 
         OMElement omType = factory.createOMElement( "type", namespaceDC );
+        String identifier = qp.getIdentifier().get( 0 );
 
         for ( String identifierDC : qp.getIdentifier() ) {
             OMElement omIdentifier = factory.createOMElement( "identifier", namespaceDC );
             omIdentifier.setText( identifierDC );
             omElement.addChild( omIdentifier );
+
         }
         for ( String title : qp.getTitle() ) {
             OMElement omTitle = factory.createOMElement( "title", namespaceDC );
@@ -447,6 +449,8 @@ public class GenerateMetadata {
             omType.setText( "" );
         }
         omElement.addChild( omType );
+
+        return identifier;
     }
 
     /**
@@ -455,9 +459,9 @@ public class GenerateMetadata {
      * @param omElement
      * @throws ParseException
      */
-    private void setDCSummaryElements( OMElement omElement, OMFactory factory )
+    private String setDCSummaryElements( OMElement omElement, OMFactory factory )
                             throws ParseException {
-        setDCBriefElements( omElement, factory );
+        String identifier = setDCBriefElements( omElement, factory );
 
         OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
 
@@ -528,6 +532,8 @@ public class GenerateMetadata {
         // dct:spatial
         // TODO
 
+        return identifier;
+
     }
 
     /**
@@ -536,12 +542,12 @@ public class GenerateMetadata {
      * @param omElement
      * @throws ParseException
      */
-    private void setDCFullElements( OMElement omElement, OMFactory factory )
+    private String setDCFullElements( OMElement omElement, OMFactory factory )
                             throws ParseException {
 
         OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
 
-        setDCSummaryElements( omElement, factory );
+        String identifier = setDCSummaryElements( omElement, factory );
 
         if ( rp.getCreator() != null ) {
             OMElement omCreator = factory.createOMElement( "creator", namespaceDC );
@@ -579,6 +585,8 @@ public class GenerateMetadata {
             }
         }
 
+        return identifier;
+
     }
 
     /**
@@ -605,26 +613,26 @@ public class GenerateMetadata {
     /**
      * @return the dcBriefElement
      */
-    public void buildElementAsDcBriefElement( OMElement element, OMFactory factory ) {
-        setDCBriefElements( element, factory );
+    public String buildElementAsDcBriefElement( OMElement element, OMFactory factory ) {
+        return setDCBriefElements( element, factory );
     }
 
     /**
      * @return the dcSummaryElement
      * @throws ParseException
      */
-    public void buildElementAsDcSummaryElement( OMElement element, OMFactory factory )
+    public String buildElementAsDcSummaryElement( OMElement element, OMFactory factory )
                             throws ParseException {
-        setDCSummaryElements( element, factory );
+        return setDCSummaryElements( element, factory );
     }
 
     /**
      * @return the dcFullElement
      * @throws ParseException
      */
-    public void buildElementAsDcFullElement( OMElement element, OMFactory factory )
+    public String buildElementAsDcFullElement( OMElement element, OMFactory factory )
                             throws ParseException {
-        setDCFullElements( element, factory );
+        return setDCFullElements( element, factory );
     }
 
     /**

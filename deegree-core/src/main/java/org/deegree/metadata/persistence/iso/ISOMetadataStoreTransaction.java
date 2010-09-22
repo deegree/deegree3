@@ -1,11 +1,16 @@
-package org.deegree.metadata.persistence.genericmetadatastore;
+package org.deegree.metadata.persistence.iso;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
+import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
+import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.UpdateTransaction;
@@ -54,7 +59,31 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public List<String> performInsert( InsertTransaction insert )
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
+        ExecuteStatements executeStatements;
+        for ( OMElement element : insert.getElement() ) {
+            QName localName = element.getQName();
+
+            try {
+
+                executeStatements = new ExecuteStatements();
+
+                if ( localName.getLocalPart().equals( "Record" ) ) {
+
+                    executeStatements.executeInsertStatement( true, conn, new ISOQPParsing().parseAPDC( element ) );
+
+                } else {
+
+                    // executeStatements.executeInsertStatement( false, conn, new ISOQPParsing().parseAPISO( fi, ic, ci,
+                    // element,
+                    // false ) );
+
+                }
+
+            } catch ( IOException e ) {
+                throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
+            }
+
+        }
         return null;
     }
 

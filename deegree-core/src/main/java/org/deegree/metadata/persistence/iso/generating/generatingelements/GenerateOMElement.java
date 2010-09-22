@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.genericmetadatastore.generating.generatingelements;
+package org.deegree.metadata.persistence.iso.generating.generatingelements;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;

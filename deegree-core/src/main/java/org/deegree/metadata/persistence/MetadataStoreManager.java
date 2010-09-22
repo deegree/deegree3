@@ -48,7 +48,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.metadata.persistence.genericmetadatastore.ISOMetadataStore;
+import org.deegree.metadata.persistence.iso.ISOMetadataStore;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
