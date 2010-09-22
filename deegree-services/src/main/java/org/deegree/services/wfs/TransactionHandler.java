@@ -130,6 +130,8 @@ class TransactionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
 
+    private final WFSController master;
+
     private final WFService service;
 
     private final Transaction request;
@@ -155,6 +157,7 @@ class TransactionHandler {
      *            request to be handled
      */
     TransactionHandler( WFSController master, WFService service, Transaction request ) {
+        this.master = master;
         this.service = service;
         this.request = request;
     }
@@ -335,9 +338,11 @@ class TransactionHandler {
             }
         }
 
+        GMLVersion inputFormat = master.determineFormat( request.getVersion(), insert.getInputFormat() );
+
         FeatureStoreTransaction ta = null;
         try {
-            FeatureCollection fc = parseFeaturesOrCollection( insert.getFeatures(), defaultCRS );
+            FeatureCollection fc = parseFeaturesOrCollection( insert.getFeatures(), inputFormat, defaultCRS );
             // TODO determine correct store
             FeatureStore fs = service.getStores()[0];
             ta = acquireTransaction( fs );
@@ -364,7 +369,8 @@ class TransactionHandler {
         }
     }
 
-    private FeatureCollection parseFeaturesOrCollection( XMLStreamReader xmlStream, CRS defaultCRS )
+    private FeatureCollection parseFeaturesOrCollection( XMLStreamReader xmlStream, GMLVersion inputFormat,
+                                                         CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             ReferenceResolvingException {
 
@@ -372,12 +378,7 @@ class TransactionHandler {
 
         // TODO determine correct schema
         ApplicationSchema schema = service.getStores()[0].getSchema();
-        GMLStreamReader gmlStream;
-        if ( VERSION_100.equals( request.getVersion() ) ) {
-            gmlStream = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, xmlStream );
-        } else {
-            gmlStream = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, xmlStream );
-        }
+        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
         gmlStream.setApplicationSchema( schema );
         gmlStream.setDefaultCRS( defaultCRS );
 
@@ -485,8 +486,10 @@ class TransactionHandler {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
 
+        GMLVersion inputFormat = master.determineFormat( request.getVersion(), update.getInputFormat() );
+
         FeatureStoreTransaction ta = acquireTransaction( fs );
-        List<Property> replacementProps = getReplacementProps( update, ft );
+        List<Property> replacementProps = getReplacementProps( update, ft, inputFormat );
         Filter filter = null;
         try {
             filter = update.getFilter();
@@ -502,7 +505,7 @@ class TransactionHandler {
         }
     }
 
-    private List<Property> getReplacementProps( Update update, FeatureType ft )
+    private List<Property> getReplacementProps( Update update, FeatureType ft, GMLVersion inputFormat )
                             throws OWSException {
 
         List<Property> newProperties = new ArrayList<Property>();
@@ -510,8 +513,7 @@ class TransactionHandler {
         while ( replacementIter.hasNext() ) {
             PropertyReplacement replacement = replacementIter.next();
             QName propName = replacement.getPropertyName();
-            // TODO proper strategy for handling GML version
-            PropertyType pt = ft.getPropertyDeclaration( propName, GMLVersion.GML_31 );
+            PropertyType pt = ft.getPropertyDeclaration( propName, inputFormat );
             if ( pt == null ) {
                 throw new OWSException( "Cannot update property '" + propName + "' of feature type '" + ft.getName()
                                         + "'. The feature type does not define this property.",
