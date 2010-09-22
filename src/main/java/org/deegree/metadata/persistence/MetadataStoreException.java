@@ -37,7 +37,7 @@
 package org.deegree.metadata.persistence;
 
 /**
- * Indicates an exception that occured in the record persistence layer.
+ * Indicates an exception that occured in the metadata persistence layer.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
