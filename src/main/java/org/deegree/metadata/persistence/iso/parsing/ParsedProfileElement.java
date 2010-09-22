@@ -33,9 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.genericmetadatastore.parsing;
+package org.deegree.metadata.persistence.iso.parsing;
 
-import org.deegree.metadata.persistence.genericmetadatastore.generating.GenerateMetadata;
+import org.deegree.metadata.persistence.iso.generating.GenerateMetadata;
 
 /**
  * Encapsulates the parsed elements that can be analysed from a record that is affected by the transaction operation.<br>

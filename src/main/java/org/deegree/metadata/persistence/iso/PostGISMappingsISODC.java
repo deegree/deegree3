@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.genericmetadatastore;
+package org.deegree.metadata.persistence.iso;
 
 import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.PrimitiveType.DATE;
@@ -457,10 +457,13 @@ public class PostGISMappingsISODC implements PostGISMapping {
         } else {
             Triple<String, String, PrimitiveType> tableColumn = propToTableAndCol.get( qName );
             if ( tableColumn != null ) {
+                String datasets = DatabaseTables.datasets.name();
+                String id = CommonColumnNames.id.name();
+                String fk_datasets = CommonColumnNames.fk_datasets.name();
                 List<Join> joins = new ArrayList<Join>();
-                if ( !tableColumn.first.equals( "datasets" ) ) {
-                    DBField from = new DBField( "datasets", "id" );
-                    DBField to = new DBField( tableColumn.first, "fk_datasets" );
+                if ( !tableColumn.first.equals( datasets ) ) {
+                    DBField from = new DBField( datasets, id );
+                    DBField to = new DBField( tableColumn.first, fk_datasets );
                     joins.add( new Join( from, to, null, 0 ) );
                 }
                 // TODO primitive type

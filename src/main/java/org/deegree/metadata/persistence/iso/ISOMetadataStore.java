@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.genericmetadatastore;
+package org.deegree.metadata.persistence.iso;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
@@ -82,6 +82,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.persistence.mapping.DBField;
@@ -96,13 +97,12 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.RecordStoreOptions;
-import org.deegree.metadata.persistence.genericmetadatastore.parsing.CoupledDataInspector;
-import org.deegree.metadata.persistence.genericmetadatastore.parsing.FileIdentifierInspector;
-import org.deegree.metadata.persistence.genericmetadatastore.parsing.ISOQPParsing;
-import org.deegree.metadata.persistence.genericmetadatastore.parsing.InspireCompliance;
+import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
+import org.deegree.metadata.persistence.iso.parsing.FileIdentifierInspector;
+import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
+import org.deegree.metadata.persistence.iso.parsing.InspireCompliance;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.publication.DeleteTransaction;
-import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.MetadataProperty;
 import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.metadata.publication.UpdateTransaction;
@@ -130,8 +130,6 @@ public class ISOMetadataStore implements MetadataStore {
     private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
 
     private final String connectionId;
-
-    private ExecuteStatements executeStatements;
 
     // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
     private boolean useLegacyPredicates;
@@ -240,7 +238,7 @@ public class ISOMetadataStore implements MetadataStore {
             else {
                 String errorMessage = "The typeName " + typeName + "is not supported by this profile. ";
                 LOG.debug( errorMessage );
-                throw new IllegalArgumentException( errorMessage );
+                throw new InvalidParameterValueException( errorMessage );
             }
 
             urlConn.setDoInput( true );
@@ -737,15 +735,7 @@ public class ISOMetadataStore implements MetadataStore {
         return preparedStatement;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.record.persistence.RecordStore#transaction(javax.xml.stream.XMLStreamWriter,
-     * org.deegree.commons.configuration.JDBCConnections, java.util.List)
-     */
-
-    @Override
-    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations )
+    public List<Integer> transaction( TransactionOperation operations )
                             throws XMLStreamException, MetadataStoreException {
 
         List<Integer> affectedIds = new ArrayList<Integer>();
@@ -758,33 +748,7 @@ public class ISOMetadataStore implements MetadataStore {
 
             switch ( operations.getType() ) {
             case INSERT:
-                InsertTransaction ins = (InsertTransaction) operations;
 
-                for ( OMElement element : ins.getElement() ) {
-                    QName localName = element.getQName();
-
-                    try {
-
-                        executeStatements = new ExecuteStatements();
-
-                        if ( localName.getLocalPart().equals( "Record" ) ) {
-
-                            executeStatements.executeInsertStatement( true, conn, affectedIds,
-                                                                      new ISOQPParsing().parseAPDC( element ) );
-
-                        } else {
-
-                            executeStatements.executeInsertStatement( false, conn, affectedIds,
-                                                                      new ISOQPParsing().parseAPISO( fi, ic, ci,
-                                                                                                     element, false ) );
-
-                        }
-
-                    } catch ( IOException e ) {
-                        throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
-                    }
-
-                }
                 break;
 
             /*
@@ -801,21 +765,21 @@ public class ISOMetadataStore implements MetadataStore {
                 if ( upd.getElement() != null ) {
                     QName localName = upd.getElement().getQName();
 
-                    executeStatements = new ExecuteStatements();
-
-                    if ( localName.getLocalPart().equals( "Record" ) ) {
-
-                        executeStatements.executeUpdateStatement( conn, affectedIds,
-                                                                  new ISOQPParsing().parseAPDC( upd.getElement() ) );
-
-                    } else {
-                        executeStatements.executeUpdateStatement(
-                                                                  conn,
-                                                                  affectedIds,
-                                                                  new ISOQPParsing().parseAPISO( fi, ic, ci,
-                                                                                                 upd.getElement(), true ) );
-
-                    }
+                    // executeStatements = new ExecuteStatements();
+                    //
+                    // if ( localName.getLocalPart().equals( "Record" ) ) {
+                    //
+                    // executeStatements.executeUpdateStatement( conn, affectedIds,
+                    // new ISOQPParsing().parseAPDC( upd.getElement() ) );
+                    //
+                    // } else {
+                    // executeStatements.executeUpdateStatement(
+                    // conn,
+                    // affectedIds,
+                    // new ISOQPParsing().parseAPISO( fi, ic, ci,
+                    // upd.getElement(), true ) );
+                    //
+                    // }
 
                 } else {
 
@@ -1240,14 +1204,6 @@ public class ISOMetadataStore implements MetadataStore {
         return stmt;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.deegree.record.persistence.RecordStore#getRecordsForTransactionInsertStatement(javax.xml.stream.XMLStreamWriter
-     * )
-     */
-    @Override
     public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, List<Integer> transactionIds )
                             throws MetadataStoreException {
         ResultSet rsInsertedDatasets = null;

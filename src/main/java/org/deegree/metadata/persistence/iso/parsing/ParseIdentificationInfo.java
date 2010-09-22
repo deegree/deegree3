@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.genericmetadatastore.parsing;
+package org.deegree.metadata.persistence.iso.parsing;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -56,8 +56,8 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.genericmetadatastore.generating.GenerateMetadata;
-import org.deegree.metadata.persistence.genericmetadatastore.generating.generatingelements.GenerateOMElement;
+import org.deegree.metadata.persistence.iso.generating.GenerateMetadata;
+import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
 import org.deegree.metadata.persistence.neededdatastructures.Keyword;
 import org.deegree.metadata.persistence.neededdatastructures.OperatesOnData;

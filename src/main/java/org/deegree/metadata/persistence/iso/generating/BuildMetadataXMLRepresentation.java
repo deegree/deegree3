@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.genericmetadatastore.generating;
+package org.deegree.metadata.persistence.iso.generating;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
@@ -51,9 +51,10 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.deegree.metadata.persistence.genericmetadatastore.PostGISMappingsISODC;
-import org.deegree.metadata.persistence.genericmetadatastore.parsing.ParsedProfileElement;
-import org.deegree.metadata.persistence.genericmetadatastore.parsing.QueryableProperties;
+import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
+import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
+import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.slf4j.Logger;
 
 /**
@@ -70,8 +71,6 @@ public class BuildMetadataXMLRepresentation {
     private static final Logger LOG = getLogger( BuildMetadataXMLRepresentation.class );
 
     private static final String dataColumn = PostGISMappingsISODC.CommonColumnNames.data.name();
-
-    // private static final String id = PostGISMappingsISODC.CommonColumnNames.id.name();
 
     private static final String idColumn = PostGISMappingsISODC.CommonColumnNames.id.name();
 
@@ -183,9 +182,10 @@ public class BuildMetadataXMLRepresentation {
      * @return an integer that is the primarykey from the inserted record
      * 
      * @throws IOException
+     * @throws MetadataStoreException
      */
-    public int generateISO( Connection connection, int operatesOnId, ParsedProfileElement parsedElement )
-                            throws IOException {
+    public String generateISO( Connection connection, int operatesOnId, ParsedProfileElement parsedElement )
+                            throws IOException, MetadataStoreException {
 
         int idDatabaseTable;
         for ( String databaseTableISO : PostGISMappingsISODC.getTableRecordType().keySet() ) {
@@ -265,15 +265,16 @@ public class BuildMetadataXMLRepresentation {
      * @param parsedElement
      * 
      * @return an integer that is the primarykey from the inserted record
+     * @throws MetadataStoreException
      */
-    public int generateDC( Connection connection, int operatesOnId, ParsedProfileElement parsedElement ) {
-
-        int recordsAffectedID = 0;
+    public String generateDC( Connection connection, int operatesOnId, ParsedProfileElement parsedElement )
+                            throws MetadataStoreException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace namespaceCSW = factory.createOMNamespace( CSW_202_NS, CSW_PREFIX );
 
         int idDatabaseTable;
+        String identifier = null;
         for ( String databaseTableDC : PostGISMappingsISODC.getTableRecordType().keySet() ) {
             PreparedStatement stm = null;
 
@@ -297,12 +298,11 @@ public class BuildMetadataXMLRepresentation {
                                                                namespaceCSW );
 
                 if ( omElement.getLocalName().equals( PostGISMappingsISODC.BRIEFRECORD ) ) {
-                    parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
-                    recordsAffectedID = idDatabaseTable;
+                    identifier = parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
                 } else if ( omElement.getLocalName().equals( PostGISMappingsISODC.SUMMARYRECORD ) ) {
-                    parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
+                    identifier = parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
                 } else {
-                    parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
+                    identifier = parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
                 }
 
                 if ( parsedElement.getQueryableProperties().getBoundingBox() != null ) {
@@ -316,14 +316,16 @@ public class BuildMetadataXMLRepresentation {
             } catch ( SQLException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
+                throw new MetadataStoreException( e.getMessage() );
             } catch ( ParseException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
+                throw new MetadataStoreException( e.getMessage() );
             }
 
         }
 
-        return recordsAffectedID;
+        return identifier;
 
     }
 
@@ -382,6 +384,7 @@ public class BuildMetadataXMLRepresentation {
 
         }
         rsBrief.close();
+        prepState.close();
         return result;
 
     }
