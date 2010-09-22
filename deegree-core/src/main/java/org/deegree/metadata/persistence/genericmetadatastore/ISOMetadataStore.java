@@ -94,6 +94,7 @@ import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.CoupledDataInspector;
 import org.deegree.metadata.persistence.genericmetadatastore.parsing.FileIdentifierInspector;
@@ -780,8 +781,7 @@ public class ISOMetadataStore implements MetadataStore {
                         }
 
                     } catch ( IOException e ) {
-
-                        LOG.debug( "error: " + e.getMessage(), e );
+                        throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
                     }
 
                 }
@@ -1371,4 +1371,15 @@ public class ISOMetadataStore implements MetadataStore {
 
     }
 
+    @Override
+    public MetadataStoreTransaction acquireTransaction()
+                            throws MetadataStoreException {
+        ISOMetadataStoreTransaction ta = null;
+        try {
+            ta = new ISOMetadataStoreTransaction( ConnectionManager.getConnection( connectionId ) );
+        } catch ( SQLException e ) {
+            throw new MetadataStoreException( e.getMessage() );
+        }
+        return ta;
+    }
 }

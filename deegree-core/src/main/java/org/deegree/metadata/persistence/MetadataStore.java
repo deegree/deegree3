@@ -147,6 +147,16 @@ public interface MetadataStore {
                             throws MetadataStoreException, XMLStreamException;
 
     /**
+     * Acquires transactional access to the metadata store.
+     * 
+     * @return transaction object that allows to perform transactions operations on the metadata store, never
+     *         <code>null</code>
+     * @throws MetadataStoreException
+     *             if the transactional access could not be acquired or is not implemented for this {@link MetadataStore}
+     */    
+    public MetadataStoreTransaction acquireTransaction() throws MetadataStoreException;
+
+    /**
      * Gets the records in dublin core representation for the insert action of the transaction operation. If there is an
      * INSERT statement in the transaction operation there has to be a brief representation (because of the validity) of
      * this inserted record presented in the response.
