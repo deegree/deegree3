@@ -57,8 +57,8 @@ import org.deegree.metadata.persistence.genericmetadatastore.parsing.QueryablePr
 import org.slf4j.Logger;
 
 /**
- * Here is the handling of generating and inserting the ISO and DC application profile record as well as the update of
- * these records.
+ * Here is the handling of generating and inserting the ISO and DC application profile metadata as well as the update of
+ * these metadata.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -69,13 +69,15 @@ public class BuildMetadataXMLRepresentation {
 
     private static final Logger LOG = getLogger( BuildMetadataXMLRepresentation.class );
 
-    private static final StringBuilder dataColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.data.name() );
+    private static final String dataColumn = PostGISMappingsISODC.CommonColumnNames.data.name();
 
-    private static final StringBuilder idColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.id.name() );
+    // private static final String id = PostGISMappingsISODC.CommonColumnNames.id.name();
 
-    private static final StringBuilder fk_datasetsColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
+    private static final String idColumn = PostGISMappingsISODC.CommonColumnNames.id.name();
 
-    private static final StringBuilder formatColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.format.name() );
+    private static final String fk_datasetsColumn = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
+
+    private static final String formatColumn = PostGISMappingsISODC.CommonColumnNames.format.name();
 
     private static final StringBuilder sqlStatementUpdate = new StringBuilder().append( " SET " ).append( dataColumn ).append(
                                                                                                                                " = ? WHERE " ).append(
@@ -92,6 +94,10 @@ public class BuildMetadataXMLRepresentation {
                                                                                                                                                                                                             ", " ).append(
                                                                                                                                                                                                                            dataColumn ).append(
                                                                                                                                                                                                                                                 " ) VALUES (?, ?, ?, ?);" );
+
+    private int insertDatadaseTableLength;
+
+    private int updateDatadaseTableLength;
 
     /**
      * Updating the XML representation of a record in DC and ISO.
@@ -119,7 +125,7 @@ public class BuildMetadataXMLRepresentation {
             try {
 
                 String updateDatabaseTable = "UPDATE " + databaseTable;
-                int updateDatadaseTableLength = updateDatabaseTable.length();
+                updateDatadaseTableLength = updateDatabaseTable.length();
                 sqlStatementUpdate.insert( 0, "UPDATE " ).insert( 7, databaseTable );
                 // DC-update
                 OMElement omElement = factory.createOMElement(
@@ -141,17 +147,10 @@ public class BuildMetadataXMLRepresentation {
 
                 setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
 
-                stm = connection.prepareStatement( sqlStatementUpdate.toString() );
-                // stm.setObject( 1, databaseTable );
-                stm.setBytes( 1, omElement.toString().getBytes() );
-                stm.setObject( 2, fk_datasets );
-                stm.setObject( 3, 1 );
-                LOG.debug( "" + stm );
-                stm.executeUpdate();
+                executeUpdate( stm, connection, fk_datasets, omElement );
 
                 // ISO-update
                 stm = connection.prepareStatement( sqlStatementUpdate.toString() );
-                // stm.setObject( 1, databaseTable );
                 stm.setBytes( 1, isoOMElement.toString().getBytes() );
                 stm.setObject( 2, fk_datasets );
                 stm.setObject( 3, 2 );
@@ -197,7 +196,7 @@ public class BuildMetadataXMLRepresentation {
             // so: put the insert-preample before the final statement
             // and delete it later...
             String insertDatabaseTable = "INSERT INTO " + databaseTableISO;
-            int insertDatadaseTableLength = insertDatabaseTable.length();
+            insertDatadaseTableLength = insertDatabaseTable.length();
             sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableISO );
             // ------------------------
             PreparedStatement stm = null;
@@ -215,18 +214,7 @@ public class BuildMetadataXMLRepresentation {
                 idDatabaseTable = getLastDatasetId( connection, databaseTableISO );
                 idDatabaseTable++;
 
-                stm = connection.prepareStatement( sqlStatementInsert.toString() );
-                stm.setObject( 1, idDatabaseTable );
-                stm.setObject( 2, operatesOnId );
-                stm.setObject( 3, 2 );
-                stm.setBytes( 4, isoElement.toString().getBytes() );
-                LOG.debug( "" + stm );
-                stm.executeUpdate();
-                stm.close();
-
-                // here is the deletion of the insert-preample
-                sqlStatementInsert.delete( 0, insertDatadaseTableLength );
-
+                executeInsert( stm, connection, idDatabaseTable, operatesOnId, isoElement );
             } catch ( SQLException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
@@ -239,6 +227,33 @@ public class BuildMetadataXMLRepresentation {
 
         return generateDC( connection, operatesOnId, parsedElement );
 
+    }
+
+    private void executeInsert( PreparedStatement stm, Connection connection, int idDatabaseTable, int operatesOnId,
+                                OMElement element )
+                            throws SQLException {
+        stm = connection.prepareStatement( sqlStatementInsert.toString() );
+        stm.setObject( 1, idDatabaseTable );
+        stm.setObject( 2, operatesOnId );
+        stm.setObject( 3, 2 );
+        stm.setBytes( 4, element.toString().getBytes() );
+        LOG.debug( "" + stm );
+        stm.executeUpdate();
+        stm.close();
+
+        // here is the deletion of the insert-preample
+        sqlStatementInsert.delete( 0, insertDatadaseTableLength );
+
+    }
+
+    private void executeUpdate( PreparedStatement stm, Connection connection, int fk_datasets, OMElement omElement )
+                            throws SQLException {
+        stm = connection.prepareStatement( sqlStatementUpdate.toString() );
+        stm.setBytes( 1, omElement.toString().getBytes() );
+        stm.setObject( 2, fk_datasets );
+        stm.setObject( 3, 1 );
+        LOG.debug( "" + stm );
+        stm.executeUpdate();
     }
 
     /**
@@ -268,7 +283,7 @@ public class BuildMetadataXMLRepresentation {
             // so: put the insert-preample before the final statement
             // and delete it later...
             String insertDatabaseTable = "INSERT INTO " + databaseTableDC;
-            int insertDatadaseTableLength = insertDatabaseTable.length();
+            insertDatadaseTableLength = insertDatabaseTable.length();
             sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableDC );
             // ------------------------
             try {
@@ -296,14 +311,7 @@ public class BuildMetadataXMLRepresentation {
 
                 stm = connection.prepareStatement( sqlStatementInsert.toString() );
 
-                stm.setObject( 1, idDatabaseTable );
-                stm.setObject( 2, operatesOnId );
-                stm.setObject( 3, 1 );
-                stm.setBytes( 4, omElement.toString().getBytes() );
-                stm.executeUpdate();
-                stm.close();
-                // here is the deletion of the insert-preample
-                sqlStatementInsert.delete( 0, insertDatadaseTableLength );
+                executeInsert( stm, connection, idDatabaseTable, operatesOnId, omElement );
 
             } catch ( SQLException e ) {
 
@@ -362,8 +370,8 @@ public class BuildMetadataXMLRepresentation {
     private int getLastDatasetId( Connection conn, String databaseTable )
                             throws SQLException {
         int result = 0;
-        String selectIDRows = "SELECT " + PostGISMappingsISODC.CommonColumnNames.id.name() + " from " + databaseTable
-                              + " ORDER BY " + PostGISMappingsISODC.CommonColumnNames.id.name() + " DESC LIMIT 1";
+        String selectIDRows = "SELECT " + idColumn + " from " + databaseTable + " ORDER BY " + idColumn
+                              + " DESC LIMIT 1";
         PreparedStatement prepState = conn.prepareStatement( selectIDRows );
 
         ResultSet rsBrief = prepState.executeQuery();
