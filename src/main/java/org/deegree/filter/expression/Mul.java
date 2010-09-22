@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
 import java.math.BigDecimal;
@@ -43,14 +43,14 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Mul implements Expression {
@@ -72,17 +72,17 @@ public class Mul implements Expression {
         return param2;
     }
 
-    @Override    
+    @Override
     public Type getType() {
         return Type.MUL;
-    }    
-    
-    @Override    
-    public TypedObjectNode[] evaluate( MatchableObject obj )
+    }
+
+    @Override
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
-        TypedObjectNode[] values1 = param1.evaluate( obj );
-        TypedObjectNode[] values2 = param2.evaluate( obj );
+        TypedObjectNode[] values1 = param1.evaluate( obj, xpathEvaluator );
+        TypedObjectNode[] values2 = param2.evaluate( obj, xpathEvaluator );
 
         List<TypedObjectNode> resultValues = new ArrayList<TypedObjectNode>( values1.length * values2.length );
         for ( TypedObjectNode value1 : values1 ) {
@@ -103,7 +103,7 @@ public class Mul implements Expression {
         return resultValues.toArray( new TypedObjectNode[resultValues.size()] );
     }
 
-    @Override    
+    @Override
     public String toString( String indent ) {
         String s = indent + "-Mul\n";
         s += param1.toString( indent + "  " );
@@ -114,5 +114,5 @@ public class Mul implements Expression {
     @Override
     public Expression[] getParams() {
         return new Expression[] { param1, param2 };
-    }    
+    }
 }

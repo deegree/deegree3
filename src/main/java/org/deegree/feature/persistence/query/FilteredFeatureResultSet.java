@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.query;
 
+import static org.deegree.gml.GMLVersion.GML_31;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +45,7 @@ import java.util.NoSuchElementException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 
@@ -92,6 +95,9 @@ public class FilteredFeatureResultSet implements FeatureResultSet {
     public Iterator<Feature> iterator() {
         return new Iterator<Feature>() {
 
+            // TODO
+            FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+
             Iterator<Feature> iter = rs.iterator();
 
             boolean nextCalled = true;
@@ -107,7 +113,7 @@ public class FilteredFeatureResultSet implements FeatureResultSet {
                 while ( iter.hasNext() ) {
                     Feature candidate = iter.next();
                     try {
-                        if ( filter.evaluate( candidate ) ) {
+                        if ( filter.evaluate( candidate, evaluator ) ) {
                             nextCalled = false;
                             next = candidate;
                             break;

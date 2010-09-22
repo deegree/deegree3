@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd">
+  <ogc:And>
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName>gml:name[@codeSpace="app"]</ogc:PropertyName>
+      <ogc:Literal>Karl Marx</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName>gml:name[@codeSpace="bpp"]</ogc:PropertyName>
+      <ogc:Literal>Kbrl Mbrx</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName>gml:description</ogc:PropertyName>
+      <ogc:Literal>This is the first Philosopher feature</ogc:Literal>
+    </ogc:PropertyIsEqualTo>    
+  </ogc:And>
+</ogc:Filter>

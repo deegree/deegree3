@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,15 +32,15 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
 /**
  * {@link Filter} that matches objects which test positively against an expression built from operators.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class OperatorFilter implements Filter {
@@ -49,7 +49,7 @@ public class OperatorFilter implements Filter {
 
     /**
      * Creates a new {@link OperatorFilter}.
-     *
+     * 
      * @param rootOperator
      *            root operator that defines the test expression
      */
@@ -59,7 +59,7 @@ public class OperatorFilter implements Filter {
 
     /**
      * Always returns {@link Filter.Type#OPERATOR_FILTER} (for {@link OperatorFilter} instances).
-     *
+     * 
      * @return {@link Filter.Type#OPERATOR_FILTER}
      */
     @Override
@@ -69,7 +69,7 @@ public class OperatorFilter implements Filter {
 
     /**
      * Returns the root {@link Operator} of the test expression.
-     *
+     * 
      * @return the root operator
      */
     public Operator getOperator() {
@@ -77,9 +77,9 @@ public class OperatorFilter implements Filter {
     }
 
     @Override
-    public boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        return rootOperator.evaluate( object );
+        return rootOperator.evaluate( obj, xpathEvaluator );
     }
 
     @Override

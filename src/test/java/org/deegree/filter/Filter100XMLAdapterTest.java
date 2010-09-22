@@ -454,5 +454,4 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         return Filter100XMLDecoder.parse( xmlStream );
     }
-
 }

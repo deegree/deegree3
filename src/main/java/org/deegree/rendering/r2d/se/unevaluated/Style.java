@@ -55,7 +55,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.Property;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.function.geometry.IsCurve;
 import org.deegree.filter.function.geometry.IsPoint;
 import org.deegree.filter.function.geometry.IsSurface;
@@ -189,7 +189,8 @@ public class Style {
      * @param f
      * @return a pair suitable for rendering
      */
-    public LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate( Feature f ) {
+    public LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate( Feature f,
+                                                                               XPathEvaluator<Feature> evaluator ) {
         if ( useDefault ) {
             LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = new LinkedList<Triple<Styling, LinkedList<Geometry>, String>>();
 
@@ -226,16 +227,16 @@ public class Style {
         StringBuffer sb = new StringBuffer();
         LinkedList<Symbolizer<?>> list = new LinkedList<Symbolizer<?>>();
         for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> pair : rules ) {
-            pair.first.evaluate( list, f );
+            pair.first.evaluate( list, f, evaluator );
         }
 
         String text = null;
         for ( Symbolizer<?> s : list ) {
-            Pair<?, ?> p = s.evaluate( f );
+            Pair<?, ?> p = s.evaluate( f, evaluator );
 
             if ( labels.containsKey( s ) ) {
                 sb.setLength( 0 );
-                labels.get( s ).evaluate( sb, f );
+                labels.get( s ).evaluate( sb, f, evaluator );
                 text = sb.toString();
             }
             res.add( new Triple<Object, Object, String>( p.first, p.second, text ) );
@@ -287,7 +288,7 @@ public class Style {
         list = new LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>>();
         for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
             LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
-            rule.first.evaluate( base, null );
+            rule.first.evaluate( base, null, null );
             LinkedList<Styling> stylings = new LinkedList<Styling>();
             LinkedList<String> xmlTexts = new LinkedList<String>();
             for ( Symbolizer<?> s : base ) {
@@ -308,6 +309,7 @@ public class Style {
     /**
      * @return true, if no filters and no expressions are used
      */
+    @SuppressWarnings("unchecked")
     public boolean isSimple() {
         for ( Pair rule : rules ) {
             if ( rule.first instanceof FilterContinuation && ( (FilterContinuation) rule.first ).filter != null ) {
@@ -315,7 +317,7 @@ public class Style {
             }
 
             LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
-            ( (Continuation) rule.first ).evaluate( base, null );
+            ( (Continuation) rule.first ).evaluate( base, null, null );
             for ( Symbolizer s : base ) {
                 if ( !s.isEvaluated() ) {
                     return false;
@@ -378,9 +380,8 @@ public class Style {
         }
 
         @Override
-        public void updateStep( T base, MatchableObject f ) {
+        public void updateStep( T base, Feature f, XPathEvaluator<Feature> evaluator ) {
             base.add( value );
         }
     }
-
 }

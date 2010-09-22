@@ -49,7 +49,9 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.filter.MatchableObject;
+import org.deegree.feature.Feature;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -90,13 +92,15 @@ public class FormatNumber extends AbstractCustomExpression {
         return ELEMENT_NAME;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject f ) {
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+                            throws FilterEvaluationException {
         double nr;
         if ( numericValueContn != null ) {
             StringBuffer sb = new StringBuffer();
             sb.append( numericValue );
-            numericValueContn.evaluate( sb, f );
+            numericValueContn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
             nr = parseDouble( sb.toString() );
         } else {
             nr = parseDouble( numericValue.toString() );

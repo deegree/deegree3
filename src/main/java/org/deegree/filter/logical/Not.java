@@ -36,8 +36,8 @@
 package org.deegree.filter.logical;
 
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
 import org.deegree.filter.Operator;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
@@ -65,9 +65,9 @@ public class Not extends LogicalOperator {
     }
 
     @Override
-    public boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        return !param.evaluate( object );
+        return !param.evaluate( obj, xpathEvaluator );
     }
 
     @Override

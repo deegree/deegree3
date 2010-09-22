@@ -49,6 +49,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r2d.styling.Copyable;
 import org.slf4j.Logger;
@@ -173,7 +174,7 @@ public class Symbolizer<T extends Copyable<T>> {
      * @param f
      * @return the styling with the geometries, p.second may be null if no geoms were found
      */
-    public Pair<T, LinkedList<Geometry>> evaluate( Feature f ) {
+    public Pair<T, LinkedList<Geometry>> evaluate( Feature f, XPathEvaluator<Feature> evaluator ) {
         if ( f == null ) {
             return new Pair<T, LinkedList<Geometry>>( evaluated == null ? base.copy() : evaluated.copy(), null );
         }
@@ -181,7 +182,7 @@ public class Symbolizer<T extends Copyable<T>> {
         LinkedList<Geometry> geoms = new LinkedList<Geometry>();
         if ( geometry != null ) {
             try {
-                TypedObjectNode[] os = geometry.evaluate( f );
+                TypedObjectNode[] os = geometry.evaluate( f, evaluator );
 
                 if ( os.length == 0 ) {
                     LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated to nothing.",
@@ -246,7 +247,7 @@ public class Symbolizer<T extends Copyable<T>> {
             return pair;
         }
 
-        next.evaluate( evald, f );
+        next.evaluate( evald, f, evaluator );
         if ( id != null ) {
             cache.put( id, pair.first );
         }

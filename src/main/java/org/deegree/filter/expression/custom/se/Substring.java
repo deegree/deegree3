@@ -49,7 +49,9 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.filter.MatchableObject;
+import org.deegree.feature.Feature;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -93,12 +95,14 @@ public class Substring extends AbstractCustomExpression {
         return ELEMENT_NAME;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject f ) {
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+                            throws FilterEvaluationException {
         StringBuffer sb = new StringBuffer();
         sb.append( value.toString().trim() );
         if ( valueContn != null ) {
-            valueContn.evaluate( sb, f );
+            valueContn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
         }
         String val = sb.toString().trim();
 
@@ -106,7 +110,7 @@ public class Substring extends AbstractCustomExpression {
         if ( positionContn != null ) {
             StringBuffer s = new StringBuffer();
             s.append( position );
-            positionContn.evaluate( s, f );
+            positionContn.evaluate( s, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
             pos = parseInt( s.toString() );
         } else {
             pos = parseInt( position.toString() );
@@ -121,7 +125,7 @@ public class Substring extends AbstractCustomExpression {
         if ( lengthContn != null ) {
             StringBuffer s = new StringBuffer();
             s.append( length );
-            lengthContn.evaluate( s, f );
+            lengthContn.evaluate( s, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
             len = parseInt( s.toString() );
         } else {
             len = parseInt( length.toString() );

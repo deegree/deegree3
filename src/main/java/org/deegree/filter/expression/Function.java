@@ -40,7 +40,7 @@ import java.util.List;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * Generic {@link Function} implementation that can be used to represent an arbitrary function, but that doesn't offer
@@ -98,7 +98,7 @@ public class Function implements Expression {
     }
 
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject object )
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
         throw new FilterEvaluationException( "Evaluation of function '" + getName()
                                              + "' is not available (GenericFunction)." );

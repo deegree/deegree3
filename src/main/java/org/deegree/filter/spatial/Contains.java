@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,47 +32,46 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 
 /**
- * If a geometry is spatially contained in an other geometry. 
- *
+ * If a geometry is spatially contained in an other geometry.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Contains extends SpatialOperator {
 
     private final PropertyName propName;
 
-    private final Geometry geometry;    
-    
+    private final Geometry geometry;
+
     public Contains( PropertyName param1, Geometry param2 ) {
         this.propName = param1;
         this.geometry = param2;
     }
 
-    public boolean evaluate( MatchableObject object )
+    @Override
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        for ( TypedObjectNode paramValue : propName.evaluate( object ) ) {
+        for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
             Geometry geom = checkGeometryOrNull( paramValue );
             if ( geom != null ) {
                 Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
-                return geom.contains( transformedLiteral);
-            }          
+                return geom.contains( transformedLiteral );
+            }
         }
         return false;
     }
-    
-    
 
     /**
      * @return the propName
@@ -96,7 +95,7 @@ public class Contains extends SpatialOperator {
     }
 
     @Override
-    public Object[] getParams () {
-        return new Object [] {propName, geometry};
-    }    
+    public Object[] getParams() {
+        return new Object[] { propName, geometry };
+    }
 }

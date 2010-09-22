@@ -46,7 +46,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 
@@ -70,10 +70,12 @@ public class IMod implements FunctionProvider {
     @Override
     public Function create( List<Expression> params ) {
         return new Function( NAME, params ) {
-            private Pair<Integer, Integer> extractValues( Expression first, Expression second, MatchableObject f )
+
+            private <T> Pair<Integer, Integer> extractValues( Expression first, Expression second, T f,
+                                                              XPathEvaluator<T> xpathEvaluator )
                                     throws FilterEvaluationException {
-                TypedObjectNode[] vals1 = first.evaluate( f );
-                TypedObjectNode[] vals2 = second.evaluate( f );
+                TypedObjectNode[] vals1 = first.evaluate( f, xpathEvaluator );
+                TypedObjectNode[] vals2 = second.evaluate( f, xpathEvaluator );
 
                 PrimitiveValue pv1;
                 PrimitiveValue pv2;
@@ -93,9 +95,9 @@ public class IMod implements FunctionProvider {
             }
 
             @Override
-            public TypedObjectNode[] evaluate( MatchableObject f )
+            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                                     throws FilterEvaluationException {
-                Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], f );
+                Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], obj, xpathEvaluator );
 
                 return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first % p.second ) ) };
             }

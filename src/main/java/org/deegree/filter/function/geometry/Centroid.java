@@ -42,7 +42,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.geometry.Geometry;
@@ -78,10 +78,10 @@ public class Centroid implements FunctionProvider {
             }
 
             @Override
-            public TypedObjectNode[] evaluate( MatchableObject f )
+            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                                     throws FilterEvaluationException {
 
-                TypedObjectNode[] inputs = getParams()[0].evaluate( f );
+                TypedObjectNode[] inputs = getParams()[0].evaluate( obj, xpathEvaluator );
                 List<TypedObjectNode> centroids = new ArrayList<TypedObjectNode>( inputs.length );
                 for ( TypedObjectNode val : inputs ) {
                     Geometry geom = getGeomValue( val );

@@ -8,7 +8,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.geometry.Geometry;
@@ -40,9 +40,9 @@ public class IsSurface implements FunctionProvider {
         }
         return new Function( NAME, params ) {
             @Override
-            public TypedObjectNode[] evaluate( MatchableObject f )
+            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                                     throws FilterEvaluationException {
-                Object[] vals = getParams()[0].evaluate( f );
+                Object[] vals = getParams()[0].evaluate( obj, xpathEvaluator );
 
                 if ( vals.length != 1 || !( vals[0] instanceof Geometry ) && !( vals[0] instanceof Property )
                      && !( ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {

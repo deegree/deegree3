@@ -40,8 +40,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
 import org.deegree.filter.Operator;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * The API for the And logical operator. For the schema model, see http://schemas.opengis.net/filter/1.1.0/filter.xsd
@@ -96,12 +96,12 @@ public class And extends LogicalOperator {
     public SubType getSubType() {
         return SubType.AND;
     }
-    
+
     @Override
-    public boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
         for ( Operator operator : params ) {
-            if (!operator.evaluate( object )) {
+            if ( !operator.evaluate( obj, xpathEvaluator ) ) {
                 return false;
             }
         }
@@ -119,6 +119,6 @@ public class And extends LogicalOperator {
 
     @Override
     public Operator[] getParams() {
-        return params.toArray(new Operator [params.size()]);
+        return params.toArray( new Operator[params.size()] );
     }
 }

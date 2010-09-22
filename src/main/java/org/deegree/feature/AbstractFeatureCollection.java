@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -53,12 +54,12 @@ import org.deegree.geometry.Envelope;
 public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
 
     @Override
-    public FeatureCollection getMembers( Filter filter )
+    public FeatureCollection getMembers( Filter filter, XPathEvaluator<Feature> evaluator )
                             throws FilterEvaluationException {
 
         List<Feature> matchingFeatures = new ArrayList<Feature>();
         for ( Feature feature : this ) {
-            if ( filter.evaluate( feature ) ) {
+            if ( filter.evaluate( feature, evaluator ) ) {
                 matchingFeatures.add( feature );
             }
         }

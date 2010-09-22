@@ -57,13 +57,13 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReaderTest;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
-import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,9 +108,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath1()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "*";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 7, result.length );
         for ( TypedObjectNode object : result ) {
@@ -120,9 +120,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath2()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 7, result.length );
         for ( TypedObjectNode object : result ) {
@@ -132,9 +132,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath3()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember/app:Philosopher";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 7, result.length );
         for ( TypedObjectNode object : result ) {
@@ -144,9 +144,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath4()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember[1]/app:Philosopher";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertEquals( 1, result.length );
         Feature feature = (Feature) result[0];
         assertEquals( "PHILOSOPHER_1", feature.getId() );
@@ -154,9 +154,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath5()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember[1]/app:Philosopher/app:name";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertEquals( 1, result.length );
         SimpleProperty prop = (SimpleProperty) result[0];
         PrimitiveValue name = prop.getValue();
@@ -168,9 +168,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath6()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember[1]/app:Philosopher/app:name/text()";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertEquals( 1, result.length );
         PrimitiveValue name = (PrimitiveValue) result[0];
         assertEquals( STRING, name.getType() );
@@ -181,9 +181,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath7()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember/app:Philosopher[app:name='Albert Camus' and app:placeOfBirth/*/app:name='Mondovi']/app:placeOfBirth/app:Place/app:name";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertEquals( 1, result.length );
         SimpleProperty prop = (SimpleProperty) result[0];
         PrimitiveValue name = prop.getValue();
@@ -194,9 +194,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath8()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember[1]/app:Philosopher/app:placeOfBirth/app:Place/../..";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertEquals( 1, result.length );
         Feature feature = (Feature) result[0];
         assertEquals( "PHILOSOPHER_1", feature.getId() );
@@ -204,10 +204,10 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath9()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
 
         String xpath = "gml:featureMember/app:Philosopher[app:id < 3]/app:name";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         Set<String> names = new HashSet<String>();
         for ( TypedObjectNode node : result ) {
             names.add( ( (SimpleProperty) node ).getValue().toString() );
@@ -219,7 +219,7 @@ public class FeatureXPathTest {
 
     // @Test
     // public void testXPath10()
-    // throws JaxenException {
+    // throws FilterEvaluationException {
     // String xpath = "gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name";
     // TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
     // for ( TypedObjectNode node : result ) {
@@ -229,9 +229,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath11()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember/app:Philosopher[@gml:id='PHILOSOPHER_1']";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertEquals( 1, result.length );
         Feature feature = (Feature) result[0];
         assertEquals( "PHILOSOPHER_1", feature.getId() );
@@ -239,9 +239,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath12()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember/app:Philosopher[gml:name='JEAN_PAUL']";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertEquals( 1, result.length );
         Feature feature = (Feature) result[0];
         assertEquals( "PHILOSOPHER_6", feature.getId() );
@@ -249,9 +249,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath13()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "/gml:FeatureCollection/gml:featureMember";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 7, result.length );
         for ( TypedObjectNode object : result ) {
@@ -261,9 +261,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath14()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "true()";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 1, result.length );
         PrimitiveValue value = (PrimitiveValue) result[0];
@@ -273,9 +273,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath15()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "count(gml:featureMember/app:Philosopher)";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 1, result.length );
         PrimitiveValue value = (PrimitiveValue) result[0];
@@ -285,9 +285,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath16()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "string(gml:featureMember/app:Philosopher/app:name)";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 1, result.length );
         PrimitiveValue value = (PrimitiveValue) result[0];
@@ -297,9 +297,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath17()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "/";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 1, result.length );
         FeatureCollection fc2 = (FeatureCollection) result[0];
@@ -308,9 +308,9 @@ public class FeatureXPathTest {
 
     @Test
     public void testXPath18()
-                            throws JaxenException {
+                            throws FilterEvaluationException {
         String xpath = "gml:featureMember/app:Philosopher/@gml:id";
-        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        TypedObjectNode[] result = new FeatureXPathEvaluator( GML_31 ).eval( fc, new PropertyName( xpath, nsContext ) );
         assertNotNull( result );
         assertEquals( 7, result.length );
         for ( TypedObjectNode typedObjectNode : result ) {

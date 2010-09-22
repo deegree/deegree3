@@ -70,9 +70,10 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
@@ -759,9 +760,9 @@ public class PostgreSQLReader {
                         sym = new Symbolizer<TextStyling>( p.first, null, null, null, -1, -1 );
                         labels.put( (Symbolizer) sym, new Continuation<StringBuffer>() {
                             @Override
-                            public void updateStep( StringBuffer base, MatchableObject f ) {
+                            public void updateStep( StringBuffer base, Feature f, XPathEvaluator<Feature> evaluator ) {
                                 try {
-                                    Object[] evald = expr.evaluate( f );
+                                    Object[] evald = expr.evaluate( f, evaluator );
                                     if ( evald.length == 0 ) {
                                         LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), expr );
                                     } else {
@@ -792,7 +793,8 @@ public class PostgreSQLReader {
 
                     Continuation<LinkedList<Symbolizer<?>>> contn = new Continuation<LinkedList<Symbolizer<?>>>() {
                         @Override
-                        public void updateStep( LinkedList<Symbolizer<?>> base, MatchableObject f ) {
+                        public void updateStep( LinkedList<Symbolizer<?>> base, Feature f,
+                                                XPathEvaluator<Feature> evaluator ) {
                             base.add( sym );
                         }
                     };

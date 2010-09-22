@@ -59,7 +59,8 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.filter.MatchableObject;
+import org.deegree.feature.Feature;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -126,27 +127,29 @@ public class Categorize extends AbstractCustomExpression {
         return ELEMENT_NAME;
     }
 
-    private static final String eval( StringBuffer initial, Continuation<StringBuffer> contn, MatchableObject f ) {
+    @SuppressWarnings("unchecked")
+    private static final <T> String eval( StringBuffer initial, Continuation<StringBuffer> contn, T f,
+                                          XPathEvaluator<T> evaluator ) {
         StringBuffer sb = new StringBuffer( initial.toString().trim() );
         if ( contn != null ) {
-            contn.evaluate( sb, f );
+            contn.evaluate( sb, (Feature) f, (XPathEvaluator<Feature>) evaluator );
         }
         return sb.toString();
     }
 
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject f ) {
-        String val = eval( value, contn, f );
+    public <T> TypedObjectNode[] evaluate( T f, XPathEvaluator<T> xpathEvaluator ) {
+        String val = eval( value, contn, f, xpathEvaluator );
 
         Iterator<StringBuffer> vals = values.iterator();
         Iterator<StringBuffer> barriers = thresholds.iterator();
         Iterator<Continuation<StringBuffer>> valContns = valueContns.iterator();
         Iterator<Continuation<StringBuffer>> barrierContns = thresholdContns.iterator();
 
-        String curVal = eval( vals.next(), valContns.next(), f );
+        String curVal = eval( vals.next(), valContns.next(), f, xpathEvaluator );
         while ( barriers.hasNext() ) {
-            String cur = eval( barriers.next(), barrierContns.next(), f );
-            String nextVal = eval( vals.next(), valContns.next(), f );
+            String cur = eval( barriers.next(), barrierContns.next(), f, xpathEvaluator );
+            String nextVal = eval( vals.next(), valContns.next(), f, xpathEvaluator );
             if ( cur.equals( val ) ) {
                 return new TypedObjectNode[] { new PrimitiveValue( precedingBelongs ? curVal : nextVal ) };
             }

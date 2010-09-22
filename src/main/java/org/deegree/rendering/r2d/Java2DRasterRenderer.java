@@ -171,7 +171,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
             Geometry geom = Raster2Feature.createPolygonGeometry( raster );
             Java2DRenderer vectorRenderer = new Java2DRenderer( graphics );
             @SuppressWarnings("unchecked")
-            Pair<Styling, LinkedList<Geometry>> pair = (Pair) styling.imageOutline.evaluate( null );
+            Pair<Styling, LinkedList<Geometry>> pair = (Pair) styling.imageOutline.evaluate( null, null );
             Styling ls = pair.first;
             vectorRenderer.render( ls, geom );
             LOG.trace( "Done rendering image outline." );

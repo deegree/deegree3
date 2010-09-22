@@ -49,7 +49,9 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.filter.MatchableObject;
+import org.deegree.feature.Feature;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -85,8 +87,10 @@ public class Concatenate extends AbstractCustomExpression {
         return ELEMENT_NAME;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject f ) {
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+                            throws FilterEvaluationException {
         StringBuffer res = new StringBuffer();
         Iterator<StringBuffer> sbs = values.iterator();
         Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
@@ -94,7 +98,7 @@ public class Concatenate extends AbstractCustomExpression {
             StringBuffer sb = new StringBuffer( sbs.next().toString().trim() );
             Continuation<StringBuffer> contn = contns.next();
             if ( contn != null ) {
-                contn.evaluate( sb, f );
+                contn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
             }
             res.append( sb.toString() );
         }

@@ -65,7 +65,9 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.filter.MatchableObject;
+import org.deegree.feature.Feature;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -458,11 +460,13 @@ public class Interpolate extends AbstractCustomExpression {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject f ) {
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+                            throws FilterEvaluationException {
         StringBuffer sb = new StringBuffer( value.toString().trim() );
         if ( contn != null ) {
-            contn.evaluate( sb, f );
+            contn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
         }
 
         double val = parseDouble( sb.toString() );
@@ -485,7 +489,7 @@ public class Interpolate extends AbstractCustomExpression {
 
         StringBuffer buf = new StringBuffer( intVal.toString().trim() );
         if ( contn != null ) {
-            contn.evaluate( sb, f );
+            contn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
         }
         String fstString = buf.toString();
 
