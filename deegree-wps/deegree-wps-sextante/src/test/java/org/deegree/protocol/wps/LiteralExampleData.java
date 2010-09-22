@@ -52,73 +52,65 @@ public class LiteralExampleData implements ExampleData {
     private static final LinkedList<LiteralExampleData> ALL_EXAMPLE_DATA = new LinkedList<LiteralExampleData>();
 
     // types of literal data
-    public static final String TYPE_BOOLEAN = "boolean";
+    private static final String BOOLEAN_TYPE = "boolean";
 
-    public static final String TYPE_NUMERICAL_VALUE = "double";
+    private static final String NUMERICAL_VALUE_TYPE = "double";
 
-    public static final String TYPE_SELECTION = "string";
+    private static final String SELECTION_TYPE = "integer";
 
-    public static final String TYPE_STRING = "string";
+    private static final String STRING_TYPE = "string";
 
     // numerical value example data
-    public static LiteralExampleData NUMERICAL_VALUE_0 = new LiteralExampleData( "NUMERICAL_VALUE_0", "0",
-                                                                                 TYPE_NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_0 = new LiteralExampleData( "0", NUMERICAL_VALUE_TYPE );
 
-    public static LiteralExampleData NUMERICAL_VALUE_1 = new LiteralExampleData( "NUMERICAL_VALUE_1", "1",
-                                                                                 TYPE_NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_1 = new LiteralExampleData( "1", NUMERICAL_VALUE_TYPE );
 
-    public static LiteralExampleData NUMERICAL_VALUE_100 = new LiteralExampleData( "NUMERICAL_VALUE_100", "100",
-                                                                                   TYPE_NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_10 = new LiteralExampleData( "10", NUMERICAL_VALUE_TYPE );
 
-    public static LiteralExampleData NUMERICAL_VALUE_200 = new LiteralExampleData( "NUMERICAL_VALUE_200", "200",
-                                                                                   TYPE_NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_50 = new LiteralExampleData( "50", NUMERICAL_VALUE_TYPE );
 
-    public static LiteralExampleData NUMERICAL_VALUE_300 = new LiteralExampleData( "NUMERICAL_VALUE_300", "300",
-                                                                                   TYPE_NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_100 = new LiteralExampleData( "100", NUMERICAL_VALUE_TYPE );
 
-    public static LiteralExampleData NUMERICAL_VALUE_400 = new LiteralExampleData( "NUMERICAL_VALUE_400", "400",
-                                                                                   TYPE_NUMERICAL_VALUE );
+    public static LiteralExampleData NUMERICAL_VALUE_200 = new LiteralExampleData( "200", NUMERICAL_VALUE_TYPE );
+
+    public static LiteralExampleData NUMERICAL_VALUE_300 = new LiteralExampleData( "300", NUMERICAL_VALUE_TYPE );
+
+    public static LiteralExampleData NUMERICAL_VALUE_400 = new LiteralExampleData( "400", NUMERICAL_VALUE_TYPE );
 
     // boolean value example data
-    public static LiteralExampleData BOOLEAN_TRUE = new LiteralExampleData( "BOOLEAN_TRUE", "true", TYPE_BOOLEAN );
+    public static LiteralExampleData BOOLEAN_TRUE = new LiteralExampleData( "true", BOOLEAN_TYPE );
 
-    public static LiteralExampleData BOOLEAN_FALSE = new LiteralExampleData( "BOOLEAN_FALSE", "false", TYPE_BOOLEAN );
+    public static LiteralExampleData BOOLEAN_FALSE = new LiteralExampleData( "false", BOOLEAN_TYPE );
 
     // selection value example data
-    public static LiteralExampleData SELECTION_0 = new LiteralExampleData( "SELECTION_0", "0", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_0 = new LiteralExampleData( "0", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_1 = new LiteralExampleData( "SELECTION_1", "1", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_1 = new LiteralExampleData( "1", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_2 = new LiteralExampleData( "SELECTION_2", "2", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_2 = new LiteralExampleData( "2", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_3 = new LiteralExampleData( "SELECTION_3", "3", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_3 = new LiteralExampleData( "3", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_4 = new LiteralExampleData( "SELECTION_4", "4", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_4 = new LiteralExampleData( "4", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_5 = new LiteralExampleData( "SELECTION_5", "5", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_5 = new LiteralExampleData( "5", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_6 = new LiteralExampleData( "SELECTION_6", "6", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_6 = new LiteralExampleData( "6", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_7 = new LiteralExampleData( "SELECTION_7", "7", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_7 = new LiteralExampleData( "7", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_8 = new LiteralExampleData( "SELECTION_8", "8", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_8 = new LiteralExampleData( "8", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_9 = new LiteralExampleData( "SELECTION_9", "9", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_9 = new LiteralExampleData( "9", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_10 = new LiteralExampleData( "SELECTION_10", "10", TYPE_SELECTION );
+    public static LiteralExampleData SELECTION_10 = new LiteralExampleData( "10", SELECTION_TYPE );
 
-    public static LiteralExampleData SELECTION_INTEGER = new LiteralExampleData( "SELECTION_INTEGER", "Integer",
-                                                                                 TYPE_SELECTION );
+    // string value example data
+    public static LiteralExampleData STRING_VIEW = new LiteralExampleData( "VIEWS", STRING_TYPE );
 
-    public static LiteralExampleData SELECTION_DOUBLE = new LiteralExampleData( "SELECTION_DOUBLE", "Double",
-                                                                                TYPE_SELECTION );
-
-    public static LiteralExampleData SELECTION_STRING = new LiteralExampleData( "SELECTION_STRING", "String",
-                                                                                TYPE_SELECTION );
+    public static LiteralExampleData STRING_0 = new LiteralExampleData( "0", STRING_TYPE );
 
     // attributes of a literal
-    private final String id;
-
     private final String idCodeSpace;
 
     private final String value;
@@ -127,8 +119,8 @@ public class LiteralExampleData implements ExampleData {
 
     private final String uom;
 
-    private LiteralExampleData( String id, String idCodeSpace, String value, String type, String uom ) {
-        this.id = id;
+    private LiteralExampleData( String idCodeSpace, String value, String type, String uom ) {
+
         this.idCodeSpace = idCodeSpace;
         this.value = value;
         this.type = type;
@@ -137,12 +129,8 @@ public class LiteralExampleData implements ExampleData {
         ALL_EXAMPLE_DATA.add( this );
     }
 
-    private LiteralExampleData( String id, String value, String type ) {
-        this( id, null, value, type, null );
-    }
-
-    public String getId() {
-        return id;
+    private LiteralExampleData( String value, String type ) {
+        this( null, value, type, null );
     }
 
     public String getIdCodeSpace() {
@@ -163,6 +151,42 @@ public class LiteralExampleData implements ExampleData {
 
     public static LinkedList<LiteralExampleData> getAllData() {
         return ALL_EXAMPLE_DATA;
+    }
+
+    public static LinkedList<LiteralExampleData> getNumericalValues() {
+        LinkedList<LiteralExampleData> result = new LinkedList<LiteralExampleData>();
+        for ( LiteralExampleData data : ALL_EXAMPLE_DATA ) {
+            if ( data.getType().equals( NUMERICAL_VALUE_TYPE ) )
+                result.add( data );
+        }
+        return result;
+    }
+
+    public static LinkedList<LiteralExampleData> getBooleans() {
+        LinkedList<LiteralExampleData> result = new LinkedList<LiteralExampleData>();
+        for ( LiteralExampleData data : ALL_EXAMPLE_DATA ) {
+            if ( data.getType().equals( BOOLEAN_TYPE ) )
+                result.add( data );
+        }
+        return result;
+    }
+
+    public static LinkedList<LiteralExampleData> getSelections() {
+        LinkedList<LiteralExampleData> result = new LinkedList<LiteralExampleData>();
+        for ( LiteralExampleData data : ALL_EXAMPLE_DATA ) {
+            if ( data.getType().equals( SELECTION_TYPE ) )
+                result.add( data );
+        }
+        return result;
+    }
+
+    public static LinkedList<LiteralExampleData> getStrings() {
+        LinkedList<LiteralExampleData> result = new LinkedList<LiteralExampleData>();
+        for ( LiteralExampleData data : ALL_EXAMPLE_DATA ) {
+            if ( data.getType().equals( STRING_TYPE ) )
+                result.add( data );
+        }
+        return result;
     }
 
     public String toString() {

@@ -321,19 +321,29 @@ public class VectorLayerAdapter {
         Object[] propObjs = f.getRecord().getValues();
         // create simple properties
         for ( int i = 0; i < l.getFieldCount(); i++ ) {
-            String[] name = l.getFieldName( i ).replace( "{", "" ).split( "}" );
+
+            String nameRaw = l.getFieldName( i );
+            String[] nameArray;
+            if ( nameRaw != null ) {
+                nameArray = l.getFieldName( i ).replace( "{", "" ).split( "}" );
+            } else {
+                nameArray = new String[0];
+                nameRaw = "PROPERTY_WITHOUT_NAME";
+            }
 
             // determine element name
             QName probName;
-            if ( name.length >= 2 )
-                probName = new QName( name[1] );
+            if ( nameArray.length >= 2 )
+                probName = new QName( nameArray[1] );
             else
-                probName = new QName( l.getFieldName( i ).replace( " ", "" ) );
+                probName = new QName( nameRaw.replace( " ", "" ) );
 
             // modify value
             Object value = propObjs[i];
             if ( value instanceof Integer )// PrimitiveType only support BigInteger
                 value = new BigInteger( value.toString() );
+            else if ( value instanceof Long )// PrimitiveType only support Double
+                value = new Double( value.toString() );
 
             // create property type
             SimplePropertyType spt = new SimplePropertyType( probName, 1, 1,
@@ -361,6 +371,8 @@ public class VectorLayerAdapter {
                 Object value = propObjs[i];
                 if ( value instanceof Integer ) // PrimitiveType only support BigInteger
                     value = new BigInteger( value.toString() );
+                else if ( value instanceof Long ) // PrimitiveType only support Double
+                    value = new Double( value.toString() );
 
                 // GenericProperty gp = new GenericProperty( it.next(), new PrimitiveValue( propObjs[i] ) );
                 SimpleProperty sp = new SimpleProperty( (SimplePropertyType) it.next(), value.toString(),

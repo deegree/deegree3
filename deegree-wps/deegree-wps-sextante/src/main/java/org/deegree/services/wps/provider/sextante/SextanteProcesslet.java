@@ -37,6 +37,8 @@ package org.deegree.services.wps.provider.sextante;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import javax.xml.stream.XMLStreamReader;
+
+import org.apache.commons.lang.NumberUtils;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Geometry;
@@ -179,7 +181,7 @@ public class SextanteProcesslet implements Processlet {
             else if ( paramTypeName.equals( SextanteWPSProcess.NUMERICAL_VALUE_INPUT ) )
                 setNumericalValueInputValue( in, param );
             else if ( paramTypeName.equals( SextanteWPSProcess.SELECTION_INPUT ) )
-                setSelectionInputValue( in, param );
+                setSelectionInputValue( in, param, alg );
             else if ( paramTypeName.equals( SextanteWPSProcess.FILEPATH_INPUT ) )
                 setFilepathInputValue( in, param );
             else if ( paramTypeName.equals( SextanteWPSProcess.BOOLEAN_INPUT ) )
@@ -257,13 +259,7 @@ public class SextanteProcesslet implements Processlet {
      *            Input parameter of {@link GeoAlgorithm}.
      */
     private void setNumericalValueInputValue( ProcessletInputs in, Parameter param ) {
-        // LOG.error( "\"" + param.getParameterTypeName()
-        // + "\" a is not supported input parameter type (but is in implementation)"
-        // + in.getClass().getSimpleName() );
-
-        // input object
         LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
-
         param.setParameterValue( Double.parseDouble( literalInput.getValue() ) );
     }
 
@@ -275,10 +271,37 @@ public class SextanteProcesslet implements Processlet {
      * @param param
      *            Input parameter of {@link GeoAlgorithm}.
      */
-    private void setSelectionInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
-        // TODO implement this input parameter type
+    private void setSelectionInputValue( ProcessletInputs in, Parameter param, GeoAlgorithm alg ) {
+        LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
+
+        // value as string
+        String valueAsString = literalInput.getValue();
+
+        // value as integer
+        int valueAsInteger = 0;
+
+        // string to integer
+        if ( org.apache.commons.lang.math.NumberUtils.isNumber( valueAsString ) )
+            valueAsInteger = Integer.parseInt( valueAsString );
+
+        // special case of 'vectoraddfield' algorithm
+        if ( alg.getCommandLineName().equals( "vectoraddfield" ) ) {
+
+            String valueAsText;
+
+            if ( valueAsInteger == 0 )
+                valueAsText = "Integer";
+            else if ( valueAsInteger == 1 )
+                valueAsText = "Double";
+            else
+                valueAsText = "String";
+
+            param.setParameterValue( valueAsString );
+
+        } else {// normal case
+            param.setParameterValue( valueAsInteger );
+        }
+
     }
 
     /**
@@ -304,7 +327,18 @@ public class SextanteProcesslet implements Processlet {
      *            Input parameter of {@link GeoAlgorithm}
      */
     private void setBooleanInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.error( "Using boolean input data is not supported." );
+        LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
+
+        String value = literalInput.getValue();
+
+        if ( value.equals( "true" ) || value.equals( "1" ) )
+            param.setParameterValue( true );
+        else if ( value.equals( "false" ) || value.equals( "0" ) )
+            param.setParameterValue( false );
+        else {
+            // TODO throw Exception? false input value
+        }
+
     }
 
     /**
@@ -316,9 +350,8 @@ public class SextanteProcesslet implements Processlet {
      *            Input parameter of {@link GeoAlgorithm}.
      */
     private void setStringInputValue( ProcessletInputs in, Parameter param ) {
-        LOG.error( "\"" + param.getParameterTypeName()
-                   + "\" a is not supported input parameter type (but is in implementation)" );
-        // TODO implement this input parameter type
+        LiteralInput literalInput = (LiteralInput) in.getParameter( param.getParameterName() );
+        param.setParameterValue( literalInput.getValue() );
     }
 
     /**
