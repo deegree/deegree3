@@ -38,7 +38,7 @@ package org.deegree.filter.spatial;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.uom.Measure;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 
@@ -64,9 +64,10 @@ public class DWithin extends SpatialOperator {
         this.distance = distance;
     }
 
-    public boolean evaluate( MatchableObject object )
+    @Override
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        for ( TypedObjectNode param1Value : propName.evaluate( object ) ) {
+        for ( TypedObjectNode param1Value : propName.evaluate( obj, xpathEvaluator ) ) {
             Geometry geom = checkGeometryOrNull( param1Value );
             if ( geom != null ) {
                 Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );

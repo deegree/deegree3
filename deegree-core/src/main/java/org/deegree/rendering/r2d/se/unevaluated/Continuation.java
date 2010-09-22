@@ -36,7 +36,8 @@
 
 package org.deegree.rendering.r2d.se.unevaluated;
 
-import org.deegree.filter.MatchableObject;
+import org.deegree.feature.Feature;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * <code>Continuation</code> is not a real continuation...
@@ -69,16 +70,16 @@ public abstract class Continuation<T> {
      * @param base
      * @param f
      */
-    public abstract void updateStep( T base, MatchableObject f );
+    public abstract void updateStep( T base, Feature obj, XPathEvaluator<Feature> evaluator );
 
     /**
      * @param base
      * @param f
      */
-    public void evaluate( T base, MatchableObject f ) {
-        updateStep( base, f );
+    public void evaluate( T base, Feature obj, XPathEvaluator<Feature> evaluator ) {
+        updateStep( base, obj, evaluator );
         if ( next != null ) {
-            next.evaluate( base, f );
+            next.evaluate( base, obj, evaluator );
         }
     }
 
@@ -107,5 +108,4 @@ public abstract class Continuation<T> {
             obj.append( val );
         }
     };
-
 }

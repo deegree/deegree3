@@ -98,10 +98,11 @@ import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.custom.se.Categorize;
 import org.deegree.filter.expression.custom.se.Interpolate;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -263,8 +264,8 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<Fill>( contn ) {
                             @Override
-                            public void updateStep( Fill base, MatchableObject f ) {
-                                pair.second.evaluate( base.graphic, f );
+                            public void updateStep( Fill base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                pair.second.evaluate( base.graphic, f, evaluator );
                             }
                         };
                     }
@@ -408,8 +409,8 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<Stroke>( contn ) {
                             @Override
-                            public void updateStep( Stroke base, MatchableObject f ) {
-                                pair.second.evaluate( base.fill, f );
+                            public void updateStep( Stroke base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                pair.second.evaluate( base.fill, f, evaluator );
                             }
                         };
                     }
@@ -429,8 +430,8 @@ public class SymbologyParser {
                             if ( pair.second != null ) {
                                 contn = new Continuation<Stroke>( contn ) {
                                     @Override
-                                    public void updateStep( Stroke base, MatchableObject f ) {
-                                        pair.second.evaluate( base.stroke, f );
+                                    public void updateStep( Stroke base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                        pair.second.evaluate( base.stroke, f, evaluator );
                                     }
                                 };
                             }
@@ -562,8 +563,8 @@ public class SymbologyParser {
                     if ( fill.second != null ) {
                         contn = new Continuation<Mark>( contn ) {
                             @Override
-                            public void updateStep( Mark base, MatchableObject f ) {
-                                fill.second.evaluate( base.fill, f );
+                            public void updateStep( Mark base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                fill.second.evaluate( base.fill, f, evaluator );
                             }
                         };
                     }
@@ -573,8 +574,8 @@ public class SymbologyParser {
                     if ( stroke.second != null ) {
                         contn = new Continuation<Mark>( contn ) {
                             @Override
-                            public void updateStep( Mark base, MatchableObject f ) {
-                                stroke.second.evaluate( base.stroke, f );
+                            public void updateStep( Mark base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                stroke.second.evaluate( base.stroke, f, evaluator );
                             }
                         };
                     }
@@ -680,9 +681,9 @@ public class SymbologyParser {
                 };
                 contn = new Continuation<List<BufferedImage>>() {
                     @Override
-                    public void updateStep( List<BufferedImage> base, MatchableObject f ) {
+                    public void updateStep( List<BufferedImage> base, Feature f, XPathEvaluator<Feature> evaluator ) {
                         StringBuffer sb = new StringBuffer();
-                        sbcontn.evaluate( sb, f );
+                        sbcontn.evaluate( sb, f, evaluator );
                         String file = sb.toString();
                         if ( cache.containsKey( file ) ) {
                             base.add( cache.get( file ) );
@@ -725,8 +726,8 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<Graphic>( contn ) {
                             @Override
-                            public void updateStep( Graphic base, MatchableObject f ) {
-                                pair.second.evaluate( base.mark, f );
+                            public void updateStep( Graphic base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                pair.second.evaluate( base.mark, f, evaluator );
                             }
                         };
                     }
@@ -737,9 +738,9 @@ public class SymbologyParser {
                     if ( p.third != null ) {
                         contn = new Continuation<Graphic>( contn ) {
                             @Override
-                            public void updateStep( Graphic base, MatchableObject f ) {
+                            public void updateStep( Graphic base, Feature f, XPathEvaluator<Feature> evaluator ) {
                                 LinkedList<BufferedImage> list = new LinkedList<BufferedImage>();
-                                p.third.evaluate( list, f );
+                                p.third.evaluate( list, f, evaluator );
                                 base.image = list.poll();
                             }
                         };
@@ -861,8 +862,8 @@ public class SymbologyParser {
                 if ( pair.second != null ) {
                     return new Symbolizer<PointStyling>( baseOrEvaluated, new Continuation<PointStyling>() {
                         @Override
-                        public void updateStep( PointStyling base, MatchableObject f ) {
-                            pair.second.evaluate( base.graphic, f );
+                        public void updateStep( PointStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                            pair.second.evaluate( base.graphic, f, evaluator );
                         }
                     }, common.geometry, null, common.loc, common.line, common.col );
                 }
@@ -1149,8 +1150,8 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<LineStyling>( contn ) {
                             @Override
-                            public void updateStep( LineStyling base, MatchableObject f ) {
-                                pair.second.evaluate( base.stroke, f );
+                            public void updateStep( LineStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                pair.second.evaluate( base.stroke, f, evaluator );
                             }
                         };
                     }
@@ -1209,8 +1210,8 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<PolygonStyling>( contn ) {
                             @Override
-                            public void updateStep( PolygonStyling base, MatchableObject f ) {
-                                pair.second.evaluate( base.stroke, f );
+                            public void updateStep( PolygonStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                pair.second.evaluate( base.stroke, f, evaluator );
                             }
                         };
                     }
@@ -1224,8 +1225,8 @@ public class SymbologyParser {
                     if ( fillPair.second != null ) {
                         contn = new Continuation<PolygonStyling>( contn ) {
                             @Override
-                            public void updateStep( PolygonStyling base, MatchableObject f ) {
-                                fillPair.second.evaluate( base.fill, f );
+                            public void updateStep( PolygonStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                fillPair.second.evaluate( base.fill, f, evaluator );
                             }
                         };
                     }
@@ -1341,7 +1342,7 @@ public class SymbologyParser {
             } else {
                 contn = new Continuation<T>( contn ) {
                     @Override
-                    public void updateStep( T base, MatchableObject f ) {
+                    public void updateStep( T base, Feature f, XPathEvaluator<Feature> evaluator ) {
                         String tmp = "";
                         for ( Pair<String, Pair<Expression, String>> p : text ) {
                             if ( p.first != null ) {
@@ -1349,7 +1350,7 @@ public class SymbologyParser {
                             }
                             if ( p.second != null ) {
                                 try {
-                                    Object[] evald = p.second.first.evaluate( f );
+                                    Object[] evald = p.second.first.evaluate( f, evaluator );
                                     if ( evald.length == 0 ) {
                                         LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), p.second.second );
                                     } else {
@@ -1492,8 +1493,9 @@ public class SymbologyParser {
                             if ( pair.second != null ) {
                                 contn = new Continuation<TextStyling>( contn ) {
                                     @Override
-                                    public void updateStep( TextStyling base, MatchableObject f ) {
-                                        pair.second.evaluate( base.linePlacement, f );
+                                    public void updateStep( TextStyling base, Feature f,
+                                                            XPathEvaluator<Feature> evaluator ) {
+                                        pair.second.evaluate( base.linePlacement, f, evaluator );
                                     }
                                 };
                             }
@@ -1508,8 +1510,8 @@ public class SymbologyParser {
                     if ( haloPair.second != null ) {
                         contn = new Continuation<TextStyling>( contn ) {
                             @Override
-                            public void updateStep( TextStyling base, MatchableObject f ) {
-                                haloPair.second.evaluate( base.halo, f );
+                            public void updateStep( TextStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                haloPair.second.evaluate( base.halo, f, evaluator );
                             }
                         };
                     }
@@ -1522,8 +1524,8 @@ public class SymbologyParser {
                     if ( fontPair.second != null ) {
                         contn = new Continuation<TextStyling>( contn ) {
                             @Override
-                            public void updateStep( TextStyling base, MatchableObject f ) {
-                                fontPair.second.evaluate( base.font, f );
+                            public void updateStep( TextStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                fontPair.second.evaluate( base.font, f, evaluator );
                             }
                         };
                     }
@@ -1536,8 +1538,8 @@ public class SymbologyParser {
                     if ( fillPair.second != null ) {
                         contn = new Continuation<TextStyling>( contn ) {
                             @Override
-                            public void updateStep( TextStyling base, MatchableObject f ) {
-                                fillPair.second.evaluate( base.fill, f );
+                            public void updateStep( TextStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                fillPair.second.evaluate( base.fill, f, evaluator );
                             }
                         };
                     }
@@ -1644,8 +1646,8 @@ public class SymbologyParser {
                     if ( fillPair.second != null ) {
                         contn = new Continuation<Halo>( contn ) {
                             @Override
-                            public void updateStep( Halo base, MatchableObject f ) {
-                                fillPair.second.evaluate( base.fill, f );
+                            public void updateStep( Halo base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                                fillPair.second.evaluate( base.fill, f, evaluator );
                             }
                         };
                     }
@@ -1758,7 +1760,7 @@ public class SymbologyParser {
 
     /**
      * @param in
-     * @return null, if no symbolizer and no MatchableObject type style was found
+     * @return null, if no symbolizer and no Feature type style was found
      * @throws XMLStreamException
      */
     public org.deegree.rendering.r2d.se.unevaluated.Style parse( XMLStreamReader in )
@@ -1898,7 +1900,7 @@ public class SymbologyParser {
 
     static class ElseFilter implements Filter {
         @Override
-        public boolean evaluate( MatchableObject object )
+        public <T> boolean evaluate( T object, XPathEvaluator<T> evaluator )
                                 throws FilterEvaluationException {
             return false; // always to false, has to be checked differently, see FilterContinuation below
         }
@@ -1933,9 +1935,10 @@ public class SymbologyParser {
         }
 
         @Override
-        public void updateStep( LinkedList<Symbolizer<?>> base, MatchableObject f ) {
+        public void updateStep( LinkedList<Symbolizer<?>> base, Feature f, XPathEvaluator<Feature> evaluator ) {
             try {
-                if ( filter == null || f == null || filter.evaluate( f ) || ( base.isEmpty() && filter == ELSEFILTER ) ) {
+                if ( filter == null || f == null || filter.evaluate( f, evaluator )
+                     || ( base.isEmpty() && filter == ELSEFILTER ) ) {
                     base.addAll( syms );
                 }
             } catch ( FilterEvaluationException e ) {
@@ -1976,5 +1979,4 @@ public class SymbologyParser {
 
         int line, col;
     }
-
 }

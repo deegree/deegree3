@@ -45,7 +45,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
@@ -80,12 +80,11 @@ public class Div implements Expression {
     }
 
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject obj )
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
-
-        TypedObjectNode[] values1 = param1.evaluate( obj );
-        TypedObjectNode[] values2 = param2.evaluate( obj );
+        TypedObjectNode[] values1 = param1.evaluate( obj, xpathEvaluator );
+        TypedObjectNode[] values2 = param2.evaluate( obj, xpathEvaluator );
 
         List<TypedObjectNode> resultValues = new ArrayList<TypedObjectNode>( values1.length * values2.length );
         for ( TypedObjectNode value1 : values1 ) {

@@ -44,12 +44,10 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
-import org.jaxen.JaxenException;
 
 /**
  * Represents a reference to a feature, which is usually expressed using an <code>xlink:href</code> attribute in GML
@@ -104,12 +102,6 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     @Override
     public Property getProperty( QName propName ) {
         return getReferencedObject().getProperty( propName );
-    }
-
-    @Override
-    public TypedObjectNode[] evalXPath( PropertyName propName, GMLVersion version )
-                            throws JaxenException {
-        return getReferencedObject().evalXPath( propName, version );
     }
 
     @Override

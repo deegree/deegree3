@@ -38,7 +38,7 @@ package org.deegree.filter.comparison;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 
@@ -109,10 +109,10 @@ public class PropertyIsLike extends ComparisonOperator {
     }
 
     @Override
-    public boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
-        TypedObjectNode[] paramValues = propName.evaluate( object );
+        TypedObjectNode[] paramValues = propName.evaluate( obj, xpathEvaluator );
 
         for ( TypedObjectNode value : paramValues ) {
             if ( matches( literal.getValue().toString(), value.toString() ) ) {

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
+import static org.deegree.gml.GMLVersion.GML_31;
+
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -43,10 +45,10 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +75,9 @@ public class Features {
      */
     public static FeatureCollection sortFc( final FeatureCollection fc, final SortProperty[] sortCrits ) {
 
+        // TODO
+        final FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+
         FeatureCollection sortedFc = fc;
         if ( sortCrits != null && sortCrits.length > 0 ) {
             SortedSet<Feature> sortedFeatures = new TreeSet<Feature>( new Comparator<Feature>() {
@@ -84,8 +89,8 @@ public class Features {
                         PropertyName propName = sortCrit.getSortProperty();
                         try {
                             // TODO handle multi properties correctly
-                            TypedObjectNode[] values1 = f1.evalXPath( propName, GMLVersion.GML_31 );
-                            TypedObjectNode[] values2 = f2.evalXPath( propName, GMLVersion.GML_31 );
+                            TypedObjectNode[] values1 = evaluator.eval( f1, propName );
+                            TypedObjectNode[] values2 = evaluator.eval( f2, propName );
                             for ( TypedObjectNode value1 : values1 ) {
                                 if ( value1 != null ) {
                                     for ( TypedObjectNode value2 : values2 ) {

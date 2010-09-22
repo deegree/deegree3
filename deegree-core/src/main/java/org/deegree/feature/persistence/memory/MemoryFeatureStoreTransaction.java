@@ -138,7 +138,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         int deleted = 0;
         if ( fc != null ) {
             try {
-                FeatureCollection newFc = fc.getMembers( filter );
+                FeatureCollection newFc = fc.getMembers( filter, store.evaluator );
 
                 // check if all can be deleted
                 for ( Feature feature : newFc ) {
@@ -426,7 +426,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         int updated = 0;
         if ( fc != null ) {
             try {
-                FeatureCollection newFc = fc.getMembers( filter );
+                FeatureCollection newFc = fc.getMembers( filter, store.evaluator );
 
                 // check if all features can be updated
                 for ( Feature feature : newFc ) {

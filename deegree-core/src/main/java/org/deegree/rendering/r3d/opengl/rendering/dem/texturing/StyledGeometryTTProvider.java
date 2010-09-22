@@ -38,6 +38,7 @@ package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
 import static java.lang.System.currentTimeMillis;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -73,6 +74,7 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -134,10 +136,11 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
      * @param cacheSize
      *            size of the cache in bytes.
      * @throws IOException
-     * @throws FeatureStoreException 
+     * @throws FeatureStoreException
      */
     public StyledGeometryTTProvider( double[] offsetVector, CRS wpvsCRS, FeatureStore featureStore, Style style,
-                                     double maxUnitsPerPixel, File cacheDir, long cacheSize ) throws IOException, FeatureStoreException {
+                                     double maxUnitsPerPixel, File cacheDir, long cacheSize ) throws IOException,
+                            FeatureStoreException {
 
         this.maxResolution = Math.max( 0, maxUnitsPerPixel );
         fac = new GeometryFactory();
@@ -326,12 +329,16 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
                 LOG.debug( LogUtils.createDurationTimeString( "Creating graphics object", sT, false ) );
                 Iterator<Feature> it = frs.iterator();
 
+                // TODO
+                FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
+
                 sT = currentTimeMillis();
                 int index = 0;
                 while ( it.hasNext() ) {
                     index++;
                     Feature feature = it.next();
-                    LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evald = style.evaluate( feature );
+                    LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evald = style.evaluate( feature,
+                                                                                                      evaluator );
                     for ( Triple<Styling, LinkedList<Geometry>, String> tr : evald ) {
                         renderer.render( tr.first, tr.second );
                     }

@@ -37,7 +37,7 @@ package org.deegree.filter.spatial;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 
@@ -61,9 +61,9 @@ public class Overlaps extends SpatialOperator {
     }
 
     @Override
-    public boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        for ( TypedObjectNode paramValue : propName.evaluate( object ) ) {
+        for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
             Geometry geom = checkGeometryOrNull( paramValue );
             if ( geom != null ) {
                 Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );

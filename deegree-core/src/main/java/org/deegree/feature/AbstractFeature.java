@@ -35,31 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
-import static java.util.Collections.synchronizedMap;
-
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
-import org.deegree.feature.xpath.FeatureXPath;
-import org.deegree.feature.xpath.GMLObjectNode;
-import org.deegree.feature.xpath.XPathNode;
-import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StandardGMLFeatureProps;
-import org.jaxen.JaxenException;
-import org.jaxen.XPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,74 +64,12 @@ public abstract class AbstractFeature implements Feature {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractFeature.class );
 
-    private static boolean cacheEnabled;
-
-    private Map<PropertyName, TypedObjectNode[]> XPATH_MAP;
-
     /** Stores the default GML properties that every GML feature allows for (gml:name, gml:description, ...). */
     protected StandardGMLFeatureProps standardProps;
-
-    /**
-     * Enables the XPath evaluation cache (TODO remove this).
-     */
-    public static void enableCache() {
-        cacheEnabled = true;
-    }
 
     @Override
     public StandardGMLFeatureProps getGMLProperties() {
         return standardProps;
-    }
-
-    public TypedObjectNode[] evalXPath( PropertyName propName, GMLVersion version )
-                            throws JaxenException {
-
-        // simple property with just a simple element step?
-        QName simplePropName = propName.getAsQName();
-        if ( simplePropName != null ) {
-            return getProperties( simplePropName, version );
-        }
-
-        TypedObjectNode[] resultValues;
-
-        if ( cacheEnabled ) {
-            synchronized ( this ) {
-                if ( XPATH_MAP == null ) {
-                    XPATH_MAP = synchronizedMap( new HashMap<PropertyName, TypedObjectNode[]>() );
-                }
-                resultValues = XPATH_MAP.get( propName );
-                if ( resultValues == null ) {
-                    resultValues = getResultValues( propName, version );
-                    XPATH_MAP.put( propName, resultValues );
-                }
-            }
-        } else {
-            // no. activate the full xpath machinery
-            resultValues = getResultValues( propName, version );
-
-        }
-        return resultValues;
-    }
-
-    private TypedObjectNode[] getResultValues( PropertyName propName, GMLVersion version )
-                            throws JaxenException {
-        XPath xpath = new FeatureXPath( propName.getPropertyName(), this, version );
-        xpath.setNamespaceContext( propName.getNsContext() );
-        List<?> selectedNodes;
-        selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature>( null, this, version ) );
-        TypedObjectNode[] resultValues = new TypedObjectNode[selectedNodes.size()];
-        int i = 0;
-        for ( Object node : selectedNodes ) {
-            if ( node instanceof XPathNode<?> ) {
-                resultValues[i++] = ( (XPathNode<?>) node ).getValue();
-            } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
-                resultValues[i++] = new PrimitiveValue( node );
-            } else {
-                throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
-                                            + node.getClass().getName() + "' (=" + node + ") during XPath-evaluation." );
-            }
-        }
-        return resultValues;
     }
 
     @Override

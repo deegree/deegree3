@@ -73,16 +73,20 @@ public interface Filter {
      * @return type of filter (id or expression based)
      */
     public Type getType();
-
+   
     /**
-     * Determines if the given {@link MatchableObject} matches this <code>Filter</code>.
+     * Determines if the given object matches this <code>Filter</code>.
      * 
-     * @param object
-     *            {@link MatchableObject} to be tested
-     * @return true, if the <code>Filter</code> evaluates to true, else false
+     * @param <T>
+     *            type of the context object
+     * @param obj
+     *            object that the operator is evaluated upon, must not be <code>null</code>
+     * @param xpathEvaluator
+     *            used for evaluation of XPath expressions, must not be <code>null</code>
+     * @return true, if the operator evaluates to true, false otherwise
      * @throws FilterEvaluationException
      *             if the evaluation fails
      */
-    boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException;
 }

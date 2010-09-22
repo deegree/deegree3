@@ -43,6 +43,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.expression.Sub;
+import org.deegree.filter.expression.custom.CustomExpressionProvider;
 
 /**
  * An <code>Expression</code> describes a rule to obtain a value that may be derived from the properties of a
@@ -86,7 +87,8 @@ public interface Expression {
          */
         FUNCTION,
         /**
-         * Value is given as a custom expression. The {@link Expression} is an instance of {@link CustomExpression}.
+         * Value is given as a custom expression. The {@link Expression} is an instance of
+         * {@link CustomExpressionProvider}.
          */
         CUSTOM;
     }
@@ -99,19 +101,23 @@ public interface Expression {
     public Type getType();
 
     /**
-     * Determines the values of the expression for the given {@link MatchableObject}.
+     * Determines the values of the expression for the given context object.
      * <p>
      * Note that this returns an <code>TypedObjectNode[]</code>, as an expression may evaluate to multiple values, e.g.
      * a {@link PropertyName} that targets a multi property of a feature.
      * </p>
      * 
+     * @param <T>
+     *            type of the context object
      * @param obj
-     *            object that the expression is evaluated upon
+     *            object that the expression is evaluated upon, must not be <code>null</code>
+     * @param xpathEvaluator
+     *            used for evaluation of XPath expressions, must not be <code>null</code>
      * @return the values of the expression, may be empty (and even contain <code>null</code> values), but never
      *         <code>null</code>
      * @throws FilterEvaluationException
      */
-    public TypedObjectNode[] evaluate( MatchableObject obj )
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException;
 
     /**

@@ -54,7 +54,9 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.filter.MatchableObject;
+import org.deegree.feature.Feature;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -97,11 +99,13 @@ public class FormatDate extends AbstractCustomExpression {
         return ELEMENT_NAME;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject f ) {
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+                            throws FilterEvaluationException {
         StringBuffer sb = new StringBuffer( dateValue.toString().trim() );
         if ( dateValueContn != null ) {
-            dateValueContn.evaluate( sb, f );
+            dateValueContn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
         }
         try {
             Date value = DateUtils.parseISO8601Date( sb.toString().trim() );

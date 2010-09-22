@@ -38,7 +38,7 @@ package org.deegree.filter.expression;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * {@link Expression} that has a constant value.
@@ -82,11 +82,8 @@ public class Literal<V extends TypedObjectNode> implements Expression {
         return Type.LITERAL;
     }
 
-    /**
-     * Returns the <code>Literal</code>'s value (to be used in the evaluation of a complexer <code>Expression</code>).
-     */
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject obj ) {
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator ) {
         return new TypedObjectNode[] { value };
     }
 

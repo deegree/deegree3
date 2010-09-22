@@ -39,7 +39,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -110,20 +110,20 @@ public class BBOX extends SpatialOperator {
     }
 
     @Override
-    public boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
         // handle the BBOX-specific case that the property name can be empty
         PropertyName propName = this.propName;
         if ( propName == null ) {
-            if ( object instanceof Feature ) {
-                GeometryPropertyType pt = ( (Feature) object ).getType().getDefaultGeometryPropertyDeclaration();
+            if ( obj instanceof Feature ) {
+                GeometryPropertyType pt = ( (Feature) obj ).getType().getDefaultGeometryPropertyDeclaration();
                 if ( pt != null ) {
                     propName = new PropertyName( pt.getName() );
                 }
             }
         }
-        for ( TypedObjectNode paramValue : propName.evaluate( object ) ) {
+        for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
             Geometry param1Value = checkGeometryOrNull( paramValue );
             if ( param1Value != null ) {
                 Envelope transformedBBox = (Envelope) getCompatibleGeometry( param1Value, bbox );

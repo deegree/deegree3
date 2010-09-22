@@ -40,7 +40,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
@@ -90,12 +90,12 @@ public class PropertyIsBetween extends ComparisonOperator {
     }
 
     @Override
-    public boolean evaluate( MatchableObject obj )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
-        TypedObjectNode[] propertyValues = expression.evaluate( obj );
-        TypedObjectNode[] upperBoundaryValues = upperBoundary.evaluate( obj );
-        TypedObjectNode[] lowerBoundaryValues = lowerBoundary.evaluate( obj );
+        TypedObjectNode[] propertyValues = expression.evaluate( obj, xpathEvaluator );
+        TypedObjectNode[] upperBoundaryValues = upperBoundary.evaluate( obj, xpathEvaluator );
+        TypedObjectNode[] lowerBoundaryValues = lowerBoundary.evaluate( obj, xpathEvaluator );
 
         for ( TypedObjectNode propertyValue : propertyValues ) {
             // check for one upper value that is larger than the propertyValue
@@ -108,7 +108,7 @@ public class PropertyIsBetween extends ComparisonOperator {
                             for ( TypedObjectNode lowerValue : lowerBoundaryValues ) {
                                 if ( lowerValue != null ) {
                                     Pair<PrimitiveValue, PrimitiveValue> propLower = getPrimitives( propertyValue,
-                                                                                                     lowerValue );
+                                                                                                    lowerValue );
                                     if ( ( propLower.first ).compareTo( propLower.second ) >= 0 ) {
                                         return true;
                                     }

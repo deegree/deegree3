@@ -73,13 +73,17 @@ public interface Operator {
     /**
      * Determines the value of the boolean operator.
      * 
-     * @param object
-     *            {@link MatchableObject} to evaluate the operator against
+     * @param <T>
+     *            type of the context object
+     * @param obj
+     *            object that the operator is evaluated upon, must not be <code>null</code>
+     * @param xpathEvaluator
+     *            used for evaluation of XPath expressions, must not be <code>null</code>
      * @return true, if the operator evaluates to true, false otherwise
      * @throws FilterEvaluationException
      *             if the evaluation fails
      */
-    boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException;
 
     public String toString( String indent );

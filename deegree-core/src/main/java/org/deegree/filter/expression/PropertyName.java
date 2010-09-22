@@ -43,8 +43,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
-import org.deegree.gml.GMLVersion;
+import org.deegree.filter.XPathEvaluator;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
 import org.jaxen.NamespaceContext;
@@ -94,7 +93,7 @@ public class PropertyName implements Expression {
     }
 
     /**
-     * Creates a new {@link PropertyName} instance that select a property of a {@link MatchableObject}.
+     * Creates a new {@link PropertyName} instance that selects a property.
      * 
      * @param name
      *            qualified name of the property, never <code>null</code>
@@ -192,17 +191,9 @@ public class PropertyName implements Expression {
     }
 
     @Override
-    public TypedObjectNode[] evaluate( MatchableObject obj )
+    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        TypedObjectNode[] values;
-        try {
-            // TODO outfactor GML version
-            values = obj.evalXPath( this, GMLVersion.GML_31 );
-        } catch ( JaxenException e ) {
-            e.printStackTrace();
-            throw new FilterEvaluationException( e.getMessage() );
-        }
-        return values;
+        return xpathEvaluator.eval( obj, this );
     }
 
     @Override

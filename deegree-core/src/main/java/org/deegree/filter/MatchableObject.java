@@ -36,11 +36,7 @@
 
 package org.deegree.filter;
 
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
-import org.deegree.filter.expression.PropertyName;
-import org.deegree.gml.GMLVersion;
-import org.jaxen.JaxenException;
 
 /**
  * Interface for objects that can be filtered, i.e. {@link Filter} expressions may be evaluated against them.
@@ -64,19 +60,4 @@ public interface MatchableObject {
      * @return the identifier of the object or null if it is an anonymous object
      */
     public String getId();
-
-    /**
-     * Returns the values that are selected by evaluating the given XPath 1.0 expression using this
-     * {@link MatchableObject} as context.
-     * 
-     * @param propName
-     *            XPath expression (usually selects a property, hence the name)
-     * @param version
-     *            determines the names and types of the standard GML properties, must not be <code>null</code>
-     * @return the selected values, never <code>null</code> and contains at least one entry
-     * @throws JaxenException
-     *             if an exception occurs during the evaluation of the XPath expression
-     */
-    public TypedObjectNode[] evalXPath( PropertyName propName, GMLVersion version )
-                            throws JaxenException;
 }

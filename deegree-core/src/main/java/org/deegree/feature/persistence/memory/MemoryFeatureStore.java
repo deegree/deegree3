@@ -36,6 +36,8 @@
 
 package org.deegree.feature.persistence.memory;
 
+import static org.deegree.gml.GMLVersion.GML_31;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
@@ -70,6 +72,7 @@ import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.sort.SortProperty;
@@ -104,6 +107,9 @@ public class MemoryFeatureStore implements FeatureStore {
     private MemoryFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
+
+    // TODO
+    FeatureXPathEvaluator evaluator = new FeatureXPathEvaluator( GML_31 );
 
     DefaultLockManager lockManager;
 
@@ -276,7 +282,7 @@ public class MemoryFeatureStore implements FeatureStore {
             }
 
             if ( query.getFilter() != null ) {
-                fc = fc.getMembers( query.getFilter() );
+                fc = fc.getMembers( query.getFilter(), evaluator );
             }
         } else {
             // must be an id filter based query

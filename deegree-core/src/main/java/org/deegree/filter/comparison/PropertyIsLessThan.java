@@ -40,7 +40,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
@@ -62,11 +62,11 @@ public class PropertyIsLessThan extends BinaryComparisonOperator {
     }
 
     @Override
-    public boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
-        TypedObjectNode[] param1Values = param1.evaluate( object );
-        TypedObjectNode[] param2Values = param2.evaluate( object );
+        TypedObjectNode[] param1Values = param1.evaluate( obj, xpathEvaluator );
+        TypedObjectNode[] param2Values = param2.evaluate( obj, xpathEvaluator );
 
         // evaluate to true if at least one pair of values matches the condition
         for ( TypedObjectNode value1 : param1Values ) {

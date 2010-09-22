@@ -38,7 +38,7 @@ package org.deegree.filter.comparison;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.PropertyName;
 
 /**
@@ -54,7 +54,7 @@ public class PropertyIsNull extends ComparisonOperator {
     private final PropertyName propName;
 
     public PropertyIsNull( PropertyName propName ) {
-        super (true);
+        super( true );
         this.propName = propName;
     }
 
@@ -68,10 +68,10 @@ public class PropertyIsNull extends ComparisonOperator {
     }
 
     @Override
-    public boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
 
-        TypedObjectNode[] paramValues = propName.evaluate( object );
+        TypedObjectNode[] paramValues = propName.evaluate( obj, xpathEvaluator );
         if ( paramValues.length == 0 ) {
             return true;
         }
@@ -89,9 +89,9 @@ public class PropertyIsNull extends ComparisonOperator {
         s += propName.toString( indent + "  " );
         return s;
     }
-    
+
     @Override
-    public Expression[] getParams () {
-        return new Expression [] {propName};
-    }    
+    public Expression[] getParams() {
+        return new Expression[] { propName };
+    }
 }

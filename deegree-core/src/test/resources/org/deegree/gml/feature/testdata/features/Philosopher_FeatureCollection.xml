@@ -1,7 +1,9 @@
-<gml:FeatureCollection xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app ../schema/Philosopher.xsd">
+<gml:FeatureCollection xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app ../schema/Philosopher.xsd">
   <gml:featureMember>
     <app:Philosopher gml:id="PHILOSOPHER_1">
+      <gml:description>This is the first Philosopher feature</gml:description>
+      <gml:name codeSpace="app">Karl Marx</gml:name>
+      <gml:name codeSpace="bpp">Kbrl Mbrx</gml:name>
       <app:id>1</app:id>
       <app:name>Karl Marx</app:name>
       <app:sex>m</app:sex>
@@ -2797,7 +2799,7 @@ xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.
       <app:friend>
         <app:Philosopher gml:id="PHILOSOPHER_6">
           <gml:description>Description using standard GML 3.1.1 feature properties.</gml:description>
-          <gml:name codeSpace="deegree">JEAN_PAUL</gml:name>        
+          <gml:name codeSpace="deegree">JEAN_PAUL</gml:name>
           <app:id>6</app:id>
           <app:name>Jean-Paul Sartre</app:name>
           <app:sex>m</app:sex>

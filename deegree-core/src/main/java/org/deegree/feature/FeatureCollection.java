@@ -40,6 +40,7 @@ import java.util.Collection;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.XPathEvaluator;
 
 /**
  * A feature collection is a collection of {@link Feature} instances.
@@ -70,10 +71,12 @@ public interface FeatureCollection extends Feature, Collection<Feature> {
      * 
      * @param filter
      *            <code>Filter</code> to be applied, must not be <code>null</code>
+     * @param evaluator
+     *            evaluator to use for evaluating XPath expressions, must not be <code>null</code>
      * @return matching feature instances as a new <code>FeatureCollection</code>
      * @throws FilterEvaluationException
      *             if an exception occurs during the evaluation of the <code>Filter</code>
      */
-    public FeatureCollection getMembers( Filter filter )
+    public FeatureCollection getMembers( Filter filter, XPathEvaluator<Feature> evaluator )
                             throws FilterEvaluationException;
 }

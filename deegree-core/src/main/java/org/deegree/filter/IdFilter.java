@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
 import java.util.HashSet;
@@ -40,10 +40,10 @@ import java.util.Set;
 
 /**
  * {@link Filter} that matches objects with certain ids.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class IdFilter implements Filter {
@@ -52,11 +52,11 @@ public class IdFilter implements Filter {
 
     /**
      * Creates a new {@link IdFilter} that matches the objects with the given ids.
-     *
+     * 
      * @param ids
      *            ids of the objects that the filter will match
      */
-    public IdFilter( String...ids ) {
+    public IdFilter( String... ids ) {
         this.matchingIds = new HashSet<String>();
         for ( String id : ids ) {
             matchingIds.add( id );
@@ -65,7 +65,7 @@ public class IdFilter implements Filter {
 
     /**
      * Creates a new {@link IdFilter} that matches the objects with the given ids.
-     *
+     * 
      * @param matchingIds
      *            ids of the objects that the filter will match
      */
@@ -75,7 +75,7 @@ public class IdFilter implements Filter {
 
     /**
      * Always returns {@link Filter.Type#ID_FILTER} (for {@link IdFilter} instances).
-     *
+     * 
      * @return {@link Filter.Type#ID_FILTER}
      */
     @Override
@@ -85,7 +85,7 @@ public class IdFilter implements Filter {
 
     /**
      * Returns the ids of the objects that this filter matches.
-     *
+     * 
      * @return the ids of the objects that this filter matches
      */
     public Set<String> getMatchingIds() {
@@ -93,9 +93,10 @@ public class IdFilter implements Filter {
     }
 
     @Override
-    public boolean evaluate( MatchableObject object )
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        String id = object.getId();
+
+        String id = xpathEvaluator.getId( obj );
         if ( id != null ) {
             return matchingIds.contains( id );
         }
