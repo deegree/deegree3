@@ -520,50 +520,63 @@ public class ISOMetadataStore implements MetadataStore {
         }
 
         ResultSet rs = null;
+        ResultSet rsOut = null;
         PreparedStatement preparedStatement = null;
+        PreparedStatement stmtOut = null;
+        String formatType = null;
         try {
             switch ( recordStoreOptions.getSetOfReturnableElements() ) {
 
             case brief:
-
-                preparedStatement = generateSELECTStatement(
-                                                             formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief ),
-                                                             recordStoreOptions, typeNameFormatNumber,
+                formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief );
+                preparedStatement = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
                                                              profileFormatNumberOutputSchema, false, builder, conn );
 
                 doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
-                                   formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief ),
-                                   ResultType.results, builder, conn );
+                                   formatType, ResultType.results, builder, conn );
                 break;
             case summary:
-
-                preparedStatement = generateSELECTStatement(
-                                                             formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.summary ),
-                                                             recordStoreOptions, typeNameFormatNumber,
+                formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.summary );
+                preparedStatement = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
                                                              profileFormatNumberOutputSchema, false, builder, conn );
 
                 doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
-                                   formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.summary ),
-                                   ResultType.results, builder, conn );
+                                   formatType, ResultType.results, builder, conn );
                 break;
             case full:
-
-                preparedStatement = generateSELECTStatement(
-                                                             formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.full ),
-                                                             recordStoreOptions, typeNameFormatNumber,
+                formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.full );
+                preparedStatement = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
                                                              profileFormatNumberOutputSchema, false, builder, conn );
 
                 doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
-                                   formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.full ),
-                                   ResultType.results, builder, conn );
+                                   formatType, ResultType.results, builder, conn );
                 break;
             }
 
             rs = preparedStatement.executeQuery();
 
+            String data = PostGISMappingsISODC.CommonColumnNames.data.name();
+            String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
+            String format = PostGISMappingsISODC.CommonColumnNames.format.name();
+
             if ( rs != null && recordStoreOptions.getMaxRecords() != 0 ) {
 
-                writeResultSet( rs, writer, 2 );
+                while ( rs.next() ) {
+                    int returnedID = rs.getInt( 1 );
+
+                    StringBuilder outS = new StringBuilder();
+                    outS.append( "SELECT " ).append( formatType ).append( '.' ).append( data );
+                    outS.append( " FROM " ).append( formatType );
+                    outS.append( " WHERE " ).append( formatType ).append( '.' ).append( fk_datasets );
+                    outS.append( " = " ).append( returnedID ).append( " AND " ).append( format );
+                    outS.append( " = " ).append( profileFormatNumberOutputSchema );
+                    stmtOut = conn.prepareStatement( outS.toString() );
+                    rsOut = stmtOut.executeQuery();
+                    writeResultSet( rsOut, writer, 1 );
+                    stmtOut.close();
+                    rsOut.close();
+                }
+
                 rs.close();
             }
         } catch ( SQLException e ) {
@@ -571,7 +584,9 @@ public class ISOMetadataStore implements MetadataStore {
             throw new MetadataStoreException( e.getMessage(), e );
         } finally {
             close( rs );
+            close( rsOut );
             close( preparedStatement );
+            close( stmtOut );
         }
 
     }
@@ -690,7 +705,7 @@ public class ISOMetadataStore implements MetadataStore {
             preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
 
             int i = 1;
-            preparedStatement.setInt( i++, profileFormatNumberOutputSchema );
+            preparedStatement.setInt( i++, typeNameFormatNumber );
 
             if ( builder.getWhere() != null ) {
                 for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
@@ -1285,7 +1300,7 @@ public class ISOMetadataStore implements MetadataStore {
      * This method writes the resultSet from the database with the writer to an XML-output.
      * 
      * @param resultSet
-     *            that should search the backend
+     *            that should search the backend, you have to close it manually.
      * @param writer
      *            that writes the data to the output
      * @param columnIndex
