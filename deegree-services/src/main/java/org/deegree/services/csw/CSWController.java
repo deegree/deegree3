@@ -578,8 +578,14 @@ public class CSWController extends AbstractOGCServiceController {
         checkOrCreateDCPGetURL( requestWrapper );
         checkOrCreateDCPPostURL( requestWrapper );
         Set<Sections> sections = getSections( getCapabilitiesRequest );
+        // Version negotiatedVersion = negotiateVersion( getCapabilitiesRequest );
+        Version negotiatedVersion = null;
+        if ( getCapabilitiesRequest.getVersion() == null ) {
+            negotiatedVersion = new Version( 2, 0, 2 );
+        } else {
+            negotiatedVersion = getCapabilitiesRequest.getVersionAsVersion();
+        }
 
-        Version negotiatedVersion = negotiateVersion( getCapabilitiesRequest );
         response.setContentType( "text/xml; charset=UTF-8" );
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );

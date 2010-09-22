@@ -55,10 +55,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.genericmetadatastore.ISOMetadataStore;
+import org.deegree.metadata.persistence.iso.ISOMetadataStore;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -172,6 +173,11 @@ public class DescribeRecordHandler {
                     rss.add( service.getRecordStore( typeName ) );
                     requestedTypeNames.put( typeName, service.getRecordStore( typeName ) );
 
+                } else {
+                    String msg = "No MetadataStore registered for request: '" + typeName
+                                 + "'. Check Capabilities document or spelling. ";
+                    LOG.debug( msg );
+                    throw new InvalidParameterValueException( msg );
                 }
 
             }

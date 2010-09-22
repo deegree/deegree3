@@ -49,6 +49,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.xml.FilterCapabilitiesExporter;
 import org.deegree.protocol.csw.CSWConstants;
@@ -109,7 +110,7 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         isoQueryables.add( "ServiceTypeVersion" );
         isoQueryables.add( "Operation" );
         isoQueryables.add( "OperatesOnData" );
-        isoQueryables.add( "CoulpingType" );
+        isoQueryables.add( "CouplingType" );
 
         supportedOperations.add( CSWRequestType.GetCapabilities.name() );
         supportedOperations.add( CSWRequestType.DescribeRecord.name() );
@@ -138,13 +139,14 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                             throws XMLStreamException {
 
         if ( VERSION_202.equals( version ) ) {
-            export100( writer, sections, identification, mainControllerConf, mainConf, isSoap );
+            export202( writer, sections, identification, mainControllerConf, mainConf, isSoap );
         } else {
-            throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
+            throw new InvalidParameterValueException( "Supported versions are: '" + VERSION_202 + "'. Version '"
+                                                      + version + "' instead is not supported." );
         }
     }
 
-    private static void export100( XMLStreamWriter writer, Set<Sections> sections,
+    private static void export202( XMLStreamWriter writer, Set<Sections> sections,
                                    ServiceIdentificationType identification,
                                    DeegreeServicesMetadataType mainControllerConf,
                                    DeegreeServiceControllerType mainConf, boolean isSoap )
@@ -439,12 +441,12 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         writeOutputFormat( writer, owsNS );
 
-        writer.writeStartElement( owsNS, "Parameter" );
-        writer.writeAttribute( "name", "schemaLocation" );
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "http://www.w3.org/TR/xmlschema-1/" );
-        writer.writeEndElement();// Value
-        writer.writeEndElement();// Parameter
+        // writer.writeStartElement( owsNS, "Parameter" );
+        // writer.writeAttribute( "name", "schemaLocation" );
+        // writer.writeStartElement( owsNS, "Value" );
+        // writer.writeCharacters( "http://www.w3.org/TR/xmlschema-1/" );
+        // writer.writeEndElement();// Value
+        // writer.writeEndElement();// Parameter
 
         writer.writeStartElement( owsNS, "Parameter" );
         writer.writeAttribute( "name", "schemaLanguage" );
@@ -467,13 +469,13 @@ public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeCharacters( "application/xml" );
         writer.writeEndElement();// Value
 
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "text/plain" );
-        writer.writeEndElement();// Value
-
-        writer.writeStartElement( owsNS, "Value" );
-        writer.writeCharacters( "text/html" );
-        writer.writeEndElement();// Value
+        // writer.writeStartElement( owsNS, "Value" );
+        // writer.writeCharacters( "text/plain" );
+        // writer.writeEndElement();// Value
+        //
+        // writer.writeStartElement( owsNS, "Value" );
+        // writer.writeCharacters( "text/html" );
+        // writer.writeEndElement();// Value
 
         writer.writeEndElement();// Parameter
 

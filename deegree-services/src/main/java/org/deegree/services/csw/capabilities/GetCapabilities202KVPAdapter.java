@@ -65,8 +65,7 @@ public class GetCapabilities202KVPAdapter {
      * @throws InvalidParameterValueException
      *             if VERSION parameter contains a syntactical error
      */
-    public static GetCapabilities parse( Version version, Map<String, String> kvpParams )
-                            throws InvalidParameterValueException {
+    public static GetCapabilities parse( Version version, Map<String, String> kvpParams ) {
         GetCapabilities request = null;
         if ( version != null ) {
             // @version present -> treat as CSW [version] request

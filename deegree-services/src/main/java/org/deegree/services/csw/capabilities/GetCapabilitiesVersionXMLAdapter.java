@@ -62,6 +62,7 @@ public class GetCapabilitiesVersionXMLAdapter extends GetCapabilitiesXMLParser {
         GetCapabilities request = null;
         if ( version != null ) {
             // @version present -> treat as CSW [version] request
+
             request = new GetCapabilities( version );
         } else {
             // else treat as OWS 1.0.0
