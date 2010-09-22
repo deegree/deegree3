@@ -258,7 +258,7 @@ public class MemoryFeatureStore implements FeatureStore {
                             fbox = fbox.getCoordinateSystem().equals( pboxcrs ) ? fbox : t.transform( fbox );
                         }
 
-                        if ( fbox == null || fbox.intersects( prefilterBox ) ) {
+                        if ( fbox != null && fbox.intersects( prefilterBox ) ) {
                             col.add( f );
                         }
                     }
