@@ -38,10 +38,10 @@
 					<gml:upperCorner>9.56222152709961 51.09111022949219</gml:upperCorner>
 				</gml:Envelope>
 			</gml:boundedBy>
-			<app:name>France</app:name>
-			<app:upperName>FRANCE</app:upperName>
+			<app:name>Germany</app:name>
+			<app:upperName>Germany</app:upperName>
 			<app:dataOrigin>Imported from shapefile.</app:dataOrigin>
-			<app:area>64.3483226450664</app:area>
+			<app:area>44.3483226450748</app:area>
 			<app:queryBBOXOverlap>0.0</app:queryBBOXOverlap>
 			<app:geom>
 				<gml:LineString gml:id="LineString3" srsName="EPSG:4326">
