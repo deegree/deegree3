@@ -37,6 +37,7 @@
 package org.deegree.services.wms.model.layers;
 
 import static java.lang.System.currentTimeMillis;
+import static org.deegree.commons.utils.CollectionUtils.clearNulls;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.time.DateUtils.formatISO8601Date;
@@ -69,6 +70,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
@@ -395,19 +397,26 @@ public class FeatureLayer extends Layer {
 
             FeatureCollection col;
             if ( featureType == null ) {
-                List<Query> queries = map( datastore.getSchema().getFeatureTypes( null, false, false ),
-                                           new Mapper<Query, FeatureType>() {
-                                               public Query apply( FeatureType u ) {
-                                                   return new Query( u.getName(), clickBox, buildFilter( operator, u,
-                                                                                                         clickBox ),
-                                                                     -1, fi.getFeatureCount(), -1 );
-                                               }
-                                           } );
+                List<Query> queries = clearNulls( map( datastore.getSchema().getFeatureTypes( null, false, false ),
+                                                       new Mapper<Query, FeatureType>() {
+                                                           public Query apply( FeatureType u ) {
+                                                               if ( u.getDefaultGeometryPropertyDeclaration() == null ) {
+                                                                   return null;
+                                                               }
+                                                               return new Query( u.getName(), clickBox,
+                                                                                 buildFilter( operator, u, clickBox ),
+                                                                                 -1, fi.getFeatureCount(), -1 );
+                                                           }
+                                                       } ) );
                 col = datastore.query( queries.toArray( new Query[queries.size()] ) ).toCollection();
             } else {
-                Query query = new Query( featureType, clickBox,
-                                         buildFilter( operator, datastore.getSchema().getFeatureType( featureType ),
-                                                      clickBox ), -1, fi.getFeatureCount(), -1 );
+                FeatureType ft = datastore.getSchema().getFeatureType( featureType );
+                if ( ft.getDefaultGeometryPropertyDeclaration() == null ) {
+                    return new Pair<FeatureCollection, LinkedList<String>>( new GenericFeatureCollection(),
+                                                                            new LinkedList<String>() );
+                }
+                Query query = new Query( featureType, clickBox, buildFilter( operator, ft, clickBox ), -1,
+                                         fi.getFeatureCount(), -1 );
                 col = datastore.query( query ).toCollection();
             }
 
