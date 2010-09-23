@@ -55,7 +55,7 @@ public class ReplaceClientLink {
 
     private static final String REPLACED_LINE = "[<a href=\"console/client/client.html\" target=\"_blank\">Generic OGC client</a>]";
 
-    private static final String NEW_LINE = "[<a href=\"webclient_index.html\" target=\"_blank\">SOS webclient</a>]";
+    private static final String NEW_LINE = "[<a href=\"client/sos/index.html\" target=\"_blank\">SOS webclient</a>]";
 
     private static final String CLASSPATH_ROOT = ReplaceClientLink.class.getResource( "/" ).getPath();
 

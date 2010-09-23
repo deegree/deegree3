@@ -30,17 +30,31 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-sos-webclient</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-services-console</artifactId>
       <version>3.0-SNAPSHOT</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
       <scope>compile</scope>
-    </dependency>
+    </dependency>    
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
       <version>3.0-SNAPSHOT</version>
       <type>zip</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-sos-webclient</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <type>zip</type>
+      <classifier>sos-webclient-template</classifier>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -88,6 +102,20 @@
               <includeGroupIds>org.deegree</includeGroupIds>
               <includeArtifactIds>deegree-services-console</includeArtifactIds>
               <outputDirectory>src/main/webapp</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-client-dependencies-zip</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <classifier>sos-webclient-template</classifier>
+              <type>zip</type>
+              <includeGroupIds>org.deegree</includeGroupIds>
+              <includeArtifactIds>deegree-sos-webclient</includeArtifactIds>
+              <outputDirectory>src/main/webapp/client</outputDirectory>
             </configuration>
           </execution>
           <execution>
