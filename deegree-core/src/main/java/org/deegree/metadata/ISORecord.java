@@ -36,13 +36,16 @@
 package org.deegree.metadata;
 
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.Filter;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents an ISO 19115 {@link MetadataRecord}.
@@ -53,9 +56,12 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  * @version $Revision$, $Date$
  */
 public class ISORecord implements MetadataRecord {
+    private static Logger LOG = LoggerFactory.getLogger( ISORecord.class );
 
-    public ISORecord( OMElement root ) {
+    private XMLStreamReader root;
 
+    public ISORecord( XMLStreamReader root ) {
+        this.root = root;
     }
 
     @Override
@@ -121,7 +127,11 @@ public class ISORecord implements MetadataRecord {
     @Override
     public void serialize( XMLStreamWriter writer, ReturnableElement returnType )
                             throws XMLStreamException {
-        // TODO Auto-generated method stub
+
+        root.nextTag();
+        XMLAdapter.writeElement( writer, root );
+
+        root.close();
 
     }
 
@@ -130,4 +140,5 @@ public class ISORecord implements MetadataRecord {
         // TODO Auto-generated method stub
         return null;
     }
+
 }

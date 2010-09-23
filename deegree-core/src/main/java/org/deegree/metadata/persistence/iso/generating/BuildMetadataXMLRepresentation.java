@@ -214,7 +214,7 @@ public class BuildMetadataXMLRepresentation {
                 idDatabaseTable = getLastDatasetId( connection, databaseTableISO );
                 idDatabaseTable++;
 
-                executeInsert( stm, connection, idDatabaseTable, operatesOnId, isoElement );
+                executeInsert( stm, connection, idDatabaseTable, operatesOnId, isoElement, 2 );
             } catch ( SQLException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
@@ -230,12 +230,12 @@ public class BuildMetadataXMLRepresentation {
     }
 
     private void executeInsert( PreparedStatement stm, Connection connection, int idDatabaseTable, int operatesOnId,
-                                OMElement element )
+                                OMElement element, int format )
                             throws SQLException {
         stm = connection.prepareStatement( sqlStatementInsert.toString() );
         stm.setObject( 1, idDatabaseTable );
         stm.setObject( 2, operatesOnId );
-        stm.setObject( 3, 2 );
+        stm.setObject( 3, format );
         stm.setBytes( 4, element.toString().getBytes() );
         LOG.debug( "" + stm );
         stm.executeUpdate();
@@ -311,7 +311,7 @@ public class BuildMetadataXMLRepresentation {
 
                 stm = connection.prepareStatement( sqlStatementInsert.toString() );
 
-                executeInsert( stm, connection, idDatabaseTable, operatesOnId, omElement );
+                executeInsert( stm, connection, idDatabaseTable, operatesOnId, omElement, 1 );
 
             } catch ( SQLException e ) {
 
