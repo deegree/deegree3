@@ -42,7 +42,7 @@ import org.deegree.observation.persistence.ObservationDatastoreException;
 import org.deegree.observation.persistence.ObservationStoreProvider;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>BinaryObservationProvider</code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 

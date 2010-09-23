@@ -56,6 +56,10 @@ import org.deegree.observation.persistence.simplesql.jaxb.SimpleObservationStore
  */
 public class ObservationStoreXMLAdapter extends XMLAdapter {
 
+    /**
+     * @return a {@link SimpleObservationStore} object
+     * @throws XMLProcessingException
+     */
     public SimpleObservationStore parseSimple()
                             throws XMLProcessingException {
         SimpleObservationStore simpleStore = null;
@@ -69,6 +73,10 @@ public class ObservationStoreXMLAdapter extends XMLAdapter {
         return simpleStore;
     }
 
+    /**
+     * @return a {@link ContinuousObservationStore} object
+     * @throws XMLProcessingException
+     */
     public ContinuousObservationStore parseContinuous()
                             throws XMLProcessingException {
         ContinuousObservationStore contStore = null;

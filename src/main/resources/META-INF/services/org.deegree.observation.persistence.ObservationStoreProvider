@@ -1,3 +1,2 @@
 org.deegree.observation.persistence.simple.SimpleObservationProvider
-org.deegree.observation.persistence.binary.BinaryObservationProvider
 org.deegree.observation.persistence.continuous.ContinuousObservationProvider
