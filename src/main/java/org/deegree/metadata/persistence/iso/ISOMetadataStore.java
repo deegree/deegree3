@@ -72,6 +72,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -91,6 +92,8 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
@@ -1035,7 +1038,7 @@ public class ISOMetadataStore implements MetadataStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public List<OMElement> getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+    public List<MetadataRecord> getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
                             throws MetadataStoreException {
 
         int profileFormatNumberOutputSchema = 0;
@@ -1044,8 +1047,9 @@ public class ISOMetadataStore implements MetadataStore {
         Connection conn = null;
         PreparedStatement stmt = null;
         // MetadataResultSet result = null;
+        XMLStreamReader xmlReader = null;
 
-        List<OMElement> result = new ArrayList<OMElement>();
+        List<MetadataRecord> result = new ArrayList<MetadataRecord>();
         try {
 
             conn = ConnectionManager.getConnection( connectionId );
@@ -1105,17 +1109,40 @@ public class ISOMetadataStore implements MetadataStore {
                     stmt.setInt( 2, profileFormatNumberOutputSchema );
                     LOG.debug( "identifier: " + identifier );
                     LOG.debug( "outputFormat: " + profileFormatNumberOutputSchema );
-
+                    LOG.debug( "" + stmt );
                     rs = stmt.executeQuery();
-                    // writeResultSet( rs, writer, 1 );
+                    InputStreamReader isr = null;
+                    Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
+
+                    while ( rs.next() ) {
+                        BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
+
+                        try {
+                            isr = new InputStreamReader( bais, charset );
+                        } catch ( Exception e ) {
+
+                            LOG.debug( "error while writing the result: {}", e.getMessage() );
+                        }
+
+                        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
+                        result.add( new ISORecord( xmlReader ) );
+
+                    }
                     stmt.close();
                 }
             }
         } catch ( SQLException e ) {
             LOG.debug( "Error while performing the getRecordById request: {}", e.getMessage() );
             throw new MetadataStoreException( "Error while performing the getRecordById request: {}", e );
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( FactoryConfigurationError e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         } finally {
             JDBCUtils.close( rs, stmt, conn, LOG );
+
         }
         return result;
     }
@@ -1254,7 +1281,8 @@ public class ISOMetadataStore implements MetadataStore {
                             throws MetadataStoreException {
         ISOMetadataStoreTransaction ta = null;
         try {
-            ta = new ISOMetadataStoreTransaction( ConnectionManager.getConnection( connectionId ), config );
+            ta = new ISOMetadataStoreTransaction( ConnectionManager.getConnection( connectionId ), config, typeNames,
+                                                  useLegacyPredicates );
         } catch ( SQLException e ) {
             throw new MetadataStoreException( e.getMessage() );
         }

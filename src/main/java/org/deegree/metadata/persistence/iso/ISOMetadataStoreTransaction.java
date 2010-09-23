@@ -5,10 +5,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
@@ -42,11 +47,18 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final CoupledDataInspector ci;
 
-    ISOMetadataStoreTransaction( Connection conn, ISOMetadataStoreConfig config ) throws SQLException {
+    private final Map<QName, Integer> typeNames;
+
+    private final boolean useLegacyPredicates;
+
+    ISOMetadataStoreTransaction( Connection conn, ISOMetadataStoreConfig config, Map<QName, Integer> typeNames,
+                                 boolean useLegacyPredicates ) throws SQLException {
         this.conn = conn;
         fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), conn );
         ic = InspireCompliance.newInstance( config.getRequireInspireCompliance(), conn );
         ci = CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), conn );
+        this.typeNames = typeNames;
+        this.useLegacyPredicates = useLegacyPredicates;
         conn.setAutoCommit( false );
 
     }
@@ -67,8 +79,40 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performDelete( DeleteTransaction delete )
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
-        return 0;
+        PostGISWhereBuilder builder = null;
+        int formatNumber = 0;
+        PostGISMappingsISODC mapping = new PostGISMappingsISODC();
+        // if there is a typeName denoted, the record with this profile should be deleted.
+        // if there is no typeName attribute denoted, every record matched should be deleted.
+        if ( delete.getTypeName() != null ) {
+
+            // for ( QName qName : typeNames.keySet() ) {
+            // if ( qName.equals( delete.getTypeName() ) ) {
+            // formatNumber = typeNames.get( qName );
+            // }
+            // }
+            formatNumber = typeNames.get( delete.getTypeName() );
+            if ( formatNumber == 0 ) {
+                throw new InvalidParameterValueException( "The typeName could not be resolved! " );
+            }
+        } else {
+            // TODO remove hack,
+            // but: a csw record is available in every case, if not there is no iso, as well
+            formatNumber = 1;
+        }
+
+        // TODO sortProperty
+        try {
+            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(), null,
+                                               useLegacyPredicates );
+
+            ExecuteStatements execStm = new ExecuteStatements();
+            return execStm.executeDeleteStatement( conn, builder, formatNumber );
+
+        } catch ( FilterEvaluationException e ) {
+
+            throw new MetadataStoreException( "The Filterexpression has thrown an error! " );
+        }
     }
 
     @Override

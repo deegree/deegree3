@@ -44,10 +44,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.feature.persistence.mapping.DBField;
+import org.deegree.feature.persistence.mapping.Join;
+import org.deegree.filter.sql.PropertyNameMapping;
+import org.deegree.filter.sql.expression.SQLLiteral;
+import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
@@ -109,6 +115,146 @@ public class ExecuteStatements {
         }
         generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
         return identifier;
+
+    }
+
+    /**
+     * 
+     * @param connection
+     * @param builder
+     * @param formatNumber
+     * @return the number of deleted metadata.
+     * @throws MetadataStoreException
+     */
+    public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder, int formatNumber )
+                            throws MetadataStoreException {
+
+        StringBuilder getDatasetIDs = new StringBuilder( 300 );
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        List<Integer> deletableDatasets;
+        try {
+
+            LOG.debug( "wherebuilder: " + builder );
+
+            String rootTableAlias = builder.getAliasManager().getRootTableAlias();
+            String blobTableAlias = builder.getAliasManager().generateNew();
+
+            getDatasetIDs.append( "SELECT " );
+
+            getDatasetIDs.append( rootTableAlias );
+            getDatasetIDs.append( '.' );
+            getDatasetIDs.append( id );
+            // getDatasetIDs.append( ',' );
+            // getDatasetIDs.append( blobTableAlias );
+            // getDatasetIDs.append( '.' );
+            // getDatasetIDs.append( PostGISMappingsISODC.CommonColumnNames.data.name() );
+
+            getDatasetIDs.append( " FROM " );
+            getDatasetIDs.append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
+            getDatasetIDs.append( " " );
+            getDatasetIDs.append( rootTableAlias );
+
+            for ( PropertyNameMapping mappedPropName : builder.getMappedPropertyNames() ) {
+                String currentAlias = rootTableAlias;
+                for ( Join join : mappedPropName.getJoins() ) {
+                    DBField from = join.getFrom();
+                    DBField to = join.getTo();
+                    getDatasetIDs.append( " LEFT OUTER JOIN " );
+                    getDatasetIDs.append( to.getTable() );
+                    getDatasetIDs.append( " AS " );
+                    getDatasetIDs.append( to.getAlias() );
+                    getDatasetIDs.append( " ON " );
+                    getDatasetIDs.append( currentAlias );
+                    getDatasetIDs.append( "." );
+                    getDatasetIDs.append( from.getColumn() );
+                    getDatasetIDs.append( "=" );
+                    currentAlias = to.getAlias();
+                    getDatasetIDs.append( currentAlias );
+                    getDatasetIDs.append( "." );
+                    getDatasetIDs.append( to.getColumn() );
+                }
+            }
+
+            getDatasetIDs.append( " LEFT OUTER JOIN " );
+            // TODO remove hard coded
+            getDatasetIDs.append( "recordbrief" );
+            getDatasetIDs.append( " AS " );
+            getDatasetIDs.append( blobTableAlias );
+            getDatasetIDs.append( " ON " );
+            getDatasetIDs.append( rootTableAlias );
+            getDatasetIDs.append( "." );
+            getDatasetIDs.append( id );
+            getDatasetIDs.append( "=" );
+            getDatasetIDs.append( blobTableAlias );
+            getDatasetIDs.append( "." );
+            getDatasetIDs.append( fk_datasets );
+
+            getDatasetIDs.append( " WHERE " );
+            getDatasetIDs.append( blobTableAlias );
+            getDatasetIDs.append( '.' );
+            getDatasetIDs.append( PostGISMappingsISODC.CommonColumnNames.format.name() );
+            getDatasetIDs.append( "=?" );
+
+            if ( builder.getWhere() != null ) {
+                getDatasetIDs.append( " AND " );
+                getDatasetIDs.append( builder.getWhere().getSQL() );
+            }
+
+            preparedStatement = connection.prepareStatement( getDatasetIDs.toString() );
+
+            int i = 1;
+            preparedStatement.setInt( i++, formatNumber );
+
+            if ( builder.getWhere() != null ) {
+                for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
+                    preparedStatement.setObject( i++, o.getValue() );
+                }
+            }
+            if ( builder.getOrderBy() != null ) {
+                for ( SQLLiteral o : builder.getOrderBy().getLiterals() ) {
+                    preparedStatement.setObject( i++, o.getValue() );
+                }
+            }
+
+            LOG.debug( preparedStatement.toString() );
+
+            rs = preparedStatement.executeQuery();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append( "DELETE FROM " );
+            stringBuilder.append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
+            stringBuilder.append( " WHERE " ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
+            stringBuilder.append( " = ?" );
+
+            deletableDatasets = new ArrayList<Integer>();
+            if ( rs != null ) {
+
+                while ( rs.next() ) {
+                    deletableDatasets.add( rs.getInt( 1 ) );
+
+                }
+                rs.close();
+                for ( int d : deletableDatasets ) {
+
+                    preparedStatement = connection.prepareStatement( stringBuilder.toString() );
+                    preparedStatement.setInt( 1, d );
+                    preparedStatement.executeUpdate();
+
+                }
+            }
+
+        } catch ( SQLException e ) {
+            JDBCUtils.close( rs, preparedStatement, connection, LOG );
+
+            LOG.debug( "Error while generating the SELECT statement: {}", e.getMessage() );
+            throw new MetadataStoreException( "Error while generating the SELECT statement: {}", e );
+        } finally {
+            JDBCUtils.close( rs, preparedStatement, null, LOG );
+
+        }
+
+        return deletableDatasets.size();
 
     }
 
