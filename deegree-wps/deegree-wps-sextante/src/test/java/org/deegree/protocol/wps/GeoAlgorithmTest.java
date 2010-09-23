@@ -70,7 +70,7 @@ public class GeoAlgorithmTest {
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     // manages all supported algorithms with example data
     private final LinkedList<GeoAlgorithmWithData> algorithms;
@@ -229,20 +229,22 @@ public class GeoAlgorithmTest {
 
         if ( !getAll ) {// return only one algorithm
 
-            // ---------------------------------------------------------------------------------------------------------------------------
-            // vectorfieldcalculator algorithm
-            String vectorfieldcalculatorName = "vectorfieldcalculator";
-            GeoAlgorithmWithData vectorfieldcalculatorAlg = new GeoAlgorithmWithData(
-                                                                                      Sextante.getAlgorithmFromCommandLineName( vectorfieldcalculatorName ) );
-            // add test data
-            LinkedList<ExampleData> vectorfieldcalculatorData1 = new LinkedList<ExampleData>();
-            vectorfieldcalculatorData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POLYGONS ); // LAYER
-            vectorfieldcalculatorData1.add( LiteralExampleData.STRING_TEST ); // FORMULA
-            vectorfieldcalculatorAlg.addInputData( vectorfieldcalculatorData1 );
-            allAlgs.add( vectorfieldcalculatorAlg );
 
-            // vectorfieldcalculator
-            // LAYER[Vector Layer], FORMULA[String], RESULT[output vector layer]
+            // //
+            // ---------------------------------------------------------------------------------------------------------------------------
+            // // vectorfieldcalculator algorithm
+            // String vectorfieldcalculatorName = "vectorfieldcalculator";
+            // GeoAlgorithmWithData vectorfieldcalculatorAlg = new GeoAlgorithmWithData(
+            // Sextante.getAlgorithmFromCommandLineName( vectorfieldcalculatorName ) );
+            // // add test data
+            // LinkedList<ExampleData> vectorfieldcalculatorData1 = new LinkedList<ExampleData>();
+            // vectorfieldcalculatorData1.add( GeometryExampleData.GML_31_FEATURE_COLLECTION_POLYGONS ); // LAYER
+            // vectorfieldcalculatorData1.add( LiteralExampleData.STRING_TEST ); // FORMULA
+            // vectorfieldcalculatorAlg.addInputData( vectorfieldcalculatorData1 );
+            // allAlgs.add( vectorfieldcalculatorAlg );
+            //
+            // // vectorfieldcalculator
+            // // LAYER[Vector Layer], FORMULA[String], RESULT[output vector layer]
         } else {// return all algorithms
 
             // ---------------------------------------------------------------------------------------------------------------------------
@@ -317,19 +319,19 @@ public class GeoAlgorithmTest {
 
             // ---------------------------------------------------------------------------------------------------------------------------
             // clip algorithm
-            String clipName = "clip";
-            GeoAlgorithmWithData clipAlg = new GeoAlgorithmWithData(
-                                                                     Sextante.getAlgorithmFromCommandLineName( clipName ) );
-
-            // add all test data
-            LinkedList<? extends ExampleData> clipLayerData = GeometryExampleData.getAllData();
-            for ( ExampleData data : clipLayerData ) {
-                LinkedList<ExampleData> list = new LinkedList<ExampleData>();
-                list.add( data ); // LAYER: all geometries
-                list.add( GeometryExampleData.GML_31_POLYGON ); // CLIPLAYER: only polygon
-                clipAlg.addInputData( list );
-            }
-            allAlgs.add( clipAlg );
+            // String clipName = "clip";
+            // GeoAlgorithmWithData clipAlg = new GeoAlgorithmWithData(
+            // Sextante.getAlgorithmFromCommandLineName( clipName ) );
+            //
+            // // add all test data
+            // LinkedList<? extends ExampleData> clipLayerData = GeometryExampleData.getAllData();
+            // for ( ExampleData data : clipLayerData ) {
+            // LinkedList<ExampleData> list = new LinkedList<ExampleData>();
+            // list.add( data ); // LAYER: all geometries
+            // list.add( GeometryExampleData.GML_31_POLYGON ); // CLIPLAYER: only polygon
+            // clipAlg.addInputData( list );
+            // }
+            // allAlgs.add( clipAlg );
 
             // ---------------------------------------------------------------------------------------------------------------------------
             // countpoints algorithm
