@@ -149,7 +149,7 @@ public class GeometryTransformer extends Transformer {
      * @throws UnknownCRSException
      */
     public GeometryTransformer( CRS targetCRS ) throws IllegalArgumentException, UnknownCRSException {
-        super( targetCRS.getWrappedCRS() );
+        super( targetCRS );
     }
 
     /**
