@@ -50,7 +50,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -65,11 +64,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -78,8 +74,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -88,7 +82,6 @@ import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
@@ -98,13 +91,8 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.RecordStoreOptions;
-import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.ParsingUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
-import org.deegree.metadata.publication.DeleteTransaction;
-import org.deegree.metadata.publication.MetadataProperty;
-import org.deegree.metadata.publication.TransactionOperation;
-import org.deegree.metadata.publication.UpdateTransaction;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
@@ -734,302 +722,49 @@ public class ISOMetadataStore implements MetadataStore {
         return preparedStatement;
     }
 
-    public List<Integer> transaction( TransactionOperation operations )
-                            throws XMLStreamException, MetadataStoreException {
-
-        List<Integer> affectedIds = new ArrayList<Integer>();
-        PostGISMappingsISODC mapping = new PostGISMappingsISODC();
-        Connection conn = null;
-        ResultSet rs = null;
-        PreparedStatement ps = null;
-        try {
-            conn = ConnectionManager.getConnection( connectionId );
-
-            switch ( operations.getType() ) {
-            case INSERT:
-
-                break;
-
-            /*
-             * There is a known BUG here. If you update one complete record, there is no problem. If you update just
-             * some properties, multiple properties like "keywords" are not correctly updated. Have a look at {@link
-             * #recursiveElementKnotUpdate}
-             */
-            case UPDATE:
-
-                UpdateTransaction upd = (UpdateTransaction) operations;
-                /*
-                 * if there should a complete record be updated or some properties
-                 */
-                if ( upd.getElement() != null ) {
-                    QName localName = upd.getElement().getQName();
-
-                    // executeStatements = new ExecuteStatements();
-                    //
-                    // if ( localName.getLocalPart().equals( "Record" ) ) {
-                    //
-                    // executeStatements.executeUpdateStatement( conn, affectedIds,
-                    // new ISOQPParsing().parseAPDC( upd.getElement() ) );
-                    //
-                    // } else {
-                    // executeStatements.executeUpdateStatement(
-                    // conn,
-                    // affectedIds,
-                    // new ISOQPParsing().parseAPISO( fi, ic, ci,
-                    // upd.getElement(), true ) );
-                    //
-                    // }
-
-                } else {
-
-                    RecordStoreOptions gdds = new RecordStoreOptions( upd.getConstraint(), ResultType.results,
-                                                                      ReturnableElement.full );
-
-                    int formatNumber = 0;
-                    Set<QName> qNameSet = new HashSet<QName>();
-
-                    // TODO sortProperty
-
-                    PostGISWhereBuilder builder = new PostGISWhereBuilder( mapping,
-                                                                           (OperatorFilter) upd.getConstraint(), null,
-                                                                           useLegacyPredicates );
-
-                    for ( QName propName : mapping.getPropToTableAndCol().keySet() ) {
-                        String nsURI = propName.getNamespaceURI();
-                        String prefix = propName.getPrefix();
-                        QName analysedQName = new QName( nsURI, "", prefix );
-                        qNameSet.add( analysedQName );
-                    }
-
-                    for ( QName qName : typeNames.keySet() ) {
-                        if ( qName.equals( qNameSet.iterator().next() ) ) {
-                            formatNumber = typeNames.get( qName );
-                        }
-                    }
-
-                    PreparedStatement str = getRequestedIDStatement(
-                                                                     formatTypeInISORecordStore.get( ReturnableElement.full ),
-                                                                     gdds, formatNumber, builder );
-
-                    ResultSet rsUpdatableDatasets = str.executeQuery();
-                    List<Integer> updatableDatasets = new ArrayList<Integer>();
-                    while ( rsUpdatableDatasets.next() ) {
-                        updatableDatasets.add( rsUpdatableDatasets.getInt( 1 ) );
-
-                    }
-                    str.close();
-                    rsUpdatableDatasets.close();
-
-                    if ( updatableDatasets.size() != 0 ) {
-                        PreparedStatement stmt = null;
-                        StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.append( "SELECT " ).append(
-                                                                  formatTypeInISORecordStore.get( ReturnableElement.full ) );
-                        stringBuilder.append( '.' ).append( data );
-                        stringBuilder.append( " FROM " ).append(
-                                                                 formatTypeInISORecordStore.get( ReturnableElement.full ) );
-                        stringBuilder.append( " WHERE " ).append(
-                                                                  formatTypeInISORecordStore.get( ReturnableElement.full ) );
-                        stringBuilder.append( '.' ).append( format );
-                        stringBuilder.append( " = 2 AND " ).append(
-                                                                    formatTypeInISORecordStore.get( ReturnableElement.full ) );
-                        stringBuilder.append( '.' ).append( fk_datasets ).append( " = ?;" );
-                        for ( int i : updatableDatasets ) {
-
-                            stmt = conn.prepareStatement( stringBuilder.toString() );
-                            stmt.setObject( 1, i );
-                            ResultSet rsGetStoredFullRecordXML = stmt.executeQuery();
-
-                            while ( rsGetStoredFullRecordXML.next() ) {
-                                for ( MetadataProperty recProp : upd.getRecordProperty() ) {
-
-                                    PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName(),
-                                                                                          null );
-
-                                    Object obje = mapping.getPostGISValue( (Literal<?>) recProp.getReplacementValue(),
-                                                                           recProp.getPropertyName() );
-
-                                    // creating an OMElement read from backend byteData
-                                    InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
-                                    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
-
-                                    OMElement elementBuiltFromDB = new StAXOMBuilder( reader ).getDocument().getOMDocumentElement();
-
-                                    OMElement omElement = recursiveElementKnotUpdate(
-                                                                                      elementBuiltFromDB,
-                                                                                      elementBuiltFromDB.getChildElements(),
-                                                                                      propMapping.getTargetField().getColumn(),
-                                                                                      obje.toString() );
-
-                                    QName localName = omElement.getQName();
-
-                                    ExecuteStatements executeStatements = new ExecuteStatements();
-
-                                    if ( localName.equals( new QName( CSW_202_NS, "Record", CSW_PREFIX ) )
-                                         || localName.equals( new QName( CSW_202_NS, "Record", "" ) ) ) {
-
-                                        executeStatements.executeUpdateStatement(
-                                                                                  conn,
-                                                                                  affectedIds,
-                                                                                  new ISOQPParsing().parseAPDC( omElement ) );
-
-                                    } else {
-
-                                        // executeStatements.executeUpdateStatement(
-                                        // conn,
-                                        // affectedIds,
-                                        // new ISOQPParsing().parseAPISO(
-                                        // fi,
-                                        // ic,
-                                        // ci,
-                                        // omElement,
-                                        // true ) );
-
-                                    }
-
-                                }
-                            }
-                            stmt.close();
-                            rsGetStoredFullRecordXML.close();
-
-                        }
-                    }
-
-                }
-
-                break;
-
-            case DELETE:
-                DeleteTransaction delete = (DeleteTransaction) operations;
-
-                PostGISWhereBuilder builder = null;
-                int formatNumber = 0;
-                int[] formatNumbers = null;
-                PreparedStatement stmt = null;
-
-                // if there is a typeName denoted, the record with this profile should be deleted.
-                // if there is no typeName attribute denoted, every record matched should be deleted.
-                if ( delete.getTypeName() != null ) {
-
-                    for ( QName qName : typeNames.keySet() ) {
-                        if ( qName.equals( delete.getTypeName() ) ) {
-                            formatNumber = typeNames.get( qName );
-                        }
-                    }
-                } else {
-                    // TODO remove hack,
-                    // but: a csw record is available in every case, if not there is no iso, as well
-                    formatNumbers = new int[1];
-                    formatNumbers[0] = 1;
-                }
-                if ( formatNumber == 0 ) {
-                    for ( int formatNum : formatNumbers ) {
-                        // TODO sortProperty
-                        try {
-                            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(), null,
-                                                               useLegacyPredicates );
-
-                        } catch ( FilterEvaluationException e ) {
-
-                            e.printStackTrace();
-                        }
-
-                        // test if there is a record to delete
-
-                        ps = generateSELECTStatement(
-                                                      formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief ),
-                                                      null, formatNum, false, builder, conn );
-
-                        rs = ps.executeQuery();
-                        List<Integer> deletableDatasets = new ArrayList<Integer>();
-                        StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.append( "DELETE FROM " );
-                        stringBuilder.append( datasets );
-                        stringBuilder.append( " WHERE " ).append( id );
-                        stringBuilder.append( " = ?" );
-
-                        if ( rs != null ) {
-                            while ( rs.next() ) {
-                                deletableDatasets.add( rs.getInt( 1 ) );
-
-                            }
-                            rs.close();
-
-                            for ( int i : deletableDatasets ) {
-
-                                stmt = conn.prepareStatement( stringBuilder.toString() );
-                                stmt.setObject( 1, i );
-                                stmt.executeUpdate();
-
-                            }
-                        }
-                        affectedIds.addAll( deletableDatasets );
-
-                    }
-
-                }
-
-                if ( stmt != null ) {
-                    stmt.close();
-                }
-
-                break;
-            }
-        } catch ( SQLException e ) {
-            LOG.debug( "Error while opening the JDBC connection: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while opening the JDBC connection: {}", e );
-        } catch ( FilterEvaluationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            close( conn );
-        }
-
-        return affectedIds;
-    }
-
-    /**
-     * This method replaces the text content of an elementknot.
-     * <p>
-     * TODO this is suitable for updates which affect an elementknot that has just one child. <br>
-     * BUG - if there a more childs like in the "keyword"-elementknot.
-     * 
-     * @param element
-     *            where to start in the OMTree
-     * @param childElements
-     *            as an Iterator above all the childElements of the element
-     * @param searchForLocalName
-     *            is the name that is searched for. This is the elementknot thats content should be updated.
-     * @param newContent
-     *            is the new content that should be updated
-     * @return OMElement
-     */
-    private OMElement recursiveElementKnotUpdate( OMElement element, Iterator childElements, String searchForLocalName,
-                                                  String newContent ) {
-
-        Iterator it = element.getChildrenWithLocalName( searchForLocalName );
-
-        if ( it.hasNext() ) {
-            OMElement u = null;
-            while ( it.hasNext() ) {
-                u = (OMElement) it.next();
-                LOG.debug( "rec: " + u.toString() );
-                u.getFirstElement().setText( newContent );
-                LOG.debug( "rec2: " + u.toString() );
-            }
-            return element;
-
-        }
-        while ( childElements.hasNext() ) {
-            OMElement elem = (OMElement) childElements.next();
-
-            recursiveElementKnotUpdate( elem, elem.getChildElements(), searchForLocalName, newContent );
-
-        }
-
-        return element;
-
-    }
+    // public List<Integer> transaction( TransactionOperation operations )
+    // throws XMLStreamException, MetadataStoreException {
+    //
+    // List<Integer> affectedIds = new ArrayList<Integer>();
+    // PostGISMappingsISODC mapping = new PostGISMappingsISODC();
+    // Connection conn = null;
+    // ResultSet rs = null;
+    // PreparedStatement ps = null;
+    // try {
+    // conn = ConnectionManager.getConnection( connectionId );
+    //
+    // switch ( operations.getType() ) {
+    // case INSERT:
+    //
+    // break;
+    //
+    // /*
+    // * There is a known BUG here. If you update one complete record, there is no problem. If you update just
+    // * some properties, multiple properties like "keywords" are not correctly updated. Have a look at {@link
+    // * #recursiveElementKnotUpdate}
+    // */
+    // case UPDATE:
+    //
+    //                
+    //
+    // break;
+    //
+    // case DELETE:
+    //
+    // break;
+    // }
+    // } catch ( SQLException e ) {
+    // LOG.debug( "Error while opening the JDBC connection: {}", e.getMessage() );
+    // throw new MetadataStoreException( "Error while opening the JDBC connection: {}", e );
+    // } catch ( FilterEvaluationException e ) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // } finally {
+    // close( conn );
+    // }
+    //
+    // return affectedIds;
+    // }
 
     /*
      * (non-Javadoc)

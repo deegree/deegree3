@@ -89,8 +89,6 @@ public class TransactionHandler {
 
     private List<String> insertedMetadata;
 
-    private List<String> updatedMetadata;
-
     private static Map<QName, MetadataStore> requestedTypeNames;
 
     /**
@@ -217,7 +215,7 @@ public class TransactionHandler {
                     break;
                 case UPDATE:
 
-                    doUpdate( (UpdateTransaction) transact );
+                    updateCount = doUpdate( (UpdateTransaction) transact );
 
                     break;
                 case DELETE:
@@ -231,10 +229,6 @@ public class TransactionHandler {
 
             if ( insertedMetadata != null ) {
                 insertCount = insertedMetadata.size();
-            }
-
-            if ( updatedMetadata != null ) {
-                updateCount = updatedMetadata.size();
             }
 
         } catch ( Exception e ) {
@@ -274,7 +268,6 @@ public class TransactionHandler {
     private int doDelete( DeleteTransaction transact )
                             throws MetadataStoreException {
         DeleteTransaction delete = transact;
-        ;
 
         int i = 0;
         MetadataStoreTransaction mt = null;
@@ -296,13 +289,15 @@ public class TransactionHandler {
 
     }
 
-    private void doUpdate( UpdateTransaction transact ) {
+    private int doUpdate( UpdateTransaction transact )
+                            throws MetadataStoreException {
         UpdateTransaction update = transact;
-
+        int i = 0;
+        MetadataStoreTransaction mt = null;
         /*
          * Either it is a hole recordStore to be updated or just some recordProperties.
          */
-        if ( update.getRecordProperty() == null ) {
+        if ( update.getRecordProperty() != null ) {
             // requestedTypeNames.put(
             // new QName( update.getElement().getNamespace().getNamespaceURI(),
             // update.getElement().getLocalName(),
@@ -318,16 +313,21 @@ public class TransactionHandler {
             }
         } else {
 
-            /*
-             * here all the registered recordStores are queried
-             */
-            for ( MetadataStore rec : service.getRecordStore() ) {
-
-                // transactionIdsUpdate.addAll( rec.transaction( update ) );
-
+            try {
+                for ( MetadataStore rec : service.getRecordStore() ) {
+                    mt = rec.acquireTransaction();
+                    i = mt.performUpdate( update );
+                    mt.commit();
+                    LOG.info( "Update done!" );
+                }
+            } catch ( MetadataStoreException e ) {
+                LOG.debug( e.getMessage() );
+                mt.rollback();
+                throw new MetadataStoreException( e.getMessage() );
             }
 
         }
+        return i;
 
     }
 

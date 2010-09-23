@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -16,6 +18,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
+import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
@@ -24,6 +27,8 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.UpdateTransaction;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,16 +86,10 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                             throws MetadataStoreException {
         PostGISWhereBuilder builder = null;
         int formatNumber = 0;
-        PostGISMappingsISODC mapping = new PostGISMappingsISODC();
+
         // if there is a typeName denoted, the record with this profile should be deleted.
         // if there is no typeName attribute denoted, every record matched should be deleted.
         if ( delete.getTypeName() != null ) {
-
-            // for ( QName qName : typeNames.keySet() ) {
-            // if ( qName.equals( delete.getTypeName() ) ) {
-            // formatNumber = typeNames.get( qName );
-            // }
-            // }
             formatNumber = typeNames.get( delete.getTypeName() );
             if ( formatNumber == 0 ) {
                 throw new InvalidParameterValueException( "The typeName could not be resolved! " );
@@ -103,8 +102,8 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
         // TODO sortProperty
         try {
-            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(), null,
-                                               useLegacyPredicates );
+            builder = new PostGISWhereBuilder( new PostGISMappingsISODC(), (OperatorFilter) delete.getConstraint(),
+                                               null, useLegacyPredicates );
 
             ExecuteStatements execStm = new ExecuteStatements();
             return execStm.executeDeleteStatement( conn, builder, formatNumber );
@@ -151,8 +150,50 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public int performUpdate( UpdateTransaction update )
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
-        return 0;
+
+        PostGISMappingsISODC mapping = new PostGISMappingsISODC();
+        PostGISWhereBuilder builder = null;
+        int result = 0;
+        /*
+         * if there should a complete record be updated or some properties
+         */
+        if ( update.getElement() != null ) {
+            QName localName = update.getElement().getQName();
+
+            ExecuteStatements executeStatements = new ExecuteStatements();
+
+            if ( localName.getLocalPart().equals( "Record" ) ) {
+
+                result = executeStatements.executeUpdateStatement( conn,
+                                                                   new ISOQPParsing().parseAPDC( update.getElement() ) );
+
+            } else {
+                result = executeStatements.executeUpdateStatement( conn,
+                                                                   new ISOQPParsing().parseAPISO( fi, ic, ci,
+                                                                                                  update.getElement(),
+                                                                                                  true ) );
+
+            }
+
+        } else {
+
+            RecordStoreOptions gdds = new RecordStoreOptions( update.getConstraint(), ResultType.results,
+                                                              ReturnableElement.full );
+
+            int formatNumber = 0;
+            Set<QName> qNameSet = new HashSet<QName>();
+
+            // TODO sortProperty
+
+            try {
+                builder = new PostGISWhereBuilder( mapping, (OperatorFilter) update.getConstraint(), null,
+                                                   useLegacyPredicates );
+            } catch ( FilterEvaluationException e ) {
+                throw new MetadataStoreException( e.getMessage() );
+            }
+
+        }
+        return result;
     }
 
     @Override
