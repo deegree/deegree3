@@ -48,7 +48,7 @@ import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * TODO add class documentation here
+ * This class writes the process content to the command line und uses the descriptions of SEXTANTE xml files.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
