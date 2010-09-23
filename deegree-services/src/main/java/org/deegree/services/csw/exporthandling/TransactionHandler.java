@@ -66,6 +66,7 @@ import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.metadata.publication.UpdateTransaction;
 import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
@@ -110,11 +111,12 @@ public class TransactionHandler {
      * @param response
      * @throws XMLStreamException
      * @throws IOException
+     * @throws OWSException
      * @throws MetadataStoreException
      * @throws SQLException
      */
     public void doTransaction( Transaction trans, HttpResponseBuffer response, boolean isSoap )
-                            throws XMLStreamException, IOException {
+                            throws XMLStreamException, IOException, OWSException {
 
         LOG.debug( "doTransaction: " + trans );
 
@@ -137,8 +139,7 @@ public class TransactionHandler {
             throw new InvalidParameterValueException( e.getMessage() );
         } catch ( MetadataStoreException e ) {
             LOG.debug( e.getMessage() );
-            // TODO not the right exception
-            throw new InvalidParameterValueException( e.getMessage() );
+            throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
         }
         xmlWriter.flush();
 

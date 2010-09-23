@@ -66,10 +66,12 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
@@ -140,6 +142,9 @@ public class GetRecordsHandler {
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage() );
             throw new InvalidParameterValueException( e.getMessage() );
+        } catch ( MetadataStoreException e ) {
+            LOG.debug( e.getMessage() );
+            throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
         }
         xmlWriter.flush();
     }
@@ -154,9 +159,10 @@ public class GetRecordsHandler {
      * @throws XMLStreamException
      * @throws SQLException
      * @throws OWSException
+     * @throws MetadataStoreException
      */
     private void export( XMLStreamWriter xmlWriter, GetRecords getRec, Version version, boolean isSoap )
-                            throws XMLStreamException, OWSException {
+                            throws XMLStreamException, OWSException, MetadataStoreException {
 
         if ( VERSION_202.equals( version ) ) {
             export202( xmlWriter, getRec, isSoap );
@@ -175,9 +181,10 @@ public class GetRecordsHandler {
      * @throws XMLStreamException
      * @throws SQLException
      * @throws OWSException
+     * @throws MetadataStoreException
      */
     private void export202( XMLStreamWriter writer, GetRecords getRec, boolean isSoap )
-                            throws XMLStreamException, OWSException {
+                            throws XMLStreamException, OWSException, MetadataStoreException {
         Version version = new Version( 2, 0, 2 );
 
         writer.setDefaultNamespace( CSW_202_NS );
@@ -243,11 +250,14 @@ public class GetRecordsHandler {
      * @throws XMLStreamException
      * @throws SQLException
      * @throws OWSException
+     * @throws MetadataStoreException
      */
     private void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version )
-                            throws XMLStreamException, OWSException {
+                            throws XMLStreamException, OWSException, MetadataStoreException {
 
         requestedTypeNames = new HashMap<QName, MetadataStore>();
+
+        List<MetadataRecord> storeList = null;
 
         if ( VERSION_202.equals( version ) ) {
 
@@ -255,25 +265,20 @@ public class GetRecordsHandler {
 
             // Question if there is the specified record available
             for ( QName typeName : getRec.getTypeNames() ) {
-                // if ( service.getRecordStore( typeName ) != null ) {
-                //
-                // requestedTypeNames.put( typeName, service.getRecordStore( typeName ) );
-                // }
-            }
+                MetadataStore rec = determineMetadataStore( typeName );
+                RecordStoreOptions gdds = new RecordStoreOptions( getRec.getConstraint(), getRec.getOutputSchema(),
+                                                                  getRec.getSortBy(), getRec.getResultType(),
+                                                                  getRec.getElementSetName(), getRec.getMaxRecords(),
+                                                                  getRec.getStartPosition() );
 
-            RecordStoreOptions gdds = new RecordStoreOptions( getRec.getConstraint(), getRec.getSortBy(),
-                                                              getRec.getResultType(), getRec.getElementSetName(),
-                                                              getRec.getMaxRecords(), getRec.getStartPosition() );
+                // commits the record to the getRecords operation
 
-            // commits the record to the getRecords operation
-            for ( QName qName : requestedTypeNames.keySet() ) {
-                for ( MetadataStore rec : requestedTypeNames.values() ) {
-                    try {
-                        rec.getRecords( writer, qName, getRec.getOutputSchema(), gdds );
-                    } catch ( MetadataStoreException e ) {
-                        throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
-                    }
+                try {
+                    storeList = rec.getRecords( typeName, getRec.getOutputSchema(), gdds );
+                } catch ( MetadataStoreException e ) {
+                    throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
                 }
+
             }
 
         } else {
@@ -348,6 +353,27 @@ public class GetRecordsHandler {
             e.printStackTrace();
         }
 
+    }
+
+    private MetadataStore determineMetadataStore( QName element )
+                            throws MetadataStoreException {
+
+        String uri = element.getNamespaceURI();
+        String localName = element.getLocalPart();
+        String prefix = element.getPrefix();
+
+        LOG.info( "Check element QName: <" + uri + ">" + prefix + ":" + localName + ". " );
+        LOG.info( "Check metadataSore..." );
+        MetadataStore rec = null;
+        try {
+            rec = service.getRecordStore( new QName( uri, localName, prefix ) );
+
+            LOG.info( "Conventient MetadataStore found. " );
+        } catch ( MetadataStoreException e ) {
+            LOG.error( "error: " + e.getMessage() );
+            throw new MetadataStoreException( e.getMessage() );
+        }
+        return rec;
     }
 
 }
