@@ -93,11 +93,13 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
+import org.deegree.metadata.persistence.iso.parsing.ParsingUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.MetadataProperty;
@@ -1036,15 +1038,15 @@ public class ISOMetadataStore implements MetadataStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public void getRecordById( XMLStreamWriter writer, List<String> idList, URI outputSchema,
-                               ReturnableElement elementSetName )
-                            throws MetadataStoreException, XMLStreamException {
+    public MetadataResultSet getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+                            throws MetadataStoreException {
 
         int profileFormatNumberOutputSchema = 0;
         String elementSetNameString = null;
         ResultSet rs = null;
         Connection conn = null;
         PreparedStatement stmt = null;
+        MetadataResultSet result = null;
         try {
 
             conn = ConnectionManager.getConnection( connectionId );
@@ -1055,11 +1057,11 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
             for ( String identifier : idList ) {
-                // if ( fi.proveIdExistence( identifier ) ) {
-                // String msg = "No Metadata found with ID: '" + identifier + "'";
-                // LOG.info( msg );
-                // throw new MetadataStoreException( msg );
-                // }
+                if ( ParsingUtils.newInstance( conn ).proveIdExistence( identifier ) ) {
+                    String msg = "No Metadata found with ID: '" + identifier + "'";
+                    LOG.info( msg );
+                    throw new MetadataStoreException( msg );
+                }
 
                 switch ( elementSetName ) {
 
@@ -1106,7 +1108,7 @@ public class ISOMetadataStore implements MetadataStore {
                     LOG.debug( "outputFormat: " + profileFormatNumberOutputSchema );
 
                     rs = stmt.executeQuery();
-                    writeResultSet( rs, writer, 1 );
+                    // writeResultSet( rs, writer, 1 );
                     stmt.close();
                 }
             }
@@ -1116,7 +1118,7 @@ public class ISOMetadataStore implements MetadataStore {
         } finally {
             JDBCUtils.close( rs, stmt, conn, LOG );
         }
-
+        return result;
     }
 
     /**

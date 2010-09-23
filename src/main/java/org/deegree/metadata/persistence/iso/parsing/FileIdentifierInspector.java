@@ -35,18 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing;
 
-import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector.Param;
 import org.slf4j.Logger;
@@ -123,7 +118,7 @@ public class FileIdentifierInspector {
         this.uuid = uuid;
         this.idList.clear();
         if ( fi != null ) {
-            if ( proveIdExistence( fi ) ) {
+            if ( ParsingUtils.newInstance( conn ).proveIdExistence( fi ) ) {
                 LOG.info( "'{}' accepted as a valid fileIdentifier. ", fi );
                 idList.add( fi );
                 return idList;
@@ -167,40 +162,6 @@ public class FileIdentifierInspector {
             }
         }
 
-    }
-
-    /**
-     * Proves the availability of the identifier in the backend.
-     * 
-     * @param identifier
-     *            that is proved, not <Code>null</Code>.
-     * @return true, if the identifier is not found in the backend, otherwise false.
-     * @throws MetadataStoreException
-     */
-    public boolean proveIdExistence( String identifier )
-                            throws MetadataStoreException {
-        PreparedStatement stm = null;
-        ResultSet rs = null;
-        boolean notAvailable = true;
-        try {
-            String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
-                       + " AS i WHERE i.identifier = ?;";
-            stm = conn.prepareStatement( s );
-            stm.setObject( 1, identifier );
-            rs = stm.executeQuery();
-            LOG.debug( s );
-            if ( rs.next() ) {
-                notAvailable = false;
-            }
-
-        } catch ( SQLException e ) {
-            LOG.debug( "Error while proving the IDs stored in the backend: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while proving the IDs stored in the backend: {}" + e.getMessage() );
-        } finally {
-            close( stm );
-            close( rs );
-        }
-        return notAvailable;
     }
 
     public List<String> getIdList() {
