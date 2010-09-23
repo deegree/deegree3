@@ -72,7 +72,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -84,7 +83,6 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.persistence.mapping.DBField;
 import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.filter.FilterEvaluationException;
@@ -93,7 +91,6 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
-import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
@@ -246,7 +243,7 @@ public class ISOMetadataStore implements MetadataStore {
             Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
             InputStreamReader isr = new InputStreamReader( bais, charset );
 
-            readXMLFragment( isr, writer );
+            // readXMLFragment( isr, writer );
 
         } catch ( MalformedURLException e ) {
 
@@ -586,7 +583,7 @@ public class ISOMetadataStore implements MetadataStore {
                     outS.append( " = " ).append( profileFormatNumberOutputSchema );
                     stmtOut = conn.prepareStatement( outS.toString() );
                     rsOut = stmtOut.executeQuery();
-                    writeResultSet( rsOut, writer, 1 );
+                    // writeResultSet( rsOut, writer, 1 );
                     stmtOut.close();
                     rsOut.close();
                 }
@@ -1038,7 +1035,7 @@ public class ISOMetadataStore implements MetadataStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public MetadataResultSet getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+    public List<OMElement> getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
                             throws MetadataStoreException {
 
         int profileFormatNumberOutputSchema = 0;
@@ -1046,7 +1043,9 @@ public class ISOMetadataStore implements MetadataStore {
         ResultSet rs = null;
         Connection conn = null;
         PreparedStatement stmt = null;
-        MetadataResultSet result = null;
+        // MetadataResultSet result = null;
+
+        List<OMElement> result = new ArrayList<OMElement>();
         try {
 
             conn = ConnectionManager.getConnection( connectionId );
@@ -1229,7 +1228,7 @@ public class ISOMetadataStore implements MetadataStore {
                 stmt = conn.prepareStatement( s.toString() );
                 stmt.setObject( 1, i );
                 rsInsertedDatasets = stmt.executeQuery();
-                writeResultSet( rsInsertedDatasets, writer, 1 );
+                // writeResultSet( rsInsertedDatasets, writer, 1 );
                 stmt.close();
                 rsInsertedDatasets.close();
             }
@@ -1237,92 +1236,16 @@ public class ISOMetadataStore implements MetadataStore {
         } catch ( SQLException e ) {
             LOG.debug( "Error while generating metadata output for the transaction: {}", e.getMessage() );
             throw new MetadataStoreException( "Error while generating metadata output for the transaction: {}", e );
-        } catch ( XMLStreamException e ) {
-            LOG.debug( "Error while writing the result to the OutputStream: {}", e.getMessage() );
-            throw new MetadataStoreException( "Error while writing the result to the OutputStream: {}", e );
-        } finally {
+        }
+        // catch ( XMLStreamException e ) {
+        // LOG.debug( "Error while writing the result to the OutputStream: {}", e.getMessage() );
+        // throw new MetadataStoreException( "Error while writing the result to the OutputStream: {}", e );
+        // }
+        finally {
             close( conn );
             close( stmt );
             close( rsInsertedDatasets );
         }
-
-    }
-
-    /**
-     * This method writes the resultSet from the database with the writer to an XML-output.
-     * 
-     * @param resultSet
-     *            that should search the backend, you have to close it manually.
-     * @param writer
-     *            that writes the data to the output
-     * @param columnIndex
-     *            the column that should be requested, not <Code>null</Code>.
-     * @throws SQLException
-     * @throws XMLStreamException
-     */
-    private void writeResultSet( ResultSet resultSet, XMLStreamWriter writer, int columnIndex )
-                            throws SQLException, XMLStreamException {
-        InputStreamReader isr = null;
-        Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
-        while ( resultSet.next() ) {
-
-            BufferedInputStream bais = new BufferedInputStream( resultSet.getBinaryStream( columnIndex ) );
-
-            try {
-                isr = new InputStreamReader( bais, charset );
-            } catch ( Exception e ) {
-
-                LOG.debug( "error while writing the result: {}", e.getMessage() );
-            }
-
-            readXMLFragment( isr, writer );
-
-        }
-
-    }
-
-    /**
-     * Reads a valid XML fragment
-     * 
-     * @param isr
-     * @param xmlWriter
-     * @throws XMLStreamException
-     */
-    private void readXMLFragment( InputStreamReader isr, XMLStreamWriter xmlWriter )
-                            throws XMLStreamException {
-
-        // XMLStreamReader xmlReaderOut;
-
-        XMLStreamReader xmlReader = null;
-        try {
-            // FileOutputStream fout = new FileOutputStream( "/home/thomas/Desktop/test.xml" );
-            // XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
-
-            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
-
-            // skip START_DOCUMENT
-            xmlReader.nextTag();
-
-            // XMLAdapter.writeElement( out, xmlReader );
-
-            XMLAdapter.writeElement( xmlWriter, xmlReader );
-            // fout.close();
-            xmlReader.close();
-
-        } catch ( XMLStreamException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-        } catch ( FactoryConfigurationError e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-        } finally {
-            xmlReader.close();
-        }
-        // catch ( FileNotFoundException e ) {
-        //
-        // LOG.debug( "error: " + e.getMessage(), e );
-        // } catch ( IOException e ) {
-        //
-        // LOG.debug( "error: " + e.getMessage(), e );
-        // }
 
     }
 

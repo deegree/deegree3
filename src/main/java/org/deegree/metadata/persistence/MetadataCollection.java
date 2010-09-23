@@ -33,9 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso;
+package org.deegree.metadata.persistence;
 
-import org.deegree.metadata.persistence.MetadataResultSet;
+import java.util.Collection;
 
 /**
  * TODO add class documentation here
@@ -45,24 +45,21 @@ import org.deegree.metadata.persistence.MetadataResultSet;
  * 
  * @version $Revision$, $Date$
  */
-public class ISOMetadataResultSet implements MetadataResultSet {
+public interface MetadataCollection extends Collection {
 
-    private MetadataResultSet rs;
+    // /**
+    // * Returns the type information for this metadata collection.
+    // *
+    // * @return the type information, never <code>null</code>
+    // */
+    // @Override
+    // public MetadataCollectionType getType();
 
-    public ISOMetadataResultSet( MetadataResultSet rs ) {
-        this.rs = rs;
-    }
-
-    @Override
-    public void close() {
-        rs.close();
-
-    }
-
-    @Override
-    public String encoding() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    /**
+     * Returns the contained metadata.
+     * 
+     * @return matching metadata instances as a new <code>MetadataCollection</code>
+     */
+    public MetadataCollection getMembers();
 
 }

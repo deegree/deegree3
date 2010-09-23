@@ -52,6 +52,12 @@ public interface MetadataResultSet {
      */
     void close();
 
+    /**
+     * 
+     * @return the encoding of the metadata.
+     */
+    String encoding();
+
     // MetadataCollection getMembers();
 
 }
