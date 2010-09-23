@@ -35,7 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import static java.util.Collections.synchronizedMap;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -61,6 +65,15 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
 
     private final GMLVersion version;
 
+    private static Map<Feature, Map<PropertyName, TypedObjectNode[]>> EVAL_CACHE = null;
+
+    /**
+     * temporary hack to enable caching again
+     */
+    public static void enableCache() {
+        EVAL_CACHE = synchronizedMap( new HashMap<Feature, Map<PropertyName, TypedObjectNode[]>>() );
+    }
+
     /**
      * Creates a new {@link FeatureXPathEvaluator} instance.
      * 
@@ -83,21 +96,40 @@ public class FeatureXPathEvaluator implements XPathEvaluator<Feature> {
 
         TypedObjectNode[] resultValues = null;
         try {
-            XPath xpath = new FeatureXPath( propName.getPropertyName(), context, version );
-            xpath.setNamespaceContext( propName.getNsContext() );
-            List<?> selectedNodes;
-            selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature>( null, context, version ) );
-            resultValues = new TypedObjectNode[selectedNodes.size()];
-            int i = 0;
-            for ( Object node : selectedNodes ) {
-                if ( node instanceof XPathNode<?> ) {
-                    resultValues[i++] = ( (XPathNode<?>) node ).getValue();
-                } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
-                    resultValues[i++] = new PrimitiveValue( node );
-                } else {
-                    throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
-                                                + node.getClass().getName() + "' (=" + node
-                                                + ") during XPath-evaluation." );
+            synchronized ( context ) {
+                if ( EVAL_CACHE != null ) {
+                    Map<PropertyName, TypedObjectNode[]> map = EVAL_CACHE.get( context );
+                    if ( map != null ) {
+                        resultValues = map.get( propName );
+                        if ( resultValues != null ) {
+                            return resultValues;
+                        }
+                    }
+                }
+                XPath xpath = new FeatureXPath( propName.getPropertyName(), context, version );
+                xpath.setNamespaceContext( propName.getNsContext() );
+                List<?> selectedNodes;
+                selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature>( null, context, version ) );
+                resultValues = new TypedObjectNode[selectedNodes.size()];
+                int i = 0;
+                for ( Object node : selectedNodes ) {
+                    if ( node instanceof XPathNode<?> ) {
+                        resultValues[i++] = ( (XPathNode<?>) node ).getValue();
+                    } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
+                        resultValues[i++] = new PrimitiveValue( node );
+                    } else {
+                        throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
+                                                    + node.getClass().getName() + "' (=" + node
+                                                    + ") during XPath-evaluation." );
+                    }
+                }
+                if ( EVAL_CACHE != null ) {
+                    Map<PropertyName, TypedObjectNode[]> map = EVAL_CACHE.get( context );
+                    if ( map == null ) {
+                        map = synchronizedMap( new HashMap<PropertyName, TypedObjectNode[]>() );
+                        EVAL_CACHE.put( context, map );
+                    }
+                    map.put( propName, resultValues );
                 }
             }
         } catch ( JaxenException e ) {
