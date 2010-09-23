@@ -121,9 +121,8 @@ public interface MetadataStore {
      *            {@link ReturnableElement}
      * @throws SQLException
      */
-    public void getRecordById( XMLStreamWriter writer, List<String> idList, URI outputSchema,
-                               ReturnableElement elementSetName )
-                            throws MetadataStoreException, XMLStreamException;
+    public MetadataResultSet getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+                            throws MetadataStoreException;
 
     /**
      * Acquires transactional access to the metadata store.

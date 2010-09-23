@@ -47,6 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.slf4j.Logger;
 
 /**
@@ -130,6 +131,40 @@ public class ParsingUtils {
         }
         return uuid;
 
+    }
+
+    /**
+     * Proves the availability of the identifier in the backend.
+     * 
+     * @param identifier
+     *            that is proved, not <Code>null</Code>.
+     * @return true, if the identifier is not found in the backend, otherwise false.
+     * @throws MetadataStoreException
+     */
+    public boolean proveIdExistence( String identifier )
+                            throws MetadataStoreException {
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        boolean notAvailable = true;
+        try {
+            String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
+                       + " AS i WHERE i.identifier = ?;";
+            stm = conn.prepareStatement( s );
+            stm.setObject( 1, identifier );
+            rs = stm.executeQuery();
+            LOG.debug( s );
+            if ( rs.next() ) {
+                notAvailable = false;
+            }
+
+        } catch ( SQLException e ) {
+            LOG.debug( "Error while proving the IDs stored in the backend: {}", e.getMessage() );
+            throw new MetadataStoreException( "Error while proving the IDs stored in the backend: {}" + e.getMessage() );
+        } finally {
+            close( stm );
+            close( rs );
+        }
+        return notAvailable;
     }
 
 }
