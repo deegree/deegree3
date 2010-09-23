@@ -39,7 +39,6 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_PUBLICATION_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-import static org.deegree.protocol.csw.CSWConstants.OutputSchema.DC;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -64,7 +63,6 @@ import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.metadata.publication.UpdateTransaction;
-import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -358,8 +356,9 @@ public class TransactionHandler {
 
         LOG.debug( "Performing insert-transaction output..." );
 
-        return rec.getRecordById( insertedMetadata, OutputSchema.determineOutputSchema( DC ), ReturnableElement.brief );
-
+        // return rec.getRecordById( insertedMetadata, OutputSchema.determineOutputSchema( DC ), ReturnableElement.brief
+        // );
+        return null;
     }
 
     private MetadataStore determineMetadataStore( OMElement element )
