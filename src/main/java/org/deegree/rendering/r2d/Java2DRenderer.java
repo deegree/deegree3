@@ -435,7 +435,13 @@ public class Java2DRenderer implements Renderer {
         }
 
         if ( LOG.isTraceEnabled() ) {
-            LOG.trace( "Drawing " + geom + " with " + styling );
+            String s;
+            try {
+                s = geom.toString();
+            } catch ( UnsupportedOperationException e ) {
+                s = "(WKT representation of " + geom.getClass().getSimpleName() + " is not available)";
+            }
+            LOG.trace( "Drawing " + s + " with " + styling );
         }
 
         if ( geom instanceof Point ) {
