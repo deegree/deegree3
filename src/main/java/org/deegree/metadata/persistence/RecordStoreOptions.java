@@ -36,6 +36,7 @@
 package org.deegree.metadata.persistence;
 
 import java.io.Writer;
+import java.net.URI;
 
 import org.deegree.filter.Filter;
 import org.deegree.filter.sort.SortProperty;
@@ -53,17 +54,19 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  */
 public class RecordStoreOptions {
 
-    private ResultType resultType;
+    private final ResultType resultType;
 
-    private ReturnableElement setOfReturnableElements;
+    private final ReturnableElement setOfReturnableElements;
 
-    private int maxRecords;
+    private final int maxRecords;
 
-    private int startPosition;
+    private final int startPosition;
 
-    private Filter filter;
+    private final Filter filter;
 
-    private SortProperty[] sorting;
+    private final URI outputSchema;
+
+    private final SortProperty[] sorting;
 
     /**
      * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared.
@@ -79,10 +82,11 @@ public class RecordStoreOptions {
      * @param startPosition
      *            at which record position should start the response}
      */
-    public RecordStoreOptions( Filter filter, SortProperty[] sorting, ResultType resultType,
+    public RecordStoreOptions( Filter filter, URI outputSchema, SortProperty[] sorting, ResultType resultType,
                                ReturnableElement setOfReturnableElements, int maxRecords, int startPosition ) {
 
         this.filter = filter;
+        this.outputSchema = outputSchema;
         this.sorting = sorting;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
@@ -91,25 +95,27 @@ public class RecordStoreOptions {
 
     }
 
-    /**
-     * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared except the
-     * startPosition attibute that is set to 1 by default.
-     * 
-     * @param filter
-     *            the parsed filter expression
-     * @param resultType
-     *            {@link ResultType}
-     * @param setOfReturnableElements
-     *            {@link ReturnableElement}
-     */
-    public RecordStoreOptions( Filter filter, ResultType resultType, ReturnableElement setOfReturnableElements ) {
-
-        this.filter = filter;
-        this.resultType = resultType;
-        this.setOfReturnableElements = setOfReturnableElements;
-        this.startPosition = 1;
-
-    }
+    // /**
+    // * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared except the
+    // * startPosition attibute that is set to 1 by default.
+    // *
+    // * @param filter
+    // * the parsed filter expression
+    // * @param resultType
+    // * {@link ResultType}
+    // * @param setOfReturnableElements
+    // * {@link ReturnableElement}
+    // */
+    // public RecordStoreOptions( Filter filter, URI outpurSchema, ResultType resultType, ReturnableElement
+    // setOfReturnableElements ) {
+    //
+    // this.filter = filter;
+    // this.outputSchema = outpurSchema;
+    // this.resultType = resultType;
+    // this.setOfReturnableElements = setOfReturnableElements;
+    // this.startPosition = 1;
+    //
+    // }
 
     /**
      * @return the filter
@@ -148,6 +154,10 @@ public class RecordStoreOptions {
 
     public SortProperty[] getSorting() {
         return sorting;
+    }
+
+    public URI getOutputSchema() {
+        return outputSchema;
     }
 
 }

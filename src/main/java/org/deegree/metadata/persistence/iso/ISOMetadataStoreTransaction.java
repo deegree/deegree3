@@ -18,7 +18,6 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
@@ -27,8 +26,6 @@ import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.UpdateTransaction;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,8 +174,15 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
         } else {
 
-            RecordStoreOptions gdds = new RecordStoreOptions( update.getConstraint(), ResultType.results,
-                                                              ReturnableElement.full );
+            // try {
+            // RecordStoreOptions gdds = new RecordStoreOptions( update.getConstraint(),
+            // new URI( update.getTypeName().getNamespaceURI() ), null,
+            // ResultType.results, ReturnableElement.full, result,
+            // result );
+            // } catch ( URISyntaxException e1 ) {
+            // // TODO Auto-generated catch block
+            // e1.printStackTrace();
+            // }
 
             int formatNumber = 0;
             Set<QName> qNameSet = new HashSet<QName>();
