@@ -39,6 +39,7 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_PUBLICATION_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
+import static org.deegree.protocol.csw.CSWConstants.OutputSchema.DC;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -63,6 +64,7 @@ import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.metadata.publication.UpdateTransaction;
+import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -85,9 +87,9 @@ public class TransactionHandler {
 
     private CSWService service;
 
-    private String encoding;
-
     private List<String> insertedMetadata;
+
+    private List<String> updatedMetadata;
 
     private static Map<QName, MetadataStore> requestedTypeNames;
 
@@ -220,7 +222,7 @@ public class TransactionHandler {
                     break;
                 case DELETE:
 
-                    doDelete( (DeleteTransaction) transact );
+                    deleteCount = doDelete( (DeleteTransaction) transact );
 
                     break;
 
@@ -230,15 +232,11 @@ public class TransactionHandler {
             if ( insertedMetadata != null ) {
                 insertCount = insertedMetadata.size();
             }
-            // for ( Integer t : transactionIdsDelete ) {
-            // deleteCount++;
-            // }
-            // for ( Integer t : transactionIdsInsert ) {
-            // insertCount++;
-            // }
-            // for ( Integer t : transactionIdsUpdate ) {
-            // updateCount++;
-            // }
+
+            if ( updatedMetadata != null ) {
+                updateCount = updatedMetadata.size();
+            }
+
         } catch ( Exception e ) {
             // throw new MetadataStoreException( e.getMessage() );
         }
@@ -265,16 +263,6 @@ public class TransactionHandler {
                 meta.serialize( writer, ReturnableElement.brief );
             }
 
-            for ( MetadataStore rec : requestedTypeNames.values() ) {
-                // try {
-                // // rec.getRecordsForTransactionInsertStatement( transactionIdsInsert );
-                // } catch ( MetadataStoreException e ) {
-                // String msg = e.getMessage();
-                // LOG.debug( msg );
-                // }
-
-            }
-
             writer.writeEndElement();// InsertResult
         }
 
@@ -283,15 +271,28 @@ public class TransactionHandler {
 
     }
 
-    private void doDelete( DeleteTransaction transact ) {
+    private int doDelete( DeleteTransaction transact )
+                            throws MetadataStoreException {
         DeleteTransaction delete = transact;
-        /*
-         * here all the registered recordStores are queried
-         */
-        for ( MetadataStore rec : service.getRecordStore() ) {
-            // transactionIdsDelete.addAll( rec.transaction( delete ) );
+        ;
 
+        int i = 0;
+        MetadataStoreTransaction mt = null;
+        try {
+            for ( MetadataStore rec : service.getRecordStore() ) {
+                mt = rec.acquireTransaction();
+                i = mt.performDelete( delete );
+                mt.commit();
+                LOG.info( "Delete done!" );
+            }
+        } catch ( MetadataStoreException e ) {
+            LOG.debug( e.getMessage() );
+            // insertedMetadata.clear();
+            mt.rollback();
+            throw new MetadataStoreException( e.getMessage() );
         }
+
+        return i;
 
     }
 
@@ -338,7 +339,10 @@ public class TransactionHandler {
         for ( OMElement element : insert.getElement() ) {
 
             MetadataStoreTransaction mt = null;
-            rec = determineMetadataStore( element );
+            String uri = element.getNamespace().getNamespaceURI();
+            String localName = element.getLocalName();
+            String prefix = element.getNamespace().getPrefix();
+            rec = determineMetadataStore( uri, localName, prefix );
             try {
 
                 mt = rec.acquireTransaction();
@@ -356,16 +360,12 @@ public class TransactionHandler {
 
         LOG.debug( "Performing insert-transaction output..." );
 
-        // return rec.getRecordById( insertedMetadata, OutputSchema.determineOutputSchema( DC ), ReturnableElement.brief
-        // );
-        return null;
+        return rec.getRecordById( insertedMetadata, OutputSchema.determineOutputSchema( DC ), ReturnableElement.brief );
     }
 
-    private MetadataStore determineMetadataStore( OMElement element )
+    private MetadataStore determineMetadataStore( String uri, String localName, String prefix )
                             throws MetadataStoreException {
-        String uri = element.getNamespace().getNamespaceURI();
-        String localName = element.getLocalName();
-        String prefix = element.getNamespace().getPrefix();
+
         LOG.info( "Prepare MetadataStore for insert. Check element QName: <" + uri + ">" + prefix + ":" + localName
                   + ". " );
         LOG.info( "Check metadataSore..." );
