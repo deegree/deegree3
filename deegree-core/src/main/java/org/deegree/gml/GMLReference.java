@@ -96,6 +96,10 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
     public boolean isLocal() {
         return uri.startsWith( "#" );
     }
+    
+    public boolean isResolved() {
+        return object != null;
+    }
 
     /**
      * Sets the referenced object.
