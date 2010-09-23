@@ -285,4 +285,21 @@ public class CollectionUtils {
         public T apply( U u );
     }
 
+    /**
+     * @param <T>
+     * @param col
+     * @return a list without null elements
+     */
+    public static <T> ArrayList<T> clearNulls( Collection<T> col ) {
+        ArrayList<T> list = new ArrayList<T>( col.size() );
+
+        for ( T t : col ) {
+            if ( t != null ) {
+                list.add( t );
+            }
+        }
+
+        return list;
+    }
+
 }
