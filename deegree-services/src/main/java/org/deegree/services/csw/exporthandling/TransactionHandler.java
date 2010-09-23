@@ -56,6 +56,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
@@ -85,6 +86,10 @@ public class TransactionHandler {
     private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
 
     private CSWService service;
+
+    private String encoding;
+
+    private List<String> insertedMetadata;
 
     private static Map<QName, MetadataStore> requestedTypeNames;
 
@@ -132,6 +137,10 @@ public class TransactionHandler {
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage() );
             throw new InvalidParameterValueException( e.getMessage() );
+        } catch ( MetadataStoreException e ) {
+            LOG.debug( e.getMessage() );
+            // TODO not the right exception
+            throw new InvalidParameterValueException( e.getMessage() );
         }
         xmlWriter.flush();
 
@@ -148,9 +157,10 @@ public class TransactionHandler {
      * @throws SQLException
      * @throws OWSException
      * @throws MetadataStoreException
+     * @throws MetadataStoreException
      */
     private void export( XMLStreamWriter xmlWriter, Transaction transaction, Version version, boolean isSoap )
-                            throws XMLStreamException, OWSException {
+                            throws XMLStreamException, OWSException, MetadataStoreException {
 
         if ( VERSION_202.equals( version ) ) {
             export202( xmlWriter, transaction, isSoap );
@@ -173,9 +183,10 @@ public class TransactionHandler {
      * @throws SQLException
      * @throws OWSException
      * @throws MetadataStoreException
+     * @throws MetadataStoreException
      */
     private void export202( XMLStreamWriter writer, Transaction transaction, boolean isSoap )
-                            throws XMLStreamException, OWSException {
+                            throws XMLStreamException, OWSException, MetadataStoreException {
         Version version = new Version( 2, 0, 2 );
 
         requestedTypeNames = new HashMap<QName, MetadataStore>();
@@ -194,13 +205,14 @@ public class TransactionHandler {
         if ( transaction.getRequestId() != null ) {
             writer.writeAttribute( "requestId", transaction.getRequestId() );
         }
+        List<MetadataRecord> rs = null;
         try {
             for ( TransactionOperation transact : transaction.getOperations() ) {
                 switch ( transact.getType() ) {
 
                 case INSERT:
 
-                    doInsert( (InsertTransaction) transact );
+                    rs = doInsert( (InsertTransaction) transact );
 
                     break;
                 case UPDATE:
@@ -217,6 +229,9 @@ public class TransactionHandler {
                 }
             }
 
+            if ( insertedMetadata != null ) {
+                insertCount = insertedMetadata.size();
+            }
             // for ( Integer t : transactionIdsDelete ) {
             // deleteCount++;
             // }
@@ -247,6 +262,10 @@ public class TransactionHandler {
         if ( insertCount > 0 ) {
             writer.writeStartElement( CSW_202_NS, "InsertResult" );
             // TODO handle?? where is it?? writer.writeAttribute( "handleRef", trans. );
+
+            for ( MetadataRecord meta : rs ) {
+                meta.serialize( writer, ReturnableElement.brief );
+            }
 
             for ( MetadataStore rec : requestedTypeNames.values() ) {
                 // try {
@@ -313,10 +332,10 @@ public class TransactionHandler {
 
     }
 
-    private void doInsert( InsertTransaction transact )
+    private List<MetadataRecord> doInsert( InsertTransaction transact )
                             throws MetadataStoreException {
         InsertTransaction insert = (InsertTransaction) transact;
-        List<String> insertedMetadata = new ArrayList<String>();
+        insertedMetadata = new ArrayList<String>();
         MetadataStore rec = null;
         for ( OMElement element : insert.getElement() ) {
 
@@ -339,7 +358,7 @@ public class TransactionHandler {
 
         LOG.debug( "Performing insert-transaction output..." );
 
-        rec.getRecordById( insertedMetadata, OutputSchema.determineOutputSchema( DC ), ReturnableElement.brief );
+        return rec.getRecordById( insertedMetadata, OutputSchema.determineOutputSchema( DC ), ReturnableElement.brief );
 
     }
 
@@ -383,4 +402,5 @@ public class TransactionHandler {
         }
         return new XMLStreamWriterWrapper( writer.getXMLWriter(), schemaLocation );
     }
+
 }
