@@ -39,10 +39,10 @@ import java.util.List;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.cs.CRS;
-import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
-import org.deegree.metadata.persistence.neededdatastructures.Format;
-import org.deegree.metadata.persistence.neededdatastructures.Keyword;
-import org.deegree.metadata.persistence.neededdatastructures.OperatesOnData;
+import org.deegree.metadata.persistence.types.BoundingBox;
+import org.deegree.metadata.persistence.types.Format;
+import org.deegree.metadata.persistence.types.Keyword;
+import org.deegree.metadata.persistence.types.OperatesOnData;
 
 /**
  * Properties that are queryable by applicationprofiles such as ISO application profile version 1.0 document 07-045.

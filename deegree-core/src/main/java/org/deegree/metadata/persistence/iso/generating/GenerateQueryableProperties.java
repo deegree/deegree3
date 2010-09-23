@@ -52,9 +52,9 @@ import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.ReturnableProperties;
-import org.deegree.metadata.persistence.neededdatastructures.Format;
-import org.deegree.metadata.persistence.neededdatastructures.Keyword;
-import org.deegree.metadata.persistence.neededdatastructures.OperatesOnData;
+import org.deegree.metadata.persistence.types.Format;
+import org.deegree.metadata.persistence.types.Keyword;
+import org.deegree.metadata.persistence.types.OperatesOnData;
 import org.slf4j.Logger;
 
 /**

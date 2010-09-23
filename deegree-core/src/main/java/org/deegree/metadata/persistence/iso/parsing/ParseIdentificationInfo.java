@@ -58,9 +58,9 @@ import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.GenerateMetadata;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
-import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
-import org.deegree.metadata.persistence.neededdatastructures.Keyword;
-import org.deegree.metadata.persistence.neededdatastructures.OperatesOnData;
+import org.deegree.metadata.persistence.types.BoundingBox;
+import org.deegree.metadata.persistence.types.Keyword;
+import org.deegree.metadata.persistence.types.OperatesOnData;
 import org.slf4j.Logger;
 
 /**

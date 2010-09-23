@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
@@ -121,7 +122,7 @@ public interface MetadataStore {
      *            {@link ReturnableElement}
      * @throws SQLException
      */
-    public MetadataResultSet getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+    public List<OMElement> getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
                             throws MetadataStoreException;
 
     /**
