@@ -35,14 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence;
 
-import java.io.IOException;
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.metadata.MetadataRecord;
@@ -101,13 +98,10 @@ public interface MetadataStore {
      *            ISO schema then there should be presented the ISO representation of the record.
      * @param recordStoreOptions
      *            {@link RecordStoreOptions}
-     * @throws SQLException
-     * @throws XMLStreamException
-     * @throws IOException
+     * @throws MetadataStoreException
      */
-    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema,
-                            RecordStoreOptions recordStoreOptions )
-                            throws MetadataStoreException, XMLStreamException;
+    public List<MetadataRecord> getRecords( QName typeName, URI outputSchema, RecordStoreOptions recordStoreOptions )
+                            throws MetadataStoreException;
 
     /**
      * Exports the records by the requested identifier.
@@ -120,7 +114,7 @@ public interface MetadataStore {
      *            that should be presented in the response
      * @param elementSetName
      *            {@link ReturnableElement}
-     * @throws SQLException
+     * @throws MetadataStoreException
      */
     public List<MetadataRecord> getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
                             throws MetadataStoreException;

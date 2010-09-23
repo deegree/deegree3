@@ -57,6 +57,7 @@ import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
@@ -87,6 +88,10 @@ public class ExecuteStatements {
     private static final String fk_datasets = PostGISMappingsISODC.CommonColumnNames.fk_datasets.name();
 
     private static final String identifier = PostGISMappingsISODC.CommonColumnNames.identifier.name();
+
+    private static final String data = PostGISMappingsISODC.CommonColumnNames.data.name();
+
+    private static final String format = PostGISMappingsISODC.CommonColumnNames.format.name();
 
     /**
      * This method executes the statement for INSERT datasets
@@ -552,6 +557,117 @@ public class ExecuteStatements {
         }
 
         return element;
+
+    }
+
+    public PreparedStatement executeGetRecords( String formatType, RecordStoreOptions recordStoreOptions,
+                                                int typeNameFormatNumber, boolean setCount,
+                                                PostGISWhereBuilder builder, Connection conn )
+                            throws MetadataStoreException {
+
+        StringBuilder getDatasetIDs = new StringBuilder( 300 );
+        PreparedStatement preparedStatement = null;
+        try {
+
+            LOG.debug( "wherebuilder: " + builder );
+
+            String rootTableAlias = builder.getAliasManager().getRootTableAlias();
+            String blobTableAlias = builder.getAliasManager().generateNew();
+
+            getDatasetIDs.append( "SELECT " );
+            if ( setCount ) {
+                getDatasetIDs.append( "COUNT(*)" );
+            } else {
+                getDatasetIDs.append( rootTableAlias );
+                getDatasetIDs.append( '.' );
+                getDatasetIDs.append( id );
+                getDatasetIDs.append( ',' );
+                getDatasetIDs.append( blobTableAlias );
+                getDatasetIDs.append( '.' );
+                getDatasetIDs.append( data );
+            }
+            getDatasetIDs.append( " FROM " );
+            getDatasetIDs.append( databaseTable );
+            getDatasetIDs.append( " " );
+            getDatasetIDs.append( rootTableAlias );
+
+            for ( PropertyNameMapping mappedPropName : builder.getMappedPropertyNames() ) {
+                String currentAlias = rootTableAlias;
+                for ( Join join : mappedPropName.getJoins() ) {
+                    DBField from = join.getFrom();
+                    DBField to = join.getTo();
+                    getDatasetIDs.append( " LEFT OUTER JOIN " );
+                    getDatasetIDs.append( to.getTable() );
+                    getDatasetIDs.append( " AS " );
+                    getDatasetIDs.append( to.getAlias() );
+                    getDatasetIDs.append( " ON " );
+                    getDatasetIDs.append( currentAlias );
+                    getDatasetIDs.append( "." );
+                    getDatasetIDs.append( from.getColumn() );
+                    getDatasetIDs.append( "=" );
+                    currentAlias = to.getAlias();
+                    getDatasetIDs.append( currentAlias );
+                    getDatasetIDs.append( "." );
+                    getDatasetIDs.append( to.getColumn() );
+                }
+            }
+
+            getDatasetIDs.append( " LEFT OUTER JOIN " );
+            getDatasetIDs.append( formatType );
+            getDatasetIDs.append( " AS " );
+            getDatasetIDs.append( blobTableAlias );
+            getDatasetIDs.append( " ON " );
+            getDatasetIDs.append( rootTableAlias );
+            getDatasetIDs.append( "." );
+            getDatasetIDs.append( id );
+            getDatasetIDs.append( "=" );
+            getDatasetIDs.append( blobTableAlias );
+            getDatasetIDs.append( "." );
+            getDatasetIDs.append( fk_datasets );
+
+            getDatasetIDs.append( " WHERE " );
+            getDatasetIDs.append( blobTableAlias );
+            getDatasetIDs.append( '.' );
+            getDatasetIDs.append( format );
+            getDatasetIDs.append( "=?" );
+
+            if ( builder.getWhere() != null ) {
+                getDatasetIDs.append( " AND " );
+                getDatasetIDs.append( builder.getWhere().getSQL() );
+            }
+
+            if ( builder.getOrderBy() != null && !setCount ) {
+                getDatasetIDs.append( " ORDER BY " );
+                getDatasetIDs.append( builder.getOrderBy().getSQL() );
+            }
+
+            if ( !setCount && recordStoreOptions != null ) {
+                getDatasetIDs.append( " OFFSET " ).append( Integer.toString( recordStoreOptions.getStartPosition() - 1 ) );
+                getDatasetIDs.append( " LIMIT " ).append( recordStoreOptions.getMaxRecords() );
+            }
+
+            preparedStatement = conn.prepareStatement( getDatasetIDs.toString() );
+
+            int i = 1;
+            preparedStatement.setInt( i++, typeNameFormatNumber );
+
+            if ( builder.getWhere() != null ) {
+                for ( SQLLiteral o : builder.getWhere().getLiterals() ) {
+                    preparedStatement.setObject( i++, o.getValue() );
+                }
+            }
+            if ( builder.getOrderBy() != null ) {
+                for ( SQLLiteral o : builder.getOrderBy().getLiterals() ) {
+                    preparedStatement.setObject( i++, o.getValue() );
+                }
+            }
+
+            LOG.debug( preparedStatement.toString() );
+        } catch ( SQLException e ) {
+            LOG.debug( "Error while generating the SELECT statement: {}", e.getMessage() );
+            throw new MetadataStoreException( "Error while generating the SELECT statement: {}", e );
+        }
+        return preparedStatement;
 
     }
 
