@@ -94,7 +94,7 @@ public class SOSClient extends HttpServlet {
 
         response.setContentType( "text/html" );
         response.setCharacterEncoding( "UTF-8" );
-        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher( "/client/CapabilitiesDisplay.jsp" );
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher( "/client/sos/CapabilitiesDisplay.jsp" );
 
         request.setAttribute( "storage", new HandleGetCapabilities( url ).getStorage() );
         try {
@@ -113,7 +113,7 @@ public class SOSClient extends HttpServlet {
 
         response.setContentType( "text/html" );
         response.setCharacterEncoding( "UTF-8" );
-        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher( "/client/DescribeSensorForm.jsp" );
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher( "/client/sos/DescribeSensorForm.jsp" );
 
         KVPDescribeSensor kvps = new GetKVPDescribeSensor( new HandleGetCapabilities( url ).getStorage() ).getKVPDescribeSensor();
 
@@ -134,7 +134,7 @@ public class SOSClient extends HttpServlet {
 
         response.setContentType( "text/html" );
         response.setCharacterEncoding( "UTF-8" );
-        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher( "/client/GetObservationForm.jsp" );
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher( "/client/sos/GetObservationForm.jsp" );
 
         KVPGetObservation kvps = new GetKVPGetObservation( new HandleGetCapabilities( url ).getStorage() ).getKVPGetObservation();
 
@@ -151,7 +151,7 @@ public class SOSClient extends HttpServlet {
     }
 
     private void doDescribeSensor( HttpServletRequest request, HttpServletResponse response ) {
-        String path = "client/DescribeSensorTemplate.xml";
+        String path = "client/sos/DescribeSensorTemplate.xml";
         path = getServletContext().getRealPath( path );
 
         String host = request.getParameter( "host" );
@@ -186,7 +186,7 @@ public class SOSClient extends HttpServlet {
     private void doGetObservation( HttpServletRequest request, HttpServletResponse response ) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        String path = "client/GetObservationTemplate.xml";
+        String path = "client/sos/GetObservationTemplate.xml";
 
         parameters.put( "path", getServletContext().getRealPath( path ) );
         parameters.put( "host", request.getParameter( "host" ) );

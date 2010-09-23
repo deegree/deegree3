@@ -4,7 +4,7 @@
   id="WebApp_ID" version="2.5">
   <display-name>genericSOSClient</display-name>
   <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
+    <welcome-file>client/sos/index.html</welcome-file>
   </welcome-file-list>
   <servlet>
     <description>entry point for SOSClient application</description>
