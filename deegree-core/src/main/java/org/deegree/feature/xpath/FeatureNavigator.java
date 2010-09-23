@@ -239,7 +239,7 @@ class FeatureNavigator extends DefaultNavigator {
             Object propValue = prop.getValue();
             if ( propValue instanceof GMLObject ) {
                 // TODO clear strategy for GML object references (remote + local)
-                if ( !( propValue instanceof GMLReference ) || ( (GMLReference) propValue ).isLocal() ) {
+                if ( !( propValue instanceof GMLReference ) || ( (GMLReference) propValue ).isResolved() ) {
                     iter = new SingleObjectIterator( new GMLObjectNode( (PropertyNode) node, (GMLObject) propValue,
                                                                         version ) );
                 }
