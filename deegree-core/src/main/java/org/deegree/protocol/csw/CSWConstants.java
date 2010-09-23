@@ -36,7 +36,11 @@
 
 package org.deegree.protocol.csw;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.metadata.persistence.MetadataStoreException;
 
 /**
  * 
@@ -324,6 +328,39 @@ public final class CSWConstants {
          * properties of specific records defined by a filter expression.
          */
         UPDATE
+
+    }
+
+    public enum OutputSchema {
+        DC,
+
+        ISO_19115;
+
+        private OutputSchema() {
+
+        }
+
+        public static URI determineOutputSchema( OutputSchema outputSchema )
+                                throws MetadataStoreException {
+            URI schema = null;
+            try {
+                switch ( outputSchema ) {
+                case DC:
+
+                    schema = new URI( CSWConstants.CSW_202_NS );
+                    break;
+                case ISO_19115:
+                    schema = new URI( CSWConstants.GMD_NS );
+                    break;
+
+                }
+            } catch ( URISyntaxException e ) {
+                throw new MetadataStoreException( e.getMessage() );
+            }
+
+            return schema;
+
+        }
 
     }
 
