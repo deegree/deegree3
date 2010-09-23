@@ -33,67 +33,48 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.neededdatastructures;
+package org.deegree.metadata.persistence.types;
 
 /**
- * BoundingBox representation for records. This class encapsulates the data for representation only.
+ * Format representation for records. This class encapsulates the data for representation only. <br>
+ * Format determines the software, hardware or other equipment needed to display or operates on a resource.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class BoundingBox {
+public class Format {
 
-    private double westBoundLongitude;
+    private String name;
 
-    private double southBoundLatitude;
-
-    private double eastBoundLongitude;
-
-    private double northBoundLatitude;
+    private String version;
 
     /**
+     * Creates a new {@link Format} instance.
      * 
-     * @param westBoundLongitude
-     * @param southBoundLatitude
-     * @param eastBoundLongitude
-     * @param northBoundLatitude
+     * @param name
+     *            physical or digital manifestation of a resource, e.g. shapefile
+     * @param version
+     *            of the format, e.g. Amendment 1 or 1.0
      */
-    public BoundingBox( double westBoundLongitude, double southBoundLatitude, double eastBoundLongitude,
-                        double northBoundLatitude ) {
-        this.westBoundLongitude = westBoundLongitude;
-        this.southBoundLatitude = southBoundLatitude;
-        this.eastBoundLongitude = eastBoundLongitude;
-        this.northBoundLatitude = northBoundLatitude;
+    public Format( String name, String version ) {
+        this.name = name;
+        this.version = version;
     }
 
     /**
-     * @return the westBoundLongitude
+     * @return the name
      */
-    public double getWestBoundLongitude() {
-        return westBoundLongitude;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @return the southBoundLatitude
+     * @return the version
      */
-    public double getSouthBoundLatitude() {
-        return southBoundLatitude;
-    }
-
-    /**
-     * @return the eastBoundLongitude
-     */
-    public double getEastBoundLongitude() {
-        return eastBoundLongitude;
-    }
-
-    /**
-     * @return the northBoundLatitude
-     */
-    public double getNorthBoundLatitude() {
-        return northBoundLatitude;
+    public String getVersion() {
+        return version;
     }
 
 }

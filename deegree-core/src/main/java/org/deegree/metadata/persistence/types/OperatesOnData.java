@@ -33,63 +33,62 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.neededdatastructures;
-
-import java.util.List;
+package org.deegree.metadata.persistence.types;
 
 /**
- * Keyword representation for records. This class encapsulates the data for representation only. <br>
- * In ISO profile this class encapsulates the keywords, whereas in DC profile the subjects are encapsulates in this
- * class.
+ * Specifies the tightly coupled dataset relation in ISO profile 1.0. This is defined in OGC 07-045 document.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Keyword {
+public class OperatesOnData {
 
-    private String keywordType;
+    private String operatesOn;
 
-    private List<String> keywords;
+    private String operatesOnIdentifier;
 
-    private String thesaurus;
+    private String operatesOnName;
 
     /**
-     * Creates a new {@link Keyword} instance.
+     * Creates a new {@link OperatesOnData} instance.
      * 
-     * @param keywordType
-     *            a group of similar keywords. It's defined in a codeList {discipline, place, stratum, theme, temporal}
-     * @param keywords
-     *            topic of the content of the resource
-     * @param thesaurus
-     *            of the keywords
+     * @param operatesOn
+     *            holds the identifier of a dataset tightly coupled with the service instance.
+     * 
+     * @param operatesOnIdentifier
+     *            identifier of a tightly coupled dataset on which the service operates on.
+     * 
+     * @param operatesOnName
+     *            name of an operation with which the service operates on a tightly coupled dataset.
+     * 
      */
-    public Keyword( String keywordType, List<String> keywords, String thesaurus ) {
-        this.keywordType = keywordType;
-        this.keywords = keywords;
-        this.thesaurus = thesaurus;
+    public OperatesOnData( String operatesOn, String operatesOnIdentifier, String operatesOnName ) {
+        this.operatesOn = operatesOn;
+        this.operatesOnIdentifier = operatesOnIdentifier;
+        this.operatesOnName = operatesOnName;
     }
 
     /**
-     * @return the keywordType
+     * @return the operatesOn
      */
-    public String getKeywordType() {
-        return keywordType;
+    public String getOperatesOn() {
+        return operatesOn;
     }
 
     /**
-     * @return the keywords
+     * @return the operatesOnIdentifier
      */
-    public List<String> getKeywords() {
-        return keywords;
+    public String getOperatesOnIdentifier() {
+        return operatesOnIdentifier;
     }
 
     /**
-     * @return the thesaurus
+     * @return the operatesOnName
      */
-    public String getThesaurus() {
-        return thesaurus;
+    public String getOperatesOnName() {
+        return operatesOnName;
     }
 
 }
