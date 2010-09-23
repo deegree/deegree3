@@ -64,7 +64,7 @@ import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.metadata.persistence.genericmetadatastore.ISOMetadataStore;
+import org.deegree.metadata.persistence.iso.ISOMetadataStore;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.slf4j.Logger;
 

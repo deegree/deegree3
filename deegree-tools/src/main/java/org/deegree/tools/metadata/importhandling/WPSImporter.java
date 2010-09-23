@@ -66,7 +66,7 @@ import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
-import org.deegree.metadata.persistence.neededdatastructures.BoundingBox;
+import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.tools.annotations.Tool;
 
