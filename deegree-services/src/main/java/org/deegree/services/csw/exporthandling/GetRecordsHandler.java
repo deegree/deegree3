@@ -255,10 +255,10 @@ public class GetRecordsHandler {
 
             // Question if there is the specified record available
             for ( QName typeName : getRec.getTypeNames() ) {
-                if ( service.getRecordStore( typeName ) != null ) {
-
-                    requestedTypeNames.put( typeName, service.getRecordStore( typeName ) );
-                }
+                // if ( service.getRecordStore( typeName ) != null ) {
+                //
+                // requestedTypeNames.put( typeName, service.getRecordStore( typeName ) );
+                // }
             }
 
             RecordStoreOptions gdds = new RecordStoreOptions( getRec.getConstraint(), getRec.getSortBy(),

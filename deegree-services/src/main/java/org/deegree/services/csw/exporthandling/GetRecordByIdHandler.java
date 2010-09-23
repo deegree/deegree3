@@ -162,7 +162,7 @@ public class GetRecordByIdHandler {
         if ( service.getRecordStore() != null ) {
             try {
                 for ( MetadataStore rec : service.getRecordStore() ) {
-                    rec.getRecordById( writer, getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
+                    rec.getRecordById( getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
                                        getRecBI.getElementSetName() );
                 }
             } catch ( MetadataStoreException e ) {

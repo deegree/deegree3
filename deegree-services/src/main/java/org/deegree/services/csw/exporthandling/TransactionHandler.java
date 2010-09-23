@@ -39,10 +39,13 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_PUBLICATION_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
+import static org.deegree.protocol.csw.CSWConstants.OutputSchema.DC;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -60,6 +63,8 @@ import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.TransactionOperation;
 import org.deegree.metadata.publication.UpdateTransaction;
+import org.deegree.protocol.csw.CSWConstants.OutputSchema;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
@@ -280,14 +285,14 @@ public class TransactionHandler {
          * Either it is a hole recordStore to be updated or just some recordProperties.
          */
         if ( update.getRecordProperty() == null ) {
-            requestedTypeNames.put(
-                                    new QName( update.getElement().getNamespace().getNamespaceURI(),
-                                               update.getElement().getLocalName(),
-                                               update.getElement().getNamespace().getPrefix() ),
-                                    service.getRecordStore( new QName(
-                                                                       update.getElement().getNamespace().getNamespaceURI(),
-                                                                       update.getElement().getLocalName(),
-                                                                       update.getElement().getNamespace().getPrefix() ) ) );
+            // requestedTypeNames.put(
+            // new QName( update.getElement().getNamespace().getNamespaceURI(),
+            // update.getElement().getLocalName(),
+            // update.getElement().getNamespace().getPrefix() ),
+            // service.getRecordStore( new QName(
+            // update.getElement().getNamespace().getNamespaceURI(),
+            // update.getElement().getLocalName(),
+            // update.getElement().getNamespace().getPrefix() ) ) );
 
             for ( MetadataStore rec : requestedTypeNames.values() ) {
                 // transactionIdsUpdate.addAll( rec.transaction( update ) );
@@ -311,34 +316,52 @@ public class TransactionHandler {
     private void doInsert( InsertTransaction transact )
                             throws MetadataStoreException {
         InsertTransaction insert = (InsertTransaction) transact;
-
+        List<String> insertedMetadata = new ArrayList<String>();
+        MetadataStore rec = null;
         for ( OMElement element : insert.getElement() ) {
 
-            requestedTypeNames.put( new QName( element.getNamespace().getNamespaceURI(), element.getLocalName(),
-                                               element.getNamespace().getPrefix() ),
-                                    service.getRecordStore( new QName( element.getNamespace().getNamespaceURI(),
-                                                                       element.getLocalName(),
-                                                                       element.getNamespace().getPrefix() ) ) );
-
-        }
-
-        for ( MetadataStore rec : requestedTypeNames.values() ) {
-
             MetadataStoreTransaction mt = null;
+            rec = determineMetadataStore( element );
             try {
-                LOG.info( "Insert of metadata from metadataStore: '" + rec + "'. " );
+
                 mt = rec.acquireTransaction();
-                mt.performInsert( insert );
+                insertedMetadata = mt.performInsert( insert );
                 mt.commit();
                 LOG.info( "Insert done!" );
             } catch ( MetadataStoreException e ) {
-                LOG.debug( "There went something wrong...so rollback every queried execute statement. " );
+                LOG.debug( e.getMessage() );
+                insertedMetadata.clear();
                 mt.rollback();
                 throw new MetadataStoreException( e.getMessage() );
             }
 
         }
 
+        LOG.debug( "Performing insert-transaction output..." );
+
+        rec.getRecordById( insertedMetadata, OutputSchema.determineOutputSchema( DC ), ReturnableElement.brief );
+
+    }
+
+    private MetadataStore determineMetadataStore( OMElement element )
+                            throws MetadataStoreException {
+        String uri = element.getNamespace().getNamespaceURI();
+        String localName = element.getLocalName();
+        String prefix = element.getNamespace().getPrefix();
+        LOG.info( "Prepare MetadataStore for insert. Check element QName: <" + uri + ">" + prefix + ":" + localName
+                  + ". " );
+        LOG.info( "Check metadataSore..." );
+        MetadataStore rec = null;
+        try {
+            rec = service.getRecordStore( new QName( uri, localName, prefix ) );
+
+            LOG.info( "Conventient MetadataStore found. Insert of metadata into metadataStore: '" + rec
+                      + "' can be accomplished" );
+        } catch ( MetadataStoreException e ) {
+            LOG.error( "error: " + e.getMessage() );
+            throw new MetadataStoreException( e.getMessage() );
+        }
+        return rec;
     }
 
     /**
