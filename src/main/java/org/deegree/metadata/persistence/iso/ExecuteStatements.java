@@ -45,8 +45,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.feature.persistence.mapping.DBField;
@@ -265,13 +267,15 @@ public class ExecuteStatements {
      * @param updatedIds
      * @param parsedElement
      *            {@link ParsedProfileElement}
+     * @throws MetadataStoreException
      */
-    public void executeUpdateStatement( Connection connection, List<Integer> updatedIds,
-                                        ParsedProfileElement parsedElement ) {
+    public int executeUpdateStatement( Connection connection, ParsedProfileElement parsedElement )
+                            throws MetadataStoreException {
 
         boolean isUpdate = true;
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildMetadataXMLRepresentation();
+        int result = 0;
 
         PreparedStatement stm = null;
         Statement stmt = null;
@@ -376,7 +380,7 @@ public class ExecuteStatements {
                     // TODO association
 
                     // recordBrief, recordSummary, recordFull update
-                    updatedIds.add( buildRecXML.updateRecord( requestedId, parsedElement, connection ) );
+                    result = buildRecXML.updateRecord( requestedId, parsedElement, connection );
 
                     generateQP.executeQueryableProperties( isUpdate, connection, requestedId, parsedElement );
 
@@ -396,18 +400,159 @@ public class ExecuteStatements {
             }
 
         } catch ( SQLException e ) {
-
             LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
         } catch ( IOException e ) {
-
             LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
         } catch ( ParseException e ) {
-
             LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
         } finally {
-            JDBCUtils.close( rs, stm, connection, LOG );
-            JDBCUtils.close( null, stmt, null, LOG );
+            JDBCUtils.close( rs );
+            JDBCUtils.close( stmt );
         }
+
+        return result;
+    }
+
+    private void updatePrecondition( PostGISMappingsISODC mapping, PostGISWhereBuilder builder ) {
+
+        // for ( QName propName : mapping.getPropToTableAndCol().keySet() ) {
+        // String nsURI = propName.getNamespaceURI();
+        // String prefix = propName.getPrefix();
+        // QName analysedQName = new QName( nsURI, "", prefix );
+        // qNameSet.add( analysedQName );
+        // }
+        //
+        // for ( QName qName : typeNames.keySet() ) {
+        // if ( qName.equals( qNameSet.iterator().next() ) ) {
+        // formatNumber = typeNames.get( qName );
+        // }
+        // }
+        //
+        // PreparedStatement str = getRequestedIDStatement( formatTypeInISORecordStore.get( ReturnableElement.full ),
+        // gdds, formatNumber, builder );
+        //
+        // ResultSet rsUpdatableDatasets = str.executeQuery();
+        // List<Integer> updatableDatasets = new ArrayList<Integer>();
+        // while ( rsUpdatableDatasets.next() ) {
+        // updatableDatasets.add( rsUpdatableDatasets.getInt( 1 ) );
+        //
+        // }
+        // str.close();
+        // rsUpdatableDatasets.close();
+        //
+        // if ( updatableDatasets.size() != 0 ) {
+        // PreparedStatement stmt = null;
+        // StringBuilder stringBuilder = new StringBuilder();
+        // stringBuilder.append( "SELECT " ).append( formatTypeInISORecordStore.get( ReturnableElement.full ) );
+        // stringBuilder.append( '.' ).append( data );
+        // stringBuilder.append( " FROM " ).append( formatTypeInISORecordStore.get( ReturnableElement.full ) );
+        // stringBuilder.append( " WHERE " ).append( formatTypeInISORecordStore.get( ReturnableElement.full ) );
+        // stringBuilder.append( '.' ).append( format );
+        // stringBuilder.append( " = 2 AND " ).append( formatTypeInISORecordStore.get( ReturnableElement.full ) );
+        // stringBuilder.append( '.' ).append( fk_datasets ).append( " = ?;" );
+        // for ( int i : updatableDatasets ) {
+        //
+        // stmt = conn.prepareStatement( stringBuilder.toString() );
+        // stmt.setObject( 1, i );
+        // ResultSet rsGetStoredFullRecordXML = stmt.executeQuery();
+        //
+        // while ( rsGetStoredFullRecordXML.next() ) {
+        // for ( MetadataProperty recProp : upd.getRecordProperty() ) {
+        //
+        // PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName(), null );
+        //
+        // Object obje = mapping.getPostGISValue( (Literal<?>) recProp.getReplacementValue(),
+        // recProp.getPropertyName() );
+        //
+        // // creating an OMElement read from backend byteData
+        // InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
+        // XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
+        //
+        // OMElement elementBuiltFromDB = new StAXOMBuilder( reader ).getDocument().getOMDocumentElement();
+        //
+        // OMElement omElement = recursiveElementKnotUpdate( elementBuiltFromDB,
+        // elementBuiltFromDB.getChildElements(),
+        // propMapping.getTargetField().getColumn(),
+        // obje.toString() );
+        //
+        // QName localName = omElement.getQName();
+        //
+        // ExecuteStatements executeStatements = new ExecuteStatements();
+        //
+        // if ( localName.equals( new QName( CSW_202_NS, "Record", CSW_PREFIX ) )
+        // || localName.equals( new QName( CSW_202_NS, "Record", "" ) ) ) {
+        //
+        // executeStatements.executeUpdateStatement( conn, affectedIds,
+        // new ISOQPParsing().parseAPDC( omElement ) );
+        //
+        // } else {
+        //
+        // // executeStatements.executeUpdateStatement(
+        // // conn,
+        // // affectedIds,
+        // // new ISOQPParsing().parseAPISO(
+        // // fi,
+        // // ic,
+        // // ci,
+        // // omElement,
+        // // true ) );
+        //
+        // }
+        //
+        // }
+        // }
+        // stmt.close();
+        // rsGetStoredFullRecordXML.close();
+        //
+        // }
+        // }
+
+    }
+
+    /**
+     * This method replaces the text content of an elementknot.
+     * <p>
+     * TODO this is suitable for updates which affect an elementknot that has just one child. <br>
+     * BUG - if there a more childs like in the "keyword"-elementknot.
+     * 
+     * @param element
+     *            where to start in the OMTree
+     * @param childElements
+     *            as an Iterator above all the childElements of the element
+     * @param searchForLocalName
+     *            is the name that is searched for. This is the elementknot thats content should be updated.
+     * @param newContent
+     *            is the new content that should be updated
+     * @return OMElement
+     */
+    private OMElement recursiveElementKnotUpdate( OMElement element, Iterator childElements, String searchForLocalName,
+                                                  String newContent ) {
+
+        Iterator it = element.getChildrenWithLocalName( searchForLocalName );
+
+        if ( it.hasNext() ) {
+            OMElement u = null;
+            while ( it.hasNext() ) {
+                u = (OMElement) it.next();
+                LOG.debug( "rec: " + u.toString() );
+                u.getFirstElement().setText( newContent );
+                LOG.debug( "rec2: " + u.toString() );
+            }
+            return element;
+
+        }
+        while ( childElements.hasNext() ) {
+            OMElement elem = (OMElement) childElements.next();
+
+            recursiveElementKnotUpdate( elem, elem.getChildElements(), searchForLocalName, newContent );
+
+        }
+
+        return element;
+
     }
 
 }

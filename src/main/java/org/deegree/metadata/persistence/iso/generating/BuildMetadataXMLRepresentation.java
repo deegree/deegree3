@@ -107,9 +107,10 @@ public class BuildMetadataXMLRepresentation {
      * @param stm
      * @return an integer that indicates if there is a record updated
      * @throws IOException
+     * @throws MetadataStoreException
      */
     public int updateRecord( int fk_datasets, ParsedProfileElement parsedElement, Connection connection )
-                            throws IOException {
+                            throws IOException, MetadataStoreException {
 
         StringWriter isoOMElement = new StringWriter( 2000 );
         OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -162,9 +163,11 @@ public class BuildMetadataXMLRepresentation {
             } catch ( SQLException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
+                throw new MetadataStoreException( e.getMessage() );
             } catch ( ParseException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
+                throw new MetadataStoreException( e.getMessage() );
             }
         }
 
