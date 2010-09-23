@@ -40,10 +40,12 @@ import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -52,9 +54,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.index.RTree;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRS;
-import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -79,6 +82,7 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
@@ -103,6 +107,8 @@ public class MemoryFeatureStore implements FeatureStore {
     private final Map<String, GMLObject> idToObject = new HashMap<String, GMLObject>();
 
     private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
+
+    private final Map<FeatureType, RTree<Feature>> ftToIndex = new HashMap<FeatureType, RTree<Feature>>();
 
     private MemoryFeatureStoreTransaction activeTransaction;
 
@@ -183,6 +189,8 @@ public class MemoryFeatureStore implements FeatureStore {
      *            features
      */
     void addFeatures( Collection<Feature> features ) {
+
+        // add features
         for ( Feature feature : features ) {
             FeatureType ft = feature.getType();
             // TODO check if served
@@ -195,6 +203,45 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     /**
+     * Rebuilds the feature collection maps and indexes after the transaction.
+     */
+    void rebuildMaps() {
+
+        // create new feature collections (for bounding box recalculation)
+        for ( FeatureType ft : ftToFeatures.keySet() ) {
+            FeatureCollection oldFc = ftToFeatures.get( ft );
+            if ( !oldFc.isEmpty() ) {
+                FeatureCollection newFc = new GenericFeatureCollection();
+                newFc.addAll( oldFc );
+            }
+        }
+
+        // (re-) build RTree
+        for ( FeatureType ft : ftToFeatures.keySet() ) {
+            FeatureCollection fc = ftToFeatures.get( ft );
+            Envelope env = fc.getEnvelope();
+            if ( env != null ) {
+                RTree<Feature> index = new RTree<Feature>( toFloats( env ), 16 );
+                List<Pair<float[], Feature>> fBboxes = new ArrayList<Pair<float[], Feature>>( fc.size() );
+                for ( Feature f : fc ) {
+                    Envelope fEnv = f.getEnvelope();
+                    if ( fEnv != null ) {
+                        float[] floats = toFloats( fEnv );
+                        fBboxes.add( new Pair<float[], Feature>( floats, f ) );
+                    }
+                }
+                index.insertBulk( fBboxes );
+                ftToIndex.put( ft, index );
+            }
+        }
+    }
+
+    private float[] toFloats( Envelope env ) {
+        return new float[] { (float) env.getMin().get0(), (float) env.getMin().get1(), (float) env.getMax().get0(),
+                            (float) env.getMax().get1() };
+    }
+
+    /**
      * Adds the given identified {@link Geometry} instances.
      * 
      * @param geometries
@@ -204,10 +251,16 @@ public class MemoryFeatureStore implements FeatureStore {
     void addGeometriesWithId( Collection<Geometry> geometries )
                             throws UnknownCRSException {
         for ( Geometry geometry : geometries ) {
-            CRS crs = geometry.getCoordinateSystem();
-            // provoke an UnknownCRSException if it is not known
-            if ( crs != null ) {
-                crs.getWrappedCRS();
+            if ( !( geometry instanceof Point && geometry.getCoordinateDimension() == 1 ) ) {
+                CRS crs = geometry.getCoordinateSystem();
+                if ( storageSRS != null ) {
+                    if ( !storageSRS.equals( crs ) ) {
+                        throw new RuntimeException( "Trying to add geometry with CRS " + crs );
+                    }
+                } else if ( crs != null ) {
+                    // provoke an UnknownCRSException if it is not known
+                    crs.getWrappedCRS();
+                }
             }
             idToObject.put( geometry.getId(), geometry );
         }
@@ -251,34 +304,23 @@ public class MemoryFeatureStore implements FeatureStore {
             // determine / filter features
             fc = ftToFeatures.get( ft );
 
-            Envelope prefilterBox = query.getPrefilterBBox();
-            if ( prefilterBox != null && prefilterBox.getCoordinateSystem() != null ) {
-                CRS pboxcrs = prefilterBox.getCoordinateSystem();
-                try {
-                    GeometryTransformer t = new GeometryTransformer( prefilterBox.getCoordinateSystem() );
-
-                    GenericFeatureCollection col = new GenericFeatureCollection();
-                    for ( Feature f : fc ) {
-                        Envelope fbox = f.getEnvelope();
-                        if ( fbox != null ) {
-                            fbox = fbox.getCoordinateSystem().equals( pboxcrs ) ? fbox : t.transform( fbox );
-                        }
-
-                        if ( fbox != null && fbox.intersects( prefilterBox ) ) {
-                            col.add( f );
-                        }
+            // perform index filtering
+            Envelope ftEnv = ftToFeatures.get( ft ).getEnvelope();
+            if ( query.getPrefilterBBox() != null && ftEnv != null && storageSRS != null ) {
+                Envelope prefilterBox = query.getPrefilterBBox();
+                if ( prefilterBox.getCoordinateSystem() != null
+                     && !prefilterBox.getCoordinateSystem().equals( storageSRS ) ) {
+                    try {
+                        GeometryTransformer t = new GeometryTransformer( storageSRS );
+                        prefilterBox = t.transform( prefilterBox );
+                    } catch ( Exception e ) {
+                        throw new FeatureStoreException( e.getMessage(), e );
                     }
-                    fc = col;
-                } catch ( IllegalArgumentException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch ( UnknownCRSException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch ( TransformationException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 }
+
+                float[] floats = toFloats( prefilterBox );
+                RTree<Feature> index = ftToIndex.get( ft );
+                fc = new GenericFeatureCollection( null, index.query( floats ) );
             }
 
             if ( query.getFilter() != null ) {
@@ -420,10 +462,6 @@ public class MemoryFeatureStore implements FeatureStore {
         return ftToFeatures.get( ft );
     }
 
-    void setCollection( FeatureType ft, FeatureCollection fc ) {
-        ftToFeatures.put( ft, fc );
-    }
-
     void removeObject( String id ) {
         Object o = idToObject.remove( id );
         if ( o == null ) {
@@ -454,7 +492,6 @@ public class MemoryFeatureStore implements FeatureStore {
 
     @Override
     public CRS getStorageSRS() {
-        // TODO make this configurable
-        return new CRS( "urn:x-ogc:def:crs:EPSG:6.11.2:4326" );
+        return storageSRS;
     }
 }

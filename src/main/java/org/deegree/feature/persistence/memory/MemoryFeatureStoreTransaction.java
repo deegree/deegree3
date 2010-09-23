@@ -116,6 +116,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public void commit()
                             throws FeatureStoreException {
+        store.rebuildMaps();
         store.releaseTransaction( this );
     }
 
@@ -319,6 +320,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private Feature transformGeometries( Feature feature, GeometryTransformer transformer )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
+
         // TODO Do not modify the incoming feature, but create a new one.
         for ( Property prop : feature.getProperties() ) {
             TypedObjectNode value = prop.getValue();
@@ -356,13 +358,14 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private Geometry transformGeometry( Geometry value, GeometryTransformer transformer )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
+
         Geometry transformed = value;
         if ( transformed.getCoordinateSystem() == null ) {
             transformed.setCoordinateSystem( store.storageSRS );
         } else {
             transformed = linearizer.linearize( value, crit );
-            if ( transformed instanceof Point && transformed.getCoordinateDimension() > 1 ) {
-                transformed = transformer.transform( value, value.getCoordinateSystem().getWrappedCRS() );
+            if ( !( transformed instanceof Point && transformed.getCoordinateDimension() == 1 ) ) {
+                transformed = transformer.transform( transformed, transformed.getCoordinateSystem().getWrappedCRS() );
             }
         }
         return transformed;
@@ -395,6 +398,16 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                             findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
                         }
                     } else if ( propertyValue instanceof Geometry ) {
+                        Geometry geom = (Geometry) propertyValue;
+                        if ( !( geom instanceof Point && geom.getCoordinateDimension() == 1 ) ) {
+                            if ( !geom.getCoordinateSystem().equals( store.getStorageSRS() ) ) {
+                                System.out.println( "Feature " + feature.getId() );
+                                System.out.println( "Property " + property.getName() );
+                                System.out.println( "Geom " + geom );
+                                System.out.println( "CRS " + geom.getCoordinateSystem() );
+                                throw new RuntimeException( "Untransformed geometry!?" );
+                            }
+                        }
                         findGeometries( (Geometry) propertyValue, geometries, gids );
                     }
                 }
@@ -485,6 +498,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public void rollback()
                             throws FeatureStoreException {
+        store.rebuildMaps();
         store.releaseTransaction( this );
         String msg = "Cannot recover pre-transaction state (not supported by this feature store). Feature store may be inconsistent!";
         throw new FeatureStoreException( msg );
