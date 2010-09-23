@@ -56,7 +56,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>SimpleObservationProvider</code> makes available the SimpleObservationStore model. This includes a schema,
+ * te
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 

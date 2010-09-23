@@ -38,7 +38,8 @@ package org.deegree.observation.persistence;
 import java.net.URL;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>ObservationStoreProvider</code> class makes an observation store model available. This can include a
+ * schema, namespace, configuration template and an observation store.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
