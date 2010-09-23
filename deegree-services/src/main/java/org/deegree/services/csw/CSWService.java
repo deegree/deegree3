@@ -112,23 +112,29 @@ public class CSWService {
     }
 
     /**
-     * Question after a {@link MetadataStore} that is available that maps to the requested typeName. <br>
+     * * Question after a {@link MetadataStore} that is available that maps to the requested typeName. <br>
      * If there is no matching between the parameter typeName and any {@link MetadataStore} there is nothing to be
      * returned. Otherwise the requested {@link MetadataStore} should return.
      * 
      * 
      * @param qName
      *            the characteristic typeName for a specific record
-     * @return {@link MetadataStore}, can be <Code>null</Code>
+     * 
+     * @return a {@link MetadataStore}
+     * @throws MetadataStoreException
+     *             if there is no {@link MetadataStore} found.
      */
-    public MetadataStore getRecordStore( QName qName ) {
+    public MetadataStore getRecordStore( QName qName )
+                            throws MetadataStoreException {
+
         for ( MetadataStore rs : recordStore ) {
             if ( rs.getTypeNames().get( qName ) != null ) {
                 return rs;
             }
 
         }
-        return null;
+        throw new MetadataStoreException( "There is no MetadataStore registered for '" + qName + "'!" );
+
     }
 
     /**
