@@ -70,6 +70,8 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.utils.GMLObjectVisitor;
 import org.deegree.gml.utils.GMLObjectWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Each instance contains the objects stored by the {@link MemoryFeatureStore} at a certain point of time.
@@ -80,6 +82,8 @@ import org.deegree.gml.utils.GMLObjectWalker;
  * @version $Revision$, $Date$
  */
 class StoredFeatures {
+
+    private static final Logger LOG = LoggerFactory.getLogger( StoredFeatures.class );
 
     private final ApplicationSchema schema;
 
@@ -110,7 +114,7 @@ class StoredFeatures {
      * Adds the given {@link Feature} instances.
      * 
      * @param features
-     *            features to be added
+     *            features to be added, never <code>null</code> and every feature and geometry must have an id
      */
     void addFeatures( Collection<Feature> features ) {
         for ( Feature feature : features ) {
@@ -124,6 +128,7 @@ class StoredFeatures {
     void buildMaps()
                             throws UnknownCRSException {
 
+        long begin = System.currentTimeMillis();
         // (re-) build RTree
         for ( FeatureType ft : ftToFeatures.keySet() ) {
             FeatureCollection fc = ftToFeatures.get( ft );
@@ -142,16 +147,17 @@ class StoredFeatures {
                 ftToIndex.put( ft, index );
             }
         }
+        long elapsed = System.currentTimeMillis() - begin;
+        LOG.debug( "Building spatial index took {} [ms]", elapsed );
 
         // (re-) build id lookup table
+        begin = System.currentTimeMillis();
         idToObject.clear();
         GMLObjectVisitor visitor = new GMLObjectVisitor() {
 
             @Override
             public boolean visitGeometry( Geometry geom ) {
-                if ( geom.getId() != null ) {
-                    idToObject.put( geom.getId(), geom );
-                }
+                idToObject.put( geom.getId(), geom );
                 return true;
             }
 
@@ -167,6 +173,8 @@ class StoredFeatures {
                 new GMLObjectWalker( visitor ).traverse( f );
             }
         }
+        elapsed = System.currentTimeMillis() - begin;
+        LOG.debug( "Building id lookup table took {} [ms]", elapsed );
     }
 
     FeatureResultSet query( Query query )

@@ -48,13 +48,12 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CombinedResultSet;
@@ -132,22 +131,14 @@ public class MemoryFeatureStore implements FeatureStore {
 
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         gmlReader.setApplicationSchema( schema );
-        gmlReader.readFeature();
+        FeatureCollection fc = gmlReader.readFeatureCollection();
         gmlReader.close();
         GMLDocumentIdContext idContext = gmlReader.getIdContext();
         idContext.resolveLocalRefs();
 
-        FeatureCollection fc = new GenericFeatureCollection();
-        for ( GMLObject obj : idContext.getObjects().values() ) {
-            if ( obj instanceof Feature ) {
-                fc.add( (Feature) obj );
-            }
-        }
-
-        // TODO storageSRS
-        storedFeatures = new StoredFeatures( schema, null, null );
-        storedFeatures.addFeatures( fc );
-        storedFeatures.buildMaps();
+        FeatureStoreTransaction ta = acquireTransaction();
+        ta.performInsert( fc, IDGenMode.GENERATE_NEW );
+        ta.commit();
     }
 
     @Override

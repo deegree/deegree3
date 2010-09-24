@@ -39,10 +39,7 @@ package org.deegree.feature.persistence.memory;
 import static org.deegree.feature.i18n.Messages.getMessage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.namespace.QName;
@@ -78,7 +75,8 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.FeatureReference;
+import org.deegree.gml.utils.GMLObjectVisitor;
+import org.deegree.gml.utils.GMLObjectWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,8 +107,10 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
      * 
      * NOTE: This method is only supposed to be invoked by the {@link MemoryFeatureStore}.
      * 
-     * @param sf
+     * @param fs
      *            invoking feature store instance, never <code>null</code>
+     * @param sf
+     * 
      */
     MemoryFeatureStoreTransaction( MemoryFeatureStore fs, StoredFeatures sf ) {
         this.fs = fs;
@@ -212,6 +212,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
+        long begin = System.currentTimeMillis();
         if ( fs.getStorageSRS() != null ) {
             LOG.debug( "Transforming incoming feature collection to '" + fs.getStorageSRS() + "'" );
             try {
@@ -223,94 +224,118 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             }
             LOG.debug( "Done." );
         }
-
-        Set<Geometry> geometries = new HashSet<Geometry>();
-        Set<Feature> features = new HashSet<Feature>();
-        Set<String> fids = new LinkedHashSet<String>();
-        Set<String> gids = new HashSet<String>();
-
-        long begin = System.currentTimeMillis();
-        findFeaturesAndGeometries( fc, geometries, features, fids, gids );
         long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Finding features and geometries took {} [ms]", elapsed );
+        LOG.debug( "Transforming geometries took {} [ms]", elapsed );
 
         begin = System.currentTimeMillis();
-        switch ( mode ) {
-        case GENERATE_NEW: {
-            // TODO don't alter incoming features / geometries
-            for ( Feature feature : features ) {
-                String newFid = "FEATURE_" + generateNewId();
-                String oldFid = feature.getId();
-                if ( oldFid != null ) {
-                    fids.remove( oldFid );
-                }
-                fids.add( newFid );
-                feature.setId( newFid );
-            }
-
-            for ( Geometry geometry : geometries ) {
-                String newGid = "GEOMETRY_" + generateNewId();
-                String oldGid = geometry.getId();
-                if ( oldGid != null ) {
-                    gids.remove( oldGid );
-                }
-                gids.add( newGid );
-                geometry.setId( newGid );
-            }
-            break;
-        }
-        case REPLACE_DUPLICATE: {
-            throw new FeatureStoreException( "REPLACE_DUPLICATE is not available yet." );
-        }
-        case USE_EXISTING: {
-            // TODO don't change incoming features / geometries
-            for ( Feature feature : features ) {
-                if ( feature.getId() == null ) {
-                    String newFid = "FEATURE_" + generateNewId();
-                    feature.setId( newFid );
-                    fids.add( newFid );
-                }
-            }
-
-            for ( Geometry geometry : geometries ) {
-                if ( geometry.getId() == null ) {
-                    String newGid = "GEOMETRY_" + generateNewId();
-                    geometry.setId( newGid );
-                    gids.add( newGid );
-                }
-            }
-            break;
-        }
-        }
+        List<Feature> features = assignIds( fc, mode );
         elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Id generation took {} [ms]", elapsed );
-
-        // check if any of the features / geometries to be inserted already exists in the store
-        begin = System.currentTimeMillis();
-        for ( String fid : fids ) {
-            if ( sf.getObjectById( fid ) != null ) {
-                String msg = "Cannot insert feature '" + fid + "'. This feature already exists in the feature store.";
-                throw new FeatureStoreException( msg );
-            }
-        }
-        elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Checking for existing features took {} [ms]", elapsed );
-
-        begin = System.currentTimeMillis();
-        for ( String gid : gids ) {
-            if ( sf.getObjectById( gid ) != null ) {
-                String msg = "Cannot insert geometry '" + gid + "'. This geometry already exists in the feature store.";
-                throw new FeatureStoreException( msg );
-            }
-        }
-        elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Checking for existing geometries took {} [ms]", elapsed );
+        LOG.debug( "Assigning ids / finding features and geometries took {} [ms]", elapsed );
 
         begin = System.currentTimeMillis();
         sf.addFeatures( features );
         elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Adding of features took {} [ms]", elapsed );
+
+        List<String> fids = new ArrayList<String>( features.size() );
+        for ( Feature f : features ) {
+            fids.add( f.getId() );
+        }
         return new ArrayList<String>( fids );
+    }
+
+    /**
+     * Assigns an id to every {@link Feature} / {@link Geometry} in the given collection.
+     * 
+     * @param fc
+     *            feature collection, must not be <code>null</code>
+     * @param mode
+     *            id generation mode, must not be <code>null</code>
+     * @return list of all features (including nested features) from the input collection, with ids
+     */
+    private List<Feature> assignIds( final FeatureCollection fc, final IDGenMode mode )
+                            throws FeatureStoreException {
+        final List<Feature> features = new ArrayList<Feature>( fc.size() );
+        GMLObjectVisitor visitor = new GMLObjectVisitor() {
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public boolean visitGeometry( Geometry geom ) {
+                String id = getGeometryId( geom, mode );
+                if ( sf.getObjectById( id ) != null ) {
+                    String msg = "Cannot insert geometry '" + id
+                                 + "'. This geometry already exists in the feature store.";
+                    throw new IllegalArgumentException( msg );
+                }
+                geom.setId( id );
+                return true;
+            }
+
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public boolean visitFeature( Feature feature ) {
+                String id = getFeatureId( feature, mode );
+                if ( sf.getObjectById( id ) != null ) {
+                    String msg = "Cannot insert feature '" + id
+                                 + "'. This feature already exists in the feature store.";
+                    throw new IllegalArgumentException( msg );
+                }
+                if ( feature != fc ) {
+                    feature.setId( id );
+                    features.add( feature );
+                }
+                return true;
+            }
+        };
+        try {
+            new GMLObjectWalker( visitor ).traverse( fc );
+        } catch ( IllegalArgumentException e ) {
+            throw new FeatureStoreException( e.getMessage() );
+        }
+        return features;
+    }
+
+    private String getFeatureId( Feature feature, IDGenMode mode ) {
+        String fid = feature.getId();
+        switch ( mode ) {
+        case GENERATE_NEW: {
+            fid = "FEATURE_" + generateNewId();
+            break;
+        }
+        case REPLACE_DUPLICATE: {
+            if ( fid == null || sf.getObjectById( fid ) != null ) {
+                fid = "FEATURE_" + generateNewId();
+            }
+        }
+        case USE_EXISTING: {
+            if ( fid == null ) {
+                fid = "FEATURE_" + generateNewId();
+            }
+            break;
+        }
+        }
+        return fid;
+    }
+
+    private String getGeometryId( Geometry geometry, IDGenMode mode ) {
+        String gid = geometry.getId();
+        switch ( mode ) {
+        case GENERATE_NEW: {
+            gid = "GEOMETRY_" + generateNewId();
+            break;
+        }
+        case REPLACE_DUPLICATE: {
+            if ( gid == null || sf.getObjectById( gid ) != null ) {
+                gid = "FEATURE_" + generateNewId();
+            }
+        }
+        case USE_EXISTING: {
+            if ( gid == null ) {
+                gid = "GEOMETRY_" + generateNewId();
+            }
+            break;
+        }
+        }
+        return gid;
     }
 
     private FeatureCollection transformGeometries( FeatureCollection fc )
@@ -379,55 +404,6 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private String generateNewId() {
         return UUID.randomUUID().toString();
-    }
-
-    private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features,
-                                            Set<String> fids, Set<String> gids ) {
-
-        if ( !features.contains( feature ) ) {
-            if ( feature instanceof FeatureCollection ) {
-                for ( Feature member : (FeatureCollection) feature ) {
-                    findFeaturesAndGeometries( member, geometries, features, fids, gids );
-                }
-            } else {
-                if ( feature.getId() == null || !( fids.contains( feature.getId() ) ) ) {
-                    features.add( feature );
-                    if ( feature.getId() != null ) {
-                        fids.add( feature.getId() );
-                    }
-                }
-                for ( Property property : feature.getProperties() ) {
-                    Object propertyValue = property.getValue();
-                    if ( propertyValue instanceof Feature ) {
-                        if ( !( propertyValue instanceof FeatureReference )
-                             || ( (FeatureReference) propertyValue ).isResolved() ) {
-                            findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
-                        }
-                    } else if ( propertyValue instanceof Geometry ) {
-                        Geometry geom = (Geometry) propertyValue;
-                        if ( !( geom instanceof Point && geom.getCoordinateDimension() == 1 ) ) {
-                            if ( !geom.getCoordinateSystem().equals( fs.getStorageSRS() ) ) {
-                                System.out.println( "Feature " + feature.getId() );
-                                System.out.println( "Property " + property.getName() );
-                                System.out.println( "Geom " + geom );
-                                System.out.println( "CRS " + geom.getCoordinateSystem() );
-                                throw new RuntimeException( "Untransformed geometry!?" );
-                            }
-                        }
-                        findGeometries( (Geometry) propertyValue, geometries, gids );
-                    }
-                }
-            }
-        }
-    }
-
-    private void findGeometries( Geometry geometry, Set<Geometry> geometries, Set<String> gids ) {
-        if ( geometry.getId() == null || !( gids.contains( geometry.getId() ) ) ) {
-            geometries.add( geometry );
-            if ( geometry.getId() != null ) {
-                gids.add( geometry.getId() );
-            }
-        }
     }
 
     @Override
