@@ -46,9 +46,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -508,7 +508,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                         if ( !features.contains( propertyValue ) ) {
                             findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
                         }
-                    } else if ( ( (FeatureReference) propertyValue ).isLocal()
+                    } else if ( ( (FeatureReference) propertyValue ).isResolved()
                                 && !( features.contains( ( (FeatureReference) propertyValue ).getReferencedObject() ) ) ) {
                         findFeaturesAndGeometries( ( (FeatureReference) propertyValue ).getReferencedObject(),
                                                    geometries, features, fids, gids );

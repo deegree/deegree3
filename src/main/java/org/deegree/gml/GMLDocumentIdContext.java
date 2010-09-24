@@ -71,6 +71,8 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
 
     private final List<GMLReference<?>> refs = new ArrayList<GMLReference<?>>();
 
+    private final List<GMLReference<?>> localRefs = new ArrayList<GMLReference<?>>();
+
     private ApplicationSchema schema;
 
     /**
@@ -114,6 +116,9 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
      */
     public void addReference( GMLReference<?> ref ) {
         refs.add( ref );
+        if ( ref.getURI().startsWith( "#" ) ) {
+            localRefs.add( ref );
+        }
     }
 
     /**
@@ -179,15 +184,13 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
     public void resolveLocalRefs()
                             throws ReferenceResolvingException {
 
-        for ( GMLReference<?> ref : refs ) {
-            if ( ref.isLocal() ) {
-                String id = ref.getURI().substring( 1 );
-                LOG.debug( "Resolving reference to object '" + id + "'" );
-                if ( ref.getReferencedObject() == null ) {
-                    String msg = "Cannot resolve reference to object with id '" + id
-                                 + "'. There is no object with this id in the document.";
-                    throw new ReferenceResolvingException( msg );
-                }
+        for ( GMLReference<?> ref : localRefs ) {
+            String id = ref.getURI().substring( 1 );
+            LOG.debug( "Resolving reference to object '" + id + "'" );
+            if ( ref.getReferencedObject() == null ) {
+                String msg = "Cannot resolve reference to object with id '" + id
+                             + "'. There is no object with this id in the document.";
+                throw new ReferenceResolvingException( msg );
             }
         }
     }

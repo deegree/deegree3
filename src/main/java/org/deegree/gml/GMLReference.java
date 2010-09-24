@@ -40,7 +40,7 @@ import org.deegree.gml.props.GMLStdProps;
 
 /**
  * Represents a reference to a {@link GMLObject}, corresponds to a GML property with an <code>xlink:href</code>
- * attribute (may be document-local or remote).
+ * attribute.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -89,14 +89,10 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
     }
 
     /**
-     * Returns whether the URI is local, i.e. if it starts with the <code>#</code> character.
+     * Returns whether the reference has been resolved.
      * 
-     * @return true, if the URI is local, false otherwise
+     * @return true, if the reference has been resolved, false otherwise
      */
-    public boolean isLocal() {
-        return uri.startsWith( "#" );
-    }
-    
     public boolean isResolved() {
         return object != null;
     }
