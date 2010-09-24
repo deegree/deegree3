@@ -39,6 +39,8 @@ package org.deegree.protocol.csw;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.metadata.persistence.MetadataStoreException;
 
@@ -360,6 +362,18 @@ public final class CSWConstants {
 
             return schema;
 
+        }
+
+        public static OutputSchema determineByTypeName( QName typeName ) {
+            String uri = typeName.getNamespaceURI();
+
+            if ( uri.equals( CSW_202_NS ) ) {
+                return DC;
+            } else if ( uri.equals( GMD_NS ) ) {
+                return ISO_19115;
+            }
+
+            return null;
         }
 
     }

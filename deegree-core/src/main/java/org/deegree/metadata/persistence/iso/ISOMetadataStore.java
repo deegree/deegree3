@@ -39,7 +39,6 @@ import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.APISO_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_RECORD;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.DC_LOCAL_PART;
 import static org.deegree.protocol.csw.CSWConstants.DC_NS;
@@ -51,10 +50,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -71,11 +67,9 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
@@ -177,66 +171,6 @@ public class ISOMetadataStore implements MetadataStore {
     public ISOMetadataStore( ISOMetadataStoreConfig config ) {
         this.connectionId = config.getConnId();
         this.config = config;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.record.persistence.RecordStore#describeRecord(javax.xml.stream.XMLStreamWriter)
-     */
-    @Override
-    public void describeRecord( XMLStreamWriter writer, QName typeName ) {
-        try {
-
-            BufferedInputStream bais;
-            URLConnection urlConn = null;
-
-            /*
-             * if typeName is csw:Record
-             */
-            if ( typeName.equals( new QName( CSW_202_NS, DC_LOCAL_PART, CSW_PREFIX ) ) ) {
-
-                urlConn = new URL( CSW_202_RECORD ).openConnection();
-
-            }
-            /*
-             * if typeName is gmd:MD_Metadata
-             */
-            else if ( typeName.equals( new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ) ) ) {
-
-                urlConn = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" ).openConnection();
-
-                writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
-
-            }
-            /*
-             * if the typeName is no registered in this recordprofile
-             */
-            else {
-                String errorMessage = "The typeName " + typeName + "is not supported by this profile. ";
-                LOG.debug( errorMessage );
-                throw new InvalidParameterValueException( errorMessage );
-            }
-
-            urlConn.setDoInput( true );
-            bais = new BufferedInputStream( urlConn.getInputStream() );
-
-            Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
-            InputStreamReader isr = new InputStreamReader( bais, charset );
-
-            // readXMLFragment( isr, writer );
-
-        } catch ( MalformedURLException e ) {
-
-            LOG.debug( "error: " + e.getMessage(), e );
-        } catch ( IOException e ) {
-
-            LOG.debug( "error: " + e.getMessage(), e );
-        } catch ( Exception e ) {
-
-            LOG.debug( "error: " + e.getMessage(), e );
-        }
 
     }
 
