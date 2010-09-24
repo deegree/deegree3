@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 
@@ -63,11 +64,22 @@ public class DefaultGMLTypes {
      */
     public static final FeatureCollectionType GML311_FEATURECOLLECTION;
 
+    /**
+     * 
+     */
+    public static final FeatureCollectionType GML321_FEATURECOLLECTION;
+
     static {
-        QName name = new QName( GMLNS, "FeatureCollection" );
+        QName name = new QName( GMLNS, "FeatureCollection", "gml" );
         List<PropertyType> props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember" ), 0, -1, null, false, null, BOTH ) );
+        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, null, false, null, BOTH ) );
         GML311_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
+
+        name = new QName( GML3_2_NS, "FeatureCollection", "gml" );
+        props = new ArrayList<PropertyType>();
+        props.add( new FeaturePropertyType( new QName( GML3_2_NS, "featureMember", "gml" ), 0, -1, null, false, null,
+                                            BOTH ) );
+        GML321_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
     }
 
 }
