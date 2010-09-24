@@ -37,6 +37,7 @@ package org.deegree.gml.feature;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.deegree.gml.GMLVersion.GML_32;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -56,6 +57,7 @@ import javax.xml.stream.XMLStreamWriter;
 import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.deegree.CoreTstProperties;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -339,5 +341,51 @@ public class GMLFeatureReaderTest {
         // Property custom3Prop = feature.getProperty( new QName( "http://www.deegree.org/app", "custom3" ) );
         // System.out.println( "type: " + custom3Prop.getType() );
         // System.out.println( "value: " + custom3Prop.getValue() );
+    }
+
+    @Test
+    public void testINSPIREAddresses1()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
+                            ReferenceResolvingException {
+
+        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        if ( schemaURL == null ) {
+            return;
+        }
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses1.gml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
+        gmlReader.setApplicationSchema( schema );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+
+        Assert.assertEquals( 4, fc.size() );
+    }
+    
+    @Test
+    public void testINSPIREAddresses2()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
+                            ReferenceResolvingException {
+
+        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        if ( schemaURL == null ) {
+            return;
+        }
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GML_32, null, schemaURL );
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "inspire_addresses2.gml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
+        gmlReader.setApplicationSchema( schema );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+
+        Assert.assertEquals( 4, fc.size() );
     }
 }

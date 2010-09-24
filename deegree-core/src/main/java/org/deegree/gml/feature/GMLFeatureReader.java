@@ -49,6 +49,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML31;
 import static org.deegree.gml.feature.StandardGMLFeatureProps.PT_BOUNDED_BY_GML32;
 import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML311_FEATURECOLLECTION;
+import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML321_FEATURECOLLECTION;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -109,6 +110,7 @@ import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.DefaultGMLTypes;
 import org.deegree.gml.geometry.GML2GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
@@ -812,6 +814,9 @@ public class GMLFeatureReader extends XMLAdapter {
         // TODO implement this less hacky
         if ( ftName.equals( GML311_FEATURECOLLECTION.getName() ) ) {
             return GML311_FEATURECOLLECTION;
+        }
+        if ( ftName.equals( GML321_FEATURECOLLECTION.getName() ) ) {
+            return GML321_FEATURECOLLECTION;
         }
 
         FeatureType ft = null;
