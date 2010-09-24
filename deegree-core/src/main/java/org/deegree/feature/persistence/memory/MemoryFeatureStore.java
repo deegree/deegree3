@@ -137,7 +137,7 @@ public class MemoryFeatureStore implements FeatureStore {
         idContext.resolveLocalRefs();
 
         FeatureStoreTransaction ta = acquireTransaction();
-        ta.performInsert( fc, IDGenMode.GENERATE_NEW );
+        ta.performInsert( fc, IDGenMode.USE_EXISTING );
         ta.commit();
     }
 
