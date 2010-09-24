@@ -390,7 +390,7 @@ public class ShapeFeatureStore implements FeatureStore {
     private Envelope getTransformedEnvelope( Envelope bbox ) {
         if ( bbox != null && transformer != null ) {
             try {
-                bbox = (Envelope) transformer.transform( bbox );
+                bbox = transformer.transform( bbox );
             } catch ( IllegalArgumentException e ) {
                 LOG.error( "Unknown error", e );
             } catch ( TransformationException e ) {
