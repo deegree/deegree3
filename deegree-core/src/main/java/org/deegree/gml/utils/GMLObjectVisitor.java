@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,52 +33,30 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.patches;
+package org.deegree.gml.utils;
 
-import org.deegree.commons.uom.Measure;
-import org.deegree.commons.uom.Unit;
-import org.deegree.geometry.primitive.Surface;
+import org.deegree.feature.Feature;
+import org.deegree.geometry.Geometry;
 
 /**
- * A {@link SurfacePatch} describes a continuous portion of a {@link Surface}.
+ * Implementations
  * 
- * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
- * @version. $Revision$, $Date$
+ * @version $Revision$, $Date$
  */
-public interface SurfacePatch {
+public interface GMLObjectVisitor {
 
     /**
-     * Convenience enum type for discriminating the different surface patch variants in switch statements.
+     * @param geom
+     * @return
      */
-    public enum SurfacePatchType {
-        /** Patch is a {@link GriddedSurfacePatch}. */
-        GRIDDED_SURFACE_PATCH,
-        /** Patch is a {@link PolygonPatch}. */
-        POLYGON_PATCH
-    }
+    public boolean visitGeometry( Geometry geom );
 
     /**
-     * Returns the type of surface patch.
-     * 
-     * @return the type of surface patch
+     * @param feature
+     * @return
      */
-    public SurfacePatchType getSurfacePatchType();
-
-    /**
-     * Returns the coordinate dimension, i.e. the dimension of the space that the patch is embedded in.
-     * 
-     * @return the coordinate dimension
-     */
-    public int getCoordinateDimension();
-
-    /**
-     * Returns the area covered by the patch.
-     * 
-     * @param uom
-     * @return area covered by the patch in the requested uom
-     */
-    public Measure getArea( Unit uom );
+    public boolean visitFeature( Feature feature );
 }

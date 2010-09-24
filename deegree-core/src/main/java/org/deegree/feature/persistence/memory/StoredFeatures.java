@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,8 +47,6 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.index.RTree;
-import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -61,12 +58,8 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.MemoryFeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.CustomPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.xpath.FeatureXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
@@ -74,8 +67,9 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLObject;
+import org.deegree.gml.utils.GMLObjectVisitor;
+import org.deegree.gml.utils.GMLObjectWalker;
 
 /**
  * Each instance contains the objects stored by the {@link MemoryFeatureStore} at a certain point of time.
@@ -151,57 +145,28 @@ class StoredFeatures {
 
         // (re-) build id lookup table
         idToObject.clear();
-        for ( FeatureType ft : ftToFeatures.keySet() ) {
-            FeatureCollection fc = ftToFeatures.get( ft );
-            for ( Feature feature : fc ) {
+        GMLObjectVisitor visitor = new GMLObjectVisitor() {
+
+            @Override
+            public boolean visitGeometry( Geometry geom ) {
+                if ( geom.getId() != null ) {
+                    idToObject.put( geom.getId(), geom );
+                }
+                return true;
+            }
+
+            @Override
+            public boolean visitFeature( Feature feature ) {
                 idToObject.put( feature.getId(), feature );
-                addFeatureGeometries( feature );
+                return true;
             }
-        }
-    }
+        };
 
-    private void addFeatureGeometries( Feature feature )
-                            throws UnknownCRSException {
-        for ( Property prop : feature.getProperties() ) {
-            TypedObjectNode value = prop.getValue();
-            if ( value != null ) {
-                PropertyType pt = prop.getType();
-                if ( pt instanceof GeometryPropertyType ) {
-                    addGeometry( (Geometry) value );
-                } else if ( pt instanceof CustomPropertyType ) {
-                    addGeometries( value );
-                }
+        for ( FeatureCollection fc : ftToFeatures.values() ) {
+            for ( Feature f : fc ) {
+                new GMLObjectWalker( visitor ).traverse( f );
             }
         }
-    }
-
-    private void addGeometries( TypedObjectNode value )
-                            throws UnknownCRSException {
-        if ( value instanceof GenericXMLElementContent ) {
-            GenericXMLElementContent generic = (GenericXMLElementContent) value;
-            for ( int i = 0; i < generic.getChildren().size(); i++ ) {
-                addGeometries( generic.getChildren().get( i ) );
-            }
-        } else if ( value instanceof Geometry ) {
-            addGeometry( (Geometry) value );
-        }
-    }
-
-    private void addGeometry( Geometry geometry )
-                            throws UnknownCRSException {
-        // skip CRS test for 1-dimensional CRS
-        if ( !( geometry instanceof Point && geometry.getCoordinateDimension() == 1 ) ) {
-            CRS crs = geometry.getCoordinateSystem();
-            if ( storageCRS != null ) {
-                if ( !storageCRS.equals( crs ) ) {
-                    throw new RuntimeException( "Trying to add geometry with CRS " + crs );
-                }
-            } else if ( crs != null ) {
-                // provoke an UnknownCRSException if it is not known
-                crs.getWrappedCRS();
-            }
-        }
-        idToObject.put( geometry.getId(), geometry );
     }
 
     FeatureResultSet query( Query query )
