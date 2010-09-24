@@ -48,9 +48,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -67,6 +65,9 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.MetadataResultType;
+import org.deegree.metadata.persistence.MetadataCollection;
+import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.RecordStoreOptions;
@@ -94,8 +95,6 @@ import org.slf4j.LoggerFactory;
 public class GetRecordsHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( GetRecordsHandler.class );
-
-    private static Map<QName, MetadataStore> requestedTypeNames;
 
     private CSWService service;
 
@@ -255,9 +254,10 @@ public class GetRecordsHandler {
     private void searchResult( XMLStreamWriter writer, GetRecords getRec, Version version )
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
-        requestedTypeNames = new HashMap<QName, MetadataStore>();
+        MetadataResultType type = null;
 
-        List<MetadataRecord> storeList = null;
+        MetadataResultSet storeSet = null;
+        MetadataCollection col = null;
 
         if ( VERSION_202.equals( version ) ) {
 
@@ -274,15 +274,33 @@ public class GetRecordsHandler {
                 // commits the record to the getRecords operation
 
                 try {
-                    storeList = rec.getRecords( typeName, getRec.getOutputSchema(), gdds );
+                    storeSet = rec.getRecords( typeName, getRec.getOutputSchema(), gdds );
                 } catch ( MetadataStoreException e ) {
                     throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
                 }
 
             }
 
+            type = storeSet.getResultType();
+            col = storeSet.getMembers();
+            writer.writeAttribute( "elementSet", type.getReturnableElement().name() );
+
+            writer.writeAttribute( "recordSchema", type.getRecordSchema() );
+
+            writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( type.getNumberOfRecordsMatched() ) );
+
+            writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( type.getNumberOfRecordsReturned() ) );
+
+            writer.writeAttribute( "nextRecord", Integer.toString( type.getNextRecord() ) );
+
+            writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+
         } else {
             throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
+        }
+
+        for ( MetadataRecord m : col ) {
+            m.serialize( writer, null );
         }
 
         writer.writeEndElement();// SearchResult

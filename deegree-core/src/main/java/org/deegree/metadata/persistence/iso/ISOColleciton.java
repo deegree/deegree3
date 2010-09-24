@@ -35,53 +35,105 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
-import org.deegree.metadata.MetadataResultType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataCollection;
-import org.deegree.metadata.persistence.MetadataResultSet;
 
 /**
- * Implementation of {@link MetadataResultSet} for the ISO Application Profile.
+ * Implementation of the {@link MetadataCollection} for the ISO Application Profile.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ISOMetadataResultSet implements MetadataResultSet {
+public class ISOColleciton implements MetadataCollection {
 
-    private MetadataResultSet rs;
+    List<MetadataRecord> memberList = new ArrayList<MetadataRecord>();
 
-    private MetadataCollection collection;
-
-    private MetadataResultType type;
-
-    public ISOMetadataResultSet( MetadataCollection collection, MetadataResultType type ) {
-        this.collection = collection;
-        this.type = type;
-    }
-
-    @Override
-    public void close() {
-        rs.close();
+    public ISOColleciton() {
 
     }
 
     @Override
-    public String encoding() {
-        // TODO Auto-generated method stub
-        return null;
+    public boolean add( MetadataRecord o ) {
+
+        return memberList.add( o );
     }
 
     @Override
-    public MetadataCollection getMembers() {
+    public boolean addAll( Collection<? extends MetadataRecord> c ) {
 
-        return this.collection;
+        return memberList.addAll( c );
     }
 
     @Override
-    public MetadataResultType getResultType() {
+    public void clear() {
+        memberList.clear();
 
-        return this.type;
+    }
+
+    @Override
+    public boolean contains( Object o ) {
+
+        return memberList.contains( o );
+    }
+
+    @Override
+    public boolean containsAll( Collection<?> c ) {
+
+        return memberList.containsAll( c );
+    }
+
+    @Override
+    public boolean isEmpty() {
+
+        return memberList.isEmpty();
+    }
+
+    @Override
+    public Iterator<MetadataRecord> iterator() {
+
+        return memberList.iterator();
+    }
+
+    @Override
+    public boolean remove( Object o ) {
+
+        return memberList.remove( o );
+    }
+
+    @Override
+    public boolean removeAll( Collection<?> c ) {
+
+        return memberList.removeAll( c );
+    }
+
+    @Override
+    public boolean retainAll( Collection<?> c ) {
+
+        return memberList.retainAll( c );
+    }
+
+    @Override
+    public int size() {
+
+        return memberList.size();
+    }
+
+    @Override
+    public Object[] toArray() {
+
+        return memberList.toArray();
+    }
+
+    @Override
+    public <T> T[] toArray( T[] a ) {
+        return memberList.toArray( a );
     }
 
 }

@@ -42,7 +42,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.metadata.MetadataRecord;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
@@ -100,7 +99,7 @@ public interface MetadataStore {
      *            {@link RecordStoreOptions}
      * @throws MetadataStoreException
      */
-    public List<MetadataRecord> getRecords( QName typeName, URI outputSchema, RecordStoreOptions recordStoreOptions )
+    public MetadataResultSet getRecords( QName typeName, URI outputSchema, RecordStoreOptions recordStoreOptions )
                             throws MetadataStoreException;
 
     /**
@@ -116,7 +115,7 @@ public interface MetadataStore {
      *            {@link ReturnableElement}
      * @throws MetadataStoreException
      */
-    public List<MetadataRecord> getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+    public MetadataResultSet getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
                             throws MetadataStoreException;
 
     /**

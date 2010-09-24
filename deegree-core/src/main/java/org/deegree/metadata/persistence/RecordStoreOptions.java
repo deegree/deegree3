@@ -95,28 +95,6 @@ public class RecordStoreOptions {
 
     }
 
-    // /**
-    // * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared except the
-    // * startPosition attibute that is set to 1 by default.
-    // *
-    // * @param filter
-    // * the parsed filter expression
-    // * @param resultType
-    // * {@link ResultType}
-    // * @param setOfReturnableElements
-    // * {@link ReturnableElement}
-    // */
-    // public RecordStoreOptions( Filter filter, URI outpurSchema, ResultType resultType, ReturnableElement
-    // setOfReturnableElements ) {
-    //
-    // this.filter = filter;
-    // this.outputSchema = outpurSchema;
-    // this.resultType = resultType;
-    // this.setOfReturnableElements = setOfReturnableElements;
-    // this.startPosition = 1;
-    //
-    // }
-
     /**
      * @return the filter
      */

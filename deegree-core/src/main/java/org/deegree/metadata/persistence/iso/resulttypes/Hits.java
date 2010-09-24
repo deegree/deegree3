@@ -35,14 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.resulttypes;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.deegree.metadata.MetadataResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
- * TODO add class documentation here
+ * Impementation of the {@link MetadataResultType} which holds the minimum amount of information needed to fullfill a
+ * getRecords operation.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -112,15 +110,8 @@ public class Hits implements MetadataResultType {
     }
 
     @Override
-    public ReturnableElement getResultType() {
+    public ReturnableElement getReturnableElement() {
         return this.resultType;
-    }
-
-    @Override
-    public void serialize( XMLStreamWriter writer, ReturnableElement returnType )
-                            throws XMLStreamException {
-        // TODO Auto-generated method stub
-
     }
 
 }

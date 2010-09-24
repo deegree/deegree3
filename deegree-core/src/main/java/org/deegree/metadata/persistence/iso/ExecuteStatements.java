@@ -56,6 +56,7 @@ import org.deegree.feature.persistence.mapping.Join;
 import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.metadata.persistence.GenericDatabaseExecution;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
@@ -64,14 +65,14 @@ import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.slf4j.Logger;
 
 /**
- * The execution of the actions affected by the transaction operation against the database.
+ * Executes statements that does the interaction with the underlying database. This is a PostGRES implementation.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ExecuteStatements {
+public class ExecuteStatements implements GenericDatabaseExecution {
 
     private static final Logger LOG = getLogger( ExecuteStatements.class );
 
@@ -93,18 +94,7 @@ public class ExecuteStatements {
 
     private static final String format = PostGISMappingsISODC.CommonColumnNames.format.name();
 
-    /**
-     * This method executes the statement for INSERT datasets
-     * 
-     * @param isDC
-     *            true, if a Dublin Core record should be inserted <br>
-     *            <div style="text-indent:38px;">false, if an ISO record should be inserted</div>
-     * @param connection
-     * @param parsedElement
-     *            {@link ParsedProfileElement}
-     * @throws IOException
-     * @throws MetadataStoreException
-     */
+    @Override
     public String executeInsertStatement( boolean isDC, Connection connection, ParsedProfileElement parsedElement )
                             throws IOException, MetadataStoreException {
         generateQP = new GenerateQueryableProperties();
@@ -125,14 +115,7 @@ public class ExecuteStatements {
 
     }
 
-    /**
-     * 
-     * @param connection
-     * @param builder
-     * @param formatNumber
-     * @return the number of deleted metadata.
-     * @throws MetadataStoreException
-     */
+    @Override
     public int executeDeleteStatement( Connection connection, PostGISWhereBuilder builder, int formatNumber )
                             throws MetadataStoreException {
 
@@ -265,15 +248,7 @@ public class ExecuteStatements {
 
     }
 
-    /**
-     * This method executes the statement for updating the queryable- and returnable properties of one specific record.
-     * 
-     * @param connection
-     * @param updatedIds
-     * @param parsedElement
-     *            {@link ParsedProfileElement}
-     * @throws MetadataStoreException
-     */
+    @Override
     public int executeUpdateStatement( Connection connection, ParsedProfileElement parsedElement )
                             throws MetadataStoreException {
 
@@ -560,6 +535,7 @@ public class ExecuteStatements {
 
     }
 
+    @Override
     public PreparedStatement executeGetRecords( String formatType, RecordStoreOptions recordStoreOptions,
                                                 int typeNameFormatNumber, boolean setCount,
                                                 PostGISWhereBuilder builder, Connection conn )
@@ -669,6 +645,12 @@ public class ExecuteStatements {
         }
         return preparedStatement;
 
+    }
+
+    @Override
+    public String getEncoding() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

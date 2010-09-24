@@ -33,62 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata;
-
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+package org.deegree.metadata.persistence.iso.resulttypes;
 
 /**
- * Responsible for the information holding in the header of any getRecords operation.
+ * The <Code>validate</Code> resulttype. TODO implement!
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface MetadataResultType {
-
-    /**
-     * brief, summary, full
-     * 
-     * @return the {@link ReturnableElement}.
-     */
-    ReturnableElement getReturnableElement();
-
-    /**
-     * TODO outsourcing possible
-     * 
-     * @return the recordSchema that is requested
-     */
-    String getRecordSchema();
-
-    /**
-     * How many records match the request. getNumberOfRecordsReturned instead is the number that can really be seen in
-     * the response.
-     * 
-     * @return the number of records that match the request
-     */
-    int getNumberOfRecordsMatched();
-
-    /**
-     * How many records should be performed in the response, whereas getNumberOfRecordsMatched is the number that could
-     * be requested.
-     * 
-     * @return the number of records that should be returned.
-     */
-    int getNumberOfRecordsReturned();
-
-    /**
-     * Indicates the next record that could be queried after the last performed record.
-     * 
-     * @return the next record if there are more, otherwise 0.
-     */
-    int getNextRecord();
-
-    /**
-     * TODO
-     * 
-     * @return
-     */
-    String getExpires();
+public class Validate {
 
 }

@@ -49,6 +49,8 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.services.controller.ows.OWSException;
@@ -159,15 +161,21 @@ public class GetRecordByIdHandler {
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
         writer.writeStartElement( CSW_202_NS, "GetRecordByIdResponse" );
 
+        MetadataResultSet resultSet = null;
+
         if ( service.getRecordStore() != null ) {
             try {
                 for ( MetadataStore rec : service.getRecordStore() ) {
-                    rec.getRecordById( getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
-                                       getRecBI.getElementSetName() );
+                    resultSet = rec.getRecordById( getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
+                                                   getRecBI.getElementSetName() );
                 }
             } catch ( MetadataStoreException e ) {
                 throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
             }
+        }
+
+        for ( MetadataRecord m : resultSet.getMembers() ) {
+            m.serialize( writer, null );
         }
 
         writer.writeEndDocument();

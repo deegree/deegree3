@@ -44,9 +44,7 @@ import static org.deegree.protocol.csw.CSWConstants.OutputSchema.DC;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -57,6 +55,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
@@ -89,8 +88,6 @@ public class TransactionHandler {
     private CSWService service;
 
     private List<String> insertedMetadata;
-
-    private static Map<QName, MetadataStore> requestedTypeNames;
 
     /**
      * Creates a new {@link TransactionHandler} instance that uses the given service to lookup the {@link MetadataStore}
@@ -188,8 +185,6 @@ public class TransactionHandler {
                             throws XMLStreamException, OWSException, MetadataStoreException {
         Version version = new Version( 2, 0, 2 );
 
-        requestedTypeNames = new HashMap<QName, MetadataStore>();
-
         int insertCount = 0;
         int updateCount = 0;
         int deleteCount = 0;
@@ -204,7 +199,7 @@ public class TransactionHandler {
         if ( transaction.getRequestId() != null ) {
             writer.writeAttribute( "requestId", transaction.getRequestId() );
         }
-        List<MetadataRecord> rs = null;
+        MetadataResultSet rs = null;
         try {
             for ( TransactionOperation transact : transaction.getOperations() ) {
                 switch ( transact.getType() ) {
@@ -254,7 +249,7 @@ public class TransactionHandler {
             writer.writeStartElement( CSW_202_NS, "InsertResult" );
             // TODO handle?? where is it?? writer.writeAttribute( "handleRef", trans. );
 
-            for ( MetadataRecord meta : rs ) {
+            for ( MetadataRecord meta : rs.getMembers() ) {
                 meta.serialize( writer, ReturnableElement.brief );
             }
 
@@ -308,10 +303,6 @@ public class TransactionHandler {
             // update.getElement().getLocalName(),
             // update.getElement().getNamespace().getPrefix() ) ) );
 
-            for ( MetadataStore rec : requestedTypeNames.values() ) {
-                // transactionIdsUpdate.addAll( rec.transaction( update ) );
-
-            }
         } else {
 
             try {
@@ -332,7 +323,7 @@ public class TransactionHandler {
 
     }
 
-    private List<MetadataRecord> doInsert( InsertTransaction transact )
+    private MetadataResultSet doInsert( InsertTransaction transact )
                             throws MetadataStoreException {
         InsertTransaction insert = (InsertTransaction) transact;
         insertedMetadata = new ArrayList<String>();
