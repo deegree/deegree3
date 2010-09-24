@@ -308,6 +308,10 @@ public class TransformationFactory {
             matrix.setIdentity();
             result = createMatrixTransform( sourceCRS, targetCRS, matrix );
         } else {
+            // allign axis, if NTv2 transformation
+            if ( "NTv2".equals( result.getImplementationName() ) && this.preferredDSTransform == DSTransform.NTv2 ) {
+                result = NTv2Transformation.createAxisAllignedNTv2Transformation( (NTv2Transformation) result );
+            }
             LOG.debug( "Concatenating the result, with the conversion matrices." );
             result = concatenate( createMatrixTransform( sourceCRS, sourceCRS, toStdValues( sourceCRS, false ) ),
                                   result, createMatrixTransform( targetCRS, targetCRS, toStdValues( targetCRS, true ) ) );
