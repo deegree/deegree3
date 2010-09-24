@@ -37,22 +37,23 @@ package org.deegree.metadata.persistence;
 
 import java.util.Collection;
 
+import org.deegree.metadata.MetadataRecord;
+
 /**
- * TODO add class documentation here
+ * Collection with type parameter {@link MetadataRecord}.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface MetadataCollection extends Collection {
+public interface MetadataCollection extends Collection<MetadataRecord> {
 
     // /**
     // * Returns the type information for this metadata collection.
     // *
     // * @return the type information, never <code>null</code>
     // */
-    // @Override
     // public MetadataCollectionType getType();
 
     /**
@@ -60,6 +61,6 @@ public interface MetadataCollection extends Collection {
      * 
      * @return matching metadata instances as a new <code>MetadataCollection</code>
      */
-    public MetadataCollection getMembers();
+    // public MetadataCollection getMembers();
 
 }

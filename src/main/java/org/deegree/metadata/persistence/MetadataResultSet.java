@@ -37,8 +37,11 @@ package org.deegree.metadata.persistence;
 
 import java.sql.ResultSet;
 
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.MetadataResultType;
+
 /**
- * TODO add class documentation here
+ * Has a {@link MetadataCollection} and the corresponding {@link MetadataResultType} as content.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -58,6 +61,18 @@ public interface MetadataResultSet {
      */
     String encoding();
 
-    // MetadataCollection getMembers();
+    /**
+     * A collection of {@link MetadataRecord}s.
+     * 
+     * @return a {@link MetadataCollection}
+     */
+    MetadataCollection getMembers();
+
+    /**
+     * A {@link MetadataResultType}.
+     * 
+     * @return a {@link MetadataResultType}.
+     */
+    MetadataResultType getResultType();
 
 }

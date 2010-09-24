@@ -36,32 +36,25 @@
 package org.deegree.metadata.persistence.iso.resulttypes;
 
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.metadata.MetadataResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
- * TODO add class documentation here
+ * Impementation of the {@link MetadataResultType} which is a subclass of {@link Hits} and extends it by the records
+ * that are matched from request.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Results implements MetadataResultType {
+public class Results extends Hits {
 
-    private final ReturnableElement resultType;
-
-    private final int numberOfRecordsMatched;
-
-    private final int numberOfRecordsReturned;
-
-    private final String recordSchema;
-
-    private final int nextRecord;
-
-    private final String expires;
+    private final XMLStreamReader stream;
 
     /**
      * 
@@ -73,54 +66,18 @@ public class Results implements MetadataResultType {
      * @param expires
      */
     public Results( ReturnableElement resultType, int numberOfRecordsMatched, int numberOfRecordsReturned,
-                    String recordSchema, int nextRecord, String expires ) {
-        this.resultType = resultType;
-        this.numberOfRecordsMatched = numberOfRecordsMatched;
-        this.numberOfRecordsReturned = numberOfRecordsReturned;
-        this.recordSchema = recordSchema;
-        this.nextRecord = nextRecord;
-        this.expires = expires;
+                    String recordSchema, int nextRecord, String expires, XMLStreamReader stream ) {
+        super( resultType, numberOfRecordsMatched, numberOfRecordsReturned, recordSchema, nextRecord, expires );
+        this.stream = stream;
     }
 
-    @Override
-    public String getExpires() {
-
-        return this.expires;
-    }
-
-    @Override
-    public int getNextRecord() {
-
-        return this.nextRecord;
-    }
-
-    @Override
-    public int getNumberOfRecordsMatched() {
-
-        return this.numberOfRecordsMatched;
-    }
-
-    @Override
-    public int getNumberOfRecordsReturned() {
-        return this.numberOfRecordsReturned;
-    }
-
-    @Override
-    public String getRecordSchema() {
-
-        return this.recordSchema;
-    }
-
-    @Override
-    public ReturnableElement getResultType() {
-        return this.resultType;
-    }
-
-    @Override
     public void serialize( XMLStreamWriter writer, ReturnableElement returnType )
                             throws XMLStreamException {
-        // TODO Auto-generated method stub
 
+        stream.nextTag();
+        XMLAdapter.writeElement( writer, stream );
+
+        stream.close();
     }
 
 }

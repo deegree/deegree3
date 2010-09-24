@@ -61,7 +61,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -82,15 +81,15 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
-import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataResultType;
+import org.deegree.metadata.persistence.MetadataCollection;
+import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.iso.parsing.ParsingUtils;
 import org.deegree.metadata.persistence.iso.resulttypes.Hits;
-import org.deegree.metadata.persistence.iso.resulttypes.Results;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
@@ -356,14 +355,16 @@ public class ISOMetadataStore implements MetadataStore {
      * javax.xml.namespace.QName)
      */
     @Override
-    public List<MetadataRecord> getRecords( QName typeName, URI outputSchema, RecordStoreOptions recordStoreOptions )
+    public MetadataResultSet getRecords( QName typeName, URI outputSchema, RecordStoreOptions recordStoreOptions )
                             throws MetadataStoreException {
 
         PostGISMappingsISODC mapping = new PostGISMappingsISODC();
         PostGISWhereBuilder builder = null;
         Connection conn = null;
 
-        List<MetadataRecord> result = new ArrayList<MetadataRecord>();
+        MetadataResultSet result = null;
+        MetadataResultType resultType = null;
+        MetadataCollection col = new ISOColleciton();
 
         try {
             conn = ConnectionManager.getConnection( connectionId );
@@ -386,13 +387,16 @@ public class ISOMetadataStore implements MetadataStore {
             switch ( recordStoreOptions.getResultType() ) {
             case results:
 
-                doResultsOnGetRecord( typeName, profileFormatNumberOutputSchema, recordStoreOptions, builder, conn );
+                result = doResultsOnGetRecord( typeName, profileFormatNumberOutputSchema, recordStoreOptions, builder,
+                                               conn );
                 break;
             case hits:
-
-                doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions,
-                                   formatTypeInISORecordStore.get( recordStoreOptions.getSetOfReturnableElements() ),
-                                   ResultType.hits, builder, conn );
+                resultType = doHitsOnGetRecord(
+                                                typeNameFormatNumber,
+                                                recordStoreOptions,
+                                                formatTypeInISORecordStore.get( recordStoreOptions.getSetOfReturnableElements() ),
+                                                ResultType.hits, builder, conn, new ExecuteStatements() );
+                result = new ISOMetadataResultSet( col, resultType );
                 break;
 
             case validate:
@@ -407,6 +411,7 @@ public class ISOMetadataStore implements MetadataStore {
         } finally {
             close( conn );
         }
+
         return result;
     }
 
@@ -423,20 +428,17 @@ public class ISOMetadataStore implements MetadataStore {
      *            - the properties that are identified by the request
      * @param con
      *            - the JDBCConnection
-     * @throws SQLException
-     * @throws XMLStreamException
-     * @throws IOException
+     * @throws MetadataStoreException
      */
     private MetadataResultType doHitsOnGetRecord( int typeNameFormatNumber, RecordStoreOptions recOpt,
                                                   String formatType, ResultType resultType,
-                                                  PostGISWhereBuilder builder, Connection conn )
+                                                  PostGISWhereBuilder builder, Connection conn, ExecuteStatements exe )
                             throws MetadataStoreException {
-
+        LOG.info( "Performing 'hits': " );
         ResultSet rs = null;
         PreparedStatement ps = null;
         MetadataResultType result = null;
 
-        ExecuteStatements exe = new ExecuteStatements();
         try {
 
             int countRows = 0;
@@ -450,47 +452,23 @@ public class ISOMetadataStore implements MetadataStore {
             countRows = rs.getInt( 1 );
             LOG.debug( "rs for rowCount: " + rs.getInt( 1 ) );
 
-            if ( resultType.equals( ResultType.hits ) ) {
-                result = new Hits( recOpt.getSetOfReturnableElements(), countRows, 0,
-                                   recOpt.getOutputSchema().getAuthority(), 1, DateUtils.formatISO8601Date( new Date() ) );
-
-                // writer.writeAttribute( "elementSet", recordStoreOptions.getSetOfReturnableElements().name() );
-                //
-                // // writer.writeAttribute( "recordSchema", "");
-                //
-                // writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
-                //
-                // writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( 0 ) );
-                //
-                // writer.writeAttribute( "nextRecord", Integer.toString( 1 ) );
-                //
-                // writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+            if ( countRows > recOpt.getMaxRecords() ) {
+                nextRecord = recOpt.getMaxRecords() + 1;
+                returnedRecords = recOpt.getMaxRecords();
             } else {
-
-                if ( countRows > recOpt.getMaxRecords() ) {
-                    nextRecord = recOpt.getMaxRecords() + 1;
-                    returnedRecords = recOpt.getMaxRecords();
-                } else {
-                    nextRecord = 0;
-                    returnedRecords = countRows - recOpt.getStartPosition() + 1;
-                }
-
-                result = new Results( recOpt.getSetOfReturnableElements(), countRows, 0,
-                                      recOpt.getOutputSchema().getAuthority(), 1,
-                                      DateUtils.formatISO8601Date( new Date() ) );
-
-                // writer.writeAttribute( "elementSet", recordStoreOptions.getSetOfReturnableElements().name() );
-                //
-                // // writer.writeAttribute( "recordSchema", "");
-                //
-                // writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
-                //
-                // writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( returnedRecords ) );
-                //
-                // writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
-                //
-                // writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+                nextRecord = 0;
+                returnedRecords = countRows - recOpt.getStartPosition() + 1;
             }
+
+            if ( resultType.equals( ResultType.results ) ) {
+                result = new Hits( recOpt.getSetOfReturnableElements(), countRows, returnedRecords,
+                                   recOpt.getOutputSchema().toString(), nextRecord,
+                                   DateUtils.formatISO8601Date( new Date() ) );
+            } else {
+                result = new Hits( recOpt.getSetOfReturnableElements(), countRows, 0,
+                                   recOpt.getOutputSchema().toString(), 1, DateUtils.formatISO8601Date( new Date() ) );
+            }
+
         } catch ( Exception e ) {
             LOG.debug( "Error while perfoming hits on the metadata: {}", e.getMessage() );
             throw new MetadataStoreException( e.getMessage(), e );
@@ -520,46 +498,49 @@ public class ISOMetadataStore implements MetadataStore {
      * @throws XMLStreamException
      * @throws IOException
      */
-    private void doResultsOnGetRecord( QName typeName, int profileFormatNumberOutputSchema,
-                                       RecordStoreOptions recordStoreOptions, PostGISWhereBuilder builder,
-                                       Connection conn )
+    private MetadataResultSet doResultsOnGetRecord( QName typeName, int profileFormatNumberOutputSchema,
+                                                    RecordStoreOptions recordStoreOptions, PostGISWhereBuilder builder,
+                                                    Connection conn )
                             throws MetadataStoreException {
         int typeNameFormatNumber = 0;
         if ( typeNames.containsKey( typeName ) ) {
             typeNameFormatNumber = typeNames.get( typeName );
         }
-
+        MetadataResultSet result = null;
+        MetadataResultType type = null;
+        MetadataCollection col = new ISOColleciton();
         ResultSet rs = null;
         ResultSet rsOut = null;
         PreparedStatement preparedStatement = null;
         PreparedStatement stmtOut = null;
         String formatType = null;
+        ExecuteStatements exe = new ExecuteStatements();
         try {
             switch ( recordStoreOptions.getSetOfReturnableElements() ) {
 
             case brief:
                 formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief );
-                preparedStatement = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
-                                                             false, builder, conn );
+                preparedStatement = exe.executeGetRecords( formatType, recordStoreOptions, typeNameFormatNumber, false,
+                                                           builder, conn );
 
-                doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions, formatType, ResultType.results, builder,
-                                   conn );
+                type = doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions, formatType, ResultType.results,
+                                          builder, conn, exe );
                 break;
             case summary:
                 formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.summary );
-                preparedStatement = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
-                                                             false, builder, conn );
+                preparedStatement = exe.executeGetRecords( formatType, recordStoreOptions, typeNameFormatNumber, false,
+                                                           builder, conn );
 
-                doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions, formatType, ResultType.results, builder,
-                                   conn );
+                type = doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions, formatType, ResultType.results,
+                                          builder, conn, exe );
                 break;
             case full:
                 formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.full );
-                preparedStatement = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
-                                                             false, builder, conn );
+                preparedStatement = exe.executeGetRecords( formatType, recordStoreOptions, typeNameFormatNumber, false,
+                                                           builder, conn );
 
-                doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions, formatType, ResultType.results, builder,
-                                   conn );
+                type = doHitsOnGetRecord( typeNameFormatNumber, recordStoreOptions, formatType, ResultType.results,
+                                          builder, conn, exe );
                 break;
             }
 
@@ -578,7 +559,7 @@ public class ISOMetadataStore implements MetadataStore {
                     outS.append( " = " ).append( profileFormatNumberOutputSchema );
                     stmtOut = conn.prepareStatement( outS.toString() );
                     rsOut = stmtOut.executeQuery();
-                    // writeResultSet( rsOut, writer, 1 );
+                    col.add( new ISORecord( writeXMLStreamReader( rsOut, 1 ) ) );
                     stmtOut.close();
                     rsOut.close();
                 }
@@ -595,32 +576,7 @@ public class ISOMetadataStore implements MetadataStore {
             close( stmtOut );
         }
 
-    }
-
-    /**
-     * Selectstatement for the constrainted tables.
-     * 
-     * @param formatType
-     *            - brief, summary or full
-     * @param recordStoreOptions
-     *            - properties that were requested
-     * @param typeNameFormatNumber
-     *            - the format number that is identified by the requested typeName
-     * @param profileFormatNumberOutputSchema
-     *            - the format number that is identified by the requested output schema
-     * @param setCount
-     *            - if the COUNT method should be in the statement
-     * @param builder
-     *            - the SQLWhereBuilder
-     * @return
-     * @throws IOException
-     * @throws SQLException
-     */
-    private PreparedStatement generateSELECTStatement( String formatType, RecordStoreOptions recordStoreOptions,
-                                                       int typeNameFormatNumber, boolean setCount,
-                                                       PostGISWhereBuilder builder, Connection conn )
-                            throws MetadataStoreException {
-        return null;
+        return new ISOMetadataResultSet( col, type );
 
     }
 
@@ -675,7 +631,7 @@ public class ISOMetadataStore implements MetadataStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public List<MetadataRecord> getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+    public MetadataResultSet getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
                             throws MetadataStoreException {
 
         int profileFormatNumberOutputSchema = 0;
@@ -683,10 +639,8 @@ public class ISOMetadataStore implements MetadataStore {
         ResultSet rs = null;
         Connection conn = null;
         PreparedStatement stmt = null;
-        // MetadataResultSet result = null;
-        XMLStreamReader xmlReader = null;
 
-        List<MetadataRecord> result = new ArrayList<MetadataRecord>();
+        MetadataCollection col = new ISOColleciton();
         try {
 
             conn = ConnectionManager.getConnection( connectionId );
@@ -748,40 +702,43 @@ public class ISOMetadataStore implements MetadataStore {
                     LOG.debug( "outputFormat: " + profileFormatNumberOutputSchema );
                     LOG.debug( "" + stmt );
                     rs = stmt.executeQuery();
-                    InputStreamReader isr = null;
-                    Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
 
-                    while ( rs.next() ) {
-                        BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
+                    col.add( new ISORecord( writeXMLStreamReader( rs, 1 ) ) );
 
-                        try {
-                            isr = new InputStreamReader( bais, charset );
-                        } catch ( Exception e ) {
-
-                            LOG.debug( "error while writing the result: {}", e.getMessage() );
-                        }
-
-                        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
-                        result.add( new ISORecord( xmlReader ) );
-
-                    }
-                    stmt.close();
                 }
+                stmt.close();
             }
+
         } catch ( SQLException e ) {
             LOG.debug( "Error while performing the getRecordById request: {}", e.getMessage() );
             throw new MetadataStoreException( "Error while performing the getRecordById request: {}", e );
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( FactoryConfigurationError e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } finally {
             JDBCUtils.close( rs, stmt, conn, LOG );
 
         }
-        return result;
+        return new ISOMetadataResultSet( col, null );
+    }
+
+    private XMLStreamReader writeXMLStreamReader( ResultSet rs, int col )
+                            throws SQLException, MetadataStoreException {
+        InputStreamReader isr = null;
+        Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
+        XMLStreamReader xmlReader = null;
+        while ( rs.next() ) {
+            BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( col ) );
+
+            try {
+                isr = new InputStreamReader( bais, charset );
+                xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
+            } catch ( Exception e ) {
+
+                LOG.debug( "error while writing the result: {}", e.getMessage() );
+                throw new MetadataStoreException( e.getMessage() );
+            } catch ( FactoryConfigurationError e ) {
+                throw new MetadataStoreException( e.getMessage() );
+            }
+        }
+        return xmlReader;
     }
 
     @Override
