@@ -162,8 +162,8 @@ public class CRS implements Serializable {
     public boolean equals( Object other ) {
         if ( other != null && other instanceof CRS ) {
             final CRS that = (CRS) other;
-            boolean result = this.crsName != null && ( this.crsName.equals( that.crsName ) );
-            if ( result ) {
+            boolean equalName = this.crsName != null && ( this.crsName.equals( that.crsName ) );
+            if ( !equalName ) {
                 try {
                     CoordinateSystem thisCRS = this.getWrappedCRS();
                     CoordinateSystem thatCRS = that.getWrappedCRS();
@@ -172,47 +172,20 @@ public class CRS implements Serializable {
                     return false; // because something failed when comparing the CoordinateSystems...
                 }
             }
+            return true;
         }
         return false;
     }
 
-    /**
-     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
-     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
-     * <ul>
-     * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f</li>
-     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
-     * <li>float -- code = Float.floatToIntBits(f);</li>
-     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
-     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
-     * <li>Array -- Apply above rules to each element</li>
-     * </ul>
-     * <p>
-     * Combining the hash code(s) computed above: result = 37 * result + code;
-     * </p>
-     * 
-     * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
-        // the 2nd millionth prime, :-)
-        long result = 32452843;
-        if ( this.crsName != null ) {
-            result = result * 37 + this.crsName.hashCode();
-        }
+
         try {
-            getWrappedCRS();
+            return getWrappedCRS().hashCode();
         } catch ( UnknownCRSException e ) {
             // because something failed while retrieving the CoordinateSystem...
         }
-        if ( this.crs != null ) {
-            result = result * 37 + this.crs.hashCode();
-        }
-
-        return (int) ( result >>> 32 ) ^ (int) result;
+        return crs.hashCode();
     }
 
     /**
