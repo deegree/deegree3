@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
@@ -74,15 +73,15 @@ public interface MetadataStore {
      */
     public void destroy();
 
-    /**
-     * Exports the XML schema for the associated metadata format.
-     * 
-     * @param writer
-     *            writer to export to, must not be <code>null</code>
-     * @param typeName
-     *            specifies which record profile should be returned in the response.
-     */
-    public void describeRecord( XMLStreamWriter writer, QName typeName );
+    // /**
+    // * Exports the XML schema for the associated metadata format.
+    // *
+    // * @param writer
+    // * writer to export to, must not be <code>null</code>
+    // * @param typeName
+    // * specifies which record profile should be returned in the response.
+    // */
+    // public void describeRecord( XMLStreamWriter writer, QName typeName );
 
     /**
      * 
