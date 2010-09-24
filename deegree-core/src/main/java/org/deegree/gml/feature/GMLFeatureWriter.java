@@ -656,7 +656,7 @@ public class GMLFeatureWriter {
 
         if ( subFeature == null ) {
             writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-        } else if ( !( subFeature instanceof FeatureReference ) || ( (FeatureReference) subFeature ).isLocal() ) {
+        } else if ( !( subFeature instanceof FeatureReference ) || ( (FeatureReference) subFeature ).isResolved() ) {
             // normal feature or local feature reference
             String subFid = subFeature.getId();
             if ( subFid == null ) {

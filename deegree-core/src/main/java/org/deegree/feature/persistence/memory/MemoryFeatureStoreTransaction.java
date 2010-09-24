@@ -76,6 +76,7 @@ import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
 import org.slf4j.Logger;
@@ -99,30 +100,38 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final LinearizationCriterion crit = new NumPointsCriterion( 20 );
 
-    private MemoryFeatureStore store;
+    private final MemoryFeatureStore fs;
+
+    private final StoredFeatures sf;
 
     /**
      * Creates a new {@link MemoryFeatureStoreTransaction} instance.
      * 
      * NOTE: This method is only supposed to be invoked by the {@link MemoryFeatureStore}.
      * 
-     * @param store
+     * @param sf
      *            invoking feature store instance, never <code>null</code>
      */
-    MemoryFeatureStoreTransaction( MemoryFeatureStore store ) {
-        this.store = store;
+    MemoryFeatureStoreTransaction( MemoryFeatureStore fs, StoredFeatures sf ) {
+        this.fs = fs;
+        this.sf = sf;
     }
 
     @Override
     public void commit()
                             throws FeatureStoreException {
-        store.rebuildMaps();
-        store.releaseTransaction( this );
+        try {
+            sf.buildMaps();
+        } catch ( UnknownCRSException e ) {
+            throw new FeatureStoreException( e.getMessage() );
+        }
+        fs.storedFeatures = sf;
+        fs.releaseTransaction( this );
     }
 
     @Override
     public FeatureStore getStore() {
-        return store;
+        return fs;
     }
 
     @Override
@@ -130,20 +139,20 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
 
         String lockId = lock != null ? lock.getId() : null;
-        FeatureType ft = store.getSchema().getFeatureType( ftName );
+        FeatureType ft = fs.getSchema().getFeatureType( ftName );
         if ( ft == null ) {
             throw new FeatureStoreException( getMessage( "TA_OPERATION_FT_NOT_SERVED", ftName ) );
         }
 
-        FeatureCollection fc = store.getCollection( ft );
+        FeatureCollection fc = sf.ftToFeatures.get( ft );
         int deleted = 0;
         if ( fc != null ) {
             try {
-                FeatureCollection newFc = fc.getMembers( filter, store.evaluator );
+                FeatureCollection delete = fc.getMembers( filter, sf.evaluator );
 
                 // check if all can be deleted
-                for ( Feature feature : newFc ) {
-                    if ( !store.lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
+                for ( Feature feature : delete ) {
+                    if ( !fs.lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
                         if ( lockId == null ) {
                             throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID",
                                                                              feature.getId() ), "lockId" );
@@ -153,9 +162,9 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                 }
 
-                deleted = newFc.size();
-                for ( Feature feature : newFc ) {
-                    store.removeObject( feature.getId() );
+                deleted = delete.size();
+                for ( Feature feature : delete ) {
+                    fc.remove( feature );
                     if ( lock != null ) {
                         lock.release( feature.getId() );
                     }
@@ -175,7 +184,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
         // check if all features can be deleted
         for ( String id : filter.getMatchingIds() ) {
-            if ( !store.lockManager.isFeatureModifiable( id, lockId ) ) {
+            if ( !fs.lockManager.isFeatureModifiable( id, lockId ) ) {
                 if ( lockId == null ) {
                     throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID", id ), "lockId" );
                 }
@@ -184,7 +193,14 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         }
 
         for ( String id : filter.getMatchingIds() ) {
-            store.removeObject( id );
+            GMLObject obj = sf.idToObject.get( id );
+            if ( obj != null ) {
+                if ( obj instanceof Feature ) {
+                    Feature f = (Feature) obj;
+                    FeatureType ft = f.getType();
+                    sf.ftToFeatures.get( ft ).remove( f );
+                }
+            }
             if ( lock != null ) {
                 lock.release( id );
             }
@@ -196,8 +212,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
-        if ( store.storageSRS != null ) {
-            LOG.info( "Transforming incoming feature collection to '" + store.getStorageSRS() + "'" );
+        if ( fs.getStorageSRS() != null ) {
+            LOG.debug( "Transforming incoming feature collection to '" + fs.getStorageSRS() + "'" );
             try {
                 fc = transformGeometries( fc );
             } catch ( Exception e ) {
@@ -205,7 +221,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 String msg = "Unable to transform geometries: " + e.getMessage();
                 throw new FeatureStoreException( msg );
             }
-            LOG.info( "Done." );
+            LOG.debug( "Done." );
         }
 
         Set<Geometry> geometries = new HashSet<Geometry>();
@@ -272,7 +288,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         // check if any of the features / geometries to be inserted already exists in the store
         begin = System.currentTimeMillis();
         for ( String fid : fids ) {
-            if ( store.getObjectById( fid ) != null ) {
+            if ( sf.getObjectById( fid ) != null ) {
                 String msg = "Cannot insert feature '" + fid + "'. This feature already exists in the feature store.";
                 throw new FeatureStoreException( msg );
             }
@@ -282,7 +298,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
         begin = System.currentTimeMillis();
         for ( String gid : gids ) {
-            if ( store.getObjectById( gid ) != null ) {
+            if ( sf.getObjectById( gid ) != null ) {
                 String msg = "Cannot insert geometry '" + gid + "'. This geometry already exists in the feature store.";
                 throw new FeatureStoreException( msg );
             }
@@ -291,19 +307,9 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         LOG.debug( "Checking for existing geometries took {} [ms]", elapsed );
 
         begin = System.currentTimeMillis();
-        store.addFeatures( features );
+        sf.addFeatures( features );
         elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Adding of features took {} [ms]", elapsed );
-
-        try {
-            begin = System.currentTimeMillis();
-            store.addGeometriesWithId( geometries );
-            elapsed = System.currentTimeMillis() - begin;
-            LOG.debug( "Adding of geometries took {} [ms]", elapsed );
-        } catch ( UnknownCRSException e ) {
-            String msg = "Cannot insert geometry: " + e.getMessage();
-            throw new FeatureStoreException( msg );
-        }
         return new ArrayList<String>( fids );
     }
 
@@ -311,7 +317,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws IllegalArgumentException, UnknownCRSException, TransformationException {
 
         FeatureCollection transformedFc = new GenericFeatureCollection();
-        GeometryTransformer transformer = new GeometryTransformer( store.storageSRS );
+        GeometryTransformer transformer = new GeometryTransformer( fs.getStorageSRS() );
         for ( Feature feature : fc ) {
             transformedFc.add( transformGeometries( feature, transformer ) );
         }
@@ -361,7 +367,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
         Geometry transformed = value;
         if ( transformed.getCoordinateSystem() == null ) {
-            transformed.setCoordinateSystem( store.storageSRS );
+            transformed.setCoordinateSystem( transformer.getWrappedTargetCRS() );
         } else {
             transformed = linearizer.linearize( value, crit );
             if ( !( transformed instanceof Point && transformed.getCoordinateDimension() == 1 ) ) {
@@ -394,13 +400,13 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                     Object propertyValue = property.getValue();
                     if ( propertyValue instanceof Feature ) {
                         if ( !( propertyValue instanceof FeatureReference )
-                             || ( (FeatureReference) propertyValue ).isLocal() ) {
+                             || ( (FeatureReference) propertyValue ).isResolved() ) {
                             findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
                         }
                     } else if ( propertyValue instanceof Geometry ) {
                         Geometry geom = (Geometry) propertyValue;
                         if ( !( geom instanceof Point && geom.getCoordinateDimension() == 1 ) ) {
-                            if ( !geom.getCoordinateSystem().equals( store.getStorageSRS() ) ) {
+                            if ( !geom.getCoordinateSystem().equals( fs.getStorageSRS() ) ) {
                                 System.out.println( "Feature " + feature.getId() );
                                 System.out.println( "Property " + property.getName() );
                                 System.out.println( "Geom " + geom );
@@ -430,20 +436,20 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
         String lockId = lock != null ? lock.getId() : null;
 
-        FeatureType ft = store.getSchema().getFeatureType( ftName );
+        FeatureType ft = fs.getSchema().getFeatureType( ftName );
         if ( ft == null ) {
             throw new FeatureStoreException( getMessage( "TA_OPERATION_FT_NOT_SERVED", ftName ) );
         }
 
-        FeatureCollection fc = store.getCollection( ft );
+        FeatureCollection fc = sf.ftToFeatures.get( ft );
         int updated = 0;
         if ( fc != null ) {
             try {
-                FeatureCollection newFc = fc.getMembers( filter, store.evaluator );
+                FeatureCollection newFc = fc.getMembers( filter, sf.evaluator );
 
                 // check if all features can be updated
                 for ( Feature feature : newFc ) {
-                    if ( !store.lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
+                    if ( !fs.lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
                         if ( lockId == null ) {
                             throw new MissingParameterException( getMessage( "TA_UPDATE_LOCKED_NO_LOCK_ID",
                                                                              feature.getId() ), "lockId" );
@@ -498,9 +504,6 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public void rollback()
                             throws FeatureStoreException {
-        store.rebuildMaps();
-        store.releaseTransaction( this );
-        String msg = "Cannot recover pre-transaction state (not supported by this feature store). Feature store may be inconsistent!";
-        throw new FeatureStoreException( msg );
+        fs.releaseTransaction( this );
     }
 }
