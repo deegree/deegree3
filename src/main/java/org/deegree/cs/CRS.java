@@ -181,11 +181,13 @@ public class CRS implements Serializable {
     public int hashCode() {
 
         try {
-            return getWrappedCRS().hashCode();
+            if ( getWrappedCRS() != null ) {
+                return getWrappedCRS().hashCode();
+            }
         } catch ( UnknownCRSException e ) {
             // because something failed while retrieving the CoordinateSystem...
         }
-        return crs.hashCode();
+        return crsName.hashCode();
     }
 
     /**
