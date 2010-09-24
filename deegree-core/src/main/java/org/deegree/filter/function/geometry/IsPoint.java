@@ -53,7 +53,7 @@ public class IsPoint implements FunctionProvider {
 
                 // TODO is handling of multi geometries like this ok?
                 boolean isPoint = geom instanceof Point || geom instanceof MultiPoint;
-                return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( isPoint ) ) };
+                return new TypedObjectNode[] { new PrimitiveValue( Boolean.toString( isPoint ) ) };
             }
         };
     }

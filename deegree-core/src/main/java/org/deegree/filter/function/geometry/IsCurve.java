@@ -56,7 +56,7 @@ public class IsCurve implements FunctionProvider {
 
                 // TODO is handling of multi geometries like this ok?
                 boolean result = geom instanceof Curve || geom instanceof MultiCurve || geom instanceof MultiLineString;
-                return new TypedObjectNode[] { new PrimitiveValue( Boolean.valueOf( result ) ) };
+                return new TypedObjectNode[] { new PrimitiveValue( Boolean.toString( result ) ) };
             }
         };
     }
