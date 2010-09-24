@@ -36,12 +36,14 @@
 package org.deegree.cs.transformations;
 
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
+
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOCENTRIC;
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
 import static org.deegree.cs.transformations.coordinate.ConcatenatedTransform.concatenate;
 import static org.deegree.cs.transformations.coordinate.MatrixTransform.createMatrixTransform;
 import static org.deegree.cs.transformations.ntv2.NTv2Transformation.createAxisAllignedNTv2Transformation;
+import static org.deegree.cs.transformations.helmert.Helmert.createAxisAllignedTransformedHelmertTransformation;
 import static org.deegree.cs.utilities.MappingUtils.updateFromDefinedTransformations;
 import static org.deegree.cs.utilities.Matrix.swapAndRotateGeoAxis;
 import static org.deegree.cs.utilities.Matrix.swapAxis;
@@ -250,7 +252,7 @@ public class TransformationFactory {
 
         // check if the list of required transformations contains a 'direct' transformation.
         Transformation result = getRequiredTransformation( toBeUsed, sourceCRS, targetCRS );
-        if ( result == null || "Helmert".equals( result.getImplementationName() ) ) {
+        if ( result == null ) {
             // check if a 'direct' transformation could be loaded from the configuration;
             result = getTransformation( sourceCRS, targetCRS );
             if ( result == null || "Helmert".equals( result.getImplementationName() ) ) {
@@ -393,6 +395,8 @@ public class TransformationFactory {
                         // rb: dirty hack, ntv2 needs lon/lat incoming coordinates, if not set, swap them.
                         // the axis must be swapped to fit ntv2 (which is defined on lon/lat.
                         tr = createAxisAllignedNTv2Transformation( (NTv2Transformation) tr );
+                    } else if ( "Helmert".equals( tr.getImplementationName() ) ) {
+                        tr = createAxisAllignedTransformedHelmertTransformation( (Helmert) tr );
                     }
                     result.add( tr );
                 }
@@ -875,19 +879,13 @@ public class TransformationFactory {
             final GeographicCRS stepGeoCS = targetCRS.getGeographicCRS();
 
             final Transformation geo2geo = createTransformation( sourceCRS, stepGeoCS );
-            final Transformation swap = createMatrixTransform( stepGeoCS, targetCRS, swapAxis( stepGeoCS, targetCRS ) );
             if ( LOG.isDebugEnabled() ) {
                 StringBuilder sb = new StringBuilder(
                                                       "Resulting axis alignment between target geographic and target projected is:" );
-                if ( swap == null ) {
-                    sb.append( " not necessary" );
-                } else {
-                    sb.append( "\n" ).append( ( (MatrixTransform) swap ).getMatrix() );
-                }
                 LOG.debug( sb.toString() );
             }
             final Transformation projection = new ProjectionTransform( targetCRS );
-            result = concatenate( geo2geo, swap, projection );
+            result = concatenate( geo2geo, projection );
         }
         return result;
     }
@@ -907,8 +905,8 @@ public class TransformationFactory {
      */
     private Transformation createTransformation( final GeographicCRS sourceCRS, final GeocentricCRS targetCRS )
                             throws TransformationException {
-        LOG.debug( "Creating geographic -> geocentric transformation: from (source): ? to (target): ?",
-                   sourceCRS.getCode(), targetCRS.getCode() );
+        LOG.debug( "Creating geographic -> geocentric transformation: from (source): " + sourceCRS.getCode()
+                   + " to (target): " + targetCRS.getCode() );
         Transformation result = getTransformation( sourceCRS, targetCRS );
         if ( isIdentity( result ) ) {
             GeocentricCRS sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(),

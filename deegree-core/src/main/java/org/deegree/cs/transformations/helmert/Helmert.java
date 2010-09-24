@@ -35,7 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.transformations.helmert;
 
+import static org.deegree.cs.transformations.TransformationFactory.createWGSAlligned;
+import static org.deegree.cs.transformations.coordinate.ConcatenatedTransform.concatenate;
+import static org.deegree.cs.transformations.coordinate.MatrixTransform.createMatrixTransform;
+import static org.deegree.cs.utilities.Matrix.swapAndRotateGeoAxis;
 import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
 
@@ -44,10 +49,15 @@ import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.components.GeodeticDatum;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
+import org.deegree.cs.transformations.coordinate.GeocentricTransform;
+import org.deegree.cs.utilities.Matrix;
+import org.slf4j.Logger;
 
 /**
  * Parameters for a geographic transformation into another datum. The Bursa Wolf parameters should be applied to
@@ -63,6 +73,8 @@ import org.deegree.cs.transformations.Transformation;
  * 
  */
 public class Helmert extends Transformation {
+
+    private static final Logger LOG = getLogger( Helmert.class );
 
     /** Bursa Wolf shift in meters. */
     public double dx;
@@ -516,5 +528,42 @@ public class Helmert extends Transformation {
      */
     public boolean areRotationsInRad() {
         return rotationInRadians;
+    }
+
+    public static Transformation createAxisAllignedTransformedHelmertTransformation( Helmert transform ) {
+        Transformation result = transform;
+        final GeographicCRS sourceCRS = (GeographicCRS) result.getSourceCRS();
+        final GeographicCRS targetCRS = (GeographicCRS) result.getTargetCRS();
+        if ( sourceCRS != null && targetCRS != null ) {
+            final GeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
+            final GeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
+            String name = sourceCRS.getName() + "_Geocentric";
+            final GeocentricCRS sourceGCS = new GeocentricCRS( sourceDatum, sourceCRS.getCode(), name );
+            name = targetCRS.getName() + "_Geocentric";
+            final GeocentricCRS targetGCS = new GeocentricCRS( targetDatum, targetCRS.getCode(), name );
+
+            final GeographicCRS alignedSource = createWGSAlligned( sourceCRS );
+            final GeographicCRS alignedTarget = createWGSAlligned( targetCRS );
+
+            try {
+                final Matrix first = swapAndRotateGeoAxis( sourceCRS, alignedSource );
+                final Matrix second = swapAndRotateGeoAxis( alignedTarget, targetCRS );
+                // result = concatenate( createMatrixTransform( sourceCRS, alignedSource, first ), result,
+                // createMatrixTransform( alignedTarget, targetCRS, second ) );
+                Transformation step1 = concatenate( createMatrixTransform( sourceCRS, alignedSource, first ),
+                                                    new GeocentricTransform( sourceCRS, sourceGCS ) );
+                GeocentricTransform geocentricTransform = new GeocentricTransform( targetCRS, targetGCS );
+                if ( geocentricTransform != null ) {
+                    // call inverseTransform from geocentric
+                    geocentricTransform.inverse();
+                }
+                Transformation step3 = concatenate( geocentricTransform, createMatrixTransform( alignedTarget,
+                                                                                                targetCRS, second ) );
+                return concatenate( step1, result, step3 );
+            } catch ( TransformationException e ) {
+                LOG.warn( "Could not create an alignment matrix for the supplied Helmert transformation, are the coordinate systems correctly defined?" );
+            }
+        }
+        return result;
     }
 }
