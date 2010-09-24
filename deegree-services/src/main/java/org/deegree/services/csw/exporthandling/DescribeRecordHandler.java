@@ -38,34 +38,35 @@ package org.deegree.services.csw.exporthandling;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.DC_LOCAL_PART;
-import static org.deegree.protocol.csw.CSWConstants.GMD_LOCAL_PART;
-import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
-import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.iso.ISOMetadataStore;
+import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.protocol.csw.CSWConstants;
+import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.describerecord.DescribeRecord;
-import org.deegree.services.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,9 +89,12 @@ public class DescribeRecordHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( DescribeRecordHandler.class );
 
-    private static Map<QName, MetadataStore> requestedTypeNames;
+    // private static Map<QName, MetadataStore> requestedTypeNames;
 
     private CSWService service;
+
+    private static final String ISO = DescribeRecordHandler.class.getResource(
+                                                                               "/org/deegree/services/csw/exporthandling/iso.xml" ).toString();
 
     /**
      * Creates a new {@link DescribeRecordHandler} instance that uses the given service to lookup the
@@ -117,73 +121,20 @@ public class DescribeRecordHandler {
     public void doDescribeRecord( DescribeRecord descRec, HttpResponseBuffer response, boolean isSoap )
                             throws XMLStreamException, IOException, OWSException {
 
-        Set<MetadataStore> rec = determineRequestedRecordStore( descRec );
-
-        if ( rec.size() == 0 ) {
-            throw new OWSException( Messages.get( "CSW_NO_RECORDSTORE_DEFINED" ),
-                                    ControllerException.NO_APPLICABLE_CODE );
-        }
+        QName[] typeNames = descRec.getTypeNames();
 
         Version version = descRec.getVersion();
         response.setContentType( descRec.getOutputFormat() );
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
 
-        export( xmlWriter, rec.iterator().next(), version, isSoap );
-        xmlWriter.flush();
-
-    }
-
-    /**
-     * Determines whether there is a typeName delivered in the request. <br>
-     * If there is no typeName delivered there should be returned all stored records. Otherwise the requested record
-     * should be provided.
-     * 
-     * @param descRec
-     *            the parsed describeRecord request
-     * @return a set of {@link MetadataStore}s
-     */
-    private Set<MetadataStore> determineRequestedRecordStore( DescribeRecord descRec ) {
-
-        Set<MetadataStore> rss = new HashSet<MetadataStore>();
-        requestedTypeNames = new HashMap<QName, MetadataStore>();
-
-        if ( descRec.getTypeNames() == null || descRec.getTypeNames().length == 0 ) {
-            LOG.debug( "Describing all served records." );
-            rss.addAll( service.getRecordStore() );
-            for ( MetadataStore rs : rss ) {
-                /*
-                 * TODO remove Dirty HACK! problem: the architecture is based on the fact that records can be identified
-                 * by their typeNames. If DescribeRecord doesn't use typeNames in the request, there should be all the
-                 * records in the response
-                 */
-                if ( rs instanceof ISOMetadataStore ) {
-                    requestedTypeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, CSW_PREFIX ), rs );
-                    requestedTypeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), rs );
-                }
-
-            }
-
-        } else {
-            for ( QName typeName : descRec.getTypeNames() ) {
-
-                // if ( service.getRecordStore( typeName ) != null ) {
-                //
-                // rss.add( service.getRecordStore( typeName ) );
-                // requestedTypeNames.put( typeName, service.getRecordStore( typeName ) );
-                //
-                // } else {
-                // String msg = "No MetadataStore registered for request: '" + typeName
-                // + "'. Check Capabilities document or spelling. ";
-                // LOG.debug( msg );
-                // throw new InvalidParameterValueException( msg );
-                // }
-
-            }
-
+        try {
+            export( xmlWriter, typeNames, version, isSoap );
+        } catch ( MetadataStoreException e ) {
+            LOG.debug( e.getMessage() );
+            throw new OWSException( e.getMessage(), ControllerException.NO_APPLICABLE_CODE );
         }
-
-        return rss;
+        xmlWriter.flush();
 
     }
 
@@ -196,12 +147,13 @@ public class DescribeRecordHandler {
      * @param record
      *            the recordStore that is requested
      * @throws XMLStreamException
+     * @throws MetadataStoreException
      */
-    private static void export( XMLStreamWriter writer, MetadataStore record, Version version, boolean isSoap )
-                            throws XMLStreamException {
+    private static void export( XMLStreamWriter writer, QName[] typeNames, Version version, boolean isSoap )
+                            throws XMLStreamException, MetadataStoreException {
 
         if ( VERSION_202.equals( version ) ) {
-            export202( writer, record, isSoap );
+            export202( writer, typeNames, isSoap );
         } else {
             throw new IllegalArgumentException( "Version '" + version + "' is not supported." );
         }
@@ -215,9 +167,10 @@ public class DescribeRecordHandler {
      * @param writer
      * @param record
      * @throws XMLStreamException
+     * @throws MetadataStoreException
      */
-    private static void export202( XMLStreamWriter writer, MetadataStore record, boolean isSoap )
-                            throws XMLStreamException {
+    private static void export202( XMLStreamWriter writer, QName[] typeNames, boolean isSoap )
+                            throws XMLStreamException, MetadataStoreException {
 
         writer.setDefaultNamespace( CSW_202_NS );
         writer.setPrefix( CSW_PREFIX, CSW_202_NS );
@@ -225,9 +178,60 @@ public class DescribeRecordHandler {
         writer.writeAttribute( "xsi", CommonNamespaces.XSINS, "schemaLocation", CSW_202_NS + " "
                                                                                 + CSW_202_DISCOVERY_SCHEMA );
 
-        for ( QName typeName : requestedTypeNames.keySet() ) {
+        for ( QName typeName : typeNames ) {
 
-            exportSchemaComponent( writer, requestedTypeNames.get( typeName ), typeName );
+            try {
+
+                BufferedInputStream bais;
+                URLConnection urlConn = null;
+                // InputStream in = null;
+
+                /*
+                 * if typeName is csw:Record
+                 */
+                if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.DC ) {
+
+                    urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
+
+                }
+
+                /*
+                 * if typeName is gmd:MD_Metadata
+                 */
+                else if ( OutputSchema.determineByTypeName( typeName ) == OutputSchema.ISO_19115 ) {
+
+                    String baseURL = "http://schemas.opengis.net/iso/19139/20060504/gmd/";
+
+                    urlConn = new URL( "http://www.isotc211.org/2005/gmd/gmd.xsd" ).openConnection();
+                    // in = new FileInputStream( ISO );
+                    // writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
+
+                }
+                /*
+                 * if the typeName is no registered in this recordprofile
+                 */
+                else {
+                    String errorMessage = "The typeName " + typeName + "is not supported. ";
+                    LOG.debug( errorMessage );
+                    throw new InvalidParameterValueException( errorMessage );
+                }
+
+                // urlConn.setDoInput( true );
+                bais = new BufferedInputStream( urlConn.getInputStream() );
+
+                // Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
+                InputStreamReader isr = new InputStreamReader( bais, "UTF-8" );
+
+                exportSchemaComponent( writer, typeName, isr );
+
+            } catch ( IOException e ) {
+
+                LOG.debug( "error: " + e.getMessage(), e );
+                throw new MetadataStoreException( e.getMessage() );
+            } catch ( Exception e ) {
+
+                LOG.debug( "error: " + e.getMessage(), e );
+            }
         }
 
         writer.writeEndElement();// DescribeRecordResponse
@@ -243,7 +247,7 @@ public class DescribeRecordHandler {
      *            that corresponds to the requested {@link MetadataStore}
      * @throws XMLStreamException
      */
-    private static void exportSchemaComponent( XMLStreamWriter writer, MetadataStore record, QName typeName )
+    private static void exportSchemaComponent( XMLStreamWriter writer, QName typeName, InputStreamReader isr )
                             throws XMLStreamException {
 
         writer.writeStartElement( CSW_202_NS, "SchemaComponent" );
@@ -259,7 +263,11 @@ public class DescribeRecordHandler {
          */
         // writer.writeAttribute( "parentSchema", "" );
 
-        record.describeRecord( writer, typeName );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
+        xmlReader.nextTag();
+        XMLAdapter.writeElement( writer, xmlReader );
+
+        xmlReader.close();
 
         writer.writeEndElement();// SchemaComponent
 

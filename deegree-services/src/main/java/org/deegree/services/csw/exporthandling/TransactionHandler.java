@@ -268,7 +268,7 @@ public class TransactionHandler {
         int i = 0;
         MetadataStoreTransaction mt = null;
         try {
-            for ( MetadataStore rec : service.getRecordStore() ) {
+            for ( MetadataStore rec : service.getMetadataStore() ) {
                 mt = rec.acquireTransaction();
                 i = mt.performDelete( delete );
                 mt.commit();
@@ -306,7 +306,7 @@ public class TransactionHandler {
         } else {
 
             try {
-                for ( MetadataStore rec : service.getRecordStore() ) {
+                for ( MetadataStore rec : service.getMetadataStore() ) {
                     mt = rec.acquireTransaction();
                     i = mt.performUpdate( update );
                     mt.commit();
