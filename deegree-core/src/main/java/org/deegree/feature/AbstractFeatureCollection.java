@@ -53,6 +53,8 @@ import org.deegree.geometry.Envelope;
  */
 public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
 
+    private boolean envelopeCalculated = false;
+
     @Override
     public FeatureCollection getMembers( Filter filter, XPathEvaluator<Feature> evaluator )
                             throws FilterEvaluationException {
@@ -64,6 +66,15 @@ public abstract class AbstractFeatureCollection extends AbstractFeature implemen
             }
         }
         return new GenericFeatureCollection( null, matchingFeatures );
+    }
+
+    @Override
+    public Envelope getEnvelope() {
+        if ( envelopeCalculated ) {
+            return standardProps.getBoundedBy();
+        }
+        envelopeCalculated = true;
+        return super.getEnvelope();
     }
 
     @Override
