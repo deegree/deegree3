@@ -60,6 +60,7 @@ import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLDocumentIdContext;
@@ -276,7 +277,15 @@ public class MemoryFeatureStore implements FeatureStore {
 
     @Override
     public Envelope getEnvelope( QName ftName ) {
-        return storedFeatures.ftToFeatures.get( schema.getFeatureType( ftName ) ).getEnvelope();
+        Envelope ftEnv = null;
+        FeatureType ft = schema.getFeatureType( ftName );
+        if ( ft != null ) {
+            FeatureCollection fc = storedFeatures.ftToFeatures.get( ft );
+            if ( fc != null ) {
+                ftEnv = fc.getEnvelope();
+            }
+        }
+        return ftEnv;
     }
 
     @Override

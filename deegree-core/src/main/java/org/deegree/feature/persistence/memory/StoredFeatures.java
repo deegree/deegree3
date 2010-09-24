@@ -100,7 +100,7 @@ class StoredFeatures {
     StoredFeatures( ApplicationSchema schema, CRS storageCRS, StoredFeatures former ) {
         this.schema = schema;
         this.storageCRS = storageCRS;
-        for ( FeatureType ft : schema.getFeatureTypes( null, false, false ) ) {
+        for ( FeatureType ft : schema.getFeatureTypes( null, true, false ) ) {
             FeatureCollection fc = new GenericFeatureCollection();
             if ( former != null ) {
                 FeatureCollection oldFc = former.ftToFeatures.get( ft );
