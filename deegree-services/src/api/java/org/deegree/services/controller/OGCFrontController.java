@@ -959,7 +959,9 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        serviceConfiguration.destroy();
+        if ( serviceConfiguration != null ) {
+            serviceConfiguration.destroy();
+        }
         plugClassLoaderLeaks();
     }
 
