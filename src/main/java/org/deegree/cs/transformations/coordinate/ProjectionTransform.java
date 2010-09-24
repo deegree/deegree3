@@ -70,7 +70,9 @@ public class ProjectionTransform extends Transformation {
 
     private Projection projection;
 
-    private boolean swapAxis = false;
+    private boolean swapAxisTarget = false;
+
+    private boolean swapAxisSource = false;
 
     /**
      * @param projectedCRS
@@ -81,7 +83,10 @@ public class ProjectionTransform extends Transformation {
     public ProjectionTransform( ProjectedCRS projectedCRS, CRSIdentifiable id ) {
         super( projectedCRS.getGeographicCRS(), projectedCRS, id );
         this.projection = projectedCRS.getProjection();
-        swapAxis = checkAxisOrientation( projectedCRS.getAxis() );
+        // expected: lon/lat
+        swapAxisSource = checkAxisOrientation( getSourceCRS().getAxis() );
+        // expected: lon/lat
+        swapAxisTarget = checkAxisOrientation( getTargetCRS().getAxis() );
     }
 
     /**
@@ -155,12 +160,17 @@ public class ProjectionTransform extends Transformation {
      */
     private void doForwardTransform( List<Point3d> srcPts, TransformationException trans ) {
         int i = 0;
-        if ( swapAxis ) {
+        if ( swapAxisSource ) {
             for ( Point3d p : srcPts ) {
                 try {
                     Point2d tmp = projection.doProjection( p.y, p.x );
-                    p.x = tmp.y;
-                    p.y = tmp.x;
+                    if ( swapAxisTarget ) {
+                        p.x = tmp.y;
+                        p.y = tmp.x;
+                    } else {
+                        p.x = tmp.x;
+                        p.y = tmp.y;
+                    }
                 } catch ( ProjectionException e ) {
                     trans.setTransformError( i, e.getMessage() );
                 }
@@ -170,8 +180,13 @@ public class ProjectionTransform extends Transformation {
             for ( Point3d p : srcPts ) {
                 try {
                     Point2d tmp = projection.doProjection( p.x, p.y );
-                    p.x = tmp.x;
-                    p.y = tmp.y;
+                    if ( swapAxisTarget ) {
+                        p.x = tmp.y;
+                        p.y = tmp.x;
+                    } else {
+                        p.x = tmp.x;
+                        p.y = tmp.y;
+                    }
                 } catch ( ProjectionException e ) {
                     trans.setTransformError( i, e.getMessage() );
                 }
@@ -185,14 +200,18 @@ public class ProjectionTransform extends Transformation {
      * @param srcPts
      */
     private void doInverseTransform( List<Point3d> srcPts, TransformationException trans ) {
-
         int i = 0;
-        if ( swapAxis ) {
+        if ( swapAxisTarget ) {
             for ( Point3d p : srcPts ) {
                 try {
                     Point2d tmp = projection.doInverseProjection( p.y, p.x );
-                    p.x = tmp.y;
-                    p.y = tmp.x;
+                    if ( swapAxisSource ) {
+                        p.x = tmp.y;
+                        p.y = tmp.x;
+                    } else {
+                        p.x = tmp.x;
+                        p.y = tmp.y;
+                    }
                 } catch ( ProjectionException e ) {
                     trans.setTransformError( i, e.getMessage() );
                 }
@@ -202,8 +221,13 @@ public class ProjectionTransform extends Transformation {
             for ( Point3d p : srcPts ) {
                 try {
                     Point2d tmp = projection.doInverseProjection( p.x, p.y );
-                    p.x = tmp.x;
-                    p.y = tmp.y;
+                    if ( swapAxisSource ) {
+                        p.x = tmp.y;
+                        p.y = tmp.x;
+                    } else {
+                        p.x = tmp.x;
+                        p.y = tmp.y;
+                    }
                 } catch ( ProjectionException e ) {
                     trans.setTransformError( i, e.getMessage() );
                 }
