@@ -225,6 +225,9 @@ public class StyleRegistry extends TimerTask {
                     if ( name != null ) {
                         style.setName( name );
                     }
+                    if ( styles.size() == 1 ) {
+                        soleStyleFiles.add( file.getName() );
+                    }
                     put( layerName, style, false );
                 }
             } catch ( MalformedURLException e ) {
@@ -302,7 +305,9 @@ public class StyleRegistry extends TimerTask {
      */
     public boolean register( String layerName, File file, boolean isSoleStyle ) {
         if ( !monitoredFiles.containsKey( file ) ) {
-            soleStyleFiles.add( file.getName() );
+            if ( isSoleStyle ) {
+                soleStyleFiles.add( file.getName() );
+            }
             return load( layerName, file );
         }
 
