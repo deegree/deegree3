@@ -42,6 +42,7 @@ import java.util.Set;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.Geometry.GeometryType;
@@ -111,7 +112,12 @@ public class GMLObjectWalker {
 
         if ( !visited.contains( node ) ) {
             visited.add( node );
-            if ( node instanceof Feature ) {
+            if ( node instanceof FeatureCollection ) {
+                FeatureCollection fc = (FeatureCollection) node;
+                for ( Feature member : fc ) {
+                    traverse( member );
+                }
+            } else if ( node instanceof Feature ) {
                 Feature f = (Feature) node;
                 if ( visitor.visitFeature( f ) ) {
                     traverseFeature( f );
