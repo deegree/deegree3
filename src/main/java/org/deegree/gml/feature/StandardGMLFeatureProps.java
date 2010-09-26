@@ -634,13 +634,7 @@ public class StandardGMLFeatureProps extends GMLStdProps {
 
     @Override
     public String toString() {
-        String s = "";
-        for ( int i = 0; i < names.length; i++ ) {
-            s += "name={" + names[i] + "}";
-            if ( i != names.length - 1 ) {
-                s += ',';
-            }
-        }
+        String s = super.toString();
         if ( boundedBy != null ) {
             if ( s.length() > 0 ) {
                 s += ",";
