@@ -46,6 +46,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
+import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 
@@ -73,12 +74,14 @@ public class DefaultGMLTypes {
         QName name = new QName( GMLNS, "FeatureCollection", "gml" );
         List<PropertyType> props = new ArrayList<PropertyType>();
         props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, null, false, null, BOTH ) );
+        props.add( new ArrayPropertyType( new QName( GMLNS, "featureMembers", "gml" ), 0, -1, false, null ) );
         GML311_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
 
         name = new QName( GML3_2_NS, "FeatureCollection", "gml" );
         props = new ArrayList<PropertyType>();
         props.add( new FeaturePropertyType( new QName( GML3_2_NS, "featureMember", "gml" ), 0, -1, null, false, null,
                                             BOTH ) );
+        props.add( new ArrayPropertyType( new QName( GML3_2_NS, "featureMembers", "gml" ), 0, -1, false, null ) );
         GML321_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
     }
 

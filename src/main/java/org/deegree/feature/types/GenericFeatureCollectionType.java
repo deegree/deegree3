@@ -46,13 +46,16 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.types.property.ArrayPropertyType;
+import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StandardGMLFeatureProps;
 
 /**
- * TODO add documentation here
+ * Generic implementation of {@link FeatureCollectionType}, can be used for representing arbitrary feature collection
+ * types.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -66,6 +69,10 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     // maps property names to their declaration (LinkedHashMap respects the correct key order)
     private Map<QName, PropertyType> propNameToDecl = new LinkedHashMap<QName, PropertyType>();
 
+    private final List<FeaturePropertyType> memberDecls = new ArrayList<FeaturePropertyType>();
+
+    private final List<ArrayPropertyType> membersDecls = new ArrayList<ArrayPropertyType>();
+
     private boolean isAbstract;
 
     private ApplicationSchema schema;
@@ -74,6 +81,12 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
         this.name = name;
         for ( PropertyType propDecl : propDecls ) {
             propNameToDecl.put( propDecl.getName(), propDecl );
+            // TODO is this test sufficient?
+            if ( propDecl instanceof FeaturePropertyType ) {
+                memberDecls.add( (FeaturePropertyType) propDecl );
+            } else if ( propDecl instanceof ArrayPropertyType ) {
+                membersDecls.add( (ArrayPropertyType) propDecl );
+            }
         }
         this.isAbstract = isAbstract;
     }
@@ -140,6 +153,16 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     @Override
     public void setSchema( ApplicationSchema schema ) {
         this.schema = schema;
+    }
+
+    @Override
+    public List<FeaturePropertyType> getMemberDeclarations() {
+        return memberDecls;
+    }
+
+    @Override
+    public List<ArrayPropertyType> getMemberArrayDeclarations() {
+        return membersDecls;
     }
 
     @Override

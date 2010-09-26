@@ -67,7 +67,7 @@ public interface FeatureCollection extends Feature, Collection<Feature> {
     public FeatureCollectionType getType();
 
     /**
-     * Returns the contained features that match the given {@link Filter}.
+     * Returns the member features that match the given {@link Filter}.
      * 
      * @param filter
      *            <code>Filter</code> to be applied, must not be <code>null</code>

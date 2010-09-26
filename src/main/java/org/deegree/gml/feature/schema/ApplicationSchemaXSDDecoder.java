@@ -37,7 +37,6 @@ package org.deegree.gml.feature.schema;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
-import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -51,8 +50,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -79,17 +78,18 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.slf4j.Logger;
@@ -126,8 +126,13 @@ public class ApplicationSchemaXSDDecoder {
     // key: name of feature type, value: feature type
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
+    // key: name of feature type, value: GML core feature type
+    private Map<QName, FeatureType> ftNameToCoreFt = new HashMap<QName, FeatureType>();
+
     // key: name of ft A, value: name of ft B (A is in substitionGroup B)
     private Map<QName, QName> ftNameToSubstitutionGroupName = new HashMap<QName, QName>();
+
+    private Map<QName, PropertyType> propNameToGlobalDecl = new HashMap<QName, PropertyType>();
 
     // stores all feature property types, so the reference to the contained
     // FeatureType can be resolved,
@@ -243,7 +248,7 @@ public class ApplicationSchemaXSDDecoder {
         for ( QName ftName : ftNameToFtElement.keySet() ) {
             FeatureType ft = buildFeatureType( ftNameToFtElement.get( ftName ) );
             if ( gmlNs.equals( ft.getName().getNamespaceURI() ) ) {
-                LOG.trace( "Skipping GML internal feature type declaration: '" + ftName + "'." );
+                ftNameToCoreFt.put( ftName, ft );
             } else {
                 ftNameToFt.put( ftName, ft );
             }
@@ -252,6 +257,7 @@ public class ApplicationSchemaXSDDecoder {
         // resolveFtReferences();
 
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
+
         Map<FeatureType, FeatureType> ftSubstitution = new HashMap<FeatureType, FeatureType>();
         for ( QName ftName : ftNameToSubstitutionGroupName.keySet() ) {
             QName substitutionFtName = ftNameToSubstitutionGroupName.get( ftName );
@@ -349,7 +355,6 @@ public class ApplicationSchemaXSDDecoder {
                 assert false;
             }
             }
-            // contents = new Sequence( elements );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
@@ -430,16 +435,6 @@ public class ApplicationSchemaXSDDecoder {
         QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "*** Found property declaration: '" + elementDecl.getName() + "'." );
 
-        // parse substitutable properties (e.g. genericProperty in CityGML)
-        List<PropertyType> ptSubstitutions = new ArrayList<PropertyType>();
-        XSObjectList list = analyzer.getXSModel().getSubstitutionGroup( elementDecl );
-        if ( list != null ) {
-            for ( int i = 0; i < list.getLength(); i++ ) {
-                XSElementDeclaration substitution = (XSElementDeclaration) list.item( i );
-                ptSubstitutions.add( buildPropertyType( substitution, minOccurs, maxOccurs ) );
-            }
-        }
-
         // HACK HACK HACK
         if ( gmlNs.equals( elementDecl.getNamespace() )
              && ( "boundedBy".equals( elementDecl.getName() ) || "name".equals( elementDecl.getName() )
@@ -448,11 +443,25 @@ public class ApplicationSchemaXSDDecoder {
                   || "identifier".equals( elementDecl.getName() ) || ( "location".equals( elementDecl.getName() ) && gmlVersion != GMLVersion.GML_2 ) ) ) {
             LOG.trace( "Omitting from feature type -- GML standard property." );
         } else {
+            // parse substitutable property declarations (e.g. genericProperty in CityGML)
+            List<PropertyType> ptSubstitutions = new ArrayList<PropertyType>();
+            XSObjectList list = analyzer.getXSModel().getSubstitutionGroup( elementDecl );
+            if ( list != null ) {
+                for ( int i = 0; i < list.getLength(); i++ ) {
+                    XSElementDeclaration substitution = (XSElementDeclaration) list.item( i );
+                    QName declName = new QName( substitution.getNamespace(), substitution.getName() );
+                    PropertyType globalDecl = propNameToGlobalDecl.get( declName );
+                    if ( globalDecl == null ) {
+                        globalDecl = buildPropertyType( substitution, minOccurs, maxOccurs );
+                        propNameToGlobalDecl.put( declName, globalDecl );
+                    }
+                    ptSubstitutions.add( globalDecl );
+                }
+            }
+
             XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
             switch ( typeDef.getTypeCategory() ) {
             case XSTypeDefinition.SIMPLE_TYPE: {
-                QName typeName = typeDef.getName() != null ? new QName( typeDef.getNamespace(), typeDef.getName() )
-                                                          : null;
                 pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, getPrimitiveType( (XSSimpleType) typeDef ),
                                              elementDecl.getAbstract(), ptSubstitutions,
                                              (XSSimpleTypeDefinition) typeDef );
@@ -475,52 +484,45 @@ public class ApplicationSchemaXSDDecoder {
         PropertyType pt = null;
         QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "- Property definition '" + ptName + "' uses a complex type for content definition." );
-        pt = buildFeaturePropertyType( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
+
+        // check for well known GML types first
+        if ( typeDef.getName() != null ) {
+            QName typeName = createQName( typeDef.getNamespace(), typeDef.getName() );
+            if ( typeName.equals( new QName( gmlVersion.getNamespace(), "CodeType" ) ) ) {
+                LOG.trace( "Identified a CodePropertyType." );
+                pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "BoundingShapeType" ) ) ) {
+                LOG.trace( "Identified an EnvelopePropertyType." );
+                pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "MeasureType" ) ) ) {
+                LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
+                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "LengthType" ) ) ) {
+                LOG.trace( "Identified a MeasurePropertyType (LENGTH)." );
+                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "AngleType" ) ) ) {
+                LOG.trace( "Identified a MeasurePropertyType (ANGLE)." );
+                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+            } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "FeatureArrayPropertyType" ) ) ) {
+                LOG.trace( "Identified a FeatureArrayPropertyType" );
+                pt = new ArrayPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+            }
+        }
+
+        // no success -> try to interpret as geometry property declaration
         if ( pt == null ) {
             pt = buildGeometryPropertyType( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
-            if ( pt == null ) {
-                if ( typeDef.getName() != null ) {
-                    // TODO improve detection of property types
-                    QName typeName = createQName( typeDef.getNamespace(), typeDef.getName() );
-                    if ( typeName.equals( new QName( gmlVersion.getNamespace(), "CodeType" ) ) ) {
-                        LOG.trace( "Identified a CodePropertyType." );
-                        pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                   ptSubstitutions );
-                    } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "BoundingShapeType" ) ) ) {
-                        LOG.trace( "Identified an EnvelopePropertyType." );
-                        pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                       ptSubstitutions );
-                    } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "MeasureType" ) ) ) {
-                        LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
-                        pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                      ptSubstitutions );
-                    } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "LengthType" ) ) ) {
-                        LOG.trace( "Identified a MeasurePropertyType (LENGTH)." );
-                        pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                      ptSubstitutions );
-                    } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "AngleType" ) ) ) {
-                        LOG.trace( "Identified a MeasurePropertyType (ANGLE)." );
-                        pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
-                                                      ptSubstitutions );
-                    } else if ( typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml}XP_VariableGeometrieType" ) )
-                                || typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml/3/0}XP_FlaechengeometrieType" ) )
-                                || typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml/3/0}XP_LiniengeometrieType" ) )
-                                || typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml/3/0}XP_PunktgeometrieType" ) )
-                                || typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml/3/0}XP_VariableGeometrieType" ) ) ) {
-                        // TODO remove xplan hack!!!
-                        pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs,
-                                                       GeometryPropertyType.GeometryType.GEOMETRY,
-                                                       GeometryPropertyType.CoordinateDimension.DIM_2,
-                                                       elementDecl.getAbstract(), ptSubstitutions, INLINE );
-                    } else {
-                        pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeDef, elementDecl.getAbstract(),
-                                                     ptSubstitutions );
-                    }
-                } else {
-                    pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeDef, elementDecl.getAbstract(),
-                                                 ptSubstitutions );
-                }
-            }
+        }
+
+        // no success -> try to interpret as feature property declaration
+        if ( pt == null ) {
+            pt = buildFeaturePropertyType( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
+        }
+
+        // no success -> build custom property declaration
+        if ( pt == null ) {
+            pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeDef, elementDecl.getAbstract(),
+                                         ptSubstitutions );
         }
         return pt;
     }
@@ -537,8 +539,7 @@ public class ApplicationSchemaXSDDecoder {
             NamespaceContext nsContext = new NamespaceContext();
             nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
             nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
-            codeListId = adapter.getNodeAsString(
-                                                  adapter.getRootElement(),
+            codeListId = adapter.getNodeAsString( adapter.getRootElement(),
                                                   new XPath( "xs:appinfo/adv:referenzierteCodeList/text()", nsContext ),
                                                   null );
             if ( codeListId != null ) {
@@ -627,8 +628,6 @@ public class ApplicationSchemaXSDDecoder {
                     switch ( particle2.getTerm().getType() ) {
                     case XSConstants.ELEMENT_DECLARATION: {
                         XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
-                        int minOccurs2 = particle2.getMinOccurs();
-                        int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                         QName elementName = createQName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( ftNameToFtElement.get( elementName ) != null ) {
                             LOG.trace( "Identified a feature property." );
@@ -717,8 +716,7 @@ public class ApplicationSchemaXSDDecoder {
         // inside the annotation element (e.g. CITE examples for WFS 1.1.0)
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
-        QName refElement = annotationXML.getNodeAsQName(
-                                                         annotationXML.getRootElement(),
+        QName refElement = annotationXML.getNodeAsQName( annotationXML.getRootElement(),
                                                          new XPath(
                                                                     "xs:appinfo[@source='urn:x-gml:targetElement']/text()",
                                                                     nsContext ), null );
@@ -812,7 +810,7 @@ public class ApplicationSchemaXSDDecoder {
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.trace( "Found choice." ); 
+                    LOG.trace( "Found choice." );
                     XSObjectList geomChoice = modelGroup.getParticles();
                     int length = geomChoice.getLength();
                     Set<GeometryType> allowedTypes = new HashSet<GeometryType>();
@@ -845,8 +843,8 @@ public class ApplicationSchemaXSDDecoder {
                     }
                     if ( !allowedTypes.isEmpty() ) {
                         return new GeometryPropertyType( ptName, minOccurs, maxOccurs, allowedTypes,
-                                                         CoordinateDimension.DIM_2_OR_3,
-                                                         elementDecl.getAbstract(), ptSubstitutions, BOTH );
+                                                         CoordinateDimension.DIM_2_OR_3, elementDecl.getAbstract(),
+                                                         ptSubstitutions, BOTH );
                     }
                     break;
                 }
@@ -863,7 +861,6 @@ public class ApplicationSchemaXSDDecoder {
                     case XSConstants.ELEMENT_DECLARATION: {
                         XSElementDeclaration elementDecl2 = (XSElementDeclaration) geomTerm;
                         // min occurs check should be done, in regards to the xlinking.
-                        int minOccurs2 = particle2.getMinOccurs();
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                         if ( maxOccurs2 > 1 ) {
                             LOG.warn( "Only single geometries are currently supported." );

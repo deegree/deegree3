@@ -33,40 +33,39 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.types;
+
+package org.deegree.feature.types.property;
 
 import java.util.List;
 
-import org.deegree.feature.types.property.ArrayPropertyType;
-import org.deegree.feature.types.property.FeaturePropertyType;
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.tom.array.TypedObjectNodeArray;
 
 /**
- * {@link FeatureType} that defines a collection of features.
- * <p>
- * A {@link FeatureCollectionType} always has at least one member property declaration, i.e. a property used for
- * aggregating member features (e.g. <code>gml:featureMember</code> for a default GML feature collection). Additionally,
- * it may define feature array properties that allow for aggregating of multiple features in a single property element
- * (e.g. <code>gml:featureMembers</code> for a default GML feature collection).
- * </p>
+ * {@link PropertyType} that defines a property with a {@link TypedObjectNodeArray} value.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public interface FeatureCollectionType extends FeatureType {
+public class ArrayPropertyType extends AbstractPropertyType {
 
-    /**
-     * Returns the feature member property declarations.
-     * 
-     * @return feature member property declarations (in order), never <code>null</code> and contains a least one entry
-     */
-    public List<FeaturePropertyType> getMemberDeclarations();
+    public ArrayPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+                                List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+    }
 
-    /**
-     * Returns the feature member array property declarations.
-     * 
-     * @return feature member array property declarations (in order), may be empty, but never <code>null</code>
-     */
-    public List<ArrayPropertyType> getMemberArrayDeclarations();
+    @Override
+    public String toString() {
+        String s = "- array property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+        return s;
+    }
+
+    @Override
+    public boolean isNillable() {
+        // TODO pipe this value through
+        return true;
+    }
 }

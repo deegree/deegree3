@@ -37,6 +37,7 @@ package org.deegree.gml.feature;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -134,11 +135,12 @@ public class GMLFeatureReaderTest {
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
-        Assert.assertEquals(fc.getGMLProperties().getDescription().getString(), "Test data for assessing compliance with the GMLSF profile at level SF-0.");
-        Assert.assertEquals(fc.getGMLProperties().getNames().length, 1);
-        Assert.assertEquals(fc.getGMLProperties().getNames()[0].getCode(), "CITE/WFS-1.1");
-        Assert.assertEquals(fc.getGMLProperties().getNames()[0].getCodeSpace(), null);
-        Assert.assertEquals(16, fc.size());
+        Assert.assertEquals( fc.getGMLProperties().getDescription().getString(),
+                             "Test data for assessing compliance with the GMLSF profile at level SF-0." );
+        Assert.assertEquals( fc.getGMLProperties().getNames().length, 1 );
+        Assert.assertEquals( fc.getGMLProperties().getNames()[0].getCode(), "CITE/WFS-1.1" );
+        Assert.assertEquals( fc.getGMLProperties().getNames()[0].getCodeSpace(), null );
+        Assert.assertEquals( 16, fc.size() );
     }
 
     /**
@@ -168,8 +170,7 @@ public class GMLFeatureReaderTest {
 
         gmlReader.getIdContext().resolveLocalRefs();
         XMLStreamWriter writer = new FormattingXMLStreamWriter(
-                                                                XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                      new FileWriter(
+                                                                XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter(
                                                                                                                                       System.getProperty( "java.io.tmpdir" )
                                                                                                                                                               + File.separatorChar
                                                                                                                                                               + "out.xml" ) ) );
@@ -351,7 +352,7 @@ public class GMLFeatureReaderTest {
 
         Assert.assertEquals( 4, fc.size() );
     }
-    
+
     @Test
     public void testINSPIREAddresses2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
@@ -372,6 +373,20 @@ public class GMLFeatureReaderTest {
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
 
+        Assert.assertEquals( 4, fc.size() );
+    }
+
+    @Test
+    public void testGeoServerFC()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
+                            ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "GeoServer_FeatureCollection.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
         Assert.assertEquals( 4, fc.size() );
     }
 }

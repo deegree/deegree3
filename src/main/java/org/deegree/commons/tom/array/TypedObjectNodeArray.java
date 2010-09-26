@@ -49,7 +49,7 @@ import org.deegree.commons.tom.TypedObjectNode;
  * @param <T>
  *            type of the contained {@link TypedObjectNode}s
  */
-public class TypedObjectNodeArray<T extends TypedObjectNode> {
+public class TypedObjectNodeArray<T extends TypedObjectNode> implements TypedObjectNode {
 
     private T[] elements;
 

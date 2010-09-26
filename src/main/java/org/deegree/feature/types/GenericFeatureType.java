@@ -52,7 +52,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StandardGMLFeatureProps;
 
 /**
- * TODO add documentation here
+ * Generic implementation of {@link FeatureType}, can be used for representing arbitrary feature types.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

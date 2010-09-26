@@ -58,7 +58,7 @@ import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
 
 /**
- * Stream-based reader for all kinds of GML objects supported by deegree.
+ * Stream-based reader for GML instance documents or GML fragments.
  * <p>
  * Instances of this class are not thread-safe.
  * </p>
@@ -84,8 +84,6 @@ public class GMLStreamReader {
     private ApplicationSchema schema;
 
     private CRS defaultCRS;
-
-    private GeometryFactory geomFac;
 
     private int defaultCoordDim = 2;
 
@@ -155,7 +153,7 @@ public class GMLStreamReader {
 
     /**
      * @return true if the stream's event is an {@link XMLStreamConstants#START_ELEMENT} && the current element's name
-     *         is a known geometry (in respect to it's gml version).
+     *         is a known geometry (with respect to it's gml version).
      */
     public boolean isGeometryElement() {
         GMLGeometryReader geomReader = getGeometryReader();
@@ -164,7 +162,7 @@ public class GMLStreamReader {
 
     /**
      * @return true if the stream's event is an {@link XMLStreamConstants#START_ELEMENT} && the current element's name
-     *         is a known geometry (in respect to it's gml version).
+     *         is a known geometry (with respect to it's gml version).
      */
     public boolean isGeometryOrEnvelopeElement() {
         GMLGeometryReader geomReader = getGeometryReader();
@@ -172,7 +170,7 @@ public class GMLStreamReader {
     }
 
     /**
-     * Controls the {@link GMLReferenceResolver} that the generated {@link GMLReference}s shall use for resolving
+     * Sets the {@link GMLReferenceResolver} that the generated {@link GMLReference}s will use for resolving
      * themselves.
      * 
      * @param resolver
@@ -207,7 +205,6 @@ public class GMLStreamReader {
     /**
      * Returns the deegree model representation for the GML feature element event that the cursor of the underlying xml
      * stream points to.
-     * 
      * @return deegree model representation for the current GML feature element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -223,7 +220,7 @@ public class GMLStreamReader {
      * underlying xml stream points to.
      * <p>
      * Please note that {@link #readStreamFeatureCollection()} should be preferred (especially for large feature
-     * collections), because it does not need to built and store all features in memory at once.
+     * collections), because it does not build and store all features in memory at once.
      * </p>
      * 
      * @return deegree model representation for the current GML feature collection element, never <code>null</code>

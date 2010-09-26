@@ -62,7 +62,7 @@ import org.deegree.gml.geometry.GMLGeometryWriter;
 import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
- * Stream-based writer for all kinds of GML objects supported by deegree.
+ * Stream-based writer for GML instance documents or GML fragments.
  * <p>
  * Instances of this class are not thread-safe.
  * </p>
