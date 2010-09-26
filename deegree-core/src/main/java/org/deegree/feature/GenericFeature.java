@@ -190,7 +190,6 @@ public class GenericFeature extends AbstractFeature {
         return prop;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Property[] getGeometryProperties() {
         List<Property> geoProps = new ArrayList<Property>( props.size() );

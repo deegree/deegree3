@@ -47,14 +47,15 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.ows.CodeType;
@@ -71,6 +72,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
@@ -471,7 +473,7 @@ public class GMLFeatureWriter {
 
         // TODO check for GML 2 properties (gml:pointProperty, ...) and export
         // as "app:gml2PointProperty" for GML 3
-        Object value = property.getValue();
+        TypedObjectNode value = property.getValue();
         if ( propertyType instanceof FeaturePropertyType ) {
             if ( property.isNilled() ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
@@ -595,28 +597,39 @@ public class GMLFeatureWriter {
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeAttribute( XSINS, "nil", "true" );
                 // TODO make sure that only attributes are exported and nothing else
-                export( (TypedObjectNode) property.getValue(), currentLevel, maxInlineLevels );
+                export( property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             } else {
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                export( (TypedObjectNode) property.getValue(), currentLevel, maxInlineLevels );
+                export( property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             }
+        } else if ( propertyType instanceof ArrayPropertyType ) {
+            if ( property.isNilled() ) {
+                writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XSINS, "nil", "true" );
+            } else {
+                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                export( property.getValue(), currentLevel, maxInlineLevels );
+                writer.writeEndElement();
+            }
+        } else {
+            throw new RuntimeException( "Internal error. Unhandled property type '" + propertyType.getClass() + "'" );
         }
     }
 
-    private void export( TypedObjectNode genericXML, int currentLevel, int maxInlineLevels )
+    private void export( TypedObjectNode node, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        if ( genericXML instanceof GMLObject ) {
-            if ( genericXML instanceof Feature ) {
-                export( (Feature) genericXML, currentLevel, maxInlineLevels );
-            } else if ( genericXML instanceof Geometry ) {
-                geometryWriter.export( (Geometry) genericXML );
+        if ( node instanceof GMLObject ) {
+            if ( node instanceof Feature ) {
+                export( (Feature) node, currentLevel, maxInlineLevels );
+            } else if ( node instanceof Geometry ) {
+                geometryWriter.export( (Geometry) node );
             } else {
                 throw new UnsupportedOperationException();
             }
-        } else if ( genericXML instanceof GenericXMLElement ) {
-            GenericXMLElement xmlContent = (GenericXMLElement) genericXML;
+        } else if ( node instanceof GenericXMLElement ) {
+            GenericXMLElement xmlContent = (GenericXMLElement) node;
             QName elName = xmlContent.getName();
             writer.writeStartElement( elName.getPrefix(), elName.getLocalPart(), elName.getNamespaceURI() );
             if ( xmlContent.getAttributes() != null ) {
@@ -630,8 +643,8 @@ public class GMLFeatureWriter {
                 }
             }
             writer.writeEndElement();
-        } else if ( genericXML instanceof GenericXMLElementContent ) {
-            GenericXMLElementContent xmlContent = (GenericXMLElementContent) genericXML;
+        } else if ( node instanceof GenericXMLElementContent ) {
+            GenericXMLElementContent xmlContent = (GenericXMLElementContent) node;
             if ( xmlContent.getAttributes() != null ) {
                 for ( Entry<QName, PrimitiveValue> attr : xmlContent.getAttributes().entrySet() ) {
                     StAXExportingHelper.writeAttribute( writer, attr.getKey(), attr.getValue().getAsText() );
@@ -642,8 +655,14 @@ public class GMLFeatureWriter {
                     export( childNode, currentLevel, maxInlineLevels );
                 }
             }
-        } else if ( genericXML instanceof PrimitiveValue ) {
-            writer.writeCharacters( ( (PrimitiveValue) genericXML ).getAsText() );
+        } else if ( node instanceof PrimitiveValue ) {
+            writer.writeCharacters( ( (PrimitiveValue) node ).getAsText() );
+        } else if ( node instanceof TypedObjectNodeArray<?> ) {
+            for ( TypedObjectNode elem : ( (TypedObjectNodeArray<?>) node ).getElements() ) {
+                export( elem, currentLevel, maxInlineLevels );
+            }
+        } else {
+            throw new RuntimeException( "Unhandled node type '" + node.getClass() + "'" );
         }
     }
 

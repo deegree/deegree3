@@ -73,6 +73,7 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.ows.CodeType;
@@ -93,16 +94,17 @@ import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -110,7 +112,6 @@ import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
-import org.deegree.gml.feature.schema.DefaultGMLTypes;
 import org.deegree.gml.geometry.GML2GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
@@ -457,6 +458,8 @@ public class GMLFeatureReader extends XMLAdapter {
             property = parseMeasureProperty( xmlStream, (MeasurePropertyType) propDecl, isNilled );
         } else if ( propDecl instanceof StringOrRefPropertyType ) {
             property = parseStringOrRefProperty( xmlStream, (StringOrRefPropertyType) propDecl, isNilled );
+        } else if ( propDecl instanceof ArrayPropertyType ) {
+            property = parseArrayProperty( xmlStream, (ArrayPropertyType) propDecl, crs, isNilled );
         } else {
             throw new RuntimeException( "Internal error in GMLFeatureReader: property type " + propDecl.getClass()
                                         + " not handled." );
@@ -621,6 +624,23 @@ public class GMLFeatureReader extends XMLAdapter {
         return new GenericProperty( propDecl, propName, new StringOrRef( string, ref ), isNilled );
     }
 
+    private Property parseArrayProperty( XMLStreamReaderWrapper xmlStream, ArrayPropertyType propDecl, CRS crs,
+                                         boolean isNilled )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        List<Feature> elems = new ArrayList<Feature>();
+        QName propName = xmlStream.getName();
+        StAXParsingHelper.nextElement( xmlStream );
+        while ( !xmlStream.isEndElement() ) {
+            Feature elem = parseFeature( xmlStream, crs );
+            elems.add( elem );
+            StAXParsingHelper.nextElement( xmlStream );
+        }
+        Feature[] elemArray = elems.toArray( new Feature[elems.size()] );
+        TypedObjectNodeArray<Feature> value = new TypedObjectNodeArray<Feature>( elemArray );
+        return new GenericProperty( propDecl, propName, value, isNilled );
+    }
+
     private Property parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl, CRS crs,
                                           boolean isNilled )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
@@ -680,8 +700,7 @@ public class GMLFeatureReader extends XMLAdapter {
                             String msg = "Element '" + childElName + "' is not allowed at this position.";
                             throw new XMLParsingException( xmlStream, msg );
                         }
-                        TypedObjectNode child = parseGenericXMLElement(
-                                                                        xmlStream,
+                        TypedObjectNode child = parseGenericXMLElement( xmlStream,
                                                                         childElementDecls.get( childElName ).getTypeDefinition(),
                                                                         crs );
                         // LOG.debug( "adding: " + childElName + ", " + child.getClass().getName() );
@@ -719,8 +738,7 @@ public class GMLFeatureReader extends XMLAdapter {
                             String msg = "Element '" + childElName + "' is not allowed at this position.";
                             throw new XMLParsingException( xmlStream, msg );
                         }
-                        TypedObjectNode child = parseGenericXMLElement(
-                                                                        xmlStream,
+                        TypedObjectNode child = parseGenericXMLElement( xmlStream,
                                                                         childElementDecls.get( childElName ).getTypeDefinition(),
                                                                         crs );
                         children.add( child );

@@ -82,7 +82,7 @@ public interface PropertyType {
     /**
      * Returns the possible substitutions that are defined for this {@link PropertyType}.
      * 
-     * NOTE: This is only needed for a number of GML application schemas (e.g. CityGML) that define properties using
+     * NOTE: This is needed for a number of GML application schemas (e.g. CityGML) that define properties using
      * abstract element declarations and provide multiple concrete substitutable elements.
      * 
      * @return the possible substitutions (including this {@link PropertyType}), never <code>null</code> and always at

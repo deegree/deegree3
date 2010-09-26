@@ -35,25 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.gml.feature.schema.DefaultGMLTypes.GML311_FEATURECOLLECTION;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureCollectionType;
-import org.deegree.feature.types.GenericFeatureCollectionType;
-import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StandardGMLFeatureProps;
@@ -61,8 +57,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Allows the representation of arbitrary {@link FeatureCollection}s, also those that use {@link FeatureCollectionType}s
- * with their own properties.
+ * Allows the representation of arbitrary {@link FeatureCollection}s, including those that use
+ * {@link FeatureCollectionType}s with additional properties.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -75,27 +71,25 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     private String fid;
 
-    private FeatureCollectionType ft;
+    private final FeatureCollectionType ft;
 
-    private List<Feature> memberFeatures = new ArrayList<Feature>();
+    private final List<Feature> memberFeatures = new ArrayList<Feature>();
 
-    private List<Property> nonMemberProps = new ArrayList<Property>();
-
-    private PropertyType featureMemberDecl;
-
-    /** * */
-    public static QName FEATURE_MEMBER = new QName( "http://www.opengis.net/gml", "featureMember" );
-
-    // private static QName FEATURE_MEMBERS = new QName( "http://www.opengis.net/gml", "featureMembers" );
+    private final List<Property> props;
 
     /**
      * Creates a new {@link GenericFeatureCollection} instance with type information and content specified using
      * properties.
      * 
      * @param ft
+     *            feature collection type, must not be <code>null</code>
      * @param fid
+     *            feature id, may be <code>null</code>
      * @param props
+     *            properties (including feature member/feature member array properties), must not be <code>null</code>
      * @param version
+     *            GML version (determines the names/types of the standard properties), or <code>null</code> (then no
+     *            standard GML properties are allowed)
      */
     public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property> props, GMLVersion version ) {
 
@@ -105,27 +99,23 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         if ( version != null ) {
             Pair<StandardGMLFeatureProps, List<Property>> pair = StandardGMLFeatureProps.create( props, version );
             standardProps = pair.first;
-            props = new ArrayList<Property>( pair.second );
-        }    	
+            this.props = new ArrayList<Property>( pair.second );
+        } else {
+            this.props = props;
+        }
 
+        // extract member features
         for ( Property prop : props ) {
-            // TODO do this a better way
             Object propValue = prop.getValue();
             if ( propValue instanceof Feature ) {
                 memberFeatures.add( (Feature) prop.getValue() );
-            } else {
-                nonMemberProps.add( prop );
+            } else if ( propValue instanceof TypedObjectNodeArray<?> ) {
+                for ( TypedObjectNode member : ( (TypedObjectNodeArray<?>) propValue ).getElements() ) {
+                    if ( member instanceof Feature ) {
+                        memberFeatures.add( (Feature) member );
+                    }
+                }
             }
-        }
-
-        for ( PropertyType propertyDecl : ft.getPropertyDeclarations() ) {
-            if ( FEATURE_MEMBER.equals( propertyDecl.getName() ) ) {
-                featureMemberDecl = propertyDecl;
-            }
-        }
-
-        if ( featureMemberDecl == null ) {
-            featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null, BOTH );
         }
     }
 
@@ -138,19 +128,19 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      */
     public GenericFeatureCollection( String fid, Collection<Feature> memberFeatures ) {
         this.fid = fid;
-        this.memberFeatures = new ArrayList<Feature>( memberFeatures );
-        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null, BOTH );
-        this.ft = new GenericFeatureCollectionType( new QName( GMLNS, "FeatureCollection" ),
-                                                    Collections.singletonList( featureMemberDecl ), false );
+        this.memberFeatures.addAll( memberFeatures );
+        // TODO
+        this.ft = GML311_FEATURECOLLECTION;
+        this.props = null;
     }
 
     /**
      * Creates a new empty {@link GenericFeatureCollection} instance without type information.
      */
     public GenericFeatureCollection() {
-        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null, BOTH );
-        this.ft = new GenericFeatureCollectionType( new QName( GMLNS, "FeatureCollection" ),
-                                                    Collections.singletonList( featureMemberDecl ), false );
+        // TODO
+        this.ft = GML311_FEATURECOLLECTION;
+        this.props = null;
     }
 
     @Override
@@ -170,15 +160,15 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     @Override
     public Property[] getProperties() {
-        Property[] props = new Property[nonMemberProps.size() + memberFeatures.size()];
-        int i = 0;
-        for ( Property property : nonMemberProps ) {
-            props[i++] = property;
+        if ( props == null ) {
+            Property[] props = new Property[memberFeatures.size()];
+            int i = 0;
+            for ( Feature feature : memberFeatures ) {
+                props[i++] = new GenericProperty( ft.getMemberDeclarations().get( 0 ), null, feature );
+            }
+            return props;
         }
-        for ( Feature feature : memberFeatures ) {
-            props[i++] = new GenericProperty( featureMemberDecl, null, feature );
-        }
-        return props;
+        return props.toArray( new Property[props.size()] );
     }
 
     @Override
@@ -189,7 +179,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     @Override
     public void setProperties( List<Property> props )
                             throws IllegalArgumentException {
-        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException( "Not implemented yet." );
     }
 
     // -----------------------------------------------------------------------
@@ -208,7 +198,6 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     @Override
     public boolean addAll( Collection<? extends Feature> c ) {
-        // TODO Auto-generated method stub
         return memberFeatures.addAll( c );
     }
 
@@ -265,45 +254,38 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     @Override
     public void setPropertyValue( QName propName, int occurrence, TypedObjectNode value ) {
-        LOG.debug( "Setting property value for " + occurrence + ". " + propName + " property" );
-        if ( !propName.equals( FEATURE_MEMBER ) ) {
-            throw new RuntimeException( "Only property '" + FEATURE_MEMBER + " may be set." );
-        }
-        int featureNum = occurrence - nonMemberProps.size();
-        memberFeatures.set( featureNum, (Feature) value );
+        throw new UnsupportedOperationException( "Not implemented yet." );
     }
 
     @Override
     public Property[] getProperties( QName propName ) {
-
-        List<Property> namedProps = new ArrayList<Property>( nonMemberProps.size() );
-
-        if ( propName.equals( FEATURE_MEMBER ) ) {
-            for ( Feature feature : memberFeatures ) {
-                namedProps.add( new GenericProperty( featureMemberDecl, null, feature ) );
-            }
-        } else {
-            for ( Property property : nonMemberProps ) {
+        List<Property> namedProps = new ArrayList<Property>();
+        if ( props != null ) {
+            for ( Property property : props ) {
                 if ( propName.equals( property.getName() ) ) {
                     namedProps.add( property );
                 }
+            }
+        } else if ( propName.equals( ft.getMemberDeclarations().get( 0 ) ) ) {
+            for ( Feature feature : memberFeatures ) {
+                namedProps.add( new GenericProperty( ft.getMemberDeclarations().get( 0 ), null, feature ) );
             }
         }
         return namedProps.toArray( new Property[namedProps.size()] );
     }
 
-    // TODO also allow the retrieval of featureMember properties in the methods below
-
     @Override
     public Property getProperty( QName propName ) {
         Property prop = null;
-        for ( Property property : nonMemberProps ) {
-            if ( propName.equals( property.getName() ) ) {
-                if ( prop != null ) {
-                    String msg = "Feature has more than one property with name '" + propName + "'.";
-                    throw new IllegalArgumentException( msg );
+        if ( props != null ) {
+            for ( Property property : props ) {
+                if ( propName.equals( property.getName() ) ) {
+                    if ( prop != null ) {
+                        String msg = "Feature has more than one property with name '" + propName + "'.";
+                        throw new IllegalArgumentException( msg );
+                    }
+                    prop = property;
                 }
-                prop = property;
             }
         }
         return prop;
@@ -311,10 +293,12 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     @Override
     public Property[] getGeometryProperties() {
-        List<Property> geoProps = new ArrayList<Property>( nonMemberProps.size() );
-        for ( Property property : nonMemberProps ) {
-            if ( property.getValue() instanceof Geometry ) {
-                geoProps.add( property );
+        List<Property> geoProps = new ArrayList<Property>();
+        if ( props != null ) {
+            for ( Property property : props ) {
+                if ( property.getValue() instanceof Geometry ) {
+                    geoProps.add( property );
+                }
             }
         }
         return geoProps.toArray( new Property[geoProps.size()] );
