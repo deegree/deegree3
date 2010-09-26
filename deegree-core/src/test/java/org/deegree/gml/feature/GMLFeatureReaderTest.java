@@ -134,25 +134,11 @@ public class GMLFeatureReaderTest {
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
-
-        // XMLStreamWriter writer = new FormattingXMLStreamWriter(
-        // XMLOutputFactory.newInstance().createXMLStreamWriter(
-        // new FileWriter(
-        // "/tmp/out.xml" ) ) );
-        // writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
-        // writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
-        // writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        // GML_311FeatureEncoder encoder = new GML_311FeatureEncoder( writer, null );
-        // encoder.export( fc );
-        // writer.close();
-
-        for ( Feature feature : fc ) {
-            if ( "f094".equals( feature.getId() ) ) {
-                Property decimalProp = feature.getProperty( new QName( "http://cite.opengeospatial.org/gmlsf",
-                                                                       "decimalProperty" ) );
-                LOG.debug( "decimal prop: " + decimalProp );
-            }
-        }
+        Assert.assertEquals(fc.getGMLProperties().getDescription().getString(), "Test data for assessing compliance with the GMLSF profile at level SF-0.");
+        Assert.assertEquals(fc.getGMLProperties().getNames().length, 1);
+        Assert.assertEquals(fc.getGMLProperties().getNames()[0].getCode(), "CITE/WFS-1.1");
+        Assert.assertEquals(fc.getGMLProperties().getNames()[0].getCodeSpace(), null);
+        Assert.assertEquals(16, fc.size());
     }
 
     /**
