@@ -62,6 +62,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
@@ -70,6 +71,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -145,48 +147,21 @@ class DescribeFeatureTypeHandler {
 
         XMLStreamWriter writer = WFSController.getXMLResponseWriter( response, null );
 
-        // check for deegree-special DescribeFeatureType-request that asks for the WFS schema in a GML
+        // check for deegree-specific DescribeFeatureType-request that asks for the WFS schema in a GML
         // version that does not match the WFS schema (e.g. WFS 1.1.0, GML 2)
         if ( request.getTypeNames() != null && request.getTypeNames().length == 1
              && "FeatureCollection".equals( request.getTypeNames()[0].getLocalPart() )
              && "wfs".equals( request.getTypeNames()[0].getPrefix() ) ) {
             writeWFSSchema( writer, request.getVersion(), version );
         } else {
-            Map<String, List<FeatureType>> nsToFts = determineRequestedFeatureTypes( request );
-            if ( nsToFts.size() == 1 ) {
-                // specific feature types from single namespace -> one schema document suffices
-                Map<String, String> importMap = buildImportMap( request, nsToFts.keySet() );
-                Map<String, String> prefixToNs = service.getPrefixToNs();
-                String namespace = nsToFts.keySet().iterator().next();
-                ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, namespace, importMap,
-                                                                                        prefixToNs );
-                exporter.export( writer, nsToFts.get( nsToFts.keySet().iterator().next() ) );
-            } else if ( request.getTypeNames() == null && request.getNsBindings() != null ) {
-                // all feature types from a single namespace
-                String ns = request.getNsBindings().get( "" );
+            Collection<String> namespaces = determineRequiredNamespaces( request );
+            String ns = namespaces.iterator().next();
+            Map<String, String> importMap = buildImportMap( request, namespaces );
+            Map<String, String> prefixToNs = service.getPrefixToNs();
+            ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, ns, importMap, prefixToNs );
+            // TODO remove hack
+            exporter.export( writer, service.getStores()[0].getSchema() );
 
-                Set<String> otherAppNs = new HashSet<String>();
-                otherAppNs.addAll( service.getStores()[0].getSchema().getNamespaceBindings().values() );
-                otherAppNs.remove( ns );
-
-                Map<String, String> importMap = buildImportMap( request, otherAppNs );
-                Map<String, String> prefixToNs = service.getPrefixToNs();
-                ApplicationSchemaXSDEncoder exporter = new ApplicationSchemaXSDEncoder( version, ns, importMap,
-                                                                                        prefixToNs );
-                // TODO remove hack
-                exporter.export( writer, service.getStores()[0].getSchema() );
-            } else {
-                // feature types from multiple namespaces -> generate wrapper schema document from all feature stores
-                Set<String> namespaces = new LinkedHashSet<String>();
-//                for ( String ns : request.getNsBindings().values() ) {
-//                    namespaces.add( ns );
-//                }
-
-                for ( FeatureStore fs : service.getStores() ) {
-                    namespaces.addAll( fs.getSchema().getNamespaceBindings().values() );
-                }
-                writeWrapperSchema( writer, request, version, namespaces );
-            }
         }
         writer.flush();
     }
@@ -388,6 +363,73 @@ class DescribeFeatureTypeHandler {
     }
 
     /**
+     * Determines the application namespaces that have to be included in the generated schema response.
+     * 
+     * @param request
+     * @return key: namespace, value: list of feature types in the namespace
+     * @throws OWSException
+     */
+    private List<String> determineRequiredNamespaces( DescribeFeatureType request )
+                            throws OWSException {
+
+        Set<String> set = new TreeSet<String>();
+        if ( request.getTypeNames() == null || request.getTypeNames().length == 0 ) {
+            if ( request.getNsBindings() == null ) {
+                LOG.debug( "Adding all namespaces." );
+                for ( FeatureStore fs : service.getStores() ) {
+                    set.addAll( fs.getSchema().getNamespaceBindings().values() );
+                }
+            } else {
+                LOG.debug( "Adding requested namespaces." );
+                for ( String ns : request.getNsBindings().values() ) {
+                    for ( FeatureStore fs : service.getStores() ) {
+                        ApplicationSchema schema = fs.getSchema();
+                        if ( schema.getNamespaceBindings().values().contains( ns ) ) {
+                            set.add( ns );
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            LOG.debug( "Adding namespaces of requested feature types." );
+            for ( QName ftName : request.getTypeNames() ) {
+                FeatureType ft = service.lookupFeatureType( ftName );
+                if ( ft == null ) {
+                    throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ),
+                                            OWSException.INVALID_PARAMETER_VALUE );
+                }
+                set.add( ft.getName().getNamespaceURI() );
+            }
+        }
+
+        // add dependent namespaces
+        Set<String> add = findUnhandledNs( set );
+        while ( !add.isEmpty() ) {
+            set.addAll( add );
+            add = findUnhandledNs( set );
+        }
+
+        return new ArrayList<String>( set );
+    }
+
+    private Set<String> findUnhandledNs( Set<String> set ) {
+        Set<String> dependentNamespaces = new HashSet<String>();
+        for ( String ns : set ) {
+            for ( FeatureStore fs : service.getStores() ) {
+                ApplicationSchema schema = fs.getSchema();
+                List<String> depNs = schema.getNamespacesDependencies( ns );
+                for ( String n : depNs ) {
+                    if ( set.contains( n ) ) {
+                        dependentNamespaces.add( n );
+                    }
+                }
+            }
+        }
+        return dependentNamespaces;
+    }
+
+    /**
      * Determine all feature types that have to be included in the generated schema response.
      * <p>
      * This includes:
@@ -412,7 +454,8 @@ class DescribeFeatureTypeHandler {
             } else {
                 String ns = request.getNsBindings().values().iterator().next();
                 LOG.debug( "Describing all feature types in namespace '" + ns + "'." );
-                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes( ns,
+                List<FeatureType> nsFts = service.getFeatureTypes().iterator().next().getSchema().getFeatureTypes(
+                                                                                                                   ns,
                                                                                                                    true,
                                                                                                                    false );
                 for ( FeatureType ft : nsFts ) {
@@ -488,7 +531,7 @@ class DescribeFeatureTypeHandler {
      * @return GML version to be used
      * @throws OWSException
      */
-    GMLVersion determineRequestedGMLVersion( DescribeFeatureType request )
+    private GMLVersion determineRequestedGMLVersion( DescribeFeatureType request )
                             throws OWSException {
 
         GMLVersion version = null;

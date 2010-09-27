@@ -160,10 +160,10 @@ public class ApplicationSchemaXSDEncoder {
     private String featurePropertyType;
 
     // keeps track of already exported (global) xs:elements declarations
-    private Set<String> exportedElements = new HashSet<String>();
+    private final Set<String> exportedElements = new HashSet<String>();
 
     // keeps track of already exported (global) xs:simpleType/xs:complexType definitions
-    private Set<String> exportedTypes = new HashSet<String>();
+    private final Set<String> exportedTypes = new HashSet<String>();
 
     /**
      * Creates a new {@link ApplicationSchemaXSDEncoder} for the given GML version and optional import URL.
@@ -240,6 +240,9 @@ public class ApplicationSchemaXSDEncoder {
         // special treatment needed for GML namespaces
         nsToPrefix.put( GMLNS, "gml" );
         nsToPrefix.put( GML3_2_NS, "gml" );
+        
+        // TODO remove CITE 1.0.0 hack
+        exportedTypes.add( "DataFeatureCollectionType");
     }
 
     private void addNsBinding( String prefix, String ns ) {
@@ -369,11 +372,9 @@ public class ApplicationSchemaXSDEncoder {
         exportedElements.add( ft.getName().getLocalPart() );
 
         // export parent feature types
-        boolean hasSubTypes = false;
         ApplicationSchema schema = ft.getSchema();
         FeatureType parentFt = null;
         if ( schema != null ) {
-            hasSubTypes = schema.getDirectSubtypes( ft ).length > 0;
             parentFt = schema.getParentFt( ft );
             if ( parentFt != null ) {
                 export( writer, parentFt );
@@ -386,7 +387,7 @@ public class ApplicationSchemaXSDEncoder {
         writer.writeAttribute( "name", ft.getName().getLocalPart() );
 
         // export type name
-        QName typeName = getXSTypeName( ft, hasSubTypes );
+        QName typeName = getXSTypeName( ft );
         if ( typeName != null ) {
             String prefix = getPrefix( typeName.getNamespaceURI() );
             writer.writeAttribute( "type", prefix + ":" + typeName.getLocalPart() );
@@ -446,8 +447,9 @@ public class ApplicationSchemaXSDEncoder {
         writer.writeStartElement( XSNS, "extension" );
 
         if ( parentFt != null ) {
-            String prefix = getPrefix( parentFt.getName().getNamespaceURI() );
-            writer.writeAttribute( "base", prefix + ":" + parentFt.getName().getLocalPart() + "Type" );
+            QName parentFtTypeDecl = getXSTypeName( parentFt );
+            String prefix = getPrefix( parentFtTypeDecl.getNamespaceURI() );
+            writer.writeAttribute( "base", prefix + ":" + parentFtTypeDecl.getLocalPart() );
         } else {
             if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
                 writer.writeAttribute( "base", "gml:AbstractFeatureCollectionType" );
@@ -463,7 +465,7 @@ public class ApplicationSchemaXSDEncoder {
 
         // export property definitions (only for non-GML ones)
         if ( schema != null ) {
-            for ( PropertyType pt : schema.getNewPropertyDeclarations( ft ) ) {
+            for ( PropertyType pt : schema.getNewPropertyDecls( ft ) ) {
                 if ( pt == null ) {
                     LOG.warn( "Property type null inside " + ft.getName() );
                     continue;
@@ -488,11 +490,17 @@ public class ApplicationSchemaXSDEncoder {
      * 
      * @param ft
      *            feature type, must not be <code>null</code>
-     * @param hasSubTypes
-     *            true, if the feature type has types that derive it, false otherwise
      * @return the qualified complex type name or <code>null</code> if the type should be exported anonymously
      */
-    private QName getXSTypeName( FeatureType ft, boolean hasSubTypes ) {
+    private QName getXSTypeName( FeatureType ft ) {
+
+        // export parent feature types
+        boolean hasSubTypes = false;
+        ApplicationSchema schema = ft.getSchema();
+        if ( schema != null ) {
+            hasSubTypes = schema.getDirectSubtypes( ft ).length > 0;
+        }
+
         QName elName = ft.getName();
         QName typeName = null;
         GMLSchemaAnalyzer analyzer = ft.getSchema().getXSModel();
@@ -506,7 +514,8 @@ public class ApplicationSchemaXSDEncoder {
             XSTypeDefinition typeDef = elDecl.getTypeDefinition();
             if ( !typeDef.getAnonymous() ) {
                 if ( CommonNamespaces.isGMLNamespace( typeDef.getNamespace() )
-                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals( "AbstractFeatureCollectionType" ) ) ) {
+                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals(
+                                                                                                         "AbstractFeatureCollectionType" ) ) ) {
                     if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
                         typeName = new QName( gmlNsURI, "AbstractFeatureCollectionType" );
                     } else {
