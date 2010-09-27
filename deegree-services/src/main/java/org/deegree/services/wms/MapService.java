@@ -62,6 +62,7 @@ import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
 import static javax.media.jai.operator.ColorQuantizerDescriptor.MEDIANCUT;
 import static org.deegree.commons.utils.CollectionUtils.AND;
+import static org.deegree.commons.utils.CollectionUtils.addAllUncontained;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
@@ -833,7 +834,7 @@ public class MapService {
             Pair<FeatureCollection, LinkedList<String>> pair = l.getFeatures( fi, s );
             if ( pair != null ) {
                 if ( pair.first != null ) {
-                    feats.addAll( pair.first );
+                    addAllUncontained( feats, pair.first );
                 }
                 warnings.addAll( pair.second );
             }

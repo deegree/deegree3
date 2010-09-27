@@ -381,6 +381,16 @@ public class FeatureLayer extends Layer {
         return new OperatorFilter( operator );
     }
 
+    private FeatureCollection clearDuplicates( FeatureResultSet rs ) {
+        FeatureCollection col = new GenericFeatureCollection();
+        for ( Feature f : rs ) {
+            if ( !col.contains( f ) ) {
+                col.add( f );
+            }
+        }
+        return col;
+    }
+
     @Override
     public Pair<FeatureCollection, LinkedList<String>> getFeatures( final GetFeatureInfo fi, Style style )
                             throws MissingDimensionValue, InvalidDimensionValue {
@@ -408,7 +418,7 @@ public class FeatureLayer extends Layer {
                                                                                  -1, fi.getFeatureCount(), -1 );
                                                            }
                                                        } ) );
-                col = datastore.query( queries.toArray( new Query[queries.size()] ) ).toCollection();
+                col = clearDuplicates( datastore.query( queries.toArray( new Query[queries.size()] ) ) );
             } else {
                 FeatureType ft = datastore.getSchema().getFeatureType( featureType );
                 if ( ft.getDefaultGeometryPropertyDeclaration() == null ) {
@@ -417,7 +427,7 @@ public class FeatureLayer extends Layer {
                 }
                 Query query = new Query( featureType, clickBox, buildFilter( operator, ft, clickBox ), -1,
                                          fi.getFeatureCount(), -1 );
-                col = datastore.query( query ).toCollection();
+                col = clearDuplicates( datastore.query( query ) );
             }
 
             LOG.debug( "Finished querying the feature store(s)." );
