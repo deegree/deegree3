@@ -44,8 +44,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -99,6 +99,8 @@ public class ApplicationSchema {
     private final GMLSchemaAnalyzer xsModel;
 
     private final Map<XSComplexTypeDefinition, Map<QName, XSElementDeclaration>> typeToAllowedChildDecls = new HashMap<XSComplexTypeDefinition, Map<QName, XSElementDeclaration>>();
+
+    private final Map<String, List<String>> nsToDependencies = new HashMap<String, List<String>>();
 
     /**
      * Creates a new {@link ApplicationSchema} instance from the given {@link FeatureType}s and their derivation
@@ -400,7 +402,7 @@ public class ApplicationSchema {
      *            feature type, must not be <code>null</code>
      * @return list of property declarations, may be empty, but never <code>null</code>
      */
-    public List<PropertyType> getNewPropertyDeclarations( FeatureType ft ) {
+    public List<PropertyType> getNewPropertyDecls( FeatureType ft ) {
 
         List<PropertyType> propDecls = ft.getPropertyDeclarations();
         FeatureType parentFt = getParentFt( ft );
@@ -413,6 +415,15 @@ public class ApplicationSchema {
                     throw new RuntimeException( "Content model of feature type '" + ft.getName()
                                                 + "' is not compatible with parent type '" + parentFt.getName() + "'." );
                 }
+            }
+        }
+
+        // TODO integrate handling of gml:featureMember properly
+        for ( int i = firstNewIdx; i < propDecls.size(); i++ ) {
+            if ( "featureMember".equals( propDecls.get( firstNewIdx ).getName().getLocalPart() ) ) {
+                firstNewIdx++;
+            } else if ( "featureMembers".equals( propDecls.get( firstNewIdx ).getName().getLocalPart() ) ) {
+                firstNewIdx++;
             }
         }
         return propDecls.subList( firstNewIdx, propDecls.size() );
@@ -482,5 +493,46 @@ public class ApplicationSchema {
                 LOG.warn( "Unhandled term type: " + term.getClass() );
             }
         }
+    }
+
+    /**
+     * Returns the namespaces that the definitions in the given namespace depend upon (not including transitive
+     * dependencies).
+     * 
+     * @param ns
+     *            application namespace, must not be <code>null</code>
+     * @return namespace dependencies, may be empty, but never <code>null</code>
+     */
+    public List<String> getNamespacesDependencies( String ns ) {
+
+        List<String> nsDependencies = nsToDependencies.get( ns );
+        if ( nsDependencies == null ) {
+            Set<String> dependencies = new HashSet<String>();
+            List<FeatureType> fts = getFeatureTypes( ns, true, true );
+            for ( FeatureType ft : fts ) {
+                dependencies.add( ft.getName().getNamespaceURI() );
+                for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+                    if ( pt instanceof FeaturePropertyType ) {
+                        FeaturePropertyType fpt = (FeaturePropertyType) pt;
+                        if ( fpt.getValueFt() != null ) {
+                            dependencies.add( fpt.getValueFt().getName().getNamespaceURI() );
+                        }
+                    }
+                }
+                if ( getParentFt( ft ) != null ) {
+                    dependencies.add( getParentFt( ft ).getName().getNamespaceURI() );
+                }
+            }
+
+            // TODO
+            if ( xsModel != null ) {
+
+            }
+
+            dependencies.remove( ns );
+            nsDependencies = new ArrayList<String>( dependencies );
+            nsToDependencies.put( ns, nsDependencies );
+        }
+        return nsDependencies;
     }
 }
