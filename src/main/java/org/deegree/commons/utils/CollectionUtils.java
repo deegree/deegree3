@@ -112,6 +112,8 @@ public class CollectionUtils {
     };
 
     /**
+     * Keeps and returns the original list.
+     * 
      * @param <T>
      * @param list
      * @return removes any duplicates in the list. Keeps the first occurrence of duplicates.
@@ -129,6 +131,22 @@ public class CollectionUtils {
         }
 
         return list;
+    }
+
+    /**
+     * Adds all elements from col2 to col1, if they're not already contained. Keep in mind that this will be expensive
+     * for lists.
+     * 
+     * @param <T>
+     * @param col1
+     * @param col2
+     */
+    public static <T> void addAllUncontained( Collection<T> col1, Collection<T> col2 ) {
+        for ( T t : col2 ) {
+            if ( !col1.contains( t ) ) {
+                col1.add( t );
+            }
+        }
     }
 
     /**
