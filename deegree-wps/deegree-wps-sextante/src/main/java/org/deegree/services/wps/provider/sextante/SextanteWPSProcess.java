@@ -176,12 +176,24 @@ public class SextanteWPSProcess implements WPSProcess {
         return null;
     }
 
+    /**
+     * This method determines a process object of the configuration file.
+     * 
+     * @param alg
+     *            SEXTANTE {@link GeoAlgorithm}.
+     * @param config
+     *            SEXTANTE configuration file.
+     * 
+     * @return process object of the configuration file.
+     */
     private org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process determineProcess(
                                                                                                         GeoAlgorithm alg,
                                                                                                         SextanteProcesses config ) {
 
         org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process process = null;
         List<org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process> processes = config.getProcess();
+
+        // determine process
         for ( org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process p : processes ) {
             if ( p.getId().equals( alg.getCommandLineName() ) ) {
                 process = p;
@@ -192,12 +204,23 @@ public class SextanteWPSProcess implements WPSProcess {
         return process;
     }
 
+    /**
+     * This method determines a input parameter of a process in the SEXTANTE configuration file.
+     * 
+     * @param p
+     *            Process of the SEXTANTE configuration file.
+     * @param name
+     *            Name of the input parameter.
+     * @return Input parameter of a process in the configuration file.
+     */
     private org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.InputParameters.Parameter determineInputParameter(
                                                                                                                                          org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process p,
 
                                                                                                                                          String name ) {
         org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.InputParameters.Parameter parameter = null;
         List<org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.InputParameters.Parameter> params = p.getInputParameters().getParameter();
+
+        // determine input parameter
         for ( org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.InputParameters.Parameter param : params ) {
             if ( param.getId().equals( name ) ) {
                 parameter = param;
@@ -207,11 +230,30 @@ public class SextanteWPSProcess implements WPSProcess {
         return parameter;
     }
 
+    /**
+     * This method determines a output parameter of a process in the SEXTANTE configuration file.
+     * 
+     * @param p
+     *            Process of the SEXTANTE configuration file.
+     * @param name
+     *            Name of the output parameter.
+     * 
+     * @return Output parameter of a process in the configuration file.
+     */
     private org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.OutputParameters.Parameter determineOutputParameter(
                                                                                                                                            org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process p,
                                                                                                                                            String name ) {
+        org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.OutputParameters.Parameter parameter = null;
+        List<org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.OutputParameters.Parameter> params = p.getOutputParameters().getParameter();
 
-        return null;
+        // determine output parameter
+        for ( org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.OutputParameters.Parameter param : params ) {
+            if ( param.getId().equals( name ) ) {
+                parameter = param;
+                break;
+            }
+        }
+        return parameter;
     }
 
     /**
@@ -248,35 +290,6 @@ public class SextanteWPSProcess implements WPSProcess {
         if ( process != null ) {
             abstrStr = process.getAbstract();
         }
-
-        // ListSextanteProcesses.Process.OutputParameters.Parameter> outputParams =
-        // p.getOutputParameters().g
-
-        // add selection parameters from config
-        // List<SelectionParameters> selParams = p.getSelectionParameters();
-        // for ( SelectionParameters selParam : selParams ) {
-        // abstrStr += "\n\n";
-        // abstrStr += "For selection input '" + selParam.getId() + "' you can use the following values:";
-        // abstrStr += "\n";
-        //
-        // // notice parameter id and value
-        // List<org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.SelectionParameters.Parameter>
-        // params = selParam.getParameter();
-        // Iterator<org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.SelectionParameters.Parameter>
-        // paramIt = params.iterator();
-        // if ( paramIt.hasNext() ) {
-        // org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.SelectionParameters.Parameter
-        // firstParam = paramIt.next();
-        // abstrStr += " " + firstParam.getId() + ": " + firstParam.getValue();
-        // while ( paramIt.hasNext() ) {
-        // org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.SelectionParameters.Parameter
-        // param = paramIt.next();
-        // abstrStr += ",\n " + param.getId() + ": " + param.getValue();
-        // }
-        // }
-        //
-        // }
-
         LanguageStringType abstr = new LanguageStringType();
         abstr.setValue( abstrStr );
         processDefinition.setAbstract( abstr );
@@ -290,9 +303,6 @@ public class SextanteWPSProcess implements WPSProcess {
 
             // input parameter
             Parameter param = alg.getParameters().getParameter( i );
-            org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.InputParameters.Parameter configParam = determineInputParameter(
-                                                                                                                                                       process,
-                                                                                                                                                       param.getParameterName() );
 
             // select the correct input parameter type
             String paramTypeName = param.getParameterTypeName();
@@ -328,13 +338,24 @@ public class SextanteWPSProcess implements WPSProcess {
             }
 
             // set parameter abstract
+            org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.InputParameters.Parameter configParam = determineInputParameter(
+                                                                                                                                                       process,
+                                                                                                                                                       param.getParameterName() );
             JAXBElement<? extends ProcessletInputDefinition> descParam = listInput.get( listInput.size() - 1 );
             if ( descParam != null ) {
                 if ( configParam != null ) {
+
+                    // abstract of a input parameter
                     String paramAbstract = configParam.getAbstract();
 
+                    // if input value is a selection, extends abstract
                     List<org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.InputParameters.Parameter.SelectionValue> selValues = configParam.getSelectionValue();
                     if ( selValues.size() > 0 ) {
+
+                        // add dot
+                        if ( !paramAbstract.valueOf( paramAbstract.length() ).equals( "." ) ) {
+                            paramAbstract += ". ";
+                        }
 
                         String selValuesStr = " You can use the following values: ";
 
@@ -386,6 +407,22 @@ public class SextanteWPSProcess implements WPSProcess {
             else {
                 LOG.error( "\"" + paramTypeDesc + "\" is a not supported output parameter type." );
                 // TODO throw exception
+            }
+
+            // set parameter abstract
+            org.deegree.services.wps.provider.sextante.jaxb.SextanteProcesses.Process.OutputParameters.Parameter configParam = determineOutputParameter(
+                                                                                                                                                         process,
+                                                                                                                                                         param.getName() );
+
+            JAXBElement<? extends ProcessletOutputDefinition> descParam = listOutput.get( listOutput.size() - 1 );
+            if ( descParam != null ) {
+                if ( configParam != null ) {
+                    // abstract of a output parameter
+                    String paramAbstract = configParam.getAbstract();
+                    LanguageStringType value = new LanguageStringType();
+                    value.setValue( paramAbstract );
+                    descParam.getValue().setAbstract( value );
+                }
             }
 
         }

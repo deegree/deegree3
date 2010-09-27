@@ -40,6 +40,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
@@ -48,7 +50,8 @@ import es.unex.sextante.outputs.Output;
 import es.unex.sextante.parameters.Parameter;
 
 /**
- * This class writes the process content to the command line und uses the descriptions of SEXTANTE xml files.
+ * This class writes the description of an SEXTANTE GeoAlgorithm to the command line. You can use it for the SEXTANTE
+ * configuration file.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -57,7 +60,7 @@ import es.unex.sextante.parameters.Parameter;
  */
 public class SextanteConfigHelper {
 
-    // private static String baseURL = "https://svn.forge.osor.eu/svn/sextante/tags/sextante_0.5/docs/xml/en/";
+    // private static String rootURL = "https://svn.forge.osor.eu/svn/";
 
     private static final String rootURL = "/home/pabel/workspace/";
 
@@ -73,96 +76,102 @@ public class SextanteConfigHelper {
         Sextante.initialize();
     }
 
+    /**
+     * This method writes for one SEXTANTE {@link GeoAlgorithm} the configuration entry on the command line.
+     * 
+     * @param alg
+     *            - SEXTANTE {@link GeoAlgorithm}.
+     * @throws IOException
+     */
     public void writeAlgorithmAbstract( GeoAlgorithm alg )
                             throws IOException {
 
         // open process element
         System.out.print( "<Process id=\"" + alg.getCommandLineName() + "\">" );
 
-        // create url
+        // create file urls
         String url = baseURL + alg.getClass().getPackage().getName() + "/" + alg.getCommandLineName() + ".xml";
         String urlAlt1 = baseURLAlt1 + alg.getClass().getPackage().getName() + "/" + alg.getCommandLineName() + ".xml";
         String urlAlt2 = baseURLAlt2 + alg.getClass().getPackage().getName() + "/" + alg.getCommandLineName() + ".xml";
         String urlAlt3 = baseURLAlt3 + alg.getClass().getPackage().getName() + "/" + alg.getCommandLineName() + ".xml";
 
+        // create file object
         File xmlFile = new File( url );
-
         if ( !xmlFile.isFile() )
             xmlFile = new File( urlAlt1 );
-
         if ( !xmlFile.isFile() )
             xmlFile = new File( urlAlt2 );
-
         if ( !xmlFile.isFile() )
             xmlFile = new File( urlAlt3 );
-
         if ( !xmlFile.isFile() ) {
             if ( alg.getCommandLineName().equals( "vectorfieldcalculator" ) )
                 xmlFile = new File( baseURLAlt2
                                     + "es.unex.sextante.tables.vectorfieldcalculator/vectorfieldcalculator.xml" );
         }
 
-        // System.out.println( "<!-- " + xmlFile.getAbsoluteFile() + xmlFile.isFile() + "--!>" );
-
         if ( xmlFile.isFile() ) {
 
+            // create file reader
             FileReader fr = new FileReader( xmlFile );
             BufferedReader br = new BufferedReader( fr );
 
+            // entire file as string
             String xmlFileAsString = "";
 
+            // a line of the file
             String line;
             while ( ( line = br.readLine() ) != null ) {
-                String lineModified = line.replace( "&#10;", "" ).replace( "&#237;", "i" ).replace( "&#186;", "o" ).replace(
-                                                                                                                             "&#225;",
-                                                                                                                             "a" ).replace(
-                                                                                                                                            "&#243;",
-                                                                                                                                            "o" ).replace(
-                                                                                                                                                           "&#183;",
-                                                                                                                                                           "." ).replace(
-                                                                                                                                                                          "&#233;",
-                                                                                                                                                                          "e" ).replace(
-                                                                                                                                                                                         "\n",
-                                                                                                                                                                                         "" ).replace(
-                                                                                                                                                                                                       "&#241;",
-                                                                                                                                                                                                       "" ).replace(
-                                                                                                                                                                                                                     "*",
-                                                                                                                                                                                                                     "" ).replace(
-                                                                                                                                                                                                                                   "&#250;",
-                                                                                                                                                                                                                                   "u" ).replace(
-                                                                                                                                                                                                                                                  "&gt;",
-                                                                                                                                                                                                                                                  "]" ).replace(
-                                                                                                                                                                                                                                                                 "&lt;",
-                                                                                                                                                                                                                                                                 "[" ).replace(
-                                                                                                                                                                                                                                                                                "&amp;",
-                                                                                                                                                                                                                                                                                "[AND-SYMBOL]" ).replace(
-                                                                                                                                                                                                                                                                                                          "%",
-                                                                                                                                                                                                                                                                                                          "[PERCENT-SYMBOL]" );
+
+                // manage strings for replace
+                LinkedList<String[]> replaces = new LinkedList<String[]>();
+
+                // vowels
+                replaces.add( new String[] { "&#225;", "a" } );
+                replaces.add( new String[] { "&#237;", "i" } );
+                replaces.add( new String[] { "&#233;", "e" } );
+                replaces.add( new String[] { "&#186;", "o" } );
+                replaces.add( new String[] { "&#243;", "o" } );
+                replaces.add( new String[] { "&#250;", "u" } );
+
+                // special character
+                replaces.add( new String[] { "&#183;", "." } );
+                replaces.add( new String[] { "&gt;", "]" } );
+                replaces.add( new String[] { "&lt;", "[" } );
+                replaces.add( new String[] { "&#10;", "" } );
+                replaces.add( new String[] { "\n", " " } );
+                replaces.add( new String[] { "&#241;", "" } );
+                replaces.add( new String[] { "*", "" } );
+                replaces.add( new String[] { "&amp;", "[AND-SYMBOL]" } );
+                replaces.add( new String[] { "%", "[PERCENT-SYMBOL]" } );
+
+                // replace all
+                String lineModified = line;
+                for ( String[] rep : replaces ) {
+                    if ( rep.length == 2 )
+                        lineModified = lineModified.replace( rep[0], rep[1] );
+                }
+
+                // notice modified line
                 xmlFileAsString += lineModified;
             }
 
-            // create a HashMap with descriptions
+            // create a HashMap with values of the file
             HashMap<String, String> descs = new HashMap<String, String>();
-
             String[] elemArray = xmlFileAsString.split( "<element " );
             for ( int i = 1; i < elemArray.length; i++ ) {
-
                 String[] values = elemArray[i].split( "\"" );
-
                 if ( values.length > 3 ) {
-
                     String key = values[1];
                     String value = values[3];
                     if ( value.equals( "" ) ) {
                         if ( values.length > 5 )
                             value = values[5];
                     }
-
                     descs.put( key, value );
                 }
-
             }
 
+            // determine description of a SEXTANTE GeoAlgorithm
             String algAbstract = descs.get( "DESCRIPTION" );
 
             // open and close abstract element
@@ -171,10 +180,14 @@ public class SextanteConfigHelper {
             // open input parameters element
             System.out.print( "<InputParameters>" );
 
-            // write input parameter descriptions
+            // write input parameters
             ParametersSet paramSet = alg.getParameters();
             for ( int i = 0; i < paramSet.getNumberOfParameters(); i++ ) {
+
+                // input parameter
                 Parameter param = paramSet.getParameter( i );
+
+                // determine input parameter description
                 String desc = descs.get( param.getParameterName() );
 
                 // open parameter element
@@ -204,7 +217,7 @@ public class SextanteConfigHelper {
                     System.out.println( "<SelectionValue id=\"BUFFER_OUTSIDE_POLY\" value=\"0\" /><SelectionValue id=\"BUFFER_INSIDE_POLY\" value=\"1\" /><SelectionValue id=\"BUFFER_INSIDE_OUTSIDE_POLY\" value=\"2\" />" );
                 else if ( alg.getCommandLineName().equals( "fixeddistancebuffer" )
                           && param.getParameterName().equals( "RINGS" ) )
-                    System.out.println( "<SelectionValue id=\"NUMBER_OF_RINGS\" value=\"0-*\" />" );
+                    System.out.println( "<SelectionValue id=\"NUMBER_OF_RINGS\" value=\"0-2\" />" );
 
                 // open close element
                 System.out.print( "</Parameter>" );
@@ -217,10 +230,13 @@ public class SextanteConfigHelper {
             // open output parameters element
             System.out.print( "<OutputParameters>" );
 
-            // write output parameter descriptions
+            // write output parameters
             OutputObjectsSet outputSet = alg.getOutputObjects();
             for ( int i = 0; i < outputSet.getOutputObjectsCount(); i++ ) {
+                // output parameter
                 Output output = outputSet.getOutput( i );
+
+                // determine input parameter description
                 String desc = descs.get( output.getName() );
 
                 // open parameter element
@@ -286,12 +302,23 @@ public class SextanteConfigHelper {
 
     }
 
+    /**
+     * This method writes for one SEXTANTE {@link GeoAlgorithm} the configuration entry on the command line.
+     * 
+     * @param commandLineName
+     *            Command line name of a SEXTANTE {@link GeoAlgorithm}.
+     * @throws IOException
+     */
     public void writeAlgorithmAbstract( String commandLineName )
                             throws IOException {
+
+        // get SEXTANTE GeoAlgorithm
         GeoAlgorithm alg = Sextante.getAlgorithmFromCommandLineName( commandLineName );
 
         if ( alg != null )
-            writeAlgorithmAbstract( alg );
+            writeAlgorithmAbstract( alg ); // write algorithm
+        else
+            System.err.println( "SEXTANTE GeoAlgorithm '" + commandLineName + "' was not found." );
     }
 
     public static void main( String[] args )

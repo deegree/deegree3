@@ -368,7 +368,7 @@
     </InputParameters>
     <OutputParameters>
       <Parameter id="RESULT">
-        <Abstract>Capa uni�n</Abstract>
+        <Abstract>Capa union</Abstract>
       </Parameter>
     </OutputParameters>
   </Process>
@@ -564,7 +564,7 @@
       </Parameter>
       <Parameter id="RINGS">
         <Abstract>The number of concentric rings to create (from 1 to 3)</Abstract>
-        <SelectionValue id="NUMBER_OF_RINGS" value="0-*" />
+        <SelectionValue id="NUMBER_OF_RINGS" value="0-2" />
       </Parameter>
       <Parameter id="NOTROUNDED">
         <Abstract>If selected, resulting polygons will not be rounded</Abstract>
@@ -756,5 +756,6 @@
       </Parameter>
     </OutputParameters>
   </Process>
+
 
 </SextanteProcesses>

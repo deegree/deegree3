@@ -64,7 +64,7 @@
 
               <!-- manages all output parameters -->
               <element name="OutputParameters" minOccurs="1"
-                maxOccurs="unbounded">
+                maxOccurs="1">
                 <complexType>
                   <sequence>
 
