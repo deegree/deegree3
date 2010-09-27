@@ -41,16 +41,11 @@ import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
 import static org.deegree.protocol.csw.CSWConstants.DCT_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -59,12 +54,12 @@ import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.generating.GenerateMetadata;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.types.BoundingBox;
+import org.deegree.metadata.persistence.types.ConfigurationAccess;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
 import org.slf4j.Logger;
@@ -93,6 +88,10 @@ public final class ISOQPParsing extends XMLAdapter {
 
     private GenerateMetadata gr;
 
+    // private MetadataValidation mv;
+
+    private final ConfigurationAccess ca;
+
     /**
      * checks if an OMElement is null
      */
@@ -110,28 +109,8 @@ public final class ISOQPParsing extends XMLAdapter {
         nsContextISOParsing.addNamespace( DCT_PREFIX, DCT_NS );
     }
 
-    /**
-     * Before any transaction operation is possible there should be an evaluation of the record. The response of the
-     * full ISO record has to be valid. With this method this is guaranteed.
-     * 
-     * @param elem
-     *            that has to be evaluated before there is any transaction operation possible.
-     * @return a list of error-strings
-     */
-    private List<String> validate( OMElement elem ) {
-        StringWriter s = new StringWriter();
-        try {
-            elem.serialize( s );
-        } catch ( XMLStreamException e ) {
-            LOG.debug( "error: " + e.getMessage(), e );
-        }
-        InputStream is = new ByteArrayInputStream( s.toString().getBytes() );
-        if ( elem.getLocalName().equals( "MD_Metadata" ) ) {
-            // TODO use local copy of schema
-            return SchemaValidator.validate( is, "http://www.isotc211.org/2005/gmd/metadataEntity.xsd" );
-
-        }
-        return SchemaValidator.validate( is, "http://schemas.opengis.net/csw/2.0.2/record.xsd" );
+    public ISOQPParsing( ConfigurationAccess ca ) {
+        this.ca = ca;
     }
 
     /**
@@ -146,8 +125,7 @@ public final class ISOQPParsing extends XMLAdapter {
      * @return {@link ParsedProfileElement}
      * @throws IOException
      */
-    public ParsedProfileElement parseAPISO( FileIdentifierInspector fi, InspireCompliance ic, CoupledDataInspector ci,
-                                            OMElement element, boolean isUpdate )
+    public ParsedProfileElement parseAPISO( OMElement element, boolean isUpdate )
                             throws MetadataStoreException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -163,9 +141,9 @@ public final class ISOQPParsing extends XMLAdapter {
 
         rp = new ReturnableProperties();
 
-        // for ( String error : validate( rootElement ) ) {
-        // throw new IOException( "VALIDATION-ERROR: " + error );
-        // }
+        for ( String error : ca.getMv().validate( rootElement ) ) {
+            throw new MetadataStoreException( "VALIDATION-ERROR: " + error );
+        }
 
         /*---------------------------------------------------------------
          * 
@@ -448,7 +426,7 @@ public final class ISOQPParsing extends XMLAdapter {
         List<OMElement> identificationInfo = getElements( rootElement, new XPath( "./gmd:identificationInfo",
                                                                                   nsContextISOParsing ) );
 
-        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, ic, ci, nsContextISOParsing );
+        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, ca.getIc(), ca.getCi(), nsContextISOParsing );
         pI.parseIdentificationInfo( identificationInfo, gr, qp, rp, crsList );
         /*---------------------------------------------------------------
          * 
@@ -460,9 +438,9 @@ public final class ISOQPParsing extends XMLAdapter {
         String fileIdentifierString = getNodeAsString( rootElement,
                                                        new XPath( "./gmd:fileIdentifier/gco:CharacterString",
                                                                   nsContextISOParsing ), null );
-        List<String> idList = fi.determineFileIdentifier( fileIdentifierString, pI.getResourceIdentifierList(),
-                                                          pI.getDataIdentificationId(), pI.getDataIdentificationUuId(),
-                                                          isUpdate );
+        List<String> idList = ca.getFi().determineFileIdentifier( fileIdentifierString, pI.getResourceIdentifierList(),
+                                                                  pI.getDataIdentificationId(),
+                                                                  pI.getDataIdentificationUuId(), isUpdate );
 
         qp.setIdentifier( idList );
 
@@ -762,8 +740,8 @@ public final class ISOQPParsing extends XMLAdapter {
                                               rootElement.getDefaultNamespace().getNamespaceURI() );
         }
 
-        for ( String error : validate( rootElement ) ) {
-            LOG.debug( "VALIDATION-ERROR: " + error );
+        for ( String error : ca.getMv().validate( rootElement ) ) {
+            throw new MetadataStoreException( "VALIDATION-ERROR: " + error );
         }
 
         List<Keyword> keywordList = new ArrayList<Keyword>();

@@ -22,7 +22,9 @@ import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.InspireCompliance;
+import org.deegree.metadata.persistence.iso.parsing.MetadataValidation;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.deegree.metadata.persistence.types.ConfigurationAccess;
 import org.deegree.metadata.publication.DeleteTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
 import org.deegree.metadata.publication.UpdateTransaction;
@@ -43,11 +45,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
     private final Connection conn;
 
-    private final FileIdentifierInspector fi;
-
-    private final InspireCompliance ic;
-
-    private final CoupledDataInspector ci;
+    private final ConfigurationAccess ca;
 
     private final Map<QName, Integer> typeNames;
 
@@ -56,9 +54,12 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     ISOMetadataStoreTransaction( Connection conn, ISOMetadataStoreConfig config, Map<QName, Integer> typeNames,
                                  boolean useLegacyPredicates ) throws SQLException {
         this.conn = conn;
-        fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), conn );
-        ic = InspireCompliance.newInstance( config.getRequireInspireCompliance(), conn );
-        ci = CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), conn );
+
+        FileIdentifierInspector fi = FileIdentifierInspector.newInstance( config.getIdentifierInspector(), conn );
+        InspireCompliance ic = InspireCompliance.newInstance( config.getRequireInspireCompliance(), conn );
+        CoupledDataInspector ci = CoupledDataInspector.newInstance( config.getCoupledResourceInspector(), conn );
+        MetadataValidation mv = MetadataValidation.newInstance( config.isValidate() );
+        this.ca = ConfigurationAccess.newInstance( fi, ic, ci, mv );
         this.typeNames = typeNames;
         this.useLegacyPredicates = useLegacyPredicates;
         conn.setAutoCommit( false );
@@ -126,13 +127,13 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 if ( localName.getLocalPart().equals( "Record" ) ) {
 
                     identifierList.add( execStm.executeInsertStatement( true, conn,
-                                                                        new ISOQPParsing().parseAPDC( element ) ) );
+                                                                        new ISOQPParsing( ca ).parseAPDC( element ) ) );
 
                 } else {
 
                     identifierList.add( execStm.executeInsertStatement( false, conn,
-                                                                        new ISOQPParsing().parseAPISO( fi, ic, ci,
-                                                                                                       element, false ) ) );
+                                                                        new ISOQPParsing( ca ).parseAPISO( element,
+                                                                                                           false ) ) );
 
                 }
 
@@ -161,14 +162,16 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
             if ( localName.getLocalPart().equals( "Record" ) ) {
 
-                result = executeStatements.executeUpdateStatement( conn,
-                                                                   new ISOQPParsing().parseAPDC( update.getElement() ) );
+                result = executeStatements.executeUpdateStatement(
+                                                                   conn,
+                                                                   new ISOQPParsing( ca ).parseAPDC( update.getElement() ) );
 
             } else {
-                result = executeStatements.executeUpdateStatement( conn,
-                                                                   new ISOQPParsing().parseAPISO( fi, ic, ci,
-                                                                                                  update.getElement(),
-                                                                                                  true ) );
+                result = executeStatements.executeUpdateStatement(
+                                                                   conn,
+                                                                   new ISOQPParsing( ca ).parseAPISO(
+                                                                                                      update.getElement(),
+                                                                                                      true ) );
 
             }
 
