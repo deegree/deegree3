@@ -106,8 +106,12 @@ public class GMLObjectWalker {
     @SuppressWarnings("unchecked")
     public void traverse( GMLObject node ) {
 
-        if ( node instanceof GMLReference<?> && ( (GMLReference<GMLObject>) node ).isResolved() ) {
-            node = ( (GMLReference<GMLObject>) node ).getReferencedObject();
+        if ( node instanceof GMLReference<?> ) {
+            if ( ( (GMLReference<GMLObject>) node ).isResolved() ) {
+                node = ( (GMLReference<GMLObject>) node ).getReferencedObject();
+            } else {
+                return;
+            }
         }
 
         if ( !visited.contains( node ) ) {
@@ -131,6 +135,7 @@ public class GMLObjectWalker {
                 throw new UnsupportedOperationException();
             }
         }
+
     }
 
     private void traverseFeature( Feature node ) {
