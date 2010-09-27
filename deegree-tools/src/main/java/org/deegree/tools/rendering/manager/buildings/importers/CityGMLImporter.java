@@ -521,7 +521,7 @@ public class CityGMLImporter implements ModelImporter {
         }
         qmList.add( qm );
 
-        Envelope env = geomFac.createEnvelope( min, max, building.getEnvelope().getCoordinateSystem() );
+        Envelope env = geomFac.createEnvelope( min, max, null );
         WorldRenderableObject rwo = new WorldRenderableObject( id,
                                                                new Timestamp( System.currentTimeMillis() ).toString(),
                                                                env, numberOfLevels );
