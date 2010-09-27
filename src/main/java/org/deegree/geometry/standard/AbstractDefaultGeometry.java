@@ -280,7 +280,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException( "#buildJTSGeometry() is not implemented for "
+                                                 + this.getClass().getName() );
     }
 
     @Override

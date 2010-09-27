@@ -40,6 +40,7 @@ import java.util.List;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.cs.CRS;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
@@ -117,5 +118,25 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
     @Override
     public Measure getVolume( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public synchronized Envelope getEnvelope() {
+        if ( env == null ) {
+            if ( exteriorSurface != null ) {
+                env = exteriorSurface.getEnvelope();
+            } else {
+                for ( Surface interiorSurface : interiorSurfaces ) {
+                    Envelope intEnv = interiorSurface.getEnvelope();
+                    if ( env == null ) {
+                        env = intEnv;
+                    } else {
+                        env = env.merge( intEnv );
+                    }
+                }
+            }
+
+        }
+        return env;
     }
 }
