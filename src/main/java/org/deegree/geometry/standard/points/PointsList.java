@@ -169,7 +169,11 @@ public class PointsList implements Points {
 
     @Override
     public void setOrdinate( int index, int ordinateIndex, double value ) {
-        throw new UnsupportedOperationException();
+        double[] coords = points.get( index ).getAsArray();
+        if ( coords.length > ordinateIndex && ordinateIndex >= 0 )
+            coords[ordinateIndex] = value;
+        else
+            throw new IndexOutOfBoundsException();
     }
 
     @Override
