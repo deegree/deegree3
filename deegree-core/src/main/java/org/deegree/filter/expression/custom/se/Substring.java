@@ -42,6 +42,7 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -55,6 +56,7 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
+import org.slf4j.Logger;
 
 /**
  * <code>Substring</code>
@@ -66,11 +68,17 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  */
 public class Substring extends AbstractCustomExpression {
 
+    private static final Logger LOG = getLogger( Substring.class );
+
     private static final QName ELEMENT_NAME = new QName( SENS, "Substring" );
 
     private StringBuffer value, position, length;
 
     private Continuation<StringBuffer> valueContn, positionContn, lengthContn;
+
+    private String file;
+
+    private int line, col;
 
     /**
      * 
@@ -133,12 +141,23 @@ public class Substring extends AbstractCustomExpression {
         int end = pos + len;
         end = min( val.length(), end );
 
-        return new PrimitiveValue[] { new PrimitiveValue( val.substring( pos, end ) ) };
+        try {
+            return new PrimitiveValue[] { new PrimitiveValue( val.substring( pos, end ) ) };
+        } catch ( StringIndexOutOfBoundsException e ) {
+            LOG.trace( "Stack trace:", e );
+            LOG.warn( "A Substring call evaluated invalid parameters: substring({}, {})", pos, end );
+            LOG.warn( "File was {}, line {}, column {}", new Object[] { file, line, col } );
+        }
+        return new TypedObjectNode[0];
     }
 
     @Override
     public Substring parse( XMLStreamReader in )
                             throws XMLStreamException {
+        file = in.getLocation().getSystemId();
+        line = in.getLocation().getLineNumber();
+        col = in.getLocation().getColumnNumber();
+
         in.require( START_ELEMENT, null, "Substring" );
 
         StringBuffer value = null;
@@ -168,6 +187,10 @@ public class Substring extends AbstractCustomExpression {
         }
 
         in.require( END_ELEMENT, null, "Substring" );
-        return new Substring( value, position, length, valueContn, positionContn, lengthContn );
+        Substring sub = new Substring( value, position, length, valueContn, positionContn, lengthContn );
+        sub.file = file;
+        sub.line = line;
+        sub.col = col;
+        return sub;
     }
 }
