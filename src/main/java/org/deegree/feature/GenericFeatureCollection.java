@@ -69,10 +69,6 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     private static final Logger LOG = LoggerFactory.getLogger( GenericFeatureCollection.class );
 
-    private String fid;
-
-    private final FeatureCollectionType ft;
-
     private final List<Feature> memberFeatures = new ArrayList<Feature>();
 
     private final List<Property> props;
@@ -93,9 +89,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      */
     public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property> props, GMLVersion version ) {
 
-        this.ft = ft;
-        this.fid = fid;
-
+        super( fid, ft );
         if ( version != null ) {
             Pair<StandardGMLFeatureProps, List<Property>> pair = StandardGMLFeatureProps.create( props, version );
             standardProps = pair.first;
@@ -127,10 +121,8 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * @param memberFeatures
      */
     public GenericFeatureCollection( String fid, Collection<Feature> memberFeatures ) {
-        this.fid = fid;
+        super( fid, GML311_FEATURECOLLECTION );
         this.memberFeatures.addAll( memberFeatures );
-        // TODO
-        this.ft = GML311_FEATURECOLLECTION;
         this.props = null;
     }
 
@@ -138,19 +130,8 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * Creates a new empty {@link GenericFeatureCollection} instance without type information.
      */
     public GenericFeatureCollection() {
-        // TODO
-        this.ft = GML311_FEATURECOLLECTION;
+        super( null, GML311_FEATURECOLLECTION );
         this.props = null;
-    }
-
-    @Override
-    public String getId() {
-        return fid;
-    }
-
-    @Override
-    public void setId( String fid ) {
-        this.fid = fid;
     }
 
     @Override
@@ -164,16 +145,11 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
             Property[] props = new Property[memberFeatures.size()];
             int i = 0;
             for ( Feature feature : memberFeatures ) {
-                props[i++] = new GenericProperty( ft.getMemberDeclarations().get( 0 ), null, feature );
+                props[i++] = new GenericProperty( getType().getMemberDeclarations().get( 0 ), null, feature );
             }
             return props;
         }
         return props.toArray( new Property[props.size()] );
-    }
-
-    @Override
-    public FeatureCollectionType getType() {
-        return ft;
     }
 
     @Override
@@ -266,9 +242,9 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
                     namedProps.add( property );
                 }
             }
-        } else if ( propName.equals( ft.getMemberDeclarations().get( 0 ) ) ) {
+        } else if ( propName.equals( getType().getMemberDeclarations().get( 0 ) ) ) {
             for ( Feature feature : memberFeatures ) {
-                namedProps.add( new GenericProperty( ft.getMemberDeclarations().get( 0 ), null, feature ) );
+                namedProps.add( new GenericProperty( getType().getMemberDeclarations().get( 0 ), null, feature ) );
             }
         }
         return namedProps.toArray( new Property[namedProps.size()] );

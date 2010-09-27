@@ -44,7 +44,6 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
-import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
@@ -65,10 +64,6 @@ public class GenericFeature extends AbstractFeature {
 
     private static final Logger LOG = LoggerFactory.getLogger( GenericFeature.class );
 
-    private String fid;
-
-    private GenericFeatureType ft;
-
     private List<Property> props;
 
     /**
@@ -85,8 +80,7 @@ public class GenericFeature extends AbstractFeature {
      *            standard GML properties are allowed)
      */
     public GenericFeature( GenericFeatureType ft, String fid, List<Property> props, GMLVersion version ) {
-        this.ft = ft;
-        this.fid = fid;
+        super( fid, ft );
         if ( version == null ) {
             this.props = new ArrayList<Property>( props );
         } else {
@@ -94,26 +88,6 @@ public class GenericFeature extends AbstractFeature {
             standardProps = pair.first;
             this.props = new ArrayList<Property>( pair.second );
         }
-    }
-
-    @Override
-    public String getId() {
-        return fid;
-    }
-
-    @Override
-    public void setId( String fid ) {
-        this.fid = fid;
-    }
-
-    @Override
-    public QName getName() {
-        return ft.getName();
-    }
-
-    @Override
-    public FeatureType getType() {
-        return ft;
     }
 
     @Override

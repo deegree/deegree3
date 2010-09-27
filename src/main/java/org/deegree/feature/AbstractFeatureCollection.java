@@ -38,6 +38,7 @@ package org.deegree.feature;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
@@ -54,6 +55,23 @@ import org.deegree.geometry.Envelope;
 public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
 
     private boolean envelopeCalculated = false;
+
+    /**
+     * Creates a new {@link AbstractFeatureCollection} instance.
+     * 
+     * @param fid
+     *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
+     * @param ft
+     *            feature type, must not be <code>null</code>
+     */
+    protected AbstractFeatureCollection( String fid, FeatureCollectionType ft ) {
+        super( fid, ft );
+    }
+
+    @Override
+    public FeatureCollectionType getType() {
+        return (FeatureCollectionType) ft;
+    }
 
     @Override
     public FeatureCollection getMembers( Filter filter, XPathEvaluator<Feature> evaluator )

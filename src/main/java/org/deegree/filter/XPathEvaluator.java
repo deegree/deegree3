@@ -37,10 +37,12 @@
 package org.deegree.filter;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.feature.Feature;
 import org.deegree.filter.expression.PropertyName;
 
 /**
- * Implementations enable the evaluation of XPath expressions (given as {@link PropertyName}s).
+ * Implementations enable the evaluation of XPath expressions (given as {@link PropertyName}s) on a specific class of
+ * objects, e.g. {@link Feature} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

@@ -46,12 +46,11 @@ import org.deegree.filter.expression.Sub;
 import org.deegree.filter.expression.custom.CustomExpressionProvider;
 
 /**
- * An <code>Expression</code> describes a rule to obtain a value that may be derived from the properties of a
- * {@link MatchableObject}.
+ * An <code>Expression</code> describes a rule to obtain a value that may be derived from the properties of an object.
  * <p>
- * Note that the objects returned by {@link #evaluate(MatchableObject)} is an <code>TypedObjectNode[]</code>, as an
- * expression may evaluate to multiple values, e.g. a {@link PropertyName} that targets a multi property of a feature.
- * Values in the returned array may also be <code>null</code>.
+ * Note that the objects returned by {@link #evaluate(Object, XPathEvaluator)} is an <code>TypedObjectNode[]</code>, as
+ * an expression may evaluate to multiple values, e.g. a {@link PropertyName} that targets a multi property of a
+ * feature. Values in the returned array may also be <code>null</code>.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -74,8 +73,7 @@ public interface Expression {
         /** Value is computed by dividing two values. The {@link Expression} is an instance of {@link Div}. */
         DIV,
         /**
-         * Expression references a property of a {@link MatchableObject}. The {@link Expression} is an instance of
-         * {@link PropertyName}.
+         * Expression references a property of an object. The {@link Expression} is an instance of {@link PropertyName}.
          */
         PROPERTY_NAME,
         /**
