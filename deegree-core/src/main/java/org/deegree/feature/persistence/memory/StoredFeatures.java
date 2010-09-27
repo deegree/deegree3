@@ -93,9 +93,9 @@ class StoredFeatures {
 
     final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
 
-    final Map<String, GMLObject> idToObject = new HashMap<String, GMLObject>();
+    final Map<String, GMLObject> idToObject;
 
-    final Map<FeatureType, RTree<Feature>> ftToIndex = new HashMap<FeatureType, RTree<Feature>>();
+    final Map<FeatureType, RTree<Feature>> ftToIndex;
 
     StoredFeatures( ApplicationSchema schema, CRS storageCRS, StoredFeatures former ) {
         this.schema = schema;
@@ -107,6 +107,13 @@ class StoredFeatures {
                 fc.addAll( oldFc );
             }
             ftToFeatures.put( ft, fc );
+        }
+        if ( former != null ) {
+            idToObject = former.idToObject;
+            ftToIndex = former.ftToIndex;
+        } else {
+            idToObject = new HashMap<String, GMLObject>();
+            ftToIndex = new HashMap<FeatureType, RTree<Feature>>();
         }
     }
 

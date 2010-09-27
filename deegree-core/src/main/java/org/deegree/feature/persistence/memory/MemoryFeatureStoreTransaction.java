@@ -222,10 +222,12 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 String msg = "Unable to transform geometries: " + e.getMessage();
                 throw new FeatureStoreException( msg );
             }
-            LOG.debug( "Done." );
+        } else {
+            LOG.debug( "Checking CRS use in feature collection" );
+            checkCRS( fc );
         }
         long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Transforming geometries took {} [ms]", elapsed );
+        LOG.debug( "Transforming / checking geometries took {} [ms]", elapsed );
 
         begin = System.currentTimeMillis();
         List<Feature> features = assignIds( fc, mode );
@@ -242,6 +244,33 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             fids.add( f.getId() );
         }
         return new ArrayList<String>( fids );
+    }
+
+    private void checkCRS( FeatureCollection fc )
+                            throws FeatureStoreException {
+        GMLObjectVisitor visitor = new GMLObjectVisitor() {
+            @Override
+            public boolean visitGeometry( Geometry geom ) {
+                if ( geom.getCoordinateSystem() != null && geom.getCoordinateDimension() != 1 ) {
+                    try {
+                        geom.getCoordinateSystem().getWrappedCRS();
+                    } catch ( Exception e ) {
+                        throw new IllegalArgumentException( e.getMessage() );
+                    }
+                }
+                return true;
+            }
+
+            @Override
+            public boolean visitFeature( Feature feature ) {
+                return true;
+            }
+        };
+        try {
+            new GMLObjectWalker( visitor ).traverse( fc );
+        } catch ( IllegalArgumentException e ) {
+            throw new FeatureStoreException( e.getMessage() );
+        }
     }
 
     /**
@@ -421,10 +450,10 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         int updated = 0;
         if ( fc != null ) {
             try {
-                FeatureCollection newFc = fc.getMembers( filter, sf.evaluator );
+                FeatureCollection update = fc.getMembers( filter, sf.evaluator );
 
                 // check if all features can be updated
-                for ( Feature feature : newFc ) {
+                for ( Feature feature : update ) {
                     if ( !fs.lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
                         if ( lockId == null ) {
                             throw new MissingParameterException( getMessage( "TA_UPDATE_LOCKED_NO_LOCK_ID",
@@ -435,36 +464,39 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                     }
                 }
 
-                updated = newFc.size();
-                for ( Feature feature : newFc ) {
-                    for ( Property prop : replacementProps ) {
-
-                        if ( prop.getValue() instanceof Geometry ) {
-                            Geometry geom = (Geometry) prop.getValue();
+                updated = update.size();
+                for ( Feature feature : update ) {
+                    for ( Property replacement : replacementProps ) {
+                        if ( replacement.getValue() instanceof Geometry ) {
+                            Geometry geom = (Geometry) replacement.getValue();
                             if ( geom != null ) {
+                                Property current = feature.getProperty( replacement.getType().getName() );
+                                Geometry currentGeom = current != null ? ( (Geometry) current.getValue() ) : null;
                                 // check compatibility (CRS) for geometry replacements (CITE
                                 // wfs:wfs-1.1.0-Transaction-tc7.2)
-                                if ( geom.getCoordinateDimension() != ( (Geometry) prop.getValue() ).getCoordinateDimension() ) {
+                                if ( currentGeom.getCoordinateDimension() != geom.getCoordinateDimension() ) {
                                     throw new InvalidParameterValueException(
                                                                               "Cannot replace given geometry property '"
-                                                                                                      + prop.getType().getName()
+                                                                                                      + replacement.getType().getName()
                                                                                                       + "' with given value (wrong dimension)." );
                                 }
                                 // check compatibility (geometry type) for geometry replacements (CITE
                                 // wfs:wfs-1.1.0-Transaction-tc10.1)
                                 if ( !( geom instanceof Surface )
-                                     && prop.getName().equals(
-                                                               new QName( "http://cite.opengeospatial.org/gmlsf",
-                                                                          "surfaceProperty" ) ) ) {
+                                     && replacement.getName().equals(
+                                                                      new QName(
+                                                                                 "http://cite.opengeospatial.org/gmlsf",
+                                                                                 "surfaceProperty" ) ) ) {
                                     throw new InvalidParameterValueException(
                                                                               "Cannot replace given geometry property '"
-                                                                                                      + prop.getType().getName()
+                                                                                                      + replacement.getType().getName()
                                                                                                       + "' with given value (wrong type)." );
                                 }
                             }
                         }
                         // TODO what about multi properties, strategy for proper handling of GML version
-                        feature.setPropertyValue( prop.getType().getName(), 0, prop.getValue(), GMLVersion.GML_31 );
+                        feature.setPropertyValue( replacement.getType().getName(), 0, replacement.getValue(),
+                                                  GMLVersion.GML_31 );
                     }
                     if ( lock != null ) {
                         lock.release( feature.getId() );

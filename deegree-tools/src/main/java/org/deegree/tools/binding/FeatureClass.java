@@ -102,7 +102,7 @@ public class FeatureClass extends ModelClass {
         this.ft = ft;
         this.baseType = parent;
         ApplicationSchema schema = ft.getSchema();
-        propertyDeclarations = schema.getNewPropertyDeclarations( ft );
+        propertyDeclarations = schema.getNewPropertyDecls( ft );
     }
 
     /**

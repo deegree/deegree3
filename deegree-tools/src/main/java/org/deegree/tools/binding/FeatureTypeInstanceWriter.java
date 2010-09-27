@@ -132,7 +132,7 @@ public class FeatureTypeInstanceWriter {
     protected static void writeFields( Writer out, FeatureType ft )
                             throws IOException {
         ApplicationSchema schema = ft.getSchema();
-        List<PropertyType> propertyDeclarations = schema.getNewPropertyDeclarations( ft );
+        List<PropertyType> propertyDeclarations = schema.getNewPropertyDecls( ft );
         // write the feature type name as a field;
 
         if ( !propertyDeclarations.isEmpty() ) {
