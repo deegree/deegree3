@@ -2,6 +2,7 @@
 <ISOMetadataStore
 	connId="conn1"
 	configVersion="0.6.0"
+	validate="false"
 	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
@@ -11,8 +12,6 @@
     </Param>
 		<Param key="deriveFileIdentifier">gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Param>
 	</IdentifierInspector>
-	<RequireInspireCompliance inspireRequired="true">
-		<ComplianceGenerator generateAutomatic="false" />
-	</RequireInspireCompliance>
+	<RequireInspireCompliance generateAutomatic="true"/> 
 	<CoupledResourceInspector throwConsistencyError="true" />
 </ISOMetadataStore>

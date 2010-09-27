@@ -75,7 +75,7 @@ public class InspireCompliance {
         if ( ric == null ) {
             return false;
         } else {
-            return ric.isInspireRequired();
+            return true;
         }
     }
 
@@ -93,7 +93,7 @@ public class InspireCompliance {
      */
     public List<String> determineInspireCompliance( List<String> rsList, String id )
                             throws MetadataStoreException {
-        boolean generateAutomatic = ric.getComplianceGenerator().isGenerateAutomatic();
+        boolean generateAutomatic = ric.isGenerateAutomatic();
         if ( checkInspireCompliance() ) {
             if ( generateAutomatic == false ) {
                 if ( checkRSListAgainstID( rsList, id ) ) {
