@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.points;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -183,6 +184,6 @@ public class PointsList implements Points {
 
     @Override
     public Object clone() {
-        throw new UnsupportedOperationException();
+        return new PointsList( new ArrayList<Point>( points ) );
     }
 }

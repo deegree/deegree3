@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.points;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -199,6 +200,6 @@ public class PointsArray implements Points {
 
     @Override
     public Object clone() {
-        throw new UnsupportedOperationException();
+        return new PointsArray( Arrays.copyOf( points, points.length ) );
     }
 }
