@@ -45,6 +45,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
@@ -64,8 +65,47 @@ public abstract class AbstractFeature implements Feature {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractFeature.class );
 
-    /** Stores the default GML properties that every GML feature allows for (gml:name, gml:description, ...). */
+    /** Feature id */
+    protected String fid;
+
+    /** Feature type */
+    protected final FeatureType ft;
+
+    /** Default GML properties that every GML feature allows for (gml:name, gml:description, ...). */
     protected StandardGMLFeatureProps standardProps;
+
+    /**
+     * Creates a new {@link AbstractFeature} instance.
+     * 
+     * @param fid
+     *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
+     * @param ft
+     *            feature type, must not be <code>null</code>
+     */
+    protected AbstractFeature( String fid, FeatureType ft ) {
+        this.fid = fid;
+        this.ft = ft;
+    }
+
+    @Override
+    public String getId() {
+        return fid;
+    }
+
+    @Override
+    public void setId( String fid ) {
+        this.fid = fid;
+    }
+
+    @Override
+    public QName getName() {
+        return ft.getName();
+    }
+
+    @Override
+    public FeatureType getType() {
+        return ft;
+    }
 
     @Override
     public StandardGMLFeatureProps getGMLProperties() {

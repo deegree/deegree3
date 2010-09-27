@@ -36,9 +36,11 @@
 
 package org.deegree.filter;
 
+import org.deegree.feature.Feature;
+
 /**
  * A <code>Filter</code> is a boolean expression (often containing spatial predicates) that can be tested against
- * {@link MatchableObject}s.
+ * objects, such as {@link Feature}s.
  * <p>
  * The filter subsystem is designed to be compatible with the <a
  * href="http://www.opengeospatial.org/standards/filter">OpenGIS Filter Encoding Implementation Specification</a>.
@@ -73,7 +75,7 @@ public interface Filter {
      * @return type of filter (id or expression based)
      */
     public Type getType();
-   
+
     /**
      * Determines if the given object matches this <code>Filter</code>.
      * 

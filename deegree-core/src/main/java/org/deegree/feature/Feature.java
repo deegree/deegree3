@@ -42,7 +42,6 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
@@ -72,52 +71,52 @@ import org.deegree.gml.feature.StandardGMLFeatureProps;
  * 
  * @version $Revision$, $Date$
  */
-public interface Feature extends MatchableObject, GMLObject {
+public interface Feature extends GMLObject {
 
     /**
      * Returns the id of the feature.
      * <p>
-     * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
+     * In a GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
      * <code>fid</code> (GML 2) attribute of the feature element.
      * </p>
      * 
-     * @return the id of the feature
+     * @return the id of the feature, may be <code>null</code>
      */
     public String getId();
 
     /**
      * Sets the id of the feature.
      * <p>
-     * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
+     * In a GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
      * <code>fid</code> (GML 2) attribute of the feature element.
      * </p>
      * 
      * @param id
-     *            the id of the feature instance
+     *            the id of the feature instance, may be <code>null</code>
      */
     public void setId( String id );
 
     /**
      * Returns the name of the feature.
      * <p>
-     * In an GML representation of the feature, this corresponds to the feature element's name.
+     * In a GML representation of the feature, this corresponds to the feature element's name.
      * </p>
      * 
-     * @return the name of the feature instance
+     * @return the name of the feature instance, never <code>null</code>
      */
     public QName getName();
 
     /**
      * Returns the type information for this feature.
      * 
-     * @return the type information
+     * @return the type information, never <code>null</code>
      */
     public FeatureType getType();
 
     /**
      * Returns all properties in order, excluding standard GML properties such as <code>gml:name</code>.
      * 
-     * @return all properties, excluding standard GML properties
+     * @return all properties, excluding standard GML properties, may be empty, but never <code>null</code>
      */
     public Property[] getProperties();
 
@@ -126,7 +125,7 @@ public interface Feature extends MatchableObject, GMLObject {
      * 
      * @param version
      *            determines the names and types of the standard GML properties, must not be <code>null</code>
-     * @return all properties, including standard GML properties
+     * @return all properties, including standard GML properties, may be empty, but never <code>null</code>
      */
     public Property[] getProperties( GMLVersion version );
 
@@ -135,7 +134,7 @@ public interface Feature extends MatchableObject, GMLObject {
      * 
      * @param propName
      *            name of the requested properties
-     * @return the properties with the given name, in order
+     * @return the properties with the given name, in order, may be empty, but never <code>null</code>
      */
     public Property[] getProperties( QName propName );
 
@@ -146,7 +145,7 @@ public interface Feature extends MatchableObject, GMLObject {
      *            name of the requested properties
      * @param version
      *            determines the names and types of the standard GML properties, must not be <code>null</code>
-     * @return the properties with the given name, in order
+     * @return the properties with the given name, in order, may be empty, but never <code>null</code>
      */
     public Property[] getProperties( QName propName, GMLVersion version );
 
@@ -184,7 +183,8 @@ public interface Feature extends MatchableObject, GMLObject {
     /**
      * Returns the envelope of the feature.
      * 
-     * @return the envelope of the feature, or null if the feature has no envelope information / geometry properties
+     * @return the envelope of the feature, or <code>null</code> if the feature has no envelope information / geometry
+     *         properties
      */
     public Envelope getEnvelope();
 
