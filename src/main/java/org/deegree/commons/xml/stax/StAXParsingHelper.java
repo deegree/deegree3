@@ -459,15 +459,16 @@ public class StAXParsingHelper {
     }
 
     /**
-     * Move the reader forth one {@link XMLStreamConstants#END_ELEMENT} or {@link XMLStreamConstants#END_ELEMENT},
-     * throws n
+     * Move the reader to the next {@link XMLStreamConstants #START_ELEMENT} or {@link XMLStreamConstants #END_ELEMENT}
+     * event.
      * 
      * @param xmlReader
+     * @return event type
      * @throws XMLStreamException
      * @throws NoSuchElementException
-     *             if the end of the document is reached.
+     *             if the end of the document is reached
      */
-    public static void nextElement( XMLStreamReader xmlReader )
+    public static int nextElement( XMLStreamReader xmlReader )
                             throws XMLStreamException, NoSuchElementException {
         xmlReader.next();
         while ( xmlReader.getEventType() != END_DOCUMENT && !xmlReader.isStartElement() && !xmlReader.isEndElement() ) {
@@ -476,6 +477,7 @@ public class StAXParsingHelper {
         if ( xmlReader.getEventType() == END_DOCUMENT ) {
             throw new NoSuchElementException();
         }
+        return xmlReader.getEventType();
     }
 
     /**

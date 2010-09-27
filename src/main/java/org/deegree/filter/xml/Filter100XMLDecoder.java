@@ -39,7 +39,9 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.requireNextTag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,7 +127,7 @@ import org.slf4j.LoggerFactory;
  * <li>TODO add here more differences</li>
  * </ul>
  * 
- * All the v1.0.0 elements are parse with {@link GML2GeometryReader}.
+ * All the v1.0.0 elements are parsed with {@link GML2GeometryReader}.
  * 
  * It was decided not to extend Filter110XMLDecoder as both filters should have static parse methods that make accessing
  * easier (than creating a superfluous instance beforehand)
@@ -269,7 +271,7 @@ public class Filter100XMLDecoder {
 
         Filter filter = null;
         xmlStream.require( START_ELEMENT, OGC_NS, "Filter" );
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         if ( xmlStream.getEventType() != START_ELEMENT ) {
             throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_FILTER_EMPTY",
                                                                            new QName( OGC_NS, "Filter" ) ) );
@@ -282,7 +284,7 @@ public class Filter100XMLDecoder {
             LOG.debug( "Building operator filter" );
             Operator rootOperator = parseOperator( xmlStream );
             filter = new OperatorFilter( rootOperator );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             LOG.debug( "Local name: " + xmlStream.getLocalName() );
         }
 
@@ -338,39 +340,39 @@ public class Filter100XMLDecoder {
 
         switch ( type ) {
         case ADD: {
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             Expression param1 = parseExpression( xmlStream );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             Expression param2 = parseExpression( xmlStream );
             expression = new Add( param1, param2 );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             break;
         }
         case SUB: {
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             Expression param1 = parseExpression( xmlStream );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             Expression param2 = parseExpression( xmlStream );
             expression = new Sub( param1, param2 );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             break;
         }
         case MUL: {
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             Expression param1 = parseExpression( xmlStream );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             Expression param2 = parseExpression( xmlStream );
             expression = new Mul( param1, param2 );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             break;
         }
         case DIV: {
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             Expression param1 = parseExpression( xmlStream );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             Expression param2 = parseExpression( xmlStream );
             expression = new Div( param1, param2 );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             break;
         }
         case PROPERTY_NAME: {
@@ -416,11 +418,11 @@ public class Filter100XMLDecoder {
 
         xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
         String name = getRequiredAttributeValue( xmlStream, "name" );
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         List<Expression> params = new ArrayList<Expression>();
         while ( xmlStream.getEventType() == START_ELEMENT ) {
             params.add( parseExpression( xmlStream ) );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
         }
         xmlStream.require( END_ELEMENT, OGC_NS, "Function" );
 
@@ -579,14 +581,14 @@ public class Filter100XMLDecoder {
                     throw new XMLParsingException( xmlStream, msg );
                 }
                 matchingIds.add( id );
-                xmlStream.nextTag();
+                nextElement( xmlStream );
                 xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "FeatureId" );
             } else {
                 String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", childElementName,
                                                   GML_OBJECT_ID_ELEMENT, FEATURE_ID_ELEMENT );
                 throw new XMLParsingException( xmlStream, msg );
             }
-            xmlStream.nextTag();
+            nextElement( xmlStream );
         }
         return new IdFilter( matchingIds );
     }
@@ -599,11 +601,11 @@ public class Filter100XMLDecoder {
         // this is a deegree extension over Filter 1.0.0 spec.
         boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
 
-        StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
+        requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter1 = parseExpression( xmlStream );
-        StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
+        requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter2 = parseExpression( xmlStream );
-        StAXParsingHelper.requireNextTag( xmlStream, END_ELEMENT );
+        requireNextTag( xmlStream, END_ELEMENT );
 
         switch ( type ) {
         case PROPERTY_IS_EQUAL_TO:
@@ -698,23 +700,23 @@ public class Filter100XMLDecoder {
         // this is a deegree extension over Filter 1.0.0 spec.
         boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
 
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         Expression expression = parseExpression( xmlStream );
 
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         xmlStream.require( START_ELEMENT, OGC_NS, "LowerBoundary" );
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         Expression lowerBoundary = parseExpression( xmlStream );
 
-        xmlStream.nextTag(); // </ expression >
-        xmlStream.nextTag(); // </LowerBoundary>
+        nextElement( xmlStream ); // </ expression >
+        nextElement( xmlStream ); // </LowerBoundary>
 
         xmlStream.require( START_ELEMENT, OGC_NS, "UpperBoundary" );
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         Expression upperBoundary = parseExpression( xmlStream );
 
-        xmlStream.nextTag(); // </ expression >
-        xmlStream.nextTag(); // </UowerBoundary>
+        nextElement( xmlStream ); // </ expression >
+        nextElement( xmlStream ); // </UowerBoundary>
         return new PropertyIsBetween( expression, lowerBoundary, upperBoundary, matchCase );
     }
 
@@ -728,20 +730,20 @@ public class Filter100XMLDecoder {
         String singleChar = getRequiredAttributeValue( xmlStream, "singleChar" );
         String escapeChar = getRequiredAttributeValue( xmlStream, "escape" );
 
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         PropertyName propName = parsePropertyName( xmlStream );
 
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         Literal<?> literal = parseLiteral( xmlStream );
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase );
     }
 
     private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         PropertyName propName = parsePropertyName( xmlStream );
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         return new PropertyIsNull( propName );
     }
 
@@ -762,7 +764,7 @@ public class Filter100XMLDecoder {
         switch ( type ) {
         case AND: {
             List<Operator> innerOperators = new ArrayList<Operator>();
-            while ( xmlStream.nextTag() == START_ELEMENT ) {
+            while ( nextElement( xmlStream ) == START_ELEMENT ) {
                 innerOperators.add( parseOperator( xmlStream ) );
             }
             if ( innerOperators.size() < 2 ) {
@@ -774,7 +776,7 @@ public class Filter100XMLDecoder {
         }
         case OR: {
             List<Operator> innerOperators = new ArrayList<Operator>();
-            while ( xmlStream.nextTag() == START_ELEMENT ) {
+            while ( nextElement( xmlStream ) == START_ELEMENT ) {
                 innerOperators.add( parseOperator( xmlStream ) );
             }
             if ( innerOperators.size() < 2 ) {
@@ -785,10 +787,10 @@ public class Filter100XMLDecoder {
             break;
         }
         case NOT: {
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             Operator parameter = parseOperator( xmlStream );
             logicalOperator = new Not( parameter );
-            xmlStream.nextTag();
+            nextElement( xmlStream );
             break;
         }
         }
@@ -809,7 +811,7 @@ public class Filter100XMLDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        xmlStream.nextTag();
+        nextElement( xmlStream );
 
         // TODO remove this after GML parser is adapted
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
@@ -817,7 +819,7 @@ public class Filter100XMLDecoder {
 
         // always first parameter: 'ogc:PropertyName'
         PropertyName param1 = parsePropertyName( xmlStream );
-        xmlStream.nextTag();
+        nextElement( xmlStream );
 
         try {
             switch ( type ) {
@@ -832,7 +834,7 @@ public class Filter100XMLDecoder {
                 // second parameter: 'gml:_Geometry'
                 Geometry param2 = geomParser.parse( wrapper );
                 // third parameter: 'ogc:Distance'
-                xmlStream.nextTag();
+                nextElement( xmlStream );
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
                 String distanceValue = xmlStream.getElementText();
@@ -870,7 +872,7 @@ public class Filter100XMLDecoder {
                 // second parameter: 'gml:_Geometry'
                 Geometry param2 = geomParser.parse( wrapper );
                 // third parameter: 'ogc:Distance'
-                xmlStream.nextTag();
+                nextElement( xmlStream );
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
                 String distanceValue = xmlStream.getElementText();
@@ -907,7 +909,7 @@ public class Filter100XMLDecoder {
         } catch ( UnknownCRSException e ) {
             throw new XMLParsingException( xmlStream, e.getMessage() );
         }
-        xmlStream.nextTag();
+        nextElement( xmlStream );
         return spatialOperator;
     }
 
@@ -931,5 +933,4 @@ public class Filter100XMLDecoder {
         }
         return ArrayUtils.join( ", ", names );
     }
-
 }
