@@ -1,4 +1,5 @@
-/*----------------------------------------------------------------------------
+//$HeadURL$
+/*---------------------------------------------------------------------------- 
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
  Department of Geography, University of Bonn
@@ -74,7 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Each instance contains the objects stored by the {@link MemoryFeatureStore} at a certain point of time.
+ * Encapsulates the feature instances stored by a {@link MemoryFeatureStore} instance plus index structures.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

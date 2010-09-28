@@ -84,6 +84,7 @@ import org.slf4j.LoggerFactory;
  * {@link FeatureStoreTransaction} implementation used by the {@link MemoryFeatureStore}.
  * 
  * @see MemoryFeatureStore
+ * @see StoredFeatures
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -105,16 +106,12 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     /**
      * Creates a new {@link MemoryFeatureStoreTransaction} instance.
      * 
-     * NOTE: This method is only supposed to be invoked by the {@link MemoryFeatureStore}.
-     * 
      * @param fs
      *            invoking feature store instance, never <code>null</code>
-     * @param sf
-     * 
      */
-    MemoryFeatureStoreTransaction( MemoryFeatureStore fs, StoredFeatures sf ) {
+    MemoryFeatureStoreTransaction( MemoryFeatureStore fs ) {
         this.fs = fs;
-        this.sf = sf;
+        this.sf = new StoredFeatures( fs.getSchema(), fs.getStorageSRS(), fs.storedFeatures );
     }
 
     @Override
@@ -483,8 +480,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                                 // check compatibility (geometry type) for geometry replacements (CITE
                                 // wfs:wfs-1.1.0-Transaction-tc10.1)
                                 if ( !( geom instanceof Surface )
-                                     && replacement.getName().equals(
-                                                                      new QName(
+                                     && replacement.getName().equals( new QName(
                                                                                  "http://cite.opengeospatial.org/gmlsf",
                                                                                  "surfaceProperty" ) ) ) {
                                     throw new InvalidParameterValueException(
