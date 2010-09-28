@@ -1,0 +1,12 @@
+<MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="0.5.0" xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/0.5.0/feature/memory.xsd">
+
+  <!-- Namespace bindings to be used (0...n) -->
+  <NamespaceHint namespaceURI="aixm" prefix="http://www.aixm.aero/schema/5.1"/>
+
+  <!-- GML schema files / directory to be used (1...n)-->
+  <GMLSchemaFileURL gmlVersion="GML_32">schemas/aixm/message/AIXM_BasicMessage.xsd</GMLSchemaFileURL>
+  
+  <!-- GML datasets to load on startup (0...n)-->
+  <GMLFeatureCollectionFileURL gmlVersion="GML_32">data/baseline.xml</GMLFeatureCollectionFileURL>
+  
+</MemoryFeatureStore>
