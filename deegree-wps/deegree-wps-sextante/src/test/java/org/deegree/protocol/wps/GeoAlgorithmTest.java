@@ -210,6 +210,14 @@ public class GeoAlgorithmTest {
         }
     }
 
+    /**
+     * This method determines a SEXTANTE {@link GeoAlgorithm} by commmand line name.
+     * 
+     * @param commandLineName
+     *            Command line name of a SEXTANTE {@link GeoAlgorithm}.
+     * 
+     * @return SEXTANTE {@link GeoAlgorithm} or null if the algorithm was not found.
+     */
     public GeoAlgorithmWithData getAlgorithm( String commandLineName ) {
 
         // determine algorithm
@@ -218,9 +226,16 @@ public class GeoAlgorithmTest {
                 return alg;
         }
 
+        LOG.error( "SEXTANTE GeoAlgorithm '" + commandLineName + "' was not found." );
+
         return null;
     }
 
+    /**
+     * This method returns all supported SEXTANTE {@link GeoAlgorithm} of the deegree WPS with example data.
+     * 
+     * @return All supported SEXTANTE {@link GeoAlgorithm} with example data.
+     */
     private LinkedList<GeoAlgorithmWithData> getAllSupportedAlgorithms() {
 
         LinkedList<GeoAlgorithmWithData> allAlgs = new LinkedList<GeoAlgorithmWithData>();
@@ -228,7 +243,6 @@ public class GeoAlgorithmTest {
         boolean getAll = true;
 
         if ( !getAll ) {// return only one algorithm
-
 
             // //
             // ---------------------------------------------------------------------------------------------------------------------------
@@ -319,19 +333,26 @@ public class GeoAlgorithmTest {
 
             // ---------------------------------------------------------------------------------------------------------------------------
             // clip algorithm
-            // String clipName = "clip";
-            // GeoAlgorithmWithData clipAlg = new GeoAlgorithmWithData(
-            // Sextante.getAlgorithmFromCommandLineName( clipName ) );
-            //
-            // // add all test data
-            // LinkedList<? extends ExampleData> clipLayerData = GeometryExampleData.getAllData();
-            // for ( ExampleData data : clipLayerData ) {
-            // LinkedList<ExampleData> list = new LinkedList<ExampleData>();
-            // list.add( data ); // LAYER: all geometries
-            // list.add( GeometryExampleData.GML_31_POLYGON ); // CLIPLAYER: only polygon
-            // clipAlg.addInputData( list );
-            // }
-            // allAlgs.add( clipAlg );
+            String clipName = "clip";
+            GeoAlgorithmWithData clipAlg = new GeoAlgorithmWithData(
+                                                                     Sextante.getAlgorithmFromCommandLineName( clipName ) );
+
+            // add all test data
+            LinkedList<ExampleData> clipLayerData = new LinkedList<ExampleData>();
+            clipLayerData.add( GeometryExampleData.GML_31_POINT );
+            clipLayerData.add( GeometryExampleData.GML_31_LINESTRING );
+            clipLayerData.add( GeometryExampleData.GML_31_POLYGON_2 );
+            clipLayerData.add( GeometryExampleData.GML_31_MULTIPOINT );
+            clipLayerData.add( GeometryExampleData.GML_31_MULTILINESTRING );
+            clipLayerData.add( GeometryExampleData.GML_31_MULTILPOLYGON );
+
+            for ( ExampleData data : clipLayerData ) {
+                LinkedList<ExampleData> list = new LinkedList<ExampleData>();
+                list.add( data ); // LAYER: all geometries
+                list.add( GeometryExampleData.GML_31_POLYGON ); // CLIPLAYER: only polygon
+                clipAlg.addInputData( list );
+            }
+            allAlgs.add( clipAlg );
 
             // ---------------------------------------------------------------------------------------------------------------------------
             // countpoints algorithm
