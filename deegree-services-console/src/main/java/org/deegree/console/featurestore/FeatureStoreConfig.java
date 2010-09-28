@@ -52,6 +52,7 @@ import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 
 /**
@@ -66,17 +67,18 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
 
     private static final long serialVersionUID = 6752472497206455251L;
 
-    public FeatureStoreConfig( String id, boolean active, boolean ignore, FeatureStoreConfigManager manager, FeatureStoreProvider provider ) {
+    public FeatureStoreConfig( String id, boolean active, boolean ignore, FeatureStoreConfigManager manager,
+                               FeatureStoreProvider provider ) {
         super( id, active, ignore, manager, provider.getConfigSchema(), provider.getConfigTemplate() );
     }
 
-    public boolean getSql () {
+    public boolean getSql() {
         if ( !isActive() ) {
             return false;
         }
         return FeatureStoreManager.get( getId() ) instanceof SQLFeatureStore;
     }
-    
+
     public String createTables() {
         if ( !isActive() ) {
             throw new RuntimeException();
@@ -111,14 +113,14 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
     public String getNumFtsTotal() {
         FeatureStore fs = FeatureStoreManager.get( getId() );
         ApplicationSchema schema = fs.getSchema();
-        int numFtsTotal = schema.getFeatureTypes().length;
+        int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         return "" + numFtsTotal;
     }
 
     public String getNumFtsAbstract() {
         FeatureStore fs = FeatureStoreManager.get( getId() );
         ApplicationSchema schema = fs.getSchema();
-        int numFtsTotal = schema.getFeatureTypes().length;
+        int numFtsTotal = schema.getFeatureTypes( null, false, true ).size();
         int numFtsConcrete = schema.getFeatureTypes( null, false, false ).size();
         return "" + ( numFtsTotal - numFtsConcrete );
     }
@@ -149,8 +151,37 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
         } );
 
         for ( FeatureType ft : fts ) {
-            appendFtInfo( ft, fs, sb, "" );
-            sb.append( "<br/>" );
+            if ( !( ft instanceof FeatureCollectionType ) ) {
+                appendFtInfo( ft, fs, sb, "" );
+                sb.append( "<br/>" );
+            }
+        }
+        return sb.toString();
+    }
+
+    public String getFcInfo()
+                            throws IOException {
+        StringBuffer sb = new StringBuffer();
+        FeatureStore fs = FeatureStoreManager.get( getId() );
+        ApplicationSchema schema = fs.getSchema();
+        FeatureType[] fts = schema.getRootFeatureTypes();
+
+        // sort the types by name
+        Arrays.sort( fts, new Comparator<FeatureType>() {
+            public int compare( FeatureType a, FeatureType b ) {
+                int order = a.getName().getNamespaceURI().compareTo( b.getName().getNamespaceURI() );
+                if ( order == 0 ) {
+                    order = a.getName().getLocalPart().compareTo( b.getName().getLocalPart() );
+                }
+                return order;
+            }
+        } );
+
+        for ( FeatureType ft : fts ) {
+            if ( ft instanceof FeatureCollectionType ) {
+                appendFtInfo( ft, fs, sb, "" );
+                sb.append( "<br/>" );
+            }
         }
         return sb.toString();
     }
@@ -158,7 +189,8 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
     private void appendFtInfo( FeatureType ft, FeatureStore store, StringBuffer sb, String indent )
                             throws IOException {
         if ( ft.isAbstract() ) {
-            sb.append( indent + "- <i>" + ft.getName().getLocalPart() + " (abstract)</i><br/>" );
+            sb.append( indent + "- <i>" + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart()
+                       + " (abstract)</i><br/>" );
         } else {
             Query query = new Query( ft.getName(), null, null, 0, -1, -1 );
             int numInstances = -1;
@@ -167,7 +199,8 @@ public class FeatureStoreConfig extends ManagedXMLConfig {
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
-            sb.append( indent + "- " + ft.getName().getLocalPart() + " (" + numInstances + " instances)<br/>" );
+            sb.append( indent + "- " + ft.getName().getPrefix() + ":" + ft.getName().getLocalPart() + " ("
+                       + numInstances + " instances)<br/>" );
         }
         FeatureType[] fts = ft.getSchema().getDirectSubtypes( ft );
         Arrays.sort( fts, new Comparator<FeatureType>() {
