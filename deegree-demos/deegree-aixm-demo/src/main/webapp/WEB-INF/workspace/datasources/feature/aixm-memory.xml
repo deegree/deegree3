@@ -1,7 +1,8 @@
 <MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="0.5.0" xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/0.5.0/feature/memory.xsd">
 
   <!-- Namespace bindings to be used (0...n) -->
-  <NamespaceHint namespaceURI="aixm" prefix="http://www.aixm.aero/schema/5.1"/>
+  <NamespaceHint prefix="aixm" namespaceURI="http://www.aixm.aero/schema/5.1"/>
+  <NamespaceHint prefix="message" namespaceURI="http://www.aixm.aero/schema/5.1/message"/>
 
   <!-- GML schema files / directory to be used (1...n)-->
   <GMLSchemaFileURL gmlVersion="GML_32">schemas/aixm/message/AIXM_BasicMessage.xsd</GMLSchemaFileURL>
