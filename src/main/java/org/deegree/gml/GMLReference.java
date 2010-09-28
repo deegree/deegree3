@@ -97,6 +97,11 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
         return object != null;
     }
 
+    // TODO can we get rid of this method?
+    public boolean isLocal() {
+        return uri.startsWith( "#" );
+    }
+
     /**
      * Sets the referenced object.
      * 
@@ -131,6 +136,9 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
     public String getId() {
         if ( object != null ) {
             return object.getId();
+        }
+        if ( isLocal() ) {
+            return uri.substring( 1 );
         }
         return getReferencedObject().getId();
     }

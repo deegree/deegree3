@@ -47,8 +47,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -675,7 +675,7 @@ public class GMLFeatureWriter {
 
         if ( subFeature == null ) {
             writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-        } else if ( !( subFeature instanceof FeatureReference ) || ( (FeatureReference) subFeature ).isResolved() ) {
+        } else if ( !( subFeature instanceof FeatureReference ) || ( (FeatureReference) subFeature ).isLocal() ) {
             // normal feature or local feature reference
             String subFid = subFeature.getId();
             if ( subFid == null ) {
