@@ -7,6 +7,6 @@
   <GMLSchemaFileURL gmlVersion="GML_32">schemas/aixm/message/AIXM_BasicMessage.xsd</GMLSchemaFileURL>
   
   <!-- GML datasets to load on startup (0...n)-->
-  <GMLFeatureCollectionFileURL gmlVersion="GML_32">data/baseline.xml</GMLFeatureCollectionFileURL>
+  <!-- GMLFeatureCollectionFileURL gmlVersion="GML_32">datasets/baseline.xml</GMLFeatureCollectionFileURL-->
   
 </MemoryFeatureStore>

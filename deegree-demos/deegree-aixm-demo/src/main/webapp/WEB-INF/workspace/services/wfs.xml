@@ -9,6 +9,6 @@
     </SupportedVersions>
     <EnableTransactions>true</EnableTransactions>
     <EnableStreaming>false</EnableStreaming>
-    <QuerySRS>EPSG:4258</QuerySRS>
+    <QuerySRS>urn:ogc:def:crs:EPSG:4326</QuerySRS>
   </PublishedInformation>
 </deegreeWFS>
