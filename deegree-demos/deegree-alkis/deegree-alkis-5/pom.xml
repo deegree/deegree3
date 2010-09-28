@@ -11,6 +11,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
   </properties>
+
+  <scm>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-demos/deegree-alkis/deegre-alkis-5</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/deegree-demos/deegree-alkis/deegree-alkis-5</url>
+  </scm>
+
   <build>
     <plugins>
       <plugin>
@@ -62,6 +68,7 @@
       </plugin>
     </plugins>
   </build>
+
   <repositories>
     <repository>
       <id>deegree-repo</id>
@@ -71,6 +78,18 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>deegree-releases</id>
+      <url>http://artefacts.deegree.org/libs-releases-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>deegree-snapshots</id>
+      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
@@ -87,4 +106,5 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
 </project>
