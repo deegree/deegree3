@@ -86,13 +86,13 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private final CRS storageCRS;
 
-    StoredFeatures storedFeatures;
-
     private MemoryFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
 
     DefaultLockManager lockManager;
+
+    StoredFeatures storedFeatures;
 
     /**
      * Creates a new {@link MemoryFeatureStore} for the given {@link ApplicationSchema}.
@@ -144,12 +144,12 @@ public class MemoryFeatureStore implements FeatureStore {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
+        // nothing to do
     }
 
     @Override
     public void init() {
-        // TODO Auto-generated method stub
+        // nothing to do
     }
 
     @Override
@@ -238,8 +238,7 @@ public class MemoryFeatureStore implements FeatureStore {
             }
         }
 
-        StoredFeatures sf = new StoredFeatures( schema, storageCRS, storedFeatures );
-        this.activeTransaction = new MemoryFeatureStoreTransaction( this, sf );
+        this.activeTransaction = new MemoryFeatureStoreTransaction( this );
         this.transactionHolder = Thread.currentThread();
         return this.activeTransaction;
     }
