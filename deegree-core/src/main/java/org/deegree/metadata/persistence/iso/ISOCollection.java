@@ -51,11 +51,11 @@ import org.deegree.metadata.persistence.MetadataCollection;
  * 
  * @version $Revision$, $Date$
  */
-public class ISOColleciton implements MetadataCollection {
+public class ISOCollection implements MetadataCollection {
 
     List<MetadataRecord> memberList = new ArrayList<MetadataRecord>();
 
-    public ISOColleciton() {
+    public ISOCollection() {
 
     }
 

@@ -117,7 +117,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                             throws MetadataStoreException {
         ExecuteStatements execStm;
         List<String> identifierList = new ArrayList<String>();
-        for ( OMElement element : insert.getElement() ) {
+        for ( OMElement element : insert.getElements() ) {
             QName localName = element.getQName();
 
             try {

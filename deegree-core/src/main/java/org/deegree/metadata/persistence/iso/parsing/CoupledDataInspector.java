@@ -164,7 +164,8 @@ public class CoupledDataInspector {
             throw new MetadataStoreException( "Error while proving the ID for the coupled resources: {}"
                                               + e.getMessage() );
         } finally {
-            close( rs, stm, conn, LOG );
+            close( rs );
+            close( stm );
         }
 
         return gotOneDataset;

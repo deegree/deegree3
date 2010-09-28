@@ -87,18 +87,13 @@ public interface MetadataStore {
      * 
      * Exports the XML for the requested records.
      * 
-     * @param writer
-     *            writer to export to, must not be <code>null</code>
      * @param typeName
      *            of a specific requested record profile
-     * @param outputSchema
-     *            that should present in the response. If there is a DC recordStore requested and the outputSchema is a
-     *            ISO schema then there should be presented the ISO representation of the record.
-     * @param recordStoreOptions
-     *            {@link RecordStoreOptions}
+     * @param query
+     *            {@link MetadataQuery}
      * @throws MetadataStoreException
      */
-    public MetadataResultSet getRecords( QName typeName, URI outputSchema, RecordStoreOptions recordStoreOptions )
+    public MetadataResultSet getRecords( QName typeName, MetadataQuery query )
                             throws MetadataStoreException;
 
     /**
@@ -114,7 +109,7 @@ public interface MetadataStore {
      *            {@link ReturnableElement}
      * @throws MetadataStoreException
      */
-    public MetadataResultSet getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+    public MetadataResultSet getRecordsById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
                             throws MetadataStoreException;
 
     /**

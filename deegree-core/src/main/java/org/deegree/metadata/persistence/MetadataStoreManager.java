@@ -41,21 +41,19 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ServiceLoader;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.metadata.persistence.iso.ISOMetadataStore;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for creating {@link MetadataStore} instances from XML elements (JAXB objects) and for retrieving global
- * {@link MetadataStore} instances by id.
+ * Entry point for creating {@link MetadataStore} providers and instances.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
@@ -66,9 +64,39 @@ public class MetadataStoreManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( MetadataStoreManager.class );
 
+    private static ServiceLoader<MetadataStoreProvider> providerLoader = ServiceLoader.load( MetadataStoreProvider.class );
+
+    private static Map<String, MetadataStoreProvider> nsToProvider = null;
+
     private static Map<String, MetadataStore> idToRs = Collections.synchronizedMap( new HashMap<String, MetadataStore>() );
 
     private MetadataStoreManager() {
+    }
+
+    /**
+     * Returns all available {@link MetadataStoreManager} providers.
+     * 
+     * @return all available providers, keys: config namespace, value: provider instance
+     */
+    public static synchronized Map<String, MetadataStoreProvider> getProviders() {
+        if ( nsToProvider == null ) {
+            nsToProvider = new HashMap<String, MetadataStoreProvider>();
+            try {
+                for ( MetadataStoreProvider provider : providerLoader ) {
+                    LOG.debug( "Metadata store provider: " + provider + ", namespace: " + provider.getConfigNamespace() );
+                    if ( nsToProvider.containsKey( provider.getConfigNamespace() ) ) {
+                        LOG.error( "Multiple metadata store providers for config namespace: '"
+                                   + provider.getConfigNamespace() + "' on classpath -- omitting provider '"
+                                   + provider.getClass().getName() + "'." );
+                        continue;
+                    }
+                    nsToProvider.put( provider.getConfigNamespace(), provider );
+                }
+            } catch ( Exception e ) {
+                LOG.error( e.getMessage(), e );
+            }
+        }
+        return nsToProvider;
     }
 
     /**
@@ -103,16 +131,25 @@ public class MetadataStoreManager {
      */
     public static synchronized MetadataStore create( URL configURL )
                             throws MetadataStoreException {
-
-        ISOMetadataStoreConfig config = null;
+        String namespace = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb" );
-            Unmarshaller u = jc.createUnmarshaller();
-            config = (ISOMetadataStoreConfig) u.unmarshal( configURL );
-        } catch ( JAXBException e ) {
-            e.printStackTrace();
+            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
+            StAXParsingHelper.nextElement( xmlReader );
+            namespace = xmlReader.getNamespaceURI();
+        } catch ( Exception e ) {
+            String msg = "Error determining configuration namespace for file '" + configURL + "'";
+            LOG.error( msg );
+            throw new MetadataStoreException( msg );
         }
-        return new ISOMetadataStore( config );
+        LOG.debug( "Config namespace: '" + namespace + "'" );
+        MetadataStoreProvider provider = getProviders().get( namespace );
+        if ( provider == null ) {
+            String msg = "No metadata store provider for namespace '" + namespace + "' (file: '" + configURL
+                         + "') registered. Skipping it.";
+            LOG.error( msg );
+            throw new MetadataStoreException( msg );
+        }
+        return provider.getMetadataStore( configURL );
     }
 
     private static void registerAndInit( MetadataStore rs, String id )

@@ -57,8 +57,8 @@ import org.deegree.filter.sql.PropertyNameMapping;
 import org.deegree.filter.sql.expression.SQLLiteral;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.persistence.GenericDatabaseExecution;
+import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
@@ -235,7 +235,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             }
 
         } catch ( SQLException e ) {
-            JDBCUtils.close( rs, preparedStatement, connection, LOG );
+            // JDBCUtils.close( rs, preparedStatement, connection, LOG );
 
             LOG.debug( "Error while generating the SELECT statement: {}", e.getMessage() );
             throw new MetadataStoreException( "Error while generating the SELECT statement: {}", e );
@@ -536,7 +536,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
     }
 
     @Override
-    public PreparedStatement executeGetRecords( String formatType, RecordStoreOptions recordStoreOptions,
+    public PreparedStatement executeGetRecords( String formatType, MetadataQuery recordStoreOptions,
                                                 int typeNameFormatNumber, boolean setCount,
                                                 PostGISWhereBuilder builder, Connection conn )
                             throws MetadataStoreException {

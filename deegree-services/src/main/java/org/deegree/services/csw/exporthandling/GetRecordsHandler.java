@@ -67,10 +67,10 @@ import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataResultType;
 import org.deegree.metadata.persistence.MetadataCollection;
+import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
@@ -266,15 +266,15 @@ public class GetRecordsHandler {
             // Question if there is the specified record available
             for ( QName typeName : getRec.getTypeNames() ) {
                 MetadataStore rec = determineMetadataStore( typeName );
-                RecordStoreOptions gdds = new RecordStoreOptions( getRec.getConstraint(), getRec.getOutputSchema(),
-                                                                  getRec.getSortBy(), getRec.getResultType(),
-                                                                  getRec.getElementSetName(), getRec.getMaxRecords(),
-                                                                  getRec.getStartPosition() );
+                MetadataQuery gdds = new MetadataQuery( getRec.getConstraint(), getRec.getOutputSchema(),
+                                                        getRec.getSortBy(), getRec.getResultType(),
+                                                        getRec.getElementSetName(), getRec.getMaxRecords(),
+                                                        getRec.getStartPosition() );
 
                 // commits the record to the getRecords operation
 
                 try {
-                    storeSet = rec.getRecords( typeName, getRec.getOutputSchema(), gdds );
+                    storeSet = rec.getRecords( typeName, gdds );
                 } catch ( MetadataStoreException e ) {
                     throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
                 }

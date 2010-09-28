@@ -44,13 +44,14 @@ import static org.deegree.protocol.csw.CSWConstants.OutputSchema.DC;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
@@ -70,6 +71,7 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.transaction.Transaction;
+import org.deegree.services.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +86,8 @@ import org.slf4j.LoggerFactory;
 public class TransactionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
+
+    private final Map<MetadataStore, MetadataStoreTransaction> acquiredTransactions = new HashMap<MetadataStore, MetadataStoreTransaction>();
 
     private CSWService service;
 
@@ -199,9 +203,12 @@ public class TransactionHandler {
         if ( transaction.getRequestId() != null ) {
             writer.writeAttribute( "requestId", transaction.getRequestId() );
         }
+
         MetadataResultSet rs = null;
+
         try {
             for ( TransactionOperation transact : transaction.getOperations() ) {
+
                 switch ( transact.getType() ) {
 
                 case INSERT:
@@ -221,6 +228,7 @@ public class TransactionHandler {
                     break;
 
                 }
+
             }
 
             if ( insertedMetadata != null ) {
@@ -228,7 +236,7 @@ public class TransactionHandler {
             }
 
         } catch ( Exception e ) {
-            // throw new MetadataStoreException( e.getMessage() );
+            throw new MetadataStoreException( e.getMessage() );
         }
 
         writer.writeStartElement( CSW_202_NS, "totalInserted" );
@@ -262,21 +270,19 @@ public class TransactionHandler {
     }
 
     private int doDelete( DeleteTransaction transact )
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, OWSException {
         DeleteTransaction delete = transact;
-
-        int i = 0;
         MetadataStoreTransaction mt = null;
+        int i = 0;
         try {
             for ( MetadataStore rec : service.getMetadataStore() ) {
-                mt = rec.acquireTransaction();
+                mt = acquireTransaction( rec );
                 i = mt.performDelete( delete );
                 mt.commit();
                 LOG.info( "Delete done!" );
             }
         } catch ( MetadataStoreException e ) {
             LOG.debug( e.getMessage() );
-            // insertedMetadata.clear();
             mt.rollback();
             throw new MetadataStoreException( e.getMessage() );
         }
@@ -286,7 +292,7 @@ public class TransactionHandler {
     }
 
     private int doUpdate( UpdateTransaction transact )
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, OWSException {
         UpdateTransaction update = transact;
         int i = 0;
         MetadataStoreTransaction mt = null;
@@ -307,7 +313,7 @@ public class TransactionHandler {
 
             try {
                 for ( MetadataStore rec : service.getMetadataStore() ) {
-                    mt = rec.acquireTransaction();
+                    mt = acquireTransaction( rec );
                     i = mt.performUpdate( update );
                     mt.commit();
                     LOG.info( "Update done!" );
@@ -324,35 +330,35 @@ public class TransactionHandler {
     }
 
     private MetadataResultSet doInsert( InsertTransaction transact )
-                            throws MetadataStoreException {
+                            throws MetadataStoreException, OWSException {
         InsertTransaction insert = (InsertTransaction) transact;
         insertedMetadata = new ArrayList<String>();
+        MetadataStoreTransaction mt = null;
         MetadataStore rec = null;
-        for ( OMElement element : insert.getElement() ) {
 
-            MetadataStoreTransaction mt = null;
-            String uri = element.getNamespace().getNamespaceURI();
-            String localName = element.getLocalName();
-            String prefix = element.getNamespace().getPrefix();
-            rec = determineMetadataStore( uri, localName, prefix );
-            try {
+        // TODO the first element determines the metadataStore
+        String uri = insert.getElements().get( 0 ).getNamespace().getNamespaceURI();
+        String localName = insert.getElements().get( 0 ).getLocalName();
+        String prefix = insert.getElements().get( 0 ).getNamespace().getPrefix();
+        rec = determineMetadataStore( uri, localName, prefix );
+        mt = acquireTransaction( rec );
 
-                mt = rec.acquireTransaction();
-                insertedMetadata = mt.performInsert( insert );
-                mt.commit();
-                LOG.info( "Insert done!" );
-            } catch ( MetadataStoreException e ) {
-                LOG.debug( e.getMessage() );
-                insertedMetadata.clear();
-                mt.rollback();
-                throw new MetadataStoreException( e.getMessage() );
-            }
+        try {
 
+            insertedMetadata = mt.performInsert( insert );
+            LOG.debug( "inserted metadata: " + insertedMetadata );
+            mt.commit();
+            LOG.info( "Insert done!" );
+        } catch ( MetadataStoreException e ) {
+            LOG.debug( e.getMessage() );
+            insertedMetadata.clear();
+            mt.rollback();
+            throw new MetadataStoreException( e.getMessage() );
         }
 
         LOG.debug( "Performing insert-transaction output..." );
 
-        return rec.getRecordById( insertedMetadata, OutputSchema.determineOutputSchema( DC ), ReturnableElement.brief );
+        return rec.getRecordsById( insertedMetadata, OutputSchema.determineOutputSchema( DC ), ReturnableElement.brief );
     }
 
     private MetadataStore determineMetadataStore( String uri, String localName, String prefix )
@@ -372,6 +378,23 @@ public class TransactionHandler {
             throw new MetadataStoreException( e.getMessage() );
         }
         return rec;
+    }
+
+    private MetadataStoreTransaction acquireTransaction( MetadataStore mds )
+                            throws OWSException {
+
+        MetadataStoreTransaction ta = acquiredTransactions.get( mds );
+        if ( ta == null ) {
+            try {
+                LOG.debug( "Acquiring transaction for metadata store " + mds );
+                ta = mds.acquireTransaction();
+                acquiredTransactions.put( mds, ta );
+            } catch ( MetadataStoreException e ) {
+                throw new OWSException( Messages.get( "CSW_CANNOT_ACQUIRE_TA", e.getMessage() ),
+                                        OWSException.NO_APPLICABLE_CODE );
+            }
+        }
+        return ta;
     }
 
     /**

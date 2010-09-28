@@ -166,7 +166,7 @@ public class GetRecordByIdHandler {
         if ( service.getMetadataStore() != null ) {
             try {
                 for ( MetadataStore rec : service.getMetadataStore() ) {
-                    resultSet = rec.getRecordById( getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
+                    resultSet = rec.getRecordsById( getRecBI.getRequestedIds(), getRecBI.getOutputSchema(),
                                                    getRecBI.getElementSetName() );
                 }
             } catch ( MetadataStoreException e ) {

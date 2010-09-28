@@ -52,24 +52,28 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
  * 
  * @version $Revision$, $Date$
  */
-public class RecordStoreOptions {
+public class MetadataQuery {
 
+    // ?
     private final ResultType resultType;
 
+    // ?
     private final ReturnableElement setOfReturnableElements;
 
+    // ?
     private final int maxRecords;
 
     private final int startPosition;
 
     private final Filter filter;
 
+    // ?
     private final URI outputSchema;
 
     private final SortProperty[] sorting;
 
     /**
-     * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared.
+     * Creates a new {@link MetadataQuery} instance with all attributes that can be declared.
      * 
      * @param filter
      *            the parsed filter expression
@@ -82,8 +86,8 @@ public class RecordStoreOptions {
      * @param startPosition
      *            at which record position should start the response}
      */
-    public RecordStoreOptions( Filter filter, URI outputSchema, SortProperty[] sorting, ResultType resultType,
-                               ReturnableElement setOfReturnableElements, int maxRecords, int startPosition ) {
+    public MetadataQuery( Filter filter, URI outputSchema, SortProperty[] sorting, ResultType resultType,
+                          ReturnableElement setOfReturnableElements, int maxRecords, int startPosition ) {
 
         this.filter = filter;
         this.outputSchema = outputSchema;
