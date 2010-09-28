@@ -400,7 +400,7 @@ public class VectorLayerAdapter {
         }
         if ( it.hasNext() ) {
 
-            Geometry geom = createGeometry( f.getGeometry() );
+            Geometry geom = createGeometry( f.getGeometry(), l.getCRS().toString() );
 
             if ( geom != null ) {
                 GenericProperty gp = new GenericProperty( it.next(), geom );
@@ -438,6 +438,10 @@ public class VectorLayerAdapter {
         if ( l.getShapesCount() == 1 ) { // only one shape in layer
             gJTS = it.next().getGeometry();
 
+            // remove multigeometries with one geometry
+            if ( gJTS.getNumGeometries() == 1 )
+                gJTS = gJTS.getGeometryN( 0 );
+
         } else { // more shapes in layer
 
             com.vividsolutions.jts.geom.GeometryFactory gFactoryJTS = new com.vividsolutions.jts.geom.GeometryFactory(
@@ -457,7 +461,7 @@ public class VectorLayerAdapter {
         }
 
         // create a deegree geometry
-        Geometry g = createGeometry( gJTS );
+        Geometry g = createGeometry( gJTS, l.getCRS().toString() );
 
         return g;
     }
@@ -548,11 +552,12 @@ public class VectorLayerAdapter {
      *            {@link com.vividsolutions.jts.geom.Geometry}
      * @return {@link Geometry} or <code>null</code> if the given geometry is an empty collection.
      */
-    private static Geometry createGeometry( com.vividsolutions.jts.geom.Geometry gJTS ) {
+    private static Geometry createGeometry( com.vividsolutions.jts.geom.Geometry gJTS, String crsName ) {
 
         // default deegree geometry to create a deegree geometry from JTS geometry
         GeometryFactory gFactory = new GeometryFactory();
-        AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( null, 0, 0, CRS.EPSG_4326 );
+        AbstractDefaultGeometry gDefault = (AbstractDefaultGeometry) gFactory.createPoint( null, 0, 0,
+                                                                                           new CRS( crsName ) );
 
         Geometry g = gDefault.createFromJTS( gJTS );
 
