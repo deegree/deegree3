@@ -118,4 +118,10 @@ public class UpdateTransaction extends TransactionOperation {
         return typeName;
     }
 
+    // @Override
+    // public List<OMElement> getElements() {
+    // // TODO Auto-generated method stub
+    // return null;
+    // }
+
 }

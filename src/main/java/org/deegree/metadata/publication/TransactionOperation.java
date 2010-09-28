@@ -74,4 +74,6 @@ public abstract class TransactionOperation {
         return handle;
     }
 
+    // public abstract List<OMElement> getElements();
+
 }

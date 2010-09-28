@@ -58,13 +58,13 @@ public class InsertTransaction extends TransactionOperation {
 
     /**
      * 
-     * @param transChildElementInsertAPISORecordList
+     * @param insertElement
      * @param typeName
      * @param handle
      */
-    public InsertTransaction( List<OMElement> transChildElementInsertAPISORecordList, QName typeName, String handle ) {
+    public InsertTransaction( List<OMElement> insertElement, QName typeName, String handle ) {
         super( handle );
-        this.element = transChildElementInsertAPISORecordList;
+        this.element = insertElement;
         this.typeName = typeName;
 
     }
@@ -80,10 +80,8 @@ public class InsertTransaction extends TransactionOperation {
         return TransactionType.INSERT;
     }
 
-    /**
-     * @return the element
-     */
-    public List<OMElement> getElement() {
+    // @Override
+    public List<OMElement> getElements() {
         return element;
     }
 

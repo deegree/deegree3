@@ -77,11 +77,11 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataResultType;
 import org.deegree.metadata.persistence.MetadataCollection;
+import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.RecordStoreOptions;
 import org.deegree.metadata.persistence.iso.parsing.ParsingUtils;
 import org.deegree.metadata.persistence.iso.resulttypes.Hits;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
@@ -289,7 +289,7 @@ public class ISOMetadataStore implements MetadataStore {
      * javax.xml.namespace.QName)
      */
     @Override
-    public MetadataResultSet getRecords( QName typeName, URI outputSchema, RecordStoreOptions recordStoreOptions )
+    public MetadataResultSet getRecords( QName typeName, MetadataQuery query )
                             throws MetadataStoreException {
 
         PostGISMappingsISODC mapping = new PostGISMappingsISODC();
@@ -298,12 +298,12 @@ public class ISOMetadataStore implements MetadataStore {
 
         MetadataResultSet result = null;
         MetadataResultType resultType = null;
-        MetadataCollection col = new ISOColleciton();
+        MetadataCollection col = new ISOCollection();
 
         try {
             conn = ConnectionManager.getConnection( connectionId );
-            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) recordStoreOptions.getFilter(),
-                                               recordStoreOptions.getSorting(), useLegacyPredicates );
+            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) query.getFilter(), query.getSorting(),
+                                               useLegacyPredicates );
 
             int profileFormatNumberOutputSchema = 0;
             int typeNameFormatNumber = 0;
@@ -313,22 +313,19 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
             for ( QName qName : typeNames.keySet() ) {
-                if ( qName.getNamespaceURI().equals( outputSchema.toString() ) ) {
+                if ( qName.getNamespaceURI().equals( query.getOutputSchema().toString() ) ) {
                     profileFormatNumberOutputSchema = typeNames.get( qName );
                 }
             }
 
-            switch ( recordStoreOptions.getResultType() ) {
+            switch ( query.getResultType() ) {
             case results:
 
-                result = doResultsOnGetRecord( typeName, profileFormatNumberOutputSchema, recordStoreOptions, builder,
-                                               conn );
+                result = doResultsOnGetRecord( typeName, profileFormatNumberOutputSchema, query, builder, conn );
                 break;
             case hits:
-                resultType = doHitsOnGetRecord(
-                                                typeNameFormatNumber,
-                                                recordStoreOptions,
-                                                formatTypeInISORecordStore.get( recordStoreOptions.getSetOfReturnableElements() ),
+                resultType = doHitsOnGetRecord( typeNameFormatNumber, query,
+                                                formatTypeInISORecordStore.get( query.getSetOfReturnableElements() ),
                                                 ResultType.hits, builder, conn, new ExecuteStatements() );
                 result = new ISOMetadataResultSet( col, resultType );
                 break;
@@ -364,9 +361,9 @@ public class ISOMetadataStore implements MetadataStore {
      *            - the JDBCConnection
      * @throws MetadataStoreException
      */
-    private MetadataResultType doHitsOnGetRecord( int typeNameFormatNumber, RecordStoreOptions recOpt,
-                                                  String formatType, ResultType resultType,
-                                                  PostGISWhereBuilder builder, Connection conn, ExecuteStatements exe )
+    private MetadataResultType doHitsOnGetRecord( int typeNameFormatNumber, MetadataQuery recOpt, String formatType,
+                                                  ResultType resultType, PostGISWhereBuilder builder, Connection conn,
+                                                  ExecuteStatements exe )
                             throws MetadataStoreException {
         LOG.info( "Performing 'hits': " );
         ResultSet rs = null;
@@ -433,7 +430,7 @@ public class ISOMetadataStore implements MetadataStore {
      * @throws IOException
      */
     private MetadataResultSet doResultsOnGetRecord( QName typeName, int profileFormatNumberOutputSchema,
-                                                    RecordStoreOptions recordStoreOptions, PostGISWhereBuilder builder,
+                                                    MetadataQuery recordStoreOptions, PostGISWhereBuilder builder,
                                                     Connection conn )
                             throws MetadataStoreException {
         int typeNameFormatNumber = 0;
@@ -442,7 +439,7 @@ public class ISOMetadataStore implements MetadataStore {
         }
         MetadataResultSet result = null;
         MetadataResultType type = null;
-        MetadataCollection col = new ISOColleciton();
+        MetadataCollection col = new ISOCollection();
         ResultSet rs = null;
         ResultSet rsOut = null;
         PreparedStatement preparedStatement = null;
@@ -565,7 +562,7 @@ public class ISOMetadataStore implements MetadataStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public MetadataResultSet getRecordById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
+    public MetadataResultSet getRecordsById( List<String> idList, URI outputSchema, ReturnableElement elementSetName )
                             throws MetadataStoreException {
 
         int profileFormatNumberOutputSchema = 0;
@@ -574,7 +571,7 @@ public class ISOMetadataStore implements MetadataStore {
         Connection conn = null;
         PreparedStatement stmt = null;
 
-        MetadataCollection col = new ISOColleciton();
+        MetadataCollection col = new ISOCollection();
         try {
 
             conn = ConnectionManager.getConnection( connectionId );
