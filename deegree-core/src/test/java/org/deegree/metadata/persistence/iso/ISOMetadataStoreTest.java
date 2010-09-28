@@ -86,7 +86,6 @@ public class ISOMetadataStoreTest {
     @Before
     public void setUp()
                             throws Exception {
-
         String jdbcURL = CoreTstProperties.getProperty( "iso_store_url" );
         String jdbcUser = CoreTstProperties.getProperty( "iso_store_user" );
         String jdbcPass = CoreTstProperties.getProperty( "iso_store_pass" );
@@ -104,7 +103,7 @@ public class ISOMetadataStoreTest {
     }
 
     private void setUpTables( Connection conn )
-                            throws SQLException, UnsupportedEncodingException, IOException {
+                            throws SQLException, UnsupportedEncodingException, IOException, MetadataStoreException {
 
         Statement stmt = null;
         try {
@@ -115,6 +114,7 @@ public class ISOMetadataStoreTest {
             for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( configURL ) ) {
                 stmt.execute( sql );
             }
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( configURL );
         } finally {
             if ( stmt != null ) {
                 stmt.close();
@@ -142,9 +142,7 @@ public class ISOMetadataStoreTest {
         List<String> ids = ta.performInsert( insert );
         ta.commit();
 
-        for ( String string : ids ) {
-            System.out.println( string );
-        }
+        // store.getRecordsById( ids, outputSchema, elementSetName )
 
         // TODO test various queries
 
