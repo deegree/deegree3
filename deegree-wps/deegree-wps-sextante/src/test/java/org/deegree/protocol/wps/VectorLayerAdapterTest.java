@@ -202,8 +202,8 @@ public class VectorLayerAdapterTest {
 
         LinkedList<FeatureCollection> colls = new LinkedList<FeatureCollection>();
 
-        LinkedList<GeometryExampleData> data = GeometryExampleData.getAllFeatureCollections();
-        for ( GeometryExampleData dataFc : data ) {
+        LinkedList<VectorExampleData> data = VectorExampleData.getAllFeatureCollections();
+        for ( VectorExampleData dataFc : data ) {
             // read file
             GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataFc.getGMLVersion(),
                                                                                      dataFc.getURL() );
@@ -227,8 +227,8 @@ public class VectorLayerAdapterTest {
 
         LinkedList<Feature> features = new LinkedList<Feature>();
 
-        LinkedList<GeometryExampleData> data = GeometryExampleData.getAllFeatureCollections();
-        for ( GeometryExampleData dataFc : data ) {
+        LinkedList<VectorExampleData> data = VectorExampleData.getAllFeatureCollections();
+        for ( VectorExampleData dataFc : data ) {
 
             // read file
             GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataFc.getGMLVersion(),
@@ -255,8 +255,8 @@ public class VectorLayerAdapterTest {
 
         LinkedList<Geometry> geoms = new LinkedList<Geometry>();
 
-        LinkedList<GeometryExampleData> data = GeometryExampleData.getAllGeometryies();
-        for ( GeometryExampleData dataGeom : data ) {
+        LinkedList<VectorExampleData> data = VectorExampleData.getAllGeometryies();
+        for ( VectorExampleData dataGeom : data ) {
             // read file
             GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( dataGeom.getGMLVersion(),
                                                                                      dataGeom.getURL() );

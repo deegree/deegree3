@@ -42,7 +42,7 @@ import org.deegree.services.wps.provider.sextante.SextanteWPSProcess;
 import es.unex.sextante.core.GeoAlgorithm;
 
 /**
- * This class wraps a {@link GeoAlgorithm} with his test data.
+ * This class wraps a {@link GeoAlgorithm} with its test data.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $
@@ -57,6 +57,9 @@ public class GeoAlgorithmWithData {
     // test data for the algorithm
     private final LinkedList<LinkedList<ExampleData>> data = new LinkedList<LinkedList<ExampleData>>();
 
+    // output formats for the algorithm
+    private final LinkedList<LinkedList<OutputFormat>> outputFormat = new LinkedList<LinkedList<OutputFormat>>();
+
     /**
      * Creates a {@link GeoAlgorithmWithData} without test data.
      * 
@@ -64,7 +67,7 @@ public class GeoAlgorithmWithData {
      *            - SEXTANTE {@link GeoAlgorithm}.
      */
     public GeoAlgorithmWithData( GeoAlgorithm alg ) {
-        this( alg, null );
+        this( alg, null, null );
     }
 
     /**
@@ -73,47 +76,87 @@ public class GeoAlgorithmWithData {
      * @param alg
      *            SEXTANTE {@link GeoAlgorithm}.
      * @param data
-     *            A list of a list of test data. If the algorithm need only one input parameter, you need only one list
-     *            of test data in the list. If the algorithm need more than one input parameter, you need for every
-     *            input parameter a list of test data in the list.
+     *            A list of a list of {@link ExampleData}. If the algorithm need only one input parameter, you need only
+     *            one element of {@link ExampleData} in the list. If the algorithm need more than one input parameter,
+     *            you need for every input parameter a element of {@link ExampleData} in the list. The sequence of the
+     *            example data must be identical to the sequence of the input parameters. For more than one execution
+     *            you need a list of these lists.
      */
-    public GeoAlgorithmWithData( GeoAlgorithm alg, LinkedList<LinkedList<ExampleData>> data ) {
+    public GeoAlgorithmWithData( GeoAlgorithm alg, LinkedList<LinkedList<ExampleData>> data,
+                                 LinkedList<LinkedList<OutputFormat>> format ) {
         this.alg = alg;
 
         if ( data != null )
             this.data.addAll( data );
 
+        if ( format != null )
+            this.outputFormat.addAll( format );
     }
 
     /**
-     * Adds a list of test data for one input parameter.
+     * Adds a list of test data for one execution.
      * 
      * @param data
-     *            List of test data for one input parameter.
+     *            List of test data for one execution.
      */
     public void addInputData( LinkedList<ExampleData> data ) {
         this.data.add( data );
     }
 
     /**
-     * Adds lists of test data for more than one input parameters.
+     * Adds lists of test data for more than one execution.
      * 
      * @param data
-     *            A list of a list of test data. If the algorithm need only one input parameter, you need only one list
-     *            of test data in the list. If the algorithm need more than one input parameter, you need for every
-     *            input parameter a list of test data in the list.
+     *            A list of a list of {@link ExampleData}. If the algorithm need only one input parameter, you need only
+     *            one element of {@link ExampleData} in the list. If the algorithm need more than one input parameter,
+     *            you need for every input parameter a element of {@link ExampleData} in the list. The sequence of the
+     *            example data must be identical to the sequence of the input parameters. For more than one execution
+     *            you need a list of these lists.
      */
     public void addAllInputData( LinkedList<LinkedList<ExampleData>> data ) {
         this.data.addAll( data );
     }
 
     /**
+     * Adds a list of output formats for one execution.
+     * 
+     * @param format
+     *            List of output formats for one execution.
+     */
+    public void addOutputFormats( LinkedList<OutputFormat> format ) {
+        this.outputFormat.add( format );
+    }
+
+    /**
+     * Adds lists of output formats for more than one execution.
+     * 
+     * @param format
+     *            A list of a list of {@link OutputFormat}. If the algorithm need only one output parameter, you need
+     *            only one element of {@link OutputFormat} in the list. If the algorithm need more than one output
+     *            parameter, you need for every output parameter a element of {@link OutputFormat} in the list. The
+     *            sequence of the example data must be identical to the sequence of the output parameters. For more than
+     *            one execution you need a list of these lists.
+     */
+    public void addAllOutputFormats( LinkedList<LinkedList<OutputFormat>> format ) {
+        this.outputFormat.addAll( format );
+    }
+
+    /**
      * Returns all test data of this algorithm.
      * 
-     * @return All test data. Every list of {@link GeometryExampleData} contains test data for one input parameter.
+     * @return All test data. Every list of {@link VectorExampleData} contains test data for one execution.
      */
     public LinkedList<LinkedList<ExampleData>> getAllInputData() {
         return data;
+    }
+
+    /**
+     * Returns all output formats of this algorithm.
+     * 
+     * @return All output formats. Every list of {@link OutputFormat} contains output formats for one execution.
+     */
+    public LinkedList<LinkedList<OutputFormat>> getAllOutputFormats() {
+        return outputFormat;
     }
 
     /**

@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import org.deegree.gml.GMLVersion;
+import org.deegree.protocol.wps.OutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GMLSchema {
+public class GMLSchema implements OutputFormat {
 
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( GMLSchema.class );
@@ -148,7 +149,10 @@ public class GMLSchema {
 
         Set<String> keys = ALL_SCHEMAS.keySet();
         for ( String key : keys ) {
-            schemas.add( ALL_SCHEMAS.get( key ) );
+
+            if ( key.equals( GML_31_GEOMETRY_SCHEMA.getSchemaURL() )
+                 || key.equals( GML_31_FEATURE_COLLECTION_SCHEMA.getSchemaURL() ) )
+                schemas.add( ALL_SCHEMAS.get( key ) );
         }
 
         return schemas;
