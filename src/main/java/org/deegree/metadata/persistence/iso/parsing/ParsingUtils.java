@@ -127,7 +127,7 @@ public class ParsingUtils {
             LOG.debug( "Error while generating a new UUID for the metadata: {}", e.getMessage() );
             throw new MetadataStoreException( "Error while generating a new UUID for the metadata: {}", e );
         } finally {
-            close( rs, stm, conn, LOG );
+            close( rs, stm, null, LOG );
         }
         return uuid;
 

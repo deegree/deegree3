@@ -37,7 +37,6 @@ package org.deegree.metadata.persistence;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -72,16 +71,6 @@ public interface MetadataStore {
      * Called by the container to indicate that this {@link MetadataStore} instance is being taken out of service.
      */
     public void destroy();
-
-    // /**
-    // * Exports the XML schema for the associated metadata format.
-    // *
-    // * @param writer
-    // * writer to export to, must not be <code>null</code>
-    // * @param typeName
-    // * specifies which record profile should be returned in the response.
-    // */
-    // public void describeRecord( XMLStreamWriter writer, QName typeName );
 
     /**
      * 
@@ -123,14 +112,5 @@ public interface MetadataStore {
      */
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException;
-
-    /**
-     * Returns the typeNames that are known in the backend. <br>
-     * i.e. the ISORecordStore holds two profiles, the DUBLIN CORE and the ISO profile.
-     * 
-     * @return a map from a QName to an int value
-     * 
-     */
-    public Map<QName, Integer> getTypeNames();
 
 }
