@@ -44,15 +44,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
+import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIParameter;
 import javax.faces.component.UISelectItem;
+import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlMessage;
@@ -69,7 +74,9 @@ import org.deegree.client.core.component.HtmlInputBBox;
 import org.deegree.client.core.component.HtmlInputFile;
 import org.deegree.client.core.model.BBox;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.protocol.ows.exception.OWSException;
+import org.deegree.protocol.ows.metadata.ServiceIdentification;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.input.type.BBoxInputType;
 import org.deegree.protocol.wps.client.input.type.ComplexInputType;
@@ -103,6 +110,16 @@ public class ClientBean implements Serializable {
     private CodeType process;
 
     private Process selectedProcess;
+
+    private String information;
+
+    private final String WPS_INFOKEY = "WPS";
+
+    private final String PROCESS_INFOKEY = "PROCESS";
+
+    private final String IN_INFOKEY = "INPUT";
+
+    private final String OUT_INFOKEY = "OUTPUT";
 
     // private Map<CodeType, SimpleLiteralInput> literalInputs = new HashMap<CodeType, SimpleLiteralInput>();
 
@@ -158,6 +175,7 @@ public class ClientBean implements Serializable {
             fc.addMessage( "WPSBean.selectProcess.NO_PROCESS_FOR_ID", msg );
             return;
         }
+        information = selectedProcess.getAbstract() != null ? selectedProcess.getAbstract().getString() : "";
         createForm( selectedProcess );
         FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_INFO, "INFO.SELECT_PROCESS", selectedProcess.getId() );
         fc.addMessage( "WPSBean.selectProcess.SELECT_PROCESS", msg );
@@ -198,7 +216,7 @@ public class ClientBean implements Serializable {
     private void addInputParams( FacesContext fc, UIComponent parent, InputType[] inputDescription ) {
         HtmlPanelGrid inputGrid = new HtmlPanelGrid();
         inputGrid.setId( getUniqueId() );
-        inputGrid.setColumns( 3 );
+        inputGrid.setColumns( 4 );
         inputGrid.setStyleClass( "paramBody" );
         inputGrid.setHeaderClass( "paramHeader" );
         HtmlOutputText inputText = new HtmlOutputText();
@@ -326,6 +344,9 @@ public class ClientBean implements Serializable {
                 inputGrid.getChildren().add( upload );
             }
 
+            inputGrid.getChildren().add( createInfoBt( IN_INFOKEY, input.getId().getCode() ) );
+
+            // messages
             HtmlMessage msg = new HtmlMessage();
             msg.setId( getUniqueId() );
             msg.setShowSummary( true );
@@ -336,12 +357,44 @@ public class ClientBean implements Serializable {
         parent.getChildren().add( inputGrid );
     }
 
+    private HtmlCommandButton createInfoBt( String type, String idCode ) {
+        // info button
+        HtmlCommandButton infoBt = new HtmlCommandButton();
+        infoBt.setId( getUniqueId() );
+        infoBt.setImage( "resources/wpsclient/images/information.png" );
+
+        ExpressionFactory ef = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
+        String me = "#{clientBean.updateInfoText}";
+
+        MethodExpression methodExpression = ef.createMethodExpression(
+                                                                       FacesContext.getCurrentInstance().getELContext(),
+                                                                       me, Object.class, new Class<?>[0] );
+        infoBt.setActionExpression( methodExpression );
+
+        UIParameter paramType = new UIParameter();
+        paramType.setName( "type" );
+        paramType.setValue( type );
+        UIParameter param = new UIParameter();
+        param.setName( "dataId" );
+        param.setValue( idCode );
+        infoBt.getChildren().add( paramType );
+        infoBt.getChildren().add( param );
+
+        AjaxBehavior ajaxB = new AjaxBehavior();
+        List<String> render = new ArrayList<String>();
+        render.add( ":infoOT" );
+        ajaxB.setRender( render );
+        infoBt.addClientBehavior( infoBt.getDefaultEventName(), ajaxB );
+        return infoBt;
+    }
+
     private void setOutputParams( FacesContext fc, UIComponent parent, OutputType[] outputs ) {
         if ( outputs.length > 1 ) {
             HtmlPanelGrid outputGrid = new HtmlPanelGrid();
             outputGrid.setId( getUniqueId() );
             outputGrid.setStyleClass( "paramBody" );
             outputGrid.setHeaderClass( "paramHeader" );
+            outputGrid.setColumns( 2 );
             HtmlOutputText outputText = new HtmlOutputText();
             outputText.setId( getUniqueId() );
             String outputTextEL = "#{labels['outputParams']}";
@@ -371,7 +424,11 @@ public class ClientBean implements Serializable {
                 }
                 cb.getChildren().add( item );
             }
+
             outputGrid.getChildren().add( cb );
+            // TODO!
+            // outputGrid.getChildren().add( createInfoBt( "", ) );
+
             parent.getChildren().add( outputGrid );
         }
     }
@@ -420,6 +477,83 @@ public class ClientBean implements Serializable {
         return processes;
     }
 
+    public void setInformation( String information ) {
+        this.information = information;
+    }
+
+    public String getInformation() {
+        return information;
+    }
+
+    public Object updateInfoText() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        Map<String, String> params = fc.getExternalContext().getRequestParameterMap();
+        if ( params.containsKey( "type" ) ) {
+            String type = params.get( "type" );
+            if ( WPS_INFOKEY.equals( type ) && wpsClient != null ) {
+                ServiceIdentification si = wpsClient.getMetadata().getServiceIdentification();
+                information = getAsLocaleString( si.getDescription().getAbstract() );
+            } else if ( PROCESS_INFOKEY.equals( type ) && selectedProcess != null ) {
+                information = selectedProcess.getAbstract() != null ? selectedProcess.getAbstract().getString() : "";
+            } else if ( IN_INFOKEY.equals( type ) && params.containsKey( "dataId" ) && selectedProcess != null ) {
+                try {
+                    String id = params.get( "dataId" );
+                    InputType[] inputTypes = selectedProcess.getInputTypes();
+                    for ( int i = 0; i < inputTypes.length; i++ ) {
+                        if ( equalsCodeType( inputTypes[i].getId(), id ) ) {
+                            information = inputTypes[i].getAbstract() != null ? inputTypes[i].getAbstract().getString()
+                                                                             : "";
+                        }
+                    }
+                } catch ( IOException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch ( OWSException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            } else if ( OUT_INFOKEY.equals( type ) && params.containsKey( "dataId" ) && selectedProcess != null ) {
+                try {
+                    String id = params.get( "dataId" );
+                    OutputType[] outputTypes = selectedProcess.getOutputTypes();
+                    for ( int i = 0; i < outputTypes.length; i++ ) {
+                        if ( equalsCodeType( outputTypes[i].getId(), id ) ) {
+                            information = outputTypes[i].getAbstract() != null ? outputTypes[i].getAbstract().getString()
+                                                                              : "";
+                        }
+                    }
+                } catch ( IOException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch ( OWSException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean equalsCodeType( CodeType codeType, String string ) {
+        if ( codeType != null && codeType.getCode().equals( string ) ) {
+            return true;
+        }
+        return false;
+    }
+
+    private String getAsLocaleString( List<LanguageString> languageStrings ) {
+        Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+        for ( LanguageString ls : languageStrings ) {
+            if ( locale.getLanguage().equals( ls.getLanguage() ) ) {
+                return ls.getString();
+            }
+        }
+        if ( !languageStrings.isEmpty() ) {
+            return languageStrings.get( 0 ).getString();
+        }
+        return "";
+    }
+
     // public void setLiteralInputs( Map<CodeType, SimpleLiteralInput> literalInputs ) {
     // this.literalInputs = literalInputs;
     // }
@@ -427,5 +561,13 @@ public class ClientBean implements Serializable {
     // public Map<CodeType, SimpleLiteralInput> getLiteralInputs() {
     // return literalInputs;
     // }
+
+    public boolean isWpsEntered() {
+        return wpsClient != null;
+    }
+
+    public boolean isProcessSelected() {
+        return selectedProcess != null;
+    }
 
 }

@@ -1,4 +1,40 @@
 #container {
+	position: relative;
+	display: block;
+	max-width: 800px;
+	margin: 0px auto;
+	border-right: 200px;
+	text-align: left;
+}
+
+#inner {
+	display: block;
+	margin-right: -200px;
+	padding: 5px;
+}
+
+#right {
+	float: right;
+	position: relative;
+	width: 190px;
+	right: 0px;
+}
+
+#center {
+	margin-right: 200px;
+	position: relative;
+	display: block;
+	height: 1%;
+}
+
+.clear {
+	clear: both;
+}
+#header {
+	font-size: larger;
+}
+/**
+#container {
 	max-width: 800px;
 	margin: 0px auto;
 	text-align: left;
@@ -6,6 +42,25 @@
 
 #header {
 	font-size: larger;
+}
+
+#content {
+	float: left;
+	width: 70%;
+}
+
+#right {
+	width: 30%;
+}
+**/
+#wpsUrl {
+	margin: 0px 10px;
+	width: 500px
+}
+
+.infoText {
+	width: 25px;
+	margin: -5px -5px -8px 10px;
 }
 
 .field {
@@ -32,6 +87,6 @@ fieldset.field legend {
 	margin-left: 25px;
 }
 
-.msgError, .msgFatal {
+.msgError,.msgFatal {
 	color: red;
 }
