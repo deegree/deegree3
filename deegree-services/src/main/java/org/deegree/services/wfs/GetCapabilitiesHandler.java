@@ -142,11 +142,13 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private WFService service;
 
+    private WFSController master;
+
     GetCapabilitiesHandler( WFSController master, WFService service, Version version, XMLStreamWriter xmlWriter,
-                                   ServiceIdentificationType serviceId, ServiceProviderType serviceProvider,
-                                   Collection<FeatureType> servedFts,
-                                   Map<QName, FeatureTypeMetadata> ftNameToFtMetadata, Set<String> sections,
-                                   boolean enableTransactions, List<CRS> querySRS ) {
+                            ServiceIdentificationType serviceId, ServiceProviderType serviceProvider,
+                            Collection<FeatureType> servedFts, Map<QName, FeatureTypeMetadata> ftNameToFtMetadata,
+                            Set<String> sections, boolean enableTransactions, List<CRS> querySRS ) {
+        this.master = master;
         this.service = service;
         this.version = version;
         this.writer = xmlWriter;
@@ -644,24 +646,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     private void writeOutputFormats110( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( WFS_PREFIX, "OutputFormats", WFS_NS );
-        writer.writeStartElement( WFS_PREFIX, "Format", WFS_NS );
-        writer.writeCharacters( "GML2" );
-        writer.writeEndElement();
-        writer.writeStartElement( WFS_PREFIX, "Format", WFS_NS );
-        writer.writeCharacters( "GML3" );
-        writer.writeEndElement();
-        writer.writeStartElement( WFS_PREFIX, "Format", WFS_NS );
-        writer.writeCharacters( "text/xml; subtype=gml/2.1.2" );
-        writer.writeEndElement();
-        writer.writeStartElement( WFS_PREFIX, "Format", WFS_NS );
-        writer.writeCharacters( "text/xml; subtype=gml/3.0.1" );
-        writer.writeEndElement();
-        writer.writeStartElement( WFS_PREFIX, "Format", WFS_NS );
-        writer.writeCharacters( "text/xml; subtype=gml/3.1.1" );
-        writer.writeEndElement();
-        writer.writeStartElement( WFS_PREFIX, "Format", WFS_NS );
-        writer.writeCharacters( "text/xml; subtype=gml/3.2.1" );
-        writer.writeEndElement();
+        for ( String format : master.getOutputFormats() ) {
+            writer.writeStartElement( WFS_PREFIX, "Format", WFS_NS );
+            writer.writeCharacters( format );
+            writer.writeEndElement();
+        }
         writer.writeEndElement();
     }
 

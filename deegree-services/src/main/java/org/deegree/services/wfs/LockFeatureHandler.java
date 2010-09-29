@@ -53,7 +53,6 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.services.controller.ows.OWSException;
@@ -71,9 +70,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class LockFeatureHandler extends GetFeatureHandler {
+class LockFeatureHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( LockFeatureHandler.class );
+
+    private final WFSController master;
 
     /**
      * Creates a new {@link LockFeatureHandler} instance that uses the given service to lookup requested
@@ -81,22 +82,9 @@ class LockFeatureHandler extends GetFeatureHandler {
      * 
      * @param master
      * 
-     * @param service
-     *            WFS instance used to lookup the feature types
-     * @param streamMode
-     *            if <code>true</code>, features are streamed (implies that the FeatureCollection's boundedBy-element
-     *            cannot be populated and that the numberOfFeatures attribute cannot be written)
-     * @param featureLimit
-     *            hard limit for returned features (-1 means no limit)
-     * @param checkInputDomain
-     *            true, if geometries in query constraints should be checked agains validity domain of the SRS (needed
-     *            for CITE 1.1.0 compliance)
-     * @param formatter
-     *            coordinate formatter to use, must not be <code>null</code>
      */
-    LockFeatureHandler( WFSController master, WFService service, boolean streamMode, int featureLimit,
-                        boolean checkInputDomain, CoordinateFormatter formatter ) {
-        super( master, service, streamMode, featureLimit, checkInputDomain, formatter );
+    LockFeatureHandler( WFSController master ) {
+        this.master = master;
     }
 
     /**
@@ -119,7 +107,7 @@ class LockFeatureHandler extends GetFeatureHandler {
         LockManager manager = null;
         try {
             // TODO strategy for multiple LockManagers / feature stores
-            manager = service.getStores()[0].getLockManager();
+            manager = master.getService().getStores()[0].getLockManager();
         } catch ( FeatureStoreException e ) {
             throw new OWSException( "Cannot acquire lock manager: " + e.getMessage(), NO_APPLICABLE_CODE );
         }

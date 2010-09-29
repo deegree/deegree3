@@ -1,10 +1,10 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,8 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
-package org.deegree.services.wfs;
+package org.deegree.services.wfs.format;
 
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -50,6 +49,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 import static org.deegree.services.controller.exception.ControllerException.NO_APPLICABLE_CODE;
+import static org.deegree.services.controller.ows.OWSException.OPERATION_NOT_SUPPORTED;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -82,16 +82,20 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.getfeature.BBoxQuery;
 import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
+import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.lockfeature.BBoxLock;
 import org.deegree.protocol.wfs.lockfeature.FeatureIdLock;
 import org.deegree.protocol.wfs.lockfeature.FilterLock;
@@ -99,28 +103,37 @@ import org.deegree.protocol.wfs.lockfeature.LockOperation;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
+import org.deegree.services.wfs.GetFeatureAnalyzer;
+import org.deegree.services.wfs.WFSController;
+import org.deegree.services.wfs.WFService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles {@link GetFeature} requests for the {@link WFSController}.
- * 
- * @see WFSController
+ * Default {@link OutputFormat} implementation that can handle GML 2/3.0/3.1/3.2.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-class GetFeatureHandler {
+class GMLOutputFormat implements OutputFormat {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GetFeatureHandler.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GMLOutputFormat.class );
+
+    private final GMLVersion gmlVersion;
+
+    private final String mimeType;
+
+    private final QName responseContainerEl;
+
+    private final String schemaLocation;
 
     private final boolean streamMode;
 
     private final WFSController master;
 
-    protected final WFService service;
+    private final WFService service;
 
     private final int featureLimit;
 
@@ -129,44 +142,39 @@ class GetFeatureHandler {
     private final CoordinateFormatter formatter;
 
     /**
-     * Creates a new {@link GetFeatureHandler} instance that uses the given service to lookup requested
-     * {@link FeatureType}s.
      * 
      * @param master
      *            corresponding WFS controller
-     * @param service
-     *            WFS instance used to lookup the feature types
      * @param streamMode
      *            if <code>true</code>, features are streamed (implies that the FeatureCollection's boundedBy-element
      *            cannot be populated and that the numberOfFeatures attribute cannot be written)
-     * @param featureLimit
-     *            hard limit for returned features (-1 means no limit)
-     * @param checkAreaOfUse
-     *            true, if geometries in query constraints should be checked agains validity domain of the SRS (needed
-     *            for CITE 1.1.0 compliance)
      * @param formatter
      *            coordinate formatter to use, must not be <code>null</code>
+     * @param mimeType
+     * @param responseContainerEl
+     * @param schemaLocation
      */
-    GetFeatureHandler( WFSController master, WFService service, boolean streamMode, int featureLimit,
-                       boolean checkAreaOfUse, CoordinateFormatter formatter ) {
+    GMLOutputFormat( WFSController master, boolean streamMode, CoordinateFormatter formatter, String mimeType,
+                     QName responseContainerEl, String schemaLocation ) {
         this.master = master;
-        this.service = service;
+        this.service = master.getService();
         this.streamMode = streamMode;
-        this.featureLimit = featureLimit;
-        this.checkAreaOfUse = checkAreaOfUse;
+        this.featureLimit = master.getMaxFeatures();
+        this.checkAreaOfUse = master.getCheckAreaOfUse();
         this.formatter = formatter;
+        this.mimeType = mimeType;
+        this.gmlVersion = GMLVersion.fromMimeType( mimeType, GML_31 );
+        this.responseContainerEl = responseContainerEl;
+        this.schemaLocation = schemaLocation;
     }
 
-    /**
-     * Performs the given {@link GetFeature} request.
-     * 
-     * @param request
-     *            request to be handled
-     * @param response
-     *            response that is used to write the result
-     * @throws Exception
-     */
-    void doGetFeature( GetFeature request, HttpResponseBuffer response )
+    @Override
+    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response ) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void doGetFeature( GetFeature request, HttpResponseBuffer response )
                             throws Exception {
         ResultType type = request.getResultType();
         if ( type == RESULTS || type == null ) {
@@ -176,19 +184,82 @@ class GetFeatureHandler {
         }
     }
 
+    @Override
+    public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
+                            throws Exception {
+
+        LOG.debug( "doGetGmlObject: " + request );
+
+        GMLObject o = retrieveObject( request.getRequestedId() );
+
+        response.setContentType( gmlVersion.getMimeType() );
+
+        int traverseXLinkDepth = 0;
+        if ( request.getTraverseXlinkDepth() != null ) {
+            if ( "*".equals( request.getTraverseXlinkDepth() ) ) {
+                traverseXLinkDepth = -1;
+            } else {
+                try {
+                    traverseXLinkDepth = Integer.parseInt( request.getTraverseXlinkDepth() );
+                } catch ( NumberFormatException e ) {
+                    String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID", request.getTraverseXlinkDepth() );
+                    throw new OWSException( new InvalidParameterValueException( msg ) );
+                }
+
+            }
+        }
+
+        String schemaLocation = null;
+        if ( o instanceof Feature ) {
+            schemaLocation = WFSController.getSchemaLocation( request.getVersion(), gmlVersion,
+                                                              ( (Feature) o ).getName() );
+        } else if ( o instanceof Geometry ) {
+            switch ( gmlVersion ) {
+            case GML_2:
+                schemaLocation = GMLNS + " http://schemas.opengis.net/gml/2.1.2.1/geometry.xsd";
+                break;
+            case GML_30:
+                schemaLocation = GMLNS + " http://schemas.opengis.net/gml/3.0.1/base/geometryComplexes.xsd";
+                break;
+            case GML_31:
+                schemaLocation = GMLNS + " http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd";
+                break;
+            case GML_32:
+                schemaLocation = GML3_2_NS + " http://schemas.opengis.net/gml/3.2.1/geometryComplexes.xsd";
+                break;
+            }
+        } else {
+            String msg = "Error exporting GML object: only exporting of features and geometries is implemented.";
+            throw new OWSException( msg, OPERATION_NOT_SUPPORTED );
+        }
+        XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, schemaLocation );
+        GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
+        gmlStream.setLocalXLinkTemplate( master.getObjectXlinkTemplate( request.getVersion(), gmlVersion ) );
+        gmlStream.setXLinkDepth( traverseXLinkDepth );
+        gmlStream.setCoordinateFormatter( formatter );
+        try {
+            gmlStream.write( o );
+        } catch ( UnknownCRSException e ) {
+            String msg = "Error exporting GML object: " + e.getMessage();
+            throw new OWSException( msg, NO_APPLICABLE_CODE );
+        } catch ( TransformationException e ) {
+            String msg = "Error exporting GML object: " + e.getMessage();
+            throw new OWSException( msg, NO_APPLICABLE_CODE );
+        }
+    }
+
     private void doResults( GetFeature request, HttpResponseBuffer response )
                             throws Exception {
 
         LOG.debug( "Performing GetFeature (results) request." );
 
-        GMLVersion outputFormat = determineOutputFormat( request );
-        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, outputFormat, checkAreaOfUse );
+        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, gmlVersion, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
-        String schemaLocation = getSchemaLocation( request.getVersion(), outputFormat, analyzer.getFeatureTypes() );
+        String schemaLocation = getSchemaLocation( request.getVersion(), gmlVersion, analyzer.getFeatureTypes() );
 
         int traverseXLinkDepth = 0;
         int traverseXLinkExpiry = -1;
-        String xLinkTemplate = master.getObjectXlinkTemplate( request.getVersion(), outputFormat );
+        String xLinkTemplate = master.getObjectXlinkTemplate( request.getVersion(), gmlVersion );
 
         if ( VERSION_110.equals( request.getVersion() ) || VERSION_200.equals( request.getVersion() ) ) {
             if ( request.getTraverseXlinkDepth() != null ) {
@@ -214,26 +285,41 @@ class GetFeatureHandler {
         }
 
         XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, schemaLocation );
-        setContentType( outputFormat, response );
+        setContentType( gmlVersion, response );
 
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
-            xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_NS );
-            if ( lockId != null ) {
-                xmlStream.writeAttribute( "lockId", lockId );
+            if ( responseContainerEl != null ) {
+                xmlStream.writeStartElement( responseContainerEl.getPrefix(), responseContainerEl.getLocalPart(),
+                                             responseContainerEl.getNamespaceURI() );
+            } else {
+                xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_NS );
+                if ( lockId != null ) {
+                    xmlStream.writeAttribute( "lockId", lockId );
+                }
             }
         } else if ( request.getVersion().equals( VERSION_110 ) ) {
-            xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_NS );
-            if ( lockId != null ) {
-                xmlStream.writeAttribute( "lockId", lockId );
+            if ( responseContainerEl != null ) {
+                xmlStream.writeStartElement( responseContainerEl.getPrefix(), responseContainerEl.getLocalPart(),
+                                             responseContainerEl.getNamespaceURI() );
+            } else {
+                xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_NS );
+                if ( lockId != null ) {
+                    xmlStream.writeAttribute( "lockId", lockId );
+                }
+                xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
             }
-            xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
         } else if ( request.getVersion().equals( VERSION_200 ) ) {
-            xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_200_NS );
-            xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+            if ( responseContainerEl != null ) {
+                xmlStream.writeStartElement( responseContainerEl.getPrefix(), responseContainerEl.getLocalPart(),
+                                             responseContainerEl.getNamespaceURI() );
+            } else {
+                xmlStream.writeStartElement( "wfs", "FeatureCollection", WFS_200_NS );
+                xmlStream.writeAttribute( "timeStamp", DateUtils.formatISO8601Date( new Date() ) );
+            }
         }
 
-        if ( GML_32 == outputFormat ) {
+        if ( GML_32 == gmlVersion ) {
             xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "GML_32_FEATURECOLLECTION" );
         }
 
@@ -243,14 +329,14 @@ class GetFeatureHandler {
         }
 
         if ( streamMode ) {
-            writeFeatureMembersStream( request.getVersion(), xmlStream, analyzer, outputFormat, xLinkTemplate,
+            writeFeatureMembersStream( request.getVersion(), xmlStream, analyzer, gmlVersion, xLinkTemplate,
                                        traverseXLinkDepth, traverseXLinkExpiry, maxFeatures );
         } else {
-            writeFeatureMembersCached( request.getVersion(), xmlStream, analyzer, outputFormat, xLinkTemplate,
+            writeFeatureMembersCached( request.getVersion(), xmlStream, analyzer, gmlVersion, xLinkTemplate,
                                        traverseXLinkDepth, traverseXLinkExpiry, maxFeatures );
         }
 
-        // close "wfs:FeatureCollection"
+        // close container element
         xmlStream.writeEndElement();
         xmlStream.flush();
     }
@@ -289,7 +375,8 @@ class GetFeatureHandler {
                             if ( VERSION_200.equals( wfsVersion ) ) {
                                 xmlStream.writeEmptyElement( "wfs", "member", WFS_200_NS );
                             } else {
-                                xmlStream.writeEmptyElement( "wfs", "member", WFS_NS );
+                                xmlStream.writeEmptyElement( "gml", "featureMember", GML3_2_NS );
+                                // xmlStream.writeEmptyElement( "wfs", "member", WFS_NS );
                             }
                         } else {
                             xmlStream.writeEmptyElement( "gml", "featureMember", GMLNS );
@@ -300,7 +387,8 @@ class GetFeatureHandler {
                             if ( VERSION_200.equals( wfsVersion ) ) {
                                 xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
                             } else {
-                                xmlStream.writeStartElement( "wfs", "member", WFS_NS );
+                                xmlStream.writeStartElement( "gml", "featureMember", GML3_2_NS );
+                                // xmlStream.writeStartElement( "wfs", "member", WFS_NS );
                             }
                         } else {
                             xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
@@ -386,7 +474,7 @@ class GetFeatureHandler {
             }
         }
 
-        if ( !wfsVersion.equals( VERSION_100 ) ) {
+        if ( !wfsVersion.equals( VERSION_100 ) && responseContainerEl == null ) {
             xmlStream.writeAttribute( "numberOfFeatures", "" + allFeatures.size() );
         }
 
@@ -412,7 +500,8 @@ class GetFeatureHandler {
                     if ( VERSION_200.equals( wfsVersion ) ) {
                         xmlStream.writeEmptyElement( "wfs", "member", WFS_200_NS );
                     } else {
-                        xmlStream.writeEmptyElement( "wfs", "member", WFS_NS );
+                        xmlStream.writeEmptyElement( "gml", "featureMember", GML3_2_NS );
+                        // xmlStream.writeEmptyElement( "wfs", "member", WFS_NS );
                     }
                 } else {
                     xmlStream.writeEmptyElement( "gml", "featureMember", GMLNS );
@@ -423,7 +512,8 @@ class GetFeatureHandler {
                     if ( VERSION_200.equals( wfsVersion ) ) {
                         xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
                     } else {
-                        xmlStream.writeStartElement( "wfs", "member", WFS_NS );
+                        xmlStream.writeStartElement( "gml", "featureMember", GML3_2_NS );
+                        // xmlStream.writeStartElement( "wfs", "member", WFS_NS );
                     }
                 } else {
                     xmlStream.writeStartElement( "gml", "featureMember", GMLNS );
@@ -505,14 +595,13 @@ class GetFeatureHandler {
 
         LOG.debug( "Performing GetFeature (hits) request." );
 
-        GMLVersion outputFormat = determineOutputFormat( request );
-        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, outputFormat, checkAreaOfUse );
+        GetFeatureAnalyzer analyzer = new GetFeatureAnalyzer( request, service, gmlVersion, checkAreaOfUse );
         String lockId = acquireLock( request, analyzer );
-        String schemaLocation = getSchemaLocation( request.getVersion(), outputFormat, analyzer.getFeatureTypes() );
+        String schemaLocation = getSchemaLocation( request.getVersion(), gmlVersion, analyzer.getFeatureTypes() );
 
         XMLStreamWriter xmlStream = WFSController.getXMLResponseWriter( response, schemaLocation );
 
-        setContentType( outputFormat, response );
+        setContentType( gmlVersion, response );
 
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
@@ -544,7 +633,7 @@ class GetFeatureHandler {
 
         // "gml:boundedBy" is necessary for GML 2
         // TODO strategies for including the correct value
-        if ( outputFormat.equals( GMLVersion.GML_2 ) ) {
+        if ( gmlVersion.equals( GMLVersion.GML_2 ) ) {
             xmlStream.writeStartElement( "gml", GMLNS, "boundedBy" );
             xmlStream.writeStartElement( GMLNS, "null" );
             xmlStream.writeCharacters( "not available (WFS streaming mode)" );
@@ -594,6 +683,10 @@ class GetFeatureHandler {
             throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
         }
 
+        if ( this.schemaLocation != null ) {
+            return schemaLocation + " " + this.schemaLocation;
+        }
+
         if ( requestedFts == null ) {
             requestedFts = service.getFeatureTypes();
         }
@@ -633,28 +726,6 @@ class GetFeatureHandler {
             response.setContentType( "text/xml; subtype=gml/3.2.1" );
             break;
         }
-    }
-
-    /**
-     * Determines the requested (GML) output format.
-     * 
-     * TODO integrate handling for custom formats
-     * 
-     * @param request
-     *            request to be analyzed, must not be <code>null</code>
-     * @return version to use for the written GML, never <code>null</code>
-     * @throws OWSException
-     *             if the requested format is not supported
-     */
-    private GMLVersion determineOutputFormat( GetFeature request )
-                            throws OWSException {
-
-        GMLVersion gmlVersion = master.determineFormat( request.getVersion(), request.getOutputFormat() );
-        if ( gmlVersion == null ) {
-            String msg = "Unsupported output format '" + request.getOutputFormat() + "'";
-            throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "outputFormat" );
-        }
-        return gmlVersion;
     }
 
     private String acquireLock( GetFeature request, GetFeatureAnalyzer analyzer )
@@ -714,5 +785,25 @@ class GetFeatureHandler {
             throw new RuntimeException();
         }
         return lockOperation;
+    }
+
+    private GMLObject retrieveObject( String id )
+                            throws OWSException {
+        GMLObject o = null;
+        for ( FeatureStore fs : service.getStores() ) {
+            try {
+                o = fs.getObjectById( id );
+            } catch ( FeatureStoreException e ) {
+                throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
+            }
+            if ( o != null ) {
+                break;
+            }
+        }
+        if ( o == null ) {
+            String msg = Messages.getMessage( "WFS_NO_SUCH_OBJECT", id );
+            throw new OWSException( new InvalidParameterValueException( msg ) );
+        }
+        return o;
     }
 }

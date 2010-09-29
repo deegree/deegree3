@@ -16,7 +16,23 @@
         <element name="QuerySRS" type="string" minOccurs="0" default="EPSG:4326" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
         <element name="CheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
-        <!-- element name="OutputFormat" type="cm:GMLVersionType" minOccurs="0" maxOccurs="unbounded"/-->
+        <element name="Format" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <element name="MimeType" type="string" />
+              <element name="Param" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                  <simpleContent>
+                    <extension base="string">
+                      <attribute name="key" type="string" use="required" />
+                    </extension>
+                  </simpleContent>
+                </complexType>
+              </element>
+            </sequence>
+            <attribute name="handler" use="optional" />
+          </complexType>
+        </element>
         <element ref="wfs:FeatureTypeMetadata" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
     </complexType>

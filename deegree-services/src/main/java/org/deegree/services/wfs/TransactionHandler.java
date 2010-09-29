@@ -338,8 +338,9 @@ class TransactionHandler {
             }
         }
 
-        GMLVersion inputFormat = master.determineFormat( request.getVersion(), insert.getInputFormat() );
-
+//        GMLVersion inputFormat = master.determineFormat( request.getVersion(), insert.getInputFormat() );
+        GMLVersion inputFormat = GML_31;
+        
         FeatureStoreTransaction ta = null;
         try {
             FeatureCollection fc = parseFeaturesOrCollection( insert.getFeatures(), inputFormat, defaultCRS );
@@ -486,7 +487,9 @@ class TransactionHandler {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
 
-        GMLVersion inputFormat = master.determineFormat( request.getVersion(), update.getInputFormat() );
+        // TODO
+        // GMLVersion inputFormat = master.determineFormat( request.getVersion(), update.getInputFormat() );
+        GMLVersion inputFormat = GML_31;
 
         FeatureStoreTransaction ta = acquireTransaction( fs );
         List<Property> replacementProps = getReplacementProps( update, ft, inputFormat );

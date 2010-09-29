@@ -93,7 +93,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class GetFeatureAnalyzer {
+public class GetFeatureAnalyzer {
 
     private final GeometryFactory geomFac = new GeometryFactory();
 
@@ -127,14 +127,14 @@ class GetFeatureAnalyzer {
      * @param service
      *            {@link WFService} to be used, must not be <code>null</code>
      * @param outputFormat
-     *            requested GML version, must not be <code>null</code>
+     *            output format, must not be <code>null</code>
      * @param checkInputDomain
      *            true, if geometries in query constraints should be checked against validity domain of the SRS (needed
      *            for CITE 1.1.0 compliance)
      * @throws OWSException
      *             if the request cannot be performed, e.g. because it queries feature types that are not served
      */
-    GetFeatureAnalyzer( GetFeature request, WFService service, GMLVersion outputFormat, boolean checkInputDomain )
+    public GetFeatureAnalyzer( GetFeature request, WFService service, GMLVersion outputFormat, boolean checkInputDomain )
                             throws OWSException {
 
         this.service = service;
@@ -223,7 +223,7 @@ class GetFeatureAnalyzer {
      * @return list of requested feature types, or <code>null</code> if any of the feature types served by the WFS could
      *         be returned (happens only for KVP-request with feature ids and without typenames)
      */
-    Collection<FeatureType> getFeatureTypes() {
+    public Collection<FeatureType> getFeatureTypes() {
         return allFtsPossible ? null : requestedFts;
     }
 
@@ -232,7 +232,7 @@ class GetFeatureAnalyzer {
      * 
      * @return the feature store queries that have to performed, never <code>null</code>
      */
-    Map<FeatureStore, List<Query>> getQueries() {
+    public Map<FeatureStore, List<Query>> getQueries() {
         return fsToQueries;
     }
 
@@ -243,7 +243,7 @@ class GetFeatureAnalyzer {
      * 
      * @return the crs, or <code>null</code> (use native crs)
      */
-    CRS getRequestedCRS() {
+    public CRS getRequestedCRS() {
         return requestedCrs;
     }
 
@@ -254,7 +254,7 @@ class GetFeatureAnalyzer {
      * 
      * @return features properties to be include or <code>null</code> (include all properties)
      */
-    PropertyName[] getRequestedProps() {
+    public PropertyName[] getRequestedProps() {
         return requestedProps;
     }
 
@@ -265,7 +265,7 @@ class GetFeatureAnalyzer {
      * 
      * @return specific XLink-behaviour or <code>null</code> (no specific behaviour)
      */
-    XLinkPropertyName[] getXLinkProps() {
+    public XLinkPropertyName[] getXLinkProps() {
         return xlinkProps;
     }
 

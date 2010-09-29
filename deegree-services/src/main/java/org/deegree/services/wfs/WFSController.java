@@ -43,6 +43,7 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.services.controller.ows.OWSException.INVALID_PARAMETER_VALUE;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -52,8 +53,10 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -126,6 +129,11 @@ import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.PublishedInformation;
 import org.deegree.services.jaxb.wfs.ServiceConfiguration;
+import org.deegree.services.jaxb.wfs.PublishedInformation.Format;
+import org.deegree.services.jaxb.wfs.PublishedInformation.Format.Param;
+import org.deegree.services.wfs.format.OutputFormat;
+import org.deegree.services.wfs.format.OutputFormatManager;
+import org.deegree.services.wfs.format.OutputFormatProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,10 +176,6 @@ public class WFSController extends AbstractOGCServiceController {
 
     private DescribeFeatureTypeHandler dftHandler;
 
-    private GetFeatureHandler getFeatureHandler;
-
-    private GetGmlObjectHandler getGmlObjectHandler;
-
     private LockFeatureHandler lockFeatureHandler;
 
     private boolean enableTransactions;
@@ -180,11 +184,17 @@ public class WFSController extends AbstractOGCServiceController {
 
     private List<CRS> querySRS = new ArrayList<CRS>();
 
+    private final Map<String, OutputFormat> mimeTypeToFormat = new LinkedHashMap<String, OutputFormat>();
+
     private Map<QName, FeatureTypeMetadata> ftNameToFtMetadata = new HashMap<QName, FeatureTypeMetadata>();
 
     private ServiceIdentificationType serviceId;
 
     private ServiceProviderType serviceProvider;
+
+    private int maxFeatures;
+
+    private boolean checkAreaOfUse;
 
     @Override
     public void init( XMLAdapter controllerConf, DeegreeServicesMetadataType serviceMetadata,
@@ -223,8 +233,8 @@ public class WFSController extends AbstractOGCServiceController {
         validateAndSetOfferedVersions( pi.getSupportedVersions().getVersion() );
         enableTransactions = pi.isEnableTransactions();
         enableStreaming = ( pi.isEnableStreaming() != null ) ? pi.isEnableStreaming() : false;
-        int maxFeatures = pi.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES : pi.getQueryMaxFeatures().intValue();
-        boolean checkAreaOfUse = pi.isCheckAreaOfUse() == null ? false : pi.isCheckAreaOfUse();
+        maxFeatures = pi.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES : pi.getQueryMaxFeatures().intValue();
+        checkAreaOfUse = pi.isCheckAreaOfUse() == null ? false : pi.isCheckAreaOfUse();
 
         try {
             if ( jaxbConfig.getPublishedInformation().getQuerySRS() != null ) {
@@ -261,11 +271,48 @@ public class WFSController extends AbstractOGCServiceController {
             throw new ControllerInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
         }
         dftHandler = new DescribeFeatureTypeHandler( service );
-        getFeatureHandler = new GetFeatureHandler( this, service, enableStreaming, maxFeatures, checkAreaOfUse,
-                                                   formatter );
-        getGmlObjectHandler = new GetGmlObjectHandler( this, service, formatter );
-        lockFeatureHandler = new LockFeatureHandler( this, service, enableStreaming, maxFeatures, checkAreaOfUse,
-                                                     formatter );
+        lockFeatureHandler = new LockFeatureHandler( this );
+
+        initFormats( jaxbConfig.getPublishedInformation().getFormat() );
+    }
+
+    private void initFormats( List<Format> formatDefs ) {
+        if ( formatDefs == null || formatDefs.isEmpty() ) {
+            LOG.debug( "Using default output formats." );
+            String handler = "GENERIC_GML";
+            OutputFormatProvider provider = OutputFormatManager.getFormatProvider( handler );
+            String mimeType = "text/xml; subtype=gml/2.1.2";
+            mimeTypeToFormat.put( mimeType, provider.create( this, mimeType, new Properties() ) );
+            mimeType = "text/xml; subtype=gml/3.0.1";
+            mimeTypeToFormat.put( mimeType, provider.create( this, mimeType, new Properties() ) );
+            mimeType = "text/xml; subtype=gml/3.1.1";
+            mimeTypeToFormat.put( mimeType, provider.create( this, mimeType, new Properties() ) );
+            mimeType = "text/xml; subtype=gml/3.2.1";
+            mimeTypeToFormat.put( mimeType, provider.create( this, mimeType, new Properties() ) );
+        } else {
+            LOG.debug( "Using customized output formats." );
+            for ( Format formatDef : formatDefs ) {
+                String handler = formatDef.getHandler();
+                if ( handler == null ) {
+                    handler = "GENERIC_GML";
+                }
+                OutputFormatProvider provider = OutputFormatManager.getFormatProvider( handler );
+                String mimeType = formatDef.getMimeType();
+                Properties props = buildProperties( formatDef.getParam() );
+                OutputFormat format = provider.create( this, mimeType, props );
+                mimeTypeToFormat.put( mimeType, format );
+            }
+        }
+    }
+
+    private Properties buildProperties( List<Param> params ) {
+        Properties props = new Properties();
+        if ( params != null ) {
+            for ( Param param : params ) {
+                props.put( param.getKey(), param.getValue() );
+            }
+        }
+        return props;
     }
 
     @Override
@@ -332,16 +379,19 @@ public class WFSController extends AbstractOGCServiceController {
                 break;
             case GetFeature:
                 GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpParamsUC, nsMap );
-                getFeatureHandler.doGetFeature( getFeature, response );
+                OutputFormat format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
+                format.doGetFeature( getFeature, response );
                 break;
             case GetFeatureWithLock:
                 checkTransactionsEnabled( requestName );
                 GetFeatureWithLock getFeatureWithLock = GetFeatureWithLockKVPAdapter.parse( kvpParamsUC );
-                getFeatureHandler.doGetFeature( getFeatureWithLock, response );
+                format = determineFormat( requestVersion, getFeatureWithLock.getOutputFormat(), "outputFormat" );
+                format.doGetFeature( getFeatureWithLock, response );
                 break;
             case GetGmlObject:
                 GetGmlObject getGmlObject = GetGmlObjectKVPAdapter.parse( kvpParamsUC );
-                getGmlObjectHandler.doGetGmlObject( getGmlObject, response );
+                format = determineFormat( requestVersion, getGmlObject.getOutputFormat(), "outputFormat" );
+                format.doGetGmlObject( getGmlObject, response );
                 break;
             case LockFeature:
                 checkTransactionsEnabled( requestName );
@@ -442,20 +492,23 @@ public class WFSController extends AbstractOGCServiceController {
                 GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
                 getFeatureAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeature getFeature = getFeatureAdapter.parse( requestVersion );
-                getFeatureHandler.doGetFeature( getFeature, response );
+                OutputFormat format = determineFormat( requestVersion, getFeature.getOutputFormat(), "outputFormat" );
+                format.doGetFeature( getFeature, response );
                 break;
             case GetFeatureWithLock:
                 checkTransactionsEnabled( requestName );
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
-                getFeatureHandler.doGetFeature( getFeatureWithLock, response );
+                format = determineFormat( requestVersion, getFeatureWithLock.getOutputFormat(), "outputFormat" );
+                format.doGetFeature( getFeatureWithLock, response );
                 break;
             case GetGmlObject:
                 GetGmlObjectXMLAdapter getGmlObjectAdapter = new GetGmlObjectXMLAdapter();
                 getGmlObjectAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetGmlObject getGmlObject = getGmlObjectAdapter.parse();
-                getGmlObjectHandler.doGetGmlObject( getGmlObject, response );
+                format = determineFormat( requestVersion, getGmlObject.getOutputFormat(), "outputFormat" );
+                format.doGetGmlObject( getGmlObject, response );
                 break;
             case LockFeature:
                 checkTransactionsEnabled( requestName );
@@ -523,7 +576,7 @@ public class WFSController extends AbstractOGCServiceController {
      * @throws UnsupportedOperationException
      *             if the protocol version does not support requesting individual objects by id
      */
-    String getObjectXlinkTemplate( Version version, GMLVersion gmlVersion ) {
+    public String getObjectXlinkTemplate( Version version, GMLVersion gmlVersion ) {
 
         String baseUrl = OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=" + version + "&";
         String template = null;
@@ -563,7 +616,7 @@ public class WFSController extends AbstractOGCServiceController {
      *            types of features included in the response
      * @return schemaLocation value
      */
-    static String getSchemaLocation( Version version, GMLVersion gmlVersion, QName... fts ) {
+    public static String getSchemaLocation( Version version, GMLVersion gmlVersion, QName... fts ) {
 
         if ( fts.length == 0 ) {
             return OGCFrontController.getHttpGetURL() + "SERVICE=WFS&VERSION=" + version
@@ -702,7 +755,7 @@ public class WFSController extends AbstractOGCServiceController {
      * @throws XMLStreamException
      * @throws IOException
      */
-    static XMLStreamWriter getXMLResponseWriter( HttpResponseBuffer writer, String schemaLocation )
+    public static XMLStreamWriter getXMLResponseWriter( HttpResponseBuffer writer, String schemaLocation )
                             throws XMLStreamException, IOException {
 
         if ( schemaLocation == null ) {
@@ -731,42 +784,66 @@ public class WFSController extends AbstractOGCServiceController {
     }
 
     /**
-     * Determines the requested (GML) output/input format.
-     * 
-     * TODO integrate handling for custom formats
+     * Determines the requested output/input format.
      * 
      * @param requestVersion
      *            version of the WFS request, must not be <code>null</code>
      * @param format
      *            mimeType or identifier for the format, can be <code>null</code>
-     * @return version to use for the written GML, or <code>null</code> if it is not supported
+     * @param locator
+     * @return format handler to use, never <code>null</code>
+     * @throws OWSException
      */
-    GMLVersion determineFormat( Version requestVersion, String format ) {
+    private OutputFormat determineFormat( Version requestVersion, String format, String locator )
+                            throws OWSException {
 
-        GMLVersion gmlVersion = null;
+        OutputFormat outputFormat = null;
 
         if ( format == null ) {
             // default values for the different WFS version
             if ( VERSION_100.equals( requestVersion ) ) {
-                gmlVersion = GMLVersion.GML_2;
+                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/2.1.2" );
+                if ( outputFormat == null ) {
+                    format = "text/xml; subtype=gml/2.1.2";
+                }
             } else if ( VERSION_110.equals( requestVersion ) ) {
-                gmlVersion = GMLVersion.GML_31;
+                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/3.1.1" );
+                if ( outputFormat == null ) {
+                    format = "text/xml; subtype=gml/3.1.1";
+                }
             } else if ( VERSION_200.equals( requestVersion ) ) {
-                gmlVersion = GMLVersion.GML_32;
-            } else {
-                throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
+                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/3.2.1" );
+                if ( outputFormat == null ) {
+                    format = "text/xml; subtype=gml/3.2.1";
+                }
             }
         } else {
-            if ( "text/xml; subtype=gml/2.1.2".equals( format ) || "GML2".equals( format ) ) {
-                gmlVersion = GMLVersion.GML_2;
-            } else if ( "text/xml; subtype=gml/3.0.1".equals( format ) ) {
-                gmlVersion = GMLVersion.GML_30;
-            } else if ( "text/xml; subtype=gml/3.1.1".equals( format ) || "GML3".equals( format ) ) {
-                gmlVersion = GMLVersion.GML_31;
-            } else if ( "text/xml; subtype=gml/3.2.1".equals( format ) ) {
-                gmlVersion = GMLVersion.GML_32;
+            if ( "GML2".equals( format ) ) {
+                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/2.1.2" );
+            } else if ( "GML3".equals( format ) ) {
+                outputFormat = mimeTypeToFormat.get( "text/xml; subtype=gml/3.1.1" );
+            } else {
+                outputFormat = mimeTypeToFormat.get( format );
             }
         }
-        return gmlVersion;
+        if ( outputFormat == null ) {
+            String msg = "This WFS is not configured to handle the output/input format '" + format + "'";
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE, locator );
+        }
+        return outputFormat;
+    }
+
+    Collection<String> getOutputFormats() {
+        return mimeTypeToFormat.keySet();
+    }
+
+    public int getMaxFeatures() {
+        // TODO Auto-generated method stub
+        return maxFeatures;
+    }
+
+    public boolean getCheckAreaOfUse() {
+        // TODO Auto-generated method stub
+        return checkAreaOfUse;
     }
 }
