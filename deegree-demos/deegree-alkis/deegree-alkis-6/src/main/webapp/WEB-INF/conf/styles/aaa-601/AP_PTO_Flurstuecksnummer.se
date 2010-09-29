@@ -22,6 +22,51 @@
         </ogc:Not>
         <ogc:PropertyIsEqualTo>
           <ogc:PropertyName>adv:art</ogc:PropertyName>
+          <ogc:Literal>ZAE</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+        <ogc:Or>
+          <ogc:PropertyIsNull>
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:abweichenderRechtszustand</ogc:PropertyName>
+            </ogc:PropertyIsNull>
+          <ogc:PropertyIsEqualTo>
+            <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:abweichenderRechtszustand</ogc:PropertyName>
+            <ogc:Literal>false</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
+        </ogc:Or>
+      </ogc:And>
+    </ogc:Filter>
+    <TextSymbolizer>
+      <Label>
+        <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
+      </Label>
+      <Font>
+        <SvgParameter name="font-family">Arial</SvgParameter>
+        <SvgParameter name="font-style">italic</SvgParameter>
+        <SvgParameter name="font-size">10</SvgParameter>
+      </Font>
+      <Fill>
+        <SvgParameter name="fill">#000000</SvgParameter>
+      </Fill>
+    </TextSymbolizer>
+  </Rule>
+
+  <Rule>
+    <Name>Flurstuecksnummer</Name>
+    <Description>
+      <Title>Flurstücksnummer</Title>
+    </Description>
+    <ogc:Filter>
+      <ogc:And>
+        <ogc:PropertyIsNull>
+          <ogc:PropertyName>adv:dientZurDarstellungVon/adv:AX_Flurstueck/adv:flurstuecksnummer/adv:AX_Flurstuecksnummer/adv:nenner</ogc:PropertyName>
+        </ogc:PropertyIsNull>
+        <ogc:Not>
+          <ogc:PropertyIsNull>
+            <ogc:PropertyName>adv:schriftinhalt</ogc:PropertyName>
+          </ogc:PropertyIsNull>
+        </ogc:Not>
+        <ogc:PropertyIsEqualTo>
+          <ogc:PropertyName>adv:art</ogc:PropertyName>
           <ogc:Literal>ZAE_NEN</ogc:Literal>
         </ogc:PropertyIsEqualTo>
         <ogc:Or>
