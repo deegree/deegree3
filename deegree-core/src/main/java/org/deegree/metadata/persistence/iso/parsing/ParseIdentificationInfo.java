@@ -290,9 +290,9 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 resourceIdentifierList.add( resourceIdentifier );
 
             }
-            LOG.info( "Creating a resourceIdentifierList..." );
+            LOG.debug( "Creating a resourceIdentifierList..." );
             List<String> rsList = ic.determineInspireCompliance( resourceIdentifierList, dataIdentificationId );
-            LOG.info( "Creating of resourceIdentifierList finished: " + rsList );
+            LOG.debug( "Creating of resourceIdentifierList finished: " + rsList );
             if ( dataIdentificationUuId == null ) {
                 LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
                 if ( !rsList.isEmpty() ) {
@@ -306,7 +306,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             }
             if ( !rsList.isEmpty() ) {
-                LOG.info( "Setting id attribute from the resourceIdentifier..." );
+                LOG.debug( "Setting id attribute from the resourceIdentifier..." );
                 OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
                 if ( attribute_id != null ) {
                     sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );

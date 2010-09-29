@@ -239,7 +239,7 @@ public class GenerateQueryableProperties {
                                                  parsedElement.getQueryableProperties() );
         }
         // TODO spatial
-        LOG.info( "Boundingbox = null?? " + parsedElement.getQueryableProperties().getBoundingBox() );
+        LOG.debug( "Boundingbox = " + parsedElement.getQueryableProperties().getBoundingBox() );
         if ( parsedElement.getQueryableProperties().getBoundingBox() != null ) {
             generateISOQP_BoundingBoxStatement( isUpdate, connection, operatesOnId,
                                                 parsedElement.getQueryableProperties() );
