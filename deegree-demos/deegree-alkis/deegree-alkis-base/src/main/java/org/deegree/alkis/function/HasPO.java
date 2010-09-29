@@ -118,7 +118,6 @@ public class HasPO implements FunctionProvider {
      */
     public static void update() {
         if ( featureStore == null ) {
-            System.out.println( "is null" );
             return;
         }
 
