@@ -104,6 +104,8 @@ public class ClientBean implements Serializable {
 
     private Process selectedProcess;
 
+    // private Map<CodeType, SimpleLiteralInput> literalInputs = new HashMap<CodeType, SimpleLiteralInput>();
+
     /**
      * change the URL of the WPS and update the list of processes
      * 
@@ -213,7 +215,7 @@ public class ClientBean implements Serializable {
             HtmlOutputText label = new HtmlOutputText();
             String labelId = getUniqueId();
             label.setId( labelId );
-            label.setValue( input.getTitle() != null ? input.getTitle().getString() : input.getId() );
+            label.setValue( input.getTitle().getString() );
             inputGrid.getChildren().add( label );
             String minOccurs = input.getMinOccurs();
             boolean isRequired = false;
@@ -225,6 +227,37 @@ public class ClientBean implements Serializable {
                 // Nothing to DO (1 assumed)
             }
             if ( input instanceof LiteralInputType ) {
+                /*
+                 * insert a composite component Application application = fc.getApplication(); Resource resource =
+                 * application.getResourceHandler().createResource( "LiteralInput.xhtml", "wpsclient" ); UIComponent
+                 * compositeComponent = application.createComponent( fc, resource ); compositeComponent.setId(
+                 * "composite" ); ValueExpression value = application.getExpressionFactory().createValueExpression(
+                 * fc.getELContext(), "#{executeBean.literalInputs['" + input.getId().toString() + "']}",
+                 * LiteralInputType.class ); LiteralInputType lit = (LiteralInputType) input;
+                 * 
+                 * SimpleLiteralInput in = new SimpleLiteralInput(); in.setUom( lit.getDefaultUom().getRef() );
+                 * literalInputs.put( input.getId(), in ); compositeComponent.setValueExpression( "value", value );
+                 * 
+                 * compositeComponent.getAttributes().put( "blub", "einTest" ); if ( lit.getDataType() != null ) {
+                 * compositeComponent.getAttributes().put( "dataType", lit.getDataType() ); } if (
+                 * lit.getSupportedUoms() != null ) { compositeComponent.getAttributes().put( "supportedUoms",
+                 * lit.getSupportedUoms() ); } if ( lit.getAllowedValues() != null ) {
+                 * compositeComponent.getAttributes().put( "allowedValues", lit.getAllowedValues() ); } if (
+                 * lit.getRanges() != null ) { compositeComponent.getAttributes().put( "ranges", lit.getRanges() ); }
+                 * 
+                 * FaceletFactory factory = (FaceletFactory) RequestStateManager.get( fc,
+                 * RequestStateManager.FACELET_FACTORY );
+                 * 
+                 * final UIComponent compositeRoot = application.createComponent( UIPanel.COMPONENT_TYPE );
+                 * compositeRoot.setRendererType( "javax.faces.Group" );
+                 * 
+                 * try { Facelet f = factory.getFacelet( resource.getURL() ); f.apply( fc, compositeRoot );
+                 * compositeComponent.getFacets().put( UIComponent.COMPOSITE_FACET_NAME, compositeRoot ); } catch (
+                 * IOException ioex ) { throw new FaceletException( ioex ); }
+                 * 
+                 * inputGrid.getChildren().add( compositeComponent );
+                 */
+
                 HtmlInputText literalText = new HtmlInputText();
                 literalText.setId( input.getId().toString() );
                 literalText.setStyleClass( "inputField" );
@@ -240,6 +273,7 @@ public class ClientBean implements Serializable {
                     literalText.setStyleClass( "required" );
                 }
                 inputGrid.getChildren().add( literalText );
+
             } else if ( input instanceof BBoxInputType ) {
                 HtmlInputBBox bbox = new HtmlInputBBox();
                 String valueEL = "#{executeBean.bboxInputs['" + input.getId().toString() + "']}";
@@ -385,5 +419,13 @@ public class ClientBean implements Serializable {
     public List<Process> getProcesses() {
         return processes;
     }
+
+    // public void setLiteralInputs( Map<CodeType, SimpleLiteralInput> literalInputs ) {
+    // this.literalInputs = literalInputs;
+    // }
+    //
+    // public Map<CodeType, SimpleLiteralInput> getLiteralInputs() {
+    // return literalInputs;
+    // }
 
 }

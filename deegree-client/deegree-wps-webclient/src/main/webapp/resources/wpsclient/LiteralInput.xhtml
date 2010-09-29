@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:composite="http://java.sun.com/jsf/composite" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+<head>
+<title>A composite component to edit a LiteralInput</title>
+</head>
+<body>
+<composite:interface>
+				<composite:attribute name="value" required="true">
+								<composite:attribute name="value" />
+								<composite:attribute name="uom" />
+				</composite:attribute>
+				<composite:attribute name="dataType" />
+				<composite:attribute name="supportedUoms" />
+				<composite:attribute name="allowedValues" />
+				<composite:attribute name="ranges" />
+				<composite:attribute name="blub" />
+</composite:interface>
+<composite:implementation>
+				<!--  input field for numbers -->
+				<h:inputText value="#{cc.attrs.value.value}"
+								rendered="#{empty cc.attrs.allowedValues and (cc.attrs.dataType.value == 'double' or cc.attrs.dataType.value == 'integer')}">
+								<f:convertNumber integerOnly="#{cc.attrs.dataType.value == 'integer'}" />
+								<!--  rangeValidator -->
+				</h:inputText>
+				<!--  input field for other dataTypes -->
+				<h:inputText value="#{cc.attrs.value.value}"
+								rendered="#{empty cc.attrs.allowedValues and !(cc.attrs.dataType.value == 'double' or cc.attrs.dataType.value == 'integer')}" />
+				<!-- allowed values -->
+				<h:selectOneMenu value="#{cc.attrs.value.value}" rendered="#{!empty cc.attrs.allowedValues}">
+								<f:selectItems value="#{cc.attrs.allowedValues}" var="alValue" itemValue="#{alValue}" itemLabel="#{alValue}" />
+				</h:selectOneMenu>
+				<!--  uom -->
+				<h:selectOneMenu value="#{cc.attrs.value.uom}" rendered="#{empty cc.attrs.allowedValues and !empty cc.attrs.supportedUoms}">
+								<f:selectItems value="#{cc.attrs.supportedUoms}" var="supUom" itemValue="#{supUom.value}"
+												itemLabel="#{supUom.value}" />
+				</h:selectOneMenu>
+</composite:implementation>
+</body>
+</html>
