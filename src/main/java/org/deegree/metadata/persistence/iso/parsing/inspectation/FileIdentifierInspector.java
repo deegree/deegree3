@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.parsing;
+package org.deegree.metadata.persistence.iso.parsing.inspectation;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -41,7 +41,9 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector.Param;
 import org.slf4j.Logger;
@@ -55,7 +57,8 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class FileIdentifierInspector {
+public class FileIdentifierInspector implements RecordInspector {
+
     private static final Logger LOG = getLogger( FileIdentifierInspector.class );
 
     private static final String REJECT_EMPTY_FILE_IDENTIFIER = "rejectEmptyFileIdentifier";
@@ -118,7 +121,7 @@ public class FileIdentifierInspector {
         this.uuid = uuid;
         this.idList.clear();
         if ( fi != null ) {
-            if ( ParsingUtils.newInstance( conn ).proveIdExistence( fi ) ) {
+            if ( IdUtils.newInstance( conn ).proveIdExistence( fi ) ) {
                 LOG.info( "'{}' accepted as a valid fileIdentifier. ", fi );
                 idList.add( fi );
                 return idList;
@@ -176,6 +179,13 @@ public class FileIdentifierInspector {
 
     public String getUuid() {
         return uuid;
+    }
+
+    @Override
+    public OMElement inspect( OMElement record )
+                            throws MetadataStoreException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
