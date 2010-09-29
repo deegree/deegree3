@@ -295,7 +295,7 @@ public class CSWController extends AbstractOGCServiceController {
                                                                                          OGCFrontController.getContext().getCredentials(),
                                                                                          false );
 
-                transactionHandler.doTransaction( trans, response, false );
+                transactionHandler.doTransaction( trans, response );
                 break;
             }
 
@@ -399,7 +399,7 @@ public class CSWController extends AbstractOGCServiceController {
                                                                                                                                                                            transAdapter.parse( requestVersion ),
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            false );
-                transactionHandler.doTransaction( cswTRequest, response, false );
+                transactionHandler.doTransaction( cswTRequest, response );
                 break;
             }
 
@@ -503,7 +503,7 @@ public class CSWController extends AbstractOGCServiceController {
                                                                                                                                                                            OGCFrontController.getContext().getCredentials(),
                                                                                                                                                                            true );
 
-                transactionHandler.doTransaction( cswTRequest, response, true );
+                transactionHandler.doTransaction( cswTRequest, response );
                 break;
 
             }

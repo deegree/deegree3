@@ -265,16 +265,16 @@ public class GetRecordsHandler {
 
             // Question if there is the specified record available
             for ( QName typeName : getRec.getTypeNames() ) {
-                MetadataStore rec = determineMetadataStore( typeName );
-                MetadataQuery gdds = new MetadataQuery( getRec.getConstraint(), getRec.getOutputSchema(),
-                                                        getRec.getSortBy(), getRec.getResultType(),
-                                                        getRec.getElementSetName(), getRec.getMaxRecords(),
-                                                        getRec.getStartPosition() );
+                MetadataStore rec = service.getStore();
+                MetadataQuery query = new MetadataQuery( getRec.getConstraint(), getRec.getOutputSchema(),
+                                                         getRec.getSortBy(), getRec.getResultType(),
+                                                         getRec.getElementSetName(), getRec.getMaxRecords(),
+                                                         getRec.getStartPosition() );
 
                 // commits the record to the getRecords operation
 
                 try {
-                    storeSet = rec.getRecords( typeName, gdds );
+                    storeSet = rec.getRecords( typeName, query );
                 } catch ( MetadataStoreException e ) {
                     throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
                 }
@@ -371,27 +371,6 @@ public class GetRecordsHandler {
             e.printStackTrace();
         }
 
-    }
-
-    private MetadataStore determineMetadataStore( QName element )
-                            throws MetadataStoreException {
-
-        String uri = element.getNamespaceURI();
-        String localName = element.getLocalPart();
-        String prefix = element.getPrefix();
-
-        LOG.info( "Check element QName: <" + uri + ">" + prefix + ":" + localName + ". " );
-        LOG.info( "Check metadataSore..." );
-        MetadataStore rec = null;
-        try {
-            rec = service.getRecordStore( new QName( uri, localName, prefix ) );
-
-            LOG.info( "Conventient MetadataStore found. " );
-        } catch ( MetadataStoreException e ) {
-            LOG.error( "error: " + e.getMessage() );
-            throw new MetadataStoreException( e.getMessage() );
-        }
-        return rec;
     }
 
 }

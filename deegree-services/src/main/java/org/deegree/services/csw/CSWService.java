@@ -40,8 +40,6 @@ import static org.deegree.services.i18n.Messages.get;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreManager;
@@ -111,30 +109,11 @@ public class CSWService {
         }
     }
 
-    /**
-     * * Question after a {@link MetadataStore} that is available that maps to the requested typeName. <br>
-     * If there is no matching between the parameter typeName and any {@link MetadataStore} there is nothing to be
-     * returned. Otherwise the requested {@link MetadataStore} should return.
-     * 
-     * 
-     * @param qName
-     *            the characteristic typeName for a specific record
-     * 
-     * @return a {@link MetadataStore}
-     * @throws MetadataStoreException
-     *             if there is no {@link MetadataStore} found.
-     */
-    public MetadataStore getRecordStore( QName qName )
-                            throws MetadataStoreException {
-
-        for ( MetadataStore rs : recordStore ) {
-            if ( rs.getTypeNames().get( qName ) != null ) {
-                return rs;
-            }
-
+    public MetadataStore getStore() {
+        if ( recordStore.isEmpty() ) {
+            return null;
         }
-        throw new MetadataStoreException( "There is no MetadataStore registered for '" + qName + "'!" );
-
+        return recordStore.iterator().next();
     }
 
     /**
