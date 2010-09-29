@@ -98,7 +98,6 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             formatNumber = 1;
         }
 
-        // TODO sortProperty
         try {
             builder = new PostGISWhereBuilder( new PostGISMappingsISODC(), (OperatorFilter) delete.getConstraint(),
                                                null, useLegacyPredicates );
@@ -108,7 +107,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
         } catch ( FilterEvaluationException e ) {
 
-            throw new MetadataStoreException( "The Filterexpression has thrown an error! " );
+            throw new MetadataStoreException( "The Filterexpression has thrown an error! " + e.getMessage() );
         }
     }
 

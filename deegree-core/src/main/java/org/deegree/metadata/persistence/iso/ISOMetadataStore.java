@@ -274,17 +274,6 @@ public class ISOMetadataStore implements MetadataStore {
     /*
      * (non-Javadoc)
      * 
-     * @see org.deegree.record.persistence.RecordStore#getTypeNames()
-     */
-    @Override
-    public Map<QName, Integer> getTypeNames() {
-
-        return typeNames;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.deegree.record.persistence.RecordStore#getRecords(javax.xml.stream.XMLStreamWriter,
      * javax.xml.namespace.QName)
      */
@@ -325,7 +314,7 @@ public class ISOMetadataStore implements MetadataStore {
                 break;
             case hits:
                 resultType = doHitsOnGetRecord( typeNameFormatNumber, query,
-                                                formatTypeInISORecordStore.get( query.getSetOfReturnableElements() ),
+                                                formatTypeInISORecordStore.get( query.returnableElement() ),
                                                 ResultType.hits, builder, conn, new ExecuteStatements() );
                 result = new ISOMetadataResultSet( col, resultType );
                 break;
@@ -392,11 +381,11 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
             if ( resultType.equals( ResultType.results ) ) {
-                result = new Hits( recOpt.getSetOfReturnableElements(), countRows, returnedRecords,
+                result = new Hits( recOpt.returnableElement(), countRows, returnedRecords,
                                    recOpt.getOutputSchema().toString(), nextRecord,
                                    DateUtils.formatISO8601Date( new Date() ) );
             } else {
-                result = new Hits( recOpt.getSetOfReturnableElements(), countRows, 0,
+                result = new Hits( recOpt.returnableElement(), countRows, 0,
                                    recOpt.getOutputSchema().toString(), 1, DateUtils.formatISO8601Date( new Date() ) );
             }
 
@@ -447,7 +436,7 @@ public class ISOMetadataStore implements MetadataStore {
         String formatType = null;
         ExecuteStatements exe = new ExecuteStatements();
         try {
-            switch ( recordStoreOptions.getSetOfReturnableElements() ) {
+            switch ( recordStoreOptions.returnableElement() ) {
 
             case brief:
                 formatType = formatTypeInISORecordStore.get( CSWConstants.ReturnableElement.brief );

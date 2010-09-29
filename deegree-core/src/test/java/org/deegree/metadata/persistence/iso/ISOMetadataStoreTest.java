@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
+import static org.deegree.protocol.csw.CSWConstants.OutputSchema.DC;
+import static org.deegree.protocol.csw.CSWConstants.ReturnableElement.brief;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -57,9 +59,11 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
+import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -99,7 +103,7 @@ public class ISOMetadataStoreTest {
                 conn.close();
             }
         }
-        // store = (ISOMetadataStore) MetadataStoreManager.create( configURL );
+        store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( configURL );
     }
 
     private void setUpTables( Connection conn )
@@ -114,7 +118,7 @@ public class ISOMetadataStoreTest {
             for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( configURL ) ) {
                 stmt.execute( sql );
             }
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( configURL );
+
         } finally {
             if ( stmt != null ) {
                 stmt.close();
@@ -142,8 +146,10 @@ public class ISOMetadataStoreTest {
         List<String> ids = ta.performInsert( insert );
         ta.commit();
 
-        // store.getRecordsById( ids, outputSchema, elementSetName )
+        MetadataResultSet rs = store.getRecordsById( ids, OutputSchema.determineOutputSchema( DC ), brief );
+        for ( MetadataRecord r : rs.getMembers() ) {
 
+        }
         // TODO test various queries
 
     }
