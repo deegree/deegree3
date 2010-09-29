@@ -36,7 +36,11 @@
 package org.deegree.services.wps.provider.sextante;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Geometry;
@@ -55,6 +59,7 @@ import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.OutputObjectsSet;
 import es.unex.sextante.core.ParametersSet;
@@ -688,10 +693,8 @@ public class SextanteProcesslet implements Processlet {
                             throws ProcessletException {
         try {
 
-            String gmlSchema = gmlOutput.getRequestedSchema();
-            XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(),
-                                                                    "http://www.opengis.net/gml " + gmlSchema );
-            sw.setPrefix( "gml", GMLNS );
+            XMLStreamWriter sw = gmlOutput.getXMLStreamWriter();
+//            sw.setPrefix( "gml", CommonNamespaces.GML3_2_NS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
                                                                                 FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );

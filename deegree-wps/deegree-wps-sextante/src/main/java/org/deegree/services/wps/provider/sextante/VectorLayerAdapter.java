@@ -89,6 +89,10 @@ public class VectorLayerAdapter {
     // logger
     private static final Logger LOG = LoggerFactory.getLogger( VectorLayerAdapter.class );
 
+    private static final String APP_NS = "http://www.deegree.org/sextante";
+
+    private static final String APP_PREFIX = "st";
+
     /**
      * Creates an {@link IVectorLayer} from a {@link FeatureCollection}.
      * 
@@ -248,6 +252,7 @@ public class VectorLayerAdapter {
 
         // create feature collection
         GenericFeatureCollection coll = new GenericFeatureCollection( "SextanteFeatureCollection", features );
+       
 
         return coll;
     }
@@ -320,13 +325,12 @@ public class VectorLayerAdapter {
         for ( int i = 0; i < l.getFieldCount(); i++ ) {
 
             String nameRaw = l.getFieldName( i );
-
             if ( nameRaw == null ) {
                 nameRaw = "PROPERTY_WITHOUT_NAME";
             }
 
             // determine element name
-            QName probName = new QName( nameRaw.replace( " ", "" ) );
+            QName probName = new QName( APP_NS, nameRaw.replace( " ", "" ), APP_PREFIX );
 
             // TODO correct redundancy
             // modify value
@@ -357,13 +361,15 @@ public class VectorLayerAdapter {
         }
 
         // create simple geometry
-        GeometryPropertyType gpt = new GeometryPropertyType( new QName( "geom" ), 1, 1, GeometryType.MULTI_GEOMETRY,
-                                                             CoordinateDimension.DIM_2, false,
-                                                             new LinkedList<PropertyType>(), ValueRepresentation.INLINE );
+        GeometryPropertyType gpt = new GeometryPropertyType( new QName( APP_NS, "geom", APP_PREFIX ), 1, 1,
+                                                             GeometryType.MULTI_GEOMETRY, CoordinateDimension.DIM_2,
+                                                             false, new LinkedList<PropertyType>(),
+                                                             ValueRepresentation.INLINE );
         propDecls.add( gpt );
 
         // creatre feature type
-        GenericFeatureType fty = new GenericFeatureType( new QName( "SextanteFeature" ), propDecls, false );
+        GenericFeatureType fty = new GenericFeatureType( new QName( APP_NS, "SextanteFeature", APP_PREFIX ), propDecls,
+                                                         false );
 
         // create properties
         LinkedList<Property> props = new LinkedList<Property>();

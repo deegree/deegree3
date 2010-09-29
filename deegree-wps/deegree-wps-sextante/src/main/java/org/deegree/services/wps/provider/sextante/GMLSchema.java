@@ -149,10 +149,47 @@ public class GMLSchema implements OutputFormat {
 
         Set<String> keys = ALL_SCHEMAS.keySet();
         for ( String key : keys ) {
+            schemas.add( ALL_SCHEMAS.get( key ) );
+        }
 
-            if ( key.equals( GML_31_GEOMETRY_SCHEMA.getSchemaURL() )
-                 || key.equals( GML_31_FEATURE_COLLECTION_SCHEMA.getSchemaURL() ) )
-                schemas.add( ALL_SCHEMAS.get( key ) );
+        return schemas;
+    }
+
+    /**
+     * Returns a list of all geometry {@link GMLSchema}s.
+     * 
+     * @return List of all geometry {@link GMLSchema}s.
+     */
+    public static LinkedList<GMLSchema> getGeometrySchemas() {
+
+        LinkedList<GMLSchema> schemas = new LinkedList<GMLSchema>();
+
+        Set<String> keys = ALL_SCHEMAS.keySet();
+        for ( String key : keys ) {
+
+            GMLSchema schema = ALL_SCHEMAS.get( key );
+            if ( schema.getGMLType().equals( GMLType.GEOMETRY ) )
+                schemas.add( schema );
+        }
+
+        return schemas;
+    }
+
+    /**
+     * Returns a list of all feature collection {@link GMLSchema}s.
+     * 
+     * @return List of all feature collection {@link GMLSchema}s.
+     */
+    public static LinkedList<GMLSchema> getFeatureCollectionSchemas() {
+
+        LinkedList<GMLSchema> schemas = new LinkedList<GMLSchema>();
+
+        Set<String> keys = ALL_SCHEMAS.keySet();
+        for ( String key : keys ) {
+
+            GMLSchema schema = ALL_SCHEMAS.get( key );
+            if ( schema.getGMLType().equals( GMLType.FEATURE_COLLECTION ) )
+                schemas.add( schema );
         }
 
         return schemas;
