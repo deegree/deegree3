@@ -48,19 +48,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+
+import junit.framework.Assert;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.CoreTstProperties;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.metadata.ISORecord;
-import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
+import org.deegree.protocol.csw.CSWConstants;
+import org.deegree.protocol.csw.CSWConstants.OutputSchema;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -124,7 +126,7 @@ public class ISOMetadataStoreTest {
     }
 
     @Test
-    public void testBasic()
+    public void testInsert()
                             throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException {
 
         if ( store == null ) {
@@ -134,11 +136,13 @@ public class ISOMetadataStoreTest {
         MetadataStoreTransaction ta = store.acquireTransaction();
         List<OMElement> records;
         int countInserted = 0;
+        int countInsert = 0;
 
         File folder = new File( "/home/thomas/Dokumente/metadata/test" );
         File[] fileArray = folder.listFiles();
         if ( fileArray != null ) {
-            System.out.println( "TEST: arraySize: " + fileArray.length );
+            countInsert = fileArray.length;
+            System.out.println( "TEST: arraySize: " + countInsert );
             for ( File f : fileArray ) {
                 records = new ArrayList<OMElement>();
                 OMElement record = new XMLAdapter( f ).getRootElement();
@@ -151,21 +155,54 @@ public class ISOMetadataStoreTest {
                     countInserted += ids.size();
                 }
                 ta.commit();
-                // MetadataResultSet rs = store.getRecordsById( ids, OutputSchema.determineOutputSchema( DC ), brief );
-                // for ( MetadataRecord r : rs.getMembers() ) {
-                //
-                // }
             }
         }
-        LOG.info( "acctually inserted metadataRecords: " + countInserted );
+        LOG.info( countInserted + " from " + countInsert + " Metadata inserted." );
 
         // TODO test various queries
 
     }
 
-    private MetadataRecord loadRecord( URL url )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.openStream() );
-        return new ISORecord( xmlStream );
+    @Test
+    public void testGetRecord()
+                            throws MetadataStoreException {
+        if ( store == null ) {
+            LOG.warn( "Skipping test (needs configuration)." );
+            return;
+        }
+        MetadataStoreTransaction ta = store.acquireTransaction();
+        List<OMElement> records;
+
+        List<String> ids = new ArrayList<String>();
+
+        File file = new File( "/home/thomas/Dokumente/metadata/cidportal.jrc.ec.europa.eu/1.xml" );
+
+        if ( file.isFile() ) {
+
+            records = new ArrayList<OMElement>();
+            OMElement record = new XMLAdapter( file ).getRootElement();
+            LOG.info( "inserting filename: " + file.getName() );
+            records.add( record );
+            InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
+            ids = ta.performInsert( insert );
+            ta.commit();
+
+        }
+        LOG.info( file + "with id'" + ids.get( 0 ) + "' as Metadata inserted." );
+        MetadataResultSet resultSet = store.getRecordsById(
+                                                            ids,
+                                                            CSWConstants.OutputSchema.determineOutputSchema( OutputSchema.ISO_19115 ),
+                                                            ReturnableElement.full );
+        // LOG.info( "" + resultSet.getResultType().getNumberOfRecordsMatched() );
+
+        Assert.assertEquals( 1, resultSet.getMembers().size() );
+
+        // TODO test various queries
     }
+
+    // private MetadataRecord loadRecord( URL url )
+    // throws XMLStreamException, FactoryConfigurationError, IOException {
+    // XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.openStream() );
+    // return new ISORecord( xmlStream );
+    // }
 }
