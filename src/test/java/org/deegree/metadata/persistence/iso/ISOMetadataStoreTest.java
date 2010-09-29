@@ -101,8 +101,8 @@ public class ISOMetadataStoreTest {
             } finally {
                 conn.close();
             }
+            store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( configURL );
         }
-        store = (ISOMetadataStore) new ISOMetadataStoreProvider().getMetadataStore( configURL );
     }
 
     private void setUpTables( Connection conn )
