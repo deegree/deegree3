@@ -93,13 +93,13 @@ public class StandardGMLFeatureProps extends GMLStdProps {
 
     static {
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
-        PT_BOUNDED_BY_GML2 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1, false, null );
+        PT_BOUNDED_BY_GML2 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1, false, false, null );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
-        PT_BOUNDED_BY_GML31 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1, false, null );
+        PT_BOUNDED_BY_GML31 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1, false, false, null );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
-        PT_BOUNDED_BY_GML32 = new EnvelopePropertyType( new QName( GML3_2_NS, "boundedBy" ), 0, 1, false, null );
+        PT_BOUNDED_BY_GML32 = new EnvelopePropertyType( new QName( GML3_2_NS, "boundedBy" ), 0, 1, false, false, null );
 
         // fill lookup maps
         GML2PropNameToPropType.put( PT_DESCRIPTION_GML2.getName(), PT_DESCRIPTION_GML2 );

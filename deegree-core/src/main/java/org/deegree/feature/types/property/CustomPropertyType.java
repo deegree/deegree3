@@ -54,8 +54,8 @@ public class CustomPropertyType extends AbstractPropertyType {
     private XSComplexTypeDefinition xsdType;
 
     public CustomPropertyType( QName name, int minOccurs, int maxOccurs, XSComplexTypeDefinition xsdType,
-                               boolean isAbstract, List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+                               boolean isAbstract, boolean isNillable, List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
         this.xsdType = xsdType;
     }
 
@@ -68,11 +68,5 @@ public class CustomPropertyType extends AbstractPropertyType {
         String s = "- custom property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
                    + ", content xsd type: " + xsdType;
         return s;
-    }
-
-    @Override
-    public boolean isNillable() {
-        // TODO pipe this value through
-        return true;
     }
 }

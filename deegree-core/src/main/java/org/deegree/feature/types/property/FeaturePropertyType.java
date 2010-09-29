@@ -63,9 +63,9 @@ public class FeaturePropertyType extends AbstractPropertyType {
 
     private final ValueRepresentation representation;
 
-    public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, QName valueFtName, boolean isAbstract,
-                                List<PropertyType> substitutions, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+    public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
+                                List<PropertyType> substitutions, QName valueFtName, ValueRepresentation representation ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
         this.valueFtName = valueFtName;
         this.representation = representation;
     }
@@ -99,10 +99,10 @@ public class FeaturePropertyType extends AbstractPropertyType {
             valueFtName = null;
         }
         // TODO (reenable?)
-//        if ( this.valueFt != null ) {
-//            String msg = "Internal error. Reference to feature type '" + valueFtName + "' has already been resolved.";
-//            throw new IllegalArgumentException( msg );
-//        }
+        // if ( this.valueFt != null ) {
+        // String msg = "Internal error. Reference to feature type '" + valueFtName + "' has already been resolved.";
+        // throw new IllegalArgumentException( msg );
+        // }
         this.valueFt = valueFt;
     }
 
@@ -120,11 +120,5 @@ public class FeaturePropertyType extends AbstractPropertyType {
         String s = "- feature property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
                    + ", value feature type: " + valueFtName;
         return s;
-    }
-
-    @Override
-    public boolean isNillable() {
-        // TODO pipe this value through
-        return true;
     }
 }

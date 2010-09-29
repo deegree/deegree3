@@ -52,19 +52,13 @@ import org.deegree.commons.tom.ows.CodeType;
 public class CodePropertyType extends AbstractPropertyType {
 
     public CodePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                             List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+                             boolean isNillable, List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
     }
 
     @Override
     public String toString() {
         String s = "- code property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
         return s;
-    }
-
-    @Override
-    public boolean isNillable() {
-        // TODO pipe this value through
-        return true;
     }
 }

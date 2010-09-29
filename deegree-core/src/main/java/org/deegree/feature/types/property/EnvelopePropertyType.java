@@ -52,8 +52,8 @@ import org.deegree.geometry.Envelope;
 public class EnvelopePropertyType extends AbstractPropertyType {
 
     public EnvelopePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                 List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+                                 boolean isNillable, List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
     }
 
     @Override
@@ -61,10 +61,4 @@ public class EnvelopePropertyType extends AbstractPropertyType {
         String s = "- envelope property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
         return s;
     }
-    
-    @Override
-    public boolean isNillable() {
-        // TODO pipe this value through
-        return true;
-    }    
 }

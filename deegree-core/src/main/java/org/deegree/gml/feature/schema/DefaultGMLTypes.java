@@ -73,15 +73,16 @@ public class DefaultGMLTypes {
     static {
         QName name = new QName( GMLNS, "FeatureCollection", "gml" );
         List<PropertyType> props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, null, false, null, BOTH ) );
-        props.add( new ArrayPropertyType( new QName( GMLNS, "featureMembers", "gml" ), 0, -1, false, null ) );
+        props.add( new FeaturePropertyType( new QName( GMLNS, "featureMember", "gml" ), 0, -1, false, false, null, null,
+                                            BOTH ) );
+        props.add( new ArrayPropertyType( new QName( GMLNS, "featureMembers", "gml" ), 0, -1, false, false, null ) );
         GML311_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
 
         name = new QName( GML3_2_NS, "FeatureCollection", "gml" );
         props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType( new QName( GML3_2_NS, "featureMember", "gml" ), 0, -1, null, false, null,
-                                            BOTH ) );
-        props.add( new ArrayPropertyType( new QName( GML3_2_NS, "featureMembers", "gml" ), 0, -1, false, null ) );
+        props.add( new FeaturePropertyType( new QName( GML3_2_NS, "featureMember", "gml" ), 0, -1, false, false, null,
+                                            null, BOTH ) );
+        props.add( new ArrayPropertyType( new QName( GML3_2_NS, "featureMembers", "gml" ), 0, -1, false, false, null ) );
         GML321_FEATURECOLLECTION = new GenericFeatureCollectionType( name, props, false );
     }
 

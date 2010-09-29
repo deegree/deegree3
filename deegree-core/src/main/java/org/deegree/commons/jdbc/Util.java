@@ -118,25 +118,26 @@ public class Util {
                 switch ( colType ) {
                 case VARCHAR:
                 case CHAR:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, STRING, false, null );
+                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, STRING, false, false, null );
                     break;
                 case INTEGER:
                 case SMALLINT:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER, false, null );
+                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER, false,
+                                                 false, null );
                     break;
                 case BIT:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, BOOLEAN, false, null );
+                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, BOOLEAN, false, false, null );
                     break;
                 case NUMERIC:
                 case DOUBLE:
                 case BIGINT:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, DECIMAL, false, null );
+                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, DECIMAL, false, false, null );
                     break;
                 case OTHER:
                 case BINARY:
                 case BLOB:
-                    pt = new GeometryPropertyType( new QName( namespace, name ), 0, 1, GEOMETRY, DIM_2_OR_3, false,
-                                                   null, null );
+                    pt = new GeometryPropertyType( new QName( namespace, name ), 0, 1, false, false, null,
+                                                   GEOMETRY, DIM_2_OR_3, null );
                     break;
                 default:
                     LOG.error( "Unsupported data type '{}'.", colType );

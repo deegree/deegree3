@@ -193,28 +193,34 @@ public class DBFReader {
                     fieldLength += fieldPrecision << 8;
                     LOG.trace( "Field length is changed to " + fieldLength + " for text field." );
                 }
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.STRING, false, null );
+                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.STRING, false, false,
+                                             null );
                 break;
             case 'N':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DECIMAL, false, null );
+                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DECIMAL, false, false,
+                                             null );
                 break;
             case 'L':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.BOOLEAN, false, null );
+                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.BOOLEAN, false, false,
+                                             null );
                 break;
             case 'D':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DATE, false, null );
+                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DATE, false, false, null );
                 break;
             case 'F':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DECIMAL, false, null );
+                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DECIMAL, false, false,
+                                             null );
                 break;
             case 'T':
                 LOG.warn( "Date/Time fields are not supported. Please send the file to the devs, so they can implement it." );
                 break;
             case 'I':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER, false, null );
+                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER, false, false,
+                                             null );
                 break;
             case '@':
-                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DATE_TIME, false, null );
+                pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.DATE_TIME, false, false,
+                                             null );
                 break;
             case 'O':
                 LOG.warn( "Double fields are not supported. Please send the file to the devs, so they can implement it." );
@@ -237,8 +243,8 @@ public class DBFReader {
             }
         }
 
-        types.add( new GeometryPropertyType( new QName( namespace, "geometry" ), 0, 1, GEOMETRY, DIM_2_OR_3, false,
-                                             null, BOTH ) ); // TODO
+        types.add( new GeometryPropertyType( new QName( namespace, "geometry" ), 0, 1, false, false, null,
+                                             GEOMETRY, DIM_2_OR_3, BOTH ) ); // TODO
         // properly
         // determine the
         // dimension from SHP type

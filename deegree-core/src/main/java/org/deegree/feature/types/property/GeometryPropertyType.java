@@ -339,10 +339,10 @@ public class GeometryPropertyType extends AbstractPropertyType {
 
     private final Set<GeometryType> allowedGeometryTypes;
 
-    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, GeometryType geomType,
-                                 CoordinateDimension dim, boolean isAbstract, List<PropertyType> substitutions,
-                                 ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+                                 boolean isNillable, List<PropertyType> substitutions, GeometryType geomType,
+                                 CoordinateDimension dim, ValueRepresentation representation ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
         this.geomType = geomType;
         this.allowedGeometryTypes = new HashSet<GeometryType>();
         this.allowedGeometryTypes.add( this.geomType );
@@ -355,17 +355,17 @@ public class GeometryPropertyType extends AbstractPropertyType {
      *            of the geometry property
      * @param minOccurs
      * @param maxOccurs
+     * @param isAbstract
+     * @param substitutions
      * @param geomTypes
      *            allowed types for this geometry property (a choice declaration in the schema).
      * @param dim
-     * @param isAbstract
-     * @param substitutions
      * @param representation
      */
-    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, Set<GeometryType> geomTypes,
-                                 CoordinateDimension dim, boolean isAbstract, List<PropertyType> substitutions,
-                                 ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+                                 boolean isNillable, List<PropertyType> substitutions, Set<GeometryType> geomTypes,
+                                 CoordinateDimension dim, ValueRepresentation representation ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
         this.allowedGeometryTypes = geomTypes;
         this.geomType = GeometryType.determineMinimalBaseGeometry( geomTypes );
         this.dim = dim;
@@ -409,11 +409,5 @@ public class GeometryPropertyType extends AbstractPropertyType {
         String s = "- geometry property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
                    + ", geometry type: " + geomType;
         return s;
-    }
-
-    @Override
-    public boolean isNillable() {
-        // TODO pipe this value through
-        return true;
     }
 }
