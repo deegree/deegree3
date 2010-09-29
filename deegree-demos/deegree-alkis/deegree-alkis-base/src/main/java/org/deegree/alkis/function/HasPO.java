@@ -60,7 +60,6 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.gml.feature.FeatureReference;
-import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.slf4j.Logger;
 
 /**
@@ -86,24 +85,18 @@ public class HasPO implements FunctionProvider {
 
     private static boolean is511;
 
-    private static TypeName[] interestingProps511 = new TypeName[] {
-                                                                    new TypeName( new QName( ns511, "AP_Darstellung" ),
-                                                                                  null ),
-                                                                    new TypeName( new QName( ns511, "AP_LTO" ), null ),
-                                                                    new TypeName( new QName( ns511, "AP_PTO" ), null ),
-                                                                    new TypeName( new QName( ns511, "AP_FTO" ), null ),
-                                                                    new TypeName( new QName( ns511, "AP_LTO" ), null ),
-                                                                    new TypeName( new QName( ns511, "AP_PPO" ), null ) };
+    private static QName[] interestingProps511 = new QName[] { new QName( ns511, "AP_Darstellung" ),
+                                                              new QName( ns511, "AP_LTO" ),
+                                                              new QName( ns511, "AP_PTO" ),
+                                                              new QName( ns511, "AP_FTO" ),
+                                                              new QName( ns511, "AP_LTO" ), new QName( ns511, "AP_PPO" ) };
 
     // use the same as for 511, 3d stuff is not supported anyway
-    private static TypeName[] interestingProps601 = new TypeName[] {
-                                                                    new TypeName( new QName( ns601, "AP_Darstellung" ),
-                                                                                  null ),
-                                                                    new TypeName( new QName( ns601, "AP_LTO" ), null ),
-                                                                    new TypeName( new QName( ns601, "AP_PTO" ), null ),
-                                                                    new TypeName( new QName( ns601, "AP_FTO" ), null ),
-                                                                    new TypeName( new QName( ns601, "AP_LTO" ), null ),
-                                                                    new TypeName( new QName( ns601, "AP_PPO" ), null ) };
+    private static QName[] interestingProps601 = new QName[] { new QName( ns601, "AP_Darstellung" ),
+                                                              new QName( ns601, "AP_LTO" ),
+                                                              new QName( ns601, "AP_PTO" ),
+                                                              new QName( ns601, "AP_FTO" ),
+                                                              new QName( ns601, "AP_LTO" ), new QName( ns601, "AP_PPO" ) };
 
     static {
         QName gemeinde511 = new QName( ns511, "AX_Gemeinde" );
@@ -125,21 +118,23 @@ public class HasPO implements FunctionProvider {
      */
     public static void update() {
         if ( featureStore == null ) {
+            System.out.println( "is null" );
             return;
         }
 
         featuresWithPO.clear();
-        
+
         try {
-            FeatureResultSet col = featureStore.query( new Query( is511 ? interestingProps511 : interestingProps601,
-                                                                  null, null, null, null ) );
-            QName name = new QName( is511 ? ns511 : ns601, "dientZurDarstellungVon" );
-            for ( Feature f : col ) {
-                for ( Property p : f.getProperties( name ) ) {
-                    if ( p != null && p.getType() instanceof FeaturePropertyType ) {
-                        FeatureReference ref = (FeatureReference) p.getValue();
-                        if ( ref.isResolved() ) {
-                            featuresWithPO.add( ref.getReferencedObject() );
+            for ( QName q : is511 ? interestingProps511 : interestingProps601 ) {
+                FeatureResultSet col = featureStore.query( new Query( q, null, null, -1, -1, -1 ) );
+                QName name = new QName( is511 ? ns511 : ns601, "dientZurDarstellungVon" );
+                for ( Feature f : col ) {
+                    for ( Property p : f.getProperties( name ) ) {
+                        if ( p != null && p.getType() instanceof FeaturePropertyType ) {
+                            FeatureReference ref = (FeatureReference) p.getValue();
+                            if ( ref.isResolved() ) {
+                                featuresWithPO.add( ref.getReferencedObject() );
+                            }
                         }
                     }
                 }
