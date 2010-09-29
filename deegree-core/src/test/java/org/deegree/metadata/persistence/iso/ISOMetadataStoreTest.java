@@ -35,10 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso;
 
-import static org.deegree.protocol.csw.CSWConstants.OutputSchema.DC;
-import static org.deegree.protocol.csw.CSWConstants.ReturnableElement.brief;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -59,11 +58,9 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.MetadataRecord;
-import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.publication.InsertTransaction;
-import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -134,22 +131,33 @@ public class ISOMetadataStoreTest {
             LOG.warn( "Skipping test (needs configuration)." );
             return;
         }
-
-        URL url = new URL( "file:/home/thomas/Dokumente/metadata_inspire/GEW_GEWAESSER_ACHSE.layer.xml" );
-        OMElement record = new XMLAdapter( url ).getRootElement();
-        // MetadataRecord record = loadRecord( url );
-
         MetadataStoreTransaction ta = store.acquireTransaction();
-        List<OMElement> records = new ArrayList<OMElement>();
-        records.add( record );
-        InsertTransaction insert = new InsertTransaction( records, record.getQName(), "insert" );
-        List<String> ids = ta.performInsert( insert );
+        List<OMElement> records;// = new ArrayList<OMElement>();
+
+        File folder = new File( "/home/thomas/Dokumente/metadata/test" );
+        File[] fileArray = folder.listFiles();
+        if ( fileArray != null ) {
+            System.out.println( "TEST: arraySize: " + fileArray.length );
+            for ( File f : fileArray ) {
+                records = new ArrayList<OMElement>();
+                // URL url = new URL( "file:/home/thomas/Dokumente/metadata_inspire/GEW_GEWAESSER_ACHSE.layer.xml" );
+                OMElement record = new XMLAdapter( f ).getRootElement();
+                // MetadataRecord record = loadRecord( url );
+                LOG.info( "inserting filename: " + f.getName() );
+                records.add( record );
+                InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
+                List<String> ids = ta.performInsert( insert );
+                ta.commit();
+                // MetadataResultSet rs = store.getRecordsById( ids, OutputSchema.determineOutputSchema( DC ), brief );
+                // for ( MetadataRecord r : rs.getMembers() ) {
+                //
+                // }
+            }
+        }
+        // InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
+        // List<String> ids = ta.performInsert( insert );
         ta.commit();
 
-        MetadataResultSet rs = store.getRecordsById( ids, OutputSchema.determineOutputSchema( DC ), brief );
-        for ( MetadataRecord r : rs.getMembers() ) {
-
-        }
         // TODO test various queries
 
     }
