@@ -122,17 +122,20 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             try {
 
                 execStm = new ExecuteStatements();
+                String idString = null;
 
                 if ( localName.getLocalPart().equals( "Record" ) ) {
-
-                    identifierList.add( execStm.executeInsertStatement( true, conn,
-                                                                        new ISOQPParsing( ca ).parseAPDC( element ) ) );
+                    idString = execStm.executeInsertStatement( true, conn, new ISOQPParsing( ca ).parseAPDC( element ) );
+                    if ( idString != null ) {
+                        identifierList.add( idString );
+                    }
 
                 } else {
 
-                    identifierList.add( execStm.executeInsertStatement( false, conn,
-                                                                        new ISOQPParsing( ca ).parseAPISO( element,
-                                                                                                           false ) ) );
+                    idString = execStm.executeInsertStatement( false, conn, new ISOQPParsing( ca ).parseAPISO( element, false ) );
+                    if ( idString != null ) {
+                        identifierList.add( idString );
+                    }
 
                 }
 

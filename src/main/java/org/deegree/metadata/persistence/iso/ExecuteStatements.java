@@ -114,7 +114,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
             generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
             return identifier;
         }
-        return "";
+        return null;
 
     }
 
