@@ -137,6 +137,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 }
 
             } catch ( IOException e ) {
+                LOG.info( e.getMessage() );
                 throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
             }
 

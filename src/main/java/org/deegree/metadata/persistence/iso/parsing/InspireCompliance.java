@@ -93,8 +93,9 @@ public class InspireCompliance {
      */
     public List<String> determineInspireCompliance( List<String> rsList, String id )
                             throws MetadataStoreException {
-        boolean generateAutomatic = ric.isGenerateAutomatic();
+
         if ( checkInspireCompliance() ) {
+            boolean generateAutomatic = ric.isGenerateAutomatic();
             if ( generateAutomatic == false ) {
                 if ( checkRSListAgainstID( rsList, id ) ) {
                     LOG.info( "The resourceIdentifier has been accepted." );

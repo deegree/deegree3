@@ -128,8 +128,10 @@ public class FileIdentifierInspector {
                 idList.add( fi );
                 return idList;
             }
-            LOG.debug( "The metadata with id '{}' is stored in backend, already! ", fi );
-            throw new MetadataStoreException( "The metadata with id '" + fi + "' stored in backend, already!" );
+            LOG.info( "SKIPPING: The metadata with id '{}' is stored in backend, already! ", fi );
+            // so skip it and return an empty idList
+            return idList;
+            // throw new MetadataStoreException( "The metadata with id '" + fi + "' stored in backend, already!" );
         } else {
             // default behavior if there is no inspector provided
             if ( isFileIdentifierRejected() == false ) {

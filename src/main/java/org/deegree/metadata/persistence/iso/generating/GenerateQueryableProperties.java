@@ -191,7 +191,7 @@ public class GenerateQueryableProperties {
             generateISOQP_RevisionDateStatement( isUpdate, connection, operatesOnId,
                                                  parsedElement.getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getResourceIdentifier() != null ) {
+        if ( !parsedElement.getQueryableProperties().getResourceIdentifier().isEmpty() ) {
             generateISOQP_ResourceIdentifierStatement( isUpdate, connection, operatesOnId,
                                                        parsedElement.getQueryableProperties() );
         }

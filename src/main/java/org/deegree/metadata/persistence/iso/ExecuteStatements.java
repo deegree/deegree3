@@ -102,16 +102,19 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
         boolean isUpdate = false;
         String identifier = null;
-        int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
+        if ( parsedElement != null ) {
+            int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
 
-        if ( isDC == true ) {
-            identifier = buildRecXML.generateDC( connection, operatesOnId, parsedElement );
-        } else {
-            identifier = buildRecXML.generateISO( connection, operatesOnId, parsedElement );
+            if ( isDC == true ) {
+                identifier = buildRecXML.generateDC( connection, operatesOnId, parsedElement );
+            } else {
+                identifier = buildRecXML.generateISO( connection, operatesOnId, parsedElement );
 
+            }
+            generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
+            return identifier;
         }
-        generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
-        return identifier;
+        return "";
 
     }
 
