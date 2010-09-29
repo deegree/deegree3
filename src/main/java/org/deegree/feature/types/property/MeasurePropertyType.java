@@ -52,8 +52,8 @@ import org.deegree.commons.uom.Measure;
 public class MeasurePropertyType extends AbstractPropertyType {
 
     public MeasurePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+                                boolean isNillable, List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
     }
 
     @Override
@@ -61,10 +61,4 @@ public class MeasurePropertyType extends AbstractPropertyType {
         String s = "- measure property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
         return s;
     }
-    
-    @Override
-    public boolean isNillable() {
-        // TODO pipe this value through
-        return true;
-    }    
 }

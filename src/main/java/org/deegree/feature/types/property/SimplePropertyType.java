@@ -62,15 +62,15 @@ public class SimplePropertyType extends AbstractPropertyType {
     private String codeList;
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
-                               List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+                               boolean isNillable, List<PropertyType> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
         this.primitiveType = type;
         this.xsdType = null;
     }
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
-                               List<PropertyType> substitutions, XSSimpleTypeDefinition xsdType ) {
-        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+                               boolean isNillable, List<PropertyType> substitutions, XSSimpleTypeDefinition xsdType ) {
+        super( name, minOccurs, maxOccurs, isAbstract, isNillable, substitutions );
         this.primitiveType = type;
         this.xsdType = xsdType;
     }
@@ -107,10 +107,4 @@ public class SimplePropertyType extends AbstractPropertyType {
                    + ", type: " + primitiveType;
         return s;
     }
-    
-    @Override
-    public boolean isNillable() {
-        // TODO pipe this value through
-        return true;
-    }    
 }

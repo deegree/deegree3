@@ -129,8 +129,8 @@ class PostGISApplicationSchemaBuilder {
             BBoxTableMapping bboxMapping = new BBoxTableMapping();
             BlobMapping blobMapping = new BlobMapping( "GML_OBJECTS", new BlobCodec( GML_32, NONE ) );
             mappedSchema = new MappedApplicationSchema( appSchema.getFeatureTypes(), appSchema.getFtToSuperFt(),
-                                                        appSchema.getNamespaceBindings(), appSchema.getXSModel(), null, storageCRS, bboxMapping,
-                                                        blobMapping );
+                                                        appSchema.getNamespaceBindings(), appSchema.getXSModel(), null,
+                                                        storageCRS, bboxMapping, blobMapping );
         } else {
             PostGISApplicationSchemaBuilder builder = new PostGISApplicationSchemaBuilder( ftDecls, jdbcConnId,
                                                                                            dbSchema );
@@ -213,13 +213,13 @@ class PostGISApplicationSchemaBuilder {
         if ( propDecl instanceof SimplePropertyDecl ) {
             SimplePropertyDecl spt = (SimplePropertyDecl) propDecl;
             PrimitiveType primType = getPrimitiveType( spt.getType() );
-            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, primType, false, null );
+            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, primType, false, false, null );
         } else if ( propDecl instanceof GeometryPropertyDecl ) {
             GeometryPropertyDecl gpt = (GeometryPropertyDecl) propDecl;
-            pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, GEOMETRY, DIM_2, false, null, BOTH );
+            pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, false, false, null, GEOMETRY, DIM_2, BOTH );
         } else if ( propDecl instanceof FeaturePropertyDecl ) {
             FeaturePropertyDecl fpt = (FeaturePropertyDecl) propDecl;
-            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, fpt.getType(), false, null, BOTH );
+            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, false, false, null, fpt.getType(), BOTH );
         } else {
             throw new RuntimeException( "Internal error: Unhandled property JAXB property type: " + propDecl.getClass() );
         }

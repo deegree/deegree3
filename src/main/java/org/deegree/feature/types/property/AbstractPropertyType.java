@@ -58,21 +58,23 @@ import javax.xml.namespace.QName;
 public abstract class AbstractPropertyType implements PropertyType {
 
     /** The name of the property. */
-    protected QName name;
+    protected final QName name;
 
     /** The minimum number of times that this property must be present. */
-    protected int minOccurs;
+    protected final int minOccurs;
 
     /** The maximum number of times that this property must be present, or -1 (=unbounded). */
-    protected int maxOccurs;
+    protected final int maxOccurs;
 
     /**
      * The possible substitutions (including this {@link PropertyType}), never <code>null</code> and always at least one
      * entry.
      */
-    protected PropertyType[] substitutions;
+    protected final PropertyType[] substitutions;
 
-    private boolean isAbstract;
+    private final boolean isAbstract;
+
+    private final boolean isNillable;
 
     /**
      * Creates a new <code>AbstractPropertyType</code> instance.
@@ -85,10 +87,12 @@ public abstract class AbstractPropertyType implements PropertyType {
      *            maximum number of times that this property must be present, or -1 (=unbounded)
      * @param isAbstract
      *            true, if it is abstract, false otherwise
+     * @param isNillable
+     *            true, if the property may be nilled, false otherwise
      * @param substitutions
      *            the possible concrete substitutions, can be <code>null</code>
      */
-    protected AbstractPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+    protected AbstractPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract, boolean isNillable,
                                     List<PropertyType> substitutions ) {
         this.name = name;
         this.minOccurs = minOccurs;
@@ -100,6 +104,7 @@ public abstract class AbstractPropertyType implements PropertyType {
         } else {
             this.substitutions = new PropertyType[] { this };
         }
+        this.isNillable = isNillable;
     }
 
     @Override
@@ -125,5 +130,10 @@ public abstract class AbstractPropertyType implements PropertyType {
     @Override
     public PropertyType[] getSubstitutions() {
         return substitutions;
+    }
+
+    @Override
+    public boolean isNillable() {
+        return isNillable;
     }
 }

@@ -193,8 +193,9 @@ public class ApplicationSchemaXSDDecoder {
         // geometry element declarations
         List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, false );
         for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
-            QName ftName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-            geometryNameToGeometryElement.put( ftName, elementDecl );
+            QName elName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
+            geometryNameToGeometryElement.put( elName, elementDecl );
+            LOG.debug( "Geometry element " + elName );
         }
     }
 
@@ -463,8 +464,8 @@ public class ApplicationSchemaXSDDecoder {
             switch ( typeDef.getTypeCategory() ) {
             case XSTypeDefinition.SIMPLE_TYPE: {
                 pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, getPrimitiveType( (XSSimpleType) typeDef ),
-                                             elementDecl.getAbstract(), ptSubstitutions,
-                                             (XSSimpleTypeDefinition) typeDef );
+                                             elementDecl.getAbstract(), elementDecl.getNillable(),
+                                             ptSubstitutions, (XSSimpleTypeDefinition) typeDef );
                 ( (SimplePropertyType) pt ).setCodeList( getCodeListId( elementDecl ) );
                 break;
             }
@@ -484,28 +485,35 @@ public class ApplicationSchemaXSDDecoder {
         PropertyType pt = null;
         QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "- Property definition '" + ptName + "' uses a complex type for content definition." );
+        boolean isNillable = elementDecl.getNillable();
 
         // check for well known GML types first
         if ( typeDef.getName() != null ) {
             QName typeName = createQName( typeDef.getNamespace(), typeDef.getName() );
             if ( typeName.equals( new QName( gmlVersion.getNamespace(), "CodeType" ) ) ) {
                 LOG.trace( "Identified a CodePropertyType." );
-                pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+                pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+                                           ptSubstitutions );
             } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "BoundingShapeType" ) ) ) {
                 LOG.trace( "Identified an EnvelopePropertyType." );
-                pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+                pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                               isNillable, ptSubstitutions );
             } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "MeasureType" ) ) ) {
                 LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
-                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+                                              ptSubstitutions );
             } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "LengthType" ) ) ) {
                 LOG.trace( "Identified a MeasurePropertyType (LENGTH)." );
-                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+                                              ptSubstitutions );
             } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "AngleType" ) ) ) {
                 LOG.trace( "Identified a MeasurePropertyType (ANGLE)." );
-                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+                pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+                                              ptSubstitutions );
             } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "FeatureArrayPropertyType" ) ) ) {
                 LOG.trace( "Identified a FeatureArrayPropertyType" );
-                pt = new ArrayPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), ptSubstitutions );
+                pt = new ArrayPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), isNillable,
+                                            ptSubstitutions );
             }
         }
 
@@ -522,7 +530,7 @@ public class ApplicationSchemaXSDDecoder {
         // no success -> build custom property declaration
         if ( pt == null ) {
             pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeDef, elementDecl.getAbstract(),
-                                         ptSubstitutions );
+                                         elementDecl.getNillable(), ptSubstitutions );
         }
         return pt;
     }
@@ -597,8 +605,8 @@ public class ApplicationSchemaXSDDecoder {
 
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
-            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null, elementDecl.getAbstract(),
-                                          ptSubstitutions, ValueRepresentation.REMOTE );
+            pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(), elementDecl.getNillable(),
+                                          ptSubstitutions, null, ValueRepresentation.REMOTE );
             return pt;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
@@ -634,23 +642,23 @@ public class ApplicationSchemaXSDDecoder {
                             pt = null;
                             if ( gmlNs.equals( elementName.getNamespaceURI() ) ) {
                                 if ( allowsXLink ) {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
-                                                                  elementDecl.getAbstract(), ptSubstitutions,
-                                                                  ValueRepresentation.BOTH );
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                                  elementDecl.getNillable(), ptSubstitutions,
+                                                                  null, ValueRepresentation.BOTH );
                                 } else {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
-                                                                  elementDecl.getAbstract(), ptSubstitutions,
-                                                                  ValueRepresentation.INLINE );
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                                  elementDecl.getNillable(), ptSubstitutions,
+                                                                  null, ValueRepresentation.INLINE );
                                 }
                             } else {
                                 if ( allowsXLink ) {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementName,
-                                                                  elementDecl.getAbstract(), ptSubstitutions,
-                                                                  ValueRepresentation.BOTH );
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                                  elementDecl.getNillable(), ptSubstitutions,
+                                                                  elementName, ValueRepresentation.BOTH );
                                 } else {
-                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
-                                                                  elementDecl.getAbstract(), ptSubstitutions,
-                                                                  ValueRepresentation.INLINE );
+                                    pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                                  elementDecl.getNillable(), ptSubstitutions,
+                                                                  null, ValueRepresentation.INLINE );
                                 }
                             }
                             featurePropertyTypes.add( pt );
@@ -723,9 +731,9 @@ public class ApplicationSchemaXSDDecoder {
         if ( refElement != null ) {
             LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
             QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                              elementDecl.getAbstract(), ptSubstitutions,
-                                                              ValueRepresentation.BOTH );
+            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                              elementDecl.getNillable(), ptSubstitutions,
+                                                              refElement, ValueRepresentation.BOTH );
             featurePropertyTypes.add( pt );
             return pt;
         }
@@ -748,9 +756,9 @@ public class ApplicationSchemaXSDDecoder {
         if ( refElement != null ) {
             LOG.trace( "Identified a feature property (adv style)." );
             QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                              elementDecl.getAbstract(), ptSubstitutions,
-                                                              ValueRepresentation.BOTH );
+            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                              elementDecl.getNillable(), ptSubstitutions,
+                                                              refElement, ValueRepresentation.BOTH );
             featurePropertyTypes.add( pt );
             return pt;
         }
@@ -772,9 +780,9 @@ public class ApplicationSchemaXSDDecoder {
         if ( refElement != null ) {
             LOG.trace( "Identified a feature property (GML 3.2 style)." );
             QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
-            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                              elementDecl.getAbstract(), ptSubstitutions,
-                                                              ValueRepresentation.REMOTE );
+            FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                              elementDecl.getNillable(), ptSubstitutions,
+                                                              refElement, ValueRepresentation.REMOTE );
             featurePropertyTypes.add( pt );
             return pt;
         }
@@ -825,7 +833,8 @@ public class ApplicationSchemaXSDDecoder {
                             int maxOccurs3 = geomChoiceParticle.getMaxOccursUnbounded() ? -1
                                                                                        : geomChoiceParticle.getMaxOccurs();
                             if ( minOccurs3 != 1 || maxOccurs3 != 1 ) {
-                                LOG.warn( "Only single geometries are currently supported, ignoring in choice." );
+                                LOG.debug( "Only single geometries are currently supported, ignoring in choice (property '"
+                                           + ptName + "')." );
                                 return null;
                             }
                             QName elementName = createQName( geomChoiceElement.getNamespace(),
@@ -835,16 +844,16 @@ public class ApplicationSchemaXSDDecoder {
                                 GeometryType geometryType = getGeometryType( elementName );
                                 allowedTypes.add( geometryType );
                             } else {
-                                LOG.warn( "Unknown geometry type." );
+                                LOG.debug( "Unknown geometry type '" + elementName + "'." );
                             }
                         } else {
                             LOG.warn( "Unsupported type particle type." );
                         }
                     }
                     if ( !allowedTypes.isEmpty() ) {
-                        return new GeometryPropertyType( ptName, minOccurs, maxOccurs, allowedTypes,
-                                                         CoordinateDimension.DIM_2_OR_3, elementDecl.getAbstract(),
-                                                         ptSubstitutions, BOTH );
+                        return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                         elementDecl.getNillable(), ptSubstitutions,
+                                                         allowedTypes, CoordinateDimension.DIM_2_OR_3, BOTH );
                     }
                     break;
                 }
@@ -863,16 +872,16 @@ public class ApplicationSchemaXSDDecoder {
                         // min occurs check should be done, in regards to the xlinking.
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                         if ( maxOccurs2 > 1 ) {
-                            LOG.warn( "Only single geometries are currently supported." );
+                            LOG.debug( "Only single geometries are currently supported." );
                             return null;
                         }
                         QName elementName = createQName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( geometryNameToGeometryElement.get( elementName ) != null ) {
                             LOG.trace( "Identified a geometry property." );
                             GeometryType geometryType = getGeometryType( elementName );
-                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, geometryType,
-                                                             CoordinateDimension.DIM_2_OR_3, elementDecl.getAbstract(),
-                                                             ptSubstitutions, BOTH );
+                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                             elementDecl.getNillable(), ptSubstitutions,
+                                                             geometryType, CoordinateDimension.DIM_2_OR_3, BOTH );
                         }
                     }
                     case XSConstants.WILDCARD: {
@@ -913,17 +922,19 @@ public class ApplicationSchemaXSDDecoder {
                                         GeometryType geometryType = getGeometryType( elementName );
                                         allowedTypes.add( geometryType );
                                     } else {
-                                        LOG.warn( "Unknown geometry type." );
+                                        LOG.debug( "Unknown geometry type '" + elementName + "'." );
                                     }
                                 } else {
                                     LOG.warn( "Unsupported type particle type." );
                                 }
                             }
                             if ( !allowedTypes.isEmpty() ) {
-                                return new GeometryPropertyType( ptName, minOccurs, maxOccurs, allowedTypes,
-                                                                 CoordinateDimension.DIM_2_OR_3,
-                                                                 elementDecl.getAbstract(), ptSubstitutions, BOTH );
+                                return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
+                                                                 elementDecl.getNillable(),
+                                                                 ptSubstitutions, allowedTypes, CoordinateDimension.DIM_2_OR_3,
+                                                                 BOTH );
                             }
+                            break;
                         }
                         case XSModelGroup.COMPOSITOR_SEQUENCE: {
                             // sequence of geometries?, lets make it a custom property
@@ -931,7 +942,6 @@ public class ApplicationSchemaXSDDecoder {
                             break;
                         }
                         }
-
                         LOG.debug( "Unhandled particle: MODEL_GROUP" );
                         break;
                     }
@@ -956,7 +966,6 @@ public class ApplicationSchemaXSDDecoder {
                 assert false;
             }
             }
-            // contents = new Sequence( elements );
             break;
         }
         }
