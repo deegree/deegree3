@@ -147,7 +147,9 @@ public class ISOMetadataStoreTest {
                 records.add( record );
                 InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
                 List<String> ids = ta.performInsert( insert );
-                countInserted += ids.size();
+                if ( !ids.isEmpty() ) {
+                    countInserted += ids.size();
+                }
                 ta.commit();
                 // MetadataResultSet rs = store.getRecordsById( ids, OutputSchema.determineOutputSchema( DC ), brief );
                 // for ( MetadataRecord r : rs.getMembers() ) {
