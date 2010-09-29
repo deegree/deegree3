@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing;
 
-import org.deegree.metadata.persistence.iso.generating.GenerateMetadata;
 
 /**
  * Encapsulates the parsed elements that can be analysed from a record that is affected by the transaction operation.<br>
@@ -52,7 +51,7 @@ public class ParsedProfileElement {
 
     private ReturnableProperties returnableProperties;
 
-    private GenerateMetadata generateRecord;
+    // private GenerateMetadata generateRecord;
 
     /**
      * Creates a new {@link ParsedProfileElement} instance.
@@ -61,11 +60,9 @@ public class ParsedProfileElement {
      * @param returnableProperties
      * @param generateRecord
      */
-    public ParsedProfileElement( QueryableProperties queryableProperties, ReturnableProperties returnableProperties,
-                                 GenerateMetadata generateRecord ) {
+    public ParsedProfileElement( QueryableProperties queryableProperties, ReturnableProperties returnableProperties ) {
         this.queryableProperties = queryableProperties;
         this.returnableProperties = returnableProperties;
-        this.generateRecord = generateRecord;
     }
 
     /**
@@ -82,11 +79,11 @@ public class ParsedProfileElement {
         return returnableProperties;
     }
 
-    /**
-     * @return the generateRecord
-     */
-    public GenerateMetadata getGenerateRecord() {
-        return generateRecord;
-    }
+    // /**
+    // * @return the generateRecord
+    // */
+    // public GenerateMetadata getGenerateRecord() {
+    // return generateRecord;
+    // }
 
 }

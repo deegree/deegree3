@@ -430,7 +430,7 @@ public class GenerateMetadata {
         OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
 
         OMElement omType = factory.createOMElement( "type", namespaceDC );
-        String identifier = qp.getIdentifier().get( 0 );
+        // String identifier = qp.getIdentifier().get( 0 );
 
         for ( String identifierDC : qp.getIdentifier() ) {
             OMElement omIdentifier = factory.createOMElement( "identifier", namespaceDC );
@@ -450,7 +450,7 @@ public class GenerateMetadata {
         }
         omElement.addChild( omType );
 
-        return identifier;
+        return null;
     }
 
     /**

@@ -66,9 +66,9 @@ public class QueryableProperties {
 
     private List<Format> format;
 
-    private List<String> identifier;
+    private String[] identifier;
 
-    private Date modified;
+    private Date[] modified;
 
     private String type;
 
@@ -342,7 +342,7 @@ public class QueryableProperties {
     /**
      * @return the identifier
      */
-    public List<String> getIdentifier() {
+    public String[] getIdentifier() {
         return identifier;
     }
 
@@ -350,14 +350,14 @@ public class QueryableProperties {
      * @param identifier
      *            the identifier to set
      */
-    public void setIdentifier( List<String> identifier ) {
+    public void setIdentifier( String[] identifier ) {
         this.identifier = identifier;
     }
 
     /**
      * @return the modified
      */
-    public Date getModified() {
+    public Date[] getModified() {
         return modified;
     }
 
@@ -365,7 +365,7 @@ public class QueryableProperties {
      * @param modified
      *            the modified to set
      */
-    public void setModified( Date modified ) {
+    public void setModified( Date[] modified ) {
         this.modified = modified;
     }
 

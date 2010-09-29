@@ -45,12 +45,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
+
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
@@ -117,59 +120,59 @@ public class BuildMetadataXMLRepresentation {
         OMNamespace namespaceCSW = factory.createOMNamespace( CSW_202_NS, CSW_PREFIX );
 
         int counter = 0;
-        for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
-
-            // StringBuilder sqlStatement = new StringBuilder( 500 );
-            PreparedStatement stm = null;
-
-            try {
-
-                String updateDatabaseTable = "UPDATE " + databaseTable;
-                updateDatadaseTableLength = updateDatabaseTable.length();
-                sqlStatementUpdate.insert( 0, "UPDATE " ).insert( 7, databaseTable );
-                // DC-update
-                OMElement omElement = factory.createOMElement(
-                                                               PostGISMappingsISODC.getTableRecordType().get(
-                                                                                                              databaseTable ),
-                                                               namespaceCSW );
-
-                if ( omElement.getLocalName().equals( PostGISMappingsISODC.BRIEFRECORD ) ) {
-                    parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
-                    isoOMElement.write( parsedElement.getGenerateRecord().getIsoBriefElement().toString() );
-                    counter++;
-                } else if ( omElement.getLocalName().equals( PostGISMappingsISODC.SUMMARYRECORD ) ) {
-                    parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
-                    isoOMElement.write( parsedElement.getGenerateRecord().getIsoSummaryElement().toString() );
-                } else {
-                    parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
-                    isoOMElement.write( parsedElement.getGenerateRecord().getIsoFullElement().toString() );
-                }
-
-                setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
-
-                executeUpdate( stm, connection, fk_datasets, omElement );
-
-                // ISO-update
-                stm = connection.prepareStatement( sqlStatementUpdate.toString() );
-                stm.setBytes( 1, isoOMElement.toString().getBytes() );
-                stm.setObject( 2, fk_datasets );
-                stm.setObject( 3, 2 );
-                LOG.debug( "" + stm );
-                stm.executeUpdate();
-                stm.close();
-
-                sqlStatementUpdate.delete( 0, updateDatadaseTableLength );
-
-            } catch ( SQLException e ) {
-
-                LOG.debug( "error: " + e.getMessage(), e );
-                throw new MetadataStoreException( e.getMessage() );
-            } catch ( ParseException e ) {
-
-                LOG.debug( "error: " + e.getMessage(), e );
-                throw new MetadataStoreException( e.getMessage() );
-            }
-        }
+        // for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
+        //
+        // // StringBuilder sqlStatement = new StringBuilder( 500 );
+        // PreparedStatement stm = null;
+        //
+        // try {
+        //
+        // String updateDatabaseTable = "UPDATE " + databaseTable;
+        // updateDatadaseTableLength = updateDatabaseTable.length();
+        // sqlStatementUpdate.insert( 0, "UPDATE " ).insert( 7, databaseTable );
+        // // DC-update
+        // OMElement omElement = factory.createOMElement(
+        // PostGISMappingsISODC.getTableRecordType().get(
+        // databaseTable ),
+        // namespaceCSW );
+        //
+        // if ( omElement.getLocalName().equals( PostGISMappingsISODC.BRIEFRECORD ) ) {
+        // parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
+        // isoOMElement.write( parsedElement.getGenerateRecord().getIsoBriefElement().toString() );
+        // counter++;
+        // } else if ( omElement.getLocalName().equals( PostGISMappingsISODC.SUMMARYRECORD ) ) {
+        // parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
+        // isoOMElement.write( parsedElement.getGenerateRecord().getIsoSummaryElement().toString() );
+        // } else {
+        // parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
+        // isoOMElement.write( parsedElement.getGenerateRecord().getIsoFullElement().toString() );
+        // }
+        //
+        // setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
+        //
+        // executeUpdate( stm, connection, fk_datasets, omElement );
+        //
+        // // ISO-update
+        // stm = connection.prepareStatement( sqlStatementUpdate.toString() );
+        // stm.setBytes( 1, isoOMElement.toString().getBytes() );
+        // stm.setObject( 2, fk_datasets );
+        // stm.setObject( 3, 2 );
+        // LOG.debug( "" + stm );
+        // stm.executeUpdate();
+        // stm.close();
+        //
+        // sqlStatementUpdate.delete( 0, updateDatadaseTableLength );
+        //
+        // } catch ( SQLException e ) {
+        //
+        // LOG.debug( "error: " + e.getMessage(), e );
+        // throw new MetadataStoreException( e.getMessage() );
+        // } catch ( ParseException e ) {
+        //
+        // LOG.debug( "error: " + e.getMessage(), e );
+        // throw new MetadataStoreException( e.getMessage() );
+        // }
+        // }
 
         return counter;
 
@@ -186,60 +189,60 @@ public class BuildMetadataXMLRepresentation {
      * 
      * @throws IOException
      * @throws MetadataStoreException
+     * @throws XMLStreamException
      */
-    public String generateISO( Connection connection, int operatesOnId, ParsedProfileElement parsedElement )
-                            throws IOException, MetadataStoreException {
+    public String[] generateISO( Connection connection, int operatesOnId, MetadataRecord rec )
+                            throws IOException, MetadataStoreException, XMLStreamException {
 
         int idDatabaseTable;
-        for ( String databaseTableISO : PostGISMappingsISODC.getTableRecordType().keySet() ) {
+        String databaseTableISO = "recordfull";
 
-            // ------------------------
-            // there is a restriction regarding to the databasetables.
-            // in some cases there is no preparedStatement allowed for databasetables
-            // so: put the insert-preample before the final statement
-            // and delete it later...
-            String insertDatabaseTable = "INSERT INTO " + databaseTableISO;
-            insertDatadaseTableLength = insertDatabaseTable.length();
-            sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableISO );
-            // ------------------------
-            PreparedStatement stm = null;
-            OMElement isoElement;
-            if ( databaseTableISO.equals( PostGISMappingsISODC.RECORDBRIEF ) ) {
-                isoElement = parsedElement.getGenerateRecord().getIsoBriefElement();
-            } else if ( databaseTableISO.equals( PostGISMappingsISODC.RECORDSUMMARY ) ) {
-                isoElement = parsedElement.getGenerateRecord().getIsoSummaryElement();
-            } else {
-                isoElement = parsedElement.getGenerateRecord().getIsoFullElement();
-            }
+        // ------------------------
+        // there is a restriction regarding to the databasetables.
+        // in some cases there is no preparedStatement allowed for databasetables
+        // so: put the insert-preample before the final statement
+        // and delete it later...
+        String insertDatabaseTable = "INSERT INTO " + databaseTableISO;
+        insertDatadaseTableLength = insertDatabaseTable.length();
+        sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableISO );
+        // ------------------------
+        PreparedStatement stm = null;
+        OMElement isoElement;
+        // if ( databaseTableISO.equals( PostGISMappingsISODC.RECORDBRIEF ) ) {
+        // isoElement = parsedElement.getGenerateRecord().getIsoBriefElement();
+        // } else if ( databaseTableISO.equals( PostGISMappingsISODC.RECORDSUMMARY ) ) {
+        // isoElement = parsedElement.getGenerateRecord().getIsoSummaryElement();
+        // } else {
+        // isoElement = parsedElement.getGenerateRecord().getIsoFullElement();
+        // }
 
-            try {
+        try {
 
-                idDatabaseTable = getLastDatasetId( connection, databaseTableISO );
-                idDatabaseTable++;
+            idDatabaseTable = getLastDatasetId( connection, databaseTableISO );
+            idDatabaseTable++;
 
-                executeInsert( stm, connection, idDatabaseTable, operatesOnId, isoElement, 2 );
-            } catch ( SQLException e ) {
+            executeInsert( stm, connection, idDatabaseTable, operatesOnId, rec, 2 );
+        } catch ( SQLException e ) {
 
-                LOG.debug( "error: " + e.getMessage(), e );
-            }
-
+            LOG.debug( "error: " + e.getMessage(), e );
         }
+
         /*
          * additional it generates the Dublin Core representation
          */
-
-        return generateDC( connection, operatesOnId, parsedElement );
+        return rec.getIdentifier();
+        // return generateDC( connection, operatesOnId, parsedElement );
 
     }
 
     private void executeInsert( PreparedStatement stm, Connection connection, int idDatabaseTable, int operatesOnId,
-                                OMElement element, int format )
-                            throws SQLException {
+                                MetadataRecord element, int format )
+                            throws SQLException, XMLStreamException {
         stm = connection.prepareStatement( sqlStatementInsert.toString() );
         stm.setObject( 1, idDatabaseTable );
         stm.setObject( 2, operatesOnId );
         stm.setObject( 3, format );
-        stm.setBytes( 4, element.toString().getBytes() );
+        stm.setBytes( 4, new XMLAdapter( element.getAsXMLStream() ).getRootElement().toString().getBytes() );
         LOG.debug( "" + stm );
         stm.executeUpdate();
         stm.close();
@@ -278,55 +281,55 @@ public class BuildMetadataXMLRepresentation {
 
         int idDatabaseTable;
         String identifier = null;
-        for ( String databaseTableDC : PostGISMappingsISODC.getTableRecordType().keySet() ) {
-            PreparedStatement stm = null;
+        // for ( String databaseTableDC : PostGISMappingsISODC.getTableRecordType().keySet() ) {
+        // PreparedStatement stm = null;
+        //
+        // // ------------------------
+        // // there is a restriction regarding to the databasetables.
+        // // in some cases there is no preparedStatement allowed for databasetables
+        // // so: put the insert-preample before the final statement
+        // // and delete it later...
+        // String insertDatabaseTable = "INSERT INTO " + databaseTableDC;
+        // insertDatadaseTableLength = insertDatabaseTable.length();
+        // sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableDC );
+        // // ------------------------
+        // try {
+        //
+        // idDatabaseTable = getLastDatasetId( connection, databaseTableDC );
+        // idDatabaseTable++;
+        //
+        // OMElement omElement = factory.createOMElement(
+        // PostGISMappingsISODC.getTableRecordType().get(
+        // databaseTableDC ),
+        // namespaceCSW );
+        //
+        // if ( omElement.getLocalName().equals( PostGISMappingsISODC.BRIEFRECORD ) ) {
+        // identifier = parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
+        // } else if ( omElement.getLocalName().equals( PostGISMappingsISODC.SUMMARYRECORD ) ) {
+        // identifier = parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
+        // } else {
+        // identifier = parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
+        // }
+        //
+        // if ( parsedElement.getQueryableProperties().getBoundingBox() != null ) {
+        // setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
+        // }
+        //
+        // stm = connection.prepareStatement( sqlStatementInsert.toString() );
+        //
+        // executeInsert( stm, connection, idDatabaseTable, operatesOnId, omElement, 1 );
+        //
+        // } catch ( SQLException e ) {
+        //
+        // LOG.debug( "error: " + e.getMessage(), e );
+        // throw new MetadataStoreException( e.getMessage() );
+        // } catch ( ParseException e ) {
+        //
+        // LOG.debug( "error: " + e.getMessage(), e );
+        // throw new MetadataStoreException( e.getMessage() );
+        // }
 
-            // ------------------------
-            // there is a restriction regarding to the databasetables.
-            // in some cases there is no preparedStatement allowed for databasetables
-            // so: put the insert-preample before the final statement
-            // and delete it later...
-            String insertDatabaseTable = "INSERT INTO " + databaseTableDC;
-            insertDatadaseTableLength = insertDatabaseTable.length();
-            sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableDC );
-            // ------------------------
-            try {
-
-                idDatabaseTable = getLastDatasetId( connection, databaseTableDC );
-                idDatabaseTable++;
-
-                OMElement omElement = factory.createOMElement(
-                                                               PostGISMappingsISODC.getTableRecordType().get(
-                                                                                                              databaseTableDC ),
-                                                               namespaceCSW );
-
-                if ( omElement.getLocalName().equals( PostGISMappingsISODC.BRIEFRECORD ) ) {
-                    identifier = parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
-                } else if ( omElement.getLocalName().equals( PostGISMappingsISODC.SUMMARYRECORD ) ) {
-                    identifier = parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
-                } else {
-                    identifier = parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
-                }
-
-                if ( parsedElement.getQueryableProperties().getBoundingBox() != null ) {
-                    setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
-                }
-
-                stm = connection.prepareStatement( sqlStatementInsert.toString() );
-
-                executeInsert( stm, connection, idDatabaseTable, operatesOnId, omElement, 1 );
-
-            } catch ( SQLException e ) {
-
-                LOG.debug( "error: " + e.getMessage(), e );
-                throw new MetadataStoreException( e.getMessage() );
-            } catch ( ParseException e ) {
-
-                LOG.debug( "error: " + e.getMessage(), e );
-                throw new MetadataStoreException( e.getMessage() );
-            }
-
-        }
+        // }
 
         return identifier;
 

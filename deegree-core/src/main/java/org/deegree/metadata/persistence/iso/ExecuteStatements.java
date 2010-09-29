@@ -102,19 +102,19 @@ public class ExecuteStatements implements GenericDatabaseExecution {
 
         boolean isUpdate = false;
         String identifier = null;
-        if ( parsedElement != null ) {
-            int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
-
-            if ( isDC == true ) {
-                identifier = buildRecXML.generateDC( connection, operatesOnId, parsedElement );
-            } else {
-                identifier = buildRecXML.generateISO( connection, operatesOnId, parsedElement );
-
-            }
-            generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
-            return identifier;
-        }
-        return null;
+        // if ( parsedElement != null ) {
+        // int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
+        //
+        // if ( isDC == true ) {
+        // identifier = buildRecXML.generateDC( connection, operatesOnId, parsedElement );
+        // } else {
+        // identifier = buildRecXML.generateISO( connection, operatesOnId, parsedElement );
+        //
+        // }
+        // 
+        return identifier;
+        // }
+        // return null;
 
     }
 
@@ -365,7 +365,7 @@ public class ExecuteStatements implements GenericDatabaseExecution {
                     // recordBrief, recordSummary, recordFull update
                     result = buildRecXML.updateRecord( requestedId, parsedElement, connection );
 
-                    generateQP.executeQueryableProperties( isUpdate, connection, requestedId, parsedElement );
+                    // generateQP.executeQueryableProperties( isUpdate, connection, requestedId, parsedElement );
 
                 } else {
                     // TODO think about what response should be written if there is no such dataset in the backend??
