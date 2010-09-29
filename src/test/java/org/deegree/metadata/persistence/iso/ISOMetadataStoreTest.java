@@ -132,7 +132,8 @@ public class ISOMetadataStoreTest {
             return;
         }
         MetadataStoreTransaction ta = store.acquireTransaction();
-        List<OMElement> records;// = new ArrayList<OMElement>();
+        List<OMElement> records;
+        int countInserted = 0;
 
         File folder = new File( "/home/thomas/Dokumente/metadata/test" );
         File[] fileArray = folder.listFiles();
@@ -140,13 +141,13 @@ public class ISOMetadataStoreTest {
             System.out.println( "TEST: arraySize: " + fileArray.length );
             for ( File f : fileArray ) {
                 records = new ArrayList<OMElement>();
-                // URL url = new URL( "file:/home/thomas/Dokumente/metadata_inspire/GEW_GEWAESSER_ACHSE.layer.xml" );
                 OMElement record = new XMLAdapter( f ).getRootElement();
                 // MetadataRecord record = loadRecord( url );
                 LOG.info( "inserting filename: " + f.getName() );
                 records.add( record );
                 InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
                 List<String> ids = ta.performInsert( insert );
+                countInserted += ids.size();
                 ta.commit();
                 // MetadataResultSet rs = store.getRecordsById( ids, OutputSchema.determineOutputSchema( DC ), brief );
                 // for ( MetadataRecord r : rs.getMembers() ) {
@@ -154,9 +155,7 @@ public class ISOMetadataStoreTest {
                 // }
             }
         }
-        // InsertTransaction insert = new InsertTransaction( records, records.get( 0 ).getQName(), "insert" );
-        // List<String> ids = ta.performInsert( insert );
-        ta.commit();
+        LOG.info( "acctually inserted metadataRecords: " + countInserted );
 
         // TODO test various queries
 
