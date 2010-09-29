@@ -122,13 +122,13 @@ public class PostGISMappingsISODC implements PostGISMapping {
     /**
      * Mapping between tablename and XML element name
      */
-    private static Map<String, String> tableRecordType = new HashMap<String, String>();
+    // private static Map<String, String> tableRecordType = new HashMap<String, String>();
 
     static {
 
-        tableRecordType.put( RECORDBRIEF, BRIEFRECORD );
-        tableRecordType.put( RECORDSUMMARY, SUMMARYRECORD );
-        tableRecordType.put( RECORDFULL, RECORD );
+        // tableRecordType.put( RECORDBRIEF, BRIEFRECORD );
+        // tableRecordType.put( RECORDSUMMARY, SUMMARYRECORD );
+        // tableRecordType.put( RECORDFULL, RECORD );
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<common queryable properties>-------------------------------------
@@ -700,10 +700,10 @@ public class PostGISMappingsISODC implements PostGISMapping {
         return propToTableAndCol;
     }
 
-    /**
-     * @return the tableRecordType
-     */
-    public static Map<String, String> getTableRecordType() {
-        return tableRecordType;
-    }
+    // /**
+    // * @return the tableRecordType
+    // */
+    // public static Map<String, String> getTableRecordType() {
+    // return tableRecordType;
+    // }
 }

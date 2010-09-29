@@ -4,25 +4,29 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
+import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
+import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
-import org.deegree.metadata.persistence.iso.parsing.FileIdentifierInspector;
-import org.deegree.metadata.persistence.iso.parsing.ISOQPParsing;
 import org.deegree.metadata.persistence.iso.parsing.InspireCompliance;
 import org.deegree.metadata.persistence.iso.parsing.MetadataValidation;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.types.ConfigurationAccess;
 import org.deegree.metadata.publication.DeleteTransaction;
@@ -124,23 +128,28 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
                 execStm = new ExecuteStatements();
                 String idString = null;
 
-                if ( localName.getLocalPart().equals( "Record" ) ) {
-                    idString = execStm.executeInsertStatement( true, conn, new ISOQPParsing( ca ).parseAPDC( element ) );
-                    if ( idString != null ) {
-                        identifierList.add( idString );
-                    }
+                // if ( localName.getLocalPart().equals( "Record" ) ) {
+                // idString = execStm.executeInsertStatement( true, conn, new ISOQPParsing( ca ).parseAPDC( element ) );
+                // if ( idString != null ) {
+                // identifierList.add( idString );
+                // }
+                //
+                // } else {
+                ISORecord rec = new ISORecord( element );
+                GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
+                BuildMetadataXMLRepresentation buildRecXML = new BuildMetadataXMLRepresentation();
 
-                } else {
+                int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
 
-                    idString = execStm.executeInsertStatement( false, conn, new ISOQPParsing( ca ).parseAPISO( element, false ) );
-                    if ( idString != null ) {
-                        identifierList.add( idString );
-                    }
-
-                }
+                String[] identifier = buildRecXML.generateISO( conn, operatesOnId, rec );
+                // idString = execStm.executeInsertStatement( false, conn, new ISORecord( element ));
+                generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
+                identifierList.addAll( Arrays.asList( identifier ) );
 
             } catch ( IOException e ) {
                 LOG.info( e.getMessage() );
+                throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
+            } catch ( XMLStreamException e ) {
                 throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
             }
 
@@ -163,20 +172,20 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
             ExecuteStatements executeStatements = new ExecuteStatements();
 
-            if ( localName.getLocalPart().equals( "Record" ) ) {
-
-                result = executeStatements.executeUpdateStatement(
-                                                                   conn,
-                                                                   new ISOQPParsing( ca ).parseAPDC( update.getElement() ) );
-
-            } else {
-                result = executeStatements.executeUpdateStatement(
-                                                                   conn,
-                                                                   new ISOQPParsing( ca ).parseAPISO(
-                                                                                                      update.getElement(),
-                                                                                                      true ) );
-
-            }
+            // if ( localName.getLocalPart().equals( "Record" ) ) {
+            //
+            // result = executeStatements.executeUpdateStatement(
+            // conn,
+            // new ISOQPParsing( ca ).parseAPDC( update.getElement() ) );
+            //
+            // } else {
+            // result = executeStatements.executeUpdateStatement(
+            // conn,
+            // new ISOQPParsing( ca ).parseAPISO(
+            // update.getElement(),
+            // true ) );
+            //
+            // }
 
         } else {
 

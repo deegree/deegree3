@@ -82,7 +82,7 @@ import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.iso.parsing.ParsingUtils;
+import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso.resulttypes.Hits;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.protocol.csw.CSWConstants;
@@ -571,7 +571,7 @@ public class ISOMetadataStore implements MetadataStore {
             }
 
             for ( String identifier : idList ) {
-                if ( ParsingUtils.newInstance( conn ).proveIdExistence( identifier ) ) {
+                if ( IdUtils.newInstance( conn ).proveIdExistence( identifier ) ) {
                     String msg = "No Metadata found with ID: '" + identifier + "'";
                     LOG.info( msg );
                     throw new MetadataStoreException( msg );

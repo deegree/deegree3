@@ -45,18 +45,15 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.impl.llom.OMAttributeImpl;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso.generating.GenerateMetadata;
 import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Keyword;
@@ -90,23 +87,16 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     private final List<String> resourceIdentifierList;
 
-    private final InspireCompliance ic;
-
-    private final CoupledDataInspector ci;
-
     /**
      * 
      * @param factory
      * @param connection
      * @param nsContext
      */
-    protected ParseIdentificationInfo( OMFactory factory, InspireCompliance ic, CoupledDataInspector ci,
-                                       NamespaceContext nsContext ) {
+    protected ParseIdentificationInfo( OMFactory factory, NamespaceContext nsContext ) {
         this.factory = factory;
         this.nsContextParseII = nsContext;
         this.resourceIdentifierList = new ArrayList<String>();
-        this.ic = ic;
-        this.ci = ci;
 
         namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
         namespaceSRV = factory.createOMNamespace( "http://www.isotc211.org/2005/srv", "srv" );
@@ -124,8 +114,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @param crsList
      * @throws IOException
      */
-    protected void parseIdentificationInfo( List<OMElement> identificationInfo, GenerateMetadata gr,
-                                            QueryableProperties qp, ReturnableProperties rp, List<CRS> crsList )
+    protected void parseIdentificationInfo( List<OMElement> identificationInfo, QueryableProperties qp,
+                                            ReturnableProperties rp, List<CRS> crsList )
                             throws MetadataStoreException {
 
         List<OMElement> identificationInfo_Update = new ArrayList<OMElement>();
@@ -291,34 +281,34 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             }
             LOG.debug( "Creating a resourceIdentifierList..." );
-            List<String> rsList = ic.determineInspireCompliance( resourceIdentifierList, dataIdentificationId );
-            LOG.debug( "Creating of resourceIdentifierList finished: " + rsList );
-            if ( dataIdentificationUuId == null ) {
-                LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
-                if ( !rsList.isEmpty() ) {
-                    sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD,
-                                                                                           rsList.get( 0 ), factory ) );
-                    dataIdentificationUuId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
-                                                                                                               namespaceGMD.getNamespaceURI(),
-                                                                                                               "uuid",
-                                                                                                               namespaceGMD.getPrefix() ) );
-                }
-
-            }
-            if ( !rsList.isEmpty() ) {
-                LOG.debug( "Setting id attribute from the resourceIdentifier..." );
-                OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
-                if ( attribute_id != null ) {
-                    sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
-                }
-                sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "id", namespaceGMD,
-                                                                                       rsList.get( 0 ), factory ) );
-                dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
-                                                                                                         namespaceGMD.getNamespaceURI(),
-                                                                                                         "id",
-                                                                                                         namespaceGMD.getPrefix() ) );
-                LOG.debug( "id attribute is now: '" + dataIdentificationId + "' " );
-            }
+            // List<String> rsList = ic.determineInspireCompliance( resourceIdentifierList, dataIdentificationId );
+            // LOG.debug( "Creating of resourceIdentifierList finished: " + rsList );
+            // if ( dataIdentificationUuId == null ) {
+            // LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
+            // if ( !rsList.isEmpty() ) {
+            // sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD,
+            // rsList.get( 0 ), factory ) );
+            // dataIdentificationUuId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
+            // namespaceGMD.getNamespaceURI(),
+            // "uuid",
+            // namespaceGMD.getPrefix() ) );
+            // }
+            //
+            // }
+            // if ( !rsList.isEmpty() ) {
+            // LOG.debug( "Setting id attribute from the resourceIdentifier..." );
+            // OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
+            // if ( attribute_id != null ) {
+            // sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
+            // }
+            // sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "id", namespaceGMD,
+            // rsList.get( 0 ), factory ) );
+            // dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
+            // namespaceGMD.getNamespaceURI(),
+            // "id",
+            // namespaceGMD.getPrefix() ) );
+            // LOG.debug( "id attribute is now: '" + dataIdentificationId + "' " );
+            // }
             qp.setResourceIdentifier( resourceIdentifierList );
 
             List<OMElement> identiferListTemp = new ArrayList<OMElement>();
@@ -345,67 +335,67 @@ public class ParseIdentificationInfo extends XMLAdapter {
             OMElement ISBN = getElement( ci_citation, new XPath( "./gmd:ISBN", nsContextParseII ) );
             OMElement ISSN = getElement( ci_citation, new XPath( "./gmd:ISSN", nsContextParseII ) );
             //
-            LOG.debug( "Begin to create element 'citation'..." );
-            omCitation = factory.createOMElement( "citation", namespaceGMD );
-            OMElement omCI_Citation = factory.createOMElement( "CI_Citation", namespaceGMD );
-            if ( title != null ) {
-                LOG.debug( "add element title..." );
-                omCI_Citation.addChild( title );
-            } else {
-                LOG.debug( "There is no title element provided!" );
-                throw new MetadataStoreException( "The title element is mandatory!" );
-            }
-            for ( OMElement elem : alternateTitle ) {
-                LOG.debug( "add element alternateTitle..." );
-                omCI_Citation.addChild( elem );
-            }
-            for ( OMElement elem : citation_date ) {
-                LOG.debug( "add element citationDate..." );
-                omCI_Citation.addChild( elem );
-            }
-            if ( edition != null ) {
-                LOG.debug( "add element edition..." );
-                omCI_Citation.addChild( edition );
-            }
-            if ( editionDate != null ) {
-                LOG.debug( "add element editionDate..." );
-                omCI_Citation.addChild( editionDate );
-            }
-            for ( OMElement elem : identiferListTemp ) {
-                LOG.debug( "add element identifier..." );
-                omCI_Citation.addChild( elem );
-            }
-            for ( OMElement elem : citedResponsibleParty ) {
-                LOG.debug( "add element responsibleParty..." );
-                omCI_Citation.addChild( elem );
-            }
-            for ( OMElement elem : presentationForm ) {
-                LOG.debug( "add element presentationForm..." );
-                omCI_Citation.addChild( elem );
-            }
-            if ( series != null ) {
-                LOG.debug( "add element series..." );
-                omCI_Citation.addChild( series );
-            }
-            if ( otherCitationDetails != null ) {
-                LOG.debug( "add element otherCitationDetails..." );
-                omCI_Citation.addChild( otherCitationDetails );
-            }
-            if ( collectiveTitle != null ) {
-                LOG.debug( "add element collectiveTitle..." );
-                omCI_Citation.addChild( collectiveTitle );
-            }
-            if ( ISBN != null ) {
-                LOG.debug( "add element ISBN..." );
-                omCI_Citation.addChild( ISBN );
-            }
-            if ( ISSN != null ) {
-                LOG.debug( "add element ISSN..." );
-                omCI_Citation.addChild( ISSN );
-            }
-            LOG.debug( "add element 'CI_Citation' to parent 'citation'..." );
-            omCitation.addChild( omCI_Citation );
-            LOG.debug( "...Creating of the 'citation' element finished. " );
+            // LOG.debug( "Begin to create element 'citation'..." );
+            // omCitation = factory.createOMElement( "citation", namespaceGMD );
+            // OMElement omCI_Citation = factory.createOMElement( "CI_Citation", namespaceGMD );
+            // if ( title != null ) {
+            // LOG.debug( "add element title..." );
+            // omCI_Citation.addChild( title );
+            // } else {
+            // LOG.debug( "There is no title element provided!" );
+            // throw new MetadataStoreException( "The title element is mandatory!" );
+            // }
+            // for ( OMElement elem : alternateTitle ) {
+            // LOG.debug( "add element alternateTitle..." );
+            // omCI_Citation.addChild( elem );
+            // }
+            // for ( OMElement elem : citation_date ) {
+            // LOG.debug( "add element citationDate..." );
+            // omCI_Citation.addChild( elem );
+            // }
+            // if ( edition != null ) {
+            // LOG.debug( "add element edition..." );
+            // omCI_Citation.addChild( edition );
+            // }
+            // if ( editionDate != null ) {
+            // LOG.debug( "add element editionDate..." );
+            // omCI_Citation.addChild( editionDate );
+            // }
+            // for ( OMElement elem : identiferListTemp ) {
+            // LOG.debug( "add element identifier..." );
+            // omCI_Citation.addChild( elem );
+            // }
+            // for ( OMElement elem : citedResponsibleParty ) {
+            // LOG.debug( "add element responsibleParty..." );
+            // omCI_Citation.addChild( elem );
+            // }
+            // for ( OMElement elem : presentationForm ) {
+            // LOG.debug( "add element presentationForm..." );
+            // omCI_Citation.addChild( elem );
+            // }
+            // if ( series != null ) {
+            // LOG.debug( "add element series..." );
+            // omCI_Citation.addChild( series );
+            // }
+            // if ( otherCitationDetails != null ) {
+            // LOG.debug( "add element otherCitationDetails..." );
+            // omCI_Citation.addChild( otherCitationDetails );
+            // }
+            // if ( collectiveTitle != null ) {
+            // LOG.debug( "add element collectiveTitle..." );
+            // omCI_Citation.addChild( collectiveTitle );
+            // }
+            // if ( ISBN != null ) {
+            // LOG.debug( "add element ISBN..." );
+            // omCI_Citation.addChild( ISBN );
+            // }
+            // if ( ISSN != null ) {
+            // LOG.debug( "add element ISSN..." );
+            // omCI_Citation.addChild( ISSN );
+            // }
+            // LOG.debug( "add element 'CI_Citation' to parent 'citation'..." );
+            // omCitation.addChild( omCI_Citation );
+            // LOG.debug( "...Creating of the 'citation' element finished. " );
             /*---------------------------------------------------------------
              * 
              * Abstract
@@ -531,23 +521,35 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:resourceConstraints", nsContextParseII ) );
 
-            qp.setLimitation( Arrays.asList( getNodesAsStrings(
-                                                                sv_service_OR_md_dataIdentification,
-                                                                new XPath(
-                                                                           "./gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString",
-                                                                           nsContextParseII ) ) ) );
+            String[] useLim = getNodesAsStrings(
+                                                 sv_service_OR_md_dataIdentification,
+                                                 new XPath(
+                                                            "./gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString",
+                                                            nsContextParseII ) );
 
-            qp.setAccessConstraints( Arrays.asList( getNodesAsStrings(
-                                                                       sv_service_OR_md_dataIdentification,
-                                                                       new XPath(
-                                                                                  "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue",
-                                                                                  nsContextParseII ) ) ) );
+            qp.setLimitation( Arrays.asList( useLim ) );
 
-            qp.setOtherConstraints( Arrays.asList( getNodesAsStrings(
-                                                                      sv_service_OR_md_dataIdentification,
-                                                                      new XPath(
-                                                                                 "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gco:CharacterString",
-                                                                                 nsContextParseII ) ) ) );
+            String[] accessConst = getNodesAsStrings(
+                                                      sv_service_OR_md_dataIdentification,
+                                                      new XPath(
+                                                                 "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue",
+                                                                 nsContextParseII ) );
+
+            qp.setAccessConstraints( Arrays.asList( accessConst ) );
+
+            String[] useConst = getNodesAsStrings(
+                                                   sv_service_OR_md_dataIdentification,
+                                                   new XPath(
+                                                              "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useConstraints/gco:CharacterString",
+                                                              nsContextParseII ) );
+
+            String[] otherConst = getNodesAsStrings(
+                                                     sv_service_OR_md_dataIdentification,
+                                                     new XPath(
+                                                                "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gco:CharacterString",
+                                                                nsContextParseII ) );
+
+            qp.setOtherConstraints( Arrays.asList( otherConst ) );
 
             qp.setClassification( Arrays.asList( getNodesAsStrings(
                                                                     sv_service_OR_md_dataIdentification,
@@ -1121,7 +1123,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 } else if ( couplingTypeString.equals( "tight" ) ) {
                     LOG.debug( "coupling: tight..." );
 
-                    ci.determineTightlyCoupled( operatesOnList, Arrays.asList( operatesOnIdentifierList ) );
+                    // ci.determineTightlyCoupled( operatesOnList, Arrays.asList( operatesOnIdentifierList ) );
 
                     // } else {
                     // // mixed coupled if there are loose and tight coupled resources.
@@ -1156,183 +1158,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
             qp.setHasSecurityConstraints( hasSecurityConstraint );
 
             // if MD_DataIdentification or SV_ServiceIdentification
-            LOG.debug( "Creating element identificationInfo..." );
-            OMElement rootItendElem = factory.createOMElement( "identificationInfo", namespaceGMD );
-            OMElement update_Ident = null;
-            if ( md_dataIdentification != null ) {
-                LOG.debug( "Creating element MD_DataIdentification..." );
-                update_Ident = factory.createOMElement( "MD_DataIdentification", namespaceGMD );
-                if ( dataIdentificationUuId != null ) {
-                    update_Ident.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD, dataIdentificationUuId,
-                                                                    factory ) );
-                }
-                if ( dataIdentificationId != null ) {
-                    update_Ident.addAttribute( new OMAttributeImpl( "id", namespaceGMD, dataIdentificationId, factory ) );
-                }
-                rootItendElem.addChild( update_Ident );
-
-            } else {
-                LOG.debug( "Creating element SV_ServiceIdentification..." );
-                update_Ident = factory.createOMElement( "SV_ServiceIdentification", namespaceSRV );
-                if ( dataIdentificationUuId != null ) {
-                    update_Ident.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD, dataIdentificationUuId,
-                                                                    factory ) );
-                }
-                if ( dataIdentificationId != null ) {
-                    update_Ident.addAttribute( new OMAttributeImpl( "id", namespaceGMD, dataIdentificationId, factory ) );
-                }
-                rootItendElem.addChild( update_Ident );
-            }
-            if ( update_Ident != null ) {
-                if ( omCitation != null ) {
-                    LOG.debug( "Creats element citation..." );
-                    update_Ident.addChild( omCitation );
-                }
-                if ( _abstract != null ) {
-                    LOG.debug( "Creats element abstract..." );
-                    update_Ident.addChild( _abstract );
-                }
-                if ( purpose != null ) {
-                    LOG.debug( "Creats element purpose..." );
-                    update_Ident.addChild( purpose );
-                }
-                for ( OMElement elem : credit ) {
-                    LOG.debug( "Creats element credit..." );
-                    update_Ident.addChild( elem );
-                }
-                for ( OMElement elem : status ) {
-                    LOG.debug( "Creats element status..." );
-                    update_Ident.addChild( elem );
-                }
-                for ( OMElement elem : pointOfContact ) {
-                    LOG.debug( "Creats element pointOfContact..." );
-                    update_Ident.addChild( elem );
-                }
-                for ( OMElement elem : resourceMaintenance ) {
-                    LOG.debug( "Creats element resourceMaintenance..." );
-                    update_Ident.addChild( elem );
-                }
-                for ( OMElement elem : graphicOverview ) {
-                    LOG.debug( "Creats element graphicOverview..." );
-                    update_Ident.addChild( elem );
-                }
-                for ( OMElement elem : resourceFormat ) {
-                    LOG.debug( "Creats element resourceFormat..." );
-                    update_Ident.addChild( elem );
-                }
-                for ( OMElement elem : descriptiveKeywords ) {
-                    LOG.debug( "Creats element descriptiveKeywords..." );
-                    update_Ident.addChild( elem );
-                }
-                for ( OMElement elem : resourceSpecificUsage ) {
-                    LOG.debug( "Creats element resourceSpecificUsage..." );
-                    update_Ident.addChild( elem );
-                }
-                for ( OMElement elem : resourceConstraints ) {
-                    LOG.debug( "Creats element resourceConstraints..." );
-                    update_Ident.addChild( elem );
-                }
-                for ( OMElement elem : aggregationInfo ) {
-                    LOG.debug( "Creats element aggregationInfo..." );
-                    update_Ident.addChild( elem );
-                }
-
-                if ( spatialRepresentationType != null ) {
-                    for ( OMElement elem : spatialRepresentationType ) {
-                        LOG.debug( "Creats element spatialRepresentationType..." );
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( spatialResolution != null ) {
-                    for ( OMElement elem : spatialResolution ) {
-                        LOG.debug( "Creats element spatialResolution..." );
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( language_md_dataIdent != null ) {
-                    for ( OMElement elem : language_md_dataIdent ) {
-                        LOG.debug( "Creats element language..." );
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( characterSet_md_dataIdent != null ) {
-                    for ( OMElement elem : characterSet_md_dataIdent ) {
-                        LOG.debug( "Creats element characterSet..." );
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( topicCategory != null ) {
-                    for ( OMElement elem : topicCategory ) {
-                        LOG.debug( "Creats element topicCategory..." );
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( environmentDescription != null ) {
-                    LOG.debug( "Creats element environmentDescription..." );
-                    update_Ident.addChild( environmentDescription );
-                }
-                if ( supplementalInformation != null ) {
-                    LOG.debug( "Creats element supplementalInformation..." );
-                    update_Ident.addChild( supplementalInformation );
-                }
-                if ( serviceTypeElem != null ) {
-                    LOG.debug( "Creats element serviceType..." );
-                    update_Ident.addChild( serviceTypeElem );
-                }
-                if ( serviceTypeElem != null ) {
-                    LOG.debug( "Creats element serviceTypeVersion..." );
-                    for ( OMElement elem : serviceTypeVersionElem ) {
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( accessProperties != null ) {
-                    LOG.debug( "Creats element accessProperties..." );
-                    update_Ident.addChild( accessProperties );
-                }
-                if ( restrictions != null ) {
-                    LOG.debug( "Creats element restrictions..." );
-                    update_Ident.addChild( restrictions );
-                }
-                if ( keywords_service != null ) {
-                    LOG.debug( "Creats element keywords for service..." );
-                    for ( OMElement elem : keywords_service ) {
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( extent != null ) {
-                    LOG.debug( "Creats element extent..." );
-                    for ( OMElement elem : extent ) {
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( coupledResource != null ) {
-                    LOG.debug( "Creats element coupledResource..." );
-                    for ( OMElement elem : coupledResource ) {
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( couplingType != null ) {
-                    LOG.debug( "Creats element couplingType..." );
-                    update_Ident.addChild( couplingType );
-                }
-                if ( containsOperations != null ) {
-                    LOG.debug( "Creats element containsOperations..." );
-                    for ( OMElement elem : containsOperations ) {
-                        update_Ident.addChild( elem );
-                    }
-                }
-                if ( operatesOn != null ) {
-                    LOG.debug( "Creats element operatesOn..." );
-                    for ( OMElement elem : operatesOn ) {
-                        update_Ident.addChild( elem );
-                    }
-                }
-
-            }
-            identificationInfo_Update.add( rootItendElem );
         }
 
-        gr.setIdentificationInfo( identificationInfo_Update );
     }
 
     public List<String> getResourceIdentifierList() {

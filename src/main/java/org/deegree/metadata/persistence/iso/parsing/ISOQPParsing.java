@@ -56,10 +56,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso.generating.GenerateMetadata;
-import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.types.BoundingBox;
-import org.deegree.metadata.persistence.types.ConfigurationAccess;
 import org.deegree.metadata.persistence.types.Format;
 import org.deegree.metadata.persistence.types.Keyword;
 import org.slf4j.Logger;
@@ -86,11 +83,7 @@ public final class ISOQPParsing extends XMLAdapter {
 
     private ReturnableProperties rp;
 
-    private GenerateMetadata gr;
-
     // private MetadataValidation mv;
-
-    private final ConfigurationAccess ca;
 
     /**
      * checks if an OMElement is null
@@ -109,8 +102,8 @@ public final class ISOQPParsing extends XMLAdapter {
         nsContextISOParsing.addNamespace( DCT_PREFIX, DCT_NS );
     }
 
-    public ISOQPParsing( ConfigurationAccess ca ) {
-        this.ca = ca;
+    public ISOQPParsing() {
+
     }
 
     /**
@@ -136,14 +129,13 @@ public final class ISOQPParsing extends XMLAdapter {
                                               rootElement.getDefaultNamespace().getNamespaceURI() );
         }
 
-        gr = new GenerateMetadata();
         qp = new QueryableProperties();
 
         rp = new ReturnableProperties();
 
-        for ( String error : ca.getMv().validate( rootElement ) ) {
-            throw new MetadataStoreException( "VALIDATION-ERROR: " + error );
-        }
+        // for ( String error : ca.getMv().validate( rootElement ) ) {
+        // throw new MetadataStoreException( "VALIDATION-ERROR: " + error );
+        // }
 
         /*---------------------------------------------------------------
          * 
@@ -152,11 +144,11 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        String l = getNodeAsString(
-                                    rootElement,
-                                    new XPath(
-                                               "./gmd:language/gco:CharacterString | ./gmd:language/gmd:LanguageCode/@codeListValue",
-                                               nsContextISOParsing ), null );
+        String language = getNodeAsString(
+                                           rootElement,
+                                           new XPath(
+                                                      "./gmd:language/gco:CharacterString | ./gmd:language/gmd:LanguageCode/@codeListValue",
+                                                      nsContextISOParsing ), null );
 
         // Locale locale = new Locale(
         // getNodeAsString(
@@ -165,14 +157,8 @@ public final class ISOQPParsing extends XMLAdapter {
         // "./gmd:language/gco:CharacterString | ./gmd:language/gmd:LanguageCode/@codeListValue",
         // nsContextISOParsing ), null ) );
 
-        qp.setLanguage( l );
+        qp.setLanguage( language );
         // LOG.debug( getElement( rootElement, new XPath( "./gmd:language", nsContextISOParsing ) ).toString() );
-        omElementNullCheck = getElement( rootElement, new XPath( "./gmd:language", nsContextISOParsing ) );
-        if ( omElementNullCheck != null ) {
-
-            gr.setLanguage( getElement( rootElement, new XPath( "./gmd:language", nsContextISOParsing ) ) );
-
-        }
 
         /*---------------------------------------------------------------
          * 
@@ -181,12 +167,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        omElementNullCheck = getElement( rootElement, new XPath( "./gmd:characterSet", nsContextISOParsing ) );
-
-        if ( omElementNullCheck != null ) {
-            gr.setCharacterSet( getElement( rootElement, new XPath( "./gmd:characterSet", nsContextISOParsing ) ) );
-
-        }
 
         /*---------------------------------------------------------------
          * 
@@ -195,15 +175,9 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        qp.setParentIdentifier( getNodeAsString( rootElement, new XPath( "./gmd:parentIdentifier/gco:CharacterString",
-                                                                         nsContextISOParsing ), null ) );
-
-        omElementNullCheck = getElement( rootElement, new XPath( "./gmd:parentIdentifier", nsContextISOParsing ) );
-
-        if ( omElementNullCheck != null ) {
-            gr.setParentIdentifier( getElement( rootElement, new XPath( "./gmd:parentIdentifier", nsContextISOParsing ) ) );
-
-        }
+        String parentId = getNodeAsString( rootElement, new XPath( "./gmd:parentIdentifier/gco:CharacterString",
+                                                                   nsContextISOParsing ), null );
+        qp.setParentIdentifier( parentId );
 
         /*---------------------------------------------------------------
          * 
@@ -221,15 +195,10 @@ public final class ISOQPParsing extends XMLAdapter {
          * <p>
          * if provided data is a service: type = service
          */
-        qp.setType( getNodeAsString( rootElement, new XPath( "./gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue",
-                                                             nsContextISOParsing ), "dataset" ) );
+        String type = getNodeAsString( rootElement, new XPath( "./gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue",
+                                                               nsContextISOParsing ), "dataset" );
+        qp.setType( type );
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:hierarchyLevel", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setHierarchyLevel( getElements( rootElement, new XPath( "./gmd:hierarchyLevel", nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -238,13 +207,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:hierarchyLevelName", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setHierarchyLevelName( getElements( rootElement, new XPath( "./gmd:hierarchyLevelName",
-                                                                           nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -253,12 +215,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:contact", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setContact( getElements( rootElement, new XPath( "./gmd:contact", nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * DateStamp
@@ -266,28 +222,26 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        String dateString = getNodeAsString( rootElement, new XPath( "./gmd:dateStamp/gco:Date", nsContextISOParsing ),
-                                             null );
-        Date date = null;
+        String[] dateString = getNodesAsStrings( rootElement, new XPath( "./gmd:dateStamp/gco:Date",
+                                                                         nsContextISOParsing ) );
+        Date[] date = new Date[dateString.length];
         try {
+            int counter = 0;
             if ( dateString != null ) {
-                date = new Date( dateString );
-            } else {
-                date = null;
+                for ( String dates : dateString ) {
+
+                    date[counter++] = new Date( dates );
+
+                }
             }
         } catch ( ParseException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
+            throw new MetadataStoreException( e.getMessage() );
         }
 
         qp.setModified( date );
 
-        omElementNullCheck = getElement( rootElement, new XPath( "./gmd:dateStamp", nsContextISOParsing ) );
-
-        if ( omElementNullCheck != null ) {
-            gr.setDateStamp( getElement( rootElement, new XPath( "./gmd:dateStamp", nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -296,13 +250,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheck = getElement( rootElement, new XPath( "./gmd:metadataStandardName", nsContextISOParsing ) );
-
-        if ( omElementNullCheck != null ) {
-            gr.setMetadataStandardName( getElement( rootElement, new XPath( "./gmd:metadataStandardName",
-                                                                            nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -311,13 +258,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheck = getElement( rootElement, new XPath( "./gmd:metadataStandardVersion", nsContextISOParsing ) );
-
-        if ( omElementNullCheck != null ) {
-            gr.setMetadataStandardVersion( getElement( rootElement, new XPath( "./gmd:metadataStandardVersion",
-                                                                               nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -325,13 +265,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-
-        omElementNullCheck = getElement( rootElement, new XPath( "./gmd:dataSetURI", nsContextISOParsing ) );
-
-        if ( omElementNullCheck != null ) {
-            gr.setDataSetURI( getElement( rootElement, new XPath( "./gmd:dataSetURI", nsContextISOParsing ) ) );
-
-        }
 
         /*---------------------------------------------------------------
          * 
@@ -341,13 +274,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:locale", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setLocale( getElements( rootElement, new XPath( "./gmd:locale", nsContextISOParsing ) ) );
-
-        }
-
         /*---------------------------------------------------------------
          * 
          * 
@@ -356,14 +282,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:spatialRepresentationInfo",
-                                                                      nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setSpatialRepresentationInfo( getElements( rootElement, new XPath( "./gmd:spatialRepresentationInfo",
-                                                                                  nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -393,13 +311,6 @@ public final class ISOQPParsing extends XMLAdapter {
             crsList.add( crs );
         }
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:referenceSystemInfo", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setReferenceSystemInfo( getElements( rootElement, new XPath( "./gmd:referenceSystemInfo",
-                                                                            nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -408,14 +319,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:metadataExtensionInfo",
-                                                                      nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setMetadataExtensionInfo( getElements( rootElement, new XPath( "./gmd:metadataExtensionInfo",
-                                                                              nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -426,8 +329,8 @@ public final class ISOQPParsing extends XMLAdapter {
         List<OMElement> identificationInfo = getElements( rootElement, new XPath( "./gmd:identificationInfo",
                                                                                   nsContextISOParsing ) );
 
-        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, ca.getIc(), ca.getCi(), nsContextISOParsing );
-        pI.parseIdentificationInfo( identificationInfo, gr, qp, rp, crsList );
+        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, nsContextISOParsing );
+        pI.parseIdentificationInfo( identificationInfo, qp, rp, crsList );
         /*---------------------------------------------------------------
          * 
          * 
@@ -435,19 +338,15 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        String fileIdentifierString = getNodeAsString( rootElement,
-                                                       new XPath( "./gmd:fileIdentifier/gco:CharacterString",
-                                                                  nsContextISOParsing ), null );
-        List<String> idList = ca.getFi().determineFileIdentifier( fileIdentifierString, pI.getResourceIdentifierList(),
-                                                                  pI.getDataIdentificationId(),
-                                                                  pI.getDataIdentificationUuId(), isUpdate );
+        String[] fileIdentifierString = getNodesAsStrings( rootElement,
+                                                           new XPath( "./gmd:fileIdentifier/gco:CharacterString",
+                                                                      nsContextISOParsing ) );
+        // List<String> idList = ca.getFi().determineFileIdentifier( fileIdentifierString,
+        // pI.getResourceIdentifierList(),
+        // pI.getDataIdentificationId(),
+        // pI.getDataIdentificationUuId(), isUpdate );
 
-        if ( idList.isEmpty() ) {
-            return null;
-        }
-        qp.setIdentifier( idList );
-
-        gr.setIdentifier( GenerateOMElement.newInstance( factory ).createFileIdentifierElement( idList.get( 0 ) ) );
+        qp.setIdentifier( fileIdentifierString );
 
         // TODO
 
@@ -459,12 +358,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:contentInfo", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setContentInfo( getElements( rootElement, new XPath( "./gmd:contentInfo", nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -500,12 +393,6 @@ public final class ISOQPParsing extends XMLAdapter {
 
         qp.setFormat( listOfFormats );
 
-        omElementNullCheck = getElement( rootElement, new XPath( "./gmd:distributionInfo", nsContextISOParsing ) );
-
-        if ( omElementNullCheck != null ) {
-            gr.setDistributionInfo( getElement( rootElement, new XPath( "./gmd:distributionInfo", nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -517,7 +404,6 @@ public final class ISOQPParsing extends XMLAdapter {
         omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:contentInfo", nsContextISOParsing ) );
 
         if ( omElementNullCheckList != null ) {
-            gr.setDataQualityInfo( getElements( rootElement, new XPath( "./gmd:dataQualityInfo", nsContextISOParsing ) ) );
             qp.setLineage( getNodeAsString(
                                             rootElement,
                                             new XPath(
@@ -586,14 +472,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:portrayalCatalogueInfo",
-                                                                      nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setPortrayalCatalogueInfo( getElements( rootElement, new XPath( "./gmd:portrayalCatalogueInfo",
-                                                                               nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -602,13 +480,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:metadataConstraints", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setMetadataConstraints( getElements( rootElement, new XPath( "./gmd:metadataConstraints",
-                                                                            nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -617,14 +488,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:applicationSchemaInfo",
-                                                                      nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setApplicationSchemaInfo( getElements( rootElement, new XPath( "./gmd:applicationSchemaInfo",
-                                                                              nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -633,13 +496,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheck = getElement( rootElement, new XPath( "./gmd:metadataMaintenance", nsContextISOParsing ) );
-
-        if ( omElementNullCheck != null ) {
-            gr.setMetadataMaintenance( getElement( rootElement, new XPath( "./gmd:metadataMaintenance",
-                                                                           nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -648,12 +504,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:series", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setSeries( getElements( rootElement, new XPath( "./gmd:series", nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -662,12 +512,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:describes", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setDescribes( getElements( rootElement, new XPath( "./gmd:describes", nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -676,12 +520,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:propertyType", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setPropertyType( getElements( rootElement, new XPath( "./gmd:propertyType", nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -690,12 +528,6 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:featureType", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setFeatureType( getElements( rootElement, new XPath( "./gmd:featureType", nsContextISOParsing ) ) );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -704,19 +536,11 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:featureAttribute", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            gr.setFeatureAttribute( getElements( rootElement, new XPath( "./gmd:featureAttribute", nsContextISOParsing ) ) );
-
-        }
         /*
          * sets the properties that are needed for building DC records
          */
-        gr.setQueryableProperties( qp );
-        gr.setReturnableProperties( rp );
 
-        return new ParsedProfileElement( qp, rp, gr );
+        return new ParsedProfileElement( qp, rp );
 
     }
 
@@ -732,7 +556,6 @@ public final class ISOQPParsing extends XMLAdapter {
     public ParsedProfileElement parseAPDC( OMElement element )
                             throws MetadataStoreException {
 
-        gr = new GenerateMetadata();
         qp = new QueryableProperties();
 
         rp = new ReturnableProperties();
@@ -743,9 +566,9 @@ public final class ISOQPParsing extends XMLAdapter {
                                               rootElement.getDefaultNamespace().getNamespaceURI() );
         }
 
-        for ( String error : ca.getMv().validate( rootElement ) ) {
-            throw new MetadataStoreException( "VALIDATION-ERROR: " + error );
-        }
+        // for ( String error : ca.getMv().validate( rootElement ) ) {
+        // throw new MetadataStoreException( "VALIDATION-ERROR: " + error );
+        // }
 
         List<Keyword> keywordList = new ArrayList<Keyword>();
 
@@ -754,7 +577,7 @@ public final class ISOQPParsing extends XMLAdapter {
         // StringWriter anyText = new StringWriter();
 
         String[] b = getNodesAsStrings( rootElement, new XPath( "./dc:identifier", nsContextISOParsing ) );
-        qp.setIdentifier( Arrays.asList( b ) );
+        qp.setIdentifier( b );
 
         rp.setCreator( getNodeAsString( rootElement, new XPath( "./dc:creator", nsContextISOParsing ), null ) );
 
@@ -784,16 +607,16 @@ public final class ISOQPParsing extends XMLAdapter {
 
         qp.setFormat( formatList );
 
-        Date modified = null;
-        try {
-            modified = new Date(
-                                 getNodeAsString( rootElement, new XPath( "./dct:modified", nsContextISOParsing ), null ) );
-        } catch ( ParseException e ) {
-
-            LOG.debug( "Error while parsing the date: {} ", e.getMessage() );
-            throw new MetadataStoreException( "Error while parsing the date: {} ", e );
-        }
-        qp.setModified( modified );
+        // Date[] modified = null;
+        // try {
+        // modified = new Date(
+        // getNodeAsString( rootElement, new XPath( "./dct:modified", nsContextISOParsing ), null ) );
+        // } catch ( ParseException e ) {
+        //
+        // LOG.debug( "Error while parsing the date: {} ", e.getMessage() );
+        // throw new MetadataStoreException( "Error while parsing the date: {} ", e );
+        // }
+        // qp.setModified( modified );
 
         qp.setType( getNodeAsString( rootElement, new XPath( "./dc:type", nsContextISOParsing ), null ) );
 
@@ -829,10 +652,7 @@ public final class ISOQPParsing extends XMLAdapter {
 
         rp.setSource( getNodeAsString( rootElement, new XPath( "./dc:source", nsContextISOParsing ), null ) );
 
-        gr.setQueryableProperties( qp );
-        gr.setReturnableProperties( rp );
-
-        return new ParsedProfileElement( qp, rp, gr );
+        return new ParsedProfileElement( qp, rp );
 
     }
 

@@ -48,8 +48,10 @@ import java.text.ParseException;
 
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRS;
+import org.deegree.metadata.ISORecord;
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
-import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
 import org.deegree.metadata.persistence.iso.parsing.ReturnableProperties;
 import org.deegree.metadata.persistence.types.Format;
@@ -87,8 +89,10 @@ public class GenerateQueryableProperties {
      * @param parsedElement
      * @return the primarykey of the inserted dataset which is the foreignkey for the queryable properties
      *         databasetables
+     * @throws MetadataStoreException
      */
-    public int generateMainDatabaseDataset( Connection connection, ParsedProfileElement parsedElement ) {
+    public int generateMainDatabaseDataset( Connection connection, ISORecord rec )
+                            throws MetadataStoreException {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
         StringWriter sqlStatement = new StringWriter( 1000 );
         boolean isCaseSensitive = true;
@@ -109,10 +113,11 @@ public class GenerateQueryableProperties {
             stm.setObject( 1, operatesOnId );
             stm.setObject( 2, null );
             stm.setObject( 3, null );
-            stm.setObject( 4, generateISOQP_AnyTextStatement( isCaseSensitive, parsedElement.getQueryableProperties(),
-                                                              parsedElement.getReturnableProperties() ) );
-            if ( parsedElement.getQueryableProperties().getModified() != null ) {
-                String time = parsedElement.getQueryableProperties().getModified().toString();
+            // TODO should be anyText
+            stm.setObject( 4, "" );
+            if ( rec.getModified() != null ) {
+                // TODO think of more than one date
+                String time = rec.getModified()[0].toString();
                 stm.setTimestamp(
                                   5,
                                   Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
@@ -120,9 +125,9 @@ public class GenerateQueryableProperties {
                 stm.setTimestamp( 5, null );
             }
 
-            stm.setObject( 6, parsedElement.getQueryableProperties().isHasSecurityConstraints() );
-            stm.setObject( 7, parsedElement.getQueryableProperties().getLanguage() );
-            stm.setObject( 8, parsedElement.getQueryableProperties().getParentIdentifier() );
+            stm.setObject( 6, rec.isHasSecurityConstraints() );
+            stm.setObject( 7, rec.getLanguage() );
+            stm.setObject( 8, rec.getParentIdentifier() );
             stm.setObject( 9, null );
             stm.setObject( 10, null );
             stm.executeUpdate();
@@ -150,133 +155,141 @@ public class GenerateQueryableProperties {
      * @param parsedElement
      */
     public void executeQueryableProperties( boolean isUpdate, Connection connection, int operatesOnId,
-                                            ParsedProfileElement parsedElement ) {
+                                            MetadataRecord rec ) {
 
-        if ( parsedElement.getQueryableProperties().getIdentifier() != null ) {
-            generateQP_IdentifierStatement( isUpdate, connection, operatesOnId, parsedElement.getQueryableProperties() );
+        if ( rec.getParsedElement().getQueryableProperties().getIdentifier() != null ) {
+            generateQP_IdentifierStatement( isUpdate, connection, operatesOnId,
+                                            rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getTitle() != null ) {
-            generateISOQP_TitleStatement( isUpdate, connection, operatesOnId, parsedElement.getQueryableProperties() );
+        if ( rec.getParsedElement().getQueryableProperties().getTitle() != null ) {
+            generateISOQP_TitleStatement( isUpdate, connection, operatesOnId,
+                                          rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getType() != null ) {
-            generateISOQP_TypeStatement( isUpdate, connection, operatesOnId, parsedElement.getQueryableProperties() );
+        if ( rec.getParsedElement().getQueryableProperties().getType() != null ) {
+            generateISOQP_TypeStatement( isUpdate, connection, operatesOnId,
+                                         rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getKeywords() != null ) {
-            generateISOQP_KeywordStatement( isUpdate, connection, operatesOnId, parsedElement.getQueryableProperties() );
+        if ( rec.getParsedElement().getQueryableProperties().getKeywords() != null ) {
+            generateISOQP_KeywordStatement( isUpdate, connection, operatesOnId,
+                                            rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getTopicCategory() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getTopicCategory() != null ) {
             generateISOQP_TopicCategoryStatement( isUpdate, connection, operatesOnId,
-                                                  parsedElement.getQueryableProperties() );
+                                                  rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getFormat() != null ) {
-            generateISOQP_FormatStatement( isUpdate, connection, operatesOnId, parsedElement.getQueryableProperties() );
+        if ( rec.getParsedElement().getQueryableProperties().getFormat() != null ) {
+            generateISOQP_FormatStatement( isUpdate, connection, operatesOnId,
+                                           rec.getParsedElement().getQueryableProperties() );
         }
         // TODO relation
-        if ( parsedElement.getQueryableProperties().get_abstract() != null ) {
-            generateISOQP_AbstractStatement( isUpdate, connection, operatesOnId, parsedElement.getQueryableProperties() );
+        if ( rec.getParsedElement().getQueryableProperties().get_abstract() != null ) {
+            generateISOQP_AbstractStatement( isUpdate, connection, operatesOnId,
+                                             rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getAlternateTitle() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getAlternateTitle() != null ) {
             generateISOQP_AlternateTitleStatement( isUpdate, connection, operatesOnId,
-                                                   parsedElement.getQueryableProperties() );
+                                                   rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getCreationDate() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getCreationDate() != null ) {
             generateISOQP_CreationDateStatement( isUpdate, connection, operatesOnId,
-                                                 parsedElement.getQueryableProperties() );
+                                                 rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getPublicationDate() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getPublicationDate() != null ) {
             generateISOQP_PublicationDateStatement( isUpdate, connection, operatesOnId,
-                                                    parsedElement.getQueryableProperties() );
+                                                    rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getRevisionDate() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getRevisionDate() != null ) {
             generateISOQP_RevisionDateStatement( isUpdate, connection, operatesOnId,
-                                                 parsedElement.getQueryableProperties() );
+                                                 rec.getParsedElement().getQueryableProperties() );
         }
-        if ( !parsedElement.getQueryableProperties().getResourceIdentifier().isEmpty() ) {
+        if ( !rec.getParsedElement().getQueryableProperties().getResourceIdentifier().isEmpty() ) {
             generateISOQP_ResourceIdentifierStatement( isUpdate, connection, operatesOnId,
-                                                       parsedElement.getQueryableProperties() );
+                                                       rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getServiceType() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getServiceType() != null ) {
             generateISOQP_ServiceTypeStatement( isUpdate, connection, operatesOnId,
-                                                parsedElement.getQueryableProperties() );
+                                                rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getServiceTypeVersion() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getServiceTypeVersion() != null ) {
             generateISOQP_ServiceTypeVersionStatement( isUpdate, connection, operatesOnId,
-                                                       parsedElement.getQueryableProperties() );
+                                                       rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getGeographicDescriptionCode_service() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getGeographicDescriptionCode_service() != null ) {
             generateISOQP_GeographicDescriptionCode_ServiceStatement( isUpdate, connection, operatesOnId,
-                                                                      parsedElement.getQueryableProperties() );
+                                                                      rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getOperation() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getOperation() != null ) {
             generateISOQP_OperationStatement( isUpdate, connection, operatesOnId,
-                                              parsedElement.getQueryableProperties() );
+                                              rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getDenominator() != 0
-             || ( parsedElement.getQueryableProperties().getDistanceValue() != 0 && parsedElement.getQueryableProperties().getDistanceUOM() != null ) ) {
+        if ( rec.getParsedElement().getQueryableProperties().getDenominator() != 0
+             || ( rec.getParsedElement().getQueryableProperties().getDistanceValue() != 0 && rec.getParsedElement().getQueryableProperties().getDistanceUOM() != null ) ) {
             generateISOQP_SpatialResolutionStatement( isUpdate, connection, operatesOnId,
-                                                      parsedElement.getQueryableProperties() );
+                                                      rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getOrganisationName() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getOrganisationName() != null ) {
             generateISOQP_OrganisationNameStatement( isUpdate, connection, operatesOnId,
-                                                     parsedElement.getQueryableProperties() );
+                                                     rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getResourceLanguage() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getResourceLanguage() != null ) {
             generateISOQP_ResourceLanguageStatement( isUpdate, connection, operatesOnId,
-                                                     parsedElement.getQueryableProperties() );
+                                                     rec.getParsedElement().getQueryableProperties() );
         }
 
-        if ( ( ( parsedElement.getQueryableProperties().getTemporalExtentBegin() != null && parsedElement.getQueryableProperties().getTemporalExtentEnd() != null ) ) ) {
+        if ( ( ( rec.getParsedElement().getQueryableProperties().getTemporalExtentBegin() != null && rec.getParsedElement().getQueryableProperties().getTemporalExtentEnd() != null ) ) ) {
             generateISOQP_TemporalExtentStatement( isUpdate, connection, operatesOnId,
-                                                   parsedElement.getQueryableProperties() );
+                                                   rec.getParsedElement().getQueryableProperties() );
         }
 
-        if ( parsedElement.getQueryableProperties().getOperatesOnData() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getOperatesOnData() != null ) {
             generateISOQP_OperatesOnStatement( isUpdate, connection, operatesOnId,
-                                               parsedElement.getQueryableProperties() );
+                                               rec.getParsedElement().getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getCouplingType() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getCouplingType() != null ) {
             generateISOQP_CouplingTypeStatement( isUpdate, connection, operatesOnId,
-                                                 parsedElement.getQueryableProperties() );
+                                                 rec.getParsedElement().getQueryableProperties() );
         }
         // TODO spatial
-        LOG.debug( "Boundingbox = " + parsedElement.getQueryableProperties().getBoundingBox() );
-        if ( parsedElement.getQueryableProperties().getBoundingBox() != null ) {
+        LOG.debug( "Boundingbox = " + rec.getParsedElement().getQueryableProperties().getBoundingBox() );
+        if ( rec.getParsedElement().getQueryableProperties().getBoundingBox() != null ) {
             generateISOQP_BoundingBoxStatement( isUpdate, connection, operatesOnId,
-                                                parsedElement.getQueryableProperties() );
+                                                rec.getParsedElement().getQueryableProperties() );
         }
         // if ( qp.getCrs() != null || qp.getCrs().size() != 0 ) {
         // generateISOQP_CRSStatement( isUpdate );
         // }
 
-        generateADDQP_DegreeStatement( isUpdate, connection, operatesOnId, parsedElement.getQueryableProperties() );
+        generateADDQP_DegreeStatement( isUpdate, connection, operatesOnId,
+                                       rec.getParsedElement().getQueryableProperties() );
 
-        if ( parsedElement.getQueryableProperties().getLimitation() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getLimitation() != null ) {
             generateADDQP_LimitationsStatement( isUpdate, connection, operatesOnId,
-                                                parsedElement.getQueryableProperties() );
+                                                rec.getParsedElement().getQueryableProperties() );
         }
 
-        if ( parsedElement.getQueryableProperties().getLineage() != null ) {
-            generateADDQP_LineageStatement( isUpdate, connection, operatesOnId, parsedElement.getQueryableProperties() );
+        if ( rec.getParsedElement().getQueryableProperties().getLineage() != null ) {
+            generateADDQP_LineageStatement( isUpdate, connection, operatesOnId,
+                                            rec.getParsedElement().getQueryableProperties() );
         }
 
-        if ( parsedElement.getQueryableProperties().getAccessConstraints() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getAccessConstraints() != null ) {
             generateADDQP_AccessConstraintsStatement( isUpdate, connection, operatesOnId,
-                                                      parsedElement.getQueryableProperties() );
+                                                      rec.getParsedElement().getQueryableProperties() );
         }
 
-        if ( parsedElement.getQueryableProperties().getOtherConstraints() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getOtherConstraints() != null ) {
             generateADDQP_OtherConstraintsStatement( isUpdate, connection, operatesOnId,
-                                                     parsedElement.getQueryableProperties() );
+                                                     rec.getParsedElement().getQueryableProperties() );
         }
 
-        if ( parsedElement.getQueryableProperties().getClassification() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getClassification() != null ) {
             generateADDQP_ClassificationStatement( isUpdate, connection, operatesOnId,
-                                                   parsedElement.getQueryableProperties() );
+                                                   rec.getParsedElement().getQueryableProperties() );
         }
 
-        if ( parsedElement.getQueryableProperties().getSpecificationTitle() != null ) {
+        if ( rec.getParsedElement().getQueryableProperties().getSpecificationTitle() != null ) {
             generateADDQP_SpecificationStatement( isUpdate, connection, operatesOnId,
-                                                  parsedElement.getQueryableProperties() );
+                                                  rec.getParsedElement().getQueryableProperties() );
         }
 
     }
