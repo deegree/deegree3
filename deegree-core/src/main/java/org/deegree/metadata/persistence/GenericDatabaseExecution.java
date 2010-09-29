@@ -63,6 +63,8 @@ public interface GenericDatabaseExecution {
      * @param connection
      * @param parsedElement
      *            {@link ParsedProfileElement}
+     * @return an integer that is the primarykey from the inserted record, or "" if there was no inserting possible
+     *         (i.e. when inserting a record twice).
      * @throws IOException
      * @throws MetadataStoreException
      */
@@ -84,9 +86,8 @@ public interface GenericDatabaseExecution {
     int executeUpdateStatement( Connection connection, ParsedProfileElement parsedElement )
                             throws MetadataStoreException;
 
-    PreparedStatement executeGetRecords( String formatType, MetadataQuery recordStoreOptions,
-                                         int typeNameFormatNumber, boolean setCount, PostGISWhereBuilder builder,
-                                         Connection conn )
+    PreparedStatement executeGetRecords( String formatType, MetadataQuery recordStoreOptions, int typeNameFormatNumber,
+                                         boolean setCount, PostGISWhereBuilder builder, Connection conn )
                             throws MetadataStoreException;
 
 }

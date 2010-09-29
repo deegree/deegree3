@@ -442,6 +442,9 @@ public final class ISOQPParsing extends XMLAdapter {
                                                                   pI.getDataIdentificationId(),
                                                                   pI.getDataIdentificationUuId(), isUpdate );
 
+        if ( idList.isEmpty() ) {
+            return null;
+        }
         qp.setIdentifier( idList );
 
         gr.setIdentifier( GenerateOMElement.newInstance( factory ).createFileIdentifierElement( idList.get( 0 ) ) );

@@ -280,6 +280,9 @@ public class QueryableProperties {
      *            the lineage to set
      */
     public void setLineage( String lineage ) {
+        if ( lineage != null ) {
+            lineage = lineage.replace( "'", "''" );
+        }
         this.lineage = lineage;
     }
 
@@ -314,6 +317,10 @@ public class QueryableProperties {
      *            the anyText to set
      */
     public void setAnyText( String anyText ) {
+        if ( anyText != null ) {
+            anyText = anyText.replace( "'", "''" );
+
+        }
         this.anyText = anyText;
     }
 
@@ -524,6 +531,9 @@ public class QueryableProperties {
      *            the organisationName to set
      */
     public void setOrganisationName( String organisationName ) {
+        if ( organisationName != null ) {
+            organisationName = organisationName.replace( "'", "''" );
+        }
         this.organisationName = organisationName;
     }
 
@@ -674,6 +684,7 @@ public class QueryableProperties {
      *            the couplingType to set
      */
     public void setCouplingType( String couplingType ) {
+
         this.couplingType = couplingType;
     }
 
@@ -734,6 +745,9 @@ public class QueryableProperties {
      *            the distanceUOM to set
      */
     public void setDistanceUOM( String distanceUOM ) {
+        if ( distanceUOM != null ) {
+            distanceUOM = distanceUOM.replace( "'", "''" );
+        }
         this.distanceUOM = distanceUOM;
     }
 
