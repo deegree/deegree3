@@ -42,6 +42,7 @@ import java.util.LinkedList;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
+import org.deegree.services.wps.provider.sextante.ExampleData;
 import org.deegree.services.wps.provider.sextante.GMLSchema;
 import org.deegree.services.wps.provider.sextante.GMLSchema.GMLType;
 import es.unex.sextante.core.GeoAlgorithm;

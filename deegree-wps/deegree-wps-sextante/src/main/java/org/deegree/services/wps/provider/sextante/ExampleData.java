@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wps;
+package org.deegree.services.wps.provider.sextante;
 
 /**
  * All classes which provide an access to example data for JUnit tests should implements this interface.

@@ -37,6 +37,8 @@ package org.deegree.protocol.wps;
 
 import java.util.LinkedList;
 
+import org.deegree.services.wps.provider.sextante.ExampleData;
+import org.deegree.services.wps.provider.sextante.OutputFormat;
 import org.deegree.services.wps.provider.sextante.SextanteWPSProcess;
 
 import es.unex.sextante.core.GeoAlgorithm;

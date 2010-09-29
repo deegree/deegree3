@@ -37,6 +37,8 @@ package org.deegree.protocol.wps;
 
 import java.util.LinkedList;
 
+import org.deegree.services.wps.provider.sextante.ExampleData;
+
 /**
  * This class wraps all literal test data as static attributes. <br>
  * A instance of this class presents one data set of test data.

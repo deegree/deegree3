@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.protocol.wps;
+package org.deegree.services.wps.provider.sextante;
 
 /**
  * TODO add class documentation here

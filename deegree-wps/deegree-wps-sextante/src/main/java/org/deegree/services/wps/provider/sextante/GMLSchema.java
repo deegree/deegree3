@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import org.deegree.gml.GMLVersion;
-import org.deegree.protocol.wps.OutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

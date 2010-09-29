@@ -48,6 +48,7 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
@@ -665,12 +666,19 @@ public class SextanteProcesslet implements Processlet {
         try {
 
             String gmlSchema = gmlOutput.getRequestedSchema();
-            XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(),
-                                                                    "http://www.opengis.net/gml " + gmlSchema );
+
+            GMLVersion gmlVersion = FormatHelper.determineGMLVersion( gmlOutput );
+
+            String schemaPrefix;
+            if ( gmlVersion.equals( GMLVersion.GML_32 ) )
+                schemaPrefix = "http://www.opengis.net/gml/3.2 ";
+            else
+                schemaPrefix = "http://www.opengis.net/gml ";
+
+            XMLStreamWriterWrapper sw = new XMLStreamWriterWrapper( gmlOutput.getXMLStreamWriter(), schemaPrefix
+                                                                                                    + gmlSchema );
             sw.setPrefix( "gml", GMLNS );
-            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
-                                                                                FormatHelper.determineGMLVersion( gmlOutput ),
-                                                                                sw );
+            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, sw );
 
             gmlWriter.write( geometry );
 
@@ -692,13 +700,11 @@ public class SextanteProcesslet implements Processlet {
     private void writeFeatureCollection( ComplexOutput gmlOutput, FeatureCollection coll )
                             throws ProcessletException {
         try {
-
             XMLStreamWriter sw = gmlOutput.getXMLStreamWriter();
-//            sw.setPrefix( "gml", CommonNamespaces.GML3_2_NS );
+            // sw.setPrefix( "gml", CommonNamespaces.GML3_2_NS );
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(
                                                                                 FormatHelper.determineGMLVersion( gmlOutput ),
                                                                                 sw );
-
             gmlWriter.write( coll );
 
         } catch ( Exception e ) {
