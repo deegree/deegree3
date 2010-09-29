@@ -33,50 +33,44 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.iso.parsing;
+package org.deegree.metadata.persistence.iso.parsing.inspectation;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.sql.Connection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.RequireInspireCompliance;
-import org.slf4j.Logger;
+import org.apache.axiom.om.OMElement;
+import org.deegree.metadata.persistence.MetadataStoreException;
 
 /**
- * Inspects the INSPIRE compliance of the metadataset.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class InspireCompliance {
+public class ResourceIdentifier implements RecordInspector {
 
-    private static final Logger LOG = getLogger( InspireCompliance.class );
-
-    private final RequireInspireCompliance ric;
-
-    private final Connection conn;
-
-    private InspireCompliance( RequireInspireCompliance ric, Connection conn ) {
-        this.ric = ric;
-        this.conn = conn;
-    }
-
-    public static InspireCompliance newInstance( RequireInspireCompliance ric, Connection conn ) {
-        return new InspireCompliance( ric, conn );
-    }
-
-    public boolean checkInspireCompliance() {
-        if ( ric == null ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
+    // private static final Logger LOG = getLogger( ResourceIdentifier.class );
+    //
+    // private final RequireInspireCompliance ric;
+    //
+    // private final Connection conn;
+    //
+    // private ResourceIdentifier( RequireInspireCompliance ric, Connection conn ) {
+    // this.ric = ric;
+    // this.conn = conn;
+    // }
+    //
+    // public static ResourceIdentifier newInstance( RequireInspireCompliance ric, Connection conn ) {
+    // return new ResourceIdentifier( ric, conn );
+    // }
+    //
+    // public boolean checkInspireCompliance() {
+    // if ( ric == null ) {
+    // return false;
+    // } else {
+    // return true;
+    // }
+    // }
+    //
     // /**
     // * Determines if the required constraint of the equality of the attribute
     // *
@@ -145,16 +139,23 @@ public class InspireCompliance {
     // }
     // return false;
     // }
+    //
+    // private boolean checkUUIDCompliance( String uuid ) {
+    //
+    // char firstChar = uuid.charAt( 0 );
+    // Pattern p = Pattern.compile( "[0-9]" );
+    // Matcher m = p.matcher( "" + firstChar );
+    // if ( m.matches() ) {
+    // return false;
+    // }
+    // return true;
+    // }
 
-    private boolean checkUUIDCompliance( String uuid ) {
-
-        char firstChar = uuid.charAt( 0 );
-        Pattern p = Pattern.compile( "[0-9]" );
-        Matcher m = p.matcher( "" + firstChar );
-        if ( m.matches() ) {
-            return false;
-        }
-        return true;
+    @Override
+    public OMElement inspect( OMElement record )
+                            throws MetadataStoreException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -33,12 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.persistence.types;
-
-import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
-import org.deegree.metadata.persistence.iso.parsing.InspireCompliance;
-import org.deegree.metadata.persistence.iso.parsing.MetadataValidation;
-import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
+package org.deegree.metadata.persistence.types.inspire;
 
 /**
  * TODO add class documentation here
@@ -48,43 +43,12 @@ import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierI
  * 
  * @version $Revision$, $Date$
  */
-public class ConfigurationAccess {
+public class DataExtent {
 
-    private final FileIdentifierInspector fi;
-
-    private final InspireCompliance ic;
-
-    private final CoupledDataInspector ci;
-
-    private final MetadataValidation mv;
-
-    private ConfigurationAccess( FileIdentifierInspector fi, InspireCompliance ic, CoupledDataInspector ci,
-                                 MetadataValidation mv ) {
-        this.fi = fi;
-        this.ci = ci;
-        this.ic = ic;
-        this.mv = mv;
-    }
-
-    public static ConfigurationAccess newInstance( FileIdentifierInspector fi, InspireCompliance ic,
-                                                   CoupledDataInspector ci, MetadataValidation mv ) {
-        return new ConfigurationAccess( fi, ic, ci, mv );
-    }
-
-    public FileIdentifierInspector getFi() {
-        return fi;
-    }
-
-    public InspireCompliance getIc() {
-        return ic;
-    }
-
-    public CoupledDataInspector getCi() {
-        return ci;
-    }
-
-    public MetadataValidation getMv() {
-        return mv;
-    }
+    // TODO
+    // extent information including the
+    // bounding box, bounding polygon,
+    // vertical, and temporal extent of the
+    // dataset
 
 }
