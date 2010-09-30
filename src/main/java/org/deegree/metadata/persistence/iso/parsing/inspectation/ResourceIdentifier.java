@@ -219,14 +219,17 @@ public class ResourceIdentifier implements RecordInspector {
         List<String> rsList = determineResourceIdentifier( resourceIdentifierList, dataIdentificationId );
 
         LOG.debug( "Creating of resourceIdentifierList finished: " + rsList );
-        if ( dataIdentificationUuId == null ) {
-            LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
-
-        } else {
-            LOG.debug( " uuid attribute found, but anyway, set it from the resourceIdentifier..." );
-            sv_service_OR_md_dataIdentification.getAttribute( new QName( "uuid" ) );
+        if ( rsList.isEmpty() ) {
+            LOG.debug( "ResourceIdentifier compliance test is not activated so skip it." );
         }
         if ( !rsList.isEmpty() ) {
+            if ( dataIdentificationUuId == null ) {
+                LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
+
+            } else {
+                LOG.debug( " uuid attribute found, but anyway, set it from the resourceIdentifier..." );
+                sv_service_OR_md_dataIdentification.getAttribute( new QName( "uuid" ) );
+            }
             sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl(
                                                                                    "uuid",
                                                                                    new OMNamespaceImpl(
@@ -256,7 +259,7 @@ public class ResourceIdentifier implements RecordInspector {
         }
 
         // check where to set the resourceIdentifier element
-        if ( identifier.isEmpty() ) {
+        if ( identifier.isEmpty() && !rsList.isEmpty() ) {
             OMElement resourceID = GenerateOMElement.newInstance().createMD_ResourceIdentifier( rsList.get( 0 ) );
             if ( editionDate != null ) {
                 LOG.debug( "Set resourceIdentifier '" + rsList.get( 0 ) + "' after the 'editionDate-element'." );
