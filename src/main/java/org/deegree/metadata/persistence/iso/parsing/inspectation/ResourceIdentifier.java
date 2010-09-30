@@ -35,8 +35,27 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing.inspectation;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.OMNamespaceImpl;
+import org.apache.axiom.om.impl.llom.OMAttributeImpl;
+import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
+import org.deegree.metadata.persistence.iso.parsing.IdUtils;
+import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.RequireInspireCompliance;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -48,114 +67,192 @@ import org.deegree.metadata.persistence.MetadataStoreException;
  */
 public class ResourceIdentifier implements RecordInspector {
 
-    // private static final Logger LOG = getLogger( ResourceIdentifier.class );
-    //
-    // private final RequireInspireCompliance ric;
-    //
-    // private final Connection conn;
-    //
-    // private ResourceIdentifier( RequireInspireCompliance ric, Connection conn ) {
-    // this.ric = ric;
-    // this.conn = conn;
-    // }
-    //
-    // public static ResourceIdentifier newInstance( RequireInspireCompliance ric, Connection conn ) {
-    // return new ResourceIdentifier( ric, conn );
-    // }
-    //
-    // public boolean checkInspireCompliance() {
-    // if ( ric == null ) {
-    // return false;
-    // } else {
-    // return true;
-    // }
-    // }
-    //
-    // /**
-    // * Determines if the required constraint of the equality of the attribute
-    // *
-    // <Code>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier</Code>
-    // * and <Code>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Code> is given.
-    // *
-    // * @param rsList
-    // * the list of RS_Identifier, not <Code>null</Code>.
-    // * @param id
-    // * the id attribute if exists, can be <Code>null</Code>.
-    // * @return a list of RS_Identifier, not <Code>null</Code> but empty, at least.
-    // * @throws MetadataStoreException
-    // */
-    // public List<String> determineInspireCompliance( InspireType type )
-    // throws MetadataStoreException {
-    //
-    // if ( checkInspireCompliance() ) {
-    // boolean generateAutomatic = ric.isGenerateAutomatic();
-    // if ( generateAutomatic == false ) {
-    // if ( checkRSListAgainstID( rsList, id ) ) {
-    // LOG.info( "The resourceIdentifier has been accepted." );
-    // return rsList;
-    // }
-    // LOG.debug(
-    // "There was no match between resourceIdentifier and the id-attribute! Without any automatic guarantee this metadata has to be rejected! "
-    // );
-    // throw new MetadataStoreException( "There was no match between resourceIdentifier and the id-attribute!" );
-    // }
-    // if ( checkRSListAgainstID( rsList, id ) ) {
-    // LOG.info( "The resourceIdentifier has been accepted without any automatic creation. " );
-    // return rsList;
-    // }
-    // /**
-    // * if both, id and resourceIdentifier exists but different: update id with resourceIdentifier
-    // * <p>
-    // * if id exists: update resourceIdentifier with id
-    // * <p>
-    // * if resourceIdentifier exists: update id with resourceIdentifier
-    // * <p>
-    // * if nothing exists: generate it for id and resourceIdentifier
-    // */
-    // if ( rsList.size() == 0 && id == null ) {
-    // LOG.info( "Neither an id nor a resourceIdentifier exists...so this creates a new one. " );
-    // rsList.add( IdUtils.newInstance( conn ).generateUUID() );
-    // return rsList;
-    // } else if ( rsList.size() == 0 && id != null ) {
-    // LOG.info( "An id exists but not a resourceIdentifier...so adapting resourceIdentifier with id. " );
-    // rsList.add( id );
-    // return rsList;
-    // }
-    // }
-    // LOG.info( "No modification happened, so the resourceIdentifierList will be passed through. " );
-    // return rsList;
-    // }
-    //
-    // private boolean checkRSListAgainstID( List<String> rsList, String id ) {
-    // if ( rsList.size() == 0 ) {
-    // return false;
-    // } else {
-    // if ( checkUUIDCompliance( rsList.get( 0 ) ) ) {
-    // if ( checkUUIDCompliance( id ) ) {
-    // return rsList.get( 0 ).equals( id );
-    // }
-    // }
-    //
-    // }
-    // return false;
-    // }
-    //
-    // private boolean checkUUIDCompliance( String uuid ) {
-    //
-    // char firstChar = uuid.charAt( 0 );
-    // Pattern p = Pattern.compile( "[0-9]" );
-    // Matcher m = p.matcher( "" + firstChar );
-    // if ( m.matches() ) {
-    // return false;
-    // }
-    // return true;
-    // }
+    private static final Logger LOG = getLogger( ResourceIdentifier.class );
+
+    private final RequireInspireCompliance ric;
+
+    private final Connection conn;
+
+    private final XMLAdapter a;
+
+    private ResourceIdentifier( RequireInspireCompliance ric, Connection conn ) {
+        this.ric = ric;
+        this.conn = conn;
+        this.a = new XMLAdapter();
+    }
+
+    public static ResourceIdentifier newInstance( RequireInspireCompliance ric, Connection conn ) {
+        return new ResourceIdentifier( ric, conn );
+    }
+
+    public boolean checkInspireCompliance() {
+        if ( ric == null ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Determines if the required constraint of the equality of the attribute
+     * 
+     * <Code>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier</Code>
+     * and <Code>gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/@id</Code> is given.
+     * 
+     * @param rsList
+     *            the list of RS_Identifier, not <Code>null</Code>.
+     * @param id
+     *            the id attribute if exists, can be <Code>null</Code>.
+     * @return a list of RS_Identifier, not <Code>null</Code> but empty, at least.
+     * @throws MetadataStoreException
+     */
+    public List<String> determineResourceIdentifier( List<String> rsList, String id )
+                            throws MetadataStoreException {
+
+        if ( checkInspireCompliance() ) {
+            boolean generateAutomatic = ric.isGenerateAutomatic();
+            if ( generateAutomatic == false ) {
+                if ( id != null ) {
+                    if ( checkRSListAgainstID( rsList, id ) ) {
+                        LOG.info( "The resourceIdentifier has been accepted." );
+                        return rsList;
+                    }
+                }
+                LOG.debug( "There was no match between resourceIdentifier and the id-attribute! Without any automatic guarantee this metadata has to be rejected! " );
+                throw new MetadataStoreException( "There was no match between resourceIdentifier and the id-attribute!" );
+            }
+            if ( checkRSListAgainstID( rsList, id ) ) {
+                LOG.info( "The resourceIdentifier has been accepted without any automatic creation. " );
+                return rsList;
+            }
+            /**
+             * if both, id and resourceIdentifier exists but different: update id with resourceIdentifier
+             * <p>
+             * if id exists: update resourceIdentifier with id
+             * <p>
+             * if resourceIdentifier exists: update id with resourceIdentifier
+             * <p>
+             * if nothing exists: generate it for id and resourceIdentifier
+             */
+            if ( rsList.size() == 0 && id == null ) {
+                LOG.info( "Neither an id nor a resourceIdentifier exists...so this creates a new one. " );
+                rsList.add( IdUtils.newInstance( conn ).generateUUID() );
+                return rsList;
+            } else if ( rsList.size() == 0 && id != null ) {
+                LOG.info( "An id exists but not a resourceIdentifier...so adapting resourceIdentifier with id. " );
+                rsList.add( id );
+                return rsList;
+            }
+        }
+        LOG.info( "No modification happened, so the resourceIdentifierList will be passed through. " );
+        return rsList;
+    }
+
+    private boolean checkRSListAgainstID( List<String> rsList, String id ) {
+        if ( rsList.size() == 0 ) {
+            return false;
+        } else {
+            IdUtils util = IdUtils.newInstance( conn );
+            if ( util.checkUUIDCompliance( rsList.get( 0 ) ) ) {
+
+                if ( util.checkUUIDCompliance( id ) ) {
+                    return rsList.get( 0 ).equals( id );
+                }
+
+            }
+
+        }
+        return false;
+    }
 
     @Override
     public OMElement inspect( OMElement record )
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        a.setRootElement( record );
+
+        NamespaceContext nsContext = a.getNamespaceContext( record );
+        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+
+        OMElement sv_service_OR_md_dataIdentification = a.getElement(
+                                                                      record,
+                                                                      new XPath(
+                                                                                 "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification",
+                                                                                 nsContext ) );
+        String dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) );
+        String dataIdentificationUuId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "uuid" ) );
+        List<OMElement> identifier = a.getElements( sv_service_OR_md_dataIdentification,
+                                                    new XPath( "./gmd:citation/gmd:CI_Citation/gmd:identifier",
+                                                               nsContext ) );
+
+        List<OMElement> CI_Citation_date = a.getElements( sv_service_OR_md_dataIdentification,
+                                                          new XPath( "./gmd:citation/gmd:CI_Citation/gmd:date",
+                                                                     nsContext ) );
+        OMElement edition = a.getElement( sv_service_OR_md_dataIdentification,
+                                          new XPath( "./gmd:citation/gmd:CI_Citation/edition", nsContext ) );
+        OMElement editionDate = a.getElement( sv_service_OR_md_dataIdentification,
+                                              new XPath( "./gmd:citation/gmd:CI_Citation/gmd:editionDate", nsContext ) );
+
+        List<String> resourceIdentifierList = new ArrayList<String>();
+        for ( OMElement resourceElement : identifier ) {
+            String resourceIdentifier = a.getNodeAsString(
+                                                           resourceElement,
+                                                           new XPath(
+                                                                      "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
+                                                                      nsContext ), null );
+            LOG.debug( "resourceIdentifier: '" + resourceIdentifier + "' " );
+            resourceIdentifierList.add( resourceIdentifier );
+
+        }
+        List<String> rsList = determineResourceIdentifier( resourceIdentifierList, dataIdentificationId );
+
+        LOG.debug( "Creating of resourceIdentifierList finished: " + rsList );
+        if ( dataIdentificationUuId == null ) {
+            LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
+            if ( !rsList.isEmpty() ) {
+                sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl(
+                                                                                       "uuid",
+                                                                                       new OMNamespaceImpl(
+                                                                                                            nsContext.getURI( "gmd" ),
+                                                                                                            "gmd" ),
+                                                                                       rsList.get( 0 ),
+                                                                                       OMAbstractFactory.getOMFactory() ) );
+
+            }
+
+        }
+        if ( !rsList.isEmpty() ) {
+            LOG.debug( "Setting id attribute from the resourceIdentifier..." );
+            OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
+            if ( attribute_id != null ) {
+                sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
+            }
+            sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl(
+                                                                                   "id",
+                                                                                   new OMNamespaceImpl(
+                                                                                                        nsContext.getURI( "gmd" ),
+                                                                                                        "gmd" ),
+                                                                                   rsList.get( 0 ),
+                                                                                   OMAbstractFactory.getOMFactory() ) );
+
+            LOG.debug( "id attribute is now: '" + dataIdentificationId + "' " );
+        }
+
+        // check where to set the resourceIdentifier element
+        if ( resourceIdentifierList.isEmpty() ) {
+            OMElement resourceID = GenerateOMElement.newInstance().createMD_ResourceIdentifier( rsList.get( 0 ) );
+            if ( editionDate != null ) {
+                LOG.debug( "Set resourceIdentifier '" + rsList.get( 0 ) + "' after the 'editionDate-element'." );
+                editionDate.insertSiblingAfter( resourceID );
+            } else if ( edition != null ) {
+                LOG.debug( "Set resourceIdentifier '" + rsList.get( 0 ) + "' after the 'edition-element'." );
+                edition.insertSiblingAfter( resourceID );
+            } else {
+                LOG.debug( "Set resourceIdentifier '" + rsList.get( 0 ) + "' after the last 'date-element'." );
+                CI_Citation_date.get( CI_Citation_date.size() - 1 ).insertSiblingAfter( resourceID );
+            }
+        }
+
+        return record;
     }
 
 }
