@@ -182,10 +182,10 @@ class OracleApplicationSchemaBuilder {
         if ( propDecl instanceof SimplePropertyDecl ) {
             SimplePropertyDecl spt = (SimplePropertyDecl) propDecl;
             PrimitiveType primType = getPrimitiveType( spt.getType() );
-            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, primType, false, null );
+            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, primType, false, false, null );
         } else if ( propDecl instanceof GeometryPropertyDecl ) {
             GeometryPropertyDecl gpt = (GeometryPropertyDecl) propDecl;
-            pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, GEOMETRY, DIM_2, false, null, BOTH );
+            pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs, false, false, null, GEOMETRY, DIM_2, BOTH );
         } else {
             throw new RuntimeException( "Internal error: Unhandled property JAXB property type: " + propDecl.getClass() );
         }
