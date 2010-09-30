@@ -153,7 +153,7 @@ public class RasterLayer extends Layer {
         }
 
         List<PropertyType> pts = new LinkedList<PropertyType>();
-        pts.add( new SimplePropertyType( new QName( "value" ), 0, -1, DECIMAL, false, null ) );
+        pts.add( new SimplePropertyType( new QName( "value" ), 0, -1, DECIMAL, false, false, null ) );
         featureType = new GenericFeatureType( new QName( "data" ), pts, false );
     }
 

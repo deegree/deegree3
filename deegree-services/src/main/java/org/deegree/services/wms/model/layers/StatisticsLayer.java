@@ -111,13 +111,14 @@ public class StatisticsLayer extends FeatureLayer {
     private static final GenericFeatureType featureType;
 
     private static final SimplePropertyType queryProp = new SimplePropertyType( new QName( ns, "query_string" ), 1, 1,
-                                                                                STRING, false, null );
+                                                                                STRING, false, false, null );
 
     private static final SimplePropertyType timeProp = new SimplePropertyType( new QName( ns, "time" ), 1, 1, DATE,
-                                                                               false, null );
+                                                                               false, false, null );
 
     private static final GeometryPropertyType boxProp = new GeometryPropertyType( new QName( ns, "boundingbox" ), 1, 1,
-                                                                                  GEOMETRY, DIM_2, false, null, BOTH );
+                                                                                  false, false, null, GEOMETRY, DIM_2,
+                                                                                  BOTH );
     static {
         List<PropertyType> props = new ArrayList<PropertyType>();
         props.add( queryProp );
