@@ -40,6 +40,8 @@ import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
 import javax.xml.namespace.QName;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -252,7 +254,6 @@ public class VectorLayerAdapter {
 
         // create feature collection
         GenericFeatureCollection coll = new GenericFeatureCollection( "SextanteFeatureCollection", features );
-       
 
         return coll;
     }
@@ -353,17 +354,18 @@ public class VectorLayerAdapter {
             }
 
             // create property type
+
             SimplePropertyType spt = new SimplePropertyType( probName, 1, 1,
                                                              PrimitiveType.determinePrimitiveType( value ), false,
-                                                             new LinkedList<PropertyType>() );
+                                                             false, new LinkedList<PropertyType>() );
 
             propDecls.add( spt );
         }
 
         // create simple geometry
-        GeometryPropertyType gpt = new GeometryPropertyType( new QName( APP_NS, "geom", APP_PREFIX ), 1, 1,
-                                                             GeometryType.MULTI_GEOMETRY, CoordinateDimension.DIM_2,
+        GeometryPropertyType gpt = new GeometryPropertyType( new QName( APP_NS, "geom", APP_PREFIX ), 1, 1, false,
                                                              false, new LinkedList<PropertyType>(),
+                                                             GeometryType.MULTI_GEOMETRY, CoordinateDimension.DIM_2,
                                                              ValueRepresentation.INLINE );
         propDecls.add( gpt );
 

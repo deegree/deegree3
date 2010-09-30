@@ -36,7 +36,7 @@
 package org.deegree.services.wps.provider.sextante;
 
 /**
- * TODO add class documentation here
+ * All classes which provide an output format for JUnit tests should implements this interface.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
  * @author last edited by: $Author: pabel $

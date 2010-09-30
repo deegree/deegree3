@@ -73,7 +73,7 @@ public class GeoAlgorithmTest {
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     // manages all supported algorithms with example data
     private final LinkedList<GeoAlgorithmWithData> algorithms;
@@ -1080,24 +1080,8 @@ public class GeoAlgorithmTest {
                                            literalData.getType(), literalData.getUOM() );
 
             } else {
-
-                // raster data
-                if ( data instanceof RasterExampleData ) {
-                    // RasterExampleData rasterData = (RasterExampleData) data;
-                    // TODO commit raster data
-                    LOG.error( "The set of raster input parameters is not implemented." );
-                } else {
-
-                    // table data
-                    if ( data instanceof TableExampleData ) {
-                        // TableExampleData tableData = (TableExampleData) data;
-                        // TODO commit table data
-                        LOG.error( "The set of table input parameters is not implemented." );
-                    } else {
-                        LOG.error( "The input parameter '" + param.getParameterTypeName() + "' is unknown." );
-                    }
-                }
-
+                // TODO distinguish further input parameters like raster and table data
+                LOG.error( "The input parameter '" + param.getParameterTypeName() + "' is unknown." );
             }
         }
     }
@@ -1122,38 +1106,39 @@ public class GeoAlgorithmTest {
                 GMLSchema schema = (GMLSchema) format;
                 execution.addOutput( identifier, null, null, false, "text/xml", "UTF-8", schema.getSchemaURL() );
             } else {
-                LOG.error( "The ouput format '" + format.getClass().getName() + "' is unknown." );
+                LOG.error( "The ouput format '" + format.getClass().getName() + "' for vector data is unknown." );
                 throw new UnsupportedOperationException();
             }
 
         } else {
 
             // create error message
-            String error = "The set of '" + param.getTypeDescription() + "' output parameters is not implemented.";
+            String error = "The output parameter '" + param.getName() + "' for " + param.getTypeDescription()
+                           + " data is not implemented.";
 
             // raster data
             if ( param.getTypeDescription().equals( SextanteWPSProcess.RASTER_LAYER_OUTPUT ) ) {
                 // TODO implements it.
                 LOG.error( error );
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(error);
             } else {
                 // table data
                 if ( param.getTypeDescription().equals( SextanteWPSProcess.TABLE_OUTPUT ) ) {
                     // TODO implements it.
                     LOG.error( error );
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException(error);
                 } else {
                     // text data
                     if ( param.getTypeDescription().equals( SextanteWPSProcess.TEXT_OUTPUT ) ) {
                         // TODO implements it.
                         LOG.error( error );
-                        throw new UnsupportedOperationException();
+                        throw new UnsupportedOperationException(error);
                     } else {
                         // chart data
                         if ( param.getTypeDescription().equals( SextanteWPSProcess.CHART_OUTPUT ) ) {
                             // TODO implements it.
                             LOG.error( error );
-                            throw new UnsupportedOperationException();
+                            throw new UnsupportedOperationException(error);
                         } else {
                             LOG.error( "The ouput parameter '" + param.getTypeDescription() + "' is unknown." );
                             throw new UnsupportedOperationException();
