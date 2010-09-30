@@ -212,7 +212,7 @@ public class MapController {
         }
         repainting = true;
         if ( repaintList.isEmpty() || preview || resizing ) {
-            if ( zoomMinx >= 0 ) {
+            if ( zoomMinx >= 0 && zoomMiny >= 0 && zoomMaxx >= 0 && zoomMaxy >= 0 ) {
                 BufferedImage newImage = new BufferedImage( width, height, TYPE_INT_ARGB );
                 Graphics2D g2 = newImage.createGraphics();
                 g2.setPaint( Color.white );
