@@ -41,8 +41,14 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.persistence.MetadataStoreException;
+import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.iso.parsing.IdUtils;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.IdentifierInspector.Param;
@@ -65,9 +71,9 @@ public class FileIdentifierInspector implements RecordInspector {
 
     private final Connection conn;
 
-    private final IdentifierInspector inspector;
+    private final XMLAdapter a;
 
-    private final List<String> idList;
+    private final IdentifierInspector inspector;
 
     private String id;
 
@@ -76,7 +82,7 @@ public class FileIdentifierInspector implements RecordInspector {
     private FileIdentifierInspector( IdentifierInspector inspector, Connection conn ) {
         this.conn = conn;
         this.inspector = inspector;
-        this.idList = new ArrayList<String>();
+        this.a = new XMLAdapter();
     }
 
     public static FileIdentifierInspector newInstance( IdentifierInspector inspector, Connection conn ) {
@@ -91,7 +97,13 @@ public class FileIdentifierInspector implements RecordInspector {
 
             for ( Param p : paramList ) {
                 if ( p.getKey().equals( REJECT_EMPTY_FILE_IDENTIFIER ) ) {
-                    return Boolean.getBoolean( p.getValue() );
+                    String value = p.getValue();
+                    if ( value.equalsIgnoreCase( "true" ) ) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+
                 }
             }
 
@@ -114,23 +126,23 @@ public class FileIdentifierInspector implements RecordInspector {
      * @return the new fileIdentifier.
      * @throws MetadataStoreException
      */
-    public List<String> determineFileIdentifier( String fi, List<String> rsList, String id, String uuid,
-                                                 boolean isFileIdentifierExistenceDesired )
+    private List<String> determineFileIdentifier( String[] fi, List<String> rsList, String id, String uuid )
                             throws MetadataStoreException {
         this.id = id;
         this.uuid = uuid;
-        this.idList.clear();
-        if ( fi != null ) {
-            if ( IdUtils.newInstance( conn ).proveIdExistence( fi ) ) {
-                LOG.info( "'{}' accepted as a valid fileIdentifier. ", fi );
-                idList.add( fi );
+        List<String> idList = new ArrayList<String>();
+        if ( fi.length != 0 ) {
+            String fileID = fi[0];
+            if ( IdUtils.newInstance( conn ).proveIdExistence( fileID ) ) {
+                LOG.info( "'{}' accepted as a valid fileIdentifier. ", fileID );
+                idList.add( fileID );
                 return idList;
             }
-            if ( isFileIdentifierExistenceDesired ) {
-                LOG.info( "'{}' is stored in backend and should be updated. ", fi );
-                idList.add( fi );
-                return idList;
-            }
+            // if ( isFileIdentifierExistenceDesired ) {
+            // LOG.info( "'{}' is stored in backend and should be updated. ", fi );
+            // idList.add( fi );
+            // return idList;
+            // }
             LOG.info( "SKIPPING: The metadata with id '{}' is stored in backend, already! ", fi );
             // so skip it and return an empty idList
             return idList;
@@ -138,9 +150,10 @@ public class FileIdentifierInspector implements RecordInspector {
         } else {
             // default behavior if there is no inspector provided
             if ( isFileIdentifierRejected() == false ) {
-                if ( rsList.size() == 0 || id == null || uuid == null ) {
+                if ( rsList.size() == 0 && id == null && uuid == null ) {
 
                     LOG.debug( "(DEFAULT) There is no Identifier available, so a new UUID will be generated..." );
+                    idList.add( IdUtils.newInstance( conn ).generateUUID() );
                     LOG.debug( "(DEFAULT) The new FileIdentifier: " + idList );
                 } else {
                     if ( rsList.size() == 0 && id != null ) {
@@ -149,9 +162,10 @@ public class FileIdentifierInspector implements RecordInspector {
                     } else if ( rsList.size() == 0 && uuid != null ) {
                         LOG.debug( "(DEFAULT) The uuid attribute will be taken: {}", uuid );
                         idList.add( uuid );
+                    } else {
+                        LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
+                        idList.add( rsList.get( 0 ) );
                     }
-                    LOG.debug( "(DEFAULT) The ResourseIdentifier will be taken: {}", rsList.get( 0 ) );
-                    idList.add( rsList.get( 0 ) );
                 }
                 return idList;
             } else {
@@ -169,10 +183,6 @@ public class FileIdentifierInspector implements RecordInspector {
 
     }
 
-    public List<String> getIdList() {
-        return idList;
-    }
-
     public String getId() {
         return id;
     }
@@ -184,8 +194,46 @@ public class FileIdentifierInspector implements RecordInspector {
     @Override
     public OMElement inspect( OMElement record )
                             throws MetadataStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        a.setRootElement( record );
+
+        NamespaceContext nsContext = a.getNamespaceContext( record );
+        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+
+        String[] fileIdentifierString = a.getNodesAsStrings( record,
+                                                             new XPath( "./gmd:fileIdentifier/gco:CharacterString",
+                                                                        nsContext ) );
+
+        OMElement sv_service_OR_md_dataIdentification = a.getElement(
+                                                                      record,
+                                                                      new XPath(
+                                                                                 "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification",
+                                                                                 nsContext ) );
+        String dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) );
+        String dataIdentificationUuId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "uuid" ) );
+        List<OMElement> identifier = a.getElements( sv_service_OR_md_dataIdentification,
+                                                    new XPath( "./gmd:citation/gmd:CI_Citation/gmd:identifier",
+                                                               nsContext ) );
+        List<String> resourceIdentifierList = new ArrayList<String>();
+        for ( OMElement resourceElement : identifier ) {
+            String resourceIdentifier = a.getNodeAsString(
+                                                           resourceElement,
+                                                           new XPath(
+                                                                      "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
+                                                                      nsContext ), null );
+            LOG.debug( "resourceIdentifier: '" + resourceIdentifier + "' " );
+            resourceIdentifierList.add( resourceIdentifier );
+
+        }
+
+        List<String> idList = determineFileIdentifier( fileIdentifierString, resourceIdentifierList,
+                                                       dataIdentificationId, dataIdentificationUuId );
+        if ( !idList.isEmpty() && fileIdentifierString.length == 0 ) {
+            for ( String id : idList ) {
+                OMElement firstElement = record.getFirstElement();
+                firstElement.insertSiblingBefore( GenerateOMElement.newInstance().createFileIdentifierElement( id ) );
+            }
+        }
+        return record;
     }
 
 }
