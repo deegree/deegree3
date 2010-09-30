@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.parsing;
 
-
 /**
  * Encapsulates the parsed elements that can be analysed from a record that is affected by the transaction operation.<br>
  * Here are the queryable and returnable properties and the elements in xml format.
@@ -50,8 +49,6 @@ public class ParsedProfileElement {
     private QueryableProperties queryableProperties;
 
     private ReturnableProperties returnableProperties;
-
-    // private GenerateMetadata generateRecord;
 
     /**
      * Creates a new {@link ParsedProfileElement} instance.
@@ -78,12 +75,5 @@ public class ParsedProfileElement {
     public ReturnableProperties getReturnableProperties() {
         return returnableProperties;
     }
-
-    // /**
-    // * @return the generateRecord
-    // */
-    // public GenerateMetadata getGenerateRecord() {
-    // return generateRecord;
-    // }
 
 }

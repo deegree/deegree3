@@ -85,16 +85,6 @@ public final class ISOQPParsing extends XMLAdapter {
 
     // private MetadataValidation mv;
 
-    /**
-     * checks if an OMElement is null
-     */
-    private OMElement omElementNullCheck;
-
-    /**
-     * checks if a List of OMElements is null
-     */
-    private List<OMElement> omElementNullCheckList;
-
     static {
         nsContextISOParsing.addNamespace( CSW_PREFIX, CSW_202_NS );
         nsContextISOParsing.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
@@ -358,112 +348,10 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * DistributionInfo
-         * 
-         * 
-         *---------------------------------------------------------------*/
-        List<OMElement> formats = getElements(
-                                               rootElement,
-                                               new XPath(
-                                                          "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format",
-                                                          nsContextISOParsing ) );
+        parseDistributionInfo();
 
-        // String onlineResource = getNodeAsString(
-        // rootElement,
-        // new XPath(
-        // "./gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:URL",
-        // nsContextISOParsing ), null );
+        parseDataQualityInfo();
 
-        List<Format> listOfFormats = new ArrayList<Format>();
-        for ( OMElement md_format : formats ) {
-
-            String formatName = getNodeAsString( md_format, new XPath( "./gmd:name/gco:CharacterString",
-                                                                       nsContextISOParsing ), null );
-
-            String formatVersion = getNodeAsString( md_format, new XPath( "./gmd:version/gco:CharacterString",
-                                                                          nsContextISOParsing ), null );
-
-            Format formatClass = new Format( formatName, formatVersion );
-            listOfFormats.add( formatClass );
-
-        }
-
-        qp.setFormat( listOfFormats );
-
-        /*---------------------------------------------------------------
-         * 
-         * 
-         * DataQualityInfo
-         * 
-         * 
-         *---------------------------------------------------------------*/
-
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:contentInfo", nsContextISOParsing ) );
-
-        if ( omElementNullCheckList != null ) {
-            qp.setLineage( getNodeAsString(
-                                            rootElement,
-                                            new XPath(
-                                                       "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString",
-                                                       nsContextISOParsing ), "" ) );
-            qp.setDegree( getNodeAsBoolean(
-                                            rootElement,
-                                            new XPath(
-                                                       "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:pass/gco:Boolean",
-                                                       nsContextISOParsing ), false ) );
-
-            OMElement titleElem = getElement(
-                                              rootElement,
-                                              new XPath(
-                                                         "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title",
-                                                         nsContextISOParsing ) );
-
-            String[] titleList = getNodesAsStrings(
-                                                    titleElem,
-                                                    new XPath(
-                                                               "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
-                                                               nsContextISOParsing ) );
-
-            List<String> titleStringList = new ArrayList<String>();
-            titleStringList.addAll( Arrays.asList( getNodeAsString(
-                                                                    rootElement,
-                                                                    new XPath(
-                                                                               "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title/gco:CharacterString",
-                                                                               nsContextISOParsing ), "" ) ) );
-            if ( titleList != null ) {
-                titleStringList.addAll( Arrays.asList( titleList ) );
-            }
-            qp.setSpecificationTitle( titleStringList );
-
-            qp.setSpecificationDateType( getNodeAsString(
-                                                          rootElement,
-                                                          new XPath(
-                                                                     "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue",
-                                                                     nsContextISOParsing ), "" ) );
-
-            String specificationDateString = getNodeAsString(
-                                                              rootElement,
-                                                              new XPath(
-                                                                         "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date",
-                                                                         nsContextISOParsing ), null );
-            Date dateSpecificationDate = null;
-            try {
-                if ( dateSpecificationDate != null ) {
-                    dateSpecificationDate = new Date( specificationDateString );
-                } else {
-                    date = null;
-                }
-            } catch ( ParseException e ) {
-
-                LOG.debug( "error: " + e.getMessage(), e );
-            }
-
-            qp.setSpecificationDate( dateSpecificationDate );
-
-        }
         /*---------------------------------------------------------------
          * 
          * 
@@ -541,6 +429,106 @@ public final class ISOQPParsing extends XMLAdapter {
          */
 
         return new ParsedProfileElement( qp, rp );
+
+    }
+
+    /**
+     * DistributionInfo
+     */
+    private void parseDistributionInfo() {
+
+        List<OMElement> formats = getElements(
+                                               rootElement,
+                                               new XPath(
+                                                          "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format",
+                                                          nsContextISOParsing ) );
+
+        // String onlineResource = getNodeAsString(
+        // rootElement,
+        // new XPath(
+        // "./gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:URL",
+        // nsContextISOParsing ), null );
+
+        List<Format> listOfFormats = new ArrayList<Format>();
+        for ( OMElement md_format : formats ) {
+
+            String formatName = getNodeAsString( md_format, new XPath( "./gmd:name/gco:CharacterString",
+                                                                       nsContextISOParsing ), null );
+
+            String formatVersion = getNodeAsString( md_format, new XPath( "./gmd:version/gco:CharacterString",
+                                                                          nsContextISOParsing ), null );
+
+            Format formatClass = new Format( formatName, formatVersion );
+            listOfFormats.add( formatClass );
+
+        }
+
+        qp.setFormat( listOfFormats );
+
+    }
+
+    /**
+     * DataQualityInfo
+     */
+    private void parseDataQualityInfo() {
+        qp.setLineage( getNodeAsString(
+                                        rootElement,
+                                        new XPath(
+                                                   "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString",
+                                                   nsContextISOParsing ), "" ) );
+        qp.setDegree( getNodeAsBoolean(
+                                        rootElement,
+                                        new XPath(
+                                                   "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:pass/gco:Boolean",
+                                                   nsContextISOParsing ), false ) );
+
+        OMElement titleElem = getElement(
+                                          rootElement,
+                                          new XPath(
+                                                     "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title",
+                                                     nsContextISOParsing ) );
+
+        String[] titleList = getNodesAsStrings(
+                                                titleElem,
+                                                new XPath(
+                                                           "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                           nsContextISOParsing ) );
+
+        List<String> titleStringList = new ArrayList<String>();
+        titleStringList.addAll( Arrays.asList( getNodeAsString(
+                                                                rootElement,
+                                                                new XPath(
+                                                                           "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title/gco:CharacterString",
+                                                                           nsContextISOParsing ), "" ) ) );
+        if ( titleList != null ) {
+            titleStringList.addAll( Arrays.asList( titleList ) );
+        }
+        qp.setSpecificationTitle( titleStringList );
+
+        qp.setSpecificationDateType( getNodeAsString(
+                                                      rootElement,
+                                                      new XPath(
+                                                                 "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue",
+                                                                 nsContextISOParsing ), "" ) );
+
+        String specificationDateString = getNodeAsString(
+                                                          rootElement,
+                                                          new XPath(
+                                                                     "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date",
+                                                                     nsContextISOParsing ), null );
+        Date dateSpecificationDate = null;
+
+        try {
+            if ( dateSpecificationDate != null ) {
+                dateSpecificationDate = new Date( specificationDateString );
+            }
+        } catch ( ParseException e ) {
+
+            LOG.debug( "error: " + e.getMessage(), e );
+
+        }
+
+        qp.setSpecificationDate( dateSpecificationDate );
 
     }
 

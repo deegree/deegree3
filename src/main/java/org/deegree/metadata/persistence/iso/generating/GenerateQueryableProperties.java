@@ -49,7 +49,6 @@ import java.text.ParseException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.ISORecord;
-import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.QueryableProperties;
@@ -154,8 +153,7 @@ public class GenerateQueryableProperties {
      * @param operatesOnId
      * @param parsedElement
      */
-    public void executeQueryableProperties( boolean isUpdate, Connection connection, int operatesOnId,
-                                            MetadataRecord rec ) {
+    public void executeQueryableProperties( boolean isUpdate, Connection connection, int operatesOnId, ISORecord rec ) {
 
         if ( rec.getParsedElement().getQueryableProperties().getIdentifier() != null ) {
             generateQP_IdentifierStatement( isUpdate, connection, operatesOnId,

@@ -36,14 +36,12 @@
 package org.deegree.metadata;
 
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.filter.Filter;
 import org.deegree.geometry.Envelope;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
@@ -101,8 +99,4 @@ public interface MetadataRecord {
     public void serialize( XMLStreamWriter writer, ReturnableElement returnType )
                             throws XMLStreamException;
 
-    XMLStreamReader getAsXMLStream()
-                            throws XMLStreamException;
-
-    ParsedProfileElement getParsedElement();
 }

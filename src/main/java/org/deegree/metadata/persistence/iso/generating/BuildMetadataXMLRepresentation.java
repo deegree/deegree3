@@ -53,7 +53,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.ISORecord;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso.PostGISMappingsISODC;
 import org.deegree.metadata.persistence.iso.parsing.ParsedProfileElement;
@@ -191,7 +191,7 @@ public class BuildMetadataXMLRepresentation {
      * @throws MetadataStoreException
      * @throws XMLStreamException
      */
-    public String[] generateISO( Connection connection, int operatesOnId, MetadataRecord rec )
+    public String[] generateISO( Connection connection, int operatesOnId, ISORecord rec )
                             throws IOException, MetadataStoreException, XMLStreamException {
 
         int idDatabaseTable;
@@ -236,7 +236,7 @@ public class BuildMetadataXMLRepresentation {
     }
 
     private void executeInsert( PreparedStatement stm, Connection connection, int idDatabaseTable, int operatesOnId,
-                                MetadataRecord element, int format )
+                                ISORecord element, int format )
                             throws SQLException, XMLStreamException {
         stm = connection.prepareStatement( sqlStatementInsert.toString() );
         stm.setObject( 1, idDatabaseTable );

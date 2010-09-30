@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.iso.generating.generatingelements;
 
+import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
@@ -55,15 +56,15 @@ public class GenerateOMElement {
 
     private final OMNamespace namespaceGCO;
 
-    private GenerateOMElement( OMFactory factory ) {
-        this.factory = factory;
+    private GenerateOMElement() {
+        this.factory = OMAbstractFactory.getOMFactory();
         namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
         namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
     }
 
-    public static GenerateOMElement newInstance( OMFactory factory ) {
+    public static GenerateOMElement newInstance() {
 
-        return new GenerateOMElement( factory );
+        return new GenerateOMElement();
     }
 
     /**
