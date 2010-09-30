@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ISOMetadataStore
+	connId="iso_pg_set_up_tables"
+	configVersion="0.6.0"
+	validate="false"
+	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 iso19115.xsd">
+
+</ISOMetadataStore>
