@@ -44,6 +44,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.CoupledResourceInspector;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class CoupledDataInspector {
+public class CoupledDataInspector implements RecordInspector {
 
     private static final Logger LOG = getLogger( CoupledDataInspector.class );
 
@@ -169,6 +170,13 @@ public class CoupledDataInspector {
         }
 
         return gotOneDataset;
+    }
+
+    @Override
+    public OMElement inspect( OMElement record )
+                            throws MetadataStoreException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

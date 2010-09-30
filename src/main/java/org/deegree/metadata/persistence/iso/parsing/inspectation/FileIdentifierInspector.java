@@ -75,10 +75,6 @@ public class FileIdentifierInspector implements RecordInspector {
 
     private final IdentifierInspector inspector;
 
-    private String id;
-
-    private String uuid;
-
     private FileIdentifierInspector( IdentifierInspector inspector, Connection conn ) {
         this.conn = conn;
         this.inspector = inspector;
@@ -128,8 +124,6 @@ public class FileIdentifierInspector implements RecordInspector {
      */
     private List<String> determineFileIdentifier( String[] fi, List<String> rsList, String id, String uuid )
                             throws MetadataStoreException {
-        this.id = id;
-        this.uuid = uuid;
         List<String> idList = new ArrayList<String>();
         if ( fi.length != 0 ) {
             String fileID = fi[0];
@@ -181,14 +175,6 @@ public class FileIdentifierInspector implements RecordInspector {
             }
         }
 
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getUuid() {
-        return uuid;
     }
 
     @Override
