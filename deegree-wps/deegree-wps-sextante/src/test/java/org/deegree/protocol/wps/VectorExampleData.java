@@ -77,70 +77,74 @@ public class VectorExampleData implements ExampleData {
 
     // example data
     public static final VectorExampleData GML_31_MULTILPOLYGON = new VectorExampleData(
-                                                                                            VectorExampleData.class.getResource( "GML31_MultiPolygon.xml" ),
-                                                                                            GeometryType.POLYGON,
-                                                                                            GMLSchema.GML_31_GEOMETRY_SCHEMA );
+                                                                                        VectorExampleData.class.getResource( "GML31_MultiPolygon.xml" ),
+                                                                                        GeometryType.POLYGON,
+                                                                                        GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
     public static final VectorExampleData GML_31_MULTILINESTRING = new VectorExampleData(
-                                                                                              VectorExampleData.class.getResource( "GML31_MultiLineString.xml" ),
-                                                                                              GeometryType.LINE,
-                                                                                              GMLSchema.GML_31_GEOMETRY_SCHEMA );
+                                                                                          VectorExampleData.class.getResource( "GML31_MultiLineString.xml" ),
+                                                                                          GeometryType.LINE,
+                                                                                          GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
     public static final VectorExampleData GML_31_MULTIPOINT = new VectorExampleData(
-                                                                                         VectorExampleData.class.getResource( "GML31_MultiPoint.xml" ),
-                                                                                         GeometryType.POINT,
-                                                                                         GMLSchema.GML_31_GEOMETRY_SCHEMA );
-
-    public static final VectorExampleData GML_31_POLYGON = new VectorExampleData(
-                                                                                      VectorExampleData.class.getResource( "GML31_Polygon.xml" ),
-                                                                                      GeometryType.POLYGON,
-                                                                                      GMLSchema.GML_31_GEOMETRY_SCHEMA );
-    
-    public static final VectorExampleData GML_31_POLYGON_2 = new VectorExampleData(
-                                                                                     VectorExampleData.class.getResource( "GML31_Polygon_2.xml" ),
-                                                                                     GeometryType.POLYGON,
+                                                                                     VectorExampleData.class.getResource( "GML31_MultiPoint.xml" ),
+                                                                                     GeometryType.POINT,
                                                                                      GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
+    public static final VectorExampleData GML_31_POLYGON = new VectorExampleData(
+                                                                                  VectorExampleData.class.getResource( "GML31_Polygon.xml" ),
+                                                                                  GeometryType.POLYGON,
+                                                                                  GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
-    public static final VectorExampleData GML_31_LINESTRING = new VectorExampleData(
-                                                                                         VectorExampleData.class.getResource( "GML31_LineString.xml" ),
-                                                                                         GeometryType.LINE,
-                                                                                         GMLSchema.GML_31_GEOMETRY_SCHEMA );
-
-    public static final VectorExampleData GML_31_POINT = new VectorExampleData(
-                                                                                    VectorExampleData.class.getResource( "GML31_Point.xml" ),
-                                                                                    GeometryType.POINT,
+    public static final VectorExampleData GML_31_POLYGON_2 = new VectorExampleData(
+                                                                                    VectorExampleData.class.getResource( "GML31_Polygon_2.xml" ),
+                                                                                    GeometryType.POLYGON,
                                                                                     GMLSchema.GML_31_GEOMETRY_SCHEMA );
 
+    public static final VectorExampleData GML_31_LINESTRING = new VectorExampleData(
+                                                                                     VectorExampleData.class.getResource( "GML31_LineString.xml" ),
+                                                                                     GeometryType.LINE,
+                                                                                     GMLSchema.GML_31_GEOMETRY_SCHEMA );
+
+    public static final VectorExampleData GML_31_POINT = new VectorExampleData(
+                                                                                VectorExampleData.class.getResource( "GML31_Point.xml" ),
+                                                                                GeometryType.POINT,
+                                                                                GMLSchema.GML_31_GEOMETRY_SCHEMA );
+
     public static final VectorExampleData GML_31_FEATURE_COLLECTION_MULTIPOLYGONS = new VectorExampleData(
-                                                                                                               VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_MultiPolygons.xml" ),
-                                                                                                               GeometryType.POLYGON,
-                                                                                                               GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+                                                                                                           VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_MultiPolygons.xml" ),
+                                                                                                           GeometryType.POLYGON,
+                                                                                                           GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final VectorExampleData GML_31_FEATURE_COLLECTION_POLYGONS = new VectorExampleData(
-                                                                                                          VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_Polygons.xml" ),
-                                                                                                          GeometryType.POLYGON,
-                                                                                                          GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+                                                                                                      VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_Polygons.xml" ),
+                                                                                                      GeometryType.POLYGON,
+                                                                                                      GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final VectorExampleData GML_31_FEATURE_COLLECTION_MULTILINESTRINGS = new VectorExampleData(
-                                                                                                                  VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_MultiLineStrings.xml" ),
-                                                                                                                  GeometryType.LINE,
-                                                                                                                  GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+                                                                                                              VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_MultiLineStrings.xml" ),
+                                                                                                              GeometryType.LINE,
+                                                                                                              GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final VectorExampleData GML_31_FEATURE_COLLECTION_LINESTRINGS = new VectorExampleData(
-                                                                                                             VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_LineStrings.xml" ),
-                                                                                                             GeometryType.LINE,
-                                                                                                             GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+                                                                                                         VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_LineStrings.xml" ),
+                                                                                                         GeometryType.LINE,
+                                                                                                         GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final VectorExampleData GML_31_FEATURE_COLLECTION_MULTIPOINTS = new VectorExampleData(
-                                                                                                             VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_MultiPoints.xml" ),
-                                                                                                             GeometryType.POINT,
-                                                                                                             GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+                                                                                                         VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_MultiPoints.xml" ),
+                                                                                                         GeometryType.POINT,
+                                                                                                         GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
 
     public static final VectorExampleData GML_31_FEATURE_COLLECTION_POINTS = new VectorExampleData(
-                                                                                                        VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_Points.xml" ),
-                                                                                                        GeometryType.POINT,
-                                                                                                        GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+                                                                                                    VectorExampleData.class.getResource( "GML31_FeatureCollection_deegree_Points.xml" ),
+                                                                                                    GeometryType.POINT,
+                                                                                                    GMLSchema.GML_31_FEATURE_COLLECTION_SCHEMA );
+
+    public static final VectorExampleData GML_31_FEATURE_COLLECTION_WFS = new VectorExampleData(
+                                                                                                 VectorExampleData.class.getResource( "GML2_FeatureCollection_wfs.xml" ),
+                                                                                                 GeometryType.POLYGON,
+                                                                                                 GMLSchema.GML_2_FEATURE_COLLECTION_SCHEMA );
 
     // URL of the data source
     private final URL url;
@@ -172,9 +176,8 @@ public class VectorExampleData implements ExampleData {
      * @param without
      *            Array of unwanted {@link VectorExampleData}, may be <code>null</code>.
      * 
-     * @return List of all {@link VectorExampleData} without the {@link VectorExampleData} of the array. If the
-     *         array of unwanted {@link VectorExampleData is <code>null</code>, returns all
-     *         {@link VectorExampleData}.
+     * @return List of all {@link VectorExampleData} without the {@link VectorExampleData} of the array. If the array of
+     *         unwanted {@link VectorExampleData is <code>null</code>, returns all {@link VectorExampleData}.
      */
     public static LinkedList<VectorExampleData> getAllData( VectorExampleData[] without ) {
         return getData( null, without );
@@ -248,10 +251,10 @@ public class VectorExampleData implements ExampleData {
      * 
      * @return List of all {@link VectorExampleData} with the same {@link GeometryType} and without some
      *         {@link VectorExampleData}. If the Array of unwanted {@link VectorExampleData is <code>null</code>,
-     *         returns all {@link VectorExampleData} with the same {@link GeometryType}. If the {@link GeometryType}
-     *         is additional <code>null</code>, returns all {@link VectorExampleData}. If the {@link GeometryType} is
-     *         only <code>null</code>, returns all {@link VectorExampleData} without the {@link VectorExampleData}
-     *         of the array.
+     *         returns all {@link VectorExampleData} with the same {@link GeometryType}. If the {@link GeometryType} is
+     *         additional <code>null</code>, returns all {@link VectorExampleData}. If the {@link GeometryType} is only
+     *         <code>null</code>, returns all {@link VectorExampleData} without the {@link VectorExampleData} of the
+     *         array.
      */
     public static LinkedList<VectorExampleData> getData( GeometryType type, VectorExampleData[] without ) {
 
@@ -383,11 +386,11 @@ public class VectorExampleData implements ExampleData {
 
     public String toString() {
         String s = getFilename();
-       // s += "(" + type.name() + ", ";
-       // s += schema.getGMLType().name() + ", ";
-       // s += schema.getGMLVersion().name() + ", ";
-       // s += schema.getSchemaURL();
-       // s += ")";
+        // s += "(" + type.name() + ", ";
+        // s += schema.getGMLType().name() + ", ";
+        // s += schema.getGMLVersion().name() + ", ";
+        // s += schema.getSchemaURL();
+        // s += ")";
         return s;
     }
 }

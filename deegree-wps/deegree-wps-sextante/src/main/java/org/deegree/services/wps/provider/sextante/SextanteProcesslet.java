@@ -497,7 +497,9 @@ public class SextanteProcesslet implements Processlet {
                                                                                FormatHelper.determineGMLVersion( gmlInput ),
                                                                                xmlReader );
 
-            return gmlReader.readFeatureCollection();
+            FeatureCollection fc = gmlReader.readFeatureCollection();
+            
+            return fc;
         } catch ( Exception e ) {
             e.printStackTrace();
             throw new ProcessletException( "Error parsing parameter " + gmlInput.getIdentifier() + ": "

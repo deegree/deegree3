@@ -37,6 +37,7 @@ package org.deegree.services.wps.provider.sextante;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -126,7 +127,8 @@ public class VectorLayerAdapter {
             crs = determineCRS( f );
 
             // get property declarations
-            vectorLayerPropertyDeclarations = createPropertyDeclarationsForVectorLayer( fType );
+            // vectorLayerPropertyDeclarations = determinePropertyDeclarationsForVectorLayer( fType );
+            vectorLayerPropertyDeclarations = determinePropertyDeclarationsForVectorLayer( c );
 
             // traverse all features
             for ( Feature feature : c ) {
@@ -136,13 +138,18 @@ public class VectorLayerAdapter {
                     // LOG.info( "FEATURE: " + feature.getId() );
 
                     // create properties
-                    Object[] values = createPropertiesForVectorLayerGeometry( feature, vectorLayerPropertyDeclarations );
+                    Object[] values = determinePropertiesForVectorLayerGeometry( feature,
+                                                                                 vectorLayerPropertyDeclarations );
 
                     // create geometry
                     com.vividsolutions.jts.geom.Geometry geom = createJTSGeometry( feature );
 
-                    // add feature
-                    features.add( new FeatureImpl( geom, values ) );
+                    if ( geom != null ) {
+                        // add feature
+                        features.add( new FeatureImpl( geom, values ) );
+                    } else {
+                        LOG.warn( "Feature '" + f.getId() + "' was skipped." );
+                    }
 
                 } else {
                     LOG.error( "Feature with id '" + feature.getId()
@@ -186,17 +193,22 @@ public class VectorLayerAdapter {
             String crs = determineCRS( f );
 
             // create property declarations
-            Field[] propertiyDeclarations = createPropertyDeclarationsForVectorLayer( f.getType() );
+            Field[] propertiyDeclarations = determinePropertyDeclarationsForVectorLayer( f.getType() );
 
             // create properties
-            Object[] properties = createPropertiesForVectorLayerGeometry( f, propertiyDeclarations );
+            Object[] properties = determinePropertiesForVectorLayerGeometry( f, propertiyDeclarations );
 
             // create geometry
             com.vividsolutions.jts.geom.Geometry geom = createJTSGeometry( f );
 
             // create vector layer
             VectorLayerImpl layer = new VectorLayerImpl( "FeatureLayer", crs, propertiyDeclarations );
-            layer.addFeature( new FeatureImpl( geom, properties ) );
+
+            if ( geom != null ) {
+                layer.addFeature( new FeatureImpl( geom, properties ) );
+            } else {
+                LOG.warn( "Feature '" + f.getId() + "' was skipped." );
+            }
 
             return layer;
         }
@@ -349,7 +361,11 @@ public class VectorLayerAdapter {
                 if ( valueClass.equals( BigDecimal.class ) ) {
                     value = new BigDecimal( 0.0 );
                 } else {
-                    value = valueClass.newInstance();
+                    if ( valueClass.equals( BigInteger.class ) ) {
+                        value = new BigInteger( "0" );
+                    } else {
+                        value = valueClass.newInstance();
+                    }
                 }
             }
 
@@ -395,7 +411,11 @@ public class VectorLayerAdapter {
                     if ( valueClass.equals( BigDecimal.class ) ) {
                         value = new BigDecimal( 0.0 );
                     } else {
-                        value = valueClass.newInstance();
+                        if ( valueClass.equals( BigInteger.class ) ) {
+                            value = new BigInteger( "0" );
+                        } else {
+                            value = valueClass.newInstance();
+                        }
                     }
                 }
 
@@ -512,24 +532,30 @@ public class VectorLayerAdapter {
 
         } else { // more geometries
 
-            geom = createJTSGeometry( (Geometry) fGeometries[0].getValue() );
+            if ( fGeometries.length != 0 ) { // feature with more than one geometry
+                geom = createJTSGeometry( (Geometry) fGeometries[0].getValue() );
 
-            LOG.warn( "Feature '" + f.getId() + "' has many geometries, only the first is in use." );
+                LOG.warn( "Feature '" + f.getId() + "' has many geometries, only the first is in use." );
 
-            // merge all geometries
-            // com.vividsolutions.jts.geom.GeometryFactory gFactoryJTS = new
-            // com.vividsolutions.jts.geom.GeometryFactory(
-            // new PrecisionModel() );
-            //
-            // // create jts geometry array
-            // com.vividsolutions.jts.geom.Geometry[] geoms = new
-            // com.vividsolutions.jts.geom.Geometry[fGeometries.length];
-            // for ( int i = 0; i < fGeometries.length; i++ ) {
-            // geoms[i] = createJTSGeometry( (Geometry) fGeometries[i].getValue() );
-            // }
-            //
-            // // create a JTS geometry collection
-            // geom = gFactoryJTS.createGeometryCollection( geoms );
+                // merge all geometries
+                // com.vividsolutions.jts.geom.GeometryFactory gFactoryJTS = new
+                // com.vividsolutions.jts.geom.GeometryFactory(
+                // new PrecisionModel() );
+                //
+                // // create jts geometry array
+                // com.vividsolutions.jts.geom.Geometry[] geoms = new
+                // com.vividsolutions.jts.geom.Geometry[fGeometries.length];
+                // for ( int i = 0; i < fGeometries.length; i++ ) {
+                // geoms[i] = createJTSGeometry( (Geometry) fGeometries[i].getValue() );
+                // }
+                //
+                // // create a JTS geometry collection
+                // geom = gFactoryJTS.createGeometryCollection( geoms );
+
+            } else { // feature without geometry
+                LOG.warn( "Feature '" + f.getId() + "' has no geometries." );
+                geom = null;
+            }
 
         }
 
@@ -579,7 +605,7 @@ public class VectorLayerAdapter {
      *            - {@link FeatureType}
      * @return The property declaration of a {@link IVectorLayer} as a {@link Field} array.
      */
-    private static Field[] createPropertyDeclarationsForVectorLayer( FeatureType type ) {
+    private static Field[] determinePropertyDeclarationsForVectorLayer( FeatureType type ) {
 
         // LOG.info( "FEATURE TYP: " + type.getName().toString() );
 
@@ -620,6 +646,54 @@ public class VectorLayerAdapter {
         return fields;
     }
 
+    private static Field[] determinePropertyDeclarationsForVectorLayer( FeatureCollection c ) {
+
+        HashMap<String, Class<?>> properties = new HashMap<String, Class<?>>();
+
+        Iterator<Feature> it = c.iterator();
+        if ( it.hasNext() ) {
+
+            // get feature type
+            Feature f = it.next();
+            FeatureType fType = f.getType();
+
+            // get property declarations
+            List<PropertyType> propertyDeclarations = fType.getPropertyDeclarations();
+
+            for ( PropertyType pt : propertyDeclarations ) {
+
+                // handle only SimplePropertyType
+                if ( pt instanceof SimplePropertyType ) {
+                    SimplePropertyType spt = (SimplePropertyType) pt;
+
+                    // name
+                    QName pName = spt.getName();
+
+                    // class
+                    Class<?> pClass = spt.getPrimitiveType().getValueClass();
+                    // Class<?> pClass = String.class;
+
+                    // notice name and class
+                    if ( f.getGeometryProperties().length > 0 )
+                        properties.put( pName.getLocalPart(), pClass );
+
+                    // LOG.info( "  PROPERTY: " + pName + ":   " + pClass );
+                }
+            }
+
+        }
+
+        // create fields array
+        Field[] vectoLayerPropertyDeclarations = new Field[properties.size()];
+        Set<String> names = properties.keySet();
+        int i = 0;
+        for ( String name : names ) {
+            vectoLayerPropertyDeclarations[i++] = new Field( name, properties.get( name ) );
+        }
+
+        return vectoLayerPropertyDeclarations;
+    }
+
     /**
      * Creates properties for a {@link com.vividsolutions.jts.geom.Geometry} of the {@link IVectorLayer}. <br>
      * If a {@link Feature} has more properties with the same name, it will be used the first.
@@ -632,7 +706,7 @@ public class VectorLayerAdapter {
      * 
      * @return {@link IFeature} properties as object array.
      */
-    private static Object[] createPropertiesForVectorLayerGeometry( Feature f, Field[] propertyDeclarations ) {
+    private static Object[] determinePropertiesForVectorLayerGeometry( Feature f, Field[] propertyDeclarations ) {
 
         Object[] geomProperties;
 

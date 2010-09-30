@@ -73,7 +73,7 @@ public class GeoAlgorithmTest {
     private static Logger LOG = LoggerFactory.getLogger( GeoAlgorithmTest.class );
 
     // enabled/disabled all tests
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
 
     // manages all supported algorithms with example data
     private final LinkedList<GeoAlgorithmWithData> algorithms;
@@ -258,7 +258,7 @@ public class GeoAlgorithmTest {
             allGMLFormats.add( list );
         }
 
-        boolean getAll = true;
+        boolean getAll = false;
 
         if ( !getAll ) {// return only one algorithm
 
@@ -269,7 +269,7 @@ public class GeoAlgorithmTest {
                                                                           Sextante.getAlgorithmFromCommandLineName( centroidsName ) );
             // add all test data
             LinkedList<ExampleData> centroidsData = new LinkedList<ExampleData>();
-            centroidsData.add( VectorExampleData.GML_31_MULTIPOINT );
+            centroidsData.add( VectorExampleData.GML_31_FEATURE_COLLECTION_WFS );
 
             for ( ExampleData data : centroidsData ) {
                 LinkedList<ExampleData> list = new LinkedList<ExampleData>();
