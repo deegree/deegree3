@@ -82,7 +82,7 @@ public class IdUtils {
      * @return a uuid that is unique in the backend.
      * @throws MetadataStoreException
      */
-    String generateUUID()
+    public String generateUUID()
                             throws MetadataStoreException {
 
         ResultSet rs = null;
@@ -165,6 +165,17 @@ public class IdUtils {
             close( rs );
         }
         return notAvailable;
+    }
+
+    public boolean checkUUIDCompliance( String uuid ) {
+
+        char firstChar = uuid.charAt( 0 );
+        Pattern p = Pattern.compile( "[0-9]" );
+        Matcher m = p.matcher( "" + firstChar );
+        if ( m.matches() ) {
+            return false;
+        }
+        return true;
     }
 
 }

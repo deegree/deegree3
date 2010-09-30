@@ -47,14 +47,12 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRS;
 import org.deegree.metadata.persistence.MetadataStoreException;
-import org.deegree.metadata.persistence.iso.generating.generatingelements.GenerateOMElement;
 import org.deegree.metadata.persistence.types.BoundingBox;
 import org.deegree.metadata.persistence.types.Keyword;
 import org.deegree.metadata.persistence.types.OperatesOnData;
@@ -73,19 +71,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
     private static final Logger LOG = getLogger( ParseIdentificationInfo.class );
 
-    private OMFactory factory;
-
-    private OMNamespace namespaceGMD;
-
-    private OMNamespace namespaceSRV;
-
-    private String dataIdentificationId;
-
-    private String dataIdentificationUuId;
-
     private NamespaceContext nsContextParseII;
-
-    private final List<String> resourceIdentifierList;
 
     /**
      * 
@@ -94,12 +80,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
      * @param nsContext
      */
     protected ParseIdentificationInfo( OMFactory factory, NamespaceContext nsContext ) {
-        this.factory = factory;
         this.nsContextParseII = nsContext;
-        this.resourceIdentifierList = new ArrayList<String>();
-
-        namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
-        namespaceSRV = factory.createOMNamespace( "http://www.isotc211.org/2005/srv", "srv" );
 
     }
 
@@ -256,14 +237,13 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 qp.setPublicationDate( date );
             }
 
-            OMElement omCitation = citation;
-
             /*---------------------------------------------------------------
              * 
              * RS_/MD_Identifier check
              * 
              *---------------------------------------------------------------*/
             LOG.debug( "Checking resourceIdentifier..." );
+            List<String> resourceIdentifierList = new ArrayList<String>();
             for ( OMElement resourceElement : identifier ) {
                 // maybe additional this?? : | ./gmd:RS_Identifier/gmd:code/gco:CharacterString
                 String resourceIdentifier = getNodeAsString(
@@ -272,57 +252,13 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                         "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                         nsContextParseII ), null );
                 LOG.debug( "resourceIdentifier: '" + resourceIdentifier + "' " );
-                dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) );
-                LOG.debug( "id attribute: '" + dataIdentificationId + "' " );
-                dataIdentificationUuId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "uuid" ) );
-                LOG.debug( "uuid attribute: '" + dataIdentificationUuId + "' " );
 
                 resourceIdentifierList.add( resourceIdentifier );
 
             }
-            LOG.debug( "Creating a resourceIdentifierList..." );
-            // List<String> rsList = ic.determineInspireCompliance( resourceIdentifierList, dataIdentificationId );
-            // LOG.debug( "Creating of resourceIdentifierList finished: " + rsList );
-            // if ( dataIdentificationUuId == null ) {
-            // LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
-            // if ( !rsList.isEmpty() ) {
-            // sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "uuid", namespaceGMD,
-            // rsList.get( 0 ), factory ) );
-            // dataIdentificationUuId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
-            // namespaceGMD.getNamespaceURI(),
-            // "uuid",
-            // namespaceGMD.getPrefix() ) );
-            // }
-            //
-            // }
-            // if ( !rsList.isEmpty() ) {
-            // LOG.debug( "Setting id attribute from the resourceIdentifier..." );
-            // OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
-            // if ( attribute_id != null ) {
-            // sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
-            // }
-            // sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl( "id", namespaceGMD,
-            // rsList.get( 0 ), factory ) );
-            // dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName(
-            // namespaceGMD.getNamespaceURI(),
-            // "id",
-            // namespaceGMD.getPrefix() ) );
-            // LOG.debug( "id attribute is now: '" + dataIdentificationId + "' " );
-            // }
+            LOG.debug( "Creating a resourceIdentifierList... is not implemented yet!!" );
+
             qp.setResourceIdentifier( resourceIdentifierList );
-
-            List<OMElement> identiferListTemp = new ArrayList<OMElement>();
-            if ( identifier != null && identifier.size() != 0 ) {
-                LOG.debug( "There is at least one resourceIdentifier available" );
-                identiferListTemp.addAll( identifier );
-            } else {
-                if ( !resourceIdentifierList.isEmpty() ) {
-                    LOG.debug( "There is no resourceIdentifier available...so there will be a new identifier element created." );
-
-                    identiferListTemp.add( GenerateOMElement.newInstance( factory ).createMD_ResourceIdentifier(
-                                                                                                                 resourceIdentifierList.get( 0 ) ) );
-                }
-            }
 
             List<OMElement> citedResponsibleParty = getElements( ci_citation, new XPath( "./gmd:citedResponsibleParty",
                                                                                          nsContextParseII ) );
@@ -334,91 +270,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
             OMElement collectiveTitle = getElement( ci_citation, new XPath( "./gmd:collectiveTitle", nsContextParseII ) );
             OMElement ISBN = getElement( ci_citation, new XPath( "./gmd:ISBN", nsContextParseII ) );
             OMElement ISSN = getElement( ci_citation, new XPath( "./gmd:ISSN", nsContextParseII ) );
-            //
-            // LOG.debug( "Begin to create element 'citation'..." );
-            // omCitation = factory.createOMElement( "citation", namespaceGMD );
-            // OMElement omCI_Citation = factory.createOMElement( "CI_Citation", namespaceGMD );
-            // if ( title != null ) {
-            // LOG.debug( "add element title..." );
-            // omCI_Citation.addChild( title );
-            // } else {
-            // LOG.debug( "There is no title element provided!" );
-            // throw new MetadataStoreException( "The title element is mandatory!" );
-            // }
-            // for ( OMElement elem : alternateTitle ) {
-            // LOG.debug( "add element alternateTitle..." );
-            // omCI_Citation.addChild( elem );
-            // }
-            // for ( OMElement elem : citation_date ) {
-            // LOG.debug( "add element citationDate..." );
-            // omCI_Citation.addChild( elem );
-            // }
-            // if ( edition != null ) {
-            // LOG.debug( "add element edition..." );
-            // omCI_Citation.addChild( edition );
-            // }
-            // if ( editionDate != null ) {
-            // LOG.debug( "add element editionDate..." );
-            // omCI_Citation.addChild( editionDate );
-            // }
-            // for ( OMElement elem : identiferListTemp ) {
-            // LOG.debug( "add element identifier..." );
-            // omCI_Citation.addChild( elem );
-            // }
-            // for ( OMElement elem : citedResponsibleParty ) {
-            // LOG.debug( "add element responsibleParty..." );
-            // omCI_Citation.addChild( elem );
-            // }
-            // for ( OMElement elem : presentationForm ) {
-            // LOG.debug( "add element presentationForm..." );
-            // omCI_Citation.addChild( elem );
-            // }
-            // if ( series != null ) {
-            // LOG.debug( "add element series..." );
-            // omCI_Citation.addChild( series );
-            // }
-            // if ( otherCitationDetails != null ) {
-            // LOG.debug( "add element otherCitationDetails..." );
-            // omCI_Citation.addChild( otherCitationDetails );
-            // }
-            // if ( collectiveTitle != null ) {
-            // LOG.debug( "add element collectiveTitle..." );
-            // omCI_Citation.addChild( collectiveTitle );
-            // }
-            // if ( ISBN != null ) {
-            // LOG.debug( "add element ISBN..." );
-            // omCI_Citation.addChild( ISBN );
-            // }
-            // if ( ISSN != null ) {
-            // LOG.debug( "add element ISSN..." );
-            // omCI_Citation.addChild( ISSN );
-            // }
-            // LOG.debug( "add element 'CI_Citation' to parent 'citation'..." );
-            // omCitation.addChild( omCI_Citation );
-            // LOG.debug( "...Creating of the 'citation' element finished. " );
-            /*---------------------------------------------------------------
-             * 
-             * Abstract
-             * 
-             *---------------------------------------------------------------*/
-            LOG.debug( "Abstract element..." );
-            OMElement _abstract = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:abstract",
-                                                                                              nsContextParseII ) );
 
-            String[] _abstractOtherLang = getNodesAsStrings(
-                                                             _abstract,
-                                                             new XPath(
-                                                                        "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
-                                                                        nsContextParseII ) );
-
-            String[] _abstractStrings = getNodesAsStrings( _abstract, new XPath( "./gco:CharacterString",
-                                                                                 nsContextParseII ) );
-            List<String> _abstractList = new ArrayList<String>();
-            _abstractList.addAll( Arrays.asList( _abstractStrings ) );
-            if ( _abstractOtherLang != null ) {
-                _abstractList.addAll( Arrays.asList( _abstractOtherLang ) );
-            }
-            qp.set_abstract( _abstractList );
+            parseAbstract( qp, sv_service_OR_md_dataIdentification );
 
             /*---------------------------------------------------------------
              * 
@@ -466,21 +319,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:resourceMaintenance", nsContextParseII ) );
 
-            /*---------------------------------------------------------------
-             * 
-             * GraphicOverview
-             * 
-             *---------------------------------------------------------------*/
-            LOG.debug( "GraphicOverview element..." );
-            List<OMElement> graphicOverview = getElements( sv_service_OR_md_dataIdentification,
-                                                           new XPath( "./gmd:graphicOverview", nsContextParseII ) );
-
-            String graphicOverviewString = getNodeAsString(
-                                                            sv_service_OR_md_dataIdentification,
-                                                            new XPath(
-                                                                       "./gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gco:CharacterString",
-                                                                       nsContextParseII ), null );
-            rp.setGraphicOverview( graphicOverviewString );
+            parseGraphicOverview( rp, sv_service_OR_md_dataIdentification );
 
             /*---------------------------------------------------------------
              * 
@@ -511,52 +350,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                  new XPath( "./gmd:resourceSpecificUsage",
                                                                             nsContextParseII ) );
 
-            /*---------------------------------------------------------------
-             * 
-             * ResourceConstraints
-             * 
-             *---------------------------------------------------------------*/
-            LOG.debug( "ResourceConstraints element..." );
-            List<OMElement> resourceConstraints = getElements(
-                                                               sv_service_OR_md_dataIdentification,
-                                                               new XPath( "./gmd:resourceConstraints", nsContextParseII ) );
-
-            String[] useLim = getNodesAsStrings(
-                                                 sv_service_OR_md_dataIdentification,
-                                                 new XPath(
-                                                            "./gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString",
-                                                            nsContextParseII ) );
-
-            qp.setLimitation( Arrays.asList( useLim ) );
-
-            String[] accessConst = getNodesAsStrings(
-                                                      sv_service_OR_md_dataIdentification,
-                                                      new XPath(
-                                                                 "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue",
-                                                                 nsContextParseII ) );
-
-            qp.setAccessConstraints( Arrays.asList( accessConst ) );
-
-            String[] useConst = getNodesAsStrings(
-                                                   sv_service_OR_md_dataIdentification,
-                                                   new XPath(
-                                                              "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useConstraints/gco:CharacterString",
-                                                              nsContextParseII ) );
-
-            String[] otherConst = getNodesAsStrings(
-                                                     sv_service_OR_md_dataIdentification,
-                                                     new XPath(
-                                                                "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gco:CharacterString",
-                                                                nsContextParseII ) );
-
-            qp.setOtherConstraints( Arrays.asList( otherConst ) );
-
-            qp.setClassification( Arrays.asList( getNodesAsStrings(
-                                                                    sv_service_OR_md_dataIdentification,
-                                                                    new XPath(
-                                                                               "./gmd:resourceConstraints/gmd:MD_SecurityConstraints/gmd:classification/gmd:MD_ClassificationCode/@codeListValue",
-                                                                               nsContextParseII ) ) ) );
-
+            parseResourceConstraints( qp, rp, sv_service_OR_md_dataIdentification );
             /*---------------------------------------------------------------
              * 
              * AggregationInfo
@@ -1131,47 +925,127 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 }
             }
 
-            LOG.debug( "hasSecurityConstraints..." );
-            OMElement hasSecurityConstraintsElement = null;
-            String[] rightsElements = null;
-            for ( OMElement resourceConstraintsElem : resourceConstraints ) {
-                rightsElements = getNodesAsStrings(
-                                                    resourceConstraintsElem,
-                                                    new XPath(
-                                                               "./gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue",
-                                                               nsContextParseII ) );
-
-                hasSecurityConstraintsElement = getElement(
-                                                            resourceConstraintsElem,
-                                                            new XPath( "./gmd:MD_SecurityConstraints", nsContextParseII ) );
-
-            }
-            if ( rightsElements != null ) {
-                LOG.debug( "hasRights..." );
-                rp.setRights( Arrays.asList( rightsElements ) );
-            }
-
-            boolean hasSecurityConstraint = false;
-            if ( hasSecurityConstraintsElement != null ) {
-                hasSecurityConstraint = true;
-            }
-            qp.setHasSecurityConstraints( hasSecurityConstraint );
-
-            // if MD_DataIdentification or SV_ServiceIdentification
         }
 
     }
 
-    public List<String> getResourceIdentifierList() {
-        return resourceIdentifierList;
+    /**
+     * ResourceConstraints and hasSecurityConstraints
+     * 
+     * @param parent
+     * @param qp
+     * @param rp
+     */
+    private void parseResourceConstraints( QueryableProperties qp, ReturnableProperties rp, OMElement parent ) {
+
+        LOG.debug( "ResourceConstraints element..." );
+        List<OMElement> resourceConstraints = getElements( parent, new XPath( "./gmd:resourceConstraints",
+                                                                              nsContextParseII ) );
+
+        String[] useLim = getNodesAsStrings(
+                                             parent,
+                                             new XPath(
+                                                        "./gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString",
+                                                        nsContextParseII ) );
+
+        qp.setLimitation( Arrays.asList( useLim ) );
+
+        String[] accessConst = getNodesAsStrings(
+                                                  parent,
+                                                  new XPath(
+                                                             "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue",
+                                                             nsContextParseII ) );
+
+        qp.setAccessConstraints( Arrays.asList( accessConst ) );
+
+        String[] useConst = getNodesAsStrings(
+                                               parent,
+                                               new XPath(
+                                                          "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useConstraints/gco:CharacterString",
+                                                          nsContextParseII ) );
+
+        String[] otherConst = getNodesAsStrings(
+                                                 parent,
+                                                 new XPath(
+                                                            "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gco:CharacterString",
+                                                            nsContextParseII ) );
+
+        qp.setOtherConstraints( Arrays.asList( otherConst ) );
+
+        qp.setClassification( Arrays.asList( getNodesAsStrings(
+                                                                parent,
+                                                                new XPath(
+                                                                           "./gmd:resourceConstraints/gmd:MD_SecurityConstraints/gmd:classification/gmd:MD_ClassificationCode/@codeListValue",
+                                                                           nsContextParseII ) ) ) );
+
+        LOG.debug( "hasSecurityConstraints..." );
+        OMElement hasSecurityConstraintsElement = null;
+        String[] rightsElements = null;
+        for ( OMElement resourceConstraintsElem : resourceConstraints ) {
+            rightsElements = getNodesAsStrings(
+                                                resourceConstraintsElem,
+                                                new XPath(
+                                                           "./gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue",
+                                                           nsContextParseII ) );
+
+            hasSecurityConstraintsElement = getElement( resourceConstraintsElem,
+                                                        new XPath( "./gmd:MD_SecurityConstraints", nsContextParseII ) );
+
+        }
+        if ( rightsElements != null ) {
+            LOG.debug( "hasRights..." );
+            rp.setRights( Arrays.asList( rightsElements ) );
+        }
+
+        boolean hasSecurityConstraint = false;
+        if ( hasSecurityConstraintsElement != null ) {
+            hasSecurityConstraint = true;
+        }
+        qp.setHasSecurityConstraints( hasSecurityConstraint );
     }
 
-    public String getDataIdentificationId() {
-        return dataIdentificationId;
+    /**
+     * GraphicOverview
+     * 
+     * @param rp
+     */
+    private void parseGraphicOverview( ReturnableProperties rp, OMElement parent ) {
+
+        LOG.debug( "GraphicOverview element..." );
+        List<OMElement> graphicOverview = getElements( parent, new XPath( "./gmd:graphicOverview", nsContextParseII ) );
+
+        String graphicOverviewString = getNodeAsString(
+                                                        parent,
+                                                        new XPath(
+                                                                   "./gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gco:CharacterString",
+                                                                   nsContextParseII ), null );
+        rp.setGraphicOverview( graphicOverviewString );
+
     }
 
-    public String getDataIdentificationUuId() {
-        return dataIdentificationUuId;
+    private void parseAbstract( QueryableProperties qp, OMElement parent ) {
+        /*---------------------------------------------------------------
+         * 
+         * Abstract
+         * 
+         *---------------------------------------------------------------*/
+        LOG.debug( "Abstract element..." );
+        OMElement _abstract = getElement( parent, new XPath( "./gmd:abstract", nsContextParseII ) );
+
+        String[] _abstractOtherLang = getNodesAsStrings(
+                                                         _abstract,
+                                                         new XPath(
+                                                                    "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                                    nsContextParseII ) );
+
+        String[] _abstractStrings = getNodesAsStrings( _abstract, new XPath( "./gco:CharacterString", nsContextParseII ) );
+        List<String> _abstractList = new ArrayList<String>();
+        _abstractList.addAll( Arrays.asList( _abstractStrings ) );
+        if ( _abstractOtherLang != null ) {
+            _abstractList.addAll( Arrays.asList( _abstractOtherLang ) );
+        }
+        qp.set_abstract( _abstractList );
+
     }
 
 }

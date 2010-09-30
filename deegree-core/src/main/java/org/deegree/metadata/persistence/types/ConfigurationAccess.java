@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.types;
 
-import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
-import org.deegree.metadata.persistence.iso.parsing.InspireCompliance;
-import org.deegree.metadata.persistence.iso.parsing.MetadataValidation;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireCompliance;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataValidation;
 
 /**
  * TODO add class documentation here

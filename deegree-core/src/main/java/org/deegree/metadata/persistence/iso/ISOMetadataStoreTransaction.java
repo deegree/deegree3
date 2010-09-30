@@ -23,10 +23,11 @@ import org.deegree.metadata.persistence.MetadataStoreException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.iso.generating.BuildMetadataXMLRepresentation;
 import org.deegree.metadata.persistence.iso.generating.GenerateQueryableProperties;
-import org.deegree.metadata.persistence.iso.parsing.CoupledDataInspector;
-import org.deegree.metadata.persistence.iso.parsing.InspireCompliance;
-import org.deegree.metadata.persistence.iso.parsing.MetadataValidation;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.CoupledDataInspector;
 import org.deegree.metadata.persistence.iso.parsing.inspectation.FileIdentifierInspector;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.InspireCompliance;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.MetadataValidation;
+import org.deegree.metadata.persistence.iso.parsing.inspectation.ResourceIdentifier;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.metadata.persistence.types.ConfigurationAccess;
 import org.deegree.metadata.publication.DeleteTransaction;
@@ -118,31 +119,19 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
     @Override
     public List<String> performInsert( InsertTransaction insert )
                             throws MetadataStoreException {
-        ExecuteStatements execStm;
         List<String> identifierList = new ArrayList<String>();
         for ( OMElement element : insert.getElements() ) {
-            QName localName = element.getQName();
 
             try {
-
-                execStm = new ExecuteStatements();
-                String idString = null;
-
-                // if ( localName.getLocalPart().equals( "Record" ) ) {
-                // idString = execStm.executeInsertStatement( true, conn, new ISOQPParsing( ca ).parseAPDC( element ) );
-                // if ( idString != null ) {
-                // identifierList.add( idString );
-                // }
-                //
-                // } else {
-                ISORecord rec = new ISORecord( element );
+                OMElement elemFI = ca.getFi().inspect( element );
+                OMElement elemRI = ResourceIdentifier.newInstance( ca.getIc().getRic(), conn ).inspect( elemFI );
+                ISORecord rec = new ISORecord( elemRI );
                 GenerateQueryableProperties generateQP = new GenerateQueryableProperties();
                 BuildMetadataXMLRepresentation buildRecXML = new BuildMetadataXMLRepresentation();
 
                 int operatesOnId = generateQP.generateMainDatabaseDataset( conn, rec );
 
                 String[] identifier = buildRecXML.generateISO( conn, operatesOnId, rec );
-                // idString = execStm.executeInsertStatement( false, conn, new ISORecord( element ));
                 generateQP.executeQueryableProperties( false, conn, operatesOnId, rec );
                 identifierList.addAll( Arrays.asList( identifier ) );
 
