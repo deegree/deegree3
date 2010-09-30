@@ -186,7 +186,7 @@ public class WFSController extends AbstractOGCServiceController {
 
     private final Map<String, OutputFormat> mimeTypeToFormat = new LinkedHashMap<String, OutputFormat>();
 
-    private Map<QName, FeatureTypeMetadata> ftNameToFtMetadata = new HashMap<QName, FeatureTypeMetadata>();
+    private final Map<QName, FeatureTypeMetadata> ftNameToFtMetadata = new HashMap<QName, FeatureTypeMetadata>();
 
     private ServiceIdentificationType serviceId;
 
