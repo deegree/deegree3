@@ -75,9 +75,12 @@ public class ResourceIdentifier implements RecordInspector {
 
     private final XMLAdapter a;
 
+    private final IdUtils util;
+
     private ResourceIdentifier( RequireInspireCompliance ric, Connection conn ) {
         this.ric = ric;
         this.conn = conn;
+        this.util = IdUtils.newInstance( conn );
         this.a = new XMLAdapter();
     }
 
@@ -136,11 +139,19 @@ public class ResourceIdentifier implements RecordInspector {
              */
             if ( rsList.size() == 0 && id == null ) {
                 LOG.info( "Neither an id nor a resourceIdentifier exists...so this creates a new one. " );
-                rsList.add( IdUtils.newInstance( conn ).generateUUID() );
+                rsList.add( util.generateUUID() );
                 return rsList;
             } else if ( rsList.size() == 0 && id != null ) {
                 LOG.info( "An id exists but not a resourceIdentifier...so adapting resourceIdentifier with id. " );
-                rsList.add( id );
+                LOG.debug( "check uuid compliance of id. " );
+                if ( util.checkUUIDCompliance( id ) ) {
+                    LOG.debug( "true...so take it" );
+
+                    rsList.add( id );
+                } else {
+                    LOG.debug( "false...so generate a new one" );
+                    rsList.add( util.generateUUID() );
+                }
                 return rsList;
             }
         }
@@ -149,10 +160,12 @@ public class ResourceIdentifier implements RecordInspector {
     }
 
     private boolean checkRSListAgainstID( List<String> rsList, String id ) {
+
         if ( rsList.size() == 0 ) {
             return false;
+
         } else {
-            IdUtils util = IdUtils.newInstance( conn );
+
             if ( util.checkUUIDCompliance( rsList.get( 0 ) ) ) {
 
                 if ( util.checkUUIDCompliance( id ) ) {
@@ -208,22 +221,25 @@ public class ResourceIdentifier implements RecordInspector {
         LOG.debug( "Creating of resourceIdentifierList finished: " + rsList );
         if ( dataIdentificationUuId == null ) {
             LOG.debug( "No uuid attribute found, set it from the resourceIdentifier..." );
-            if ( !rsList.isEmpty() ) {
-                sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl(
-                                                                                       "uuid",
-                                                                                       new OMNamespaceImpl(
-                                                                                                            nsContext.getURI( "gmd" ),
-                                                                                                            "gmd" ),
-                                                                                       rsList.get( 0 ),
-                                                                                       OMAbstractFactory.getOMFactory() ) );
 
-            }
-
+        } else {
+            LOG.debug( " uuid attribute found, but anyway, set it from the resourceIdentifier..." );
+            sv_service_OR_md_dataIdentification.getAttribute( new QName( "uuid" ) );
         }
         if ( !rsList.isEmpty() ) {
+            sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl(
+                                                                                   "uuid",
+                                                                                   new OMNamespaceImpl(
+                                                                                                        nsContext.getURI( "gmd" ),
+                                                                                                        "gmd" ),
+                                                                                   rsList.get( 0 ),
+                                                                                   OMAbstractFactory.getOMFactory() ) );
+
             LOG.debug( "Setting id attribute from the resourceIdentifier..." );
             OMAttribute attribute_id = sv_service_OR_md_dataIdentification.getAttribute( new QName( "id" ) );
+
             if ( attribute_id != null ) {
+
                 sv_service_OR_md_dataIdentification.removeAttribute( attribute_id );
             }
             sv_service_OR_md_dataIdentification.addAttribute( new OMAttributeImpl(
@@ -234,11 +250,13 @@ public class ResourceIdentifier implements RecordInspector {
                                                                                    rsList.get( 0 ),
                                                                                    OMAbstractFactory.getOMFactory() ) );
 
-            LOG.debug( "id attribute is now: '" + dataIdentificationId + "' " );
+            LOG.debug( "id attribute is now: '"
+                       + sv_service_OR_md_dataIdentification.getAttributeValue( new QName( nsContext.getURI( "gmd" ),
+                                                                                           "id", "gmd" ) ) + "' " );
         }
 
         // check where to set the resourceIdentifier element
-        if ( resourceIdentifierList.isEmpty() ) {
+        if ( identifier.isEmpty() ) {
             OMElement resourceID = GenerateOMElement.newInstance().createMD_ResourceIdentifier( rsList.get( 0 ) );
             if ( editionDate != null ) {
                 LOG.debug( "Set resourceIdentifier '" + rsList.get( 0 ) + "' after the 'editionDate-element'." );

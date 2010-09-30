@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class MetadataValidation {
+public class MetadataValidation implements RecordInspector {
     private static Logger LOG = LoggerFactory.getLogger( MetadataValidation.class );
 
     private final boolean isValidate;
@@ -79,7 +79,7 @@ public class MetadataValidation {
      * @return a list of error-strings, or empty list if there is no validation needed.
      * @throws MetadataStoreException
      */
-    public List<String> validate( OMElement elem )
+    private List<String> validate( OMElement elem )
                             throws MetadataStoreException {
         StringWriter s = new StringWriter();
         if ( isValidate ) {
@@ -99,5 +99,12 @@ public class MetadataValidation {
             return SchemaValidator.validate( is, "http://schemas.opengis.net/csw/2.0.2/record.xsd" );
         }
         return new ArrayList<String>();
+    }
+
+    @Override
+    public OMElement inspect( OMElement record )
+                            throws MetadataStoreException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
