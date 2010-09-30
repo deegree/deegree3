@@ -74,8 +74,8 @@ public class GetCapabilitiesKVPAdapter {
     public static GetCapabilities parse( Version version, Map<String, String> kvpParams )
                             throws InvalidParameterValueException {
         GetCapabilities request = null;
-        if ( version != null ) {
-            // @version present -> treat as WFS 1.0.0 request
+        if ( version == null ) {
+            // @version not present -> treat as WFS 1.0.0 request
             request = new GetCapabilities( version );
         } else {
             // else treat as WFS 1.1.0 request (-> OWS 1.0.0)
