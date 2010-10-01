@@ -51,30 +51,30 @@ public class TstConstants {
 
     }
 
-    static final URL configURL = ISOMetadataStoreTest.class.getResource( "configdocs/iso19115_SetUpTables.xml" );
+    static final URL configURL = TstConstants.class.getResource( "configdocs/iso19115_SetUpTables.xml" );
 
-    static final URL configURL_REJECT_FI_FALSE = ISOMetadataStoreTest.class.getResource( "configdocs/iso19115_Reject_FI_FALSE.xml" );
+    static final URL configURL_REJECT_FI_FALSE = TstConstants.class.getResource( "configdocs/iso19115_Reject_FI_FALSE.xml" );
 
-    static final URL configURL_REJECT_FI_TRUE = ISOMetadataStoreTest.class.getResource( "configdocs/iso19115_Reject_FI_TRUE.xml" );
+    static final URL configURL_REJECT_FI_TRUE = TstConstants.class.getResource( "configdocs/iso19115_Reject_FI_TRUE.xml" );
 
-    static final URL configURL_RS_GEN_FALSE = ISOMetadataStoreTest.class.getResource( "configdocs/iso19115_RS_Available_Generate_FALSE.xml" );
+    static final URL configURL_RS_GEN_FALSE = TstConstants.class.getResource( "configdocs/iso19115_RS_Available_Generate_FALSE.xml" );
 
-    static final URL configURL_RS_GEN_TRUE = ISOMetadataStoreTest.class.getResource( "configdocs/iso19115_RS_Available_Generate_TRUE.xml" );
+    static final URL configURL_RS_GEN_TRUE = TstConstants.class.getResource( "configdocs/iso19115_RS_Available_Generate_TRUE.xml" );
 
-    static final URL fileTest_1 = ISOMetadataStoreTest.class.getResource( "metadatarecords/1.xml" );
+    static final URL tst_1 = TstConstants.class.getResource( "metadatarecords/1.xml" );
 
-    static final URL fileTest_2 = ISOMetadataStoreTest.class.getResource( "metadatarecords/2.xml" );
+    static final URL tst_2 = TstConstants.class.getResource( "metadatarecords/2.xml" );
 
-    static final URL fileTest_3 = ISOMetadataStoreTest.class.getResource( "metadatarecords/3.xml" );
+    static final URL tst_3 = TstConstants.class.getResource( "metadatarecords/3.xml" );
 
-    static final URL fileTest_4 = ISOMetadataStoreTest.class.getResource( "metadatarecords/4.xml" );
+    static final URL tst_4 = TstConstants.class.getResource( "metadatarecords/4.xml" );
 
-    static final URL fileTest_5 = ISOMetadataStoreTest.class.getResource( "metadatarecords/5.xml" );
+    static final URL tst_5 = TstConstants.class.getResource( "metadatarecords/5.xml" );
 
-    static final URL fileTest_6 = ISOMetadataStoreTest.class.getResource( "metadatarecords/6.xml" );
+    static final URL tst_6 = TstConstants.class.getResource( "metadatarecords/6.xml" );
 
-    static final URL fileTest_7 = ISOMetadataStoreTest.class.getResource( "metadatarecords/7.xml" );
+    static final URL tst_7 = TstConstants.class.getResource( "metadatarecords/7.xml" );
 
-    static final URL fileTest_8 = ISOMetadataStoreTest.class.getResource( "metadatarecords/8.xml" );
+    static final URL tst_8 = TstConstants.class.getResource( "metadatarecords/8.xml" );
 
 }
