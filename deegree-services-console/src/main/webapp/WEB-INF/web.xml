@@ -27,20 +27,23 @@
   <servlet>
     <servlet-name>services</servlet-name>
     <servlet-class>org.deegree.services.controller.OGCFrontController</servlet-class>
-    <!--
-      parameter 'ConfigurationFile' is optional (only needed when a non-default location is used for the
-      'services_metadata.xml' file)
-    -->
-    <!--
-      init-param> <param-name>ConfigurationFile</param-name> <param-value>conf/services_metadata.xml</param-value>
-      </init-param
-    -->
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>resources</servlet-name>
+    <servlet-class>org.deegree.services.resources.ResourcesServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
     <servlet-name>services</servlet-name>
     <url-pattern>/services</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>resources</servlet-name>
+    <url-pattern>/resources/*</url-pattern>
   </servlet-mapping>
 
   <servlet>
