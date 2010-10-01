@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+
+  <FeatureTypeName>cp:CadastralParcel</FeatureTypeName>
+
+  <Rule>
+    <Description>
+      <Title>INSPIRE CadastralParcels (CP)</Title>
+    </Description>
+    <!-- <MaxScaleDenominator>32000</MaxScaleDenominator> -->
+
+    <PolygonSymbolizer uom="meter">
+      <Geometry>
+        <ogc:PropertyName>cp:geometry</ogc:PropertyName>
+      </Geometry>
+
+      <Fill>
+        <SvgParameter name="fill">
+          <ogc:Literal>#aaaaaa</ogc:Literal>
+        </SvgParameter>
+        <SvgParameter name="fill-opacity">
+          <ogc:Literal>0.4</ogc:Literal>
+        </SvgParameter>
+      </Fill>
+      <Stroke>
+        <GraphicStroke>
+          <Graphic>
+            <Mark>
+              <WellKnownName>circle</WellKnownName>
+              <Fill>
+                <SvgParameter name="fill-opacity">0</SvgParameter>
+              </Fill>
+            </Mark>
+            <Size>1.5</Size>
+          </Graphic>
+          <Gap>8</Gap>
+        </GraphicStroke>
+        <SvgParameter name="stroke">#ff1111</SvgParameter>
+      </Stroke>
+      <PerpendicularOffset>-6</PerpendicularOffset>
+    </PolygonSymbolizer>
+
+    <LineSymbolizer uom="meter">
+      <Geometry>
+        <ogc:PropertyName>cp:geometry</ogc:PropertyName>
+      </Geometry>
+      <Stroke>
+        <SvgParameter name="stroke">#111111</SvgParameter>
+        <SvgParameter name="stroke-width">1</SvgParameter>
+      </Stroke>
+    </LineSymbolizer>
+
+  </Rule>
+
+  <Rule>
+    <!-- <MaxScaleDenominator>32000</MaxScaleDenominator> -->
+    <TextSymbolizer uom="meter">
+
+      <!--
+        <Geometry> <ogc:PropertyName>cp:position/AD:GeographicPosition/AD:geometry</ogc:PropertyName> </Geometry>
+      -->
+
+      <Label>
+        <ogc:PropertyName>cp:label</ogc:PropertyName>
+      </Label>
+      <Font>
+        <SvgParameter name="font-family">Arial</SvgParameter>
+        <SvgParameter name="font-weight">Normal</SvgParameter>
+        <SvgParameter name="font-size">10</SvgParameter>
+      </Font>
+      <LabelPlacement>
+        <PointPlacement>
+          <Displacement>
+            <DisplacementX>0</DisplacementX>
+            <DisplacementY>-15</DisplacementY>
+          </Displacement>
+        </PointPlacement>
+      </LabelPlacement>
+      <Halo>
+        <Radius>2</Radius>
+        <Fill>
+          <SvgParameter name="fill">#FFFFFF</SvgParameter>
+        </Fill>
+      </Halo>
+      <Fill>
+        <SvgParameter name="fill">#0000CC</SvgParameter>
+      </Fill>
+    </TextSymbolizer>
+  </Rule>
+
+</FeatureTypeStyle>
