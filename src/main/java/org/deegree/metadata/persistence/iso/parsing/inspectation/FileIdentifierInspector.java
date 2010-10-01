@@ -214,7 +214,7 @@ public class FileIdentifierInspector implements RecordInspector {
         List<String> idList = determineFileIdentifier( fileIdentifierString, resourceIdentifierList,
                                                        dataIdentificationId, dataIdentificationUuId );
         if ( idList.isEmpty() ) {
-            // TODO already existent in backend
+            return null;
         }
         if ( !idList.isEmpty() && fileIdentifierString.length == 0 ) {
             for ( String id : idList ) {
