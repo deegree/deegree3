@@ -73,8 +73,11 @@ import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
+import static org.deegree.commons.xml.schema.SchemaUtils.writeWrapperDoc;
 import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.gml.schema.GMLSchemaInfoSet.isGMLNamespace;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -102,7 +105,8 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.URITranslator;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
@@ -114,7 +118,7 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.GMLSchemaAnalyzer;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -250,6 +254,31 @@ public class ApplicationSchemaXSDEncoder {
         this.nsToPrefix.put( ns, prefix );
     }
 
+    /**
+     * Exports a wrapper schema document for the given XML Schema Infoset.
+     * 
+     * @param writer
+     * @param xsModel
+     * @param targetNs
+     * @param translator
+     * @throws XMLStreamException
+     */
+    public static void export( XMLStreamWriter writer, GMLSchemaInfoSet xsModel, String targetNs,
+                               URITranslator translator )
+                            throws XMLStreamException {
+
+        List<Pair<String, String>> nsImports = new ArrayList<Pair<String, String>>();
+        for ( String ns : xsModel.getAppNamespaces() ) {
+            List<String> locations = xsModel.getComponentLocations( ns );
+            for ( String location : locations ) {
+                String translated = translator.translate( location );
+                nsImports.add( new Pair<String, String>( ns, translated ) );
+            }
+        }
+
+        writeWrapperDoc( writer, targetNs, nsImports );
+    }
+
     public void export( XMLStreamWriter writer, ApplicationSchema schema )
                             throws XMLStreamException {
         export( writer, schema.getFeatureTypes( null, true, true ) );
@@ -323,7 +352,7 @@ public class ApplicationSchemaXSDEncoder {
         // export element declarations and type declarations (in the target namespace) that are not feature type related
         try {
             for ( ApplicationSchema schema : schemas ) {
-                GMLSchemaAnalyzer analyzer = schema.getXSModel();
+                GMLSchemaInfoSet analyzer = schema.getXSModel();
                 if ( analyzer != null ) {
                     XSModel xsModel = analyzer.getXSModel();
                     XSNamespaceItemList nsItems = xsModel.getNamespaceItems();
@@ -500,7 +529,7 @@ public class ApplicationSchemaXSDEncoder {
 
         QName elName = ft.getName();
         QName typeName = null;
-        GMLSchemaAnalyzer analyzer = ft.getSchema().getXSModel();
+        GMLSchemaInfoSet analyzer = ft.getSchema().getXSModel();
         if ( analyzer == null ) {
             if ( hasSubTypes ) {
                 typeName = new QName( elName.getNamespaceURI(), elName.getLocalPart() + "Type" );
@@ -510,8 +539,9 @@ public class ApplicationSchemaXSDEncoder {
                                                                                        elName.getNamespaceURI() );
             XSTypeDefinition typeDef = elDecl.getTypeDefinition();
             if ( !typeDef.getAnonymous() ) {
-                if ( CommonNamespaces.isGMLNamespace( typeDef.getNamespace() )
-                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals( "AbstractFeatureCollectionType" ) ) ) {
+                if ( isGMLNamespace( typeDef.getNamespace() )
+                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals(
+                                                                                                         "AbstractFeatureCollectionType" ) ) ) {
                     if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
                         typeName = new QName( gmlNsURI, "AbstractFeatureCollectionType" );
                     } else {

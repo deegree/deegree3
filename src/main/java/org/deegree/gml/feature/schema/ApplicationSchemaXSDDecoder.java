@@ -91,7 +91,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.GMLSchemaAnalyzer;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +115,7 @@ public class ApplicationSchemaXSDDecoder {
 
     private Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDDecoder.class );
 
-    private GMLSchemaAnalyzer analyzer;
+    private GMLSchemaInfoSet analyzer;
 
     // key: ft name, value: element declaration
     private Map<QName, XSElementDeclaration> ftNameToFtElement = new HashMap<QName, XSElementDeclaration>();
@@ -175,7 +175,7 @@ public class ApplicationSchemaXSDDecoder {
 
         this.gmlVersion = gmlVersion;
         gmlNs = gmlVersion.getNamespace();
-        analyzer = new GMLSchemaAnalyzer( gmlVersion, schemaUrls );
+        analyzer = new GMLSchemaInfoSet( gmlVersion, schemaUrls );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
 
         // feature element declarations

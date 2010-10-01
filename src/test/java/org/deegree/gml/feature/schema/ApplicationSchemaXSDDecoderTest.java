@@ -116,7 +116,7 @@ public class ApplicationSchemaXSDDecoderTest {
         if ( schemaURL == null ) {
             return;
         }
-        
+
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
         FeatureType[] fts = schema.getFeatureTypes();
@@ -212,6 +212,25 @@ public class ApplicationSchemaXSDDecoderTest {
         assertEquals( 2, pt.getAllowedGeometryTypes().size() );
         assertTrue( pt.getAllowedGeometryTypes().contains( GeometryPropertyType.GeometryType.CURVE ) );
         assertTrue( pt.getAllowedGeometryTypes().contains( GeometryPropertyType.GeometryType.COMPOSITE_CURVE ) );
+    }
+
+    @Test
+    public void testParsingINSPIREAddresses()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = CoreTstProperties.getProperty( "schema_inspire_addresses" );
+        if ( schemaURL == null ) {
+            return;
+        }
+
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_32, null, schemaURL );
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        FeatureType[] fts = schema.getFeatureTypes();
+        Assert.assertEquals( 75, fts.length );
+        for ( String ns : schema.getXSModel().getAppNamespaces() ) {
+            System.out.println( ns );
+        }
     }
 
     @Test

@@ -35,9 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.commons.xml.CommonNamespaces.ISOAP10GMDNS;
+import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GCO_NS;
+import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GSR_NS;
+import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GSS_NS;
+import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GTS_NS;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSNS;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.xerces.impl.xs.XSComplexTypeDecl;
 import org.apache.xerces.xs.XSConstants;
@@ -48,7 +60,7 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.schema.XSModelAnalyzer;
+import org.deegree.commons.xml.schema.XMLSchemaInfoSet;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,15 +90,15 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLSchemaAnalyzer extends XSModelAnalyzer {
+public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLSchemaAnalyzer.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GMLSchemaInfoSet.class );
 
     private static final String GML_PRE_32_NS = CommonNamespaces.GMLNS;
 
     private static final String GML_32_NS = CommonNamespaces.GML3_2_NS;
 
-    private GMLVersion version;
+    private final GMLVersion version;
 
     private XSElementDeclaration abstractObjectElementDecl;
 
@@ -130,8 +142,10 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
 
     private Map<String, List<XSElementDeclaration>> nsToConcreteFcDecls;
 
+    private SortedSet<String> appNamespaces;
+
     /**
-     * Creates a new {@link GMLSchemaAnalyzer} instance for the given GML version and using the specified schemas.
+     * Creates a new {@link GMLSchemaInfoSet} instance for the given GML version and using the specified schemas.
      * 
      * @param version
      * @param schemaUrls
@@ -140,7 +154,7 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public GMLSchemaAnalyzer( GMLVersion version, String... schemaUrls ) throws ClassCastException,
+    public GMLSchemaInfoSet( GMLVersion version, String... schemaUrls ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         super( schemaUrls );
         this.version = version;
@@ -224,6 +238,68 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
     }
 
     /**
+     * Returns the GML version used for the infoset.
+     * 
+     * @return the GML version used for the infoset, never <code>null</code>
+     */
+    public GMLVersion getVersion() {
+        return version;
+    }
+
+    /**
+     * Returns whether the given namespace is a GML core namespace.
+     * 
+     * @param ns
+     *            namespace to check, may be <code>null</code>
+     * @return true, if it is a GML core namespace, false otherwise
+     */
+    public static boolean isGMLNamespace( String ns ) {
+        if ( GMLNS.equals( ns ) ) {
+            return true;
+        } else if ( GML3_2_NS.equals( ns ) ) {
+            return true;
+        } else if ( XSNS.equals( ns ) ) {
+            return true;
+        } else if ( XLNNS.equals( ns ) ) {
+            return true;
+        } else if ( ISOAP10GMDNS.equals( ns ) ) {
+            return true;
+        } else if ( ISO_2005_GSR_NS.equals( ns ) ) {
+            return true;
+        } else if ( ISO_2005_GSS_NS.equals( ns ) ) {
+            return true;
+        } else if ( ISO_2005_GTS_NS.equals( ns ) ) {
+            return true;
+        } else if ( ISO_2005_GCO_NS.equals( ns ) ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns all application namespaces that participate in this infoset.
+     * <p>
+     * This excludes all namespaces that are imported by the GML core schemas.
+     * </p>
+     * 
+     * @return all application namespaces, never <code>null</code>
+     */
+    public synchronized SortedSet<String> getAppNamespaces() {
+        if ( appNamespaces == null ) {
+            appNamespaces = new TreeSet<String>( getSchemaNamespaces() );
+            appNamespaces.remove( version.getNamespace() );
+            appNamespaces.remove( XLNNS );
+            appNamespaces.remove( XSNS );
+            appNamespaces.remove( ISOAP10GMDNS );
+            appNamespaces.remove( ISO_2005_GCO_NS );
+            appNamespaces.remove( ISO_2005_GSR_NS );
+            appNamespaces.remove( ISO_2005_GSS_NS );
+            appNamespaces.remove( ISO_2005_GTS_NS );
+        }
+        return appNamespaces;
+    }
+
+    /**
      * Returns the element declaration of the abstract object element, i.e.
      * <code>{http://www.opengis.net/gml}_Object</code> (GML 3.0 to 3.1) or
      * <code>{http://www.opengis.net/gml/3.2}AbstractObject</code> (GML 3.2).
@@ -299,9 +375,9 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
     public List<XSElementDeclaration> getFeatureElementDeclarations( String namespace, boolean onlyConcrete ) {
         List<XSElementDeclaration> ftDecls = new ArrayList<XSElementDeclaration>();
         for ( XSElementDeclaration ftDecl : this.ftDecls ) {
-            if (!ftDecl.getAbstract() || !onlyConcrete) {
-                if (namespace == null || ftDecl.getNamespace().equals( namespace )) {
-                    ftDecls.add (ftDecl);
+            if ( !ftDecl.getAbstract() || !onlyConcrete ) {
+                if ( namespace == null || ftDecl.getNamespace().equals( namespace ) ) {
+                    ftDecls.add( ftDecl );
                 }
             }
         }
@@ -315,9 +391,9 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
     public List<XSElementDeclaration> getFeatureCollectionElementDeclarations( String namespace, boolean onlyConcrete ) {
         List<XSElementDeclaration> fcDecls = new ArrayList<XSElementDeclaration>();
         for ( XSElementDeclaration fcDecl : this.fcDecls ) {
-            if (!fcDecl.getAbstract() || !onlyConcrete) {
-                if (namespace == null || fcDecl.getNamespace().equals( namespace )) {
-                    fcDecls.add (fcDecl);
+            if ( !fcDecl.getAbstract() || !onlyConcrete ) {
+                if ( namespace == null || fcDecl.getNamespace().equals( namespace ) ) {
+                    fcDecls.add( fcDecl );
                 }
             }
         }

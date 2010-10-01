@@ -60,7 +60,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.gml.schema.GMLSchemaAnalyzer;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +96,7 @@ public class ApplicationSchema {
     // key: namespace prefix, value: namespace URI
     private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
-    private final GMLSchemaAnalyzer xsModel;
+    private final GMLSchemaInfoSet xsModel;
 
     private final Map<XSComplexTypeDefinition, Map<QName, XSElementDeclaration>> typeToAllowedChildDecls = new HashMap<XSComplexTypeDefinition, Map<QName, XSElementDeclaration>>();
 
@@ -121,7 +121,7 @@ public class ApplicationSchema {
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
-                              Map<String, String> prefixToNs, GMLSchemaAnalyzer xsModel )
+                              Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel )
                             throws IllegalArgumentException {
 
         for ( FeatureType ft : fts ) {
@@ -358,7 +358,7 @@ public class ApplicationSchema {
      * 
      * @return the underlying XML schema, can be <code>null</code>
      */
-    public GMLSchemaAnalyzer getXSModel() {
+    public GMLSchemaInfoSet getXSModel() {
         return xsModel;
     }
 

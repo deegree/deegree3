@@ -45,7 +45,7 @@ import javax.xml.namespace.QName;
 import org.deegree.cs.CRS;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.gml.schema.GMLSchemaAnalyzer;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +104,7 @@ public class MappedApplicationSchema extends ApplicationSchema {
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public MappedApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
-                                    Map<String, String> prefixToNs, GMLSchemaAnalyzer xsModel,
+                                    Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel,
                                     FeatureTypeMapping[] ftMappings, CRS storageSRS, BBoxTableMapping bboxMapping,
                                     BlobMapping blobMapping ) {
 
